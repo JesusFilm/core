@@ -29,7 +29,7 @@
     ]
   },
   "projects": {
-    "journeys": {
+    "api-journeys": {
       "tags": []
     }
   }

@@ -1,19 +1,18 @@
 {
   "version": 2,
   "projects": {
-    "journeys": {
-      "root": "apps/journeys",
-      "sourceRoot": "apps/journeys/src",
+    "api-journeys": {
+      "root": "apps/api-journeys",
+      "sourceRoot": "apps/api-journeys/src",
       "projectType": "application",
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/journeys",
-            "main": "apps/journeys/src/main.ts",
-            "tsConfig": "apps/journeys/tsconfig.app.json",
-            "assets": ["apps/journeys/src/assets"]
+            "outputPath": "dist/apps/api-journeys",
+            "main": "apps/api-journeys/src/main.ts",
+            "tsConfig": "apps/api-journeys/tsconfig.app.json"
           },
           "configurations": {
             "production": {
@@ -22,8 +21,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/journeys/src/environments/environment.ts",
-                  "with": "apps/journeys/src/environments/environment.prod.ts"
+                  "replace": "apps/api-journeys/src/environments/environment.ts",
+                  "with": "apps/api-journeys/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -32,20 +31,20 @@
         "serve": {
           "executor": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "journeys:build"
+            "buildTarget": "api-journeys:build"
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/journeys/**/*.ts"]
+            "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/journeys"],
+          "outputs": ["coverage/apps/api-journeys"],
           "options": {
-            "jestConfig": "apps/journeys/jest.config.js",
+            "jestConfig": "apps/api-journeys/jest.config.js",
             "passWithNoTests": true
           }
         }
@@ -55,5 +54,5 @@
   "cli": {
     "defaultCollection": "@nrwl/express"
   },
-  "defaultProject": "journeys"
+  "defaultProject": "api-journeys"
 }

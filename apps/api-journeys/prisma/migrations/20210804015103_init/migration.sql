@@ -1,8 +1,9 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- CreateTable
-CREATE TABLE "Post" (
-    "id" SERIAL NOT NULL,
+CREATE TABLE "Journey" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "title" TEXT NOT NULL,
-    "content" TEXT,
     "published" BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY ("id")

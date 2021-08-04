@@ -11,9 +11,8 @@ generator client {
   output   = "../../../node_modules/.prisma/client"
 }
 
-model Post {
-  id        Int     @default(autoincrement()) @id
+model Journey {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title     String
-  content   String?
   published Boolean @default(false)
 }
