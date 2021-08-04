@@ -1,7 +1,59 @@
 {
   "version": 2,
-  "projects": {},
+  "projects": {
+    "journeys": {
+      "root": "apps/journeys",
+      "sourceRoot": "apps/journeys/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/journeys",
+            "main": "apps/journeys/src/main.ts",
+            "tsConfig": "apps/journeys/tsconfig.app.json",
+            "assets": ["apps/journeys/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/journeys/src/environments/environment.ts",
+                  "with": "apps/journeys/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "journeys:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/journeys/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/journeys"],
+          "options": {
+            "jestConfig": "apps/journeys/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
   "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  }
+    "defaultCollection": "@nrwl/express"
+  },
+  "defaultProject": "journeys"
 }
