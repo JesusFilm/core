@@ -1,12 +1,12 @@
-import { ApolloServer } from 'apollo-server';
-import application from './modules/application';
+import { ApolloServer } from 'apollo-server'
+import application from './modules/application'
 
-const schema = application.createSchemaForApollo();
+const schema = application.createSchemaForApollo()
 
 const server = new ApolloServer({
-  schema,
-});
+  schema
+})
 
 server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  console.log(`🚀  Server ready at ${url}`)
+})

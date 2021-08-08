@@ -1,6 +1,6 @@
-import { PrismaClient } from '.prisma/client';
-import { createModule, gql } from 'graphql-modules';
-import { JourneyModule } from './__generated__/types';
+import { PrismaClient } from '.prisma/client'
+import { createModule, gql } from 'graphql-modules'
+import { JourneyModule } from './__generated__/types'
 
 const typeDefs = gql`
   type Journey {
@@ -18,48 +18,47 @@ const typeDefs = gql`
     journeyCreate(title: String!): Journey!
     journeyPublish(id: ID!): Journey
   }
-`;
+`
 
-const client = new PrismaClient();
+const client = new PrismaClient()
 
 const resolvers: JourneyModule.Resolvers = {
   Query: {
-    journeys() {
+    journeys () {
       return client.journey.findMany({
-        where: { published: true },
-      });
-      ``;
+        where: { published: true }
+      })
     },
-    journey(_parent, { id }) {
+    journey (_parent, { id }) {
       return client.journey.findFirst({
-        where: { id },
-      });
-    },
+        where: { id }
+      })
+    }
   },
   Mutation: {
-    journeyCreate(_parent, { title }) {
+    journeyCreate (_parent, { title }) {
       return client.journey.create({
         data: {
-          title,
-        },
-      });
+          title
+        }
+      })
     },
-    journeyPublish(_parent, { id }) {
+    journeyPublish (_parent, { id }) {
       return client.journey.update({
         where: {
-          id,
+          id
         },
         data: {
-          published: true,
-        },
-      });
-    },
-  },
-};
+          published: true
+        }
+      })
+    }
+  }
+}
 
 export default createModule({
   id: 'journey',
   dirname: __dirname,
   typeDefs: [typeDefs],
-  resolvers,
-});
+  resolvers
+})
