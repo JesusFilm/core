@@ -1,32 +1,34 @@
 import { PrismaClient } from '.prisma/client';
-import { gql } from 'apollo-server';
+import { createModule, gql } from 'graphql-modules';
+import { JourneyModule } from './__generated__/types';
 
-const client = new PrismaClient();
-
-export const typeDefs = gql`
+const typeDefs = gql`
   type Journey {
     id: ID!
     published: Boolean!
     title: String!
   }
 
-  extend type Query {
+  type Query {
     journeys: [Journey!]!
     journey(id: ID!): Journey
   }
 
-  extend type Mutation {
+  type Mutation {
     journeyCreate(title: String!): Journey!
     journeyPublish(id: ID!): Journey
   }
 `;
 
-export const resolvers = {
+const client = new PrismaClient();
+
+const resolvers: JourneyModule.Resolvers = {
   Query: {
     journeys() {
       return client.journey.findMany({
         where: { published: true },
       });
+      ``;
     },
     journey(_parent, { id }) {
       return client.journey.findFirst({
@@ -53,9 +55,11 @@ export const resolvers = {
       });
     },
   },
-  Journey: {
-    id: ({ id }) => id,
-    published: ({ published }) => published,
-    title: ({ title }) => title,
-  },
 };
+
+export default createModule({
+  id: 'journey',
+  dirname: __dirname,
+  typeDefs: [typeDefs],
+  resolvers,
+});

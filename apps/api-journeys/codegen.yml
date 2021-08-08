@@ -1,0 +1,14 @@
+generates:
+  ./apps/api-journeys/src/modules/:
+    schema:
+      - './apps/api-journeys/src/modules/**/*.ts':
+          noRequire: true
+    preset: graphql-modules
+    presetConfig:
+      baseTypesPath: types.ts
+      filename: __generated__/types.ts
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - typescript
+      - typescript-resolvers

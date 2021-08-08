@@ -1,27 +1,10 @@
-import { ApolloServer, gql } from 'apollo-server';
-import { merge } from 'lodash';
-import {
-  typeDefs as journeyTypeDefs,
-  resolvers as journeyResolvers,
-} from './models/journey';
+import { ApolloServer } from 'apollo-server';
+import application from './modules/application';
 
-const Query = gql`
-  type Query {
-    _empty: String
-  }
-`;
-
-const Mutation = gql`
-  type Mutation {
-    _empty: String
-  }
-`;
-
-const resolvers = {};
+const schema = application.createSchemaForApollo();
 
 const server = new ApolloServer({
-  typeDefs: [Query, Mutation, journeyTypeDefs],
-  resolvers: merge(resolvers, journeyResolvers),
+  schema,
 });
 
 server.listen().then(({ url }) => {

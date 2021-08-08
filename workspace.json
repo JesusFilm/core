@@ -47,6 +47,16 @@
             "jestConfig": "apps/api-journeys/jest.config.js",
             "passWithNoTests": true
           }
+        },
+        "generate": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
+              }
+            ]
+          }
         }
       }
     }
