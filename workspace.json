@@ -1,7 +1,71 @@
 {
   "version": 2,
-  "projects": {},
+  "projects": {
+    "api-journeys": {
+      "root": "apps/api-journeys",
+      "sourceRoot": "apps/api-journeys/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/api-journeys",
+            "main": "apps/api-journeys/src/main.ts",
+            "tsConfig": "apps/api-journeys/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/api-journeys/src/environments/environment.ts",
+                  "with": "apps/api-journeys/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "api-journeys:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/api-journeys"],
+          "options": {
+            "jestConfig": "apps/api-journeys/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "generate": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
+              },
+              {
+                "command": "npx prisma generate --schema apps/api-journeys/prisma/schema.prisma"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
   "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  }
+    "defaultCollection": "@nrwl/express"
+  },
+  "defaultProject": "api-journeys"
 }
