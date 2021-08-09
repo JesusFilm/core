@@ -27,6 +27,7 @@
   },
   "private": true,
   "dependencies": {
+    "@prisma/client": "^2.28.0",
     "apollo-server": "^3.1.2",
     "express": "4.17.1",
     "graphql": "^15.5.1",

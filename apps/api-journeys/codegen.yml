@@ -5,7 +5,7 @@ generates:
           noRequire: true
     preset: graphql-modules
     presetConfig:
-      baseTypesPath: types.ts
+      baseTypesPath: ../__generated__/types.ts
       filename: __generated__/types.ts
     plugins:
       - add:

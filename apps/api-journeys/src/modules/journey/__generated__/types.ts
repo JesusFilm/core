@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as Types from "../../types";
+import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
