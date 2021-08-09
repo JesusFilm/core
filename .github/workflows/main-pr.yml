@@ -9,12 +9,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: main
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
           node-version: 15.x
       - uses: bahmutov/npm-install@v1
+      - name: Fetch other branches
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: lint
@@ -23,12 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: main
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
           node-version: 15.x
       - uses: bahmutov/npm-install@v1
+      - name: Fetch other branches
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build
@@ -43,6 +47,8 @@ jobs:
         with:
           node-version: 15.x
       - uses: bahmutov/npm-install@v1
+      - name: Fetch other branches
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: test
