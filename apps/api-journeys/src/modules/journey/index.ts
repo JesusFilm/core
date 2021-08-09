@@ -1,4 +1,4 @@
-import { PrismaClient } from '.prisma/client'
+import { PrismaClient } from '.prisma/api-journeys-client'
 import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
 
