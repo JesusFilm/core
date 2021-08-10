@@ -1,8 +1,6 @@
 import 'reflect-metadata'
-import { DataSource } from 'apollo-datasource'
-import { Scope, createModule, gql, Injectable, Inject, CONTEXT } from 'graphql-modules'
+import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
-import { Journey } from '.prisma/api-journeys-client'
 
 const typeDefs = gql`
   type Journey {
@@ -22,59 +20,34 @@ const typeDefs = gql`
   }
 `
 
-@Injectable({
-  scope: Scope.Operation
-})
-class JourneyAPI extends DataSource {
-  constructor (@Inject(CONTEXT) private readonly context: GraphQLModules.GlobalContext) {
-    super()
-  }
-
-  async getJourneys (): Promise<Journey[]> {
-    return await this.context.db.journey.findMany({
-      where: { published: true }
-    })
-  }
-
-  async getJourney (id: string): Promise<Journey | null> {
-    return await this.context.db.journey.findFirst({
-      where: { id }
-    })
-  }
-
-  async journeyCreate (title: string): Promise<Journey> {
-    return await this.context.db.journey.create({
-      data: {
-        title
-      }
-    })
-  }
-
-  async journeyPublish (id: string): Promise<Journey> {
-    return await this.context.db.journey.update({
-      where: { id },
-      data: {
-        published: true
-      }
-    })
-  }
-}
-
 const resolvers: JourneyModule.Resolvers = {
   Query: {
-    async journeys (_, __, { injector }) {
-      return await injector.get(JourneyAPI).getJourneys()
+    async journeys (_, __, { db }) {
+      return await db.journey.findMany({
+        where: { published: true }
+      })
     },
-    async journey (_parent, { id }, { injector }) {
-      return await injector.get(JourneyAPI).getJourney(id)
+    async journey (_parent, { id }, { db }) {
+      return await db.journey.findUnique({
+        where: { id }
+      })
     }
   },
   Mutation: {
-    async journeyCreate (_parent, { title }, { injector }) {
-      return await injector.get(JourneyAPI).journeyCreate(title)
+    async journeyCreate (_parent, { title }, { db }) {
+      return await db.journey.create({
+        data: {
+          title
+        }
+      })
     },
-    async journeyPublish (_parent, { id }, { injector }) {
-      return await injector.get(JourneyAPI).journeyPublish(id)
+    async journeyPublish (_parent, { id }, { db }) {
+      return await db.journey.update({
+        where: { id },
+        data: {
+          published: true
+        }
+      })
     }
   }
 }
@@ -83,6 +56,5 @@ export default createModule({
   id: 'journey',
   dirname: __dirname,
   typeDefs: [typeDefs],
-  resolvers,
-  providers: [JourneyAPI]
+  resolvers
 })
