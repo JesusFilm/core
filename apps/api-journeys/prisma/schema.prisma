@@ -12,7 +12,7 @@ generator client {
 }
 
 model Journey {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String  @id @default(uuid())
   title     String
   published Boolean @default(false)
 }
