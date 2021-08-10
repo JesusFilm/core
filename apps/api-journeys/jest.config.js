@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = {
   displayName: 'journeys',
   preset: '../../jest.preset.js',
@@ -6,7 +8,7 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.spec.json'
     }
   },
-  testEnvironment: 'node',
+  testEnvironment: path.join(__dirname, './test-environment.ts'),
   transform: {
     '^.+\\.[tj]s$': 'ts-jest'
   },
