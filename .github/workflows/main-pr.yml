@@ -64,4 +64,4 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: generate,test
+          targets: generate,migrations,test
