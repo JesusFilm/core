@@ -49,14 +49,23 @@
           }
         },
         "generate": {
+          "builder": "@nx-tools/nx-prisma:generate",
+          "options": {
+            "schema": "apps/api-journeys/prisma/schema.prisma"
+          }
+        },
+        "migrations": {
+          "builder": "@nx-tools/nx-prisma:migrations",
+          "options": {
+            "schema": "apps/api-journeys/prisma/schema.prisma"
+          }
+        },
+        "codegen": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
                 "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
-              },
-              {
-                "command": "npx prisma generate --schema apps/api-journeys/prisma/schema.prisma"
               }
             ]
           }

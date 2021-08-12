@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server-fastify'
 import application from './modules/application'
-import { PrismaClient } from '.prisma/api-journeys-client'
+import db from './lib/db'
 import Fastify, { FastifyInstance, FastifyServerFactory } from 'fastify'
 
 const init = async (serverFactory?: FastifyServerFactory): Promise<FastifyInstance> => {
@@ -10,7 +10,7 @@ const init = async (serverFactory?: FastifyServerFactory): Promise<FastifyInstan
   const server = new ApolloServer({
     schema,
     context: {
-      db: new PrismaClient()
+      db
     }
   })
 

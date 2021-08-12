@@ -1,15 +1,15 @@
 module.exports = {
-  displayName: 'journeys',
+  displayName: 'api-journeys',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json'
     }
   },
-  testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/journeys'
+  coverageDirectory: '../../coverage/apps/api-journeys',
+  setupFilesAfterEnv: ['<rootDir>setupTests.ts']
 }

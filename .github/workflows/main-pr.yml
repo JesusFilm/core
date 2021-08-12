@@ -11,10 +11,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 15.x
-      - uses: bahmutov/npm-install@v1
+          node-version: '16'
+          cache: 'npm'
+      - run: npm install
       - name: Fetch other branches
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
@@ -27,10 +28,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 15.x
-      - uses: bahmutov/npm-install@v1
+          node-version: '16'
+          cache: 'npm'
+      - run: npm install
       - name: Fetch other branches
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
@@ -38,17 +40,31 @@ jobs:
           targets: generate,build
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: test-user
+          POSTGRES_PASSWORD: test-password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 15.x
-      - uses: bahmutov/npm-install@v1
+          node-version: '16'
+          cache: 'npm'
+      - run: npm install
       - name: Fetch other branches
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: generate,test
+          targets: generate,migrations,test
