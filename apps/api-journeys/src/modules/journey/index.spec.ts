@@ -1,9 +1,7 @@
 import { testkit, gql } from 'graphql-modules'
 import module from '.'
-import { PrismaClient } from '.prisma/api-journeys-client'
+import db from '../../lib/db'
 import { pick } from 'lodash'
-
-const db = new PrismaClient()
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(module)
