@@ -23,14 +23,9 @@ const truncate = async (): Promise<void> => {
 }
 
 beforeAll(async () => {
-  await client.$connect()
   await truncate()
 })
 
 afterEach(async () => {
   await truncate()
-})
-
-afterAll(async () => {
-  await client.$disconnect()
 })

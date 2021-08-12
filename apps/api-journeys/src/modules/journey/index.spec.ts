@@ -3,16 +3,7 @@ import module from '.'
 import { PrismaClient } from '.prisma/api-journeys-client'
 import { pick } from 'lodash'
 
-let db: PrismaClient
-
-beforeAll(async () => {
-  db = new PrismaClient()
-  await db.$connect()
-})
-
-afterAll(async () => {
-  await db.$disconnect()
-})
+const db = new PrismaClient()
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(module)
