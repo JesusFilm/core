@@ -1,8 +1,4 @@
 import { PrismaClient } from '.prisma/api-journeys-client'
-import * as dotenv from 'dotenv'
-import * as path from 'path'
-
-dotenv.config({ path: path.resolve(__dirname, '.env.test') })
 
 const client = new PrismaClient()
 
