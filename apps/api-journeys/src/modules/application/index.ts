@@ -1,6 +1,8 @@
 import { createApplication } from 'graphql-modules'
+import { buildModuleSubgraphSchema } from './buildModuleSubgraphSchema'
 import journey from '../journey'
 
 export default createApplication({
-  modules: [journey]
+  modules: [journey],
+  schemaBuilder: buildModuleSubgraphSchema
 })
