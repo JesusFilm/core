@@ -59,6 +59,7 @@ union InteractiveElement = MCSRQuestion | SliderInput | MarkdownTextMedia |
                              Image | Button | ImagePickQuestion | DelayedElement
 
 type MCSRQuestion {
+  id: ID!
   question: String!
   answerOptions: [Answer!]!
 }
@@ -69,6 +70,7 @@ type Answer {
 }
 
 type SliderInput {
+  id: ID!
   question: String!
   leftLabel: String!
   rightLabel: String!
@@ -79,12 +81,14 @@ type Image {
 }
 
 type Button {
-  text: String!
+  id: ID!
+  label: String!
   style: ButtonStyle
 }
 
 type ImagePickQuestion {
-  text: String
+  id: ID!
+  prompt: String
   images: [Image!]!
 }
 
