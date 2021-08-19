@@ -1,0 +1,89 @@
+type Journey {
+  id: ID!
+  published: Boolean!
+  title: String!
+  blocks: [JourneyStep!]!
+}
+
+union JourneyStep = Block | Condition
+
+type Condition {}
+
+type Block {
+  id: ID!
+  mediaElement: MediaElement!
+  interactiveElements: [InteractiveElement!]!
+}
+
+union MediaElement = MediaWithOverlaidInteractions | MarkdownTextMedia |
+                      TextWithBackgroundMedia | AudioMedia | Signup
+
+interface MediaWithOverlaidInteractions {
+  overlaidInteractions: [OverlaidInteraction]!
+  mediaURI: URI!
+}
+
+type VideoMedia implements MediaWithOverlaidInteractions {
+  startTimestamp: String
+  endTimestamp: String
+  autoplay: Boolean!
+  repeat: Boolean!
+}
+
+type PhotoMedia implements MediaWithOverlaidInteractions {
+}
+
+type MarkdownTextMedia {
+  text: String!
+}
+
+type TextWithBackgroundMedia {
+  mediaURI: URI!
+  text: String!
+}
+
+type AudioMedia {
+  mediaURI: URI!
+  startTimestamp: String
+  endTimestamp: String
+  autoplay: Boolean!
+  repeat: Boolean!
+}
+
+type OverlaidInteraction {
+  appearAtTimestamp: String!
+  InteractiveElement: InteractiveElement!
+}
+
+union InteractiveElement = MCSRQuestion | SliderInput | MarkdownTextMedia |
+                             Image | Button | ImagePickQuestion
+
+type MCSRQuestion {
+  question: String!
+  answerOptions: [Answer!]!
+}
+
+type Answer {
+  id: ID!
+  text: String
+}
+
+type SliderInput {
+  question: String!
+  leftLabel: String!
+  rightLabel: String!
+}
+
+type Image {
+  mediaURI: URI!
+}
+
+type Button {
+  text: String!
+  style: ButtonStyle
+}
+
+type ImagePickQuestion {
+  text: String
+  images: [Image!]!
+}
