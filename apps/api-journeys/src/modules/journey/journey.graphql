@@ -56,7 +56,7 @@ type OverlaidInteraction {
 }
 
 union InteractiveElement = MCSRQuestion | SliderInput | MarkdownTextMedia |
-                             Image | Button | ImagePickQuestion
+                             Image | Button | ImagePickQuestion | DelayedElement
 
 type MCSRQuestion {
   question: String!
@@ -86,4 +86,11 @@ type Button {
 type ImagePickQuestion {
   text: String
   images: [Image!]!
+}
+
+# TODO figure out how to only allow these on time-based media
+# TODO figure out how to not allow DelayedElement as element of a DelayedElement
+type DelayedElement {
+  appearAtTimestamp: String!
+  element: InteractiveElement!
 }
