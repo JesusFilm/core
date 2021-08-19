@@ -11,7 +11,7 @@ type Condition {}
 
 type Block {
   id: ID!
-  mediaElement: MediaElement!
+  mediaElement: MediaElement
   interactiveElements: [InteractiveElement!]!
 }
 
