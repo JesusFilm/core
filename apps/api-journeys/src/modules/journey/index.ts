@@ -7,6 +7,7 @@ const typeDefs = gql`
     id: ID!
     published: Boolean!
     title: String!
+    blocks: [Block!]!
   }
 
   type Query {
@@ -17,6 +18,38 @@ const typeDefs = gql`
   type Mutation {
     journeyCreate(title: String!): Journey!
     journeyPublish(id: ID!): Journey
+  }
+
+  union Block = StepBlock | VideoBlock | RadioQuestionBlock | RadioOptionBlock
+
+  interface BaseBlock {
+    id: ID!
+    parent: Block
+  }
+
+  type StepBlock implements BaseBlock {
+    id: ID!
+    parent: Block
+  }
+
+  type VideoBlock implements BaseBlock {
+    id: ID!
+    parent: Block
+    src: String!
+    title: String!
+    description: String
+    provider: 'Youtube' | 'Vimeo' | 'Arclight'
+  }
+
+  type RadioQuestionBlock implements BaseBlock {
+    id: ID!
+    parent: Block
+    question: String!
+  }
+
+  type RadioOptionBlock implements BaseBlock {
+    id: ID!
+    parent: Block
   }
 `
 
