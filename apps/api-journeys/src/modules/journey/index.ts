@@ -50,7 +50,9 @@ const typeDefs = gql`
   type RadioOptionBlock implements BaseBlock {
     id: ID!
     parent: Block
-    label: String!
+    ## Field suggestions to be added - options: answer in string, image: string file name to be rendered
+    option: String!
+    image: String!
   }
 `
 
