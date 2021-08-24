@@ -15,4 +15,15 @@ model Journey {
   id        String  @id @default(uuid())
   title     String
   published Boolean @default(false)
+  blocks    Block[]
+}
+
+model Block {
+  id            String  @id @default(uuid())
+  block_type    String
+  journey       Journey @relation(fields: [journeyId], references: [id])
+  journeyId     String
+  parentBlock   Block?  @relation("BlockChildren", fields: [parentBlockId], references: [id])
+  parentBlockId String?
+  childBlocks   Block[] @relation("BlockChildren")
 }
