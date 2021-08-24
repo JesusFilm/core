@@ -1,0 +1,20 @@
+.app {
+  font-family: sans-serif;
+  min-width: 300px;
+  max-width: 600px;
+  margin: 50px auto;
+}
+
+.app :global(header) {
+  background-color: #e9f3ff;
+  color: rgb(7, 7, 9);
+  padding: 5px;
+  border-radius: 3px;
+}
+
+
+.app :global(.flex) {
+  display: flex;
+  align-items: space-between;
+  justify-content: space-between;
+}

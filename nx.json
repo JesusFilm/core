@@ -31,6 +31,13 @@
   "projects": {
     "api-journeys": {
       "tags": []
+    },
+    "journeys": {
+      "tags": []
+    },
+    "journeys-e2e": {
+      "tags": [],
+      "implicitDependencies": ["journeys"]
     }
   }
 }
