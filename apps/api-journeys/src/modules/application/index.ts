@@ -1,5 +1,5 @@
 import { createApplication } from 'graphql-modules'
-import { buildModuleSubgraphSchema } from '../../lib/shared/util-graphql/buildModuleSubgraphSchema'
+import { buildModuleSubgraphSchema } from '@core/shared/util-graphql'
 import journey from '../journey'
 
 export default createApplication({

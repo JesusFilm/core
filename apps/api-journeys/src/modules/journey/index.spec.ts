@@ -1,5 +1,5 @@
 import { testkit, gql } from 'graphql-modules'
-import { buildModuleSubgraphSchema } from '../../lib/shared/util-graphql/buildModuleSubgraphSchema'
+import { buildModuleSubgraphSchema } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import { pick } from 'lodash'

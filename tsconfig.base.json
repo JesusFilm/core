@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@core/shared/util-graphql": ["libs/shared/util-graphql/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

@@ -49,13 +49,13 @@
           }
         },
         "generate": {
-          "builder": "@nx-tools/nx-prisma:generate",
+          "executor": "@nx-tools/nx-prisma:generate",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
         },
         "migrations": {
-          "builder": "@nx-tools/nx-prisma:migrations",
+          "executor": "@nx-tools/nx-prisma:migrations",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
@@ -109,6 +109,27 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/gateway/**/*.ts"]
+          }
+        }
+      }
+    },
+    "shared-util-graphql": {
+      "root": "libs/shared/util-graphql",
+      "sourceRoot": "libs/shared/util-graphql/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/util-graphql/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/util-graphql"],
+          "options": {
+            "jestConfig": "libs/shared/util-graphql/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }
