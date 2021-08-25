@@ -11,6 +11,7 @@ export function App() {
         Block renderer & conductor samples
         <Link to="/">Example 1.</Link>
         <Link to="/example-2">Example 2.</Link>
+        <Link to="/example-3">Example 3.</Link>
       </header>
       <main>
         <Route
@@ -31,6 +32,15 @@ export function App() {
             </div>
           )}
         />
+        <Route
+          path="/example-3"
+          exact
+          render={() => (
+            <div>
+              <Conductor {...Transformer(data3)} />
+            </div>
+          )}
+        />
       </main>
     </div>
   );
@@ -38,41 +48,59 @@ export function App() {
 
 export default App;
 
-const data = [{
-    "id":"Root",
+const data = [
+  {
+    id: 'Root',
   },
   {
-    "parentId":"Root",
-    "id":"Video",
+    parentId: 'Root',
+    id: 'Video',
   },
   {
-    "parentId":"Root",
-    "id":"Questions",
+    parentId: 'Root',
+    id: 'Questions',
   },
   {
-    "id":"SecondBlock",
+    id: 'SecondBlock',
   },
   {
-    "id":"ThirdBlock",
+    id: 'ThirdBlock',
   },
   {
-    "parentId":"ThirdBlock",
-    "id":"MoreQuestions",
+    parentId: 'ThirdBlock',
+    id: 'MoreQuestions',
   },
   {
-    "parentId":"MoreQuestions",
-    "id":"NestedMoreQuestions",
+    parentId: 'MoreQuestions',
+    id: 'NestedMoreQuestions',
   },
-]
+];
 
-const data2 = [{
-    "id":"Root Video",
+const data2 = [
+  {
+    id: 'Root Video',
   },
   {
-    "parentId":"Root Video",
-    "id":"Questions",
+    parentId: 'Root Video',
+    id: 'Questions',
   },
   {
-    "id":"Signup",
+    id: 'Signup',
   },
-]
+];
+
+const data3 = [
+  {
+    id: 'Root Video',
+  },
+  {
+    parentId: 'Root Video',
+    id: 'RadioQuestions',
+    question: 'How are you today?',
+  },
+  {
+    parentId: 'RadioQuestions',
+    id: 'RadioOptions',
+    option: 'Option 1',
+  },
+];
