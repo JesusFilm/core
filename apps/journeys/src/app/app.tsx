@@ -3,6 +3,7 @@ import { Conductor } from '../Conductor/Conductor';
 import { Transformer } from '../Transformer/Transformer';
 
 import { Route, Link } from 'react-router-dom';
+import { BlockType } from '../types';
 
 export function App() {
   return (
@@ -48,59 +49,90 @@ export function App() {
 
 export default App;
 
-const data = [
+const data: BlockType[] = [
   {
+    __typename: 'Step',
     id: 'Root',
   },
   {
-    parentId: 'Root',
+    __typename: 'Video',
     id: 'Video',
+    parent: {
+      id: 'Root',
+    },
   },
   {
-    parentId: 'Root',
+    __typename: 'RadioQuestion',
+    label: 'This is a test question 1!',
     id: 'Questions',
+    parent: {
+      id: 'Root',
+    },
   },
   {
+    __typename: 'Step',
     id: 'SecondBlock',
   },
   {
+    __typename: 'Step',
     id: 'ThirdBlock',
   },
   {
-    parentId: 'ThirdBlock',
+    __typename: 'RadioQuestion',
     id: 'MoreQuestions',
+    label: 'This is a test question 2!',
+    parent: {
+      id: 'ThirdBlock',
+    },
   },
   {
-    parentId: 'MoreQuestions',
+    __typename: 'RadioOption',
     id: 'NestedMoreQuestions',
+    label: 'Radio Option',
+    parent: {
+      id: 'MoreQuestions',
+    }
   },
 ];
 
-const data2 = [
+const data2: BlockType[] = [
   {
+    __typename: 'Step',
     id: 'Root Video',
   },
   {
-    parentId: 'Root Video',
-    id: 'Questions',
+    __typename: 'RadioQuestion',
+    id: 'MoreQuestions',
+    label: 'How are you today?',
+    parent: {
+      id: 'Root Video',
+    },
   },
   {
+    __typename: 'Step',
     id: 'Signup',
   },
 ];
 
-const data3 = [
+const data3: BlockType[] = [
   {
+    __typename: 'Step',
     id: 'Root Video',
   },
   {
-    parentId: 'Root Video',
-    id: 'RadioQuestions',
-    question: 'How are you today?',
+    __typename: 'RadioQuestion',
+    id: 'MoreQuestions',
+    label: 'This is a test question!',
+    parent: {
+      id: 'Root Video',
+    },
   },
   {
-    parentId: 'RadioQuestions',
-    id: 'RadioOptions',
-    option: 'Option 1',
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions',
+    label: 'Radio Option',
+    parent: {
+      id: 'MoreQuestions',
+    }
   },
 ];

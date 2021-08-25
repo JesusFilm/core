@@ -1,9 +1,10 @@
-import React, { ReactNode, useState } from 'react'
+import { useState } from 'react'
 import styles from './Conductor.module.css';
-import {BlockRenderer, Block} from '../BlockRenderer/BlockRenderer';
+import {BlockRenderer} from '../BlockRenderer/BlockRenderer';
+import { BlockType } from '../types';
 
 
-export function Conductor(blocks: Block[]) {
+export function Conductor(blocks: BlockType[]) {
   const [currentBlock, setCurrentBlock] = useState(0)
 
   const handleClick = () => {

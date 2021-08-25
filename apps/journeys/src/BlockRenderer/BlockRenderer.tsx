@@ -1,13 +1,8 @@
 import styles from './BlockRenderer.module.css';
 import { RadioQuestion } from '../Blocks/MultipleChoice/MultipleChoice';
+import { BlockType } from '../types';
 
-export type Block = {
-  id: string;
-  children?: Block[];
-  parentId?: string;
-};
-
-export function BlockRenderer(block: Block) {
+export function BlockRenderer(block: BlockType) {
   return (
     <div className={styles.BlockRenderer} key={block.id}>
       <h1>{block.id}</h1>
@@ -16,7 +11,7 @@ export function BlockRenderer(block: Block) {
             <BlockRenderer {...block} key={block.id} />
           ))
         : null}
-      {block.id === 'RadioQuestions' ? <RadioQuestion {...block} /> : null}
+      {block.__typename === 'RadioQuestion' ? <RadioQuestion block={block} /> : null}
     </div>
   );
 }

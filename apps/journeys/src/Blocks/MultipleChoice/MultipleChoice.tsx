@@ -12,6 +12,7 @@ import {
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import customTheme from './MultipleChoice.theme';
+import { RadioOptionType, RadioQuestionType } from '../../types';
 
 const useStyles = makeStyles((theme) => ({
   highlight: {
@@ -40,28 +41,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type RadioOptions = {
-  id?: string;
-  parent?: string;
-  option: string;
-  image?: string;
-};
-
 type RadioQuestionProps = {
-  id: string;
-  parent?: string;
-  question?: string;
-  children?: RadioOptions[];
-};
+  block: RadioQuestionType
+}
 
-export const RadioQuestion = (props: RadioQuestionProps) => {
+
+export const RadioQuestion = ({ block }: RadioQuestionProps) => {
   const classes = useStyles();
-  const [option, setOption] = useState<string | null>(null);
-  const [highlight, setHighlight] = useState<number>();
+  const [selectedOption, setSelectedOption] = useState<RadioOptionType | undefined>();
 
-  const handleButtonSelect = (selected: string, index: number) => {
-    setOption(selected);
-    setHighlight(index);
+  const handleButtonSelect = (selected: RadioOptionType) => {
+    setSelectedOption(selected);
     console.log('option', selected);
   };
 
@@ -85,20 +75,20 @@ export const RadioQuestion = (props: RadioQuestionProps) => {
               variant="contained"
               fullWidth={true}
             >
-              {props.children?.map((options, i) => (
-                <Button
+              {block.children?.map((option) => (
+                option.__typename === 'RadioOption' && <Button
                   variant="contained"
-                  key={i}
-                  onClick={() => handleButtonSelect(options.option, i)}
-                  disabled={i !== highlight && !!option}
+                  key={option.id}
+                  onClick={() => handleButtonSelect(option)}
+                  disabled={selectedOption?.id === option.id}
                   className={
-                    i === highlight ? classes.highlight : classes.buttonLabels
+                    selectedOption?.id === option.id ? classes.highlight : classes.buttonLabels
                   }
                   startIcon={
-                    i !== highlight ? (
-                      <RadioButtonUncheckedIcon />
-                    ) : (
+                    selectedOption?.id === option.id ? (
                       <CheckCircleIcon className={classes.highlightIcon} />
+                      ) : (
+                      <RadioButtonUncheckedIcon />
                     )
                   }
                 ></Button>
