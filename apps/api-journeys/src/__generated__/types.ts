@@ -24,7 +24,7 @@ export type Block = StepBlock | VideoBlock | RadioQuestionBlock | RadioOptionBlo
 
 export type Journey = {
   __typename?: 'Journey';
-  blocks: Array<Block>;
+  blocks?: Maybe<Array<Block>>;
   id: Scalars['ID'];
   published: Scalars['Boolean'];
   title: Scalars['String'];
@@ -165,7 +165,7 @@ export type ResolversTypes = {
   BaseBlock: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'];
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Block: ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['RadioOptionBlock'];
-  Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks: Array<ResolversTypes['Block']> }>;
+  Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -182,7 +182,7 @@ export type ResolversParentTypes = {
   BaseBlock: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['VideoBlock'];
   ID: Scalars['ID'];
   Block: ResolversParentTypes['StepBlock'] | ResolversParentTypes['VideoBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['RadioOptionBlock'];
-  Journey: Omit<Journey, 'blocks'> & { blocks: Array<ResolversParentTypes['Block']> };
+  Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
   Boolean: Scalars['Boolean'];
   String: Scalars['String'];
   Mutation: {};
@@ -204,7 +204,7 @@ export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType exte
 };
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
-  blocks?: Resolver<Array<ResolversTypes['Block']>, ParentType, ContextType>;
+  blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

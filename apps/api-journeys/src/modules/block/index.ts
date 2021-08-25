@@ -4,7 +4,7 @@ import { BlockModule } from './__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
-    blocks: [Block!]!
+    blocks: [Block!]
   }
 
   union Block = StepBlock | VideoBlock | RadioQuestionBlock | RadioOptionBlock
