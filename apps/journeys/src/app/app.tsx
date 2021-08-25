@@ -91,7 +91,7 @@ const data: BlockType[] = [
     label: 'Radio Option',
     parent: {
       id: 'MoreQuestions',
-    }
+    },
   },
 ];
 
@@ -122,7 +122,9 @@ const data3: BlockType[] = [
   {
     __typename: 'RadioQuestion',
     id: 'MoreQuestions',
-    label: 'This is a test question!',
+    label: 'How can we help you know more about Jesus?',
+    description:
+      'What do you think would be the next step to help you grow in your relationship with Christ',
     parent: {
       id: 'Root Video',
     },
@@ -130,9 +132,33 @@ const data3: BlockType[] = [
   {
     __typename: 'RadioOption',
     id: 'NestedMoreQuestions',
-    label: 'Radio Option',
+    label: 'Chat Privately',
     parent: {
       id: 'MoreQuestions',
-    }
+    },
+  },
+  {
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions2',
+    label: 'Get a bible',
+    parent: {
+      id: 'MoreQuestions',
+    },
+  },
+  {
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions3',
+    label: 'Watch more vidoes about Jesus',
+    parent: {
+      id: 'MoreQuestions',
+    },
+  },
+  {
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions4',
+    label: 'Ask a question',
+    parent: {
+      id: 'MoreQuestions',
+    },
   },
 ];

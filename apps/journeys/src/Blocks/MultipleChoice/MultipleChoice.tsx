@@ -42,13 +42,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type RadioQuestionProps = {
-  block: RadioQuestionType
-}
-
+  block: RadioQuestionType;
+};
 
 export const RadioQuestion = ({ block }: RadioQuestionProps) => {
   const classes = useStyles();
-  const [selectedOption, setSelectedOption] = useState<RadioOptionType | undefined>();
+  const [selectedOption, setSelectedOption] = useState<
+    RadioOptionType | undefined
+  >();
 
   const handleButtonSelect = (selected: RadioOptionType) => {
     setSelectedOption(selected);
@@ -64,9 +65,11 @@ export const RadioQuestion = ({ block }: RadioQuestionProps) => {
               variant="subtitle1"
               className={classes.title}
               gutterBottom
-            ></Typography>
+            >
+              {block.label}
+            </Typography>
             <Typography variant="subtitle2" className={classes.description}>
-              description
+              {block.description}
             </Typography>
           </CardContent>
           <CardContent>
@@ -75,24 +78,33 @@ export const RadioQuestion = ({ block }: RadioQuestionProps) => {
               variant="contained"
               fullWidth={true}
             >
-              {block.children?.map((option) => (
-                option.__typename === 'RadioOption' && <Button
-                  variant="contained"
-                  key={option.id}
-                  onClick={() => handleButtonSelect(option)}
-                  disabled={selectedOption?.id === option.id}
-                  className={
-                    selectedOption?.id === option.id ? classes.highlight : classes.buttonLabels
-                  }
-                  startIcon={
-                    selectedOption?.id === option.id ? (
-                      <CheckCircleIcon className={classes.highlightIcon} />
-                      ) : (
-                      <RadioButtonUncheckedIcon />
-                    )
-                  }
-                ></Button>
-              ))}
+              {block.children?.map(
+                (option) =>
+                  option.__typename === 'RadioOption' && (
+                    <Button
+                      variant="contained"
+                      key={option.id}
+                      onClick={() => handleButtonSelect(option)}
+                      disabled={
+                        selectedOption?.id !== option.id && !!selectedOption
+                      }
+                      className={
+                        selectedOption?.id === option.id
+                          ? classes.highlight
+                          : classes.buttonLabels
+                      }
+                      startIcon={
+                        selectedOption?.id === option.id ? (
+                          <CheckCircleIcon className={classes.highlightIcon} />
+                        ) : (
+                          <RadioButtonUncheckedIcon />
+                        )
+                      }
+                    >
+                      {option.label}
+                    </Button>
+                  )
+              )}
             </ButtonGroup>
           </CardContent>
         </Card>

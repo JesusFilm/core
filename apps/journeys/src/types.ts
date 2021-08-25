@@ -15,6 +15,7 @@ export type RadioOptionType = BaseBlockType & {
 export type RadioQuestionType = BaseBlockType & {
   __typename: 'RadioQuestion';
   label: string;
+  description?: string;
 };
 
 export type StepType = BaseBlockType & {

@@ -1,38 +1,61 @@
 import { render } from '@testing-library/react';
-import {BlockRenderer, Block} from './BlockRenderer';
+import { BlockRenderer } from './BlockRenderer';
 import Transformer from '../Transformer/Transformer';
+import { BlockType } from '../types';
 
-const data = [{
-    "id":"Root",
+const data: BlockType[] = [
+  {
+    __typename: 'Step',
+    id: 'Root Video',
   },
   {
-    "parentId":"Root",
-    "id":"Video",
+    __typename: 'RadioQuestion',
+    id: 'MoreQuestions',
+    label: 'How can we help you know more about Jesus?',
+    description:
+      'What do you think would be the next step to help you grow in your relationship with Christ',
+    parent: {
+      id: 'Root Video',
+    },
   },
   {
-    "parentId":"Root",
-    "id":"Questions",
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions',
+    label: 'Chat Privately',
+    parent: {
+      id: 'MoreQuestions',
+    },
   },
   {
-    "id":"SecondBlock",
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions2',
+    label: 'Get a bible',
+    parent: {
+      id: 'MoreQuestions',
+    },
   },
   {
-    "id":"ThirdBlock",
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions3',
+    label: 'Watch more vidoes about Jesus',
+    parent: {
+      id: 'MoreQuestions',
+    },
   },
   {
-    "parentId":"ThirdBlock",
-    "id":"MoreQuestions",
+    __typename: 'RadioOption',
+    id: 'NestedMoreQuestions4',
+    label: 'Ask a question',
+    parent: {
+      id: 'MoreQuestions',
+    },
   },
-]
+];
 
 describe('BlockRenderer', () => {
   it('should render successfully', () => {
-
-    const { baseElement } = render(
-      <BlockRenderer {...Transformer(data)[0]} />
-    );
+    const { baseElement } = render(<BlockRenderer {...Transformer(data)[0]} />);
 
     expect(baseElement).toBeTruthy();
   });
-
 });

@@ -11,7 +11,9 @@ export function BlockRenderer(block: BlockType) {
             <BlockRenderer {...block} key={block.id} />
           ))
         : null}
-      {block.__typename === 'RadioQuestion' ? <RadioQuestion block={block} /> : null}
+      {block.__typename === 'RadioQuestion' ? (
+        <RadioQuestion block={block} />
+      ) : null}
     </div>
   );
 }
