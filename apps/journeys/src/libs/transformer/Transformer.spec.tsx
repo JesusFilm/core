@@ -1,4 +1,4 @@
-import { BlockType } from '../types';
+import { BlockType } from '../../types';
 import Transformer from './Transformer';
 
 describe('Transformer', () => {

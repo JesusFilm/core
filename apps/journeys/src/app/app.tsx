@@ -1,6 +1,6 @@
 import styles from './app.module.css';
-import { Conductor } from '../Conductor/Conductor';
-import { Transformer } from '../Transformer/Transformer';
+import { Conductor } from '../components/Conductor/Conductor';
+import { Transformer } from '../libs/transformer/Transformer';
 
 import { Route, Link } from 'react-router-dom';
 import { BlockType } from '../types';
@@ -124,14 +124,14 @@ const data3: BlockType[] = [
     id: 'MoreQuestions',
     label: 'How can we help you know more about Jesus?',
     description:
-      'What do you think would be the next step to help you grow in your relationship with Christ',
+      'What do you think would be the next step to help you grow in your relationship with Jesus?',
     parent: {
       id: 'Root Video',
     },
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions',
+    id: 'NestedOptions',
     label: 'Chat Privately',
     parent: {
       id: 'MoreQuestions',
@@ -139,7 +139,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions2',
+    id: 'NestedOptions2',
     label: 'Get a bible',
     parent: {
       id: 'MoreQuestions',
@@ -147,7 +147,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions3',
+    id: 'NestedOptions3',
     label: 'Watch more vidoes about Jesus',
     parent: {
       id: 'MoreQuestions',
@@ -155,7 +155,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions4',
+    id: 'NestedOptions4',
     label: 'Ask a question',
     parent: {
       id: 'MoreQuestions',
