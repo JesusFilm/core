@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { BlockRenderer } from './BlockRenderer';
-import Transformer from '../Transformer/Transformer';
-import { BlockType } from '../types';
+import Transformer from '../../libs/transformer/Transformer';
+import { BlockType } from '../../types';
 
 const data: BlockType[] = [
   {
