@@ -4,7 +4,7 @@ import { DocumentNode, GraphQLSchema } from 'graphql'
 import { GraphQLSchemaModule } from 'apollo-graphql'
 import { buildSubgraphSchema } from '@apollo/federation'
 
-export function schemaBuilder(
+export function schemaBuilder (
   input: {
     typeDefs: DocumentNode[]
     resolvers: Array<Record<string, any>>

@@ -69,4 +69,9 @@ describe('schemaBuilder', () => {
     expect(directiveNames).toContain('provides')
     expect(directiveNames).toContain('requires')
   })
+
+  it('throws error when typeDefs and resolvers are different lengths', () => {
+    expect(() => schemaBuilder({ typeDefs: [], resolvers: [{}] }))
+      .toThrow('Number of typeDefs: 0 does not match number of resolvers: 1')
+  })
 })
