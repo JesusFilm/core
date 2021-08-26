@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { RadioQuestion } from './RadioQuestion';
+import { RadioQuestion } from '.';
 import { RadioQuestionType } from '../../types';
 
 const data: RadioQuestionType = {

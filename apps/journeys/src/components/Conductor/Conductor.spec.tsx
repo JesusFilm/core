@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import Conductor from './Conductor';
+import { Conductor } from '.';
 import Transformer from '../../libs/transformer/Transformer';
 import { BlockType } from '../../types';
 

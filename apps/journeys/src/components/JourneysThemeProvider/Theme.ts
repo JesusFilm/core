@@ -1,5 +1,4 @@
-
-import { createTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core'
 
 const lightTheme = createTheme({
     palette: {
@@ -13,15 +12,13 @@ const lightTheme = createTheme({
         success: {
             main: '#54A055' 
         },
-        background: {
-            default: '#8D8D8D'
-        },
     },
     shape: {
         borderRadius: 14
     }
 });
 
+// Not quiet sure if this is how we want to implement dark theme
 const darkTheme = createTheme({
     palette: {
         type: 'dark',
@@ -29,16 +26,13 @@ const darkTheme = createTheme({
             main: '#3f51b5'
         },
         secondary: {
-            main: '#f50057'
+            main: '#f500057'
         },
-        background: {
-            default: '#8D8D8D'
-        }
     },
     shape: {
         borderRadius: 14
     }
-})
+});
 
 export default {
     lightTheme, 

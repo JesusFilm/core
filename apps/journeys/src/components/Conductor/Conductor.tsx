@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './Conductor.module.css';
-import { BlockRenderer } from '../BlockRenderer/BlockRenderer';
+import { BlockRenderer } from '../BlockRenderer';
 import { BlockType } from '../../types';
 
 export function Conductor(blocks: BlockType[]) {

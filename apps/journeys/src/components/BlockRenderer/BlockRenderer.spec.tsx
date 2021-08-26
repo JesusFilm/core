@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { BlockRenderer } from './BlockRenderer';
+import { BlockRenderer } from '.';
 import Transformer from '../../libs/transformer/Transformer';
 import { BlockType } from '../../types';
 

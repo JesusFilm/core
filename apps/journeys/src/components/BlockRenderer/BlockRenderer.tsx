@@ -1,5 +1,6 @@
 import styles from './BlockRenderer.module.css';
-import { RadioQuestion } from '../../blocks/RadioQuestion/RadioQuestion';
+import { RadioQuestion } from '../../blocks/RadioQuestion';
+import { JourneysThemeProvider } from '../JourneysThemeProvider';
 import { BlockType } from '../../types';
 
 export function BlockRenderer(block: BlockType) {

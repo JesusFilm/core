@@ -131,7 +131,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions',
+    id: 'NestedOptions',
     label: 'Chat Privately',
     parent: {
       id: 'MoreQuestions',
@@ -139,7 +139,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions2',
+    id: 'NestedOptions2',
     label: 'Get a bible',
     parent: {
       id: 'MoreQuestions',
@@ -147,7 +147,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions3',
+    id: 'NestedOptions3',
     label: 'Watch more vidoes about Jesus',
     parent: {
       id: 'MoreQuestions',
@@ -155,7 +155,7 @@ const data3: BlockType[] = [
   },
   {
     __typename: 'RadioOption',
-    id: 'NestedMoreQuestions4',
+    id: 'NestedOptions4',
     label: 'Ask a question',
     parent: {
       id: 'MoreQuestions',

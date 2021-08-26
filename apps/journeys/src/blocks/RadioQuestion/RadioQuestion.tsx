@@ -11,12 +11,11 @@ import {
 } from '@material-ui/core';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import customTheme from './RadioQuestion.theme';
 import { RadioOptionType, RadioQuestionType } from '../../types';
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
-    color: customTheme.lightTheme.palette.success.main,
+    color: '#54A055',
   },
   title: {
     fontSize: 24,
