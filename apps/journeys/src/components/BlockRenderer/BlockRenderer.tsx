@@ -1,6 +1,6 @@
 import styles from './BlockRenderer.module.css';
-import { RadioQuestion } from '../Blocks/MultipleChoice/MultipleChoice';
-import { BlockType } from '../types';
+import { RadioQuestion } from '../../blocks/RadioQuestion/RadioQuestion';
+import { BlockType } from '../../types';
 
 export function BlockRenderer(block: BlockType) {
   return (

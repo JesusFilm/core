@@ -2,9 +2,6 @@
 import { createTheme } from '@material-ui/core';
 
 const lightTheme = createTheme({
-    typography: {
-        // fontFamily: {}
-    },
     palette: {
         type: 'light',
         primary: {
