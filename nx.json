@@ -32,7 +32,7 @@
     "api-journeys": {
       "tags": []
     },
-    "gateway": {
+    "api-gateway": {
       "tags": []
     },
     "shared-util-graphql": {

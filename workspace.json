@@ -72,18 +72,18 @@
         }
       }
     },
-    "gateway": {
-      "root": "apps/gateway",
-      "sourceRoot": "apps/gateway/src",
+    "api-gateway": {
+      "root": "apps/api-gateway",
+      "sourceRoot": "apps/api-gateway/src",
       "projectType": "application",
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/gateway",
-            "main": "apps/gateway/src/main.ts",
-            "tsConfig": "apps/gateway/tsconfig.app.json"
+            "outputPath": "dist/apps/api-gateway",
+            "main": "apps/api-gateway/src/main.ts",
+            "tsConfig": "apps/api-gateway/tsconfig.app.json"
           },
           "configurations": {
             "production": {
@@ -92,8 +92,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/gateway/src/environments/environment.ts",
-                  "with": "apps/gateway/src/environments/environment.prod.ts"
+                  "replace": "apps/api-gateway/src/environments/environment.ts",
+                  "with": "apps/api-gateway/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -102,13 +102,13 @@
         "serve": {
           "executor": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "gateway:build"
+            "buildTarget": "api-gateway:build"
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/gateway/**/*.ts"]
+            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
           }
         }
       }
