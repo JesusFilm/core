@@ -4,7 +4,7 @@ import { DocumentNode, GraphQLSchema } from 'graphql'
 import { GraphQLSchemaModule } from 'apollo-graphql'
 import { buildSubgraphSchema } from '@apollo/federation'
 
-export function buildModuleSubgraphSchema (
+export function schemaBuilder(
   input: {
     typeDefs: DocumentNode[]
     resolvers: Array<Record<string, any>>
@@ -21,6 +21,5 @@ export function buildModuleSubgraphSchema (
     return module
   })
 
-  const schema = buildSubgraphSchema(modules)
-  return schema
+  return buildSubgraphSchema(modules)
 }

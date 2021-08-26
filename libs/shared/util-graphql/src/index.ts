@@ -1,1 +1,1 @@
-export * from './lib/buildModuleSubgraphSchema'
+export { schemaBuilder } from './lib/schemaBuilder'

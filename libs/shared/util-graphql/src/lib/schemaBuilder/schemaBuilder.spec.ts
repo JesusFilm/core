@@ -1,8 +1,8 @@
 import { GraphQLSchema } from 'graphql'
 import { createApplication, createModule, gql } from 'graphql-modules'
-import { buildModuleSubgraphSchema } from './buildModuleSubgraphSchema'
+import { schemaBuilder } from './schemaBuilder'
 
-describe('buildModuleSubgraphSchema', () => {
+describe('schemaBuilder', () => {
   it('allows createApplication to accept module schemas having federation directives', async () => {
     const m1 = createModule({
       id: 'm1',
@@ -53,7 +53,7 @@ describe('buildModuleSubgraphSchema', () => {
 
     const application = createApplication({
       modules: [m1, m2],
-      schemaBuilder: buildModuleSubgraphSchema
+      schemaBuilder
     })
 
     expect(application.schema).toBeInstanceOf(GraphQLSchema)
