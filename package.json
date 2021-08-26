@@ -27,6 +27,8 @@
   },
   "private": true,
   "dependencies": {
+    "@apollo/federation": "^0.29.0",
+    "@apollo/gateway": "^0.38.0",
     "@prisma/client": "^2.28.0",
     "apollo-datasource": "^3.0.3",
     "apollo-server": "^3.1.2",

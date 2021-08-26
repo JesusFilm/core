@@ -49,13 +49,13 @@
           }
         },
         "generate": {
-          "builder": "@nx-tools/nx-prisma:generate",
+          "executor": "@nx-tools/nx-prisma:generate",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
         },
         "migrations": {
-          "builder": "@nx-tools/nx-prisma:migrations",
+          "executor": "@nx-tools/nx-prisma:migrations",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
@@ -68,6 +68,68 @@
                 "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
               }
             ]
+          }
+        }
+      }
+    },
+    "api-gateway": {
+      "root": "apps/api-gateway",
+      "sourceRoot": "apps/api-gateway/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/api-gateway",
+            "main": "apps/api-gateway/src/main.ts",
+            "tsConfig": "apps/api-gateway/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/api-gateway/src/environments/environment.ts",
+                  "with": "apps/api-gateway/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "api-gateway:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+          }
+        }
+      }
+    },
+    "shared-util-graphql": {
+      "root": "libs/shared/util-graphql",
+      "sourceRoot": "libs/shared/util-graphql/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/util-graphql/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/util-graphql"],
+          "options": {
+            "jestConfig": "libs/shared/util-graphql/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }

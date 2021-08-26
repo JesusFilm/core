@@ -31,6 +31,12 @@
   "projects": {
     "api-journeys": {
       "tags": []
+    },
+    "api-gateway": {
+      "tags": []
+    },
+    "shared-util-graphql": {
+      "tags": []
     }
   }
 }
