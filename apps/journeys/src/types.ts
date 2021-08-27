@@ -29,6 +29,7 @@ export type StepType = BaseBlockType & {
 export type VideoType = BaseBlockType & {
   __typename: 'Video'
   src: string
+  poster?: string
 }
 
 export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType

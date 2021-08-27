@@ -19,12 +19,8 @@ export const data1 = [
   {
     __typename: 'Video' as const,
     id: 'Root',
-    src: 'https://media.vimejs.com/720p.mp4'
-  },
-  {
-    __typename: 'Video' as const,
-    id: 'Second Video',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    src: 'https://media.vimejs.com/720p.mp4',
+    poster: 'https://media.vimejs.com/poster.png'
   },
   {
     __typename: 'RadioQuestion' as const,
@@ -33,30 +29,6 @@ export const data1 = [
     variant: 'light' as const,
     parent: {
       id: 'Root'
-    }
-  },
-  {
-    __typename: 'Step' as const,
-    id: 'SecondBlock'
-  },
-  {
-    __typename: 'Step' as const,
-    id: 'ThirdBlock'
-  },
-  {
-    __typename: 'RadioQuestion' as const,
-    id: 'MoreQuestions',
-    label: 'This is a test question 2!',
-    parent: {
-      id: 'ThirdBlock'
-    }
-  },
-  {
-    __typename: 'RadioOption' as const,
-    id: 'NestedMoreQuestions',
-    label: 'Radio Option',
-    parent: {
-      id: 'MoreQuestions'
     }
   },
   {
@@ -73,6 +45,28 @@ export const data1 = [
     label: 'another Radio Option',
     parent: {
       id: 'Questions'
+    }
+  },
+  {
+    __typename: 'Video' as const,
+    id: 'Second Video',
+    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    poster: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+  },
+  {
+    __typename: 'RadioQuestion' as const,
+    id: 'MoreQuestions',
+    label: 'This is a test question 2!',
+    parent: {
+      id: 'Second Video'
+    }
+  },
+  {
+    __typename: 'RadioOption' as const,
+    id: 'NestedMoreQuestions',
+    label: 'Radio Option',
+    parent: {
+      id: 'MoreQuestions'
     }
   }
 ]

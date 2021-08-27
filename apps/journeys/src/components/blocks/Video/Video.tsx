@@ -2,8 +2,8 @@ import { ConductorContext } from '../../Conductor'
 import { VideoType, BlockType, GoTo } from '../../../types'
 import { BlockSwitcher } from '../../BlockRenderer'
 import '@vime/core/themes/default.css'
-import { useEffect, useRef, ReactElement } from 'react';
-import { Player, Video as VimeVideo, DefaultUi, usePlayerContext } from '@vime/react';
+import { useEffect, useRef, ReactElement } from 'react'
+import { Player, Video as VimeVideo, DefaultUi, usePlayerContext } from '@vime/react'
 
 export function Video (block: VideoType): ReactElement {
   const player = useRef<HTMLVmPlayerElement>(null)
@@ -28,14 +28,12 @@ export function Video (block: VideoType): ReactElement {
             </VimeVideo>
 
             <DefaultUi>
-          {
-            (block.children != null) ? block.children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : null
-          }
+              {
+                (block.children != null) ? block.children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : null
+              }
             </DefaultUi>
           </Player>
-          <button onClick={() => goTo(block?.action)}>Go to the next thing</button>
-
-
+          <button onClick={() => goTo(block?.action)} style={{background: 'blue', color: 'white'}}>Go to the next thing</button>
         </div>
         )
       }}
