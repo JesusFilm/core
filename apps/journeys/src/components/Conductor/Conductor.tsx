@@ -1,21 +1,34 @@
-import { ReactElement, useState } from 'react'
-
 import styles from './Conductor.module.css'
 import { BlockRenderer } from '../BlockRenderer'
-import { BlockType } from '../../types'
+import { useState, ReactElement } from 'react'
+import { ConductorProps, NextStepProps, BlockType } from '../../types'
+import ConductorContext from './ConductorContext'
 
-export function Conductor (blocks: BlockType[]): ReactElement {
-  const [currentBlock, setCurrentBlock] = useState(0)
+export function Conductor ({ blocks }: ConductorProps): ReactElement {
+  const [currentBlock, setCurrentBlock] = useState(blocks[0])
 
-  const handleClick = () => {
-    if (blocks[currentBlock + 1]) {
-      setCurrentBlock(currentBlock + 1)
+  const handleNextStep: NextStepProps = (id) => {
+    console.log('next step clicked. id value:', id)
+    let nextBlock: BlockType | undefined
+    if (id != null) {
+      nextBlock = blocks.find(block => block.id === id)
+    } else {
+      const index = blocks.findIndex(block => block.id === currentBlock.id)
+      if (index > -1) {
+        nextBlock = blocks[index + 1]
+      }
     }
+    ;(nextBlock != null) && setCurrentBlock(nextBlock)
   }
 
   return (
-    <div className={styles.Conductor} onClick={handleClick}>
-      <BlockRenderer {...blocks[currentBlock]} />
+    <div className={styles.Conductor}>
+      <ConductorContext.Provider value={{
+        currentBlock: currentBlock,
+        goTo: handleNextStep
+      }}>
+        <BlockRenderer {...currentBlock} />
+      </ConductorContext.Provider>
     </div>
   )
 }
