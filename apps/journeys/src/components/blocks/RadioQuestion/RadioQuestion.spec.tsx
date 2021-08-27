@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { RadioQuestion } from '.'
-import { RadioQuestionType } from '../../types'
+import { RadioQuestionType } from '../../../types'
 
 const data: RadioQuestionType = {
   __typename: 'RadioQuestion',
@@ -49,17 +49,17 @@ const data: RadioQuestionType = {
 
 describe('RadioQuestion', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<RadioQuestion block={data} />)
+    const { baseElement } = render(<RadioQuestion {...data} />)
     expect(baseElement).toBeTruthy()
   })
   it('should render question with correct text', () => {
-    const { getByText } = render(<RadioQuestion block={data} />)
+    const { getByText } = render(<RadioQuestion {...data} />)
     expect(
       getByText('How can we help you know more about Jesus?')
     ).toBeTruthy()
   })
   it('should render description with correct text', () => {
-    const { getByText } = render(<RadioQuestion block={data} />)
+    const { getByText } = render(<RadioQuestion {...data} />)
     expect(
       getByText(
         'What do you think would be the next step to help you grow in your relationship with Jesus?'
@@ -67,7 +67,7 @@ describe('RadioQuestion', () => {
     )
   })
   it('should render option with correct text', () => {
-    const { getByText } = render(<RadioQuestion block={data} />)
+    const { getByText } = render(<RadioQuestion {...data} />)
     expect(getByText('Chat Privately')).toBeTruthy()
   })
 })

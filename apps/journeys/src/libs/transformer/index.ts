@@ -1,1 +1,3 @@
-export { Transformer } from './Transformer'
+import transformer from "./transformer";
+
+export default transformer

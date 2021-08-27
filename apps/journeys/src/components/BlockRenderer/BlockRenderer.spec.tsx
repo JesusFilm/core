@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { BlockRenderer } from '.'
-import Transformer from '../../libs/transformer/Transformer'
+import transformer from '../../libs/transformer'
 import { BlockType } from '../../types'
 
 const data: BlockType[] = [
@@ -52,9 +52,11 @@ const data: BlockType[] = [
   }
 ]
 
+const transformed = transformer(data)
+
 describe('BlockRenderer', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<BlockRenderer {...Transformer(data)[0]} />)
+    const { baseElement } = render(<BlockRenderer block={transformed} />)
 
     expect(baseElement).toBeTruthy()
   })

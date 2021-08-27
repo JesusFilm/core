@@ -1,9 +1,12 @@
+export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video'
 interface BaseBlockType {
   id: string
   parent?: {
     id: string
   }
   children?: BlockType[]
+  action?: string
+  __typename: TypeName
 }
 
 export type RadioOptionType = BaseBlockType & {
@@ -25,6 +28,15 @@ export type StepType = BaseBlockType & {
 
 export type VideoType = BaseBlockType & {
   __typename: 'Video'
+  src: string
 }
 
 export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType
+
+export type NextStepProps = (id?: string) => void
+export interface GoTo {
+  goTo: NextStepProps
+}
+export interface ConductorProps {
+  blocks: BlockType[]
+}
