@@ -2,10 +2,11 @@ import styles from './app.module.css';
 import { Conductor } from '../Conductor/Conductor';
 import { Route, Link } from 'react-router-dom';
 import { data1, data2 } from '../data/data';
-import { Transformer } from '../Transformer/Transformer';
+import transformer from '../transformer';
+import { BlockProps } from '../BlockRenderer/BlockRenderer';
 
-const transformed1 = Transformer(data1)
-const transformed2 = Transformer(data2)
+const transformed1 = transformer<BlockProps>(data1)
+const transformed2 = transformer<BlockProps>(data2)
 
 export function App() {
   return (
@@ -21,7 +22,7 @@ export function App() {
           exact
           render={() => (
             <div>
-              <Conductor {...transformed1} />
+              <Conductor blocks={transformed1} />
             </div>
           )}
         />
@@ -30,7 +31,7 @@ export function App() {
           exact
           render={() => (
             <div>
-              <Conductor {...transformed2} />
+              <Conductor blocks={transformed2} />
             </div>
           )}
         />

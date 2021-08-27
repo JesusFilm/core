@@ -9,22 +9,24 @@ export const ConductorContext = createContext({
   goTo: (id?: string) => {},
 });
 
-export function Conductor(blocks: BlockProps[]) {
+interface ConductorProps {
+  blocks: BlockProps[];
+}
+
+export function Conductor({ blocks }: ConductorProps) {
   const [currentBlock, setCurrentBlock] = useState(blocks[0])
 
-  const handleNextStep: NextStepProps = (id) => {
-    console.log(currentBlock)
-    console.log(blocks)
-    console.log(`ACTION: ${id}`)
+  const handleNextStep: NextStepProps = (id?: string) => {
+    let nextBlock: BlockProps | undefined
     if (id) {
-      const newBlock = [...blocks].find(block => block.id == id) || blocks[0]
-      setCurrentBlock(newBlock)
+      nextBlock = blocks.find(block => block.id == id)
     } else {
-      const index = [...blocks].findIndex(block => block.id === currentBlock.id)
-      const next = blocks[index + 1] ? blocks[index + 1] : blocks[index]
-      console.log('newBlocknext :>> ', next);
-      setCurrentBlock(next)
+      const index = blocks.findIndex(block => block.id === currentBlock.id)
+      if (index) {
+        nextBlock = blocks[index + 1]
+      }
     }
+    nextBlock && setCurrentBlock(nextBlock)
   }
 
   return (

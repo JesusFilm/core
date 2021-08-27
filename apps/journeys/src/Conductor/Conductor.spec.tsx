@@ -1,14 +1,14 @@
 import { render } from '@testing-library/react';
 import Conductor from './Conductor';
 import { data1 } from '../data/data';
-import { Transformer } from '../Transformer/Transformer';
+import transformer from '../transformer';
 
-const transformed1 = Transformer(data1)
+const transformed1 = transformer(data1)
 
 describe('Conductor', () => {
   it('should render successfully', () => {
     const { baseElement } = render(
-      <Conductor {...transformed1} />
+      <Conductor blocks={transformed1} />
     );
 
     expect(baseElement).toBeTruthy();
