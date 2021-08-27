@@ -19,7 +19,7 @@ export const data1 = [
   {
     __typename: 'Video' as const,
     id: 'Root',
-    src: 'videosource'
+    src: 'https://media.vimejs.com/720p.mp4'
   },
   {
     __typename: 'Video' as const,
