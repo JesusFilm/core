@@ -44,14 +44,17 @@ const typeDefs = gql`
   type RadioQuestionBlock implements BaseBlock {
     id: ID!
     parent: Block
-    question: String!
+    ## Field suggestions to be added
+    label: String!
+    description: String!
+    variant: 'light' | 'dark'
   }
 
   type RadioOptionBlock implements BaseBlock {
     id: ID!
     parent: Block
-    ## Field suggestions to be added - options: answer in string, image: string file name to be rendered
-    option: String!
+    ## Field suggestions to be added
+    label: String!
     image: String!
   }
 `
