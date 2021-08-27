@@ -19,7 +19,7 @@ export function Video (block: VideoType): ReactElement {
       {({ goTo }: GoTo) => {
         return (
         <div>
-          <Player playsinline ref={player}>
+          <Player playsinline ref={player} autoplay muted>
             <VimeVideo poster="https://media.vimejs.com/poster.png">
               <source
                 data-src={block.src}
