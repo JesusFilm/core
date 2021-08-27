@@ -1,25 +1,22 @@
 import 'reflect-metadata'
-import { createModule, gql } from 'graphql-modules'
-import { BlockModule } from './__generated__/types'
+import { createModule, gql, Resolvers } from 'graphql-modules'
 
 const typeDefs = gql`
   extend type Journey {
     blocks: [Block!]
   }
 
-  union Block = StepBlock | VideoBlock | RadioQuestionBlock | RadioOptionBlock
-
-  interface BaseBlock {
+  interface Block {
     id: ID!
     parent: Block
   }
 
-  type StepBlock implements BaseBlock {
+  type StepBlock implements Block {
     id: ID!
     parent: Block
   }
 
-  type VideoBlock implements BaseBlock {
+  type VideoBlock implements Block {
     id: ID!
     parent: Block
     src: String!
@@ -34,7 +31,7 @@ const typeDefs = gql`
     ARCLIGHT
   }
 
-  type RadioQuestionBlock implements BaseBlock {
+  type RadioQuestionBlock implements Block {
     id: ID!
     parent: Block
     label: String!
@@ -42,7 +39,7 @@ const typeDefs = gql`
     variant: 'light' | 'dark'
   }
 
-  type RadioOptionBlock implements BaseBlock {
+  type RadioOptionBlock implements Block {
     id: ID!
     parent: Block
     ## Field suggestions to be added
@@ -50,11 +47,17 @@ const typeDefs = gql`
     image: String!
   }
 `
-
-const resolvers: BlockModule.Resolvers = {
+const resolvers: Resolvers = {
   Journey: {
-    async blocks(journey) {
-      return []
+    async blocks (journey, __, { db }) {
+      return db.block.findMany({
+        where: { journeyId: journey.id }
+      })
+    }
+  },
+  Block: {
+    __resolveType: (obj, context, info) => {
+      return obj.blockType
     }
   }
 }

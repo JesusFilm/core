@@ -8,7 +8,7 @@ export namespace BlockModule {
     RadioQuestionBlock: 'id' | 'parent' | 'question';
     RadioOptionBlock: 'id' | 'parent' | 'option' | 'image';
     Journey: 'blocks';
-    BaseBlock: 'id' | 'parent';
+    Block: 'id' | 'parent';
   };
   
   interface DefinedEnumValues {
@@ -16,20 +16,19 @@ export namespace BlockModule {
   };
   
   export type Journey = Types.Journey;
-  export type Block = Types.Block;
+  export type Block = Pick<Types.Block, DefinedFields['Block']>;
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
   export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
+  export type VideoProviderEnum = DefinedEnumValues['VideoProviderEnum'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
-  export type BaseBlock = Pick<Types.BaseBlock, DefinedFields['BaseBlock']>;
-  export type VideoProviderEnum = DefinedEnumValues['VideoProviderEnum'];
   
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
-  export type BaseBlockResolvers = Pick<Types.BaseBlockResolvers, DefinedFields['BaseBlock']>;
+  export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
   
   export interface Resolvers {
     StepBlock?: StepBlockResolvers;

@@ -4,7 +4,6 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -15,12 +14,10 @@ export type Scalars = {
   Float: number;
 };
 
-export type BaseBlock = {
+export type Block = {
   id: Scalars['ID'];
   parent?: Maybe<Block>;
 };
-
-export type Block = StepBlock | VideoBlock | RadioQuestionBlock | RadioOptionBlock;
 
 export type Journey = {
   __typename?: 'Journey';
@@ -57,7 +54,7 @@ export type QueryJourneyArgs = {
   id: Scalars['ID'];
 };
 
-export type RadioOptionBlock = BaseBlock & {
+export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   id: Scalars['ID'];
   parent?: Maybe<Block>;
@@ -65,20 +62,20 @@ export type RadioOptionBlock = BaseBlock & {
   image: Scalars['String'];
 };
 
-export type RadioQuestionBlock = BaseBlock & {
+export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
   id: Scalars['ID'];
   parent?: Maybe<Block>;
   question: Scalars['String'];
 };
 
-export type StepBlock = BaseBlock & {
+export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID'];
   parent?: Maybe<Block>;
 };
 
-export type VideoBlock = BaseBlock & {
+export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   id: Scalars['ID'];
   parent?: Maybe<Block>;
@@ -162,45 +159,39 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  BaseBlock: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'];
+  Block: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'];
   ID: ResolverTypeWrapper<Scalars['ID']>;
-  Block: ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['RadioOptionBlock'];
-  Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
+  Journey: ResolverTypeWrapper<Journey>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
-  RadioOptionBlock: ResolverTypeWrapper<Omit<RadioOptionBlock, 'parent'> & { parent?: Maybe<ResolversTypes['Block']> }>;
-  RadioQuestionBlock: ResolverTypeWrapper<Omit<RadioQuestionBlock, 'parent'> & { parent?: Maybe<ResolversTypes['Block']> }>;
-  StepBlock: ResolverTypeWrapper<Omit<StepBlock, 'parent'> & { parent?: Maybe<ResolversTypes['Block']> }>;
-  VideoBlock: ResolverTypeWrapper<Omit<VideoBlock, 'parent'> & { parent?: Maybe<ResolversTypes['Block']> }>;
+  RadioOptionBlock: ResolverTypeWrapper<RadioOptionBlock>;
+  RadioQuestionBlock: ResolverTypeWrapper<RadioQuestionBlock>;
+  StepBlock: ResolverTypeWrapper<StepBlock>;
+  VideoBlock: ResolverTypeWrapper<VideoBlock>;
   VideoProviderEnum: VideoProviderEnum;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  BaseBlock: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['VideoBlock'];
+  Block: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['VideoBlock'];
   ID: Scalars['ID'];
-  Block: ResolversParentTypes['StepBlock'] | ResolversParentTypes['VideoBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['RadioOptionBlock'];
-  Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
+  Journey: Journey;
   Boolean: Scalars['Boolean'];
   String: Scalars['String'];
   Mutation: {};
   Query: {};
-  RadioOptionBlock: Omit<RadioOptionBlock, 'parent'> & { parent?: Maybe<ResolversParentTypes['Block']> };
-  RadioQuestionBlock: Omit<RadioQuestionBlock, 'parent'> & { parent?: Maybe<ResolversParentTypes['Block']> };
-  StepBlock: Omit<StepBlock, 'parent'> & { parent?: Maybe<ResolversParentTypes['Block']> };
-  VideoBlock: Omit<VideoBlock, 'parent'> & { parent?: Maybe<ResolversParentTypes['Block']> };
-};
-
-export type BaseBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['BaseBlock'] = ResolversParentTypes['BaseBlock']> = {
-  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'StepBlock' | 'VideoBlock', ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
+  RadioOptionBlock: RadioOptionBlock;
+  RadioQuestionBlock: RadioQuestionBlock;
+  StepBlock: StepBlock;
+  VideoBlock: VideoBlock;
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'StepBlock' | 'VideoBlock' | 'RadioQuestionBlock' | 'RadioOptionBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'StepBlock' | 'VideoBlock', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
 };
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
@@ -253,7 +244,6 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 };
 
 export type Resolvers<ContextType = GraphQLModules.Context> = {
-  BaseBlock?: BaseBlockResolvers<ContextType>;
   Block?: BlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

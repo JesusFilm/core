@@ -20,7 +20,7 @@ model Journey {
 
 model Block {
   id            String  @id @default(uuid())
-  block_type    String
+  blockType     String  @default("StepBlock")
   journey       Journey @relation(fields: [journeyId], references: [id])
   journeyId     String
   parentBlock   Block?  @relation("BlockChildren", fields: [parentBlockId], references: [id])
