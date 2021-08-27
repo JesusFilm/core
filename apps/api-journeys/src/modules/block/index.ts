@@ -1,5 +1,7 @@
 import 'reflect-metadata'
-import { createModule, gql, Resolvers } from 'graphql-modules'
+import { createModule, gql } from 'graphql-modules'
+import { Prisma } from '.prisma/api-journeys-client'
+import { Resolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
@@ -8,17 +10,17 @@ const typeDefs = gql`
 
   interface Block {
     id: ID!
-    parent: Block
+    parentBlockId: ID
   }
 
   type StepBlock implements Block {
     id: ID!
-    parent: Block
+    parentBlockId: ID
   }
 
   type VideoBlock implements Block {
     id: ID!
-    parent: Block
+    parentBlockId: ID
     src: String!
     title: String!
     description: String
@@ -31,33 +33,39 @@ const typeDefs = gql`
     ARCLIGHT
   }
 
+  enum RadioQuestionVariant {
+    LIGHT
+    DARK
+  }
+
   type RadioQuestionBlock implements Block {
     id: ID!
-    parent: Block
+    parentBlockId: ID
     label: String!
     description: String!
-    variant: 'light' | 'dark'
+    variant: RadioQuestionVariant
   }
 
   type RadioOptionBlock implements Block {
     id: ID!
-    parent: Block
+    parentBlockId: ID
     ## Field suggestions to be added
     label: String!
     image: String!
   }
 `
+
 const resolvers: Resolvers = {
   Journey: {
-    async blocks (journey, __, { db }) {
-      return db.block.findMany({
+    async blocks(journey, __, { db }) {
+      const blocks = await db.block.findMany({
         where: { journeyId: journey.id }
       })
-    }
-  },
-  Block: {
-    __resolveType: (obj, context, info) => {
-      return obj.blockType
+      return blocks.map((block) => ({
+        ...block,
+        ...(block.extraAttrs as Prisma.JsonObject),
+        __typename: block.blockType
+      }))
     }
   }
 }

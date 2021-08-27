@@ -3,16 +3,17 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
-    StepBlock: 'id' | 'parent';
-    VideoBlock: 'id' | 'parent' | 'src' | 'title' | 'description' | 'provider';
-    RadioQuestionBlock: 'id' | 'parent' | 'question';
-    RadioOptionBlock: 'id' | 'parent' | 'option' | 'image';
+    StepBlock: 'id' | 'parentBlockId';
+    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
+    RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
+    RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'image';
     Journey: 'blocks';
-    Block: 'id' | 'parent';
+    Block: 'id' | 'parentBlockId';
   };
   
   interface DefinedEnumValues {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
+    RadioQuestionVariant: 'LIGHT' | 'DARK';
   };
   
   export type Journey = Types.Journey;
@@ -20,6 +21,7 @@ export namespace BlockModule {
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
   export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type VideoProviderEnum = DefinedEnumValues['VideoProviderEnum'];
+  export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   
@@ -49,12 +51,12 @@ export namespace BlockModule {
     StepBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
-      parent?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
     };
     VideoBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
-      parent?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
       src?: gm.Middleware[];
       title?: gm.Middleware[];
       description?: gm.Middleware[];
@@ -63,14 +65,16 @@ export namespace BlockModule {
     RadioQuestionBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
-      parent?: gm.Middleware[];
-      question?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      label?: gm.Middleware[];
+      description?: gm.Middleware[];
+      variant?: gm.Middleware[];
     };
     RadioOptionBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
-      parent?: gm.Middleware[];
-      option?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      label?: gm.Middleware[];
       image?: gm.Middleware[];
     };
   };

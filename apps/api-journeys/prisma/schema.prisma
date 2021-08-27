@@ -26,4 +26,5 @@ model Block {
   parentBlock   Block?  @relation("BlockChildren", fields: [parentBlockId], references: [id])
   parentBlockId String?
   childBlocks   Block[] @relation("BlockChildren")
+  extraAttrs    Json?
 }

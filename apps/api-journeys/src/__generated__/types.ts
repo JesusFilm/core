@@ -16,7 +16,7 @@ export type Scalars = {
 
 export type Block = {
   id: Scalars['ID'];
-  parent?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type Journey = {
@@ -57,28 +57,34 @@ export type QueryJourneyArgs = {
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   id: Scalars['ID'];
-  parent?: Maybe<Block>;
-  option: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  label: Scalars['String'];
   image: Scalars['String'];
 };
 
 export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
   id: Scalars['ID'];
-  parent?: Maybe<Block>;
-  question: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  label: Scalars['String'];
+  description: Scalars['String'];
+  variant?: Maybe<RadioQuestionVariant>;
 };
+
+export type RadioQuestionVariant =
+  | 'LIGHT'
+  | 'DARK';
 
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID'];
-  parent?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   id: Scalars['ID'];
-  parent?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['ID']>;
   src: Scalars['String'];
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
@@ -168,6 +174,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RadioOptionBlock: ResolverTypeWrapper<RadioOptionBlock>;
   RadioQuestionBlock: ResolverTypeWrapper<RadioQuestionBlock>;
+  RadioQuestionVariant: RadioQuestionVariant;
   StepBlock: ResolverTypeWrapper<StepBlock>;
   VideoBlock: ResolverTypeWrapper<VideoBlock>;
   VideoProviderEnum: VideoProviderEnum;
@@ -191,7 +198,7 @@ export type ResolversParentTypes = {
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
   __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'StepBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
@@ -214,28 +221,30 @@ export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType exte
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
-  option?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioQuestionBlock'] = ResolversParentTypes['RadioQuestionBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
-  question?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  variant?: Resolver<Maybe<ResolversTypes['RadioQuestionVariant']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['StepBlock'] = ResolversParentTypes['StepBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoBlock'] = ResolversParentTypes['VideoBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parent?: Resolver<Maybe<ResolversTypes['Block']>, ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
