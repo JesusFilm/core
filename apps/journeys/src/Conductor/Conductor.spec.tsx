@@ -1,34 +1,14 @@
 import { render } from '@testing-library/react';
 import Conductor from './Conductor';
-import Transformer from '../Transformer/Transformer';
+import { data1 } from '../data/data';
+import { Transformer } from '../Transformer/Transformer';
 
+const transformed1 = Transformer(data1)
 
-const data = [{
-    "id":"Root",
-  },
-  {
-    "parentId":"Root",
-    "id":"Video",
-  },
-  {
-    "parentId":"Root",
-    "id":"Questions",
-  },
-  {
-    "id":"SecondBlock",
-  },
-  {
-    "id":"ThirdBlock",
-  },
-  {
-    "parentId":"ThirdBlock",
-    "id":"MoreQuestions",
-  },
-]
 describe('Conductor', () => {
   it('should render successfully', () => {
     const { baseElement } = render(
-      <Conductor {...Transformer(data)} />
+      <Conductor {...transformed1} />
     );
 
     expect(baseElement).toBeTruthy();

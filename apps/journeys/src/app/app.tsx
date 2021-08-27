@@ -1,8 +1,11 @@
 import styles from './app.module.css';
 import { Conductor } from '../Conductor/Conductor';
+import { Route, Link } from 'react-router-dom';
+import { data1, data2 } from '../data/data';
 import { Transformer } from '../Transformer/Transformer';
 
-import { Route, Link } from 'react-router-dom';
+const transformed1 = Transformer(data1)
+const transformed2 = Transformer(data2)
 
 export function App() {
   return (
@@ -18,7 +21,7 @@ export function App() {
           exact
           render={() => (
             <div>
-              <Conductor {...Transformer(data)} />
+              <Conductor {...transformed1} />
             </div>
           )}
         />
@@ -27,7 +30,7 @@ export function App() {
           exact
           render={() => (
             <div>
-              <Conductor {...Transformer(data2)} />
+              <Conductor {...transformed2} />
             </div>
           )}
         />
@@ -38,41 +41,3 @@ export function App() {
 
 export default App;
 
-const data = [{
-    "id":"Root",
-  },
-  {
-    "parentId":"Root",
-    "id":"Video",
-  },
-  {
-    "parentId":"Root",
-    "id":"Questions",
-  },
-  {
-    "id":"SecondBlock",
-  },
-  {
-    "id":"ThirdBlock",
-  },
-  {
-    "parentId":"ThirdBlock",
-    "id":"MoreQuestions",
-  },
-  {
-    "parentId":"MoreQuestions",
-    "id":"NestedMoreQuestions",
-  },
-]
-
-const data2 = [{
-    "id":"Root Video",
-  },
-  {
-    "parentId":"Root Video",
-    "id":"Questions",
-  },
-  {
-    "id":"Signup",
-  },
-]

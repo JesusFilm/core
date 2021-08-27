@@ -1,20 +1,40 @@
-import React, { ReactNode, useState } from 'react'
+import { useState, createContext } from 'react'
 import styles from './Conductor.module.css';
-import {BlockRenderer, Block} from '../BlockRenderer/BlockRenderer';
+import { BlockRenderer, BlockProps } from '../BlockRenderer/BlockRenderer';
 
+export type NextStepProps = (id?: string) => void
 
-export function Conductor(blocks: Block[]) {
-  const [currentBlock, setCurrentBlock] = useState(0)
+export const ConductorContext = createContext({
+  currentBlock: {},
+  goTo: (id?: string) => {},
+});
 
-  const handleClick = () => {
-    if (blocks[currentBlock + 1]) {
-      setCurrentBlock(currentBlock + 1)
+export function Conductor(blocks: BlockProps[]) {
+  const [currentBlock, setCurrentBlock] = useState(blocks[0])
+
+  const handleNextStep: NextStepProps = (id) => {
+    console.log(currentBlock)
+    console.log(blocks)
+    console.log(`ACTION: ${id}`)
+    if (id) {
+      const newBlock = [...blocks].find(block => block.id == id) || blocks[0]
+      setCurrentBlock(newBlock)
+    } else {
+      const index = [...blocks].findIndex(block => block.id === currentBlock.id)
+      const next = blocks[index + 1] ? blocks[index + 1] : blocks[index]
+      console.log('newBlocknext :>> ', next);
+      setCurrentBlock(next)
     }
   }
 
   return (
-    <div className={styles.Conductor} onClick={handleClick}>
-      <BlockRenderer {...blocks[currentBlock]} />
+    <div className={styles.Conductor}>
+      <ConductorContext.Provider value={{
+          currentBlock: currentBlock,
+          goTo: handleNextStep,
+        }}>
+        <BlockRenderer {...currentBlock} />
+      </ConductorContext.Provider>
     </div>
   );
 }

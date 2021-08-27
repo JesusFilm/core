@@ -1,31 +1,10 @@
 import Transformer from './Transformer';
+import { data1 } from '../data/data';
 
 describe('Transformer', () => {
-  const data = [{
-      "id":"Root",
-    },
-    {
-      "parentId":"Root",
-      "id":"Video",
-    },
-    {
-      "parentId":"Root",
-      "id":"Questions",
-    },
-    {
-      "id":"SecondBlock",
-    },
-    {
-      "id":"ThirdBlock",
-    },
-    {
-      "parentId":"ThirdBlock",
-      "id":"MoreQuestions",
-    },
-  ]
 
   it('should render successfully', () => {
-    const transformed = Transformer(data)
+    const transformed = Transformer(data1)
     expect(transformed).toBeTruthy();
   });
 });

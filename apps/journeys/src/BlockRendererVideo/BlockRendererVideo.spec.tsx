@@ -1,14 +1,16 @@
 import { render } from '@testing-library/react';
-import { BlockRenderer } from './BlockRenderer';
+import {BlockRendererVideo} from './BlockRendererVideo';
 import Transformer from '../Transformer/Transformer';
-import { data1 } from '../data/data';
+import { videos } from '../data/data';
+
+const transformed1 = Transformer(videos)
 
 
-describe('BlockRenderer', () => {
+describe('BlockRendererVideo', () => {
   it('should render successfully', () => {
 
     const { baseElement } = render(
-      <BlockRenderer {...Transformer(data1)[0]} />
+      <BlockRendererVideo {...transformed1[0]} />
     );
 
     expect(baseElement).toBeTruthy();
