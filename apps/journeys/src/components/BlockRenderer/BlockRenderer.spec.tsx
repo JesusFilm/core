@@ -56,7 +56,7 @@ const transformed = transformer(data)
 
 describe('BlockRenderer', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<BlockRenderer block={transformed} />)
+    const { baseElement } = render(<BlockRenderer {...transformed[0]} />)
 
     expect(baseElement).toBeTruthy()
   })

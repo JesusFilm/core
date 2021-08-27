@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 import styles from './app.module.css'
-import { Conductor } from '../components/Conductor/Conductor'
+import { Conductor } from '../components/Conductor'
 import { JourneysThemeProvider } from '../components/JourneysThemeProvider'
 import { Route, Link } from 'react-router-dom'
 import { BlockType } from '../types'
-import { data1, data2, data3 } from '../data';
-import transformer from '../libs/transformer';
+import { data1, data2, data3 } from '../data'
+import transformer from '../libs/transformer'
 
 const transformed1 = transformer<BlockType>(data1)
 const transformed2 = transformer<BlockType>(data2)
