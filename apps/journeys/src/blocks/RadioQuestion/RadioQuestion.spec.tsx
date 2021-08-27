@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react';
-import { RadioQuestion } from '.';
-import { RadioQuestionType } from '../../types';
+import { render } from '@testing-library/react'
+import { RadioQuestion } from '.'
+import { RadioQuestionType } from '../../types'
 
 const data: RadioQuestionType = {
   __typename: 'RadioQuestion',
@@ -9,7 +9,7 @@ const data: RadioQuestionType = {
   description:
     'What do you think would be the next step to help you grow in your relationship with Jesus?',
   parent: {
-    id: 'Root Video',
+    id: 'Root Video'
   },
   children: [
     {
@@ -17,57 +17,57 @@ const data: RadioQuestionType = {
       id: 'NestedMoreQuestions',
       label: 'Chat Privately',
       parent: {
-        id: 'MoreQuestions',
-      },
+        id: 'MoreQuestions'
+      }
     },
     {
       __typename: 'RadioOption',
       id: 'NestedMoreQuestions2',
       label: 'Get a bible',
       parent: {
-        id: 'MoreQuestions',
-      },
+        id: 'MoreQuestions'
+      }
     },
     {
       __typename: 'RadioOption',
       id: 'NestedMoreQuestions3',
       label: 'Watch more vidoes about Jesus',
       parent: {
-        id: 'MoreQuestions',
-      },
+        id: 'MoreQuestions'
+      }
     },
     {
       __typename: 'RadioOption',
       id: 'NestedMoreQuestions4',
       label: 'Ask a question',
       parent: {
-        id: 'MoreQuestions',
-      },
-    },
-  ],
-};
+        id: 'MoreQuestions'
+      }
+    }
+  ]
+}
 
 describe('RadioQuestion', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<RadioQuestion block={data} />);
-    expect(baseElement).toBeTruthy();
-  });
+    const { baseElement } = render(<RadioQuestion block={data} />)
+    expect(baseElement).toBeTruthy()
+  })
   it('should render question with correct text', () => {
-    const { getByText } = render(<RadioQuestion block={data} />);
+    const { getByText } = render(<RadioQuestion block={data} />)
     expect(
       getByText('How can we help you know more about Jesus?')
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
   it('should render description with correct text', () => {
-    const { getByText } = render(<RadioQuestion block={data} />);
+    const { getByText } = render(<RadioQuestion block={data} />)
     expect(
       getByText(
         'What do you think would be the next step to help you grow in your relationship with Jesus?'
       )
-    );
-  });
+    )
+  })
   it('should render option with correct text', () => {
-    const { getByText } = render(<RadioQuestion block={data} />);
-    expect(getByText('Chat Privately')).toBeTruthy();
-  });
-});
+    const { getByText } = render(<RadioQuestion block={data} />)
+    expect(getByText('Chat Privately')).toBeTruthy()
+  })
+})

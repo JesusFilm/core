@@ -1,29 +1,30 @@
-type BaseBlockType = {
-  id: string;
+interface BaseBlockType {
+  id: string
   parent?: {
-    id: string;
-  };
-  children?: BlockType[];
+    id: string
+  }
+  children?: BlockType[]
 }
 
 export type RadioOptionType = BaseBlockType & {
-  __typename: 'RadioOption';
-  label: string;
-  image?: string;
-};
+  __typename: 'RadioOption'
+  label: string
+  image?: string
+}
 
 export type RadioQuestionType = BaseBlockType & {
-  __typename: 'RadioQuestion';
-  label: string;
-  description?: string;
-};
+  __typename: 'RadioQuestion'
+  label: string
+  description?: string
+  variant?: 'light' | 'dark'
+}
 
 export type StepType = BaseBlockType & {
-  __typename: 'Step';
+  __typename: 'Step'
 }
 
 export type VideoType = BaseBlockType & {
-  __typename: 'Video';
+  __typename: 'Video'
 }
 
 export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType
