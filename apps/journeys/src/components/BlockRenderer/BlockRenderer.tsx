@@ -6,7 +6,6 @@ import { ReactElement } from 'react'
 export function BlockRenderer (block: BlockType): ReactElement {
   return (
     <div className={styles.BlockRenderer} >
-      <h1><em>root block name: </em>{block.id}</h1>
       {BlockSwitcher(block, 1000)}
     </div>
   )

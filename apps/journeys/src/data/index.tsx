@@ -23,11 +23,8 @@ export const data1 = [
   },
   {
     __typename: 'Video' as const,
-    id: 'Video',
-    parent: {
-      id: 'Root'
-    },
-    src: 'yoyo'
+    id: 'Second Video',
+    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
   },
   {
     __typename: 'RadioQuestion' as const,
@@ -60,6 +57,22 @@ export const data1 = [
     label: 'Radio Option',
     parent: {
       id: 'MoreQuestions'
+    }
+  },
+  {
+    __typename: 'RadioOption' as const,
+    id: 'Questions',
+    label: 'Radio Option',
+    parent: {
+      id: 'Questions'
+    }
+  },
+  {
+    __typename: 'RadioOption' as const,
+    id: 'Questions again',
+    label: 'another Radio Option',
+    parent: {
+      id: 'Questions'
     }
   }
 ]

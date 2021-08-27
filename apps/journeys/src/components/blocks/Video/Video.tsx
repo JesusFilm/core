@@ -28,13 +28,14 @@ export function Video (block: VideoType): ReactElement {
             </VimeVideo>
 
             <DefaultUi>
+          {
+            (block.children != null) ? block.children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : null
+          }
             </DefaultUi>
           </Player>
           <button onClick={() => goTo(block?.action)}>Go to the next thing</button>
 
-          {
-            (block.children != null) ? block.children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : null
-          }
+
         </div>
         )
       }}

@@ -1,27 +1,28 @@
 type Node<T> = T & {
-    children: Node<T>[]
-  }
-  
-  interface Item {
+  children: Array<Node<T>>
+}
+
+interface Item {
+  id: string
+  parent?: {
     id: string
-    parentId?: string
   }
-  
-  export default function transformer<T extends Item>(data: T[]): Node<T>[] {
-    const tree: Node<T>[] = []
-    const childrenOf: Record<string, Node<T>[]> = {}
-    data.forEach((item) => {
-      const newNode: Node<T> = {
-        ...item,
-        children: []
-      }
-      const { id, parentId } = item
-      childrenOf[id] = childrenOf[id] || []
-      newNode.children = childrenOf[id]
-      parentId
-        ? (childrenOf[parentId] = childrenOf[parentId] || []).push(newNode)
-        : tree.push(newNode)
-    })
-    return tree
-  }
-  
+}
+
+export default function transformer<T extends Item> (data: T[]): Array<Node<T>> {
+  const tree: Array<Node<T>> = []
+  const childrenOf: Record<string, Array<Node<T>>> = {}
+  data.forEach((item) => {
+    const newNode: Node<T> = {
+      ...item,
+      children: []
+    }
+    const { id, parent } = item
+    childrenOf[id] = childrenOf[id] || []
+    newNode.children = childrenOf[id]
+    ;(parent != null)
+      ? (childrenOf[parent.id] = childrenOf[parent.id] || []).push(newNode)
+      : tree.push(newNode)
+  })
+  return tree
+}
