@@ -1,10 +1,11 @@
 import { testkit, gql } from 'graphql-modules'
+import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import { pick } from 'lodash'
 
 it('returns published journeys', async () => {
-  const app = testkit.testModule(module)
+  const app = testkit.testModule(module, { schemaBuilder })
 
   const journey = await db.journey.create({
     data: {
@@ -41,7 +42,7 @@ it('returns published journeys', async () => {
 })
 
 it('returns journey', async () => {
-  const app = testkit.testModule(module)
+  const app = testkit.testModule(module, { schemaBuilder })
 
   const journey = await db.journey.create({
     data: {
@@ -74,7 +75,7 @@ it('returns journey', async () => {
 })
 
 it('creates journey', async () => {
-  const app = testkit.testModule(module)
+  const app = testkit.testModule(module, { schemaBuilder })
 
   const { data } = await testkit.execute(app, {
     document: gql`
@@ -105,7 +106,7 @@ it('creates journey', async () => {
 })
 
 it('publishes journey', async () => {
-  const app = testkit.testModule(module)
+  const app = testkit.testModule(module, { schemaBuilder })
 
   const journey = await db.journey.create({
     data: {

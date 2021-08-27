@@ -38,6 +38,12 @@
     "journeys-e2e": {
       "tags": [],
       "implicitDependencies": ["journeys"]
+    },
+    "api-gateway": {
+      "tags": []
+    },
+    "shared-util-graphql": {
+      "tags": []
     }
   }
 }
