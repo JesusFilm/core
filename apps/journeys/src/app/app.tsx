@@ -1,44 +1,58 @@
-import styles from './app.module.css';
-import { Conductor } from '../Conductor/Conductor';
-import { Route, Link } from 'react-router-dom';
-import { data1, data2 } from '../data/data';
-import transformer from '../transformer';
-import { BlockProps } from '../BlockRenderer/BlockRenderer';
+import { ReactElement } from 'react'
+import styles from './app.module.css'
+import { Conductor } from '../components/Conductor/Conductor'
+import { JourneysThemeProvider } from '../components/JourneysThemeProvider'
+import { Route, Link } from 'react-router-dom'
+import { BlockType } from '../types'
+import { data1, data2, data3 } from '../data';
+import transformer from '../libs/transformer';
 
-const transformed1 = transformer<BlockProps>(data1)
-const transformed2 = transformer<BlockProps>(data2)
+const transformed1 = transformer<BlockType>(data1)
+const transformed2 = transformer<BlockType>(data2)
+const transformed3 = transformer<BlockType>(data3)
 
-export function App() {
+export function App (): ReactElement {
   return (
-    <div className={styles.app}>
-      <header className="flex">
-        Block renderer & conductor samples
-        <Link to="/">Example 1.</Link>
-        <Link to="/example-2">Example 2.</Link>
-      </header>
-      <main>
-        <Route
-          path="/"
-          exact
-          render={() => (
-            <div>
-              <Conductor blocks={transformed1} />
-            </div>
-          )}
-        />
-        <Route
-          path="/example-2"
-          exact
-          render={() => (
-            <div>
-              <Conductor blocks={transformed2} />
-            </div>
-          )}
-        />
-      </main>
-    </div>
-  );
+    <JourneysThemeProvider>
+      <div className={styles.app}>
+        <header className="flex">
+          Block renderer & conductor samples
+          <Link to="/">Example 1.</Link>
+          <Link to="/example-2">Example 2.</Link>
+          <Link to="/example-3">Example 3.</Link>
+        </header>
+        <main>
+          <Route
+            path="/"
+            exact
+            render={() => (
+              <div>
+                <Conductor blocks={transformed1} />
+              </div>
+            )}
+          />
+          <Route
+            path="/example-2"
+            exact
+            render={() => (
+              <div>
+                <Conductor blocks={transformed2} />
+              </div>
+            )}
+          />
+          <Route
+            path="/example-3"
+            exact
+            render={() => (
+              <div>
+                <Conductor blocks={transformed3} />
+              </div>
+            )}
+          />
+        </main>
+      </div>
+    </JourneysThemeProvider>
+  )
 }
 
-export default App;
-
+export default App

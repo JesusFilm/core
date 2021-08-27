@@ -29,6 +29,9 @@
     ]
   },
   "projects": {
+    "api-gateway": {
+      "tags": []
+    },
     "api-journeys": {
       "tags": []
     },
@@ -38,9 +41,6 @@
     "journeys-e2e": {
       "tags": [],
       "implicitDependencies": ["journeys"]
-    },
-    "api-gateway": {
-      "tags": []
     },
     "shared-util-graphql": {
       "tags": []
