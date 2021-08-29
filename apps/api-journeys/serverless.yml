@@ -14,13 +14,15 @@ custom:
     copyFiles:
       - from: prisma/schema.prisma
         to: src/
+      - from: ../../node_modules/.prisma/api-journeys-client/query-engine-rhel-openssl-1.0.x
+        to: src/
   serverless-offline:
     httpPort: 3333
     noPrependStageInUrl: true
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: ${self:custom.stage}
   endpointType: regional
   timeout: 20
