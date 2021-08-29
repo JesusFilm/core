@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import styles from './app.module.css'
 import { Conductor } from '../components/Conductor'
 import { JourneysThemeProvider } from '../components/JourneysThemeProvider'
-import { Route, Link } from 'react-router-dom'
+import { BrowserRouter, Route, Link } from 'react-router-dom'
 import { BlockType } from '../types'
 import { data1, data2, data3 } from '../data'
 import transformer from '../libs/transformer'
@@ -14,6 +14,7 @@ const transformed3 = transformer<BlockType>(data3)
 export function App (): ReactElement {
   return (
     <JourneysThemeProvider>
+      <BrowserRouter>
       <div className={styles.app}>
         <header className="flex">
           Block renderer & conductor samples
@@ -30,7 +31,7 @@ export function App (): ReactElement {
                 <Conductor blocks={transformed1} />
               </div>
             )}
-          />
+            />
           <Route
             path="/example-2"
             exact
@@ -39,7 +40,7 @@ export function App (): ReactElement {
                 <Conductor blocks={transformed2} />
               </div>
             )}
-          />
+            />
           <Route
             path="/example-3"
             exact
@@ -48,9 +49,10 @@ export function App (): ReactElement {
                 <Conductor blocks={transformed3} />
               </div>
             )}
-          />
+            />
         </main>
       </div>
+      </BrowserRouter>
     </JourneysThemeProvider>
   )
 }
