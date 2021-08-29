@@ -1,5 +1,5 @@
 service: api-journeys
-
+useDotenv: true
 plugins:
   - serverless-bundle
   - serverless-offline
@@ -8,9 +8,12 @@ custom:
   stage: ${opt:serviceStage, 'dev'}
   bundle:
     linting: false
-    tsConfig: 'tsconfig.app.json'
+    tsConfig: "tsconfig.app.json"
     forceExclude:
       - "_http_common"
+    copyFiles:
+      - from: prisma/schema.prisma
+        to: src/
   serverless-offline:
     httpPort: 3333
     noPrependStageInUrl: true
@@ -26,12 +29,17 @@ provider:
     shouldStartNameWithService: true # removes deprecation warning (remove in serverless v3)
   environment:
     APP_ENV: ${self:custom.stage}
-    IS_PRODUCTION: '${file(./src/environments/config.${self:custom.stage}.json):is_production}'
+    IS_PRODUCTION: "${file(./src/environments/config.${self:custom.stage}.json):is_production}"
 
 functions:
   journeys:
     handler: src/main.handler
+    environment:
+      DATABASE_URL: ${env:DATABASE_URL}
     events:
       - http:
           method: GET
+          path: /journeys
+      - http:
+          method: POST
           path: /journeys
