@@ -9,7 +9,10 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["apps/journeys/tsconfig.*?.json"]
+        "project": [
+          "apps/journeys/tsconfig.*?.json",
+          "apps/journeys/.storybook/tsconfig.json"
+        ]
       },
       "rules": {}
     },
