@@ -75,6 +75,7 @@
     "prisma": "^2.28.0",
     "serverless": "^2.39.0",
     "serverless-bundle": "^4.3.0",
+    "serverless-dotenv-plugin": "^3.9.0",
     "serverless-offline": "^7.0.0",
     "ts-jest": "27.0.3",
     "ts-node": "~9.1.1",

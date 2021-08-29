@@ -7,8 +7,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../../../node_modules/.prisma/api-journeys-client"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native","rhel-openssl-1.0.x"]
+  output        = "../../../node_modules/.prisma/api-journeys-client"
 }
 
 model Journey {

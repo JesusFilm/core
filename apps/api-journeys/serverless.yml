@@ -30,16 +30,21 @@ provider:
   environment:
     APP_ENV: ${self:custom.stage}
     IS_PRODUCTION: "${file(./src/environments/config.${self:custom.stage}.json):is_production}"
+    DATABASE_URL: ${env:DATABASE_URL}
 
 functions:
   journeys:
     handler: src/main.handler
-    environment:
-      DATABASE_URL: ${env:DATABASE_URL}
     events:
       - http:
           method: GET
           path: /journeys
+          cors:
+            origin: "*"
+            headers: "*"
       - http:
           method: POST
           path: /journeys
+          cors:
+            origin: "*"
+            headers: "*"
