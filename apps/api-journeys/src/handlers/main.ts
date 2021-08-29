@@ -1,12 +1,13 @@
 import { ApolloServer } from 'apollo-server-fastify'
-import application from './modules/application'
-import db from './lib/db'
+import { ApolloServer as ApolloServerLambda } from 'apollo-server-lambda'
+import application from '../modules/application'
+import db from '../lib/db'
 import Fastify, { FastifyInstance, FastifyServerFactory } from 'fastify'
+const schema = application.createSchemaForApollo()
 
 const init = async (serverFactory?: FastifyServerFactory): Promise<FastifyInstance> => {
   const app = Fastify({ serverFactory })
-  const schema = application.createSchemaForApollo()
-
+  
   const server = new ApolloServer({
     schema,
     context: {
@@ -19,7 +20,7 @@ const init = async (serverFactory?: FastifyServerFactory): Promise<FastifyInstan
   return await app
 }
 
-if (require.main !== module) {
+if (require.main === module) {
   // called directly i.e. "node app"
   init().then(async (server) => {
     try {
@@ -31,5 +32,12 @@ if (require.main !== module) {
   }).catch((err) => console.error(err))
 } else {
   // required as a module => executed on aws lambda
-  module.exports = init
+  
+  const lambdaserver = new ApolloServerLambda({
+    schema,
+    context: {
+      db
+    }
+  })
+  exports.handler = lambdaserver.createHandler();
 }
