@@ -65,8 +65,9 @@ export const RadioQuestion = ({
               </Card>
             )}
           </Container>
-        )}
+        )
       }
+    }
     </ConductorContext.Consumer>
   )
 }

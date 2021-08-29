@@ -8,7 +8,7 @@ import { Player, Video as VimeVideo, DefaultUi, usePlayerContext } from '@vime/r
 export function Video (block: VideoType): ReactElement {
   const player = useRef<HTMLVmPlayerElement>(null)
 
-  const [currentTime] = usePlayerContext(player, 'currentTime', 0);
+  const [currentTime] = usePlayerContext(player, 'currentTime', 0)
 
   useEffect(() => {
     console.log(currentTime)
@@ -33,7 +33,7 @@ export function Video (block: VideoType): ReactElement {
               }
             </DefaultUi>
           </Player>
-          <button onClick={() => goTo(block?.action)} style={{background: 'blue', color: 'white'}}>Go to the next thing</button>
+          <button onClick={() => goTo(block?.action)} style={{ background: 'blue', color: 'white' }}>Go to the next thing</button>
         </div>
         )
       }}
