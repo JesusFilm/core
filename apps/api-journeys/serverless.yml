@@ -1,5 +1,5 @@
 service: api-journeys
-useDotenv: true
+
 plugins:
   - serverless-bundle
   - serverless-offline
@@ -14,7 +14,7 @@ custom:
   serverless-offline:
     httpPort: 3333
     noPrependStageInUrl: true
-  
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -30,7 +30,7 @@ provider:
 
 functions:
   journeys:
-    handler: src/handlers/main.handler
+    handler: src/main.handler
     events:
       - http:
           method: GET

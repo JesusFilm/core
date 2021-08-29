@@ -1,7 +1,7 @@
 import { ApolloServer } from 'apollo-server-fastify'
 import { ApolloServer as ApolloServerLambda } from 'apollo-server-lambda'
-import application from '../modules/application'
-import db from '../lib/db'
+import application from './modules/application'
+import db from './lib/db'
 import Fastify, { FastifyInstance, FastifyServerFactory } from 'fastify'
 const schema = application.createSchemaForApollo()
 

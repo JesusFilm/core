@@ -1,87 +1,6 @@
 {
   "version": 2,
   "projects": {
-    "api-journeys": {
-      "root": "apps/api-journeys",
-      "sourceRoot": "apps/api-journeys/src",
-      "projectType": "application",
-      "targets": {
-        "build": {
-          "executor": "@ns3/nx-serverless:build",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "apps/api-journeys/.serverless",
-            "tsConfig": "apps/api-journeys/tsconfig.app.json"
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/api-journeys/src/environments/environment.ts",
-                  "with": "apps/api-journeys/src/environments/environment.prod.ts"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "executor": "@ns3/nx-serverless:serve",
-          "options": {
-            "buildTarget": "api-journeys:build",
-            "out": "../../dist/out-tsc/apps/api-journeys"
-          }
-        },
-        "deploy": {
-          "executor": "@ns3/nx-serverless:deploy",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "apps/api-journeys/.serverless"
-          }
-        },
-        "remove": {
-          "executor": "@ns3/nx-serverless:remove"
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/api-journeys"],
-          "options": {
-            "jestConfig": "apps/api-journeys/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "generate": {
-          "executor": "@nx-tools/nx-prisma:generate",
-          "options": {
-            "schema": "apps/api-journeys/prisma/schema.prisma"
-          }
-        },
-        "migrations": {
-          "executor": "@nx-tools/nx-prisma:migrations",
-          "options": {
-            "schema": "apps/api-journeys/prisma/schema.prisma"
-          }
-        },
-        "codegen": {
-          "executor": "@nrwl/workspace:run-commands",
-          "options": {
-            "commands": [
-              {
-                "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
-              }
-            ]
-          }
-        }
-      }
-    },
     "api-gateway": {
       "root": "apps/api-gateway",
       "sourceRoot": "apps/api-gateway/src",
@@ -119,6 +38,143 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+          }
+        }
+      }
+    },
+    "api-journeys": {
+      "root": "apps/api-journeys",
+      "projectType": "application",
+      "sourceRoot": "apps/api-journeys/src",
+      "targets": {
+        "build": {
+          "executor": "@ns3/nx-serverless:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "apps\\api-journeys\\.serverless"
+          }
+        },
+        "serve": {
+          "executor": "@ns3/nx-serverless:serve",
+          "options": {
+            "out": "..\\..\\dist\\out-tsc\\apps\\api-journeys"
+          }
+        },
+        "deploy": {
+          "executor": "@ns3/nx-serverless:deploy",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "apps\\api-journeys\\.serverless"
+          }
+        },
+        "remove": {
+          "executor": "@ns3/nx-serverless:remove"
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/api-journeys"],
+          "options": {
+            "jestConfig": "apps/api-journeys/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-journeys/src/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "generate": {
+          "executor": "@nx-tools/nx-prisma:generate",
+          "options": {
+            "schema": "apps/api-journeys/prisma/schema.prisma"
+          }
+        },
+        "migrations": {
+          "executor": "@nx-tools/nx-prisma:migrations",
+          "options": {
+            "schema": "apps/api-journeys/prisma/schema.prisma"
+          }
+        },
+        "codegen": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "api-journeys-1": {
+      "root": "apps/api-journeys-1",
+      "sourceRoot": "apps/api-journeys-1/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/api-journeys-1",
+            "main": "apps/api-journeys-1/src/main.ts",
+            "tsConfig": "apps/api-journeys-1/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/api-journeys-1/src/environments/environment.ts",
+                  "with": "apps/api-journeys-1/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "api-journeys-1:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-journeys-1/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/api-journeys-1"],
+          "options": {
+            "jestConfig": "apps/api-journeys-1/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "generate": {
+          "executor": "@nx-tools/nx-prisma:generate",
+          "options": {
+            "schema": "apps/api-journeys-1/prisma/schema.prisma"
+          }
+        },
+        "migrations": {
+          "executor": "@nx-tools/nx-prisma:migrations",
+          "options": {
+            "schema": "apps/api-journeys-1/prisma/schema.prisma"
+          }
+        },
+        "codegen": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx graphql-codegen --config apps/api-journeys-1/codegen.yml"
+              }
+            ]
           }
         }
       }

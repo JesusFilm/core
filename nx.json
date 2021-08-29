@@ -29,10 +29,13 @@
     ]
   },
   "projects": {
+    "api-gateway": {
+      "tags": []
+    },
     "api-journeys": {
       "tags": []
     },
-    "api-gateway": {
+    "api-journeys-1": {
       "tags": []
     },
     "shared-util-graphql": {
