@@ -7,21 +7,11 @@ import {
   ButtonGroup,
   makeStyles
 } from '@material-ui/core'
-import { RadioQuestionType, GoTo, BlockType } from '../../../types'
+import { RadioQuestionType, GoTo } from '../../../types'
 import { ConductorContext } from '../../Conductor'
-import { BlockSwitcher } from '../../BlockRenderer'
+import { RadioOption } from '../RadioOption'
 
 const useStyles = makeStyles(() => ({
-  highlightIcon: {
-    color: '#54A055'
-  },
-  buttonLabels: {
-    fontSize: 16,
-    fontWeight: 700,
-    lineHeight: 1.4,
-    textTransform: 'none',
-    justifyContent: 'flex-start'
-  },
   light: {
     background: '#ffffff'
   },
@@ -45,8 +35,10 @@ export const RadioQuestion = ({
       {({ goTo }: GoTo) => {
         return (
           <Container maxWidth="sm">
-            {(variant.length > 0) && (
-              <Card className={variant === 'light' ? classes.light : classes.dark}>
+            {variant.length > 0 && (
+              <Card
+                className={variant === 'light' ? classes.light : classes.dark}
+              >
                 <CardContent onClick={() => goTo(action)}>
                   <Typography variant="h1" gutterBottom>
                     {label}
@@ -59,14 +51,21 @@ export const RadioQuestion = ({
                     variant="contained"
                     fullWidth={true}
                   >
-                    {(children !== undefined) ? children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : null}
+                    {children !== undefined
+                      ? children?.map(
+                        (option) =>
+                          option.__typename === 'RadioOption' && (
+                              <RadioOption {...option} />
+                          )
+                      )
+                      : null}
                   </ButtonGroup>
                 </CardContent>
               </Card>
             )}
           </Container>
-        )}
-      }
+        )
+      }}
     </ConductorContext.Consumer>
   )
 }

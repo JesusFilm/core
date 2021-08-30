@@ -66,8 +66,4 @@ describe('RadioQuestion', () => {
       )
     )
   })
-  it('should render option with correct text', () => {
-    const { getByText } = render(<RadioQuestion {...data} />)
-    expect(getByText('Chat Privately')).toBeTruthy()
-  })
 })

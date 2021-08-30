@@ -5,13 +5,14 @@ import { ReactElement } from 'react'
 
 export function BlockRenderer (block: BlockType): ReactElement {
   return (
-    <div className={styles.BlockRenderer} >
-      {BlockSwitcher(block, 1000)}
-    </div>
+    <div className={styles.BlockRenderer}>{BlockSwitcher(block, 1000)}</div>
   )
 }
 
-export const BlockSwitcher = (block: BlockType, key: number): ReactElement | null => {
+export const BlockSwitcher = (
+  block: BlockType,
+  key: number
+): ReactElement | null => {
   switch (block.__typename) {
     case 'Video':
       return <Video {...block} key={key} />

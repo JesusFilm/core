@@ -1,4 +1,3 @@
-import styles from './Conductor.module.css'
 import { BlockRenderer } from '../BlockRenderer'
 import { useState, ReactElement } from 'react'
 import { ConductorProps, NextStepProps, BlockType } from '../../types'
@@ -11,25 +10,25 @@ export function Conductor ({ blocks }: ConductorProps): ReactElement {
     console.log('next step clicked. id value:', id)
     let nextBlock: BlockType | undefined
     if (id != null) {
-      nextBlock = blocks.find(block => block.id === id)
+      nextBlock = blocks.find((block) => block.id === id)
     } else {
-      const index = blocks.findIndex(block => block.id === currentBlock.id)
+      const index = blocks.findIndex((block) => block.id === currentBlock.id)
       if (index > -1) {
         nextBlock = blocks[index + 1]
       }
     }
-    ;(nextBlock != null) && setCurrentBlock(nextBlock)
+    nextBlock != null && setCurrentBlock(nextBlock)
   }
 
   return (
-    <div className={styles.Conductor}>
-      <ConductorContext.Provider value={{
+    <ConductorContext.Provider
+      value={{
         currentBlock: currentBlock,
         goTo: handleNextStep
-      }}>
-        <BlockRenderer {...currentBlock} />
-      </ConductorContext.Provider>
-    </div>
+      }}
+    >
+      <BlockRenderer {...currentBlock} />
+    </ConductorContext.Provider>
   )
 }
 

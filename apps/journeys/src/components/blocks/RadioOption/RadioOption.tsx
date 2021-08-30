@@ -1,11 +1,9 @@
 import { ConductorContext } from '../../Conductor'
 import { RadioOptionType, GoTo } from '../../../types'
-import {
-  Button,
-  makeStyles
-} from '@material-ui/core'
+import { Button, makeStyles } from '@material-ui/core'
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
-import { ReactElement } from 'react'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import { ReactElement, useState } from 'react'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -29,6 +27,15 @@ const useStyles = makeStyles(() => ({
 
 export function RadioOption (block: RadioOptionType): ReactElement {
   const classes = useStyles()
+  const [selectedOption, setSelectedOption] = useState<
+  RadioOptionType | undefined
+  >()
+
+  // enables selected option to be highlighted
+  const handleButtonSelect = (selected: RadioOptionType) => {
+    setSelectedOption(selected)
+  }
+
   return (
     <ConductorContext.Consumer>
       {({ goTo }: GoTo) => (
@@ -36,8 +43,16 @@ export function RadioOption (block: RadioOptionType): ReactElement {
           variant="contained"
           key={block.id}
           className={classes.buttonLabels}
-          onClick={() => goTo((block.action != null) ? block.action : undefined)}
-          startIcon={<RadioButtonUncheckedIcon />}
+          onClick={() => goTo(block.action != null ? block.action : undefined)}
+          startIcon={
+            selectedOption?.id === block.id
+              ? (
+              <CheckCircleIcon className={classes.highlightIcon} />
+                )
+              : (
+              <RadioButtonUncheckedIcon />
+                )
+          }
         >
           {block.label}
         </Button>
