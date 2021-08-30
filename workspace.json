@@ -207,7 +207,7 @@
           "outputs": ["{options.outputPath}"],
           "options": {
             "uiFramework": "@storybook/react",
-            "outputPath": "dist/storybook/journeys",
+            "outputPath": "dist/storybook",
             "config": {
               "configFolder": ".storybook"
             }

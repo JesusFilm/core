@@ -20,6 +20,8 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm install
+      # Build storybook for all affected projects
+      - run: npm run build-storybook --project=journey
         #👇 Adds Chromatic as a step in the workflow
       - uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
@@ -27,7 +29,7 @@ jobs:
           #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          buildScriptName: build-storybook --project=journeys
+          storybookBuildDir: 'dist/storybook'
 
 
           # .github/workflows/chromatic.yml
