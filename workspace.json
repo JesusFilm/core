@@ -193,7 +193,7 @@
             "uiFramework": "@storybook/react",
             "port": 4400,
             "config": {
-              "configFolder": "apps/journeys/.storybook"
+              "configFolder": ".storybook"
             }
           },
           "configurations": {
@@ -209,7 +209,7 @@
             "uiFramework": "@storybook/react",
             "outputPath": "dist/storybook/journeys",
             "config": {
-              "configFolder": "apps/journeys/.storybook"
+              "configFolder": ".storybook"
             }
           },
           "configurations": {

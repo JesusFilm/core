@@ -1,6 +1,21 @@
+const storiesForProject = {
+  journeys: [
+    '../apps/journeys/src/app/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/journeys/src/components/**/ *.stories.mdx',
+    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  projectB: './projectB/**.stories.js',
+  // etc
+};
+
+const addonsForProject = {
+  journeys: ['@nrwl/react/plugins/storybook']
+  // etc
+}
+
 module.exports = {
-  stories: [],
-  addons: ['@storybook/addon-essentials'],
+  stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || '**/*.stories.js',
+  addons: ['@storybook/addon-essentials', addonsForProject[process.env.NX_TASK_TARGET_PROJECT]],
   // uncomment the property below if you want to apply some webpack config globally
   // webpackFinal: async (config, { configType }) => {
   //   // Make whatever fine-grained changes you need that should apply to all storybook configs
@@ -8,4 +23,4 @@ module.exports = {
   //   // Return the altered config
   //   return config;
   // },
-};
+}

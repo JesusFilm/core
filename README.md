@@ -69,6 +69,10 @@ Run `nx affected:test` to execute the unit tests affected by a change.
 
 Run `nx demo my-app` to view components via [Storybook](https://storybook.js.org/).
 
+## Running VR tests
+
+Run `nx vr --project=my-app` to execute VR test via [Chromatic](https://www.chromatic.com/).
+
 ## Running end-to-end tests
 
 Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
