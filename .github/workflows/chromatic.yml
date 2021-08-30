@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       # Build storybook for all affected projects
-      - run: npm run build-storybook --project=journeys
+      - run: npm run affected:build-storybook
         #👇 Adds Chromatic as a step in the workflow
       - uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
