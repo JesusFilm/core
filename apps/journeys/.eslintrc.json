@@ -1,23 +1,38 @@
 {
-  "extends": ["plugin:@nrwl/nx/react", "../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*"],
+  "extends": [
+    "plugin:@nrwl/nx/react",
+    "../../.eslintrc.json"
+  ],
+  "ignorePatterns": [
+    "!**/*"
+  ],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "*.jsx"
+      ],
       "rules": {}
     },
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "parserOptions": {
         "project": [
-          "apps/journeys/tsconfig.*?.json",
-          "apps/journeys/.storybook/tsconfig.json"
+          "apps/journeys/tsconfig.*?.json"
         ]
       },
       "rules": {}
     },
     {
-      "files": ["*.js", "*.jsx"],
+      "files": [
+        "*.js",
+        "*.jsx"
+      ],
       "rules": {}
     }
   ]
