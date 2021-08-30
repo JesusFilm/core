@@ -1,12 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { App } from './app'
 
-export default {
+const Demo = {
   component: App,
-  title: 'App',
-} as Meta;
+  title: 'App'
+}
 
 const Template: Story = (args) => <App {...args} />
 
 export const Primary = Template.bind({})
 Primary.args = {}
+
+export default Demo as Meta
