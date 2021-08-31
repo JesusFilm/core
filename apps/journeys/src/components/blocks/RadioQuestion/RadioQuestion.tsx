@@ -53,9 +53,9 @@ export const RadioQuestion = ({
                   >
                     {children !== undefined
                       ? children?.map(
-                        (option) =>
+                        (option, index) =>
                           option.__typename === 'RadioOption' && (
-                              <RadioOption {...option} />
+                              <RadioOption {...option} key={index} />
                           )
                       )
                       : null}

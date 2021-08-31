@@ -3,9 +3,13 @@ import { VideoType, BlockType, GoTo } from '../../../types'
 import { BlockSwitcher } from '../../BlockRenderer'
 import '@vime/core/themes/default.css'
 import { useEffect, useRef, ReactElement } from 'react'
-import { Player, Video as VimeVideo, DefaultUi, usePlayerContext } from '@vime/react'
+import { Player, Video as VimeVideo, Ui, usePlayerContext, Controls, DefaultControls } from '@vime/react'
 
-export function Video (block: VideoType): ReactElement {
+export const Video = ({
+  src,
+  children,
+  action
+}: VideoType): ReactElement => {
   const player = useRef<HTMLVmPlayerElement>(null)
 
   const [currentTime] = usePlayerContext(player, 'currentTime', 0)
@@ -19,21 +23,21 @@ export function Video (block: VideoType): ReactElement {
       {({ goTo }: GoTo) => {
         return (
         <div>
-          <Player playsinline ref={player} autoplay muted>
+          <Player playsinline ref={player} autoplay muted onVmPlaybackEnded={() => goTo(action)}>
             <VimeVideo poster="https://media.vimejs.com/poster.png">
               <source
-                data-src={block.src}
-                type="video/mp4"
+                data-src={src}
               />
             </VimeVideo>
-
-            <DefaultUi>
-              {
-                (block.children != null) ? block.children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : null
-              }
-            </DefaultUi>
+            <Ui>
+              <DefaultControls activeDuration={100000} />
+              <Controls fullWidth pin="center" hidden={false} activeDuration={100000}>
+                  {
+                    (children != null) ? children.map((block: BlockType, index: number) => BlockSwitcher(block, index)) : undefined
+                  }
+              </Controls>
+            </Ui>
           </Player>
-          <button onClick={() => goTo(block?.action)} style={{ background: 'blue', color: 'white' }}>Go to the next thing</button>
         </div>
         )
       }}
