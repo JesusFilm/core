@@ -3,6 +3,8 @@ name: Chromatic Deployment
 
 # Event for the workflow
 on: [push, pull_request]
+env:
+  GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
 # List of jobs
 jobs:
