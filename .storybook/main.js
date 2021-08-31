@@ -11,17 +11,11 @@ const storiesForProject = {
   // etc
 };
 
-const addonsForProject = {
-  journeys: ['@nrwl/react/plugins/storybook'],
-  myapp: ['@nrwl/react/plugins/storybook']
-  // etc
-}
-
 console.log(storiesForProject[process.env.NX_TASK_TARGET_PROJECT])
 
 module.exports = {
   stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || '**/*.stories.js',
-  addons: ['@storybook/addon-essentials', addonsForProject[process.env.NX_TASK_TARGET_PROJECT]],
+  addons: ['@storybook/addon-essentials', '@nrwl/react/plugins/storybook'],
   // uncomment the property below if you want to apply some webpack config globally
   // webpackFinal: async (config, { configType }) => {
   //   // Make whatever fine-grained changes you need that should apply to all storybook configs
