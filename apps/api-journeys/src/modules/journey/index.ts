@@ -3,18 +3,18 @@ import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
 
 const typeDefs = gql`
-  type Journey {
+  type Journey @key(fields: "id") {
     id: ID!
     published: Boolean!
     title: String!
   }
 
-  type Query {
+  extend type Query {
     journeys: [Journey!]!
     journey(id: ID!): Journey
   }
 
-  type Mutation {
+  extend type Mutation {
     journeyCreate(title: String!): Journey!
     journeyPublish(id: ID!): Journey
   }
