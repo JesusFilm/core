@@ -29,7 +29,8 @@ async function main(): Promise<void> {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
       parentBlockId: question.id,
-      extraAttrs: { label: 'Answer 1' }
+      extraAttrs: { label: 'Answer 1' },
+      parentOrder: 0
     }
   })
   await prisma.block.create({
@@ -37,7 +38,8 @@ async function main(): Promise<void> {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
       parentBlockId: question.id,
-      extraAttrs: { label: 'Answer 2' }
+      extraAttrs: { label: 'Answer 2' },
+      parentOrder: 1
     }
   })
 }

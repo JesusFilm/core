@@ -59,7 +59,8 @@ const resolvers: Resolvers = {
   Journey: {
     async blocks(journey, __, { db }) {
       const blocks = await db.block.findMany({
-        where: { journeyId: journey.id }
+        where: { journeyId: journey.id },
+        orderBy: [{ parentOrder: 'asc' }]
       })
       return blocks.map((block) => ({
         ...block,
