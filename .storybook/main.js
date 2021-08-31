@@ -4,14 +4,20 @@ const storiesForProject = {
     '../apps/journeys/src/components/**/ *.stories.mdx',
     '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  myapp: [
+    '../apps/myapp/src/app/**/*.stories.@(js|jsx|ts|tsx)',
+  ],
   projectB: './projectB/**.stories.js',
   // etc
 };
 
 const addonsForProject = {
-  journeys: ['@nrwl/react/plugins/storybook']
+  journeys: ['@nrwl/react/plugins/storybook'],
+  myapp: ['@nrwl/react/plugins/storybook']
   // etc
 }
+
+console.log(storiesForProject[process.env.NX_TASK_TARGET_PROJECT])
 
 module.exports = {
   stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || '**/*.stories.js',

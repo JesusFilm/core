@@ -42,6 +42,9 @@
       "tags": [],
       "implicitDependencies": ["journeys"]
     },
+    "myapp": {
+      "tags": []
+    },
     "shared-util-graphql": {
       "tags": []
     }

@@ -3,10 +3,10 @@ import { App } from './app'
 
 const Demo = {
   component: App,
-  title: 'AppJourney'
+  title: 'TestApp'
 }
 
-const Template: Story = (args) => <App {...args} />
+const Template: Story = () => <App />
 
 export const Primary = Template.bind({})
 Primary.args = {}
