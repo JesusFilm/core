@@ -2,7 +2,7 @@
 name: Chromatic Deployment
 
 # Event for the workflow
-on: [push, pull_request]
+on: pull_request
 
 env:
   GITHUB_BASE_SHA: ${{ github.event.before }}
