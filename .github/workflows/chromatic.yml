@@ -21,7 +21,10 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Build affected storybooks for VR
-        run: npm run nx affected --target=build-storybook --base=$GITHUB_BASE_REF --head=${{ github.event.pull_request.head.ref }}
+        run: npm run affected:build-storybook
+        with: 
+          base: ${{ github.event.pull_request.base.ref }}
+          head: ${{ github.event.pull_request.head.ref }}
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests 
         uses: chromaui/action@v1
