@@ -17,7 +17,7 @@ export function App (): ReactElement {
       <BrowserRouter>
       <div className={styles.app}>
         <header className="flex">
-          Block renderer & conductor samples
+          Block renderer and conductor samples
           <Link to="/">Example 1.</Link>
           <Link to="/example-2">Example 2.</Link>
           <Link to="/example-3">Example 3.</Link>
