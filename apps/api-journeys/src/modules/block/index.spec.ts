@@ -1,4 +1,5 @@
 import { testkit, gql } from 'graphql-modules'
+import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import { Prisma } from '.prisma/api-journeys-client'
@@ -16,6 +17,7 @@ afterEach(async () => {
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
+    schemaBuilder,
     modules: [Journey]
   })
 
