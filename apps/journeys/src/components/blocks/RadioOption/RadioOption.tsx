@@ -4,6 +4,7 @@ import { Button, makeStyles } from '@material-ui/core'
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { ReactElement, useState } from 'react'
+import { compact } from 'lodash'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -25,7 +26,11 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-export function RadioOption (block: RadioOptionType): ReactElement {
+type RadioOptionProps = RadioOptionType & {
+  className?: string
+}
+
+export function RadioOption ({className, ...block}: RadioOptionProps): ReactElement {
   const classes = useStyles()
   const [selectedOption, setSelectedOption] = useState<
   RadioOptionType | undefined
@@ -42,7 +47,7 @@ export function RadioOption (block: RadioOptionType): ReactElement {
         <Button
           variant="contained"
           key={block.id}
-          className={classes.buttonLabels}
+          className={compact([className, classes.buttonLabels]).join(' ')}
           onClick={() => goTo(block.action != null ? block.action : undefined)}
           startIcon={
             selectedOption?.id === block.id
