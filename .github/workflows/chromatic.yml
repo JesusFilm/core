@@ -2,7 +2,7 @@
 name: Chromatic Deployment
 
 # Event for the workflow
-on: push
+on: pull_request
 
 # List of jobs
 jobs:
@@ -20,8 +20,8 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm install
-      # Build storybook for all affected projects
-      - run: npm run affected:build-storybook --base=$GITHUB_BASE_REF --head=$GITHUB_HEAD_REF
+      - name: Build storybook for affected projects
+      - run: npm run affected:build-storybook --base=$GITHUB_BASE_REF --head=${{ github.event.pull_request.head.ref }}
         #👇 Adds Chromatic as a step in the workflow
       - uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
