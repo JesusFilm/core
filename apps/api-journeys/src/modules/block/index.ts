@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
-import { Resolvers } from '../../__generated__/types'
+import { Block, Resolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
@@ -51,7 +51,7 @@ const typeDefs = gql`
     parentBlockId: ID
     ## Field suggestions to be added
     label: String!
-    image: String!
+    image: String
   }
 `
 
@@ -66,7 +66,7 @@ const resolvers: Resolvers = {
         ...block,
         ...(block.extraAttrs as Prisma.JsonObject),
         __typename: block.blockType
-      }))
+      })) as Block[]
     }
   }
 }
