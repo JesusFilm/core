@@ -2,7 +2,7 @@
 name: Chromatic Deployment
 
 # Event for the workflow
-on: push
+on: [push, pull_request]
 
 env:
   GITHUB_BASE_SHA: ${{ github.event.before }}
@@ -24,7 +24,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Build affected storybooks for VR
-        run: npm run affected:build-storybook -- --base=block-renderer-conductor
+        run: npm run affected:build-storybook -- --base=cf85885674d0c00946fad3b92ad60b6bb7d7f085
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests 
         uses: chromaui/action@v1
