@@ -3,9 +3,9 @@ name: Chromatic Deployment
 
 # Event for the workflow
 on: 
-pull_request:
-  branches:
-    - '**'
+  pull_request:
+    branches:
+      - '**'
 
 env:
   GITHUB_BASE_SHA: ${{ github.event.pull_request.head.sha }}
