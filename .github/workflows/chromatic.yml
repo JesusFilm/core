@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Build storybook for affected projects
-      - run: npm run affected:build-storybook --base=$GITHUB_BASE_REF --head=${{ github.event.pull_request.head.ref }}
+        run: npm run affected:build-storybook --base=$GITHUB_BASE_REF --head=${{ github.event.pull_request.head.ref }}
         #👇 Adds Chromatic as a step in the workflow
       - uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
