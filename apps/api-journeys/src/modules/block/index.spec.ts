@@ -2,9 +2,22 @@ import { testkit, gql } from 'graphql-modules'
 import module from '.'
 import db from '../../lib/db'
 import { Prisma } from '.prisma/api-journeys-client'
+import Journey from '../journey'
+
+beforeEach(async () => {
+  await db.block.deleteMany()
+  await db.journey.deleteMany()
+})
+
+afterEach(async () => {
+  await db.block.deleteMany()
+  await db.journey.deleteMany()
+})
 
 it('returns blocks', async () => {
-  const app = testkit.testModule(module)
+  const app = testkit.testModule(module, {
+    modules: [Journey]
+  })
 
   const journey = await db.journey.create({
     data: {
