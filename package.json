@@ -8,7 +8,6 @@
     "build": "nx build",
     "test": "nx test",
     "demo": "nx storybook",
-    "vr": "chromatic --project-token=CHROMATIC_PROJECT_TOKEN --buildScriptName=affected:build-storybook",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
     "affected:apps": "nx affected:apps",
