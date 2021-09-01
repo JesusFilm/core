@@ -1,6 +1,5 @@
 module.exports = {
   displayName: 'journeys',
-  testEnvironment: 'jsdom',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nrwl/react/plugins/jest',

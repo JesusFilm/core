@@ -1,10 +1,17 @@
 {
-  "extends": ["plugin:@nrwl/nx/react", "../../.eslintrc.json"],
+  "extends": [
+    "plugin:@nrwl/nx/react-typescript",
+    "../../.eslintrc.json",
+    "next",
+    "next/core-web-vitals"
+  ],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "@next/next/no-html-link-for-pages": ["error", "apps/journeys/pages/"]
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
@@ -16,6 +23,15 @@
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["next-env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
     }
-  ]
+  ],
+  "env": {
+    "jest": true
+  }
 }
