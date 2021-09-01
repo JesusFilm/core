@@ -1,8 +1,9 @@
+import { noop } from 'lodash'
 import { createContext } from 'react'
 
 export const ConductorContext = createContext({
   currentBlock: {},
-  goTo: (id?: string) => {},
-});
+  goTo: noop
+})
 
 export default ConductorContext

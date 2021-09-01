@@ -1,8 +1,9 @@
 const storiesForProject = {
   journeys: [
-    '../apps/journeys/src/app/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/journeys/src/components/**/ *.stories.mdx',
-    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)'
+    '../apps/journeys/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/journeys/src/components/**/*.stories.mdx',
+    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   // Add new UI projects here and in allStories
 };

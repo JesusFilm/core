@@ -1,12 +1,12 @@
 import { Story, Meta } from '@storybook/react'
-import { App } from './app'
+import { Test } from './Test'
 
 const Demo = {
-  component: App,
-  title: 'Journeys/App/App'
+  component: Test,
+  title: 'Journeys/Blocks/Test'
 }
 
-const Template: Story = (args) => <App {...args} />
+const Template: Story = () => <Test />
 
 export const Primary = Template.bind({})
 Primary.args = {}

@@ -9,11 +9,24 @@ export const radioOptions = [
   }
 ]
 
-export const videos = [{
-  __typename: 'Video' as const,
-  id: 'Root Video',
-  src: 'yoyo'
-}]
+export const radioQuestion = [
+  {
+    __typename: 'RadioQuestion' as const,
+    id: 'MoreQuestions',
+    label: 'How can we help you know more about Jesus?',
+    description:
+      'What do you think would be the next step to help you grow in your relationship with Jesus?',
+    variant: 'light' as const
+  }
+]
+
+export const videos = [
+  {
+    __typename: 'Video' as const,
+    id: 'Root Video',
+    src: 'yoyo'
+  }
+]
 
 export const data1 = [
   {
@@ -34,7 +47,7 @@ export const data1 = [
   {
     __typename: 'RadioOption' as const,
     id: 'Questions',
-    label: 'Radio Option',
+    label: 'RadioOption',
     parent: {
       id: 'Questions'
     }
@@ -51,7 +64,8 @@ export const data1 = [
     __typename: 'Video' as const,
     id: 'Second Video',
     src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-    poster: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+    poster:
+      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
   },
   {
     __typename: 'RadioQuestion' as const,
@@ -64,7 +78,7 @@ export const data1 = [
   {
     __typename: 'RadioOption' as const,
     id: 'NestedMoreQuestions',
-    label: 'Radio Option',
+    label: 'RadioOption',
     parent: {
       id: 'MoreQuestions'
     }
@@ -76,7 +90,8 @@ export const data2 = [
     __typename: 'Video' as const,
     id: 'Root Video',
     src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-    poster: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+    poster:
+      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
   },
   {
     __typename: 'RadioQuestion' as const,
@@ -142,6 +157,7 @@ export const data3 = [
     __typename: 'Video' as const,
     id: 'A Video',
     src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-    poster: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+    poster:
+      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
   }
 ]

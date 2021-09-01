@@ -19,7 +19,7 @@ const baseTheme = createTheme({
   }
 })
 
-const lightTheme = createTheme({
+export const lightTheme = createTheme({
   ...baseTheme,
   palette: {
     type: 'light',
@@ -35,7 +35,7 @@ const lightTheme = createTheme({
   }
 })
 
-const darkTheme = createTheme({
+export const darkTheme = createTheme({
   ...baseTheme,
   palette: {
     type: 'dark',
@@ -47,8 +47,3 @@ const darkTheme = createTheme({
     }
   }
 })
-
-export default {
-  lightTheme,
-  darkTheme
-}

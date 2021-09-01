@@ -1,7 +1,9 @@
 {
   "extends": [
-    "plugin:@nrwl/nx/react",
-    "../../.eslintrc.json"
+    "plugin:@nrwl/nx/react-typescript",
+    "../../.eslintrc.json",
+    "next",
+    "next/core-web-vitals"
   ],
   "ignorePatterns": [
     "!**/*"
@@ -14,7 +16,12 @@
         "*.js",
         "*.jsx"
       ],
-      "rules": {}
+      "rules": {
+        "@next/next/no-html-link-for-pages": [
+          "error",
+          "apps/journeys/pages/"
+        ]
+      }
     },
     {
       "files": [
@@ -34,6 +41,17 @@
         "*.jsx"
       ],
       "rules": {}
+    },
+    {
+      "files": [
+        "next-env.d.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
     }
-  ]
+  ],
+  "env": {
+    "jest": true
+  }
 }
