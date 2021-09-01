@@ -38,6 +38,7 @@
     "apollo-server-fastify": "^3.1.2",
     "core-js": "^3.6.5",
     "express": "4.17.1",
+    "fastify": "^3.20.2",
     "graphql": "^15.5.1",
     "graphql-modules": "^1.4.4",
     "lodash": "^4.17.21",
