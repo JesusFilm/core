@@ -1,16 +1,27 @@
-import { render } from '@testing-library/react'
 import { RadioOption } from './RadioOption'
-import transformer from '../../../libs/transformer'
-import { radioOptions } from '../../../data'
+import { fireEvent, renderWithStore } from '../../../../test/testingLibrary'
+import { RadioOptionType } from '../../../types'
 
-const transformed1 = transformer(radioOptions)
+const block: RadioOptionType = {
+  __typename: 'RadioOption',
+  id: 'RadioOption1',
+  label: 'This is a test question 2!'
+}
 
-describe('BlockRendererRadioOption', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(
-      <RadioOption {...transformed1[0]} />
+describe('RadioOption', () => {
+  it('should render option props', () => {
+    const { getByText } = renderWithStore(
+      <RadioOption {...block} />
     )
+    expect(getByText(block.label)).toBeInTheDocument()
+  })
 
-    expect(baseElement).toBeTruthy()
+  it('should handle click', () => {
+    const { getByTestId, getByRole } = renderWithStore(
+      <RadioOption {...block} />
+    )
+    expect(getByTestId('RadioOptionRadioButtonUncheckedIcon')).toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
+    expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument()
   })
 })

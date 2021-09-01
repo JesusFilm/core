@@ -6,5 +6,6 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'babel-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/journeys'
+  coverageDirectory: '../../coverage/apps/journeys',
+  setupFilesAfterEnv: ['<rootDir>setupTests.ts']
 }

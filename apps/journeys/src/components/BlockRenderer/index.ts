@@ -1,1 +1,1 @@
-export { BlockRenderer, BlockSwitcher } from './BlockRenderer'
+export { BlockRenderer } from './BlockRenderer'
