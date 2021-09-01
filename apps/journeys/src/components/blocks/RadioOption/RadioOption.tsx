@@ -30,15 +30,16 @@ type RadioOptionProps = RadioOptionType & {
   className?: string
 }
 
-export function RadioOption ({className, ...block}: RadioOptionProps): ReactElement {
+export function RadioOption ({ className, ...block }: RadioOptionProps): ReactElement {
   const classes = useStyles()
   const [selectedOption, setSelectedOption] = useState<
   RadioOptionType | undefined
   >()
 
   // enables selected option to be highlighted
-  const handleButtonSelect = (selected: RadioOptionType) => {
+  const handleButtonSelect = (selected: RadioOptionType, goTo: (id?: string) => void): void => {
     setSelectedOption(selected)
+    goTo(block.action != null ? block.action : undefined)
   }
 
   return (
@@ -48,7 +49,7 @@ export function RadioOption ({className, ...block}: RadioOptionProps): ReactElem
           variant="contained"
           key={block.id}
           className={compact([className, classes.buttonLabels]).join(' ')}
-          onClick={() => goTo(block.action != null ? block.action : undefined)}
+          onClick={() => handleButtonSelect(block, goTo)}
           startIcon={
             selectedOption?.id === block.id
               ? (

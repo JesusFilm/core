@@ -136,68 +136,37 @@
     },
     "journeys": {
       "root": "apps/journeys",
-      "sourceRoot": "apps/journeys/src",
+      "sourceRoot": "apps/journeys",
       "projectType": "application",
       "targets": {
         "build": {
-          "executor": "@nrwl/web:build",
+          "executor": "@nrwl/next:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/journeys",
-            "index": "apps/journeys/src/index.html",
-            "main": "apps/journeys/src/main.tsx",
-            "polyfills": "apps/journeys/src/polyfills.ts",
-            "tsConfig": "apps/journeys/tsconfig.app.json",
-            "assets": [
-              "apps/journeys/src/favicon.ico",
-              "apps/journeys/src/assets"
-            ],
-            "styles": ["apps/journeys/src/styles.css"],
-            "scripts": [],
-            "webpackConfig": "@nrwl/react/plugins/webpack"
+            "root": "apps/journeys",
+            "outputPath": "dist/apps/journeys"
           },
           "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/journeys/src/environments/environment.ts",
-                  "with": "apps/journeys/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
-                }
-              ]
-            }
+            "production": {}
           }
         },
         "serve": {
-          "executor": "@nrwl/web:dev-server",
+          "executor": "@nrwl/next:server",
           "options": {
             "buildTarget": "journeys:build",
-            "hmr": true
+            "dev": true
           },
           "configurations": {
             "production": {
               "buildTarget": "journeys:build:production",
-              "hmr": false
+              "dev": false
             }
           }
         },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
+        "export": {
+          "executor": "@nrwl/next:export",
           "options": {
-            "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
+            "buildTarget": "journeys:build:production"
           }
         },
         "test": {
@@ -206,6 +175,12 @@
           "options": {
             "jestConfig": "apps/journeys/jest.config.js",
             "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
           }
         }
       }
