@@ -1,63 +1,49 @@
-import { render } from '@testing-library/react'
+import { renderWithStore } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
-import transformer from '../../libs/transformer'
-import { BlockType } from '../../types'
-
-const data: BlockType[] = [
-  {
-    __typename: 'Step',
-    id: 'Root Video'
-  },
-  {
-    __typename: 'RadioQuestion',
-    id: 'MoreQuestions',
-    label: 'How can we help you know more about Jesus?',
-    description:
-      'What do you think would be the next step to help you grow in your relationship with Christ',
-    parent: {
-      id: 'Root Video'
-    }
-  },
-  {
-    __typename: 'RadioOption',
-    id: 'NestedMoreQuestions',
-    label: 'Chat Privately',
-    parent: {
-      id: 'MoreQuestions'
-    }
-  },
-  {
-    __typename: 'RadioOption',
-    id: 'NestedMoreQuestions2',
-    label: 'Get a bible',
-    parent: {
-      id: 'MoreQuestions'
-    }
-  },
-  {
-    __typename: 'RadioOption',
-    id: 'NestedMoreQuestions3',
-    label: 'Watch more vidoes about Jesus',
-    parent: {
-      id: 'MoreQuestions'
-    }
-  },
-  {
-    __typename: 'RadioOption',
-    id: 'NestedMoreQuestions4',
-    label: 'Ask a question',
-    parent: {
-      id: 'MoreQuestions'
-    }
-  }
-]
-
-const transformed = transformer(data)
+import { RadioOptionType, RadioQuestionType, StepType, VideoType } from '../../types'
 
 describe('BlockRenderer', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(<BlockRenderer {...transformed[0]} />)
+  it('should render RadioOption', () => {
+    const block: RadioOptionType = {
+      __typename: 'RadioOption',
+      id: 'main',
+      label: 'radio option'
+    }
+    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    expect(getByText('radio option')).toBeInTheDocument()
+  })
 
-    expect(baseElement).toBeTruthy()
+  it('should render RadioQuestion', () => {
+    const block: RadioQuestionType = {
+      __typename: 'RadioQuestion',
+      id: 'main',
+      label: 'radio question'
+    }
+    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    expect(getByText('radio question')).toBeInTheDocument()
+  })
+
+  it('should render Step', () => {
+    const block: StepType = {
+      __typename: 'Step',
+      id: 'main',
+      children: [{
+        __typename: 'RadioQuestion',
+        id: 'main',
+        label: 'radio question'
+      }]
+    }
+    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    expect(getByText('radio question')).toBeInTheDocument()
+  })
+
+  it('should render Video', () => {
+    const block: VideoType = {
+      __typename: 'Video',
+      id: 'main',
+      src: 'https://www.youtube.com'
+    }
+    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    expect(getByText('Render Video Here')).toBeInTheDocument()
   })
 })

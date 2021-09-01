@@ -43,7 +43,6 @@ export function RadioOption ({ className, label, action }: RadioOptionProps): Re
 
   if (selected) {
     return <Button
-      data-testid="RadioOption"
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
       startIcon={<CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" className={classes.highlightIcon} />}
@@ -53,7 +52,6 @@ export function RadioOption ({ className, label, action }: RadioOptionProps): Re
   } else {
     return (
     <Button
-      data-testid="RadioOption"
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
       onClick={handleClick}

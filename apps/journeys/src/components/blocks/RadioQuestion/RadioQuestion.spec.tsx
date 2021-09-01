@@ -21,20 +21,20 @@ const block: RadioQuestionType = {
 
 describe('RadioQuestion', () => {
   it('should render question props', () => {
-    const { getByText, getByTestId } = renderWithStore(<RadioQuestion {...(block)} />)
+    const { getByText, getByTestId } = renderWithStore(<RadioQuestion {...block} />)
     expect(getByText('Label')).toBeInTheDocument()
     expect(getByText('Description')).toBeInTheDocument()
     expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-light')
   })
 
   it('should render options', () => {
-    const { getByText } = renderWithStore(<RadioQuestion {...(block)} />)
+    const { getByText } = renderWithStore(<RadioQuestion {...block} />)
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
   })
 
   it('should render dark them', () => {
-    const { getByTestId } = renderWithStore(<RadioQuestion {...(block)} variant="dark" />)
+    const { getByTestId } = renderWithStore(<RadioQuestion {...block} variant="dark" />)
     expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-dark')
   })
 })

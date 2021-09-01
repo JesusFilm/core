@@ -30,7 +30,7 @@ export function RadioQuestion ({
   const classes = useStyles()
 
   return (
-    <Container maxWidth="sm" data-testid="RadioQuestion">
+    <Container maxWidth="sm">
         <Card
           data-testid="RadioQuestionCard"
           className={variant === 'dark' ? classes.dark : classes.light}
