@@ -1,10 +1,11 @@
-import { ConductorContext } from '../../Conductor'
-import { RadioOptionType, GoTo } from '../../../types'
+import { RadioOptionType } from '../../../types'
 import { Button, makeStyles } from '@material-ui/core'
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { ReactElement, useState } from 'react'
 import { compact } from 'lodash'
+import { useAppDispatch } from '../../../libs/store/store'
+import { navigate } from '../../Conductor/conductorSlice'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -30,41 +31,38 @@ type RadioOptionProps = RadioOptionType & {
   className?: string
 }
 
-export function RadioOption ({ className, ...block }: RadioOptionProps): ReactElement {
+export function RadioOption ({ className, label, action }: RadioOptionProps): ReactElement {
   const classes = useStyles()
-  const [selectedOption, setSelectedOption] = useState<
-  RadioOptionType | undefined
-  >()
+  const dispatch = useAppDispatch()
+  const [selected, setSelected] = useState(false)
 
-  // enables selected option to be highlighted
-  const handleButtonSelect = (selected: RadioOptionType, goTo: (id?: string) => void): void => {
-    setSelectedOption(selected)
-    goTo(block.action != null ? block.action : undefined)
+  const handleClick = (): void => {
+    setSelected(true)
+    dispatch(navigate(action))
   }
 
-  return (
-    <ConductorContext.Consumer>
-      {({ goTo }: GoTo) => (
-        <Button
-          variant="contained"
-          key={block.id}
-          className={compact([className, classes.buttonLabels]).join(' ')}
-          onClick={() => handleButtonSelect(block, goTo)}
-          startIcon={
-            selectedOption?.id === block.id
-              ? (
-              <CheckCircleIcon className={classes.highlightIcon} />
-                )
-              : (
-              <RadioButtonUncheckedIcon />
-                )
-          }
-        >
-          {block.label}
-        </Button>
-      )}
-    </ConductorContext.Consumer>
-  )
+  if (selected) {
+    return <Button
+      data-testid="RadioOption"
+      variant="contained"
+      className={compact([className, classes.buttonLabels]).join(' ')}
+      startIcon={<CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" className={classes.highlightIcon} />}
+    >
+      {label}
+    </Button>
+  } else {
+    return (
+    <Button
+      data-testid="RadioOption"
+      variant="contained"
+      className={compact([className, classes.buttonLabels]).join(' ')}
+      onClick={handleClick}
+      startIcon={<RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />}
+    >
+      {label}
+    </Button>
+    )
+  }
 }
 
 export default RadioOption

@@ -1,5 +1,6 @@
+import { Box } from '@material-ui/core'
 import React, { ReactElement } from 'react'
 
 export const Video = (): ReactElement => {
-  return <div>Render Video Here</div>
+  return <Box data-testid="Video">Render Video Here</Box>
 }

@@ -1,2 +1,4 @@
+import reducer from './conductorSlice'
 export { Conductor } from './Conductor'
-export { ConductorContext } from './ConductorContext'
+export { setBlocks, navigate } from './conductorSlice'
+export { reducer as conductorReducer }
