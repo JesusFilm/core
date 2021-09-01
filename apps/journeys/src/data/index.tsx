@@ -46,7 +46,7 @@ export const data1 = [
   },
   {
     __typename: 'RadioOption' as const,
-    id: 'Questions',
+    id: 'Option',
     label: 'RadioOption',
     parent: {
       id: 'Questions'
@@ -54,7 +54,7 @@ export const data1 = [
   },
   {
     __typename: 'RadioOption' as const,
-    id: 'Questions again',
+    id: 'Option again',
     label: 'another Radio Option',
     parent: {
       id: 'Questions'
