@@ -1,22 +1,17 @@
-import { RadioOption, RadioQuestion } from '../blocks'
+import { RadioOption, RadioQuestion, Video, Step } from '../blocks'
 import { BlockType } from '../../types'
 import { ReactElement } from 'react'
 
-export function BlockRenderer (block: BlockType): ReactElement | null {
-  return BlockSwitcher(block, 1000)
-}
-
-export const BlockSwitcher = (
-  block: BlockType,
-  key: number
-): ReactElement | null => {
+export function BlockRenderer (block: BlockType): ReactElement {
   switch (block.__typename) {
     case 'RadioOption':
-      return <RadioOption {...block} key={key} />
+      return <RadioOption {...block} />
     case 'RadioQuestion':
-      return <RadioQuestion {...block} key={key} />
-    default:
-      return null
+      return <RadioQuestion {...block} />
+    case 'Step':
+      return <Step {...block} />
+    case 'Video':
+      return <Video />
   }
 }
 

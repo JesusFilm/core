@@ -1,35 +1,18 @@
 import { BlockRenderer } from '../BlockRenderer'
-import { useState, ReactElement } from 'react'
-import { ConductorProps, NextStepProps, BlockType } from '../../types'
-import ConductorContext from './ConductorContext'
+import { ReactElement, useEffect } from 'react'
+import { ConductorProps } from '../../types'
+import { useAppDispatch, useAppSelector } from '../../libs/store/store'
+import { setBlocks } from './conductorSlice'
 
 export function Conductor ({ blocks }: ConductorProps): ReactElement {
-  const [currentBlock, setCurrentBlock] = useState(blocks[0])
+  const active = useAppSelector((state) => state.conductor.active)
+  const dispatch = useAppDispatch()
 
-  const handleNextStep: NextStepProps = (id) => {
-    console.log('next step clicked. id value:', id)
-    let nextBlock: BlockType | undefined
-    if (id != null) {
-      nextBlock = blocks.find((block) => block.id === id)
-    } else {
-      const index = blocks.findIndex((block) => block.id === currentBlock.id)
-      if (index > -1) {
-        nextBlock = blocks[index + 1]
-      }
-    }
-    nextBlock != null && setCurrentBlock(nextBlock)
-  }
+  useEffect(() => {
+    dispatch(setBlocks(blocks))
+  }, [dispatch, blocks])
 
-  return (
-    <ConductorContext.Provider
-      value={{
-        currentBlock: currentBlock,
-        goTo: handleNextStep
-      }}
-    >
-      <BlockRenderer {...currentBlock} />
-    </ConductorContext.Provider>
-  )
+  return (active != null) ? <BlockRenderer {...active} /> : <></>
 }
 
 export default Conductor
