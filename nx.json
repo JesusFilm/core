@@ -29,11 +29,18 @@
     ]
   },
   "projects": {
+    "api-gateway": {
+      "tags": []
+    },
     "api-journeys": {
       "tags": []
     },
-    "api-gateway": {
+    "journeys": {
       "tags": []
+    },
+    "journeys-e2e": {
+      "tags": [],
+      "implicitDependencies": ["journeys"]
     },
     "shared-util-graphql": {
       "tags": []
