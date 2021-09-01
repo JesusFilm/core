@@ -33,7 +33,7 @@ export const data1 = [
     __typename: 'RadioQuestion' as const,
     label: 'This is a test question 1!',
     id: 'Questions',
-    variant: 'light' as const,
+    variant: 'light' as const
   },
   {
     __typename: 'RadioOption' as const,
@@ -54,7 +54,7 @@ export const data1 = [
   {
     __typename: 'RadioQuestion' as const,
     id: 'MoreQuestions',
-    label: 'This is a test question 2!',
+    label: 'This is a test question 2!'
   },
   {
     __typename: 'RadioOption' as const,
@@ -71,7 +71,7 @@ export const data2 = [
     __typename: 'RadioQuestion' as const,
     id: 'MoreQuestions',
     label: 'How are you today?',
-    variant: 'dark' as const,
+    variant: 'dark' as const
   },
   {
     __typename: 'RadioOption' as const,
