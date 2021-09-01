@@ -25,6 +25,13 @@
       "rules": {}
     },
     {
+      "files": ["*.tsx", "*.jsx"],
+      "rules": { 
+        "react/jsx-indent": ["error", 2]
+      }
+    },
+    
+    {
       "files": ["next-env.d.ts"],
       "rules": {
         "@typescript-eslint/triple-slash-reference": "off"

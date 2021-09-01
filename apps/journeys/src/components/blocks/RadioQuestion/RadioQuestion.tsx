@@ -31,31 +31,31 @@ export function RadioQuestion ({
 
   return (
     <Container maxWidth="sm">
-        <Card
+      <Card
           data-testid="RadioQuestionCard"
           className={variant === 'dark' ? classes.dark : classes.light}
         >
-          <CardContent>
-            <Typography variant="h1" gutterBottom>
-              {label}
-            </Typography>
-            <Typography variant="subtitle1">{description}</Typography>
-          </CardContent>
-          <CardContent>
-            <ButtonGroup
+        <CardContent>
+          <Typography variant="h1" gutterBottom>
+            {label}
+          </Typography>
+          <Typography variant="subtitle1">{description}</Typography>
+        </CardContent>
+        <CardContent>
+          <ButtonGroup
               orientation="vertical"
               variant="contained"
               fullWidth={true}
             >
-              {children?.map(
-                (option) =>
-                  option.__typename === 'RadioOption' && (
-                        <RadioOption {...option} key={option.id} />
-                  )
-              )}
-            </ButtonGroup>
-          </CardContent>
-        </Card>
+            {children?.map(
+              (option) =>
+                option.__typename === 'RadioOption' && (
+                  <RadioOption {...option} key={option.id} />
+                )
+            )}
+          </ButtonGroup>
+        </CardContent>
+      </Card>
     </Container>
   )
 }

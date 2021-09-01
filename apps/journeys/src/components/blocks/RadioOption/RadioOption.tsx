@@ -51,14 +51,14 @@ export function RadioOption ({ className, label, action }: RadioOptionProps): Re
     </Button>
   } else {
     return (
-    <Button
+      <Button
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
       onClick={handleClick}
       startIcon={<RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />}
     >
-      {label}
-    </Button>
+        {label}
+      </Button>
     )
   }
 }

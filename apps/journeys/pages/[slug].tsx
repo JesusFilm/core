@@ -13,17 +13,17 @@ function Slug (): ReactElement {
   const { query: { slug } } = useRouter()
 
   return (
-        <Container>
-          <Typography variant="h1">Block renderer and conductor samples</Typography>
-          <Link href="/example-1">Example 1.</Link>
-          <Link href="/example-2">Example 2.</Link>
-          <Link href="/example-3">Example 3.</Link>
-          <Provider store={store}>
-          {slug === 'example-1' && <Conductor blocks={transformer<BlockType>(data1)} />}
-          {slug === 'example-2' && <Conductor blocks={transformer<BlockType>(data2)} />}
-          {slug === 'example-3' && <Conductor blocks={transformer<BlockType>(data3)} />}
-        </Provider>
-        </Container>
+    <Container>
+      <Typography variant="h1">Block renderer and conductor samples</Typography>
+      <Link href="/example-1">Example 1.</Link>
+      <Link href="/example-2">Example 2.</Link>
+      <Link href="/example-3">Example 3.</Link>
+      <Provider store={store}>
+        {slug === 'example-1' && <Conductor blocks={transformer<BlockType>(data1)} />}
+        {slug === 'example-2' && <Conductor blocks={transformer<BlockType>(data2)} />}
+        {slug === 'example-3' && <Conductor blocks={transformer<BlockType>(data3)} />}
+      </Provider>
+    </Container>
   )
 }
 
