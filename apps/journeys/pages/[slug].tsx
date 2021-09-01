@@ -16,7 +16,7 @@ export function App (): ReactElement {
 
   return (
         <Container>
-          <Typography variant="h1">Block renderer &amp; conductor samples</Typography>
+          <Typography variant="h1">Block renderer and conductor samples</Typography>
           <Link href="/example-1">Example 1.</Link>
           <Link href="/example-2">Example 2.</Link>
           <Link href="/example-3">Example 3.</Link>
