@@ -15,13 +15,13 @@ describe('App', () => {
     expect(baseElement).toBeTruthy()
   })
 
-  it('should have a greeting as the title', () => {
+  it('should render an example link successfully', () => {
     const { getByText } = render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
     )
 
-    expect(getByText('Welcome to journeys!')).toBeTruthy()
+    expect(getByText(/Example 3/)).toBeTruthy()
   })
 })

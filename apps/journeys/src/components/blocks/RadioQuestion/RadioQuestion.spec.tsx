@@ -1,69 +1,27 @@
-import { render } from '@testing-library/react'
-import { RadioQuestion } from '.'
-import { RadioQuestionType } from '../../../types'
+import { render } from '@testing-library/react';
+import { RadioQuestion } from '.';
+import transformer from '../../../libs/transformer';
+import { radioQuestion } from '../../../data';
 
-const data: RadioQuestionType = {
-  __typename: 'RadioQuestion',
-  id: 'MoreQuestions',
-  label: 'How can we help you know more about Jesus?',
-  description:
-    'What do you think would be the next step to help you grow in your relationship with Jesus?',
-  parent: {
-    id: 'Root Video'
-  },
-  children: [
-    {
-      __typename: 'RadioOption',
-      id: 'NestedMoreQuestions',
-      label: 'Chat Privately',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    },
-    {
-      __typename: 'RadioOption',
-      id: 'NestedMoreQuestions2',
-      label: 'Get a bible',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    },
-    {
-      __typename: 'RadioOption',
-      id: 'NestedMoreQuestions3',
-      label: 'Watch more vidoes about Jesus',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    },
-    {
-      __typename: 'RadioOption',
-      id: 'NestedMoreQuestions4',
-      label: 'Ask a question',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    }
-  ]
-}
+const transformed = transformer(radioQuestion);
 
 describe('RadioQuestion', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<RadioQuestion {...data} />)
-    expect(baseElement).toBeTruthy()
-  })
+    const { baseElement } = render(<RadioQuestion {...transformed[0]} />);
+    expect(baseElement).toBeTruthy();
+  });
   it('should render question with correct text', () => {
-    const { getByText } = render(<RadioQuestion {...data} />)
+    const { getByText } = render(<RadioQuestion {...transformed[0]} />);
     expect(
       getByText('How can we help you know more about Jesus?')
-    ).toBeTruthy()
-  })
+    ).toBeTruthy();
+  });
   it('should render description with correct text', () => {
-    const { getByText } = render(<RadioQuestion {...data} />)
+    const { getByText } = render(<RadioQuestion {...transformed[0]} />);
     expect(
       getByText(
         'What do you think would be the next step to help you grow in your relationship with Jesus?'
       )
-    )
-  })
-})
+    ).toBeTruthy();
+  });
+});

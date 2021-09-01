@@ -4,25 +4,36 @@ export const radioOptions = [
     id: 'MoreQuestions',
     label: 'This is a test question 2!',
     parent: {
-      id: 'ThirdBlock'
-    }
-  }
-]
+      id: 'ThirdBlock',
+    },
+  },
+];
+
+export const radioQuestion = [
+  {
+    __typename: 'RadioQuestion' as const,
+    id: 'MoreQuestions',
+    label: 'How can we help you know more about Jesus?',
+    description:
+      'What do you think would be the next step to help you grow in your relationship with Jesus?',
+    variant: 'light' as const,
+  },
+];
 
 export const videos = [
   {
     __typename: 'Video' as const,
     id: 'Root Video',
-    src: 'yoyo'
-  }
-]
+    src: 'yoyo',
+  },
+];
 
 export const data1 = [
   {
     __typename: 'Video' as const,
     id: 'Root',
     src: 'https://media.vimejs.com/720p.mp4',
-    poster: 'https://media.vimejs.com/poster.png'
+    poster: 'https://media.vimejs.com/poster.png',
   },
   {
     __typename: 'RadioQuestion' as const,
@@ -30,49 +41,49 @@ export const data1 = [
     id: 'Questions',
     variant: 'light' as const,
     parent: {
-      id: 'Root'
-    }
+      id: 'Root',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'Questions',
     label: 'RadioOption',
     parent: {
-      id: 'Questions'
-    }
+      id: 'Questions',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'Questions again',
     label: 'another Radio Option',
     parent: {
-      id: 'Questions'
-    }
+      id: 'Questions',
+    },
   },
   {
     __typename: 'Video' as const,
     id: 'Second Video',
     src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
     poster:
-      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
   },
   {
     __typename: 'RadioQuestion' as const,
     id: 'MoreQuestions',
     label: 'This is a test question 2!',
     parent: {
-      id: 'Second Video'
-    }
+      id: 'Second Video',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'NestedMoreQuestions',
     label: 'RadioOption',
     parent: {
-      id: 'MoreQuestions'
-    }
-  }
-]
+      id: 'MoreQuestions',
+    },
+  },
+];
 
 export const data2 = [
   {
@@ -80,7 +91,7 @@ export const data2 = [
     id: 'Root Video',
     src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
     poster:
-      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
   },
   {
     __typename: 'RadioQuestion' as const,
@@ -88,18 +99,18 @@ export const data2 = [
     label: 'How are you today?',
     variant: 'dark' as const,
     parent: {
-      id: 'Root Video'
-    }
+      id: 'Root Video',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'NestedOptions',
     label: 'Chat Privately',
     parent: {
-      id: 'MoreQuestions'
-    }
-  }
-]
+      id: 'MoreQuestions',
+    },
+  },
+];
 
 export const data3 = [
   {
@@ -108,45 +119,45 @@ export const data3 = [
     label: 'How can we help you know more about Jesus?',
     description:
       'What do you think would be the next step to help you grow in your relationship with Jesus?',
-    variant: 'light' as const
+    variant: 'light' as const,
   },
   {
     __typename: 'RadioOption' as const,
     id: 'NestedOptions',
     label: 'Chat Privately',
     parent: {
-      id: 'MoreQuestions'
-    }
+      id: 'MoreQuestions',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'NestedOptions2',
     label: 'Get a bible',
     parent: {
-      id: 'MoreQuestions'
-    }
+      id: 'MoreQuestions',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'NestedOptions3',
     label: 'Watch more vidoes about Jesus',
     parent: {
-      id: 'MoreQuestions'
-    }
+      id: 'MoreQuestions',
+    },
   },
   {
     __typename: 'RadioOption' as const,
     id: 'NestedOptions4',
     label: 'Ask a question',
     parent: {
-      id: 'MoreQuestions'
-    }
+      id: 'MoreQuestions',
+    },
   },
   {
     __typename: 'Video' as const,
     id: 'A Video',
     src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
     poster:
-      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
-  }
-]
+      'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
+  },
+];
