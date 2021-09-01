@@ -1,6 +1,6 @@
 # shared-storybook
 
-Dummy library shared storybook to view components from all projects. This is used to bundle components and run VR on this library.
+Dummy library to view components from all projects. This is used to bundle components and run VR on this library.
 
 Reccomended build from NX https://www.youtube.com/watch?v=c323HOuFKkA
 To reduce boilerplate, we use the root .storybook config which is also shared with each ui project.

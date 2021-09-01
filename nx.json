@@ -42,9 +42,6 @@
       "tags": [],
       "implicitDependencies": ["journeys"]
     },
-    "myapp": {
-      "tags": []
-    },
     "shared-storybook": {
       "tags": []
     },

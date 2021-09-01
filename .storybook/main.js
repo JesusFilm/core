@@ -4,17 +4,15 @@ const storiesForProject = {
     '../apps/journeys/src/components/**/ *.stories.mdx',
     '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
-  myapp: [
-    '../apps/myapp/src/app/**/*.stories.@(js|jsx|ts|tsx)',
-  ],
-  // Add new UI projects here
+  // Add new UI projects here and in allStories
 };
+
+const allStories = [...storiesForProject["journeys"]]
 
 module.exports = {
   stories:
     storiesForProject[process.env.NX_TASK_TARGET_PROJECT] ||
-    // List all projects for shared-storybook
-    [...storiesForProject["journeys"], ...storiesForProject["myapp"]],
+    allStories,
   addons: ['@storybook/addon-essentials', '@nrwl/react/plugins/storybook'],
   // uncomment the property below if you want to apply some webpack config globally
   // webpackFinal: async (config, { configType }) => {
