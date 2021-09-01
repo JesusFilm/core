@@ -45,6 +45,9 @@
     "myapp": {
       "tags": []
     },
+    "shared-storybook": {
+      "tags": []
+    },
     "shared-util-graphql": {
       "tags": []
     }

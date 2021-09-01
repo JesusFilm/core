@@ -10,7 +10,6 @@
     "demo": "nx storybook",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
-    "vr": "chromatic --project-token=b2614900708f --patch-build=integrate-storybook...main",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
     "affected:build": "nx affected:build",

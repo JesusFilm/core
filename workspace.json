@@ -246,7 +246,7 @@
         }
       }
     },
-     "myapp": {
+    "myapp": {
       "root": "apps/myapp",
       "sourceRoot": "apps/myapp/src",
       "projectType": "application",
@@ -260,10 +260,7 @@
             "main": "apps/myapp/src/main.tsx",
             "polyfills": "apps/myapp/src/polyfills.ts",
             "tsConfig": "apps/myapp/tsconfig.app.json",
-            "assets": [
-              "apps/myapp/src/favicon.ico",
-              "apps/myapp/src/assets"
-            ],
+            "assets": ["apps/myapp/src/favicon.ico", "apps/myapp/src/assets"],
             "styles": ["apps/myapp/src/styles.css"],
             "scripts": [],
             "webpackConfig": "@nrwl/react/plugins/webpack"
@@ -343,6 +340,50 @@
             "outputPath": "dist/storybook",
             "config": {
               "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        }
+      }
+    },
+    "shared-storybook": {
+      "root": "libs/shared/storybook",
+      "sourceRoot": "libs/shared/storybook/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/storybook/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
+            "config": {
+              "configFolder": "libs/shared/storybook/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        },
+        "build-storybook": {
+          "executor": "@nrwl/storybook:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "uiFramework": "@storybook/react",
+            "outputPath": "dist/storybook/shared-storybook",
+            "config": {
+              "configFolder": "libs/shared/storybook/.storybook"
             }
           },
           "configurations": {

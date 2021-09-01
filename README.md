@@ -67,7 +67,7 @@ Run `nx affected:test` to execute the unit tests affected by a change.
 
 ## Running demos
 
-Run `nx demo my-app` to view components via [Storybook](https://storybook.js.org/).
+Run `nx demo my-app` to view components of my-app via [Storybook](https://storybook.js.org/).
 
 ## Running end-to-end tests
 
