@@ -1,4 +1,4 @@
-import { RadioOption, RadioQuestion, Video } from '../blocks'
+import { RadioOption, RadioQuestion } from '../blocks'
 import { BlockType } from '../../types'
 import { ReactElement } from 'react'
 
@@ -11,8 +11,6 @@ export const BlockSwitcher = (
   key: number
 ): ReactElement | null => {
   switch (block.__typename) {
-    case 'Video':
-      return <Video {...block} key={key} />
     case 'RadioOption':
       return <RadioOption {...block} key={key} />
     case 'RadioQuestion':
