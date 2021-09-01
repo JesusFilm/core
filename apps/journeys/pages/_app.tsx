@@ -1,16 +1,16 @@
-import { AppProps } from 'next/app';
-import Head from 'next/head';
-import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider';
-import { useEffect } from 'react';
+import { AppProps } from 'next/app'
+import Head from 'next/head'
+import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
+import { ReactElement, useEffect } from 'react'
 
-function CustomApp({ Component, pageProps }: AppProps) {
+function CustomApp ({ Component, pageProps }: AppProps): ReactElement {
   useEffect(() => {
     // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side');
-    if (jssStyles) {
-      jssStyles.parentElement?.removeChild(jssStyles);
+    const jssStyles = document.querySelector('#jss-server-side')
+    if (jssStyles != null) {
+      jssStyles.parentElement?.removeChild(jssStyles)
     }
-  }, []);
+  }, [])
 
   return (
     <>
@@ -22,7 +22,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </JourneysThemeProvider>
     </>
-  );
+  )
 }
 
-export default CustomApp;
+export default CustomApp
