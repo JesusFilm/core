@@ -65,6 +65,12 @@ Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
 
 Run `nx affected:test` to execute the unit tests affected by a change.
 
+## Running demos
+
+Run `nx storybook my-app` to view components of my-app via [Storybook](https://storybook.js.org/).
+
+Run `nx storybook shared-storybook` to view all components across projects via [Storybook](https://storybook.js.org/).
+
 ## Running end-to-end tests
 
 Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).

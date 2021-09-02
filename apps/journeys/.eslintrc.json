@@ -5,34 +5,59 @@
     "next",
     "next/core-web-vitals"
   ],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": [
+    "!**/*"
+  ],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "*.jsx"
+      ],
       "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/journeys/pages/"]
+        "@next/next/no-html-link-for-pages": [
+          "error",
+          "apps/journeys/pages/"
+        ]
       }
     },
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "parserOptions": {
-        "project": ["apps/journeys/tsconfig.*?.json"]
+        "project": [
+          "apps/journeys/tsconfig.*?.json"
+        ]
       },
       "rules": {}
     },
     {
-      "files": ["*.js", "*.jsx"],
+      "files": [
+        "*.js",
+        "*.jsx"
+      ],
       "rules": {}
     },
     {
-      "files": ["*.tsx", "*.jsx"],
-      "rules": { 
-        "react/jsx-indent": ["error", 2]
+      "files": [
+        "*.tsx",
+        "*.jsx"
+      ],
+      "rules": {
+        "react/jsx-indent": [
+          "error",
+          2
+        ]
       }
     },
-    
     {
-      "files": ["next-env.d.ts"],
+      "files": [
+        "next-env.d.ts"
+      ],
       "rules": {
         "@typescript-eslint/triple-slash-reference": "off"
       }
