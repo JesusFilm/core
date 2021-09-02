@@ -68,7 +68,7 @@ jobs:
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,migrations,test
-  VR-test:
+  visual-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -80,7 +80,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm install
-      - name: Build all storybooks for VR
+      - name: Build all storybooks for visual regression
         run: npm run build-storybook shared-storybook
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests 
