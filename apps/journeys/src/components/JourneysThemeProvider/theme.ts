@@ -8,7 +8,7 @@ const baseTheme = createTheme({
       fontWeight: 700,
       lineHeight: 1.14
     },
-    subtitle1: {
+    h6: {
       fontSize: 13,
       fontWeight: 400,
       lineHeight: 1.4
