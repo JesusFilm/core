@@ -34,7 +34,11 @@ it('returns blocks', async () => {
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: block1.id
+      parentBlockId: block1.id,
+      extraAttrs: {
+        label: 'label',
+        description: 'description'
+      }
     }
   })
 
@@ -81,11 +85,18 @@ it('returns blocks', async () => {
   })
 
   expect(data?.journey.blocks).toEqual([
-    { id: block1.id, __typename: 'StepBlock' },
+    {
+      id: block1.id,
+      __typename: 'StepBlock',
+      parentBlockId: null
+    },
     {
       id: block2.id,
       __typename: 'RadioQuestionBlock',
-      ...(block2.extraAttrs as Prisma.JsonObject)
+      description: 'description',
+      label: 'label',
+      parentBlockId: block1.id,
+      variant: null
     }
   ])
 })
