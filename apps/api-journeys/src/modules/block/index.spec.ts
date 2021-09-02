@@ -48,7 +48,7 @@ it('returns blocks', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      query {
+      query($id: ID!) {
         journey(id: $id) {
           blocks {
             id
@@ -80,7 +80,6 @@ it('returns blocks', async () => {
     }
   })
 
-  console.log(data)
   expect(data?.journey.blocks).toEqual([
     { id: block1.id, __typename: 'StepBlock' },
     {
