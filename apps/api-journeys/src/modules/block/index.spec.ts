@@ -2,7 +2,6 @@ import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
-import { Prisma } from '.prisma/api-journeys-client'
 import Journey from '../journey'
 
 beforeEach(async () => {
