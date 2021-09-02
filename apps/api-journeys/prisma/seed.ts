@@ -3,7 +3,7 @@ import { noop } from 'lodash'
 
 const prisma = new PrismaClient()
 
-async function main(): Promise<void> {
+async function main (): Promise<void> {
   const journey = await prisma.journey.create({
     data: {
       title: 'Test Journey',
