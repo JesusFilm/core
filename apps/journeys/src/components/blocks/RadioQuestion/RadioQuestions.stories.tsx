@@ -23,8 +23,6 @@ const Demo = {
 
 const Template: Story<RadioQuestionType> = ({ ...props }) => <RadioQuestion {...props} />
 
-console.log(RadioOption.Primary.args)
-
 export const Primary = Template.bind({})
 Primary.args = {
   label: 'Label',
