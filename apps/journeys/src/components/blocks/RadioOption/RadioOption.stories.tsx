@@ -1,23 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { RadioOptionType } from '../../../types'
 import RadioOption from './RadioOption'
-
-import { Provider } from 'react-redux'
-import { configureStoreWithState, RootState } from '../../../libs/store/store'
-import { PreloadedState } from 'redux'
-
-let preloadedState: PreloadedState<RootState>
+import { journeysConfig } from '../../../libs/storybook/decorators'
 
 const Demo = {
+  ...journeysConfig,
   component: RadioOption,
-  title: 'Journeys/Blocks/RadioOption',
-  decorators: [
-    Story => (
-      <Provider store={configureStoreWithState(preloadedState)}>
-        <Story/>
-      </Provider>
-    )
-  ]
+  title: 'Journeys/Blocks/RadioOption'
 }
 
 const Template: Story<RadioOptionType> = ({ ...props }) => <RadioOption {...props} />
