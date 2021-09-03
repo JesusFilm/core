@@ -1,6 +1,7 @@
 import { Provider } from 'react-redux'
 import { configureStoreWithState, RootState } from '../store/store'
 import { PreloadedState } from 'redux'
+import { parameters as rootParameters } from '../../../../../.storybook/preview'
 
 let preloadedState: PreloadedState<RootState>
 
@@ -14,6 +15,6 @@ export const journeysConfig = {
     )
   ],
   parameters: {
-    chromatic: { viewports: [320] }
+    ...rootParameters
   }
 }
