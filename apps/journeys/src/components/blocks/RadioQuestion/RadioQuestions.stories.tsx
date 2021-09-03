@@ -13,20 +13,11 @@ const Demo = {
   component: RadioQuestion,
   title: 'Journeys/Blocks/RadioQuestion',
   argTypes: {
-    id: {
-      control: { type: 'disabled' }
-    },
-    parent: {
-      control: { type: 'disabled' }
-    },
     action: {
-      control: { type: 'disabled' }
+      table: { disable: true }
     },
     __typename: {
-      control: { type: 'disabled' }
-    },
-    children: {
-      control: { type: 'disabled' }
+      table: { disable: true }
     }
   },
   decorators: [
@@ -44,17 +35,22 @@ const Template: Story<RadioQuestionType> = ({ ...props }) => (
 
 export const Primary = Template.bind({})
 Primary.args = {
+  id: 'id',
   label: 'Label',
   description: 'Description',
   children: [
     RadioOption.Primary.args,
     RadioOption.Primary.args,
     RadioOption.Primary.args
-  ]
+  ],
+  parent: {
+    id: 'parentId'
+  }
 }
 
 export const Secondary = Template.bind({})
 Secondary.args = {
+  id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
   description:
     'What do you think would be the next step to help you grow in your relationship with Jesus?',
@@ -63,7 +59,10 @@ Secondary.args = {
     RadioOption.OptionTwo.args,
     RadioOption.OptionThree.args,
     RadioOption.OptionFour.args
-  ]
+  ],
+  parent: {
+    id: 'Step1'
+  }
 }
 
 export default Demo as Meta
