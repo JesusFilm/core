@@ -1,6 +1,47 @@
 {
   "version": 2,
   "projects": {
+    "api-gateway": {
+      "root": "apps/api-gateway",
+      "sourceRoot": "apps/api-gateway/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/api-gateway",
+            "main": "apps/api-gateway/src/main.ts",
+            "tsConfig": "apps/api-gateway/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/api-gateway/src/environments/environment.ts",
+                  "with": "apps/api-gateway/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "api-gateway:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+          }
+        }
+      }
+    },
     "api-journeys": {
       "root": "apps/api-journeys",
       "sourceRoot": "apps/api-journeys/src",
@@ -85,43 +126,132 @@
         }
       }
     },
-    "api-gateway": {
-      "root": "apps/api-gateway",
-      "sourceRoot": "apps/api-gateway/src",
+    "journeys": {
+      "root": "apps/journeys",
+      "sourceRoot": "apps/journeys",
       "projectType": "application",
       "targets": {
         "build": {
-          "executor": "@nrwl/node:build",
+          "executor": "@nrwl/next:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/api-gateway",
-            "main": "apps/api-gateway/src/main.ts",
-            "tsConfig": "apps/api-gateway/tsconfig.app.json"
+            "root": "apps/journeys",
+            "outputPath": "dist/apps/journeys"
           },
           "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/api-gateway/src/environments/environment.ts",
-                  "with": "apps/api-gateway/src/environments/environment.prod.ts"
-                }
-              ]
-            }
+            "production": {}
           }
         },
         "serve": {
-          "executor": "@nrwl/node:execute",
+          "executor": "@nrwl/next:server",
           "options": {
-            "buildTarget": "api-gateway:build"
+            "buildTarget": "journeys:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "journeys:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "journeys:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/journeys"],
+          "options": {
+            "jestConfig": "apps/journeys/jest.config.js",
+            "passWithNoTests": true
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+            "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        }
+      }
+    },
+    "journeys-e2e": {
+      "root": "apps/journeys-e2e",
+      "sourceRoot": "apps/journeys-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/journeys-e2e/cypress.json",
+            "tsConfig": "apps/journeys-e2e/tsconfig.e2e.json",
+            "devServerTarget": "journeys:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "journeys:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "shared-storybook": {
+      "root": "libs/shared/storybook",
+      "sourceRoot": "libs/shared/storybook/src",
+      "projectType": "library",
+      "targets": {
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        },
+        "build-storybook": {
+          "executor": "@nrwl/storybook:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "uiFramework": "@storybook/react",
+            "outputPath": "dist/storybook/shared-storybook",
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
           }
         }
       }
@@ -151,5 +281,21 @@
   "cli": {
     "defaultCollection": "@nrwl/express"
   },
-  "defaultProject": "api-journeys"
+  "defaultProject": "api-journeys",
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint"
+      }
+    }
+  }
 }
