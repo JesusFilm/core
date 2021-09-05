@@ -71,4 +71,22 @@ LongLabel.args = {
   }
 }
 
+const Template2: Story<RadioOptionType> = ({ ...props }) => (
+  <RadioOption {...props} selectedId="NestedOptions3" />
+)
+
+export const SelectedLabel = Template2.bind({})
+SelectedLabel.args = {
+  id: 'NestedOptions3',
+  __typename: 'RadioOption',
+  label: 'Watch more video about Jesus'
+}
+
+export const DisabledLabel = Template2.bind({})
+DisabledLabel.args = {
+  id: 'NestedOptions4',
+  __typename: 'RadioOption',
+  label: 'Ask a question'
+}
+
 export default Demo as Meta
