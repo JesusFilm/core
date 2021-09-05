@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import {
   Typography,
   Container,
@@ -10,6 +10,8 @@ import {
 } from '@material-ui/core'
 import { RadioQuestionType } from '../../../types'
 import { RadioOption } from '../RadioOption'
+import { useAppDispatch } from '../../../libs/store/store'
+import { navigate } from '../../Conductor/conductorSlice'
 
 const useStyles = makeStyles(
   () =>
@@ -32,6 +34,13 @@ export function RadioQuestion ({
   variant = 'light'
 }: RadioQuestionType): ReactElement {
   const classes = useStyles()
+  const dispatch = useAppDispatch()
+  const [selectedId, setSelectedId] = useState<string>()
+
+  const handleClick = (id: string, action: any): void => {
+    setSelectedId(id)
+    dispatch(navigate(action))
+  }
 
   return (
     <Container maxWidth="sm">
@@ -54,7 +63,12 @@ export function RadioQuestion ({
             {children?.map(
               (option) =>
                 option.__typename === 'RadioOption' && (
-                  <RadioOption {...option} key={option.id} />
+                  <RadioOption
+                    {...option}
+                    key={option.id}
+                    selectedId={selectedId}
+                    handleClick={handleClick}
+                  />
                 )
             )}
           </ButtonGroup>
