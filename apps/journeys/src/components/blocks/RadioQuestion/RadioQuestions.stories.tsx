@@ -1,48 +1,31 @@
-import { Story, Meta } from '@storybook/react'
-import { RadioQuestionType } from '../../../types'
-import { RadioQuestion } from './RadioQuestion'
-import * as RadioOption from '../RadioOption/RadioOption.stories'
+import { Story, Meta } from '@storybook/react';
+import { RadioQuestionType } from '../../../types';
+import { RadioQuestion } from './RadioQuestion';
+import * as RadioOption from '../RadioOption/RadioOption.stories';
 
-import { Provider } from 'react-redux'
-import { configureStoreWithState, RootState } from '../../../libs/store/store'
-import { PreloadedState } from 'redux'
+import { Provider } from 'react-redux';
+import { configureStoreWithState, RootState } from '../../../libs/store/store';
+import { PreloadedState } from 'redux';
 
-let preloadedState: PreloadedState<RootState>
+let preloadedState: PreloadedState<RootState>;
 
 const Demo = {
   component: RadioQuestion,
   title: 'Journeys/Blocks/RadioQuestion',
-  argTypes: {
-    action: {
-      table: { disable: true }
-    },
-    __typename: {
-      table: { disable: true }
-    },
-    id: {
-      table: { disable: true }
-    },
-    parent: {
-      table: { disable: true }
-    },
-    variant: {
-      table: { disable: true }
-    }
-  },
   decorators: [
     (Story) => (
       <Provider store={configureStoreWithState(preloadedState)}>
         <Story />
       </Provider>
-    )
-  ]
-}
+    ),
+  ],
+};
 
 const Template: Story<RadioQuestionType> = ({ ...props }) => (
   <RadioQuestion {...props} />
-)
+);
 
-export const Primary = Template.bind({})
+export const Primary = Template.bind({});
 Primary.args = {
   id: 'id',
   label: 'Label',
@@ -50,14 +33,14 @@ Primary.args = {
   children: [
     RadioOption.Primary.args,
     RadioOption.Primary.args,
-    RadioOption.Primary.args
+    RadioOption.Primary.args,
   ],
   parent: {
-    id: 'parentId'
-  }
-}
+    id: 'parentId',
+  },
+};
 
-export const Secondary = Template.bind({})
+export const Secondary = Template.bind({});
 Secondary.args = {
   id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
@@ -65,8 +48,8 @@ Secondary.args = {
     'What do you think would be the next step to help you grow in your relationship with Jesus?',
   children: [RadioOption.DefaultLabel.args, RadioOption.LongLabel.args],
   parent: {
-    id: 'Step1'
-  }
-}
+    id: 'Step1',
+  },
+};
 
-export default Demo as Meta
+export default Demo as Meta;
