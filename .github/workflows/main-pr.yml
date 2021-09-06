@@ -86,9 +86,14 @@ jobs:
         id: build-storybook
         with:
           targets: build-storybook
+      - name: Check storybook build directory existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "dist/storybook/shared-storybook"
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests 
-        if: ${{ steps.build-storybook.outcome == 'success' }}
+        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         with:
