@@ -1,13 +1,13 @@
-import { RadioOptionType } from '../../../types';
-import { Button, makeStyles } from '@material-ui/core';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { ReactElement } from 'react';
-import { compact } from 'lodash';
+import { RadioOptionType } from '../../../types'
+import { Button, makeStyles } from '@material-ui/core'
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import { ReactElement } from 'react'
+import { compact } from 'lodash'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
-    color: '#54A055',
+    color: '#54A055'
   },
   buttonLabels: {
     fontSize: 16,
@@ -15,33 +15,33 @@ const useStyles = makeStyles(() => ({
     lineHeight: 1.4,
     textTransform: 'none',
     textAlign: 'start',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-start'
   },
   light: {
-    background: '#ffffff',
+    background: '#ffffff'
   },
   dark: {
     background: '#3b3b3b',
-    color: '#ffffff',
-  },
-}));
+    color: '#ffffff'
+  }
+}))
 
 type RadioOptionProps = RadioOptionType & {
-  id: string;
-  className?: string;
-  selectedId: string | undefined;
-  handleClick?: (selected: string, action: any) => void;
-};
+  id: string
+  className?: string
+  selectedId: string | undefined
+  handleClick?: (selected: string, action: any) => void
+}
 
-export function RadioOption({
+export function RadioOption ({
   className,
   label,
   action,
   id,
   selectedId,
-  handleClick,
+  handleClick
 }: RadioOptionProps): ReactElement {
-  const classes = useStyles();
+  const classes = useStyles()
 
   if (selectedId === id) {
     return (
@@ -57,7 +57,7 @@ export function RadioOption({
       >
         {label}
       </Button>
-    );
+    )
   } else {
     return (
       <Button
@@ -71,8 +71,8 @@ export function RadioOption({
       >
         {label}
       </Button>
-    );
+    )
   }
 }
 
-export default RadioOption;
+export default RadioOption
