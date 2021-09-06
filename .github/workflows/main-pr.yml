@@ -81,11 +81,11 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Build all storybooks for visual regression
-        if: npm run affected:libs --plain | grep shared-storybook  
+        if: npm run nx affected -- --target=build-storybook
         run: npm run build-storybook shared-storybook
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests 
-        if: npm run affected:libs --plain | grep shared-storybook  
+        if: npm run nx affected -- --target=build-storybook  
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         with:
