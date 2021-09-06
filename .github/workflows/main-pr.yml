@@ -80,6 +80,8 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm install
+      - name: Fetch other branches
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook
         with:
