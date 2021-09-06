@@ -86,7 +86,7 @@ jobs:
           targets: build-storybook
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests 
-        if: steps.build-storybook.outcome === "success"
+        if: steps.build-storybook.outcome == "success"
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         with:
