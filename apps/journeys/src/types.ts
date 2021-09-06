@@ -29,6 +29,14 @@ export type StepType = BaseBlockType & {
 export type VideoType = BaseBlockType & {
   __typename: 'Video'
   src: string
+  // sources: {
+  //   src: string
+  // }[]
+  // autoplay?: boolean | string
+  // controls?: boolean
+  // volume?: number
+  // fullscreenToggle: boolean
+  // fullscreenOnDoubleClick: boolean
   poster?: string
 }
 

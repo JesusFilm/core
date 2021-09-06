@@ -1,7 +1,27 @@
 import videojs from 'video.js'
 import React, { useEffect, useRef } from 'react'
+import { Container, makeStyles, createStyles } from '@material-ui/core'
 
 import 'video.js/dist/video-js.css'
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    container: {
+      position: 'relative',
+      overflow: 'hidden'
+    },
+    overlayHolder: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden'
+    }
+  })
+)
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions
@@ -39,7 +59,11 @@ const initialOptions: videojs.PlayerOptions = {
   playbackRates: [0.5, 1, 1.5, 2]
 }
 
-export const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
+export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
+  options,
+  children
+}) => {
+  const classes = useStyles()
   const videoNode = useRef<HTMLVideoElement>(null)
   const player = useRef<videojs.Player>()
 
@@ -59,5 +83,10 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
     }
   }, [options])
 
-  return <video ref={videoNode} className="video-js" />
+  return (
+    <Container className={classes.container}>
+      <video ref={videoNode} className="video-js" />
+      <Container className={classes.overlayHolder}>{children}</Container>
+    </Container>
+  )
 }
