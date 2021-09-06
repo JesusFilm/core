@@ -54,7 +54,8 @@
     "redux-devtools-extension": "^2.13.9",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "video.js": "^7.14.3"
   },
   "devDependencies": {
     "@babel/core": "7.12.13",
@@ -92,6 +93,7 @@
     "@types/react-helmet": "^6.1.2",
     "@types/react-redux": "^7.1.18",
     "@types/react-router-dom": "5.1.7",
+    "@types/video.js": "^7.3.26",
     "@typescript-eslint/eslint-plugin": "~4.28.3",
     "@typescript-eslint/parser": "~4.28.3",
     "babel-jest": "27.0.6",
