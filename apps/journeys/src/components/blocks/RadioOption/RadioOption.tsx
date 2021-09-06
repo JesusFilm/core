@@ -57,7 +57,7 @@ export function RadioOption ({ className, label, action }: RadioOptionProps): Re
       onClick={handleClick}
       startIcon={<RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />}
     >
-        {label}d
+        {label}
       </Button>
     )
   }
