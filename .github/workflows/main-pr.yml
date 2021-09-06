@@ -80,7 +80,7 @@ jobs:
           node-version: '16'
           cache: 'npm'
       - run: npm install
-        uses: mansagroup/nrwl-nx-action@v2
+      - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook
         with:
           targets: build-storybook
