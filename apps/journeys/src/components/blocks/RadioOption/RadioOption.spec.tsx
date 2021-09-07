@@ -1,12 +1,12 @@
-import { RadioOption } from './RadioOption';
-import { fireEvent, renderWithStore } from '../../../../test/testingLibrary';
-import { RadioOptionType } from '../../../types';
+import { RadioOption } from './RadioOption'
+import { renderWithStore } from '../../../../test/testingLibrary'
+import { RadioOptionType } from '../../../types'
 
 const block: RadioOptionType = {
   __typename: 'RadioOption',
   id: 'RadioOption1',
-  label: 'This is a test question 2!',
-};
+  label: 'This is a test question 2!'
+}
 
 describe('RadioOption', () => {
   it('should render option props', () => {
@@ -17,23 +17,31 @@ describe('RadioOption', () => {
         selected={false}
         disabled={false}
       />
-    );
-    expect(getByText(block.label)).toBeInTheDocument();
-  });
-
-  it('should handle click', () => {
-    const { getByTestId, getByRole } = renderWithStore(
+    )
+    expect(getByText(block.label)).toBeInTheDocument()
+  })
+  it('should render an unselected option', () => {
+    const { getByTestId } = renderWithStore(
       <RadioOption
         {...block}
         key="question1"
         selected={false}
         disabled={false}
       />
-    );
+    )
     expect(
       getByTestId('RadioOptionRadioButtonUncheckedIcon')
-    ).toBeInTheDocument();
-    fireEvent.click(getByRole('button'));
-    expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument();
-  });
-});
+    ).toBeInTheDocument()
+  })
+  it('should render selected option', () => {
+    const { getByTestId } = renderWithStore(
+      <RadioOption
+        {...block}
+        key="question1"
+        selected={true}
+        disabled={false}
+      />
+    )
+    expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument()
+  })
+})
