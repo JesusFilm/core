@@ -35,9 +35,9 @@ export function RadioQuestion ({
 }: RadioQuestionType): ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
-  const [selectedId, setSelectedId] = useState<string>()
+  const [selectedId, setSelectedId] = useState<string>('')
 
-  const handleClick = (id: string, action: any): void => {
+  const handleClick = (id: string, action: string): void => {
     setSelectedId(id)
     dispatch(navigate(action))
   }
@@ -66,7 +66,8 @@ export function RadioQuestion ({
                   <RadioOption
                     {...option}
                     key={option.id}
-                    selectedId={selectedId}
+                    selected={selectedId !== ''}
+                    disabled={selectedId !== '' && selectedId !== option.id}
                     handleClick={handleClick}
                   />
                 )

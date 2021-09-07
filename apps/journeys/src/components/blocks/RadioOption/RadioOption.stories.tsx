@@ -20,17 +20,11 @@ const Demo = {
   ]
 }
 
-const Template: Story<RadioOptionType> = ({ ...props }) => (
-  <RadioOption {...props} selectedId="" />
+const DefaultTemplate: Story<RadioOptionType> = ({ ...props }) => (
+  <RadioOption {...props} selected={false} disabled={false} />
 )
 
-export const Primary = Template.bind({})
-Primary.args = {
-  __typename: 'RadioOption',
-  label: 'Label'
-}
-
-export const DefaultLabel = Template.bind({})
+export const DefaultLabel = DefaultTemplate.bind({})
 DefaultLabel.args = {
   id: 'NestedOptions',
   __typename: 'RadioOption',
@@ -40,7 +34,7 @@ DefaultLabel.args = {
   }
 }
 
-export const LongLabel = Template.bind({})
+export const LongLabel = DefaultTemplate.bind({})
 LongLabel.args = {
   id: 'NestedOptions2',
   __typename: 'RadioOption',
@@ -51,18 +45,22 @@ LongLabel.args = {
   }
 }
 
-const Template2: Story<RadioOptionType> = ({ ...props }) => (
-  <RadioOption {...props} selectedId="NestedOptions3" />
+const SelectedTemplate: Story<RadioOptionType> = ({ ...props }) => (
+  <RadioOption {...props} selected={true} disabled={false} />
 )
 
-export const SelectedLabel = Template2.bind({})
+export const SelectedLabel = SelectedTemplate.bind({})
 SelectedLabel.args = {
   id: 'NestedOptions3',
   __typename: 'RadioOption',
   label: 'Watch more video about Jesus'
 }
 
-export const DisabledLabel = Template2.bind({})
+const DisabledTemplate: Story<RadioOptionType> = ({ ...props }) => (
+  <RadioOption {...props} selected={false} disabled={true} />
+)
+
+export const DisabledLabel = DisabledTemplate.bind({})
 DisabledLabel.args = {
   id: 'NestedOptions4',
   __typename: 'RadioOption',

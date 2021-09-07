@@ -29,8 +29,9 @@ const useStyles = makeStyles(() => ({
 type RadioOptionProps = RadioOptionType & {
   id: string
   className?: string
-  selectedId: string | undefined
-  handleClick?: (selected: string, action: any) => void
+  selected: boolean
+  disabled: boolean
+  handleClick?: (selected: string, action: string | undefined) => void
 }
 
 export function RadioOption ({
@@ -38,41 +39,34 @@ export function RadioOption ({
   label,
   action,
   id,
-  selectedId,
+  disabled = false,
+  selected = false,
   handleClick
 }: RadioOptionProps): ReactElement {
   const classes = useStyles()
 
-  if (selectedId === id) {
-    return (
-      <Button
-        variant="contained"
-        className={compact([className, classes.buttonLabels]).join(' ')}
-        startIcon={
-          <CheckCircleIcon
+  return (
+    <Button
+      variant="contained"
+      className={compact([className, classes.buttonLabels]).join(' ')}
+      disabled={disabled}
+      onClick={() => handleClick(id, action)}
+      startIcon={
+        selected && !disabled
+          ? (
+            <CheckCircleIcon
             data-testid="RadioOptionCheckCircleIcon"
             className={classes.highlightIcon}
           />
-        }
-      >
-        {label}
-      </Button>
-    )
-  } else {
-    return (
-      <Button
-        variant="contained"
-        className={compact([className, classes.buttonLabels]).join(' ')}
-        disabled={selectedId !== id && !!selectedId}
-        onClick={() => handleClick(id, action)}
-        startIcon={
-          <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
-        }
-      >
-        {label}
-      </Button>
-    )
-  }
+            )
+          : (
+            <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
+            )
+      }
+    >
+      {label}
+    </Button>
+  )
 }
 
 export default RadioOption

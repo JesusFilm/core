@@ -11,14 +11,24 @@ const block: RadioOptionType = {
 describe('RadioOption', () => {
   it('should render option props', () => {
     const { getByText } = renderWithStore(
-      <RadioOption {...block} key="question1" selectedId="" />
+      <RadioOption
+        {...block}
+        key="question1"
+        selected={false}
+        disabled={false}
+      />
     )
     expect(getByText(block.label)).toBeInTheDocument()
   })
 
   it('should handle click', () => {
     const { getByTestId, getByRole } = renderWithStore(
-      <RadioOption {...block} key="question1" selectedId="" />
+      <RadioOption
+        {...block}
+        key="question1"
+        selected={true}
+        disabled={false}
+      />
     )
     expect(
       getByTestId('RadioOptionRadioButtonUncheckedIcon')

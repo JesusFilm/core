@@ -25,21 +25,6 @@ const Template: Story<RadioQuestionType> = ({ ...props }) => (
   <RadioQuestion {...props} />
 )
 
-export const Primary = Template.bind({})
-Primary.args = {
-  id: 'id',
-  label: 'Label',
-  description: 'Description',
-  children: [
-    RadioOption.Primary.args,
-    RadioOption.Primary.args,
-    RadioOption.Primary.args
-  ],
-  parent: {
-    id: 'parentId'
-  }
-}
-
 export const Secondary = Template.bind({})
 Secondary.args = {
   id: 'MoreQuestions',
