@@ -18,7 +18,7 @@ const options = [
   },
   {
     __typename: 'RadioOption',
-    label: 'Watch more vidoes aout Jesus',
+    label: 'Watch more videos about Jesus',
     id: 'Question3',
     parent: { id: 'MoreQuestions' }
   },
@@ -60,7 +60,6 @@ const DefaultTemplate: Story<RadioQuestionType> = ({ ...props }) => (
 export const DefaultQuestion = DefaultTemplate.bind({})
 DefaultQuestion.args = {
   id: 'MoreQuestions',
-  __typename: 'RadioQuestion',
   label: 'How can we help you know more about Jesus?',
   description:
     'What do you think would be the next step to help you grow in your relationship with Jesus?',
@@ -73,7 +72,6 @@ DefaultQuestion.args = {
 export const LongOptions = DefaultTemplate.bind({})
 LongOptions.args = {
   id: 'MoreQuestions',
-  __typename: 'RadioQuestion',
   label: 'Have you accepted Jesus in your life?',
   description:
     'Have you declared that you want to accept Jesus in your life as your Lord and savior?',
@@ -83,7 +81,6 @@ LongOptions.args = {
 export const DarkBackground = DefaultTemplate.bind({})
 DarkBackground.args = {
   id: 'AnotherQuestion',
-  __typename: 'RadioQuestion',
   label: 'Dark Background',
   description: 'Testing to see if the dark background is working',
   variant: 'dark',
