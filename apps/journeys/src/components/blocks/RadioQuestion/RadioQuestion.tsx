@@ -66,7 +66,7 @@ export function RadioQuestion ({
                   <RadioOption
                     {...option}
                     key={option.id}
-                    selected={selectedId !== ''}
+                    selected={selectedId === option.id}
                     disabled={selectedId !== '' && selectedId !== option.id}
                     handleClick={handleClick}
                   />

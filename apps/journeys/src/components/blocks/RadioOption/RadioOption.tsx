@@ -56,7 +56,7 @@ export function RadioOption ({
         }
       }}
       startIcon={
-        selected && !disabled
+        selected
           ? (
             <CheckCircleIcon
             data-testid="RadioOptionCheckCircleIcon"
