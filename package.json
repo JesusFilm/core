@@ -25,7 +25,8 @@
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
   },
   "private": true,
   "dependencies": {
@@ -77,6 +78,7 @@
     "@nrwl/web": "12.7.2",
     "@nrwl/workspace": "12.6.3",
     "@nx-tools/nx-prisma": "^1.0.1",
+    "@storybook/addon-a11y": "^6.3.7",
     "@storybook/addon-essentials": "~6.3.0",
     "@storybook/react": "~6.3.0",
     "@svgr/webpack": "^5.4.0",
@@ -112,6 +114,7 @@
     "eslint-plugin-react": "7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest": "27.0.3",
+    "pg": "^8.7.1",
     "prettier": "^2.3.1",
     "prisma": "^2.28.0",
     "ts-jest": "27.0.3",

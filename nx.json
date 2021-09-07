@@ -43,7 +43,8 @@
       "implicitDependencies": ["journeys"]
     },
     "shared-storybook": {
-      "tags": []
+      "tags": [],
+      "implicitDependencies": ["journeys"]
     },
     "shared-util-graphql": {
       "tags": []

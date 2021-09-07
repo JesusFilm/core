@@ -101,6 +101,19 @@
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
         },
+        "rollback": {
+          "builder": "@nx-tools/nx-prisma:rollback",
+          "options": {
+            "schema": "apps/api-journeys/prisma/schema.prisma"
+          }
+        },
+        "seed": {
+          "builder": "@nx-tools/nx-prisma:seed",
+          "options": {
+            "script": "apps/api-journeys/prisma/seed.ts",
+            "tsConfig": "apps/api-journeys/tsconfig.app.json"
+          }
+        },
         "codegen": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
