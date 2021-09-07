@@ -37,7 +37,7 @@ export function RadioQuestion ({
   const dispatch = useAppDispatch()
   const [selectedId, setSelectedId] = useState<string>('')
 
-  const handleClick = (id: string, action: string): void => {
+  const handleClick = (id: string, action: string | undefined): void => {
     setSelectedId(id)
     dispatch(navigate(action))
   }

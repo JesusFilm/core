@@ -31,7 +31,7 @@ type RadioOptionProps = RadioOptionType & {
   className?: string
   selected?: boolean
   disabled?: boolean
-  handleClick?: (selected: string, action: string | undefined) => void
+  handleClick?: (selected: string, action?: string) => void
 }
 
 export function RadioOption ({
@@ -50,7 +50,11 @@ export function RadioOption ({
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
       disabled={disabled}
-      onClick={() => handleClick(id, action)}
+      onClick={() => {
+        if (handleClick !== undefined) {
+          handleClick(id, action)
+        }
+      }}
       startIcon={
         selected && !disabled
           ? (
