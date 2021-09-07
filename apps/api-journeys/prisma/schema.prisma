@@ -15,4 +15,24 @@ model Journey {
   id        String  @id @default(uuid())
   title     String
   published Boolean @default(false)
+  blocks    Block[]
+}
+
+model Block {
+  id            String    @id @default(uuid())
+  blockType     BlockType @default(StepBlock)
+  journey       Journey   @relation(fields: [journeyId], references: [id])
+  journeyId     String
+  parentBlock   Block?    @relation("BlockChildren", fields: [parentBlockId], references: [id])
+  parentBlockId String?
+  childBlocks   Block[]   @relation("BlockChildren")
+  extraAttrs    Json?
+  parentOrder   Int       @default(0)
+}
+
+enum BlockType {
+  StepBlock
+  VideoBlock
+  RadioQuestionBlock
+  RadioOptionBlock
 }
