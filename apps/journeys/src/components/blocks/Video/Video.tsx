@@ -6,7 +6,7 @@ import { RadioQuestion } from '../RadioQuestion/'
 
 export const Video = (block: VideoType): ReactElement => {
   const videoJsOptions = {
-    autoplay: true,
+    autoplay: 'muted',
     controls: true,
     volume: 0,
     initialLoad: true,

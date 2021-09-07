@@ -1,6 +1,11 @@
 import { renderWithStore } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
-import { RadioOptionType, RadioQuestionType, StepType, VideoType } from '../../types'
+import {
+  RadioOptionType,
+  RadioQuestionType,
+  StepType,
+  VideoType
+} from '../../types'
 
 describe('BlockRenderer', () => {
   it('should render RadioOption', () => {
@@ -27,11 +32,13 @@ describe('BlockRenderer', () => {
     const block: StepType = {
       __typename: 'Step',
       id: 'main',
-      children: [{
-        __typename: 'RadioQuestion',
-        id: 'main',
-        label: 'radio question'
-      }]
+      children: [
+        {
+          __typename: 'RadioQuestion',
+          id: 'main',
+          label: 'radio question'
+        }
+      ]
     }
     const { getByText } = renderWithStore(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
@@ -41,9 +48,13 @@ describe('BlockRenderer', () => {
     const block: VideoType = {
       __typename: 'Video',
       id: 'main',
-      src: 'https://www.youtube.com'
+      sources: [
+        {
+          src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+        }
+      ]
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
-    expect(getByText('Render Video Here')).toBeInTheDocument()
+    const { getByTestId } = renderWithStore(<BlockRenderer {...block} />)
+    expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })

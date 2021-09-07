@@ -36,4 +36,48 @@ Default.args = {
   }
 }
 
+export const ComponentOverlay = Template.bind({})
+ComponentOverlay.args = {
+  __typename: 'Video',
+  id: 'Video1',
+  sources: [
+    {
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }
+  ],
+  children: [
+    {
+      __typename: 'RadioQuestion',
+      id: 'Question1',
+      label: 'Label',
+      description: 'Description',
+      variant: 'light',
+      parent: {
+        id: 'Video1'
+      },
+      children: [
+        {
+          __typename: 'RadioOption',
+          id: 'Option1',
+          label: 'Chat Privately',
+          parent: {
+            id: 'Question1'
+          }
+        },
+        {
+          __typename: 'RadioOption',
+          id: 'Option1',
+          label: 'Get a bible',
+          parent: {
+            id: 'Question1'
+          }
+        }
+      ]
+    }
+  ],
+  parent: {
+    id: 'Step1'
+  }
+}
+
 export default Demo as Meta
