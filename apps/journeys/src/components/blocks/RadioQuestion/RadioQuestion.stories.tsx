@@ -90,4 +90,17 @@ LongOptions.args = {
   children: longLabel
 }
 
+export const DarkBackground = DefaultTemplate.bind({})
+DarkBackground.args = {
+  id: 'AnotherQuestion',
+  __typename: 'RadioQuestion',
+  label: 'Dark Background',
+  description: 'Testing to see if the dark background is working',
+  variant: 'dark',
+  children: options,
+  parent: {
+    id: 'AStep'
+  }
+}
+
 export default Demo as Meta
