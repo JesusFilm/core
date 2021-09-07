@@ -5,6 +5,6 @@
     "module": "commonjs",
     "types": ["node", "express"]
   },
-  "exclude": ["**/*.spec.ts", "setupTests.ts"],
+  "exclude": ["**/*.spec.ts", "tests/*.ts"],
   "include": ["**/*.ts"]
 }

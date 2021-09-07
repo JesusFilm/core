@@ -1,12 +1,13 @@
-import db from './src/lib/db'
+import db from '../src/lib/db'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 
-dotenv.config({ path: path.resolve(__dirname, '.env') })
+dotenv.config({ path: path.resolve(__dirname, '../.env') })
 
 const truncate = async (): Promise<void> => {
-  const tablenames: Array<{ tablename: string}> = await db.$queryRaw(
-    'SELECT tablename FROM pg_tables WHERE schemaname=\'public\''
+  const schema = process.env.SCHEMA != null ? process.env.SCHEMA : ''
+  const tablenames: Array<{ tablename: string }> = await db.$queryRaw(
+    `SELECT tablename FROM pg_tables WHERE schemaname='${schema}'`
   )
 
   await tablenames.map(async ({ tablename }) => {
@@ -15,7 +16,7 @@ const truncate = async (): Promise<void> => {
     }
 
     return await db.$queryRaw(
-      `TRUNCATE TABLE public."${tablename}" CASCADE;`
+      `TRUNCATE TABLE "${schema}"."${tablename}" CASCADE;`
     )
   })
 }
