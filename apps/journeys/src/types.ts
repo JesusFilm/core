@@ -19,7 +19,7 @@ export interface RadioQuestionType extends BaseBlockType {
   __typename: 'RadioQuestion'
   label: string
   description?: string
-  action: string
+  action?: string
   variant?: 'light' | 'dark'
 }
 
