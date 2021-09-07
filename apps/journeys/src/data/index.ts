@@ -8,7 +8,9 @@ export const data1: BlockType[] = [
   {
     __typename: 'Video',
     id: 'Video1',
-    src: 'https://media.vimejs.com/720p.mp4',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster: 'https://media.vimejs.com/poster.png',
     parent: {
       id: 'Step1'
@@ -48,7 +50,9 @@ export const data1: BlockType[] = [
   {
     __typename: 'Video',
     id: 'Video2',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster:
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
     parent: {
@@ -77,7 +81,9 @@ export const data2: BlockType[] = [
   {
     __typename: 'Video',
     id: 'Root Video',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster:
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
   },
@@ -97,6 +103,14 @@ export const data2: BlockType[] = [
     parent: {
       id: 'MoreQuestions'
     }
+  },
+  {
+    __typename: 'RadioOption',
+    id: 'NestedOptions2',
+    label: 'I want to watch more videos',
+    parent: {
+      id: 'MoreQuestions'
+    }
   }
 ]
 
@@ -108,7 +122,9 @@ export const data3: BlockType[] = [
   {
     __typename: 'Video',
     id: 'A Video',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster:
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
     parent: {

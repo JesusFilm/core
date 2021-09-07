@@ -72,16 +72,12 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
       player.current = videojs(videoNode.current, {
         ...initialOptions,
         ...options
-      }).ready(() => {
-        console.log('Ready', this)
+      })
+      player.current.on('ready', () => {
+        console.log('Ready')
       })
     }
-    return () => {
-      if (player.current != null) {
-        player.current.dispose()
-      }
-    }
-  }, [options])
+  }, [options, videoNode])
 
   return (
     <Container className={classes.container}>

@@ -1,72 +1,33 @@
 import React, { ReactElement } from 'react'
 import { VideoPlayer } from './VideoPlayer'
 import { Container } from '@material-ui/core'
+import { VideoType } from '../../../types'
 import { RadioQuestion } from '../RadioQuestion/'
 
-const data = {
-  __typename: 'RadioQuestion',
-  id: 'MoreQuestions',
-  label: 'How can we help you know more about Jesus?',
-  description:
-    'What do you think would be the next step to help you grow in your relationship with Jesus?',
-  variant: 'light',
-  parent: {
-    id: 'Step1'
-  },
-  children: [
-    {
-      __typename: 'RadioOption',
-      id: 'NestedOptions',
-      label: 'Chat Privately',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    },
-    {
-      __typename: 'RadioOption',
-      id: 'NestedOptions2',
-      label: 'Get a bible',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    },
-    {
-      __typename: 'RadioOption',
-      id: 'NestedOptions3',
-      label: 'Watch more vidoes about Jesus',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    },
-    {
-      __typename: 'RadioOption',
-      id: 'NestedOptions4',
-      label: 'Ask a question',
-      parent: {
-        id: 'MoreQuestions'
-      }
-    }
-  ]
-}
-
-export const Video = () => {
+export const Video = (block: VideoType): ReactElement => {
   const videoJsOptions = {
-    autoplay: 'muted',
+    autoplay: true,
     controls: true,
     volume: 0,
-    fullscreenToggle: true,
-    fullscreenOnDoubleClick: true,
+    initialLoad: true,
     sources: [
       {
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+        src: block.sources[0].src
       }
     ]
   }
 
   return (
-    <Container>
+    <Container data-testid="VideoComponent" maxWidth="md">
       <VideoPlayer options={videoJsOptions}>
-        <RadioQuestion {...data} />
+        {block.children != null
+          ? block.children?.map(
+            (question) =>
+              question.__typename === 'RadioQuestion' && (
+              <RadioQuestion {...question} key={question.id} />
+              )
+          )
+          : null}
       </VideoPlayer>
     </Container>
   )

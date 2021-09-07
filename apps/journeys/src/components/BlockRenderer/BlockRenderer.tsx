@@ -11,7 +11,7 @@ export function BlockRenderer (block: BlockType): ReactElement {
     case 'Step':
       return <Step {...block} />
     case 'Video':
-      return <Video />
+      return <Video {...block} />
   }
 }
 
