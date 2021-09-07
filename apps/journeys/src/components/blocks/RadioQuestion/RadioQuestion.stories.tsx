@@ -1,9 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { RadioQuestionType } from '../../../types'
 import { RadioQuestion } from './RadioQuestion'
-import { Provider } from 'react-redux'
-import { configureStoreWithState, RootState } from '../../../libs/store/store'
-import { PreloadedState } from 'redux'
+import { journeysConfig } from '../../../libs/storybook/decorators'
 
 const options = [
   {
@@ -49,18 +47,10 @@ const longLabel = [
   }
 ]
 
-let preloadedState: PreloadedState<RootState>
-
 const Demo = {
+  ...journeysConfig,
   component: RadioQuestion,
-  title: 'Journeys/Blocks/RadioQuestion',
-  decorators: [
-    (Story) => (
-      <Provider store={configureStoreWithState(preloadedState)}>
-        <Story />
-      </Provider>
-    )
-  ]
+  title: 'Journeys/Blocks/RadioQuestion'
 }
 
 const DefaultTemplate: Story<RadioQuestionType> = ({ ...props }) => (

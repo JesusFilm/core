@@ -29,8 +29,8 @@ const useStyles = makeStyles(() => ({
 type RadioOptionProps = RadioOptionType & {
   id: string
   className?: string
-  selected: boolean
-  disabled: boolean
+  selected?: boolean
+  disabled?: boolean
   handleClick?: (selected: string, action: string | undefined) => void
 }
 
