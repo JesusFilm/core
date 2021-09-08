@@ -2,10 +2,8 @@ import { RadioOptionType } from '../../../types'
 import { Button, makeStyles } from '@material-ui/core'
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { compact } from 'lodash'
-import { useAppDispatch } from '../../../libs/store/store'
-import { navigate } from '../../Conductor/conductorSlice'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -16,6 +14,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: 700,
     lineHeight: 1.4,
     textTransform: 'none',
+    textAlign: 'start',
     justifyContent: 'flex-start'
   },
   light: {
@@ -28,39 +27,50 @@ const useStyles = makeStyles(() => ({
 }))
 
 type RadioOptionProps = RadioOptionType & {
+  id: string
   className?: string
+  selected?: boolean
+  disabled?: boolean
+  handleClick?: (selected: string, action?: string) => void
 }
 
-export function RadioOption ({ className, label, action }: RadioOptionProps): ReactElement {
+export function RadioOption ({
+  className,
+  label,
+  action,
+  id,
+  disabled = false,
+  selected = false,
+  handleClick
+}: RadioOptionProps): ReactElement {
   const classes = useStyles()
-  const dispatch = useAppDispatch()
-  const [selected, setSelected] = useState(false)
 
-  const handleClick = (): void => {
-    setSelected(true)
-    dispatch(navigate(action))
-  }
-
-  if (selected) {
-    return <Button
+  return (
+    <Button
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
-      startIcon={<CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" className={classes.highlightIcon} />}
+      disabled={disabled}
+      onClick={() => {
+        if (handleClick !== undefined) {
+          handleClick(id, action)
+        }
+      }}
+      startIcon={
+        selected
+          ? (
+            <CheckCircleIcon
+            data-testid="RadioOptionCheckCircleIcon"
+            className={classes.highlightIcon}
+          />
+            )
+          : (
+            <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
+            )
+      }
     >
       {label}
     </Button>
-  } else {
-    return (
-      <Button
-      variant="contained"
-      className={compact([className, classes.buttonLabels]).join(' ')}
-      onClick={handleClick}
-      startIcon={<RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />}
-    >
-        {label}
-      </Button>
-    )
-  }
+  )
 }
 
 export default RadioOption

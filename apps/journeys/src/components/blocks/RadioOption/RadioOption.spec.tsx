@@ -8,20 +8,20 @@ const block: RadioOptionType = {
   label: 'This is a test question 2!'
 }
 
-describe('RadioOption', () => {
-  it('should render option props', () => {
-    const { getByText } = renderWithStore(
-      <RadioOption {...block} />
-    )
-    expect(getByText(block.label)).toBeInTheDocument()
-  })
+const handleClick = jest.fn()
 
-  it('should handle click', () => {
-    const { getByTestId, getByRole } = renderWithStore(
-      <RadioOption {...block} />
+describe('RadioOption', () => {
+  it('should handle onClick', () => {
+    const { getByRole } = renderWithStore(
+      <RadioOption
+        {...block}
+        key="question"
+        selected={false}
+        disabled={false}
+        handleClick={handleClick}
+      />
     )
-    expect(getByTestId('RadioOptionRadioButtonUncheckedIcon')).toBeInTheDocument()
     fireEvent.click(getByRole('button'))
-    expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument()
+    expect(handleClick).toBeCalledWith(block.id, block.action)
   })
 })

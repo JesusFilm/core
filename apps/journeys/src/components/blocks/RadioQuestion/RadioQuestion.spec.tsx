@@ -1,4 +1,4 @@
-import { renderWithStore } from '../../../../test/testingLibrary'
+import { fireEvent, renderWithStore } from '../../../../test/testingLibrary'
 import { RadioQuestionType } from '../../../types'
 import { RadioQuestion } from '.'
 
@@ -27,14 +27,30 @@ describe('RadioQuestion', () => {
     expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-light')
   })
 
-  it('should render options', () => {
+  it('should display the correct options', () => {
     const { getByText } = renderWithStore(<RadioQuestion {...block} />)
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
   })
 
-  it('should render dark them', () => {
-    const { getByTestId } = renderWithStore(<RadioQuestion {...block} variant="dark" />)
-    expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-dark')
+  it('should select an option OnClick', () => {
+    const { getByTestId, getAllByRole } = renderWithStore(<RadioQuestion {...block}/>)
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    expect(buttons[0]).not.toBeDisabled()
+    expect(buttons[0]).toContainElement(getByTestId('RadioOptionCheckCircleIcon'))
+  })
+
+  it('should disable unselected options', () => {
+    const { getByTestId, getAllByRole } = renderWithStore(
+      <RadioQuestion {...block} />
+    )
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    expect(getByTestId('RadioOptionRadioButtonUncheckedIcon')).toBeInTheDocument()
+    expect(buttons[1]).toBeDisabled()
+    expect(buttons[1]).toContainElement(getByTestId('RadioOptionRadioButtonUncheckedIcon'))
+    fireEvent.click(buttons[1])
+    expect(buttons[1]).toBeDisabled()
   })
 })
