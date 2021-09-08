@@ -15,7 +15,11 @@ describe('Conductor', () => {
               id: 'Option1',
               label: 'Option 1',
               parentBlockId: 'Question1',
-              image: null,
+              action: {
+                __typename: 'NavigateAction',
+                gtmEventName: 'gtmEventName',
+                blockId: 'Question2'
+              },
               children: []
             }
           ],

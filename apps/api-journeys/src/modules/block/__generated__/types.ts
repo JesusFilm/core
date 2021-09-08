@@ -6,9 +6,13 @@ export namespace BlockModule {
     StepBlock: 'id' | 'parentBlockId';
     VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
-    RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'image';
+    NavigateAction: 'gtmEventName' | 'blockId';
+    NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
+    LinkAction: 'gtmEventName' | 'url' | 'target';
+    RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
     Journey: 'blocks';
     Block: 'id' | 'parentBlockId';
+    Action: 'gtmEventName';
   };
   
   interface DefinedEnumValues {
@@ -19,23 +23,34 @@ export namespace BlockModule {
   export type Journey = Types.Journey;
   export type Block = Pick<Types.Block, DefinedFields['Block']>;
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
-  export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type VideoProviderEnum = DefinedEnumValues['VideoProviderEnum'];
+  export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
+  export type Action = Pick<Types.Action, DefinedFields['Action']>;
+  export type NavigateAction = Pick<Types.NavigateAction, DefinedFields['NavigateAction']>;
+  export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
+  export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
+  export type NavigateActionResolvers = Pick<Types.NavigateActionResolvers, DefinedFields['NavigateAction'] | '__isTypeOf'>;
+  export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
+  export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
   export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
+  export type ActionResolvers = Pick<Types.ActionResolvers, DefinedFields['Action']>;
   
   export interface Resolvers {
     StepBlock?: StepBlockResolvers;
     VideoBlock?: VideoBlockResolvers;
     RadioQuestionBlock?: RadioQuestionBlockResolvers;
+    NavigateAction?: NavigateActionResolvers;
+    NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
+    LinkAction?: LinkActionResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
     Journey?: JourneyResolvers;
   };
@@ -70,12 +85,28 @@ export namespace BlockModule {
       description?: gm.Middleware[];
       variant?: gm.Middleware[];
     };
+    NavigateAction?: {
+      '*'?: gm.Middleware[];
+      gtmEventName?: gm.Middleware[];
+      blockId?: gm.Middleware[];
+    };
+    NavigateToJourneyAction?: {
+      '*'?: gm.Middleware[];
+      gtmEventName?: gm.Middleware[];
+      journeyId?: gm.Middleware[];
+    };
+    LinkAction?: {
+      '*'?: gm.Middleware[];
+      gtmEventName?: gm.Middleware[];
+      url?: gm.Middleware[];
+      target?: gm.Middleware[];
+    };
     RadioOptionBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
-      image?: gm.Middleware[];
+      action?: gm.Middleware[];
     };
   };
 }

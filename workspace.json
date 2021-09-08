@@ -153,7 +153,7 @@
           "options": {
             "commands": [
               {
-                "command": "npx rover subgraph introspect http://127.0.0.1:4001/graphql > apps/api-journeys/schema.graphql"
+                "command": "npx rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
               }
             ]
           }

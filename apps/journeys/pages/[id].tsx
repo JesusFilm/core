@@ -44,7 +44,19 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (c
             }
             ... on RadioOptionBlock {
               label
-              image
+              action {
+                __typename
+                gtmEventName
+                ... on NavigateAction {
+                  blockId
+                }
+                ... on NavigateToJourneyAction {
+                  journeyId
+                }
+                ... on LinkAction {
+                  url
+                }
+              }
             }
           }
         }

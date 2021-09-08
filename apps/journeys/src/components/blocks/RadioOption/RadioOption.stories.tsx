@@ -10,12 +10,41 @@ const Demo = {
   title: 'Journeys/Blocks/RadioOption'
 }
 
-const Template: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => <RadioOption {...props} />
+const DefaultTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
+  <RadioOption {...props} selected={false} disabled={false} />
+)
 
-export const Primary = Template.bind({})
-Primary.args = {
-  __typename: 'RadioOptionBlock',
-  label: 'Label'
+export const Default = DefaultTemplate.bind({})
+Default.args = {
+  id: 'NestedOptions',
+  label: 'Chat Privately'
+}
+
+export const Long = DefaultTemplate.bind({})
+Long.args = {
+  id: 'NestedOptions2',
+  label:
+    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the '
+}
+
+const SelectedTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
+  <RadioOption {...props} selected={true} disabled={false} />
+)
+
+export const Selected = SelectedTemplate.bind({})
+Selected.args = {
+  id: 'NestedOptions3',
+  label: 'Watch more videos about Jesus'
+}
+
+const DisabledTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
+  <RadioOption {...props} selected={false} disabled={true} />
+)
+
+export const Disabled = DisabledTemplate.bind({})
+Disabled.args = {
+  id: 'NestedOptions4',
+  label: 'Ask a question'
 }
 
 export default Demo as Meta

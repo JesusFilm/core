@@ -29,16 +29,36 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   label: string;
-  description: string;
+  description: string | null;
   variant: RadioQuestionVariant | null;
 }
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journeyId: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   label: string;
-  image: string | null;
+  action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock;

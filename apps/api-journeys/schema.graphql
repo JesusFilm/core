@@ -1,3 +1,7 @@
+interface Action {
+  gtmEventName: String
+}
+
 interface Block {
   id: ID!
   parentBlockId: ID
@@ -10,9 +14,25 @@ type Journey @key(fields: "id") {
   blocks: [Block!]
 }
 
+type LinkAction implements Action {
+  gtmEventName: String
+  url: String!
+  target: String
+}
+
 extend type Mutation {
   journeyCreate(title: String!): Journey!
   journeyPublish(id: ID!): Journey
+}
+
+type NavigateAction implements Action {
+  gtmEventName: String
+  blockId: String!
+}
+
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String
+  journeyId: String!
 }
 
 extend type Query {
@@ -24,14 +44,14 @@ type RadioOptionBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
-  image: String
+  action: Action
 }
 
 type RadioQuestionBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
-  description: String!
+  description: String
   variant: RadioQuestionVariant
 }
 
