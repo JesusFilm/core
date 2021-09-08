@@ -6,19 +6,32 @@ describe('Conductor', () => {
     const { getByText } = renderWithStore(
       <Conductor blocks={[
         {
-          __typename: 'RadioQuestion',
+          __typename: 'RadioQuestionBlock',
           id: 'Question1',
           label: 'Question 1',
           children: [
             {
-              __typename: 'RadioOption',
+              __typename: 'RadioOptionBlock',
               id: 'Option1',
               label: 'Option 1',
-              action: 'Question2'
+              parentBlockId: 'Question1',
+              image: null,
+              children: []
             }
-          ]
+          ],
+          parentBlockId: null,
+          description: 'description',
+          variant: null
         },
-        { __typename: 'RadioQuestion', id: 'Question2', label: 'Question 2' }
+        {
+          __typename: 'RadioQuestionBlock',
+          id: 'Question2',
+          label: 'Question 2',
+          children: [],
+          parentBlockId: null,
+          description: 'description',
+          variant: null
+        }
       ]} />
     )
     fireEvent.click(getByText('Option 1'))

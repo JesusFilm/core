@@ -1,4 +1,3 @@
-import { RadioOptionType } from '../../../types'
 import { Button, makeStyles } from '@material-ui/core'
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
@@ -6,6 +5,8 @@ import { ReactElement, useState } from 'react'
 import { compact } from 'lodash'
 import { useAppDispatch } from '../../../libs/store/store'
 import { navigate } from '../../Conductor/conductorSlice'
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -27,18 +28,18 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-type RadioOptionProps = RadioOptionType & {
+type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
   className?: string
 }
 
-export function RadioOption ({ className, label, action }: RadioOptionProps): ReactElement {
+export function RadioOption ({ className, label }: RadioOptionProps): ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const [selected, setSelected] = useState(false)
 
   const handleClick = (): void => {
     setSelected(true)
-    dispatch(navigate(action))
+    dispatch(navigate())
   }
 
   if (selected) {

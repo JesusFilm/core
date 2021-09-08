@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { RadioQuestionType } from '../../../types'
 import { RadioQuestion } from './RadioQuestion'
+import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 import * as RadioOption from '../RadioOption/RadioOption.stories'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 
@@ -10,7 +11,7 @@ const Demo = {
   title: 'Journeys/Blocks/RadioQuestion'
 }
 
-const Template: Story<RadioQuestionType> = ({ ...props }) => <RadioQuestion {...props} />
+const Template: Story<TreeBlock<RadioQuestionBlock>> = ({ ...props }) => <RadioQuestion {...props} />
 
 export const Primary = Template.bind({})
 Primary.args = {

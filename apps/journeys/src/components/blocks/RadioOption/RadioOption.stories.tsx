@@ -1,7 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { RadioOptionType } from '../../../types'
 import RadioOption from './RadioOption'
 import { journeysConfig } from '../../../libs/storybook/decorators'
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 
 const Demo = {
   ...journeysConfig,
@@ -9,11 +10,11 @@ const Demo = {
   title: 'Journeys/Blocks/RadioOption'
 }
 
-const Template: Story<RadioOptionType> = ({ ...props }) => <RadioOption {...props} />
+const Template: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => <RadioOption {...props} />
 
 export const Primary = Template.bind({})
 Primary.args = {
-  __typename: 'RadioOption',
+  __typename: 'RadioOptionBlock',
   label: 'Label'
 }
 

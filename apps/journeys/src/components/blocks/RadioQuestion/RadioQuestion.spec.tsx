@@ -1,25 +1,33 @@
 import { renderWithStore } from '../../../../test/testingLibrary'
-import { RadioQuestionType } from '../../../types'
 import { RadioQuestion } from '.'
-
-const block: RadioQuestionType = {
-  __typename: 'RadioQuestion',
-  id: 'RadioQuestion1',
-  label: 'Label',
-  description: 'Description',
-  variant: 'light',
-  children: [{
-    __typename: 'RadioOption',
-    id: 'RadioOption1',
-    label: 'Option 1'
-  }, {
-    __typename: 'RadioOption',
-    id: 'RadioOption2',
-    label: 'Option 2'
-  }]
-}
-
+import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 describe('RadioQuestion', () => {
+  const block: TreeBlock<RadioQuestionBlock> = {
+    __typename: 'RadioQuestionBlock',
+    id: 'RadioQuestion1',
+    label: 'Label',
+    description: 'Description',
+    variant: RadioQuestionVariant.LIGHT,
+    parentBlockId: 'RadioQuestion1',
+    children: [{
+      __typename: 'RadioOptionBlock',
+      id: 'RadioOption1',
+      label: 'Option 1',
+      parentBlockId: 'RadioQuestion1',
+      image: null,
+      children: []
+    }, {
+      __typename: 'RadioOptionBlock',
+      id: 'RadioOption2',
+      label: 'Option 2',
+      parentBlockId: 'RadioQuestion1',
+      image: null,
+      children: []
+    }]
+  }
+
   it('should render question props', () => {
     const { getByText, getByTestId } = renderWithStore(<RadioQuestion {...block} />)
     expect(getByText('Label')).toBeInTheDocument()
@@ -34,7 +42,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should render dark them', () => {
-    const { getByTestId } = renderWithStore(<RadioQuestion {...block} variant="dark" />)
+    const { getByTestId } = renderWithStore(<RadioQuestion {...block} variant={RadioQuestionVariant.DARK} />)
     expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-dark')
   })
 })

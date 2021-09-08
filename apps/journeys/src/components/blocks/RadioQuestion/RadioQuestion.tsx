@@ -8,8 +8,10 @@ import {
   makeStyles,
   createStyles
 } from '@material-ui/core'
-import { RadioQuestionType } from '../../../types'
 import { RadioOption } from '../RadioOption'
+import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 
 const useStyles = makeStyles(() => createStyles({
   light: {
@@ -25,15 +27,15 @@ export function RadioQuestion ({
   label,
   description,
   children,
-  variant = 'light'
-}: RadioQuestionType): ReactElement {
+  variant = RadioQuestionVariant.LIGHT
+}: TreeBlock<RadioQuestionBlock>): ReactElement {
   const classes = useStyles()
 
   return (
     <Container maxWidth="sm">
       <Card
           data-testid="RadioQuestionCard"
-          className={variant === 'dark' ? classes.dark : classes.light}
+          className={variant === RadioQuestionVariant.DARK ? classes.dark : classes.light}
         >
         <CardContent>
           <Typography variant="h1" gutterBottom>
@@ -49,7 +51,7 @@ export function RadioQuestion ({
             >
             {children?.map(
               (option) =>
-                option.__typename === 'RadioOption' && (
+                option.__typename === 'RadioOptionBlock' && (
                   <RadioOption {...option} key={option.id} />
                 )
             )}
