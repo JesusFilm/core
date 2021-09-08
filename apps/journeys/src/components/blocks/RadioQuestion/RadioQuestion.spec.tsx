@@ -37,7 +37,8 @@ describe('RadioQuestion', () => {
     const { getByTestId, getAllByRole } = renderWithStore(<RadioQuestion {...block}/>)
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument()
+    expect(buttons[0]).not.toBeDisabled()
+    expect(buttons[0]).toContainElement(getByTestId('RadioOptionCheckCircleIcon'))
   })
 
   it('should disable unselected options', () => {
@@ -48,6 +49,7 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     expect(getByTestId('RadioOptionRadioButtonUncheckedIcon')).toBeInTheDocument()
     expect(buttons[1]).toBeDisabled()
+    expect(buttons[1]).toContainElement(getByTestId('RadioOptionRadioButtonUncheckedIcon'))
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
   })
