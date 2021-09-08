@@ -1,5 +1,5 @@
 import { RadioOption } from './RadioOption'
-import { renderWithStore } from '../../../../test/testingLibrary'
+import { fireEvent, renderWithStore } from '../../../../test/testingLibrary'
 import { RadioOptionType } from '../../../types'
 
 const block: RadioOptionType = {
@@ -8,40 +8,20 @@ const block: RadioOptionType = {
   label: 'This is a test question 2!'
 }
 
+const handleClick = jest.fn()
+
 describe('RadioOption', () => {
-  it('should render option props', () => {
-    const { getByText } = renderWithStore(
+  it('should handle onClick', () => {
+    const { getByRole } = renderWithStore(
       <RadioOption
         {...block}
-        key="question1"
+        key="question"
         selected={false}
         disabled={false}
+        handleClick={handleClick}
       />
     )
-    expect(getByText(block.label)).toBeInTheDocument()
-  })
-  it('should render an unselected option', () => {
-    const { getByTestId } = renderWithStore(
-      <RadioOption
-        {...block}
-        key="question1"
-        selected={false}
-        disabled={false}
-      />
-    )
-    expect(
-      getByTestId('RadioOptionRadioButtonUncheckedIcon')
-    ).toBeInTheDocument()
-  })
-  it('should render selected option', () => {
-    const { getByTestId } = renderWithStore(
-      <RadioOption
-        {...block}
-        key="question1"
-        selected={true}
-        disabled={false}
-      />
-    )
-    expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
+    expect(handleClick).toBeCalledWith(block.id, block.action)
   })
 })
