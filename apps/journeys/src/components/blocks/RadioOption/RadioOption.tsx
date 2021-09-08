@@ -1,7 +1,8 @@
 import { RadioOptionType } from '../../../types'
-import { Button, makeStyles } from '@material-ui/core'
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import { Button } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { ReactElement } from 'react'
 import { compact } from 'lodash'
 

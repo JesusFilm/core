@@ -1,13 +1,6 @@
 import { ReactElement, useState } from 'react'
-import {
-  Typography,
-  Container,
-  Card,
-  CardContent,
-  ButtonGroup,
-  makeStyles,
-  createStyles
-} from '@material-ui/core'
+import { Typography, Container, Card, CardContent, ButtonGroup } from '@mui/material'
+import { makeStyles, createStyles } from '@mui/styles'
 import { RadioQuestionType } from '../../../types'
 import { RadioOption } from '../RadioOption'
 import { useAppDispatch } from '../../../libs/store/store'
