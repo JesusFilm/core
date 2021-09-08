@@ -9,24 +9,25 @@ interface BaseBlockType {
   __typename: TypeName
 }
 
-export type RadioOptionType = BaseBlockType & {
+export interface RadioOptionType extends BaseBlockType {
   __typename: 'RadioOption'
   label: string
   image?: string
 }
 
-export type RadioQuestionType = BaseBlockType & {
+export interface RadioQuestionType extends BaseBlockType {
   __typename: 'RadioQuestion'
   label: string
   description?: string
+  action?: string
   variant?: 'light' | 'dark'
 }
 
-export type StepType = BaseBlockType & {
+export interface StepType extends BaseBlockType {
   __typename: 'Step'
 }
 
-export type VideoType = BaseBlockType & {
+export interface VideoType extends BaseBlockType {
   __typename: 'Video'
   src: string
   poster?: string
