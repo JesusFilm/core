@@ -34,6 +34,20 @@
             "buildTarget": "api-gateway:build"
           }
         },
+        "serve-all": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "nx serve api-journeys"
+              },
+              {
+                "command": "sleep 10; nx serve api-gateway"
+              }
+            ],
+            "parallel": true
+          }
+        },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
@@ -188,6 +202,16 @@
             "ci": {
               "quiet": true
             }
+          }
+        },
+        "codegen": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
+              }
+            ]
           }
         }
       }
