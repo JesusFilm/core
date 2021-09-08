@@ -5,7 +5,7 @@ import { BlockType } from '../src/types'
 import { data1, data2, data3 } from '../src/data'
 import transformer from '../src/libs/transformer'
 import { useRouter } from 'next/dist/client/router'
-import { Container, Typography } from '@material-ui/core'
+import { Container, Typography } from '@mui/material'
 import { Provider } from 'react-redux'
 import { store } from '../src/libs/store/store'
 
