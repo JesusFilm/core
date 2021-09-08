@@ -1,7 +1,9 @@
-import { ApolloGateway } from '@apollo/gateway'
+import { EnvironmentConfig } from './types'
+import { readFileSync } from 'fs'
 
-export const gateway = new ApolloGateway({
-  serviceList: [
-    { name: 'journeys', url: 'http://localhost:4001/graphql' }
-  ]
-})
+export const config: EnvironmentConfig = {
+  production: false,
+  gatewayConfig: {
+    supergraphSdl: readFileSync('./apps/api-gateway/schema.graphql').toString()
+  }
+}

@@ -3,8 +3,8 @@ module.exports = {
     includes: ['./pages/**', './src/**'],
     excludes: ['./**/*.test.tsx'],
     service: {
-      name: 'api',
-      url: 'http://localhost:4000'
+      name: 'api-gateway',
+      localSchemaFile: './../api-gateway/schema.graphql'
     }
   }
 }

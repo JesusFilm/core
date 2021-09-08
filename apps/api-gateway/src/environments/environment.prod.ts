@@ -1,3 +1,6 @@
-import { ApolloGateway } from '@apollo/gateway'
+import { EnvironmentConfig } from './types'
 
-export const gateway = new ApolloGateway({})
+export const config: EnvironmentConfig = {
+  production: true,
+  gatewayConfig: {}
+}
