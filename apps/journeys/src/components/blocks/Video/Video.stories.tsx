@@ -80,4 +80,94 @@ ComponentOverlay.args = {
   }
 }
 
+export const EventHandlers = Template.bind({})
+EventHandlers.args = {
+  __typename: 'Video',
+  id: 'Video1',
+  sources: [
+    {
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }
+  ],
+  children: [
+    {
+      __typename: 'OnTimeReached',
+      id: '3seconds',
+      secondsWatched: 3,
+      parent: {
+        id: 'Video1'
+      },
+      children: [
+        {
+          __typename: 'RadioQuestion',
+          id: 'Question3seconds',
+          description: 'Question appears after 3 seconds',
+          variant: 'light',
+          parent: {
+            id: 'Video1'
+          },
+          children: [
+            {
+              __typename: 'RadioOption',
+              id: 'Option113',
+              label: 'Chat maybe',
+              parent: {
+                id: 'Question1'
+              }
+            },
+            {
+              __typename: 'RadioOption',
+              id: 'Option1224',
+              label: 'Get a thing',
+              parent: {
+                id: 'Question1'
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      __typename: 'OnVideoPaused',
+      id: 'onPause',
+      action: 'showChildren',
+      parent: {
+        id: 'Video1'
+      },
+      children: [
+        {
+          __typename: 'RadioQuestion',
+          id: 'Question1puased',
+          description: 'Question appears on pause',
+          variant: 'light',
+          parent: {
+            id: 'Video1'
+          },
+          children: [
+            {
+              __typename: 'RadioOption',
+              id: 'Option11',
+              label: 'Chat Privately',
+              parent: {
+                id: 'Question1'
+              }
+            },
+            {
+              __typename: 'RadioOption',
+              id: 'Option122',
+              label: 'Get a bible',
+              parent: {
+                id: 'Question1'
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  parent: {
+    id: 'Step1'
+  }
+}
+
 export default Demo as Meta

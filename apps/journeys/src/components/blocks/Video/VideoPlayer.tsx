@@ -15,7 +15,7 @@ const useStyles = makeStyles(() =>
       top: 0,
       left: 0,
       width: '100%',
-      height: '100%',
+      height: 'calc(100% - 30px)',
       justifyContent: 'center',
       alignItems: 'center',
       overflow: 'hidden'
@@ -25,6 +25,7 @@ const useStyles = makeStyles(() =>
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions
+  onReady?: (player: undefined | videojs.Player) => void
 }
 
 const initialOptions: videojs.PlayerOptions = {
@@ -61,6 +62,7 @@ const initialOptions: videojs.PlayerOptions = {
 
 export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   options,
+  onReady,
   children
 }) => {
   const classes = useStyles()
@@ -74,15 +76,19 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
         ...options
       })
       player.current.on('ready', () => {
-        console.log('Ready')
+        onReady?.(player.current)
       })
     }
-  }, [options, videoNode])
+  }, [options, videoNode, onReady])
 
   return (
     <Container className={classes.container}>
       <video ref={videoNode} className="video-js" />
-      <Container className={classes.overlayHolder}>{children}</Container>
+      {children != null
+        ? (<Container className={classes.overlayHolder}>
+          {children as unknown as JSX.Element}
+        </Container>)
+        : null}
     </Container>
   )
 }

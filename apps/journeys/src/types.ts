@@ -34,7 +34,16 @@ export type VideoType = BaseBlockType & {
   poster?: string
 }
 
-export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType
+export type OnTimeReachedType = BaseBlockType & {
+  __typename: 'OnTimeReached'
+  secondsWatched: number
+}
+
+export type OnVideoPausedType = BaseBlockType & {
+  __typename: 'OnVideoPaused'
+}
+
+export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType | OnTimeReachedType | OnVideoPausedType
 
 export type NextStepProps = (id?: string) => void
 export interface GoTo {
