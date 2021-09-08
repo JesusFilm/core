@@ -57,8 +57,8 @@ const DefaultTemplate: Story<RadioQuestionType> = ({ ...props }) => (
   <RadioQuestion {...props} />
 )
 
-export const DefaultQuestion = DefaultTemplate.bind({})
-DefaultQuestion.args = {
+export const Default = DefaultTemplate.bind({})
+Default.args = {
   id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
   description:
@@ -69,8 +69,8 @@ DefaultQuestion.args = {
   }
 }
 
-export const LongOptions = DefaultTemplate.bind({})
-LongOptions.args = {
+export const Long = DefaultTemplate.bind({})
+Long.args = {
   id: 'MoreQuestions',
   label: 'Have you accepted Jesus in your life?',
   description:
@@ -78,8 +78,8 @@ LongOptions.args = {
   children: longLabel
 }
 
-export const DarkBackground = DefaultTemplate.bind({})
-DarkBackground.args = {
+export const Dark = DefaultTemplate.bind({})
+Dark.args = {
   id: 'AnotherQuestion',
   label: 'Dark Background',
   description: 'Testing to see if the dark background is working',

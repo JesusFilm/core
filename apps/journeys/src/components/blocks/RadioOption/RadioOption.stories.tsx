@@ -13,8 +13,8 @@ const DefaultTemplate: Story<RadioOptionType> = ({ ...props }) => (
   <RadioOption {...props} selected={false} disabled={false} />
 )
 
-export const DefaultLabel = DefaultTemplate.bind({})
-DefaultLabel.args = {
+export const Default = DefaultTemplate.bind({})
+Default.args = {
   id: 'NestedOptions',
   label: 'Chat Privately',
   parent: {
@@ -22,8 +22,8 @@ DefaultLabel.args = {
   }
 }
 
-export const LongLabel = DefaultTemplate.bind({})
-LongLabel.args = {
+export const Long = DefaultTemplate.bind({})
+Long.args = {
   id: 'NestedOptions2',
   label:
     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the ',
@@ -36,18 +36,18 @@ const SelectedTemplate: Story<RadioOptionType> = ({ ...props }) => (
   <RadioOption {...props} selected={true} disabled={false} />
 )
 
-export const SelectedLabel = SelectedTemplate.bind({})
-SelectedLabel.args = {
+export const Selected = SelectedTemplate.bind({})
+Selected.args = {
   id: 'NestedOptions3',
-  label: 'Watch more video about Jesus'
+  label: 'Watch more videos about Jesus'
 }
 
 const DisabledTemplate: Story<RadioOptionType> = ({ ...props }) => (
   <RadioOption {...props} selected={false} disabled={true} />
 )
 
-export const DisabledLabel = DisabledTemplate.bind({})
-DisabledLabel.args = {
+export const Disabled = DisabledTemplate.bind({})
+Disabled.args = {
   id: 'NestedOptions4',
   label: 'Ask a question'
 }
