@@ -1,4 +1,3 @@
-import { RadioOptionType } from '../../../types'
 import { Button } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'

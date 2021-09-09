@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
-import { Container } from '@material-ui/core'
+import { Container } from '@mui/material'
 import { Provider } from 'react-redux'
 import { store } from '../src/libs/store/store'
 import { GetServerSideProps } from 'next'
