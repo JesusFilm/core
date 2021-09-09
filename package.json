@@ -30,6 +30,7 @@
   },
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.4.10",
     "@apollo/federation": "^0.29.0",
     "@apollo/gateway": "^0.38.0",
     "@material-ui/core": "^4.12.3",
@@ -43,7 +44,7 @@
     "core-js": "^3.6.5",
     "express": "4.17.1",
     "fastify": "^3.20.2",
-    "graphql": "^15.5.1",
+    "graphql": "^15.5.3",
     "graphql-modules": "^1.4.4",
     "lodash": "^4.17.21",
     "next": "11.1.0",
@@ -55,9 +56,11 @@
     "redux-devtools-extension": "^2.13.9",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
+    "subscriptions-transport-ws": "^0.10.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
+    "@apollo/rover": "^0.2.0",
     "@babel/core": "7.12.13",
     "@babel/preset-typescript": "7.12.13",
     "@graphql-codegen/add": "^3.0.0",
@@ -96,6 +99,7 @@
     "@types/react-router-dom": "5.1.7",
     "@typescript-eslint/eslint-plugin": "~4.28.3",
     "@typescript-eslint/parser": "~4.28.3",
+    "apollo": "^2.33.6",
     "babel-jest": "27.0.6",
     "babel-loader": "8.1.0",
     "chromatic": "^5.9.2",

@@ -1,28 +1,23 @@
-type Node<T> = T & {
-  children: Array<Node<T>>
+import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
+
+export type TreeBlock<T = Block> = T & {
+  children: TreeBlock[]
 }
 
-interface Item {
-  id: string
-  parent?: {
-    id: string
-  }
-}
-
-export default function transformer<T extends Item> (data: T[]): Array<Node<T>> {
-  const tree: Array<Node<T>> = []
-  const childrenOf: Record<string, Array<Node<T>> | undefined> = {}
+export default function transformer (data: Block[]): TreeBlock[] {
+  const tree: TreeBlock[] = []
+  const childrenOf: Record<string, TreeBlock[] | undefined> = {}
   data.forEach((item) => {
-    const newNode: Node<T> = {
+    const newNode: TreeBlock = {
       ...item,
       children: []
     }
-    const { id, parent } = item
+    const { id, parentBlockId } = item
     childrenOf[id] ||= []
-    newNode.children = childrenOf[id] as Array<Node<T>>
-    if (parent != null) {
-      childrenOf[parent.id] ||= []
-      childrenOf[parent.id]?.push(newNode)
+    newNode.children = childrenOf[id] as TreeBlock[]
+    if (parentBlockId != null) {
+      childrenOf[parentBlockId] ||= []
+      childrenOf[parentBlockId]?.push(newNode)
     } else {
       tree.push(newNode)
     }
