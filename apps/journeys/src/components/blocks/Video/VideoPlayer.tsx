@@ -1,5 +1,5 @@
 import videojs from 'video.js'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Container, makeStyles, createStyles } from '@material-ui/core'
 
 import 'video.js/dist/video-js.css'
@@ -68,6 +68,8 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   const classes = useStyles()
   const videoNode = useRef<HTMLVideoElement>(null)
   const player = useRef<videojs.Player>()
+  const [isReady, setIsReady] = useState<boolean | undefined>()
+  const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   useEffect(() => {
     if (videoNode.current != null) {
@@ -77,9 +79,19 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
       })
       player.current.on('ready', () => {
         onReady?.(player.current)
+        setIsReady(true)
       })
+      player.current.on('autoplay-success', () => setAutoplaySuccess(true))
     }
   }, [options, videoNode, onReady])
+
+  useEffect(() => {
+    if ((isReady === true) && (initialOptions.autoplay === true) && !autoPlaySuccess && (navigator.userAgent.match(/Firefox/i) != null)) {
+      player.current?.defaultMuted(true)
+      player.current?.setAttribute('autoplay', '')
+      player.current?.play()
+    }
+  }, [player, isReady, autoPlaySuccess])
 
   return (
     <Container className={classes.container}>
