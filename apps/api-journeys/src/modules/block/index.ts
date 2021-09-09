@@ -30,7 +30,7 @@ const typeDefs = gql`
     src: String!
     title: String!
     description: String
-    provider: VideoProviderEnum
+    provider: VideoProviderEnum!
   }
 
   enum RadioQuestionVariant {
