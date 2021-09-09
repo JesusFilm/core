@@ -1,49 +1,63 @@
 import { Story, Meta } from '@storybook/react'
-import { RadioQuestionType } from '../../../types'
+import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock, GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
 import { journeysConfig } from '../../../libs/storybook/decorators'
+import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 
-const options = [
+const options: Array<TreeBlock<RadioOptionBlock>> = [
   {
-    __typename: 'RadioOption',
+    __typename: 'RadioOptionBlock',
     label: 'Chat Privately',
     id: 'Question1',
-    parent: { id: 'MoreQuestions' }
+    parentBlockId: 'MoreQuestions',
+    action: null,
+    children: []
   },
   {
-    __typename: 'RadioOption',
+    __typename: 'RadioOptionBlock',
     label: 'Get a bible',
     id: 'Question2',
-    parent: { id: 'MoreQuestions' }
+    parentBlockId: 'MoreQuestions',
+    action: null,
+    children: []
   },
   {
-    __typename: 'RadioOption',
+    __typename: 'RadioOptionBlock',
     label: 'Watch more videos about Jesus',
     id: 'Question3',
-    parent: { id: 'MoreQuestions' }
+    parentBlockId: 'MoreQuestions',
+    action: null,
+    children: []
   },
   {
-    __typename: 'RadioOption',
+    __typename: 'RadioOptionBlock',
     label: 'Ask a question',
     id: 'Question4',
-    parent: { id: 'MoreQuestions' }
+    parentBlockId: 'MoreQuestions',
+    action: null,
+    children: []
   }
 ]
 
-const longLabel = [
+const longLabel: Array<TreeBlock<RadioOptionBlock>> = [
   {
-    __typename: 'RadioOption',
+    __typename: 'RadioOptionBlock',
     label:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
     id: 'Question1',
-    parent: { id: 'MoreQuestions' }
+    parentBlockId: 'MoreQuestions',
+    action: null,
+    children: []
   },
   {
-    __typename: 'RadioOption',
+    __typename: 'RadioOptionBlock',
     label:
       'when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting',
     id: 'Question2',
-    parent: { id: 'MoreQuestions' }
+    parentBlockId: 'MoreQuestions',
+    action: null,
+    children: []
   }
 ]
 
@@ -53,23 +67,21 @@ const Demo = {
   title: 'Journeys/Blocks/RadioQuestion'
 }
 
-const DefaultTemplate: Story<RadioQuestionType> = ({ ...props }) => (
+const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({ ...props }) => (
   <RadioQuestion {...props} />
 )
 
-export const Default = DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
   description:
     'What do you think would be the next step to help you grow in your relationship with Jesus?',
   children: options,
-  parent: {
-    id: 'Step1'
-  }
+  parentBlockId: 'Step1'
 }
 
-export const Long = DefaultTemplate.bind({})
+export const Long: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
 Long.args = {
   id: 'MoreQuestions',
   label: 'Have you accepted Jesus in your life?',
@@ -78,16 +90,14 @@ Long.args = {
   children: longLabel
 }
 
-export const Dark = DefaultTemplate.bind({})
+export const Dark: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
 Dark.args = {
   id: 'AnotherQuestion',
   label: 'Dark Background',
   description: 'Testing to see if the dark background is working',
-  variant: 'dark',
+  variant: RadioQuestionVariant.DARK,
   children: options,
-  parent: {
-    id: 'AStep'
-  }
+  parentBlockId: 'AStep'
 }
 
 export default Demo as Meta
