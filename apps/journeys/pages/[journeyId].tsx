@@ -7,17 +7,17 @@ import { store } from '../src/libs/store/store'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
-import { GetJourney, GetJourney_journey } from '../__generated__/GetJourney'
+import { GetJourney, GetJourney_journey as Journey } from '../__generated__/GetJourney'
 
 interface JourneyPageProps {
-  journey: GetJourney_journey | null
+  journey: Journey
 }
 
 function JourneyPage ({ journey }: JourneyPageProps): ReactElement {
   return (
     <Container>
       <Provider store={store}>
-        {((journey?.blocks) != null) && <Conductor blocks={transformer(journey?.blocks)} />}
+        {(journey.blocks != null) && <Conductor blocks={transformer(journey.blocks)} />}
       </Provider>
     </Container>
   )
@@ -63,13 +63,19 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (c
       }
     `,
     variables: {
-      id: context.query.id
+      id: context.query.journeyId
     }
   })
 
-  return {
-    props: {
-      journey: data.journey
+  if (data.journey === null) {
+    return {
+      notFound: true
+    }
+  } else {
+    return {
+      props: {
+        journey: data.journey
+      }
     }
   }
 }
