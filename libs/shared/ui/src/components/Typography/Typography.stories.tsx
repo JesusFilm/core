@@ -1,12 +1,14 @@
-import { Story, Meta } from '@storybook/react';
-import { Typography, TypographyProps } from './Typography';
+import { Story, Meta } from '@storybook/react'
+import { Typography, TypographyProps } from './Typography'
 
-export default {
+const TypographyDemo = {
   component: Typography,
-  title: 'shared-ui/Typography',
-} as Meta;
+  title: 'shared-ui/Typography'
+}
 
-const Template: Story<TypographyProps> = (args) => <Typography {...args} />;
+const Template: Story<TypographyProps> = (args) => <Typography {...args} />
 
-export const Primary = Template.bind({});
-Primary.args = {};
+export const Primary = Template.bind({})
+Primary.args = {}
+
+export default TypographyDemo as Meta
