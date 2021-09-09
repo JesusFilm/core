@@ -17,7 +17,8 @@ async function main (): Promise<void> {
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 0
     }
   })
   await prisma.block.create({
@@ -46,7 +47,8 @@ async function main (): Promise<void> {
   const stepWhenNo = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 1
     }
   })
   await prisma.block.create({
@@ -67,7 +69,8 @@ async function main (): Promise<void> {
   const stepWhenIamNotSure = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 2
     }
   })
   await prisma.block.create({
@@ -88,7 +91,8 @@ async function main (): Promise<void> {
   const stepWhenIamTrying = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 3
     }
   })
   await prisma.block.create({
@@ -109,7 +113,8 @@ async function main (): Promise<void> {
   const stepWhenIFollowAnotherFaith = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 4
     }
   })
   await prisma.block.create({
@@ -130,7 +135,8 @@ async function main (): Promise<void> {
   const stepWhenIWantToStart = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 5
     }
   })
   await prisma.block.create({
@@ -151,7 +157,8 @@ async function main (): Promise<void> {
   const stepWhenIAmAlreadyFollowingYou = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'StepBlock'
+      blockType: 'StepBlock',
+      parentOrder: 6
     }
   })
   await prisma.block.create({
