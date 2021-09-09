@@ -52,6 +52,14 @@
           "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "apps/api-journeys/.serverless"
+          },
+          "configurations": {
+            "production": {
+              "serviceStage": "prod"
+            },
+            "preprod": {
+              "serviceStage": "preprod"
+            }
           }
         },
         "serve": {
