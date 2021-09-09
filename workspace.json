@@ -4,6 +4,74 @@
     "api-gateway": {
       "root": "apps/api-gateway",
       "sourceRoot": "apps/api-gateway/src",
+<<<<<<< HEAD
+=======
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/api-gateway",
+            "main": "apps/api-gateway/src/main.ts",
+            "tsConfig": "apps/api-gateway/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/api-gateway/src/environments/environment.ts",
+                  "with": "apps/api-gateway/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "api-gateway:build"
+          }
+        },
+        "serve-all": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "nx serve api-journeys"
+              },
+              {
+                "command": "sleep 10; nx serve api-gateway"
+              }
+            ],
+            "parallel": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+          }
+        },
+        "generate-graphql": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx rover supergraph compose --config apps/api-gateway/supergraph.yml > apps/api-gateway/schema.graphql"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "api-journeys": {
+      "root": "apps/api-journeys",
+      "sourceRoot": "apps/api-journeys/src",
+>>>>>>> origin/main
       "projectType": "application",
       "targets": {
         "build": {
@@ -104,6 +172,19 @@
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
         },
+        "rollback": {
+          "builder": "@nx-tools/nx-prisma:rollback",
+          "options": {
+            "schema": "apps/api-journeys/prisma/schema.prisma"
+          }
+        },
+        "seed": {
+          "builder": "@nx-tools/nx-prisma:seed",
+          "options": {
+            "script": "apps/api-journeys/prisma/seed.ts",
+            "tsConfig": "apps/api-journeys/tsconfig.app.json"
+          }
+        },
         "codegen": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
@@ -113,18 +194,35 @@
               }
             ]
           }
+        },
+        "generate-graphql": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+              }
+            ]
+          }
         }
       }
     },
+<<<<<<< HEAD
     "api-journeys-1": {
       "root": "apps/api-journeys-1",
       "sourceRoot": "apps/api-journeys-1/src",
+=======
+    "journeys": {
+      "root": "apps/journeys",
+      "sourceRoot": "apps/journeys",
+>>>>>>> origin/main
       "projectType": "application",
       "targets": {
         "build": {
-          "executor": "@nrwl/node:build",
+          "executor": "@nrwl/next:build",
           "outputs": ["{options.outputPath}"],
           "options": {
+<<<<<<< HEAD
             "outputPath": "dist/apps/api-journeys-1",
             "main": "apps/api-journeys-1/src/main.ts",
             "tsConfig": "apps/api-journeys-1/tsconfig.app.json"
@@ -140,18 +238,50 @@
                   "with": "apps/api-journeys-1/src/environments/environment.prod.ts"
                 }
               ]
-            }
+=======
+            "root": "apps/journeys",
+            "outputPath": "dist/apps/journeys"
+          },
+          "configurations": {
+            "production": {}
           }
         },
         "serve": {
-          "executor": "@nrwl/node:execute",
+          "executor": "@nrwl/next:server",
           "options": {
+            "buildTarget": "journeys:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "journeys:build:production",
+              "dev": false
+>>>>>>> origin/main
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+<<<<<<< HEAD
             "buildTarget": "api-journeys-1:build"
+=======
+            "buildTarget": "journeys:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/journeys"],
+          "options": {
+            "jestConfig": "apps/journeys/jest.config.js",
+            "passWithNoTests": true
+>>>>>>> origin/main
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
+<<<<<<< HEAD
             "lintFilePatterns": ["apps/api-journeys-1/**/*.ts"]
           }
         },
@@ -173,6 +303,24 @@
           "executor": "@nx-tools/nx-prisma:migrations",
           "options": {
             "schema": "apps/api-journeys-1/prisma/schema.prisma"
+=======
+            "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+>>>>>>> origin/main
           }
         },
         "codegen": {
@@ -180,9 +328,79 @@
           "options": {
             "commands": [
               {
+<<<<<<< HEAD
                 "command": "npx graphql-codegen --config apps/api-journeys-1/codegen.yml"
               }
             ]
+=======
+                "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "journeys-e2e": {
+      "root": "apps/journeys-e2e",
+      "sourceRoot": "apps/journeys-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/journeys-e2e/cypress.json",
+            "tsConfig": "apps/journeys-e2e/tsconfig.e2e.json",
+            "devServerTarget": "journeys:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "journeys:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "shared-storybook": {
+      "root": "libs/shared/storybook",
+      "sourceRoot": "libs/shared/storybook/src",
+      "projectType": "library",
+      "targets": {
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        },
+        "build-storybook": {
+          "executor": "@nrwl/storybook:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "uiFramework": "@storybook/react",
+            "outputPath": "dist/storybook/shared-storybook",
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+>>>>>>> origin/main
           }
         }
       }
@@ -212,5 +430,21 @@
   "cli": {
     "defaultCollection": "@nrwl/express"
   },
-  "defaultProject": "api-journeys"
+  "defaultProject": "api-journeys",
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint"
+      }
+    }
+  }
 }

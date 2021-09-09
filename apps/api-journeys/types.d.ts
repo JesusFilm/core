@@ -6,4 +6,9 @@ declare global {
       db: PrismaClient
     }
   }
+  namespace NodeJS {
+    interface Global {
+      db: PrismaClient
+    }
+  }
 }

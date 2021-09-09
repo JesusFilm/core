@@ -14,11 +14,28 @@ export type Scalars = {
   Float: number;
 };
 
+export type Action = {
+  gtmEventName?: Maybe<Scalars['String']>;
+};
+
+export type Block = {
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+};
+
 export type Journey = {
   __typename?: 'Journey';
+  blocks?: Maybe<Array<Block>>;
   id: Scalars['ID'];
   published: Scalars['Boolean'];
   title: Scalars['String'];
+};
+
+export type LinkAction = Action & {
+  __typename?: 'LinkAction';
+  gtmEventName?: Maybe<Scalars['String']>;
+  target?: Maybe<Scalars['String']>;
+  url: Scalars['String'];
 };
 
 export type Mutation = {
@@ -37,16 +54,70 @@ export type MutationJourneyPublishArgs = {
   id: Scalars['ID'];
 };
 
+export type NavigateAction = Action & {
+  __typename?: 'NavigateAction';
+  blockId: Scalars['String'];
+  gtmEventName?: Maybe<Scalars['String']>;
+};
+
+export type NavigateToJourneyAction = Action & {
+  __typename?: 'NavigateToJourneyAction';
+  gtmEventName?: Maybe<Scalars['String']>;
+  journeyId: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
-  journeys: Array<Journey>;
   journey?: Maybe<Journey>;
+  journeys: Array<Journey>;
 };
 
 
 export type QueryJourneyArgs = {
   id: Scalars['ID'];
 };
+
+export type RadioOptionBlock = Block & {
+  __typename?: 'RadioOptionBlock';
+  action?: Maybe<Action>;
+  id: Scalars['ID'];
+  label: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+};
+
+export type RadioQuestionBlock = Block & {
+  __typename?: 'RadioQuestionBlock';
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  label: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  variant?: Maybe<RadioQuestionVariant>;
+};
+
+export type RadioQuestionVariant =
+  | 'DARK'
+  | 'LIGHT';
+
+export type StepBlock = Block & {
+  __typename?: 'StepBlock';
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+};
+
+export type VideoBlock = Block & {
+  __typename?: 'VideoBlock';
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  provider?: Maybe<VideoProviderEnum>;
+  src: Scalars['String'];
+  title: Scalars['String'];
+};
+
+export type VideoProviderEnum =
+  | 'ARCLIGHT'
+  | 'VIMEO'
+  | 'YOUTUBE';
 
 
 
@@ -117,28 +188,67 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Journey: ResolverTypeWrapper<Journey>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Action: ResolversTypes['LinkAction'] | ResolversTypes['NavigateAction'] | ResolversTypes['NavigateToJourneyAction'];
+  Block: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'];
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  String: ResolverTypeWrapper<Scalars['String']>;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Journey: ResolverTypeWrapper<Journey>;
+  LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
+  NavigateAction: ResolverTypeWrapper<NavigateAction>;
+  NavigateToJourneyAction: ResolverTypeWrapper<NavigateToJourneyAction>;
   Query: ResolverTypeWrapper<{}>;
+  RadioOptionBlock: ResolverTypeWrapper<RadioOptionBlock>;
+  RadioQuestionBlock: ResolverTypeWrapper<RadioQuestionBlock>;
+  RadioQuestionVariant: RadioQuestionVariant;
+  StepBlock: ResolverTypeWrapper<StepBlock>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  VideoBlock: ResolverTypeWrapper<VideoBlock>;
+  VideoProviderEnum: VideoProviderEnum;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Journey: Journey;
-  ID: Scalars['ID'];
+  Action: ResolversParentTypes['LinkAction'] | ResolversParentTypes['NavigateAction'] | ResolversParentTypes['NavigateToJourneyAction'];
+  Block: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['VideoBlock'];
   Boolean: Scalars['Boolean'];
-  String: Scalars['String'];
+  ID: Scalars['ID'];
+  Journey: Journey;
+  LinkAction: LinkAction;
   Mutation: {};
+  NavigateAction: NavigateAction;
+  NavigateToJourneyAction: NavigateToJourneyAction;
   Query: {};
+  RadioOptionBlock: RadioOptionBlock;
+  RadioQuestionBlock: RadioQuestionBlock;
+  StepBlock: StepBlock;
+  String: Scalars['String'];
+  VideoBlock: VideoBlock;
+};
+
+export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
+  __resolveType: TypeResolveFn<'LinkAction' | 'NavigateAction' | 'NavigateToJourneyAction', ParentType, ContextType>;
+  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
+export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
+  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'StepBlock' | 'VideoBlock', ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
+  blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['LinkAction'] = ResolversParentTypes['LinkAction']> = {
+  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -147,14 +257,68 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
 };
 
+export type NavigateActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateAction'] = ResolversParentTypes['NavigateAction']> = {
+  blockId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateToJourneyAction'] = ResolversParentTypes['NavigateToJourneyAction']> = {
+  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  journeyId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
+  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
+};
+
+export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioQuestionBlock'] = ResolversParentTypes['RadioQuestionBlock']> = {
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  variant?: Resolver<Maybe<ResolversTypes['RadioQuestionVariant']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['StepBlock'] = ResolversParentTypes['StepBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoBlock'] = ResolversParentTypes['VideoBlock']> = {
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  provider?: Resolver<Maybe<ResolversTypes['VideoProviderEnum']>, ParentType, ContextType>;
+  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = GraphQLModules.Context> = {
+  Action?: ActionResolvers<ContextType>;
+  Block?: BlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;
+  LinkAction?: LinkActionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  NavigateAction?: NavigateActionResolvers<ContextType>;
+  NavigateToJourneyAction?: NavigateToJourneyActionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RadioOptionBlock?: RadioOptionBlockResolvers<ContextType>;
+  RadioQuestionBlock?: RadioQuestionBlockResolvers<ContextType>;
+  StepBlock?: StepBlockResolvers<ContextType>;
+  VideoBlock?: VideoBlockResolvers<ContextType>;
 };
 

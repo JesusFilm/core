@@ -11,4 +11,6 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/api-journeys',
+  setupFilesAfterEnv: ['<rootDir>tests/setup.ts'],
+  testEnvironment: './tests/prismaEnvironment.ts',
 };
