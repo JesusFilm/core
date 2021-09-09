@@ -88,14 +88,6 @@ export const data2: BlockType[] = [
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
   },
   {
-    __typename: 'OnTimeReached',
-    id: '10Seconds',
-    secondsWatched: 10,
-    parent: {
-      id: 'Root Video'
-    }
-  },
-  {
     __typename: 'RadioQuestion',
     id: 'MoreQuestions',
     label: 'How are you today?',
@@ -137,14 +129,6 @@ export const data3: BlockType[] = [
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
     parent: {
       id: 'Step1'
-    }
-  },
-  {
-    __typename: 'OnVideoPaused',
-    id: 'onPause',
-    action: 'showChildren',
-    parent: {
-      id: 'A Video'
     }
   },
   {
