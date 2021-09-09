@@ -1,4 +1,4 @@
-export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video'
+export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video' | 'OnTimeReached' | 'OnVideoPaused'
 interface BaseBlockType {
   id: string
   parent?: {
@@ -29,9 +29,9 @@ export interface StepType extends BaseBlockType {
 
 export interface VideoType extends BaseBlockType {
   __typename: 'Video'
-  sources: [ {
+  sources: [{
     src: string
-  } ]
+  }]
   poster?: string
 }
 
