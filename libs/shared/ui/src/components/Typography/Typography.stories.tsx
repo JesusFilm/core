@@ -9,6 +9,8 @@ const TypographyDemo = {
 const Template: Story<TypographyProps> = (args) => <Typography {...args} />
 
 export const Primary = Template.bind({})
-Primary.args = {}
+Primary.args = {
+  content: 'hello world'
+}
 
 export default TypographyDemo as Meta
