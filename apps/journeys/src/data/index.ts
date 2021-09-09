@@ -140,6 +140,14 @@ export const data3: BlockType[] = [
     }
   },
   {
+    __typename: 'OnVideoPaused',
+    id: 'onPause',
+    action: 'showChildren',
+    parent: {
+      id: 'A Video'
+    }
+  },
+  {
     __typename: 'RadioQuestion',
     id: 'MoreQuestions',
     label: 'How can we help you know more about Jesus?',
@@ -147,7 +155,7 @@ export const data3: BlockType[] = [
       'What do you think would be the next step to help you grow in your relationship with Jesus?',
     variant: 'light',
     parent: {
-      id: 'Step1'
+      id: 'onPause'
     }
   },
   {
