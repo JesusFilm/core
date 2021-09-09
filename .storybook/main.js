@@ -5,10 +5,14 @@ const storiesForProject = {
     '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  "shared-ui": [
+    '../libs/shared/ui/src/components/**/*.stories.mdx',
+    '../libs/shared/ui/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+  ]
   // Add new UI projects here and in allStories
 };
 
-const allStories = [...storiesForProject["journeys"]]
+const allStories = [...storiesForProject["journeys"], ...storiesForProject["shared-ui"]]
 
 module.exports = {
   stories:
