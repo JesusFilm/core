@@ -3,6 +3,9 @@ import { Typography, Container, Card, CardContent, ButtonGroup } from '@mui/mate
 import { makeStyles, createStyles } from '@mui/styles'
 import { RadioQuestionType } from '../../../types'
 import { RadioOption } from '../RadioOption'
+import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock, GetJourney_journey_blocks_RadioOptionBlock_action as Action } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 import { useAppDispatch } from '../../../libs/store/store'
 import { navigate } from '../../Conductor/conductorSlice'
 
@@ -24,23 +27,25 @@ export function RadioQuestion ({
   label,
   description,
   children,
-  variant = 'light'
-}: RadioQuestionType): ReactElement {
+  variant = RadioQuestionVariant.LIGHT
+}: TreeBlock<RadioQuestionBlock>): ReactElement {
   const classes = useStyles()
   const dispatch = useAppDispatch()
   const [selectedId, setSelectedId] = useState<string>('')
 
-  const handleClick = (id: string, action: string | undefined): void => {
+  const handleClick = (id: string, action: Action | null): void => {
     setSelectedId(id)
-    dispatch(navigate(action))
+    if (action?.__typename === 'NavigateAction') {
+      dispatch(navigate(action.blockId))
+    }
   }
 
   return (
     <Container maxWidth="sm">
       <Card
-        data-testid="RadioQuestionCard"
-        className={variant === 'dark' ? classes.dark : classes.light}
-      >
+          data-testid="RadioQuestionCard"
+          className={variant === RadioQuestionVariant.DARK ? classes.dark : classes.light}
+        >
         <CardContent>
           <Typography variant="h1" gutterBottom>
             {label}
@@ -55,7 +60,7 @@ export function RadioQuestion ({
           >
             {children?.map(
               (option) =>
-                option.__typename === 'RadioOption' && (
+                option.__typename === 'RadioOptionBlock' && (
                   <RadioOption
                     {...option}
                     key={option.id}

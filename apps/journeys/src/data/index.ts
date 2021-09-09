@@ -8,7 +8,9 @@ export const data1: BlockType[] = [
   {
     __typename: 'Video',
     id: 'Video1',
-    src: 'https://media.vimejs.com/720p.mp4',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster: 'https://media.vimejs.com/poster.png',
     parent: {
       id: 'Step1'
@@ -48,7 +50,9 @@ export const data1: BlockType[] = [
   {
     __typename: 'Video',
     id: 'Video2',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster:
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
     parent: {
@@ -77,9 +81,19 @@ export const data2: BlockType[] = [
   {
     __typename: 'Video',
     id: 'Root Video',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster:
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80'
+  },
+  {
+    __typename: 'OnTimeReached',
+    id: '10Seconds',
+    secondsWatched: 10,
+    parent: {
+      id: 'Root Video'
+    }
   },
   {
     __typename: 'RadioQuestion',
@@ -87,13 +101,21 @@ export const data2: BlockType[] = [
     label: 'How are you today?',
     variant: 'dark',
     parent: {
-      id: 'Root Video'
+      id: '10Seconds'
     }
   },
   {
     __typename: 'RadioOption',
     id: 'NestedOptions',
     label: 'Chat Privately',
+    parent: {
+      id: 'MoreQuestions'
+    }
+  },
+  {
+    __typename: 'RadioOption',
+    id: 'NestedOptions2',
+    label: 'I want to watch more videos',
     parent: {
       id: 'MoreQuestions'
     }
@@ -108,11 +130,21 @@ export const data3: BlockType[] = [
   {
     __typename: 'Video',
     id: 'A Video',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    sources: [{
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    }],
     poster:
       'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80',
     parent: {
       id: 'Step1'
+    }
+  },
+  {
+    __typename: 'OnVideoPaused',
+    id: 'onPause',
+    action: 'showChildren',
+    parent: {
+      id: 'A Video'
     }
   },
   {
@@ -123,7 +155,7 @@ export const data3: BlockType[] = [
       'What do you think would be the next step to help you grow in your relationship with Jesus?',
     variant: 'light',
     parent: {
-      id: 'Step1'
+      id: 'onPause'
     }
   },
   {

@@ -23,7 +23,7 @@ if (require.main !== module) {
   // called directly i.e. "node app"
   init().then(async (server) => {
     try {
-      const result = await server.listen(3000)
+      const result = await server.listen(4001)
       console.log(`🚀  Server ready at ${result}/graphql`)
     } catch (err) {
       console.error(err)

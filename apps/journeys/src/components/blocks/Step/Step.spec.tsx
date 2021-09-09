@@ -1,18 +1,28 @@
 import { renderWithStore } from '../../../../test/testingLibrary'
-import { StepType } from '../../../types'
 import { Step } from '.'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 
-const block: StepType = {
-  __typename: 'Step',
+const block: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
   id: 'Step1',
+  parentBlockId: null,
   children: [{
-    __typename: 'RadioQuestion',
+    __typename: 'RadioQuestionBlock',
     id: 'Question1',
-    label: 'Question 1'
+    label: 'Question 1',
+    parentBlockId: 'Step1',
+    description: 'question description',
+    variant: null,
+    children: []
   }, {
-    __typename: 'RadioQuestion',
+    __typename: 'RadioQuestionBlock',
     id: 'Question2',
-    label: 'Question 2'
+    label: 'Question 2',
+    parentBlockId: 'Step1',
+    description: 'question description',
+    variant: null,
+    children: []
   }]
 }
 

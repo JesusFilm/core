@@ -1,0 +1,108 @@
+schema
+  @core(feature: "https://specs.apollo.dev/core/v0.1"),
+  @core(feature: "https://specs.apollo.dev/join/v0.1")
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @core(feature: String!) repeatable on SCHEMA
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet) on FIELD_DEFINITION
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on OBJECT | INTERFACE
+
+directive @join__owner(graph: join__Graph!) on OBJECT | INTERFACE
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+interface Action {
+  gtmEventName: String
+}
+
+interface Block {
+  id: ID!
+  parentBlockId: ID
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
+}
+
+type Journey
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  blocks: [Block!] @join__field(graph: JOURNEYS)
+  id: ID! @join__field(graph: JOURNEYS)
+  published: Boolean! @join__field(graph: JOURNEYS)
+  title: String! @join__field(graph: JOURNEYS)
+}
+
+type LinkAction implements Action {
+  gtmEventName: String
+  target: String
+  url: String!
+}
+
+type Mutation {
+  journeyCreate(title: String!): Journey! @join__field(graph: JOURNEYS)
+  journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+}
+
+type NavigateAction implements Action {
+  blockId: String!
+  gtmEventName: String
+}
+
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String
+  journeyId: String!
+}
+
+type Query {
+  journey(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeys: [Journey!]! @join__field(graph: JOURNEYS)
+}
+
+type RadioOptionBlock implements Block {
+  action: Action
+  id: ID!
+  label: String!
+  parentBlockId: ID
+}
+
+type RadioQuestionBlock implements Block {
+  description: String
+  id: ID!
+  label: String!
+  parentBlockId: ID
+  variant: RadioQuestionVariant
+}
+
+enum RadioQuestionVariant {
+  DARK
+  LIGHT
+}
+
+type StepBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+}
+
+type VideoBlock implements Block {
+  description: String
+  id: ID!
+  parentBlockId: ID
+  provider: VideoProviderEnum
+  src: String!
+  title: String!
+}
+
+enum VideoProviderEnum {
+  ARCLIGHT
+  VIMEO
+  YOUTUBE
+}

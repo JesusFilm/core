@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { BlockType } from '../../types'
+import { TreeBlock } from '../../libs/transformer/transformer'
 
 // Define a type for the slice state
 export interface ConductorState {
-  active?: BlockType
-  blocks: BlockType[]
+  active?: TreeBlock
+  blocks: TreeBlock[]
 }
 
 // Define the initial state using that type
@@ -16,7 +16,7 @@ export const conductorSlice = createSlice({
   name: 'conductor',
   initialState,
   reducers: {
-    setBlocks: (state, action: PayloadAction<BlockType[]>) => {
+    setBlocks: (state, action: PayloadAction<TreeBlock[]>) => {
       state.blocks = action.payload
       state.active = action.payload[0]
     },

@@ -1,4 +1,4 @@
-export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video'
+export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video' | 'OnTimeReached' | 'OnVideoPaused'
 interface BaseBlockType {
   id: string
   parent?: {
@@ -29,11 +29,22 @@ export interface StepType extends BaseBlockType {
 
 export interface VideoType extends BaseBlockType {
   __typename: 'Video'
-  src: string
+  sources: [{
+    src: string
+  }]
   poster?: string
 }
 
-export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType
+export type OnTimeReachedType = BaseBlockType & {
+  __typename: 'OnTimeReached'
+  secondsWatched: number
+}
+
+export type OnVideoPausedType = BaseBlockType & {
+  __typename: 'OnVideoPaused'
+}
+
+export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType | OnTimeReachedType | OnVideoPausedType
 
 export type NextStepProps = (id?: string) => void
 export interface GoTo {
