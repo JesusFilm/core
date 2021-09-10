@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { Button, ButtonProps } from '.'
-import { ButtonVariant, ButtonColor, ButtonSize } from './buttonTypes'
+import { ButtonVariant, ColorType, SizeType } from './buttonTypes'
 
 const ButtonDemo = {
   component: Button,
@@ -48,7 +48,7 @@ const ColorTemplate: Story<ButtonStoryProps> = (args) => (
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Button label={`${variant}`} color={variant as ButtonColor} variant="contained"/>
+      <Button label={`${variant}`} color={variant as ColorType} variant="contained"/>
     ))}
   </div>
 )
@@ -64,7 +64,7 @@ const SizeTemplate: Story<ButtonStoryProps> = (args) => (
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Button label={`${variant}`} size={variant as ButtonSize} variant="outlined"/>
+      <Button label={`${variant}`} size={variant as SizeType} variant="outlined"/>
     ))}
   </div>
 )
