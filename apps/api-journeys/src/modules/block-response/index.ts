@@ -3,12 +3,6 @@ import { createModule, gql } from 'graphql-modules'
 import { BlockResponseModule } from './__generated__/types'
 
 const typeDefs = gql`
-  type JourneySession {
-    journey: Journey!
-    name: String
-    email: String
-  }
-
   enum VideoBlockResponseStateEnum {
     PLAYING
     PAUSED

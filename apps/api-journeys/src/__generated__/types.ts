@@ -31,13 +31,6 @@ export type Journey = {
   title: Scalars['String'];
 };
 
-export type JourneySession = {
-  __typename?: 'JourneySession';
-  journey: Journey;
-  name?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-};
-
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
   gtmEventName?: Maybe<Scalars['String']>;
@@ -238,7 +231,6 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Journey: ResolverTypeWrapper<Journey>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  JourneySession: ResolverTypeWrapper<JourneySession>;
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
@@ -262,7 +254,6 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   Journey: Journey;
   Boolean: Scalars['Boolean'];
-  JourneySession: JourneySession;
   LinkAction: LinkAction;
   Mutation: {};
   Float: Scalars['Float'];
@@ -291,13 +282,6 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type JourneySessionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['JourneySession'] = ResolversParentTypes['JourneySession']> = {
-  journey?: Resolver<ResolversTypes['Journey'], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -371,7 +355,6 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   Action?: ActionResolvers<ContextType>;
   Block?: BlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;
-  JourneySession?: JourneySessionResolvers<ContextType>;
   LinkAction?: LinkActionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NavigateAction?: NavigateActionResolvers<ContextType>;
