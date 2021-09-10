@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { lightTheme as theme } from './theme'
+import { lightTheme as theme } from '../../libs/themes/default'
 
 interface JourneysThemeProviderProps {
   children: ReactNode

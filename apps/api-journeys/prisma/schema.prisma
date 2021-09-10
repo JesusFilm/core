@@ -16,6 +16,7 @@ model Journey {
   title     String
   published Boolean @default(false)
   blocks    Block[]
+  // Add theme & locale(for font/formatting), possibly 'font' (overrides locale specific font)?
 }
 
 model Block {
@@ -28,6 +29,7 @@ model Block {
   childBlocks   Block[]   @relation("BlockChildren")
   extraAttrs    Json?
   parentOrder   Int       @default(0)
+  // Add theme?
 }
 
 enum BlockType {
