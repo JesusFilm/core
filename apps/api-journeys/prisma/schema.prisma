@@ -12,22 +12,24 @@ generator client {
 }
 
 model Journey {
-  id        String  @id @default(uuid())
-  title     String
-  published Boolean @default(false)
-  blocks    Block[]
+  id              String  @id @default(uuid())
+  title           String
+  published       Boolean @default(false)
+  blocks          Block[]
+  journeySessions JourneySession[]
 }
 
 model Block {
-  id            String    @id @default(uuid())
-  blockType     BlockType @default(StepBlock)
-  journey       Journey   @relation(fields: [journeyId], references: [id])
-  journeyId     String
-  parentBlock   Block?    @relation("BlockChildren", fields: [parentBlockId], references: [id])
-  parentBlockId String?
-  childBlocks   Block[]   @relation("BlockChildren")
-  extraAttrs    Json?
-  parentOrder   Int       @default(0)
+  id             String    @id @default(uuid())
+  blockType      BlockType @default(StepBlock)
+  journey        Journey   @relation(fields: [journeyId], references: [id])
+  journeyId      String
+  parentBlock    Block?    @relation("BlockChildren", fields: [parentBlockId], references: [id])
+  parentBlockId  String?
+  childBlocks    Block[]   @relation("BlockChildren")
+  extraAttrs     Json?
+  parentOrder    Int       @default(0)
+  blockResponses BlockResponse[]
 }
 
 enum BlockType {
@@ -35,4 +37,20 @@ enum BlockType {
   VideoBlock
   RadioQuestionBlock
   RadioOptionBlock
+}
+
+model JourneySession {
+  id             String  @id @default(uuid())
+  journey        Journey @relation(fields: [journeyId], references: [id])
+  journeyId      String
+  blockResponses BlockResponse[]
+}
+
+model BlockResponse {
+  id               String         @id @default(uuid())
+  journeySession   JourneySession @relation(fields: [journeySessionId], references: [id])
+  journeySessionId String
+  block            Block          @relation(fields: [blockId], references: [id])
+  blockId          String
+  responseData     Json
 }

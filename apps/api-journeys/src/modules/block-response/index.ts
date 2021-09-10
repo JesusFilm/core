@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
+import { BlockResponseModule } from './__generated__/types'
 
 const typeDefs = gql`
   type JourneySession {
@@ -45,25 +46,29 @@ const typeDefs = gql`
 
     # We could instead of returning the whole BlockResponse, just return the id since the clients don't really care
     # We could split this out into n mutations that would have strongly typed inputs
-    blockResponseCreate(journeySessionId: ID!, blockId: ID!, responseMetadateJSON: String): BlockResponse!
+    blockResponseCreate(journeySessionId: ID!, blockId: ID!, responseMetadateJSON: String): ID!
   }
 `
 
-const resolvers = {
+const resolvers: BlockResponseModule.Resolvers = {
   Mutation: {
     async journeySessionCreate (_parent, { journeyId }, { db }) {
-      return await db.journeySession.create({
+      const session = await db.journeySession.create({
         data: {
           journeyId
         }
       })
+      return session.id
     },
     async blockResponseCreate (_parent, { journeySessionId, blockId, responseMetadateJSON }, { db }) {
-      return await db.blockResponse.create({
+      const response = await db.blockResponse.create({
         data: {
-          journeySessionId, blockId, responseMetadateJSON
+          journeySessionId,
+          blockId,
+          responseData: responseMetadateJSON
         }
       })
+      return response.id
     }
   }
 }
