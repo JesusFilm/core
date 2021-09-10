@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { Button, ButtonProps, ButtonVariant, ButtonColor, ButtonSize } from './Button'
+import { Button, ButtonProps } from '.'
+import { ButtonVariant, ButtonColor, ButtonSize } from './buttonTypes'
 
 const ButtonDemo = {
   component: Button,
