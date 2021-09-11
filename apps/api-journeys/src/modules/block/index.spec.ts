@@ -3,6 +3,7 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
+import { TypographyVariant } from './typography-enums'
 
 beforeEach(async () => {
   await db.block.deleteMany()
@@ -102,6 +103,19 @@ it('returns blocks', async () => {
       }
     }
   })
+  const block7 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: block1.id,
+      extraAttrs: {
+        content: 'text',
+        variant: TypographyVariant.HEADING_2,
+        color: 'SUCCESS',
+        align: 'CENTER'
+      }
+    }
+  })
   await db.block.create({
     data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
   })
@@ -138,6 +152,12 @@ it('returns blocks', async () => {
                   url
                 }
               }
+            }
+            ... on TypographyBlock {
+              content
+              variant
+              color
+              align
             }
           }
         }
@@ -205,6 +225,15 @@ it('returns blocks', async () => {
       src: 'src',
       title: 'title',
       provider: 'YOUTUBE'
+    },
+    {
+      id: block7.id,
+      __typename: 'TypographyBlock',
+      parentBlockId: block1.id,
+      content: 'text',
+      variant: 'HEADING_2',
+      color: 'SUCCESS',
+      align: 'CENTER'
     }
   ])
 })

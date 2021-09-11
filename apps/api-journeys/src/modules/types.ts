@@ -17,6 +17,7 @@ export type Scalars = {
 export type Journey = {
   __typename?: 'Journey';
   id: Scalars['ID'];
+  locale: Scalars['String'];
   published: Scalars['Boolean'];
   title: Scalars['String'];
 };
@@ -30,6 +31,7 @@ export type Mutation = {
 
 export type MutationJourneyCreateArgs = {
   title: Scalars['String'];
+  locale?: Maybe<Scalars['String']>;
 };
 
 
@@ -137,6 +139,7 @@ export type ResolversParentTypes = {
 
 export type JourneyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
