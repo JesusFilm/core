@@ -3,6 +3,7 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
+import { IconName, IconSize } from './icon-enums'
 
 beforeEach(async () => {
   await db.block.deleteMany()
@@ -102,6 +103,34 @@ it('returns blocks', async () => {
       }
     }
   })
+  const block7 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: block1.id,
+      extraAttrs: {
+        label: 'label',
+        variant: 'OUTLINED',
+        color: 'PRIMARY',
+        size: 'LARGE',
+        startIcon: {
+          name: IconName.ARROW_FORWARD,
+          color: 'NORMAL',
+          size: IconSize.LARGE
+        },
+        endIcon: {
+          name: IconName.LOCK_OPEN,
+          color: 'DISABLED',
+          size: IconSize.SMALL
+        },
+        action: {
+          gtmEventName: 'gtmEventName',
+          url: 'https://jesusfilm.org',
+          target: 'target'
+        }
+      }
+    }
+  })
   await db.block.create({
     data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
   })
@@ -136,6 +165,36 @@ it('returns blocks', async () => {
                 }
                 ... on LinkAction {
                   url
+                }
+              }
+            }
+            ... on ButtonBlock {
+              label
+              variant
+              color
+              size
+              startIcon {
+                name
+                color
+                size
+              }
+              endIcon {
+                name
+                color
+                size
+              }
+              action {
+                __typename
+                gtmEventName
+                ... on NavigateAction {
+                  blockId
+                }
+                ... on NavigateToJourneyAction {
+                  journeyId
+                }
+                ... on LinkAction {
+                  url
+                  target
                 }
               }
             }
@@ -205,6 +264,31 @@ it('returns blocks', async () => {
       src: 'src',
       title: 'title',
       provider: 'YOUTUBE'
+    },
+    {
+      id: block7.id,
+      __typename: 'ButtonBlock',
+      parentBlockId: block1.id,
+      label: 'label',
+      variant: 'OUTLINED',
+      color: 'PRIMARY',
+      size: 'LARGE',
+      startIcon: {
+        name: 'ARROW_FORWARD',
+        color: 'NORMAL',
+        size: 'LARGE'
+      },
+      endIcon: {
+        name: 'LOCK_OPEN',
+        color: 'DISABLED',
+        size: 'SMALL'
+      },
+      action: {
+        __typename: 'LinkAction',
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org',
+        target: 'target'
+      }
     }
   ])
 })

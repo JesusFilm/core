@@ -9,6 +9,9 @@ generates:
       filename: __generated__/types.ts
     config:
       contextType: GraphQLModules.Context
+      enumValues:
+        IconName: ../modules/block/icon-enums#IconName
+        IconSize: ../modules/block/icon-enums#IconSize
     plugins:
       - add:
           content: '/* eslint-disable */'

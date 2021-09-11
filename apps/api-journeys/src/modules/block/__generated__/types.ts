@@ -10,6 +10,8 @@ export namespace BlockModule {
     NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
     LinkAction: 'gtmEventName' | 'url' | 'target';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
+    Icon: 'name' | 'color' | 'size';
+    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     Journey: 'blocks';
     Block: 'id' | 'parentBlockId';
     Action: 'gtmEventName';
@@ -18,6 +20,13 @@ export namespace BlockModule {
   interface DefinedEnumValues {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
+    IconName: 'PLAY_ARROW' | 'TRANSLATE' | 'CHECK_CIRCLE' | 'RADIO_BUTTON_UNCHECKED' | 'FORMAT_QUOTE' | 'LOCK_OPEN' | 'ARROW_FORWARD' | 'CHAT_BUBBLE_ONLINE' | 'LIVE_TV' | 'MENU_BOOK';
+    IconColor: 'NORMAL' | 'DISABLED';
+    IconSize: 'SMALL' | 'MEDIUM_SMALL' | 'MEDIUM_LARGE' | 'LARGE';
+    ButtonColor: 'PRIMARY' | 'SECONDARY';
+    ButtonAlignment: 'LEFT' | 'CENTER' | 'RIGHT';
+    ButtonSize: 'LARGE' | 'MEDIUM' | 'SMALL';
+    ButtonBlockVariant: 'CONTAINED' | 'OUTLINED' | 'TEXT';
   };
   
   export type Journey = Types.Journey;
@@ -32,6 +41,15 @@ export namespace BlockModule {
   export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
   export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
+  export type IconName = DefinedEnumValues['IconName'];
+  export type IconColor = DefinedEnumValues['IconColor'];
+  export type IconSize = DefinedEnumValues['IconSize'];
+  export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
+  export type ButtonColor = DefinedEnumValues['ButtonColor'];
+  export type ButtonAlignment = DefinedEnumValues['ButtonAlignment'];
+  export type ButtonSize = DefinedEnumValues['ButtonSize'];
+  export type ButtonBlockVariant = DefinedEnumValues['ButtonBlockVariant'];
+  export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
   
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
@@ -40,6 +58,8 @@ export namespace BlockModule {
   export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
   export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
+  export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
+  export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
   export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
   export type ActionResolvers = Pick<Types.ActionResolvers, DefinedFields['Action']>;
@@ -52,6 +72,8 @@ export namespace BlockModule {
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
     LinkAction?: LinkActionResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
+    Icon?: IconResolvers;
+    ButtonBlock?: ButtonBlockResolvers;
     Journey?: JourneyResolvers;
   };
   
@@ -106,6 +128,24 @@ export namespace BlockModule {
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
+      action?: gm.Middleware[];
+    };
+    Icon?: {
+      '*'?: gm.Middleware[];
+      name?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+    };
+    ButtonBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      label?: gm.Middleware[];
+      variant?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+      startIcon?: gm.Middleware[];
+      endIcon?: gm.Middleware[];
       action?: gm.Middleware[];
     };
   };
