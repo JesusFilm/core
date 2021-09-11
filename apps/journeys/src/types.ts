@@ -1,12 +1,30 @@
-export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video' | 'OnTimeReached' | 'OnVideoPaused'
+export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video' | 'VideoOverlay'
 interface BaseBlockType {
   id: string
   parent?: {
     id: string
   }
   children?: BlockType[]
-  action?: string
+  action?: Action
   __typename: TypeName
+}
+
+export type Action = NavigateAction | NavigateToJourneyAction | LinkAction
+
+export interface NavigateAction {
+  __typename: 'NavigateAction'
+  blockId?: string // must be root block else goes to next block
+}
+
+export interface NavigateToJourneyAction {
+  __typename: 'NavigateToJourneyAction'
+  journeyId: string
+}
+
+export interface LinkAction {
+  __typename: 'LinkAction'
+  url: string
+  target?: '_blank'
 }
 
 export interface RadioOptionType extends BaseBlockType {
@@ -15,11 +33,16 @@ export interface RadioOptionType extends BaseBlockType {
   image?: string
 }
 
+export type VideoEvent = 'ready' | 'paused' | 'timeReached' | 'ended'
+export interface VideoOverlayType extends BaseBlockType {
+  __typename: 'VideoOverlay'
+  displayOn: VideoEvent[]
+}
+
 export interface RadioQuestionType extends BaseBlockType {
   __typename: 'RadioQuestion'
   label: string
   description?: string
-  action?: string
   variant?: 'light' | 'dark'
 }
 
@@ -44,7 +67,7 @@ export type OnVideoPausedType = BaseBlockType & {
   __typename: 'OnVideoPaused'
 }
 
-export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType | OnTimeReachedType | OnVideoPausedType
+export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType | VideoOverlayType
 
 export type NextStepProps = (id?: string) => void
 export interface GoTo {

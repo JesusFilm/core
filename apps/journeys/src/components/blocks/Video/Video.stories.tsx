@@ -36,8 +36,8 @@ Default.args = {
   }
 }
 
-export const ComponentOverlay = Template.bind({})
-ComponentOverlay.args = {
+export const OverlayOnReady = Template.bind({})
+OverlayOnReady.args = {
   __typename: 'Video',
   id: 'Video1',
   sources: [
@@ -47,30 +47,40 @@ ComponentOverlay.args = {
   ],
   children: [
     {
-      __typename: 'RadioQuestion',
-      id: 'Question1',
-      label: 'Label',
-      description: 'Description',
-      variant: 'light',
+      __typename: 'VideoOverlay',
+      id: 'videooverlay',
+      displayOn: 'paused',
       parent: {
         id: 'Video1'
       },
       children: [
         {
-          __typename: 'RadioOption',
-          id: 'Option1',
-          label: 'Chat Privately',
+          __typename: 'RadioQuestion',
+          id: 'Question1',
+          label: 'Label',
+          description: 'Description',
+          variant: 'light',
           parent: {
-            id: 'Question1'
-          }
-        },
-        {
-          __typename: 'RadioOption',
-          id: 'Option1',
-          label: 'Get a bible',
-          parent: {
-            id: 'Question1'
-          }
+            id: 'Video1'
+          },
+          children: [
+            {
+              __typename: 'RadioOption',
+              id: 'Option1',
+              label: 'Chat Privately',
+              parent: {
+                id: 'Question1'
+              }
+            },
+            {
+              __typename: 'RadioOption',
+              id: 'Option1',
+              label: 'Get a bible',
+              parent: {
+                id: 'Question1'
+              }
+            }
+          ]
         }
       ]
     }
@@ -80,8 +90,8 @@ ComponentOverlay.args = {
   }
 }
 
-export const EventHandlers = Template.bind({})
-EventHandlers.args = {
+export const OverlayOnPause = Template.bind({})
+OverlayOnPause.args = {
   __typename: 'Video',
   id: 'Video1',
   sources: [
@@ -91,9 +101,9 @@ EventHandlers.args = {
   ],
   children: [
     {
-      __typename: 'OnTimeReached',
-      id: '3seconds',
-      secondsWatched: 3,
+      __typename: 'VideoOverlay',
+      id: 'videooverlay',
+      displayOn: 'paused',
       parent: {
         id: 'Video1'
       },
@@ -119,43 +129,6 @@ EventHandlers.args = {
               __typename: 'RadioOption',
               id: 'Option1224',
               label: 'Get a thing',
-              parent: {
-                id: 'Question1'
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      __typename: 'OnVideoPaused',
-      id: 'onPause',
-      action: 'showChildren',
-      parent: {
-        id: 'Video1'
-      },
-      children: [
-        {
-          __typename: 'RadioQuestion',
-          id: 'Question1puased',
-          description: 'Question appears on pause',
-          variant: 'light',
-          parent: {
-            id: 'Video1'
-          },
-          children: [
-            {
-              __typename: 'RadioOption',
-              id: 'Option11',
-              label: 'Chat Privately',
-              parent: {
-                id: 'Question1'
-              }
-            },
-            {
-              __typename: 'RadioOption',
-              id: 'Option122',
-              label: 'Get a bible',
               parent: {
                 id: 'Question1'
               }
