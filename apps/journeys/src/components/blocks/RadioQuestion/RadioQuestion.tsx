@@ -5,8 +5,6 @@ import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock, GetJourney_journey_blocks_RadioOptionBlock_action as Action } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
-import { useAppDispatch } from '../../../libs/store/store'
-import { navigate } from '../../Conductor/conductorSlice'
 
 const useStyles = makeStyles(
   () =>
@@ -29,14 +27,10 @@ export function RadioQuestion ({
   variant = RadioQuestionVariant.LIGHT
 }: TreeBlock<RadioQuestionBlock>): ReactElement {
   const classes = useStyles()
-  const dispatch = useAppDispatch()
   const [selectedId, setSelectedId] = useState<string>('')
 
-  const handleClick = (id: string, action: Action | null): void => {
+  const handleClick = (id: string): void => {
     setSelectedId(id)
-    if (action?.__typename === 'NavigateAction') {
-      dispatch(navigate(action.blockId))
-    }
   }
 
   return (

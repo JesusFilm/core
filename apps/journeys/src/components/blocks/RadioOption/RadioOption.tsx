@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 import { compact } from 'lodash'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock, GetJourney_journey_blocks_RadioOptionBlock_action as Action } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { useBlocks } from '../../../libs/client/cache/blocks'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -32,7 +33,7 @@ type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
   className?: string
   selected?: boolean
   disabled?: boolean
-  handleClick?: (selected: string, action: Action | null) => void
+  handleClick?: (selected: string) => void
 }
 
 export function RadioOption ({
@@ -42,23 +43,31 @@ export function RadioOption ({
   id,
   disabled = false,
   selected = false,
-  handleClick
+  handleClick: onClick
 }: RadioOptionProps): ReactElement {
+  const { setActiveBlockById } = useBlocks()
   const classes = useStyles()
+
+  const handleClick = (): void => {
+    if (action?.__typename === 'NavigateAction') {
+      setActiveBlockById(action.blockId)
+    }
+    onClick?.(id)
+  }
 
   return (
     <Button
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
       disabled={disabled}
-      onClick={() => handleClick?.(id, action)}
+      onClick={handleClick}
       startIcon={
         selected
           ? (
             <CheckCircleIcon
-            data-testid="RadioOptionCheckCircleIcon"
-            className={classes.highlightIcon}
-          />
+              data-testid="RadioOptionCheckCircleIcon"
+              className={classes.highlightIcon}
+            />
             )
           : (
             <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />

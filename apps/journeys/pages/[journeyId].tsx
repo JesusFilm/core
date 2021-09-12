@@ -2,8 +2,6 @@ import { ReactElement } from 'react'
 import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
 import { Container } from '@mui/material'
-import { Provider } from 'react-redux'
-import { store } from '../src/libs/store/store'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
@@ -16,9 +14,7 @@ interface JourneyPageProps {
 function JourneyPage ({ journey }: JourneyPageProps): ReactElement {
   return (
     <Container>
-      <Provider store={store}>
-        {(journey.blocks != null) && <Conductor blocks={transformer(journey.blocks)} />}
-      </Provider>
+      {(journey.blocks != null) && <Conductor blocks={transformer(journey.blocks)} />}
     </Container>
   )
 }
