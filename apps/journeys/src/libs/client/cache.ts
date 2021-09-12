@@ -1,12 +1,12 @@
 import { InMemoryCache } from '@apollo/client'
-import { activeBlockIdVar, treeBlocksVar } from './cache/blocks'
+import { activeBlockVar, treeBlocksVar } from './cache/blocks'
 
 export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
         activeBlock: {
-          read: () => treeBlocksVar().find(({ id }) => id === activeBlockIdVar())
+          read: () => activeBlockVar()
         },
         treeBlocks: {
           read: () => treeBlocksVar()

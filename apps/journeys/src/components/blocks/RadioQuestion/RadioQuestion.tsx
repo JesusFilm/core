@@ -59,7 +59,7 @@ export function RadioQuestion ({
                     key={option.id}
                     selected={selectedId === option.id}
                     disabled={selectedId !== '' && selectedId !== option.id}
-                    handleClick={handleClick}
+                    onClick={handleClick}
                   />
                 )
             )}

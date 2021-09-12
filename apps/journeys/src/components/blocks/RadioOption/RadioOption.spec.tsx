@@ -21,7 +21,7 @@ describe('RadioOption', () => {
   it('should handle onClick', () => {
     const handleClick = jest.fn()
     const { getByRole } = renderWithApolloClient(
-      <RadioOption {...block} handleClick={handleClick} />
+      <RadioOption {...block} onClick={handleClick} />
     )
     fireEvent.click(getByRole('button'))
     expect(handleClick).toBeCalledWith(block.id)

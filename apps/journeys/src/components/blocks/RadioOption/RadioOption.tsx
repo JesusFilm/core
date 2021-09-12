@@ -33,7 +33,7 @@ type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
   className?: string
   selected?: boolean
   disabled?: boolean
-  handleClick?: (selected: string) => void
+  onClick?: (selected: string) => void
 }
 
 export function RadioOption ({
@@ -43,7 +43,7 @@ export function RadioOption ({
   id,
   disabled = false,
   selected = false,
-  handleClick: onClick
+  onClick
 }: RadioOptionProps): ReactElement {
   const { setActiveBlockById } = useBlocks()
   const classes = useStyles()
