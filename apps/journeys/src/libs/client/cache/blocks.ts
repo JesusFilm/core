@@ -12,7 +12,7 @@ interface UseBlocksHook {
   treeBlocksVar: ReactiveVar<TreeBlock[]>
 }
 
-export function useBlocks(): UseBlocksHook {
+export function useBlocks (): UseBlocksHook {
   const setActiveBlockById = useCallback((id?: string): void => {
     const blocks = treeBlocksVar()
     const activeBlockId = activeBlockVar()?.id

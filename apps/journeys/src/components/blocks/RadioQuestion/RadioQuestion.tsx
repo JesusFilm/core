@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react'
 import { Typography, Container, Card, CardContent, ButtonGroup } from '@mui/material'
 import { makeStyles, createStyles } from '@mui/styles'
 import { RadioOption } from '../RadioOption'
-import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock, GetJourney_journey_blocks_RadioOptionBlock_action as Action } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 
