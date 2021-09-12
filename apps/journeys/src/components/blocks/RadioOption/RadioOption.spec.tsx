@@ -27,7 +27,7 @@ describe('RadioOption', () => {
     expect(handleClick).toBeCalledWith(block.id)
   })
 
-  it('should set activeBlockId', () => {
+  it('should set activeBlockId to action blockId', () => {
     const blockAbc: TreeBlock = {
       id: 'abc',
       __typename: 'StepBlock',

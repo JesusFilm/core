@@ -26,6 +26,8 @@ export function useBlocks(): UseBlocksHook {
       const index = blocks.findIndex((block) => block.id === activeBlockId)
       if (index > -1 && blocks[index + 1] != null) {
         activeBlockVar(blocks[index + 1])
+      } else {
+        activeBlockVar(null)
       }
     }
   }, [])

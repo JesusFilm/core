@@ -47,4 +47,13 @@ describe('Conductor', () => {
     expect(activeBlockVar()?.id).toBe('Question2')
     expect(getByText('Question 2')).toBeInTheDocument()
   })
+
+  it('should not throw error if no blocks', () => {
+    const blocks: TreeBlock[] = []
+    renderWithApolloClient(
+      <Conductor blocks={blocks} />
+    )
+    expect(treeBlocksVar()).toBe(blocks)
+    expect(activeBlockVar()).toBe(null)
+  })
 })
