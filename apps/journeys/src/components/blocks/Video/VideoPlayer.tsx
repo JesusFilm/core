@@ -1,6 +1,7 @@
 import videojs from 'video.js'
 import React, { useEffect, useRef, useState } from 'react'
-import { Container, makeStyles, createStyles } from '@material-ui/core'
+import { Container } from '@mui/material'
+import { makeStyles, createStyles } from '@mui/styles'
 
 import 'video.js/dist/video-js.css'
 

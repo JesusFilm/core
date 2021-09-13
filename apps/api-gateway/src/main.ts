@@ -1,11 +1,9 @@
-import { ApolloServer } from 'apollo-server'
 import { ApolloGateway } from '@apollo/gateway'
+import { ApolloServer } from 'apollo-server'
+import { config } from './environments/environment'
 
-const gateway = new ApolloGateway()
-
-const server = new ApolloServer({
-  gateway
-})
+export const gateway = new ApolloGateway(config.gatewayConfig)
+const server = new ApolloServer({ gateway })
 
 server.listen().then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`)

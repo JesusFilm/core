@@ -4,25 +4,20 @@ import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
 
-beforeEach(async () => {
-  await db.block.deleteMany()
-  await db.journey.deleteMany()
-})
-
-afterEach(async () => {
-  await db.block.deleteMany()
-  await db.journey.deleteMany()
-})
-
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
     schemaBuilder,
     modules: [Journey]
   })
-
   const journey = await db.journey.create({
     data: {
       title: 'published',
+      published: true
+    }
+  })
+  const otherJourney = await db.journey.create({
+    data: {
+      title: 'not "that" journey',
       published: true
     }
   })
@@ -40,15 +35,66 @@ it('returns blocks', async () => {
       }
     }
   })
-
-  const otherJourney = await db.journey.create({
+  const block3 = await db.block.create({
     data: {
-      title: 'not "that" journey',
-      published: true
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      extraAttrs: {
+        label: 'label',
+        description: 'description',
+        action: {
+          gtmEventName: 'gtmEventName',
+          blockId: block1.id
+        }
+      }
     }
   })
-  await db.block.create({ data: { journeyId: otherJourney.id, blockType: 'StepBlock' } })
-
+  const block4 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      extraAttrs: {
+        label: 'label',
+        description: 'description',
+        action: {
+          gtmEventName: 'gtmEventName',
+          journeyId: otherJourney.id
+        }
+      }
+    }
+  })
+  const block5 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      extraAttrs: {
+        label: 'label',
+        description: 'description',
+        action: {
+          gtmEventName: 'gtmEventName',
+          url: 'https://jesusfilm.org'
+        }
+      }
+    }
+  })
+  const block6 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'VideoBlock',
+      parentBlockId: block1.id,
+      extraAttrs: {
+        src: 'src',
+        title: 'title',
+        provider: 'YOUTUBE'
+      }
+    }
+  })
+  await db.block.create({
+    data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
+  })
   const { data } = await testkit.execute(app, {
     document: gql`
       query($id: ID!) {
@@ -69,7 +115,19 @@ it('returns blocks', async () => {
             }
             ... on RadioOptionBlock {
               label
-              image
+              action {
+                __typename
+                gtmEventName
+                ... on NavigateAction {
+                  blockId
+                }
+                ... on NavigateToJourneyAction {
+                  journeyId
+                }
+                ... on LinkAction {
+                  url
+                }
+              }
             }
           }
         }
@@ -82,7 +140,6 @@ it('returns blocks', async () => {
       db
     }
   })
-
   expect(data?.journey.blocks).toEqual([
     {
       id: block1.id,
@@ -92,10 +149,51 @@ it('returns blocks', async () => {
     {
       id: block2.id,
       __typename: 'RadioQuestionBlock',
-      description: 'description',
-      label: 'label',
       parentBlockId: block1.id,
+      label: 'label',
+      description: 'description',
       variant: null
+    },
+    {
+      id: block3.id,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      label: 'label',
+      action: {
+        __typename: 'NavigateAction',
+        gtmEventName: 'gtmEventName',
+        blockId: block1.id
+      }
+    },
+    {
+      id: block4.id,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      label: 'label',
+      action: {
+        __typename: 'NavigateToJourneyAction',
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourney.id
+      }
+    },
+    {
+      id: block5.id,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      label: 'label',
+      action: {
+        __typename: 'LinkAction',
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org'
+      }
+    },
+    {
+      id: block6.id,
+      __typename: 'VideoBlock',
+      parentBlockId: block1.id,
+      src: 'src',
+      title: 'title',
+      provider: 'YOUTUBE'
     }
   ])
 })

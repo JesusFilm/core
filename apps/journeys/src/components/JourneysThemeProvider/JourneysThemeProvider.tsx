@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
-import { CssBaseline, ThemeProvider } from '@material-ui/core'
+import { CssBaseline, ThemeProvider } from '@mui/material'
 import { lightTheme as theme } from './theme'
 
 interface JourneysThemeProviderProps {

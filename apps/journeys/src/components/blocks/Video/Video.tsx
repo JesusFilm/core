@@ -1,10 +1,11 @@
 import React, { ReactElement, useState } from 'react'
+import { Container } from '@mui/material'
 import { VideoPlayer } from './VideoPlayer'
-import { Container } from '@material-ui/core'
-import { VideoType } from '../../../types'
 import { VideoOverlay } from '../VideoOverlay/'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
-export const Video = (block: VideoType): ReactElement => {
+export const Video = ({ src, children }: TreeBlock<VideoBlock>): ReactElement => {
   const [latestEvent, setLatestEvent] = useState('ready')
 
   const handlePlayerReady = (player): void => {
@@ -21,16 +22,17 @@ export const Video = (block: VideoType): ReactElement => {
     initialLoad: true,
     sources: [
       {
-        src: block.sources[0].src
+        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
       }
     ]
   }
 
   return (
     <Container data-testid="VideoComponent" maxWidth="md">
+      {console.log(src)}
       <VideoPlayer options={videoJsOptions} onReady={handlePlayerReady}>
-        {block.children != null
-          ? block.children?.map(
+        {children != null
+          ? children?.map(
             (block) => {
               if (block.__typename === 'VideoOverlay') return <VideoOverlay {...block} key={block.id} latestEvent={latestEvent} />
               return null
