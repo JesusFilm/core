@@ -24,12 +24,13 @@ Default.args = {
     __typename: 'RadioQuestion',
     id: 'Question1',
     label: 'Question 1',
+    description: '',
     children: [{
       id: 'NestedOptions',
-      __typename: 'RadioOption',
+      __typename: 'RadioOptionBlock',
       label: 'Chat Privately',
       parent: {
-        id: 'MoreQuestions'
+        id: 'Question1'
       }
     }]
   }]
@@ -43,15 +44,15 @@ Paused.args = {
     id: 'Video'
   },
   children: [{
-    __typename: 'RadioQuestion',
+    __typename: 'RadioQuestionBlock',
     id: 'Question1',
     label: 'Question 1',
     children: [{
       id: 'NestedOptions',
-      __typename: 'RadioOption',
+      __typename: 'RadioOptionBlock',
       label: 'Chat Privately',
       parent: {
-        id: 'MoreQuestions'
+        id: 'Question1'
       }
     }]
   }]

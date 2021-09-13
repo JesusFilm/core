@@ -49,7 +49,7 @@ OverlayOnReady.args = {
     {
       __typename: 'VideoOverlay',
       id: 'videooverlay',
-      displayOn: 'paused',
+      displayOn: 'ready',
       parent: {
         id: 'Video1'
       },
@@ -65,7 +65,7 @@ OverlayOnReady.args = {
           },
           children: [
             {
-              __typename: 'RadioOption',
+              __typename: 'RadioOptionBlock',
               id: 'Option1',
               label: 'Chat Privately',
               parent: {
@@ -73,7 +73,7 @@ OverlayOnReady.args = {
               }
             },
             {
-              __typename: 'RadioOption',
+              __typename: 'RadioOptionBlock',
               id: 'Option1',
               label: 'Get a bible',
               parent: {
@@ -119,7 +119,7 @@ OverlayOnPause.args = {
           },
           children: [
             {
-              __typename: 'RadioOption',
+              __typename: 'RadioOptionBlock',
               id: 'Option113',
               label: 'Chat maybe',
               parent: {
@@ -127,7 +127,7 @@ OverlayOnPause.args = {
               }
             },
             {
-              __typename: 'RadioOption',
+              __typename: 'RadioOptionBlock',
               id: 'Option1224',
               label: 'Get a thing',
               parent: {
