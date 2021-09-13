@@ -48,11 +48,11 @@ Paused.args = {
     id: 'Video'
   },
   children: [{
-    __typename: 'RadioQuestionBlock',
+    __typename: 'RadioQuestion',
     id: 'Question1',
     label: 'Question 1',
     parent: {
-      id: 'Question1'
+      id: 'Video'
     },
     children: [{
       id: 'NestedOptions',
