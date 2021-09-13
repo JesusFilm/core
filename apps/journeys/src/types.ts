@@ -1,4 +1,3 @@
-import { VideoProviderEnum } from '../__generated__/globalTypes'
 
 export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video' | 'VideoOverlay'
 interface BaseBlockType {
@@ -7,7 +6,7 @@ interface BaseBlockType {
     id: string
   }
   children?: BlockType[]
-  action?: Action | null
+  action?: Action
   __typename: TypeName
 }
 
@@ -46,9 +45,6 @@ export interface RadioQuestionType extends BaseBlockType {
   label: string
   description?: string
   variant?: 'light' | 'dark'
-  parent: {
-    id: string
-  }
 }
 
 export interface StepType extends BaseBlockType {
@@ -57,11 +53,10 @@ export interface StepType extends BaseBlockType {
 
 export interface VideoType extends BaseBlockType {
   __typename: 'Video'
-  id: string
-  parentBlockId: string | null
-  src: string
-  title: string
-  provider: VideoProviderEnum | null
+  sources: [{
+    src: string
+  }]
+  poster?: string
 }
 
 export type OnTimeReachedType = BaseBlockType & {

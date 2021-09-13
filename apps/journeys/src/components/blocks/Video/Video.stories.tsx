@@ -24,7 +24,7 @@ const Template: Story<VideoType> = ({ ...props }) => <Video {...props} />
 
 export const Default = Template.bind({})
 Default.args = {
-  __typename: 'Video',
+  __typename: 'VideoBlock',
   id: 'Video1',
   sources: [
     {
@@ -38,7 +38,7 @@ Default.args = {
 
 export const OverlayOnReady = Template.bind({})
 OverlayOnReady.args = {
-  __typename: 'Video',
+  __typename: 'VideoBlock',
   id: 'Video1',
   sources: [
     {
@@ -92,7 +92,7 @@ OverlayOnReady.args = {
 
 export const OverlayOnPause = Template.bind({})
 OverlayOnPause.args = {
-  __typename: 'Video',
+  __typename: 'VideoBlock',
   id: 'Video1',
   sources: [
     {
@@ -110,8 +110,9 @@ OverlayOnPause.args = {
       children: [
         {
           __typename: 'RadioQuestion',
-          id: 'Question3seconds',
-          description: 'Question appears after 3 seconds',
+          id: 'Question4321',
+          label: '',
+          description: 'Question appears on pause',
           variant: 'light',
           parent: {
             id: 'Video1'
@@ -122,7 +123,7 @@ OverlayOnPause.args = {
               id: 'Option113',
               label: 'Chat maybe',
               parent: {
-                id: 'Question1'
+                id: 'Question4321'
               }
             },
             {
@@ -130,7 +131,7 @@ OverlayOnPause.args = {
               id: 'Option1224',
               label: 'Get a thing',
               parent: {
-                id: 'Question1'
+                id: 'Question4321'
               }
             }
           ]
