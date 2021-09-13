@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
-import { VideoType } from '../../../types'
 import { Video } from './'
-
 import { Provider } from 'react-redux'
 import { configureStoreWithState, RootState } from '../../../libs/store/store'
 import { PreloadedState } from 'redux'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
 let preloadedState: PreloadedState<RootState>
 
@@ -20,7 +20,7 @@ const Demo = {
   ]
 }
 
-const Template: Story<VideoType> = ({ ...props }) => <Video {...props} />
+const Template: Story<TreeBlock<VideoBlock>> = ({ ...props }) => <Video {...props} />
 
 export const Default = Template.bind({})
 Default.args = {
