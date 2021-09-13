@@ -59,8 +59,7 @@ describe('BlockRenderer', () => {
       provider: null,
       children: []
     }
-    const { getByText, getByTestId } = renderWithStore(<BlockRenderer {...block} />)
-    expect(getByText('Render title Here')).toBeInTheDocument()
+    const { getByTestId } = renderWithStore(<BlockRenderer {...block} />)
     expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })

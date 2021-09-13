@@ -6,6 +6,7 @@ const block: VideoOverlayType = {
   __typename: 'VideoOverlay',
   id: 'VideoOverlay1',
   displayOn: ['ready'],
+  location: 'flex-start',
   children: [{
     __typename: 'RadioQuestion',
     id: 'Question1',
@@ -15,17 +16,16 @@ const block: VideoOverlayType = {
     },
     children: [{
       id: 'NestedOptions',
-      __typename: 'RadioOption',
+      __typename: 'RadioOptionBlock',
       label: 'Chat Privately',
       parent: {
-        id: 'MoreQuestions'
+        id: 'Question1'
       }
     }]
   }]
 }
 
 describe('VideoOverlay', () => {
-  // Test won't work until database schema updated
   it('should display radio option', () => {
     const { getByText } = renderWithStore(
       <VideoOverlay
