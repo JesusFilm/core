@@ -42,7 +42,7 @@
                 "command": "nx serve api-journeys"
               },
               {
-                "command": "sleep 10; nx serve api-gateway"
+                "command": "nx serve api-gateway"
               }
             ],
             "parallel": true
@@ -180,7 +180,9 @@
           "executor": "@nrwl/next:server",
           "options": {
             "buildTarget": "journeys:build",
-            "dev": true
+            "dev": true,
+            "hostname": "0.0.0.0",
+            "port": 4100
           },
           "configurations": {
             "production": {
