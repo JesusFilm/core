@@ -37,6 +37,7 @@ export interface RadioOptionType extends BaseBlockType {
 export type VideoEvent = 'ready' | 'paused' | 'timeReached' | 'ended'
 export interface VideoOverlayType extends BaseBlockType {
   __typename: 'VideoOverlay'
+  location: 'flex-start' | 'flex-end' | 'center'
   displayOn: VideoEvent[]
 }
 
@@ -57,6 +58,8 @@ export interface VideoType extends BaseBlockType {
     src: string
   }]
   poster?: string
+  volume?: number
+  autoplay?: 'muted' | true | false
 }
 
 export type OnTimeReachedType = BaseBlockType & {

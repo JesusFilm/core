@@ -26,30 +26,25 @@ export const Default = Template.bind({})
 Default.args = {
   __typename: 'VideoBlock',
   id: 'Video1',
-  sources: [
-    {
-      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
-    }
-  ],
+  src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
   parent: {
     id: 'Step1'
   }
 }
 
-export const OverlayOnReady = Template.bind({})
-OverlayOnReady.args = {
+export const OverlayOnPauseEnded = Template.bind({})
+OverlayOnPauseEnded.args = {
   __typename: 'VideoBlock',
   id: 'Video1',
-  sources: [
-    {
-      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
-    }
-  ],
+  src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+  volume: 1,
+  autoplay: false,
   children: [
     {
       __typename: 'VideoOverlay',
       id: 'videooverlay',
-      displayOn: 'ready',
+      displayOn: ['paused', 'ended'],
+      location: 'flex-end',
       parent: {
         id: 'Video1'
       },
@@ -57,8 +52,8 @@ OverlayOnReady.args = {
         {
           __typename: 'RadioQuestion',
           id: 'Question1',
-          label: 'Label',
-          description: 'Description',
+          label: 'show on',
+          description: 'pause/ended',
           variant: 'light',
           parent: {
             id: 'Video1'
@@ -90,20 +85,16 @@ OverlayOnReady.args = {
   }
 }
 
-export const OverlayOnPause = Template.bind({})
-OverlayOnPause.args = {
+export const OverlayOnReadyPlay = Template.bind({})
+OverlayOnReadyPlay.args = {
   __typename: 'VideoBlock',
   id: 'Video1',
-  sources: [
-    {
-      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
-    }
-  ],
+  src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
   children: [
     {
       __typename: 'VideoOverlay',
       id: 'videooverlay',
-      displayOn: 'paused',
+      displayOn: ['ready', 'played'],
       parent: {
         id: 'Video1'
       },
@@ -111,8 +102,8 @@ OverlayOnPause.args = {
         {
           __typename: 'RadioQuestion',
           id: 'Question4321',
-          label: '',
-          description: 'Question appears on pause',
+          label: 'appears',
+          description: 'on ready',
           variant: 'light',
           parent: {
             id: 'Video1'

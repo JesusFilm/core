@@ -5,7 +5,7 @@ import { VideoOverlay } from '../VideoOverlay/'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
-export const Video = ({ src, children }: TreeBlock<VideoBlock>): ReactElement => {
+export const Video = ({ src, volume = 0, autoplay = 'muted', children }: TreeBlock<VideoBlock>): ReactElement => {
   const [latestEvent, setLatestEvent] = useState('ready')
 
   const handlePlayerReady = (player): void => {
@@ -16,20 +16,21 @@ export const Video = ({ src, children }: TreeBlock<VideoBlock>): ReactElement =>
   }
 
   const videoJsOptions = {
-    autoplay: 'muted',
+    autoplay: autoplay,
     controls: true,
-    volume: 0,
+    volume: volume,
     initialLoad: true,
+    bigPlayButton: false,
+    controlBar: true,
     sources: [
       {
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+        src: src
       }
     ]
   }
 
   return (
     <Container data-testid="VideoComponent" maxWidth="md">
-      {console.log(src)}
       <VideoPlayer options={videoJsOptions} onReady={handlePlayerReady}>
         {children != null
           ? children?.map(

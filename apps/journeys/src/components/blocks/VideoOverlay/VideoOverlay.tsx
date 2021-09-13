@@ -1,21 +1,43 @@
 import { VideoOverlayType } from '../../../types'
 import { ReactElement } from 'react'
 import { RadioQuestion } from '../RadioQuestion/'
+import { makeStyles, createStyles } from '@mui/styles'
+import { Grid } from '@mui/material'
 
 type VideoOverlayProps = VideoOverlayType & {
   latestEvent
 }
 
+const useStyles = makeStyles(
+  () =>
+    createStyles({
+      container: {
+        width: '100%',
+        height: '100%'
+      }
+    }),
+  { name: 'VideoOverlay' }
+)
+
 export function VideoOverlay ({
   children,
   displayOn,
-  latestEvent
+  latestEvent,
+  location = 'flex-start'
 }: VideoOverlayProps): ReactElement {
   const show = displayOn.includes(latestEvent)
-  console.log(show)
+  const classes = useStyles()
+
   return (
-    <>
-      {
+    <Grid
+      container
+      direction="row"
+      justifyContent={location}
+      alignItems="center"
+      className={classes.container}
+    >
+      <Grid item p={2}>
+        {
         children != null && show
           ? children?.map(
             (block) => {
@@ -24,7 +46,8 @@ export function VideoOverlay ({
             }
           )
           : null}
-    </>
+      </Grid>
+    </Grid>
   )
 }
 

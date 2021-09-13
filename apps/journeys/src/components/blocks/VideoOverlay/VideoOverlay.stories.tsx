@@ -25,6 +25,9 @@ Default.args = {
     id: 'Question1',
     label: 'Question 1',
     description: '',
+    parent: {
+      id: 'Video'
+    },
     children: [{
       id: 'NestedOptions',
       __typename: 'RadioOptionBlock',
@@ -40,6 +43,7 @@ export const Paused = DefaultTemplate.bind({})
 Paused.args = {
   id: 'VideoOverlay',
   displayOn: ['paused'],
+  location: 'flex-end',
   parent: {
     id: 'Video'
   },
@@ -47,6 +51,9 @@ Paused.args = {
     __typename: 'RadioQuestionBlock',
     id: 'Question1',
     label: 'Question 1',
+    parent: {
+      id: 'Question1'
+    },
     children: [{
       id: 'NestedOptions',
       __typename: 'RadioOptionBlock',
