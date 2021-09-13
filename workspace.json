@@ -35,7 +35,7 @@
           }
         },
         "serve-all": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
@@ -55,7 +55,7 @@
           }
         },
         "generate-graphql": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
@@ -126,13 +126,13 @@
           }
         },
         "rollback": {
-          "builder": "@nx-tools/nx-prisma:rollback",
+          "executor": "@nx-tools/nx-prisma:rollback",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
         },
         "seed": {
-          "builder": "@nx-tools/nx-prisma:seed",
+          "executor": "@nx-tools/nx-prisma:seed",
           "options": {
             "script": "apps/api-journeys/prisma/seed.ts",
             "tsConfig": "apps/api-journeys/tsconfig.app.json"
@@ -149,7 +149,7 @@
           }
         },
         "generate-graphql": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
@@ -288,6 +288,42 @@
           "options": {
             "uiFramework": "@storybook/react",
             "outputPath": "dist/storybook/shared-storybook",
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        }
+      }
+    },
+    "shared-ui": {
+      "root": "libs/shared/ui",
+      "sourceRoot": "libs/shared/ui/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/ui/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/ui"],
+          "options": {
+            "jestConfig": "libs/shared/ui/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
             "config": {
               "configFolder": ".storybook"
             }
