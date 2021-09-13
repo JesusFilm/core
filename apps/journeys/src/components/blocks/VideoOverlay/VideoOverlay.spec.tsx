@@ -25,6 +25,7 @@ const block: VideoOverlayType = {
 }
 
 describe('VideoOverlay', () => {
+  // Test won't work until database schema updated
   it('should display radio option', () => {
     const { getByText } = renderWithStore(
       <VideoOverlay

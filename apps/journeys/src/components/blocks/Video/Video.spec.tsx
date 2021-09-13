@@ -47,6 +47,7 @@ describe('VideoComponent', () => {
   })
 
   // Tests if overlay shows on video
+  // Test won't work until database schema is updated
   it('should render overlay label', () => {
     const { getByText, getByTestId } = renderWithStore(<Video {...block} />)
     expect(getByText('Choose a step to jump to')).toBeInTheDocument()
