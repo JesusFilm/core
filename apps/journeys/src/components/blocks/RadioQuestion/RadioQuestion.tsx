@@ -49,7 +49,7 @@ export function RadioQuestion ({
           <Typography variant="h1" gutterBottom>
             {label}
           </Typography>
-          <Typography variant="h6">{description}</Typography>
+          <Typography variant="h2">{description}</Typography>
         </CardContent>
         <CardContent>
           <ButtonGroup
