@@ -131,13 +131,13 @@ it('publishes journey', async () => {
     }
   })
 
-  const uodatedJourney = await db.journey.findUnique({
+  const updatedJourney = await db.journey.findUnique({
     where: {
       id: journey.id
     }
   })
 
-  expect(uodatedJourney).toEqual({
+  expect(updatedJourney).toEqual({
     id: journey.id,
     published: true,
     title: 'my journey'
