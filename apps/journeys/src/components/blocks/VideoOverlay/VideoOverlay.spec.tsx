@@ -10,6 +10,9 @@ const block: VideoOverlayType = {
     __typename: 'RadioQuestion',
     id: 'Question1',
     label: 'Question 1',
+    parent: {
+      id: 'VideoOverlay1'
+    },
     children: [{
       id: 'NestedOptions',
       __typename: 'RadioOption',
