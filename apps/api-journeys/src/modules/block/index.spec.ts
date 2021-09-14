@@ -5,16 +5,6 @@ import db from '../../lib/db'
 import Journey from '../journey'
 import { IconName, IconSize } from './icon-enums'
 
-beforeEach(async () => {
-  await db.block.deleteMany()
-  await db.journey.deleteMany()
-})
-
-afterEach(async () => {
-  await db.block.deleteMany()
-  await db.journey.deleteMany()
-})
-
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
     schemaBuilder,
@@ -134,7 +124,7 @@ it('returns blocks', async () => {
   await db.block.create({
     data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
   })
-  const { data, errors } = await testkit.execute(app, {
+  const { data } = await testkit.execute(app, {
     document: gql`
       query($id: ID!) {
         journey(id: $id) {
@@ -209,7 +199,6 @@ it('returns blocks', async () => {
       db
     }
   })
-  console.log(errors)
   expect(data?.journey.blocks).toEqual([
     {
       id: block1.id,
