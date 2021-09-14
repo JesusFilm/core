@@ -335,6 +335,16 @@
               "quiet": true
             }
           }
+        },
+        "codegen": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript --outputFlat libs/shared/ui/__generated__"
+              }
+            ]
+          }
         }
       }
     },

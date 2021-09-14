@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import { Button as MuiButton, CircularProgress } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { ButtonType } from './buttonTypes'
 import { Icon } from '../Icon/'
+import { ButtonBlockFields } from '../../../__generated__/ButtonBlockFields'
 
 const useStyles = makeStyles(() => ({
   spacing: {
@@ -10,7 +10,7 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-export interface ButtonProps extends ButtonType {
+export interface ButtonProps extends ButtonBlockFields {
   loading?: boolean
   disabled?: boolean
 }
