@@ -10,7 +10,7 @@ The following is a set of guidelines for contributing to the Core Monorepo, whic
   * [Monorepo](#monorepo)
   * [Back-end Architecture](#back-end-architecture)
   * [Developing inside a Container](#developing-inside-a-container)
-[Starting the gateway, back-end and front-end projects](#starting-the-gateway-back-end-and-front-end-projects)
+  * [Starting the gateway, back-end and front-end projects](#starting-the-gateway-back-end-and-front-end-projects)
 
 ## What should I know before I get started?
 
@@ -47,10 +47,12 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install [Docker Desktop](https://www.docker.com/get-started)
-3. Start VS Code and run Remote-Containers: Clone Repository in Container Volume... from the Command Palette (F1).
-4. Enter `https://github.com/JesusFilm/core.git`
-5. The VS Code window (instance) will reload, clone the source code, and start building the dev container. A progress notification provides status updates.
-6. After the build completes, VS Code will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
+3. Start Docker Desktop
+4. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
+5. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
+6. Enter `https://github.com/JesusFilm/core.git` and choose `main` as the branch to clone.
+7. The VS Code window (instance) will reload, clone the source code, and start building the dev container. A progress notification provides status updates.
+8. After the build completes, VS Code will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
 
 ## Starting the gateway, back-end and front-end projects
 
