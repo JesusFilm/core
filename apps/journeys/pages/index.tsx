@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Box, Button, Container } from '@material-ui/core'
+import { Box, Button, Container } from '@mui/material'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
