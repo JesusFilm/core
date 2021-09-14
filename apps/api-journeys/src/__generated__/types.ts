@@ -42,9 +42,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   journeyCreate: Journey;
   journeyPublish?: Maybe<Journey>;
-  journeySessionCreate: Scalars['ID'];
   radioQuestionBlockResponseCreate: Scalars['ID'];
   signupBlockResponseCreate: Scalars['ID'];
+  userSessionCreate: Scalars['ID'];
   videoBlockResponseCreate: Scalars['ID'];
 };
 
@@ -56,11 +56,6 @@ export type MutationJourneyCreateArgs = {
 
 export type MutationJourneyPublishArgs = {
   id: Scalars['ID'];
-};
-
-
-export type MutationJourneySessionCreateArgs = {
-  journeyId: Scalars['ID'];
 };
 
 
@@ -76,6 +71,11 @@ export type MutationSignupBlockResponseCreateArgs = {
   blockId: Scalars['ID'];
   name: Scalars['String'];
   email: Scalars['String'];
+};
+
+
+export type MutationUserSessionCreateArgs = {
+  journeyId: Scalars['ID'];
 };
 
 
@@ -295,9 +295,9 @@ export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType
 export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   journeyCreate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyCreateArgs, 'title'>>;
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
-  journeySessionCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationJourneySessionCreateArgs, 'journeyId'>>;
   radioQuestionBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRadioQuestionBlockResponseCreateArgs, 'journeySessionId' | 'blockId' | 'selectedResponseBlockId'>>;
   signupBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationSignupBlockResponseCreateArgs, 'journeySessionId' | 'blockId' | 'name' | 'email'>>;
+  userSessionCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationUserSessionCreateArgs, 'journeyId'>>;
   videoBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationVideoBlockResponseCreateArgs, 'journeySessionId' | 'blockId' | 'position' | 'state'>>;
 };
 

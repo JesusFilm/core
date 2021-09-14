@@ -28,31 +28,6 @@ const executeGQL = async (app, query, variables): Promise<{ data?, errors? }> =>
   })
 }
 
-it('creates a journey session', async () => {
-  const app = setupApp()
-  const journey = await factoryJourney()
-  const query = gql`
-    mutation($journeyId: ID!) {
-      journeySessionCreate(journeyId: $journeyId) {
-        id
-      }
-    }
-  `
-
-  const { data } = await executeGQL(app, query, { journeyId: journey.id })
-
-  const journeySession = await db.journeySession.findUnique({
-    where: {
-      id: data?.journeySessionCreate
-    }
-  })
-
-  expect(journeySession).toEqual({
-    id: journeySession?.id,
-    journeyId: journey.id
-  })
-})
-
 it('creates a video block response', async () => {
   const app = setupApp()
   const journey = await factoryJourney()

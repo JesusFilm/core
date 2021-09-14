@@ -1,16 +1,11 @@
 /* eslint-disable */
 import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
-export namespace BlockResponseModule {
+export namespace UserSessionModule {
   interface DefinedFields {
-    Mutation: 'signupBlockResponseCreate' | 'videoBlockResponseCreate' | 'radioQuestionBlockResponseCreate';
+    Mutation: 'userSessionCreate';
   };
   
-  interface DefinedEnumValues {
-    VideoBlockResponseStateEnum: 'PLAYING' | 'PAUSED' | 'FINISHED';
-  };
-  
-  export type VideoBlockResponseStateEnum = DefinedEnumValues['VideoBlockResponseStateEnum'];
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
@@ -25,9 +20,7 @@ export namespace BlockResponseModule {
     };
     Mutation?: {
       '*'?: gm.Middleware[];
-      signupBlockResponseCreate?: gm.Middleware[];
-      videoBlockResponseCreate?: gm.Middleware[];
-      radioQuestionBlockResponseCreate?: gm.Middleware[];
+      userSessionCreate?: gm.Middleware[];
     };
   };
 }

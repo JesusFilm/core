@@ -10,8 +10,6 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    journeySessionCreate(journeyId: ID!): ID!
-
     signupBlockResponseCreate(journeySessionId: ID!, blockId: ID!, name: String!, email: String!): ID!
     videoBlockResponseCreate(journeySessionId: ID!, blockId: ID!, position: Float!, state: VideoBlockResponseStateEnum!): ID!
     radioQuestionBlockResponseCreate(journeySessionId: ID!, blockId: ID!, selectedResponseBlockId: ID!): ID!
@@ -20,14 +18,6 @@ const typeDefs = gql`
 
 const resolvers: BlockResponseModule.Resolvers = {
   Mutation: {
-    async journeySessionCreate (_parent, { journeyId }, { db }) {
-      const session = await db.journeySession.create({
-        data: {
-          journeyId
-        }
-      })
-      return session.id
-    },
     async signupBlockResponseCreate (_parent, { journeySessionId, blockId, name, email }, { db }) {
       const response = await db.blockResponse.create({
         data: {
