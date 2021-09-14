@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { Button, ButtonProps } from '.'
-import { ButtonVariant, ButtonColor, ButtonSize } from './buttonTypes'
+import { ButtonVariant, ButtonColor, ButtonSize, IconList } from './buttonTypes'
 
 const ButtonDemo = {
   component: Button,
@@ -9,7 +9,6 @@ const ButtonDemo = {
 
 interface ButtonStoryProps extends ButtonProps {
   variants: string[]
-  colors: string[]
 }
 
 const Template: Story<ButtonStoryProps> = (args) => (
@@ -72,6 +71,38 @@ const SizeTemplate: Story<ButtonStoryProps> = (args) => (
 export const Size = SizeTemplate.bind({})
 Size.args = {
   variants: ['small', 'medium', 'large']
+}
+
+const startIconTemplate: Story<ButtonStoryProps> = (args) => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column'
+  }}>
+    {args.variants.map((variant) => (
+      <Button label={`${variant}`} variant="contained" startIcon={{ icon: variant as IconList }}/>
+    ))}
+  </div>
+)
+
+export const startIcon = startIconTemplate.bind({})
+startIcon.args = {
+  variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
+}
+
+const endIconTemplate: Story<ButtonStoryProps> = (args) => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column'
+  }}>
+    {args.variants.map((variant) => (
+      <Button label={`${variant}`} variant="contained" endIcon={{ icon: variant as IconList }}/>
+    ))}
+  </div>
+)
+
+export const endIcon = endIconTemplate.bind({})
+endIcon.args = {
+  variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
 }
 
 export default ButtonDemo as Meta
