@@ -37,6 +37,25 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (c
               title
               provider
             }
+            ... on ButtonBlock {
+              label
+              variant
+              color
+              size
+              startIcon {
+                name
+                color
+                size
+              }
+              endIcon {
+                name
+                color
+                size
+              }
+              action {
+                ...ActionFields
+              }
+            }
             ... on RadioQuestionBlock {
               label
               description
@@ -45,20 +64,23 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (c
             ... on RadioOptionBlock {
               label
               action {
-                __typename
-                gtmEventName
-                ... on NavigateAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
+                ...ActionFields
               }
             }
           }
+        }
+      }
+      fragment ActionFields on Action {
+        __typename
+        gtmEventName
+        ... on NavigateAction {
+          blockId
+        }
+        ... on NavigateToJourneyAction {
+          journeyId
+        }
+        ... on LinkAction {
+          url
         }
       }
     `,
