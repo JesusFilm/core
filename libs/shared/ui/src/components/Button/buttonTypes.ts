@@ -1,23 +1,27 @@
 
 export type IconList = 'playArrow' | 'translate' | 'checkCircle' | 'radioButtonUncheckd' | 'formatQuote' | 'lockOpen' | 'arrowForward' | 'chatBubbleOutline' | 'liveTv' | 'menuBook'
 
-export type ColorType = 'primary' | 'secondary'
+export type IconColor = 'primary' | 'secondary'
 
-export type SizeType = 'large' | 'medium' | 'small'
+export type IconSize = 'small' | 'medium' | 'large'
 
 export interface IconType {
   icon: IconList
-  color?: ColorType
-  size?: SizeType
+  color?: IconColor
+  size?: IconSize
 }
 
 export type ButtonVariant = 'contained' | 'outlined' | 'text'
 
+export type ButtonColor = 'primary' | 'secondary'
+
+export type ButtonSize = 'small' | 'medium' | 'large'
+
 export interface ButtonType {
   label: string
   variant?: ButtonVariant
-  color?: ColorType
-  size?: SizeType
+  color?: ButtonColor
+  size?: ButtonSize
   startIcon?: IconType
   endIcon?: IconType
 }
