@@ -9,6 +9,8 @@ The following is a set of guidelines for contributing to the Core Monorepo, whic
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
   * [Monorepo](#monorepo)
   * [Back-end Architecture](#back-end-architecture)
+    * [Schema Extensions](#schema-extensions)
+  * [Front-end Architecture](#front-end-architecture)
 
 [Getting Started](#getting-started)
   * [Developing inside a Container](#developing-inside-a-container)
@@ -42,6 +44,21 @@ Our back-end architecture consists of:
 - **api-gateway**: A gateway that uses a supergraph schema (composed from all subgraph schemas) to execute queries across multiple subgraphs
 
 When implementing back-end projects we encourage you to leverage a design principle called [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns). This enables different teams to work on different products and features within a single data graph, without interfering with each other.
+
+#### Schema Extensions
+
+It's important that once you've started on a schema extension that you to regenerate the schema. We leverage the generated schema to create types for front-end apps so they're super important! You can even extend the schema and generate types before you even write the related resolvers.
+
+1. Start the server for the back-end project e.g `nx serve api-journeys`
+2. In another terminal run the schema generator against the backend project e.g `nx generate-graphql api-journeys`
+3. Run the gateway schema `nx generate-graphql api-gateway`
+4. Commit the changed schema.graphql files
+
+### Front-end Architecture
+
+Jesus Film uses [React](https://reactjs.org/) as our primary library to build out front-end user interfaces. These are built on top of the [Apollo Client](https://www.apollographql.com/apollo-client) to manage state and back-end interactions. We leverage the [Next.js](https://nextjs.org/) Framework to ship web based apps quickly and regularly on the [Vercel](https://vercel.com/) platform.
+
+We are building out our component library to support the growing needs of our product suite. To support this effort all of our components have stories attached for use in [Storybook](https://storybook.js.org/). These stories are published to our library which can be found on our [Chromatic Library](https://www.chromatic.com/library?appId=612c2a83fdc2b2003a5c2eb7&groupPrefix=Journeys%2FBlocks).
 
 ## Getting Started
 
