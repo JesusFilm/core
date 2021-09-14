@@ -86,7 +86,7 @@ const startIconTemplate: Story<ButtonStoryProps> = (args) => (
 
 export const startIcon = startIconTemplate.bind({})
 startIcon.args = {
-  variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
+  variants: ['playArrow']
 }
 
 const endIconTemplate: Story<ButtonStoryProps> = (args) => (
@@ -102,7 +102,7 @@ const endIconTemplate: Story<ButtonStoryProps> = (args) => (
 
 export const endIcon = endIconTemplate.bind({})
 endIcon.args = {
-  variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
+  variants: ['playArrow']
 }
 
 const loadingTemplate: Story<ButtonStoryProps> = () => (
