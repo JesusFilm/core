@@ -30,7 +30,7 @@ it('creates a journey session', async () => {
     contextValue: { db }
   })
 
-  const journeySession = await db.journeySession.findUnique({
+  const journeySession = await db.userSession.findUnique({
     where: {
       id: data?.userSessionCreate
     }

@@ -12,11 +12,11 @@ generator client {
 }
 
 model Journey {
-  id              String  @id @default(uuid())
-  title           String
-  published       Boolean @default(false)
-  blocks          Block[]
-  journeySessions JourneySession[]
+  id           String  @id @default(uuid())
+  title        String
+  published    Boolean @default(false)
+  blocks       Block[]
+  userSessions UserSession[]
 }
 
 model Block {
@@ -39,7 +39,7 @@ enum BlockType {
   RadioOptionBlock
 }
 
-model JourneySession {
+model UserSession {
   id             String  @id @default(uuid())
   journey        Journey @relation(fields: [journeyId], references: [id])
   journeyId      String
@@ -47,10 +47,10 @@ model JourneySession {
 }
 
 model BlockResponse {
-  id               String         @id @default(uuid())
-  journeySession   JourneySession @relation(fields: [journeySessionId], references: [id])
-  journeySessionId String
-  block            Block          @relation(fields: [blockId], references: [id])
-  blockId          String
-  responseData     Json
+  id            String      @id @default(uuid())
+  userSession   UserSession @relation(fields: [userSessionId], references: [id])
+  userSessionId String
+  block         Block       @relation(fields: [blockId], references: [id])
+  blockId       String
+  responseData  Json
 }

@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "JourneySession" (
+CREATE TABLE "UserSession" (
     "id" TEXT NOT NULL,
     "journeyId" TEXT NOT NULL,
 
@@ -9,7 +9,7 @@ CREATE TABLE "JourneySession" (
 -- CreateTable
 CREATE TABLE "BlockResponse" (
     "id" TEXT NOT NULL,
-    "journeySessionId" TEXT NOT NULL,
+    "userSessionId" TEXT NOT NULL,
     "blockId" TEXT NOT NULL,
     "responseData" JSONB NOT NULL,
 
@@ -17,10 +17,10 @@ CREATE TABLE "BlockResponse" (
 );
 
 -- AddForeignKey
-ALTER TABLE "JourneySession" ADD FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "UserSession" ADD FOREIGN KEY ("journeyId") REFERENCES "Journey"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BlockResponse" ADD FOREIGN KEY ("journeySessionId") REFERENCES "JourneySession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "BlockResponse" ADD FOREIGN KEY ("userSessionId") REFERENCES "UserSession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BlockResponse" ADD FOREIGN KEY ("blockId") REFERENCES "Block"("id") ON DELETE CASCADE ON UPDATE CASCADE;
