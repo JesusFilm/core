@@ -22,7 +22,7 @@ const resolvers: UserSessionModule.Resolvers = {
 }
 
 export default createModule({
-  id: 'user-session',
+  id: 'userSession',
   dirname: __dirname,
   typeDefs: [typeDefs],
   resolvers

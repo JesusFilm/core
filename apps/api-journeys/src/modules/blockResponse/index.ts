@@ -74,7 +74,7 @@ const resolvers: BlockResponseModule.Resolvers = {
 }
 
 export default createModule({
-  id: 'block-response',
+  id: 'blockResponse',
   dirname: __dirname,
   typeDefs: [typeDefs],
   resolvers
