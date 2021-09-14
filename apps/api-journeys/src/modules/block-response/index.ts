@@ -9,44 +9,66 @@ const typeDefs = gql`
     FINISHED
   }
 
+  input SignupBlockResponseInput {
+    userSessionId: ID!
+    blockId: ID!
+    name: String!
+    email: String!
+  }
+
+  input VideoBlockResponseInput {
+    userSessionId: ID!
+    blockId: ID!
+    position: Float!
+    state: VideoBlockResponseStateEnum!
+  }
+
+  input RadioQuestionBlockResponseInput {
+    userSessionId: ID!
+    blockId: ID!
+    selectedResponseBlockId: ID!
+  }
   extend type Mutation {
-    signupBlockResponseCreate(userSessionId: ID!, blockId: ID!, name: String!, email: String!): ID!
-    videoBlockResponseCreate(userSessionId: ID!, blockId: ID!, position: Float!, state: VideoBlockResponseStateEnum!): ID!
-    radioQuestionBlockResponseCreate(userSessionId: ID!, blockId: ID!, selectedResponseBlockId: ID!): ID!
+    signupBlockResponseCreate(input: SignupBlockResponseInput!): ID!
+    videoBlockResponseCreate(input: VideoBlockResponseInput!): ID!
+    radioQuestionBlockResponseCreate(input: RadioQuestionBlockResponseInput!): ID!
   }
 `
 
 const resolvers: BlockResponseModule.Resolvers = {
   Mutation: {
-    async signupBlockResponseCreate (_parent, { userSessionId, blockId, name, email }, { db }) {
-      const response = await db.blockResponse.create({
+    async signupBlockResponseCreate (_parent, { input }, { db }) {
+      const { userSessionId, blockId, name, email } = input
+      const { id } = await db.blockResponse.create({
         data: {
           userSessionId,
           blockId,
           responseData: { name, email }
         }
       })
-      return response.id
+      return id
     },
-    async videoBlockResponseCreate (_parent, { userSessionId, blockId, position, state }, { db }) {
-      const response = await db.blockResponse.create({
+    async videoBlockResponseCreate (_parent, { input }, { db }) {
+      const { userSessionId, blockId, position, state } = input
+      const { id } = await db.blockResponse.create({
         data: {
           userSessionId,
           blockId,
           responseData: { position, state }
         }
       })
-      return response.id
+      return id
     },
-    async radioQuestionBlockResponseCreate (_parent, { userSessionId, blockId, selectedResponseBlockId }, { db }) {
-      const response = await db.blockResponse.create({
+    async radioQuestionBlockResponseCreate (_parent, { input }, { db }) {
+      const { userSessionId, blockId, selectedResponseBlockId } = input
+      const { id } = await db.blockResponse.create({
         data: {
           userSessionId,
           blockId,
           responseData: { selectedResponseBlockId }
         }
       })
-      return response.id
+      return id
     }
   }
 }

@@ -60,17 +60,12 @@ export type MutationJourneyPublishArgs = {
 
 
 export type MutationRadioQuestionBlockResponseCreateArgs = {
-  userSessionId: Scalars['ID'];
-  blockId: Scalars['ID'];
-  selectedResponseBlockId: Scalars['ID'];
+  input: RadioQuestionBlockResponseInput;
 };
 
 
 export type MutationSignupBlockResponseCreateArgs = {
-  userSessionId: Scalars['ID'];
-  blockId: Scalars['ID'];
-  name: Scalars['String'];
-  email: Scalars['String'];
+  input: SignupBlockResponseInput;
 };
 
 
@@ -80,10 +75,7 @@ export type MutationUserSessionCreateArgs = {
 
 
 export type MutationVideoBlockResponseCreateArgs = {
-  userSessionId: Scalars['ID'];
-  blockId: Scalars['ID'];
-  position: Scalars['Float'];
-  state: VideoBlockResponseStateEnum;
+  input: VideoBlockResponseInput;
 };
 
 export type NavigateAction = Action & {
@@ -126,9 +118,22 @@ export type RadioQuestionBlock = Block & {
   variant?: Maybe<RadioQuestionVariant>;
 };
 
+export type RadioQuestionBlockResponseInput = {
+  userSessionId: Scalars['ID'];
+  blockId: Scalars['ID'];
+  selectedResponseBlockId: Scalars['ID'];
+};
+
 export type RadioQuestionVariant =
   | 'LIGHT'
   | 'DARK';
+
+export type SignupBlockResponseInput = {
+  userSessionId: Scalars['ID'];
+  blockId: Scalars['ID'];
+  name: Scalars['String'];
+  email: Scalars['String'];
+};
 
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
@@ -144,6 +149,13 @@ export type VideoBlock = Block & {
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   provider: VideoProviderEnum;
+};
+
+export type VideoBlockResponseInput = {
+  userSessionId: Scalars['ID'];
+  blockId: Scalars['ID'];
+  position: Scalars['Float'];
+  state: VideoBlockResponseStateEnum;
 };
 
 export type VideoBlockResponseStateEnum =
@@ -233,15 +245,18 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
   NavigateAction: ResolverTypeWrapper<NavigateAction>;
   NavigateToJourneyAction: ResolverTypeWrapper<NavigateToJourneyAction>;
   Query: ResolverTypeWrapper<{}>;
   RadioOptionBlock: ResolverTypeWrapper<RadioOptionBlock>;
   RadioQuestionBlock: ResolverTypeWrapper<RadioQuestionBlock>;
+  RadioQuestionBlockResponseInput: RadioQuestionBlockResponseInput;
   RadioQuestionVariant: RadioQuestionVariant;
+  SignupBlockResponseInput: SignupBlockResponseInput;
   StepBlock: ResolverTypeWrapper<StepBlock>;
   VideoBlock: ResolverTypeWrapper<VideoBlock>;
+  VideoBlockResponseInput: VideoBlockResponseInput;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   VideoBlockResponseStateEnum: VideoBlockResponseStateEnum;
   VideoProviderEnum: VideoProviderEnum;
 };
@@ -256,14 +271,17 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   LinkAction: LinkAction;
   Mutation: {};
-  Float: Scalars['Float'];
   NavigateAction: NavigateAction;
   NavigateToJourneyAction: NavigateToJourneyAction;
   Query: {};
   RadioOptionBlock: RadioOptionBlock;
   RadioQuestionBlock: RadioQuestionBlock;
+  RadioQuestionBlockResponseInput: RadioQuestionBlockResponseInput;
+  SignupBlockResponseInput: SignupBlockResponseInput;
   StepBlock: StepBlock;
   VideoBlock: VideoBlock;
+  VideoBlockResponseInput: VideoBlockResponseInput;
+  Float: Scalars['Float'];
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
@@ -295,10 +313,10 @@ export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType
 export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   journeyCreate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyCreateArgs, 'title'>>;
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
-  radioQuestionBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRadioQuestionBlockResponseCreateArgs, 'userSessionId' | 'blockId' | 'selectedResponseBlockId'>>;
-  signupBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationSignupBlockResponseCreateArgs, 'userSessionId' | 'blockId' | 'name' | 'email'>>;
+  radioQuestionBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRadioQuestionBlockResponseCreateArgs, 'input'>>;
+  signupBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationSignupBlockResponseCreateArgs, 'input'>>;
   userSessionCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationUserSessionCreateArgs, 'journeyId'>>;
-  videoBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationVideoBlockResponseCreateArgs, 'userSessionId' | 'blockId' | 'position' | 'state'>>;
+  videoBlockResponseCreate?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationVideoBlockResponseCreateArgs, 'input'>>;
 };
 
 export type NavigateActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateAction'] = ResolversParentTypes['NavigateAction']> = {

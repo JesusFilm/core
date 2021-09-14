@@ -36,10 +36,12 @@ it('creates a video block response', async () => {
   const query = gql`
     mutation($userSessionId: ID!, $blockId: ID!) {
       videoBlockResponseCreate(
-        userSessionId: $userSessionId,
-        blockId: $blockId,
-        position: 4.1,
-        state: PAUSED
+        input: {
+          userSessionId: $userSessionId,
+          blockId: $blockId,
+          position: 4.1,
+          state: PAUSED
+        }
       ) {
         id
       }
