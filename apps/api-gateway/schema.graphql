@@ -25,6 +25,72 @@ interface Block {
   parentBlockId: ID
 }
 
+enum ButtonAlignment {
+  CENTER
+  LEFT
+  RIGHT
+}
+
+type ButtonBlock implements Block {
+  action: Action
+  color: ButtonColor
+  endIcon: Icon
+  id: ID!
+  label: String!
+  parentBlockId: ID
+  size: ButtonSize
+  startIcon: Icon
+  variant: ButtonBlockVariant
+}
+
+enum ButtonBlockVariant {
+  CONTAINED
+  OUTLINED
+  TEXT
+}
+
+enum ButtonColor {
+  PRIMARY
+  SECONDARY
+}
+
+enum ButtonSize {
+  LARGE
+  MEDIUM
+  SMALL
+}
+
+type Icon {
+  color: IconColor
+  name: IconName!
+  size: IconSize
+}
+
+enum IconColor {
+  DISABLED
+  NORMAL
+}
+
+enum IconName {
+  ARROW_FORWARD
+  CHAT_BUBBLE_ONLINE
+  CHECK_CIRCLE
+  FORMAT_QUOTE
+  LIVE_TV
+  LOCK_OPEN
+  MENU_BOOK
+  PLAY_ARROW
+  RADIO_BUTTON_UNCHECKED
+  TRANSLATE
+}
+
+enum IconSize {
+  LARGE
+  MEDIUM_LARGE
+  MEDIUM_SMALL
+  SMALL
+}
+
 scalar join__FieldSet
 
 enum join__Graph {
@@ -96,7 +162,7 @@ type VideoBlock implements Block {
   description: String
   id: ID!
   parentBlockId: ID
-  provider: VideoProviderEnum
+  provider: VideoProviderEnum!
   src: String!
   title: String!
 }

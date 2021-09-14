@@ -176,6 +176,28 @@ async function main (): Promise<void> {
       parentOrder: 5
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: stepWhenIWantToStart.id,
+      extraAttrs: {
+        label: 'Sign me up',
+        variant: 'OUTLINED',
+        color: 'PRIMARY',
+        size: 'LARGE',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'NORMAL',
+          size: '24px'
+        },
+        action: {
+          gtmEventName: 'signup',
+          url: 'https://signup.jesusfilm.org'
+        }
+      }
+    }
+  })
 }
 
 main()

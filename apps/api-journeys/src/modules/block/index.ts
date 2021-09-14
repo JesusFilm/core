@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
-import { Block, NavigateAction, NavigateToJourneyAction, Resolvers } from '../../__generated__/types'
+import { Block, NavigateAction, NavigateToJourneyAction, IconName, IconSize, Resolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
@@ -72,6 +72,72 @@ const typeDefs = gql`
     label: String!
     action: Action
   }
+
+  enum IconName {
+    PLAY_ARROW
+    TRANSLATE
+    CHECK_CIRCLE
+    RADIO_BUTTON_UNCHECKED
+    FORMAT_QUOTE
+    LOCK_OPEN
+    ARROW_FORWARD
+    CHAT_BUBBLE_ONLINE
+    LIVE_TV
+    MENU_BOOK
+  }
+
+  enum IconColor {
+    NORMAL
+    DISABLED
+  }
+
+  enum IconSize {
+    SMALL
+    MEDIUM_SMALL
+    MEDIUM_LARGE
+    LARGE
+  }
+
+  type Icon {
+    name: IconName!
+    color: IconColor
+    size: IconSize
+  }
+
+  enum ButtonColor {
+    PRIMARY
+    SECONDARY
+  }
+
+  enum ButtonAlignment {
+    LEFT
+    CENTER
+    RIGHT
+  }
+
+  enum ButtonSize {
+    LARGE
+    MEDIUM
+    SMALL
+  }
+
+  enum ButtonBlockVariant {
+    CONTAINED
+    OUTLINED
+    TEXT
+  }
+
+  type ButtonBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    label: String!
+    variant: ButtonBlockVariant
+    color: ButtonColor
+    size: ButtonSize
+    startIcon: Icon
+    endIcon: Icon
+    action: Action
+  }
 `
 
 const resolvers: Resolvers = {
@@ -98,7 +164,9 @@ const resolvers: Resolvers = {
       }
       return 'LinkAction'
     }
-  }
+  },
+  IconName,
+  IconSize
 }
 
 export default createModule({
