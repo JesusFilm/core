@@ -15,7 +15,7 @@ const block: ButtonProps = {
 describe('Button', () => {
   it('should render the button successfully', () => {
     const { getByText, getByTestId } = render(<Button {...block} />)
-    expect(getByText('This is a button')).toBeTruthy()
+    expect(getByText('This is a button')).toBeInTheDocument()
     expect(getByTestId('ButtonComponent')).toBeTruthy()
   })
 
