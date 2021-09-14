@@ -50,7 +50,7 @@ export function Button (props: ButtonProps): ReactElement {
     className={classes.spacing}
     startIcon={props.startIcon?.icon !== null ? setIcon(props.startIcon?.icon) : null}
     endIcon={props.endIcon?.icon !== null ? setIcon(props.endIcon?.icon) : null}>
-        {props.label === '' ? <CircularProgress color="secondary" /> : props.label}
+        {props.loading === false ? <CircularProgress color="secondary" /> : props.label}
     </MuiButton>
   )
 }

@@ -11,7 +11,7 @@ interface ButtonStoryProps extends ButtonProps {
   variants: string[]
 }
 
-const Template: Story<ButtonStoryProps> = (args) => (
+const Template: Story<ButtonStoryProps> = () => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
@@ -105,12 +105,12 @@ endIcon.args = {
   variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
 }
 
-const loadingTemplate: Story<ButtonStoryProps> = (args) => (
+const loadingTemplate: Story<ButtonStoryProps> = () => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
   }}>
-    <Button label='' variant="contained"/>
+    <Button label='' variant="contained" loading={false}/>
   </div>
 )
 
