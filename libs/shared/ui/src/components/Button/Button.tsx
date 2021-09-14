@@ -20,6 +20,7 @@ export function Button (props: ButtonProps): ReactElement {
 
   return (
     <MuiButton {...props}
+    data-testid='ButtonComponent'
     className={classes.spacing}
     startIcon={props.startIcon?.icon !== null ? <Icon icon={props.startIcon?.icon} /> : null}
     endIcon={props.endIcon?.icon !== null ? <Icon icon={props.endIcon?.icon} /> : null}>

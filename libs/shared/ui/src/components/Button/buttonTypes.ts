@@ -17,7 +17,10 @@ export type ButtonColor = 'primary' | 'secondary'
 
 export type ButtonSize = 'small' | 'medium' | 'large'
 
+export type Typename = 'ButtonBlock'
+
 export interface ButtonType {
+  __typename: Typename
   label: string
   variant?: ButtonVariant
   color?: ButtonColor
