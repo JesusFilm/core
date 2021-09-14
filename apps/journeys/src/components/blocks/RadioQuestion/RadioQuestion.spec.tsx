@@ -1,4 +1,4 @@
-import { fireEvent, renderWithStore } from '../../../../test/testingLibrary'
+import { fireEvent, renderWithApolloClient } from '../../../../test/testingLibrary'
 import { RadioQuestion } from '.'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -29,25 +29,25 @@ describe('RadioQuestion', () => {
   }
 
   it('should render question props', () => {
-    const { getByText, getByTestId } = renderWithStore(<RadioQuestion {...block} />)
+    const { getByText, getByTestId } = renderWithApolloClient(<RadioQuestion {...block} />)
     expect(getByText('Label')).toBeInTheDocument()
     expect(getByText('Description')).toBeInTheDocument()
     expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-light')
   })
 
   it('should display the correct options', () => {
-    const { getByText } = renderWithStore(<RadioQuestion {...block} />)
+    const { getByText } = renderWithApolloClient(<RadioQuestion {...block} />)
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
   })
 
   it('should render dark theme', () => {
-    const { getByTestId } = renderWithStore(<RadioQuestion {...block} variant={RadioQuestionVariant.DARK} />)
+    const { getByTestId } = renderWithApolloClient(<RadioQuestion {...block} variant={RadioQuestionVariant.DARK} />)
     expect(getByTestId('RadioQuestionCard')).toHaveClass('MuiRadioQuestionComponent-dark')
   })
 
   it('should select an option OnClick', () => {
-    const { getByTestId, getAllByRole } = renderWithStore(<RadioQuestion {...block}/>)
+    const { getByTestId, getAllByRole } = renderWithApolloClient(<RadioQuestion {...block}/>)
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
     expect(buttons[0]).not.toBeDisabled()
@@ -55,7 +55,7 @@ describe('RadioQuestion', () => {
   })
 
   it('should disable unselected options', () => {
-    const { getByTestId, getAllByRole } = renderWithStore(
+    const { getByTestId, getAllByRole } = renderWithApolloClient(
       <RadioQuestion {...block} />
     )
     const buttons = getAllByRole('button')
