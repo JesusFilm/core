@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Button as MuiButton } from '@mui/material'
+import { Button as MuiButton, CircularProgress } from '@mui/material'
 import { CheckCircle, PlayArrow, Translate, RadioButtonUnchecked, FormatQuote, LockOpen, ArrowForward, ChatBubbleOutline, LiveTv, MenuBook } from '@mui/icons-material'
 import { makeStyles } from '@mui/styles'
 import { ButtonType } from './buttonTypes'
@@ -50,7 +50,7 @@ export function Button (props: ButtonProps): ReactElement {
     className={classes.spacing}
     startIcon={props.startIcon?.icon !== null ? setIcon(props.startIcon?.icon) : null}
     endIcon={props.endIcon?.icon !== null ? setIcon(props.endIcon?.icon) : null}>
-        {props.label}
+        {props.label === '' ? <CircularProgress color="secondary" /> : props.label}
     </MuiButton>
   )
 }

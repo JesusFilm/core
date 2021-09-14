@@ -105,4 +105,18 @@ endIcon.args = {
   variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
 }
 
+const loadingTemplate: Story<ButtonStoryProps> = (args) => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column'
+  }}>
+    <Button label='' variant="contained"/>
+  </div>
+)
+
+export const Loading = loadingTemplate.bind({})
+Loading.args = {
+  variants: []
+}
+
 export default ButtonDemo as Meta
