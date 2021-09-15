@@ -183,13 +183,13 @@ async function main (): Promise<void> {
       parentBlockId: stepWhenIWantToStart.id,
       extraAttrs: {
         label: 'Sign me up',
-        variant: 'OUTLINED',
-        color: 'PRIMARY',
-        size: 'LARGE',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'NORMAL',
-          size: '24px'
+          name: 'PLAY_ARROW',
+          color: 'secondary',
+          size: 'medium'
         },
         action: {
           gtmEventName: 'signup',

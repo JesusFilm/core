@@ -20,13 +20,12 @@ export namespace BlockModule {
   interface DefinedEnumValues {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
-    IconName: 'PLAY_ARROW' | 'TRANSLATE' | 'CHECK_CIRCLE' | 'RADIO_BUTTON_UNCHECKED' | 'FORMAT_QUOTE' | 'LOCK_OPEN' | 'ARROW_FORWARD' | 'CHAT_BUBBLE_ONLINE' | 'LIVE_TV' | 'MENU_BOOK';
-    IconColor: 'NORMAL' | 'DISABLED';
-    IconSize: 'SMALL' | 'MEDIUM_SMALL' | 'MEDIUM_LARGE' | 'LARGE';
-    ButtonColor: 'PRIMARY' | 'SECONDARY';
-    ButtonAlignment: 'LEFT' | 'CENTER' | 'RIGHT';
-    ButtonSize: 'LARGE' | 'MEDIUM' | 'SMALL';
-    ButtonBlockVariant: 'CONTAINED' | 'OUTLINED' | 'TEXT';
+    IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOnline' | 'LiveTv' | 'MenuBook';
+    IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled';
+    IconSize: 'small' | 'medium' | 'large' | 'inherit';
+    ButtonBlockVariant: 'text' | 'outlined' | 'contained';
+    ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
+    ButtonSize: 'small' | 'medium' | 'large';
   };
   
   export type Journey = Types.Journey;
@@ -45,10 +44,9 @@ export namespace BlockModule {
   export type IconColor = DefinedEnumValues['IconColor'];
   export type IconSize = DefinedEnumValues['IconSize'];
   export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
-  export type ButtonColor = DefinedEnumValues['ButtonColor'];
-  export type ButtonAlignment = DefinedEnumValues['ButtonAlignment'];
-  export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlockVariant = DefinedEnumValues['ButtonBlockVariant'];
+  export type ButtonColor = DefinedEnumValues['ButtonColor'];
+  export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
   
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;

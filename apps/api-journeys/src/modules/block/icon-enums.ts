@@ -1,19 +1,14 @@
+// Mapping of current, Material-UI icon type names (in the GraphQL interface)
+// to the generic values we are storing in the database
 export enum IconName {
-  PLAY_ARROW = 'PlayArrow',
-  TRANSLATE = 'Translate',
-  CHECK_CIRCLE = 'CheckCircle',
-  RADIO_BUTTON_UNCHECKED = 'RadioButtonUnchecked',
-  FORMAT_QUOTE = 'FormatQuote',
-  LOCK_OPEN = 'LockOpen',
-  ARROW_FORWARD = 'ArrowForward',
-  CHAT_BUBBLE_OUTLINE = 'ChatBubbleOutline',
-  LIVE_TV = 'LiveTv',
-  MENU_BOOK = 'MenuBook'
-}
-
-export enum IconSize {
-  SMALL = '18px',
-  MEDIUM_SMALL = '24px',
-  MEDIUM_LARGE = '36px',
-  LARGE = '48px'
+  PlayArrow = 'PLAY_ARROW',
+  Translate = 'TRANSLATE',
+  CheckCircle = 'CHECK_CIRCLE',
+  RadioButtonUnchecked = 'RADIO_BUTTON_UNCHECKED',
+  FormatQuote = 'FORMAT_QUOTE',
+  LockOpen = 'LOCK_OPEN',
+  ArrowForward = 'ARROW_FORWARD',
+  ChatBubbleOutline = 'CHAT_BUBBLE_OUTLINE',
+  LiveTv = 'LIVE_TV',
+  MenuBook = 'MENU_BOOK'
 }

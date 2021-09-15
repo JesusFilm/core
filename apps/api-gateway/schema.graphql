@@ -25,12 +25,6 @@ interface Block {
   parentBlockId: ID
 }
 
-enum ButtonAlignment {
-  CENTER
-  LEFT
-  RIGHT
-}
-
 type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
@@ -44,20 +38,25 @@ type ButtonBlock implements Block {
 }
 
 enum ButtonBlockVariant {
-  CONTAINED
-  OUTLINED
-  TEXT
+  contained
+  outlined
+  text
 }
 
 enum ButtonColor {
-  PRIMARY
-  SECONDARY
+  error
+  info
+  inherit
+  primary
+  secondary
+  success
+  warning
 }
 
 enum ButtonSize {
-  LARGE
-  MEDIUM
-  SMALL
+  large
+  medium
+  small
 }
 
 type Icon {
@@ -67,28 +66,31 @@ type Icon {
 }
 
 enum IconColor {
-  DISABLED
-  NORMAL
+  action
+  disabled
+  error
+  primary
+  secondary
 }
 
 enum IconName {
-  ARROW_FORWARD
-  CHAT_BUBBLE_ONLINE
-  CHECK_CIRCLE
-  FORMAT_QUOTE
-  LIVE_TV
-  LOCK_OPEN
-  MENU_BOOK
-  PLAY_ARROW
-  RADIO_BUTTON_UNCHECKED
-  TRANSLATE
+  ArrowForward
+  ChatBubbleOnline
+  CheckCircle
+  FormatQuote
+  LiveTv
+  LockOpen
+  MenuBook
+  PlayArrow
+  RadioButtonUnchecked
+  Translate
 }
 
 enum IconSize {
-  LARGE
-  MEDIUM_LARGE
-  MEDIUM_SMALL
-  SMALL
+  inherit
+  large
+  medium
+  small
 }
 
 scalar join__FieldSet

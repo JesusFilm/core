@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { IconName } from '../modules/block/icon-enums';
-import { IconSize } from '../modules/block/icon-enums';
 import { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -26,11 +25,6 @@ export type Block = {
   parentBlockId?: Maybe<Scalars['ID']>;
 };
 
-export type ButtonAlignment =
-  | 'LEFT'
-  | 'CENTER'
-  | 'RIGHT';
-
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
   id: Scalars['ID'];
@@ -45,18 +39,23 @@ export type ButtonBlock = Block & {
 };
 
 export type ButtonBlockVariant =
-  | 'CONTAINED'
-  | 'OUTLINED'
-  | 'TEXT';
+  | 'text'
+  | 'outlined'
+  | 'contained';
 
 export type ButtonColor =
-  | 'PRIMARY'
-  | 'SECONDARY';
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'error'
+  | 'info'
+  | 'warning'
+  | 'inherit';
 
 export type ButtonSize =
-  | 'LARGE'
-  | 'MEDIUM'
-  | 'SMALL';
+  | 'small'
+  | 'medium'
+  | 'large';
 
 export type Icon = {
   __typename?: 'Icon';
@@ -66,12 +65,19 @@ export type Icon = {
 };
 
 export type IconColor =
-  | 'NORMAL'
-  | 'DISABLED';
+  | 'primary'
+  | 'secondary'
+  | 'action'
+  | 'error'
+  | 'disabled';
 
 export { IconName };
 
-export { IconSize };
+export type IconSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'inherit';
 
 export type Journey = {
   __typename?: 'Journey';
@@ -242,7 +248,6 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Block: ResolversTypes['ButtonBlock'] | ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'];
   ID: ResolverTypeWrapper<Scalars['ID']>;
-  ButtonAlignment: ButtonAlignment;
   ButtonBlock: ResolverTypeWrapper<ButtonBlock>;
   ButtonBlockVariant: ButtonBlockVariant;
   ButtonColor: ButtonColor;
@@ -318,9 +323,7 @@ export type IconResolvers<ContextType = GraphQLModules.Context, ParentType exten
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type IconNameResolvers = EnumResolverSignature<{ PLAY_ARROW?: any, TRANSLATE?: any, CHECK_CIRCLE?: any, RADIO_BUTTON_UNCHECKED?: any, FORMAT_QUOTE?: any, LOCK_OPEN?: any, ARROW_FORWARD?: any, CHAT_BUBBLE_ONLINE?: any, LIVE_TV?: any, MENU_BOOK?: any }, ResolversTypes['IconName']>;
-
-export type IconSizeResolvers = EnumResolverSignature<{ SMALL?: any, MEDIUM_SMALL?: any, MEDIUM_LARGE?: any, LARGE?: any }, ResolversTypes['IconSize']>;
+export type IconNameResolvers = EnumResolverSignature<{ PlayArrow?: any, Translate?: any, CheckCircle?: any, RadioButtonUnchecked?: any, FormatQuote?: any, LockOpen?: any, ArrowForward?: any, ChatBubbleOnline?: any, LiveTv?: any, MenuBook?: any }, ResolversTypes['IconName']>;
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
@@ -398,7 +401,6 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   ButtonBlock?: ButtonBlockResolvers<ContextType>;
   Icon?: IconResolvers<ContextType>;
   IconName?: IconNameResolvers;
-  IconSize?: IconSizeResolvers;
   Journey?: JourneyResolvers<ContextType>;
   LinkAction?: LinkActionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
