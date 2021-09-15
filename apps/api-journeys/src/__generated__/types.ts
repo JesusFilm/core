@@ -1,12 +1,10 @@
 /* eslint-disable */
-import { TypographyVariant } from '../modules/block/typography-enums';
 import { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
-export type EnumResolverSignature<T, AllowedValues = any> = { [key in keyof T]?: AllowedValues };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -109,9 +107,9 @@ export type StepBlock = Block & {
 };
 
 export type TypographyAlign =
-  | 'LEFT'
-  | 'CENTER'
-  | 'RIGHT';
+  | 'left'
+  | 'center'
+  | 'right';
 
 export type TypographyBlock = Block & {
   __typename?: 'TypographyBlock';
@@ -124,14 +122,27 @@ export type TypographyBlock = Block & {
 };
 
 export type TypographyColor =
-  | 'PRIMARY'
-  | 'SECONDARY'
-  | 'ERROR'
-  | 'WARNING'
-  | 'INFO'
-  | 'SUCCESS';
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'success';
 
-export { TypographyVariant };
+export type TypographyVariant =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'subtitle1'
+  | 'subtitle2'
+  | 'body1'
+  | 'body2'
+  | 'button'
+  | 'caption'
+  | 'overline';
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
@@ -342,8 +353,6 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TypographyVariantResolvers = EnumResolverSignature<{ HEADING_1?: any, HEADING_2?: any, HEADING_3?: any, HEADING_4?: any, HEADING_5?: any, HEADING_6?: any, SUBTITLE_1?: any, SUBTITLE_2?: any, BODY_1?: any, BODY_2?: any, BUTTON?: any, CAPTION?: any, OVERLINE?: any }, ResolversTypes['TypographyVariant']>;
-
 export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoBlock'] = ResolversParentTypes['VideoBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -367,7 +376,6 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   RadioQuestionBlock?: RadioQuestionBlockResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
-  TypographyVariant?: TypographyVariantResolvers;
   VideoBlock?: VideoBlockResolvers<ContextType>;
 };
 

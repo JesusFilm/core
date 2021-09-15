@@ -185,8 +185,8 @@ async function main (): Promise<void> {
       extraAttrs: {
         content: 'Fantastis!',
         variant: 'h1',
-        color: 'PRIMARY',
-        align: 'LEFT'
+        color: 'primary',
+        align: 'left'
       }
     }
   })

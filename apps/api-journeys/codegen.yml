@@ -9,8 +9,6 @@ generates:
       filename: __generated__/types.ts
     config:
       contextType: GraphQLModules.Context
-      enumValues:
-        TypographyVariant: ../modules/block/typography-enums#TypographyVariant
     plugins:
       - add:
           content: '/* eslint-disable */'

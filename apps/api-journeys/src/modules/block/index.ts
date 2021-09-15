@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
-import { Block, NavigateAction, NavigateToJourneyAction, TypographyVariant, Resolvers } from '../../__generated__/types'
+import { Block, NavigateAction, NavigateToJourneyAction, Resolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
@@ -74,34 +74,34 @@ const typeDefs = gql`
   }
 
   enum TypographyVariant {
-    HEADING_1,
-    HEADING_2,
-    HEADING_3,
-    HEADING_4,
-    HEADING_5,
-    HEADING_6,
-    SUBTITLE_1,
-    SUBTITLE_2,
-    BODY_1,
-    BODY_2,
-    BUTTON,
-    CAPTION,
-    OVERLINE
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    subtitle1,
+    subtitle2,
+    body1,
+    body2,
+    button,
+    caption,
+    overline
   }
   
   enum TypographyColor {
-    PRIMARY,
-    SECONDARY,
-    ERROR,
-    WARNING,
-    INFO,
-    SUCCESS
+    primary,
+    secondary,
+    error,
+    warning,
+    info,
+    success
   }
 
   enum TypographyAlign {
-    LEFT,
-    CENTER,
-    RIGHT
+    left,
+    center,
+    right
   }
 
   type TypographyBlock implements Block {
@@ -138,8 +138,7 @@ const resolvers: Resolvers = {
       }
       return 'LinkAction'
     }
-  },
-  TypographyVariant
+  }
 }
 
 export default createModule({

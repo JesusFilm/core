@@ -3,7 +3,6 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
-import { TypographyVariant } from './typography-enums'
 
 beforeEach(async () => {
   await db.block.deleteMany()
@@ -110,9 +109,9 @@ it('returns blocks', async () => {
       parentBlockId: block1.id,
       extraAttrs: {
         content: 'text',
-        variant: TypographyVariant.HEADING_2,
-        color: 'SUCCESS',
-        align: 'CENTER'
+        variant: 'h2',
+        color: 'primary',
+        align: 'left'
       }
     }
   })
@@ -231,9 +230,9 @@ it('returns blocks', async () => {
       __typename: 'TypographyBlock',
       parentBlockId: block1.id,
       content: 'text',
-      variant: 'HEADING_2',
-      color: 'SUCCESS',
-      align: 'CENTER'
+      variant: 'h2',
+      color: 'primary',
+      align: 'left'
     }
   ])
 })

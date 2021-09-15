@@ -94,9 +94,9 @@ type StepBlock implements Block {
 }
 
 enum TypographyAlign {
-  CENTER
-  LEFT
-  RIGHT
+  center
+  left
+  right
 }
 
 type TypographyBlock implements Block {
@@ -109,28 +109,28 @@ type TypographyBlock implements Block {
 }
 
 enum TypographyColor {
-  ERROR
-  INFO
-  PRIMARY
-  SECONDARY
-  SUCCESS
-  WARNING
+  error
+  info
+  primary
+  secondary
+  success
+  warning
 }
 
 enum TypographyVariant {
-  BODY_1
-  BODY_2
-  BUTTON
-  CAPTION
-  HEADING_1
-  HEADING_2
-  HEADING_3
-  HEADING_4
-  HEADING_5
-  HEADING_6
-  OVERLINE
-  SUBTITLE_1
-  SUBTITLE_2
+  body1
+  body2
+  button
+  caption
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  overline
+  subtitle1
+  subtitle2
 }
 
 type VideoBlock implements Block {

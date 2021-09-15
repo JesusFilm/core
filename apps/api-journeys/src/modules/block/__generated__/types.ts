@@ -19,9 +19,9 @@ export namespace BlockModule {
   interface DefinedEnumValues {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
-    TypographyVariant: 'HEADING_1' | 'HEADING_2' | 'HEADING_3' | 'HEADING_4' | 'HEADING_5' | 'HEADING_6' | 'SUBTITLE_1' | 'SUBTITLE_2' | 'BODY_1' | 'BODY_2' | 'BUTTON' | 'CAPTION' | 'OVERLINE';
-    TypographyColor: 'PRIMARY' | 'SECONDARY' | 'ERROR' | 'WARNING' | 'INFO' | 'SUCCESS';
-    TypographyAlign: 'LEFT' | 'CENTER' | 'RIGHT';
+    TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'button' | 'caption' | 'overline';
+    TypographyColor: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
+    TypographyAlign: 'left' | 'center' | 'right';
   };
   
   export type Journey = Types.Journey;
