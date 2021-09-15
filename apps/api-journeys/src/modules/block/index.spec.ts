@@ -3,7 +3,7 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
-import { IconName, IconSize } from './icon-enums'
+import { IconName } from './icon-enums'
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
@@ -100,18 +100,18 @@ it('returns blocks', async () => {
       parentBlockId: block1.id,
       extraAttrs: {
         label: 'label',
-        variant: 'OUTLINED',
-        color: 'PRIMARY',
-        size: 'LARGE',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
         startIcon: {
-          name: IconName.ARROW_FORWARD,
-          color: 'NORMAL',
-          size: IconSize.LARGE
+          name: IconName.ArrowForward,
+          color: 'secondary',
+          size: 'medium'
         },
         endIcon: {
-          name: IconName.LOCK_OPEN,
-          color: 'DISABLED',
-          size: IconSize.SMALL
+          name: IconName.LockOpen,
+          color: 'action',
+          size: 'small'
         },
         action: {
           gtmEventName: 'gtmEventName',
@@ -259,18 +259,18 @@ it('returns blocks', async () => {
       __typename: 'ButtonBlock',
       parentBlockId: block1.id,
       label: 'label',
-      variant: 'OUTLINED',
-      color: 'PRIMARY',
-      size: 'LARGE',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
       startIcon: {
-        name: 'ARROW_FORWARD',
-        color: 'NORMAL',
-        size: 'LARGE'
+        name: 'ArrowForward',
+        color: 'secondary',
+        size: 'medium'
       },
       endIcon: {
-        name: 'LOCK_OPEN',
-        color: 'DISABLED',
-        size: 'SMALL'
+        name: 'LockOpen',
+        color: 'action',
+        size: 'small'
       },
       action: {
         __typename: 'LinkAction',

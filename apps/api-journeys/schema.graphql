@@ -7,12 +7,6 @@ interface Block {
   parentBlockId: ID
 }
 
-enum ButtonAlignment {
-  LEFT
-  CENTER
-  RIGHT
-}
-
 type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
@@ -26,20 +20,25 @@ type ButtonBlock implements Block {
 }
 
 enum ButtonBlockVariant {
-  CONTAINED
-  OUTLINED
-  TEXT
+  text
+  outlined
+  contained
 }
 
 enum ButtonColor {
-  PRIMARY
-  SECONDARY
+  primary
+  secondary
+  success
+  error
+  info
+  warning
+  inherit
 }
 
 enum ButtonSize {
-  LARGE
-  MEDIUM
-  SMALL
+  small
+  medium
+  large
 }
 
 type Icon {
@@ -49,28 +48,31 @@ type Icon {
 }
 
 enum IconColor {
-  NORMAL
-  DISABLED
+  primary
+  secondary
+  action
+  error
+  disabled
 }
 
 enum IconName {
-  PLAY_ARROW
-  TRANSLATE
-  CHECK_CIRCLE
-  RADIO_BUTTON_UNCHECKED
-  FORMAT_QUOTE
-  LOCK_OPEN
-  ARROW_FORWARD
-  CHAT_BUBBLE_ONLINE
-  LIVE_TV
-  MENU_BOOK
+  PlayArrow
+  Translate
+  CheckCircle
+  RadioButtonUnchecked
+  FormatQuote
+  LockOpen
+  ArrowForward
+  ChatBubbleOnline
+  LiveTv
+  MenuBook
 }
 
 enum IconSize {
-  SMALL
-  MEDIUM_SMALL
-  MEDIUM_LARGE
-  LARGE
+  small
+  medium
+  large
+  inherit
 }
 
 type Journey @key(fields: "id") {

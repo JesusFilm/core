@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
-import { Block, NavigateAction, NavigateToJourneyAction, IconName, IconSize, Resolvers } from '../../__generated__/types'
+import { Block, NavigateAction, NavigateToJourneyAction, IconName, Resolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
@@ -73,29 +73,33 @@ const typeDefs = gql`
     action: Action
   }
 
+  # MaterialUI Icon Type Names:
   enum IconName {
-    PLAY_ARROW
-    TRANSLATE
-    CHECK_CIRCLE
-    RADIO_BUTTON_UNCHECKED
-    FORMAT_QUOTE
-    LOCK_OPEN
-    ARROW_FORWARD
-    CHAT_BUBBLE_ONLINE
-    LIVE_TV
-    MENU_BOOK
+    PlayArrow
+    Translate
+    CheckCircle
+    RadioButtonUnchecked
+    FormatQuote
+    LockOpen
+    ArrowForward
+    ChatBubbleOnline
+    LiveTv
+    MenuBook
   }
 
   enum IconColor {
-    NORMAL
-    DISABLED
+    primary
+    secondary
+    action
+    error
+    disabled
   }
 
   enum IconSize {
-    SMALL
-    MEDIUM_SMALL
-    MEDIUM_LARGE
-    LARGE
+    small
+    medium
+    large
+    inherit
   }
 
   type Icon {
@@ -104,27 +108,26 @@ const typeDefs = gql`
     size: IconSize
   }
 
-  enum ButtonColor {
-    PRIMARY
-    SECONDARY
+  enum ButtonBlockVariant {
+    text
+    outlined
+    contained
   }
 
-  enum ButtonAlignment {
-    LEFT
-    CENTER
-    RIGHT
+  enum ButtonColor {
+    primary
+    secondary
+    success
+    error
+    info
+    warning
+    inherit
   }
 
   enum ButtonSize {
-    LARGE
-    MEDIUM
-    SMALL
-  }
-
-  enum ButtonBlockVariant {
-    CONTAINED
-    OUTLINED
-    TEXT
+    small
+    medium
+    large
   }
 
   type ButtonBlock implements Block {
@@ -165,8 +168,7 @@ const resolvers: Resolvers = {
       return 'LinkAction'
     }
   },
-  IconName,
-  IconSize
+  IconName
 }
 
 export default createModule({
