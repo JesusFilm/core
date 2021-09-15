@@ -341,7 +341,7 @@
           "options": {
             "commands": [
               {
-                "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript --outputFlat libs/shared/ui/__generated__"
+                "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript  --globalTypesFile=libs/shared/ui/__generated__/globalTypes.ts"
               }
             ]
           }
