@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { Button, ButtonProps } from '.'
-import { ButtonBlockVariant } from '../../../__generated__/globalTypes'
+import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
 
 const ButtonDemo = {
   component: Button,
@@ -11,12 +11,12 @@ interface ButtonStoryProps extends ButtonProps {
   variants: string[]
 }
 
-const Template: Story<ButtonStoryProps> = () => (
+const Template: Story<ButtonStoryProps> = (...args) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
   }}>
-    <Button label="this is text" variant='contained' color="NORMAL" size="small" startIcon={{ icon: 'checkCircle' }} />
+    <Button {...args} __typename='ButtonBlock' id='' parentBlockId='' label="this is text" variant={ButtonBlockVariant.contained} color={ButtonColor.primary} size={ButtonSize.large} startIcon={{ __typename: 'Icon', name: IconName.CheckCircle, color: IconColor.primary, size: IconSize.small }} endIcon={{ __typename: 'Icon', name: IconName.CheckCircle, color: IconColor.primary, size: IconSize.small }} action={null} />
   </div>
 )
 

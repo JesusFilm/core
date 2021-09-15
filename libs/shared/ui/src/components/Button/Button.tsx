@@ -15,19 +15,19 @@ export interface ButtonProps extends ButtonBlockFields {
   disabled?: boolean
 }
 
-export function Button(props: ButtonProps): ReactElement {
+export function Button ({ variant, label, color, size, startIcon, endIcon, loading }: ButtonProps): ReactElement {
   const classes = useStyles()
 
   return (
     <MuiButton
       data-testid='ButtonComponent'
       className={classes.spacing}
-      variant={props.variant}
-      color={props.color}
-      size={props.size}
-      startIcon={props.startIcon?.name !== null ? <Icon icon={props.startIcon?.name} /> : null}
-      endIcon={props.endIcon?.name !== null ? <Icon icon={props.endIcon?.name} /> : null}>
-      {props.loading === false ? <CircularProgress color="secondary" /> : props.label}
+      variant={variant ?? undefined}
+      color={color ?? undefined}
+      size={size ?? undefined}
+      startIcon={startIcon?.name !== null ? <Icon icon={startIcon?.name} /> : null}
+      endIcon={endIcon?.name !== null ? <Icon icon={endIcon?.name} /> : null}>
+      {loading === false ? <CircularProgress color="secondary" /> : label}
     </MuiButton>
   )
 }

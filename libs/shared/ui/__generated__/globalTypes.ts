@@ -8,45 +8,53 @@
 //==============================================================
 
 export enum ButtonBlockVariant {
-  CONTAINED = "CONTAINED",
-  OUTLINED = "OUTLINED",
-  TEXT = "TEXT",
+  contained = "contained",
+  outlined = "outlined",
+  text = "text",
 }
 
 export enum ButtonColor {
-  PRIMARY = "PRIMARY",
-  SECONDARY = "SECONDARY",
+  error = "error",
+  info = "info",
+  inherit = "inherit",
+  primary = "primary",
+  secondary = "secondary",
+  success = "success",
+  warning = "warning",
 }
 
 export enum ButtonSize {
-  LARGE = "LARGE",
-  MEDIUM = "MEDIUM",
-  SMALL = "SMALL",
+  large = "large",
+  medium = "medium",
+  small = "small",
 }
 
 export enum IconColor {
-  DISABLED = "DISABLED",
-  NORMAL = "NORMAL",
+  action = "action",
+  disabled = "disabled",
+  error = "error",
+  primary = "primary",
+  secondary = "secondary",
 }
 
 export enum IconName {
-  ARROW_FORWARD = "ARROW_FORWARD",
-  CHAT_BUBBLE_ONLINE = "CHAT_BUBBLE_ONLINE",
-  CHECK_CIRCLE = "CHECK_CIRCLE",
-  FORMAT_QUOTE = "FORMAT_QUOTE",
-  LIVE_TV = "LIVE_TV",
-  LOCK_OPEN = "LOCK_OPEN",
-  MENU_BOOK = "MENU_BOOK",
-  PLAY_ARROW = "PLAY_ARROW",
-  RADIO_BUTTON_UNCHECKED = "RADIO_BUTTON_UNCHECKED",
-  TRANSLATE = "TRANSLATE",
+  ArrowForward = "ArrowForward",
+  ChatBubbleOnline = "ChatBubbleOnline",
+  CheckCircle = "CheckCircle",
+  FormatQuote = "FormatQuote",
+  LiveTv = "LiveTv",
+  LockOpen = "LockOpen",
+  MenuBook = "MenuBook",
+  PlayArrow = "PlayArrow",
+  RadioButtonUnchecked = "RadioButtonUnchecked",
+  Translate = "Translate",
 }
 
 export enum IconSize {
-  LARGE = "LARGE",
-  MEDIUM_LARGE = "MEDIUM_LARGE",
-  MEDIUM_SMALL = "MEDIUM_SMALL",
-  SMALL = "SMALL",
+  inherit = "inherit",
+  large = "large",
+  medium = "medium",
+  small = "small",
 }
 
 //==============================================================
