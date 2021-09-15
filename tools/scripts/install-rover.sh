@@ -7,9 +7,14 @@ install_from_source () {
     cargo install --git https://github.com/apollographql/rover.git rover
 }
 
-if [ "$ARCHITECTURE" = "aarch64" ] 
+if ! command -v rover &> /dev/null
 then
-    install_from_source
+  if [ "$ARCHITECTURE" = "aarch64" ] 
+  then
+      install_from_source
+  else
+    npm install -g @apollo/rover
+  fi
 else
-  npm install -g @apollo/rover
+  echo "@apollo/rover already installed"
 fi
