@@ -6,7 +6,7 @@ export interface IconProps {
   icon: string | undefined
 }
 
-export function Icon(props: IconProps): ReactElement | null {
+export function Icon (props: IconProps): ReactElement | null {
   switch (props.icon) {
     case 'CheckCircle':
       return <CheckCircle />
