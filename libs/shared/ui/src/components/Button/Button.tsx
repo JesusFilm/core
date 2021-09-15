@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Button as MuiButton, CircularProgress } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Icon } from '../Icon/'
-import { ButtonBlockFields } from '../../../__generated__/ButtonBlockFields'
+import { ButtonBlockFields } from './__generated__/ButtonBlockFields'
 
 const useStyles = makeStyles(() => ({
   spacing: {
@@ -15,16 +15,19 @@ export interface ButtonProps extends ButtonBlockFields {
   disabled?: boolean
 }
 
-export function Button (props: ButtonProps): ReactElement {
+export function Button(props: ButtonProps): ReactElement {
   const classes = useStyles()
 
   return (
-    <MuiButton {...props}
-    data-testid='ButtonComponent'
-    className={classes.spacing}
-    startIcon={props.startIcon?.icon !== null ? <Icon icon={props.startIcon?.icon} /> : null}
-    endIcon={props.endIcon?.icon !== null ? <Icon icon={props.endIcon?.icon} /> : null}>
-        {props.loading === false ? <CircularProgress color="secondary" /> : props.label}
+    <MuiButton
+      data-testid='ButtonComponent'
+      className={classes.spacing}
+      variant={props.variant}
+      color={props.color}
+      size={props.size}
+      startIcon={props.startIcon?.name !== null ? <Icon icon={props.startIcon?.name} /> : null}
+      endIcon={props.endIcon?.name !== null ? <Icon icon={props.endIcon?.name} /> : null}>
+      {props.loading === false ? <CircularProgress color="secondary" /> : props.label}
     </MuiButton>
   )
 }
