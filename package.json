@@ -60,7 +60,6 @@
     "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@apollo/rover": "^0.2.0",
     "@babel/core": "7.12.13",
     "@babel/preset-typescript": "7.12.13",
     "@graphql-codegen/add": "^3.0.0",
