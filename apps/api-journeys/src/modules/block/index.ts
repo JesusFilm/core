@@ -51,6 +51,15 @@ const typeDefs = gql`
     variant: RadioQuestionVariant
   }
 
+  type ImageBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    src: String!
+    backgroundColor: String
+    fontColor: String
+    alt: String
+  }
+
   interface Action {
     gtmEventName: String
   }
