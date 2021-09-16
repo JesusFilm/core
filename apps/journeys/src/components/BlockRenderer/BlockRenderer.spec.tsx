@@ -1,4 +1,4 @@
-import { renderWithStore } from '../../../test/testingLibrary'
+import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
@@ -12,7 +12,7 @@ describe('BlockRenderer', () => {
       image: null,
       children: []
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio option')).toBeInTheDocument()
   })
 
@@ -26,7 +26,7 @@ describe('BlockRenderer', () => {
       variant: null,
       children: []
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
   })
 
@@ -45,7 +45,7 @@ describe('BlockRenderer', () => {
         children: []
       }]
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
   })
 
@@ -59,7 +59,7 @@ describe('BlockRenderer', () => {
       provider: null,
       children: []
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('Render title Here')).toBeInTheDocument()
   })
 })

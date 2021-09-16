@@ -2,6 +2,8 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
 import { ReactElement, useEffect } from 'react'
+import { ApolloProvider } from '@apollo/client'
+import client from '../src/libs/client'
 
 function CustomApp ({ Component, pageProps }: AppProps): ReactElement {
   useEffect(() => {
@@ -18,9 +20,11 @@ function CustomApp ({ Component, pageProps }: AppProps): ReactElement {
         <title>My page</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
-      <JourneysThemeProvider>
-        <Component {...pageProps} />
-      </JourneysThemeProvider>
+      <ApolloProvider client={client}>
+        <JourneysThemeProvider>
+          <Component {...pageProps} />
+        </JourneysThemeProvider>
+      </ApolloProvider>
     </>
   )
 }
