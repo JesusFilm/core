@@ -11,51 +11,60 @@ interface IconStoryProps extends IconProps {
   variants: string[]
 }
 
-const VariantTemplate: Story<IconStoryProps> = (args) => (
+const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Icon name={variant} />
+      <Icon {...args} name={variant as IconName} />
     ))}
   </div>
 )
 
 export const Variant = VariantTemplate.bind({})
 Variant.args = {
+  __typename: 'Icon',
+  color: null,
+  size: null,
   variants: [IconName.ArrowForward, IconName.ChatBubbleOutline, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
 }
 
-const ColorTemplate: Story<IconStoryProps> = (args) => (
+const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Icon name={IconName.CheckCircle} color={variant} />
+      <Icon {...args} color={variant as IconColor} />
     ))}
   </div>
 )
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
+  __typename: 'Icon',
+  name: IconName.CheckCircle,
+  size: null,
   variants: [IconColor.primary, IconColor.secondary, IconColor.error, IconColor.action, IconColor.disabled]
 }
 
-const SizeTemplate: Story<IconStoryProps> = (args) => (
+const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Icon name={IconName.CheckCircle} size={variant} />
+      <Icon {...args} size={variant as IconSize} />
     ))}
   </div>
 )
 
 export const Size = SizeTemplate.bind({})
 Size.args = {
+  __typename: 'Icon',
+  name: IconName.CheckCircle,
+  color: null,
   variants: [IconSize.small, IconSize.medium, IconSize.large, IconSize.inherit]
 }
 
