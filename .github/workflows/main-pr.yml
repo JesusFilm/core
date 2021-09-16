@@ -20,7 +20,7 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: generate,lint
+          targets: generate,lint,type-check
   build:
     runs-on: ubuntu-latest
     steps:
