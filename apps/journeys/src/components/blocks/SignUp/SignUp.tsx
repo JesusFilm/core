@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 
-import TextField from '../../../../../../libs/shared/ui/src/components/TextField'
+import { TextField } from '@core/shared/ui'
 
 import Button from '@mui/material/Button'
 
