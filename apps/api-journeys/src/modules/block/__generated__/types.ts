@@ -20,7 +20,7 @@ export namespace BlockModule {
   interface DefinedEnumValues {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
-    IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOnline' | 'LiveTv' | 'MenuBook';
+    IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled';
     IconSize: 'small' | 'medium' | 'large' | 'inherit';
     ButtonBlockVariant: 'text' | 'outlined' | 'contained';

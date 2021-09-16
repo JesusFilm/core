@@ -75,7 +75,7 @@ enum IconColor {
 
 enum IconName {
   ArrowForward
-  ChatBubbleOnline
+  ChatBubbleOutline
   CheckCircle
   FormatQuote
   LiveTv
