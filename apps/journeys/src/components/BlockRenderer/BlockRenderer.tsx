@@ -2,7 +2,7 @@ import { RadioOption, RadioQuestion, Video, Step } from '../blocks'
 import { ReactElement } from 'react'
 import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transformer'
 
-export function BlockRenderer (block: BlockRendererProps): ReactElement {
+export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {
     case 'RadioOptionBlock':
       return <RadioOption {...block} />

@@ -3,11 +3,11 @@ import { render, RenderOptions, RenderResult } from '@testing-library/react'
 import { ApolloProvider } from '@apollo/client'
 import client from '../src/libs/client'
 
-function renderWithApolloClient (
+function renderWithApolloClient(
   ui: React.ReactElement,
   { ...renderOptions }: Omit<RenderOptions, 'queries'> = {}
 ): RenderResult {
-  function Wrapper ({ children }): ReactElement {
+  function Wrapper({ children }): ReactElement {
     return <ApolloProvider client={client}>{children}</ApolloProvider>
   }
   return render(ui, { wrapper: Wrapper, ...renderOptions })

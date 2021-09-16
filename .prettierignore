@@ -2,3 +2,5 @@
 
 /dist
 /coverage
+schema.graphql
+**/__generated__/**
