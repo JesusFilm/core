@@ -8,15 +8,15 @@ describe('schemaBuilder', () => {
       id: 'm1',
       dirname: __dirname,
       typeDefs: [
-        gql`        
+        gql`
           type Foo @key(fields: "id") {
             id: ID!
             fooname: String!
           }
-                  
-          extend type Query {            
-            myfoo: Foo      
-          }   
+
+          extend type Query {
+            myfoo: Foo
+          }
         `
       ],
       resolvers: {
@@ -30,7 +30,7 @@ describe('schemaBuilder', () => {
       id: 'm2',
       dirname: __dirname,
       typeDefs: [
-        gql`      
+        gql`
           type Boo @key(fields: "id") {
             id: ID!
             booname: String!
@@ -47,9 +47,11 @@ describe('schemaBuilder', () => {
       resolvers: {}
     })
 
-    expect(() => createApplication({
-      modules: [m1, m2]
-    })).toThrow()
+    expect(() =>
+      createApplication({
+        modules: [m1, m2]
+      })
+    ).toThrow()
 
     const application = createApplication({
       modules: [m1, m2],
@@ -62,7 +64,7 @@ describe('schemaBuilder', () => {
     expect(application.schema.getType('_Entity')).toBeDefined()
     expect(application.schema.getType('_Any')).toBeDefined()
 
-    const directiveNames = application.schema.getDirectives().map(a => a.name)
+    const directiveNames = application.schema.getDirectives().map((a) => a.name)
     expect(directiveNames).toContain('key')
     expect(directiveNames).toContain('extends')
     expect(directiveNames).toContain('external')
@@ -71,7 +73,8 @@ describe('schemaBuilder', () => {
   })
 
   it('throws error when typeDefs and resolvers are different lengths', () => {
-    expect(() => schemaBuilder({ typeDefs: [], resolvers: [{}] }))
-      .toThrow('Number of typeDefs: 0 does not match number of resolvers: 1')
+    expect(() => schemaBuilder({ typeDefs: [], resolvers: [{}] })).toThrow(
+      'Number of typeDefs: 0 does not match number of resolvers: 1'
+    )
   })
 })

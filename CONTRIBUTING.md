@@ -7,14 +7,16 @@ The following is a set of guidelines for contributing to the Core Monorepo, whic
 ## Table Of Contents
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
-  * [Monorepo](#monorepo)
-  * [Back-end Architecture](#back-end-architecture)
-    * [Schema Extensions](#schema-extensions)
-  * [Front-end Architecture](#front-end-architecture)
+
+- [Monorepo](#monorepo)
+- [Back-end Architecture](#back-end-architecture)
+  - [Schema Extensions](#schema-extensions)
+- [Front-end Architecture](#front-end-architecture)
 
 [Getting Started](#getting-started)
-  * [Developing inside a Container](#developing-inside-a-container)
-  * [Starting the gateway, back-end and front-end projects](#starting-the-gateway-back-end-and-front-end-projects)
+
+- [Developing inside a Container](#developing-inside-a-container)
+- [Starting the gateway, back-end and front-end projects](#starting-the-gateway-back-end-and-front-end-projects)
 
 ## What should I know before I get started?
 

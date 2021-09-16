@@ -57,6 +57,7 @@ export type MutationJourneyPublishArgs = {
 export type NavigateAction = Action & {
   __typename?: 'NavigateAction';
   gtmEventName?: Maybe<Scalars['String']>;
+  blockId: Scalars['String'];
 };
 
 export type NavigateToBlockAction = Action & {
@@ -266,6 +267,7 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
 
 export type NavigateActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateAction'] = ResolversParentTypes['NavigateAction']> = {
   gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  blockId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

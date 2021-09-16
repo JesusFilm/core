@@ -1,8 +1,14 @@
 import { RadioOption } from './RadioOption'
-import { fireEvent, renderWithApolloClient } from '../../../../test/testingLibrary'
+import {
+  fireEvent,
+  renderWithApolloClient
+} from '../../../../test/testingLibrary'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { activeBlockVar, treeBlocksVar } from '../../../libs/client/cache/blocks'
+import {
+  activeBlockVar,
+  treeBlocksVar
+} from '../../../libs/client/cache/blocks'
 
 describe('RadioOption', () => {
   const block: TreeBlock<RadioOptionBlock> = {
@@ -42,9 +48,7 @@ describe('RadioOption', () => {
     }
     treeBlocksVar([blockAbc, blockDef])
     activeBlockVar(blockAbc)
-    const { getByRole } = renderWithApolloClient(
-      <RadioOption {...block} />
-    )
+    const { getByRole } = renderWithApolloClient(<RadioOption {...block} />)
     fireEvent.click(getByRole('button'))
     expect(activeBlockVar()).toEqual(blockDef)
   })

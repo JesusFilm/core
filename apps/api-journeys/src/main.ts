@@ -3,7 +3,9 @@ import application from './modules/application'
 import db from './lib/db'
 import Fastify, { FastifyInstance, FastifyServerFactory } from 'fastify'
 
-const init = async (serverFactory?: FastifyServerFactory): Promise<FastifyInstance> => {
+const init = async (
+  serverFactory?: FastifyServerFactory
+): Promise<FastifyInstance> => {
   const app = Fastify({ serverFactory })
   const schema = application.createSchemaForApollo()
 
@@ -21,14 +23,16 @@ const init = async (serverFactory?: FastifyServerFactory): Promise<FastifyInstan
 
 if (require.main !== module) {
   // called directly i.e. "node app"
-  init().then(async (server) => {
-    try {
-      const result = await server.listen({ host: '0.0.0.0', port: 4001 })
-      console.log(`🚀  Server ready at ${result}/graphql`)
-    } catch (err) {
-      console.error(err)
-    }
-  }).catch((err) => console.error(err))
+  init()
+    .then(async (server) => {
+      try {
+        const result = await server.listen({ host: '0.0.0.0', port: 4001 })
+        console.log(`🚀  Server ready at ${result}/graphql`)
+      } catch (err) {
+        console.error(err)
+      }
+    })
+    .catch((err) => console.error(err))
 } else {
   // required as a module => executed on aws lambda
   module.exports = init

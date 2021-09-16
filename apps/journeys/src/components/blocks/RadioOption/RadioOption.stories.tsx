@@ -14,7 +14,9 @@ const DefaultTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
   <RadioOption {...props} selected={false} disabled={false} />
 )
 
-export const Default: Story<TreeBlock<RadioOptionBlock>> = DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<RadioOptionBlock>> = DefaultTemplate.bind(
+  {}
+)
 Default.args = {
   id: 'NestedOptions',
   label: 'Chat Privately'
@@ -31,7 +33,8 @@ const SelectedTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
   <RadioOption {...props} selected={true} disabled={false} />
 )
 
-export const Selected: Story<TreeBlock<RadioOptionBlock>> = SelectedTemplate.bind({})
+export const Selected: Story<TreeBlock<RadioOptionBlock>> =
+  SelectedTemplate.bind({})
 Selected.args = {
   id: 'NestedOptions3',
   label: 'Watch more videos about Jesus'
@@ -41,7 +44,8 @@ const DisabledTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
   <RadioOption {...props} selected={false} disabled={true} />
 )
 
-export const Disabled: Story<TreeBlock<RadioOptionBlock>> = DisabledTemplate.bind({})
+export const Disabled: Story<TreeBlock<RadioOptionBlock>> =
+  DisabledTemplate.bind({})
 Disabled.args = {
   id: 'NestedOptions4',
   label: 'Ask a question'
