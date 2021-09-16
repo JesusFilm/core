@@ -1,9 +1,10 @@
 import { PrismaClient } from '.prisma/api-journeys-client'
 import { noop } from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 
 const prisma = new PrismaClient()
 
-async function main (): Promise<void> {
+async function main(): Promise<void> {
   let journey = await prisma.journey.findFirst({ where: { title: '#FallingPlates' } })
   if (journey == null) {
     journey = await prisma.journey.create({
@@ -14,10 +15,15 @@ async function main (): Promise<void> {
     })
   }
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
+  const nextBlockId = uuidv4()
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
       parentOrder: 0
     }
   })
@@ -46,8 +52,12 @@ async function main (): Promise<void> {
   })
   const stepWhenNo = await prisma.block.create({
     data: {
+      id: nextBlockId,
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 1
     }
   })
@@ -70,6 +80,9 @@ async function main (): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 2
     }
   })
@@ -92,6 +105,9 @@ async function main (): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 3
     }
   })
@@ -114,6 +130,9 @@ async function main (): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 4
     }
   })
@@ -136,6 +155,9 @@ async function main (): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 5
     }
   })
@@ -158,6 +180,9 @@ async function main (): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 6
     }
   })
