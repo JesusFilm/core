@@ -2,11 +2,11 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
 import {
-  Block,
   LinkAction,
   NavigateToBlockAction,
   NavigateToJourneyAction,
-  Resolvers
+  Resolvers,
+  ResolversTypes
 } from '../../__generated__/types'
 
 const typeDefs = gql`
@@ -111,7 +111,7 @@ const resolvers: Resolvers = {
         ...block,
         ...(block.extraAttrs as Prisma.JsonObject),
         __typename: block.blockType
-      })) as Block[]
+      } as unknown as ResolversTypes['Block']))
     }
   },
   Action: {
