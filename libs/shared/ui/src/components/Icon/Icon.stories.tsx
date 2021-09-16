@@ -24,7 +24,7 @@ const Template: Story<IconStoryProps> = (args) => (
 
 export const Icons = Template.bind({})
 Icons.args = {
-  variants: [IconName.ArrowForward, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
+  variants: [IconName.ArrowForward, IconName.ChatBubbleOutline, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
 }
 
 export default IconDemo as Meta

@@ -39,7 +39,7 @@ export enum IconColor {
 
 export enum IconName {
   ArrowForward = "ArrowForward",
-  ChatBubbleOnline = "ChatBubbleOnline",
+  ChatBubbleOutline = "ChatBubbleOutline",
   CheckCircle = "CheckCircle",
   FormatQuote = "FormatQuote",
   LiveTv = "LiveTv",
