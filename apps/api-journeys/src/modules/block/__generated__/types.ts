@@ -10,6 +10,7 @@ export namespace BlockModule {
     NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
     LinkAction: 'gtmEventName' | 'url' | 'target';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
+    TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
     Journey: 'blocks';
     Block: 'id' | 'parentBlockId';
     Action: 'gtmEventName';
@@ -18,6 +19,9 @@ export namespace BlockModule {
   interface DefinedEnumValues {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
+    TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'button' | 'caption' | 'overline';
+    TypographyColor: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
+    TypographyAlign: 'left' | 'center' | 'right';
   };
   
   export type Journey = Types.Journey;
@@ -32,6 +36,10 @@ export namespace BlockModule {
   export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
   export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
+  export type TypographyVariant = DefinedEnumValues['TypographyVariant'];
+  export type TypographyColor = DefinedEnumValues['TypographyColor'];
+  export type TypographyAlign = DefinedEnumValues['TypographyAlign'];
+  export type TypographyBlock = Pick<Types.TypographyBlock, DefinedFields['TypographyBlock']>;
   
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
@@ -40,6 +48,7 @@ export namespace BlockModule {
   export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
   export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
+  export type TypographyBlockResolvers = Pick<Types.TypographyBlockResolvers, DefinedFields['TypographyBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
   export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
   export type ActionResolvers = Pick<Types.ActionResolvers, DefinedFields['Action']>;
@@ -52,6 +61,7 @@ export namespace BlockModule {
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
     LinkAction?: LinkActionResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
+    TypographyBlock?: TypographyBlockResolvers;
     Journey?: JourneyResolvers;
   };
   
@@ -107,6 +117,15 @@ export namespace BlockModule {
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
       action?: gm.Middleware[];
+    };
+    TypographyBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      content?: gm.Middleware[];
+      variant?: gm.Middleware[];
+      color?: gm.Middleware[];
+      align?: gm.Middleware[];
     };
   };
 }

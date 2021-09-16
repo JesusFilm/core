@@ -10,14 +10,16 @@ it('returns published journeys', async () => {
   const journey = await db.journey.create({
     data: {
       title: 'published',
-      published: true
+      published: true,
+      locale: 'id-ID'
     }
   })
 
   await db.journey.create({
     data: {
       title: 'unpublished',
-      published: false
+      published: false,
+      locale: 'hi-IN'
     }
   })
 
@@ -28,6 +30,7 @@ it('returns published journeys', async () => {
           id
           title
           published
+          locale
         }
       }
     `,
@@ -37,7 +40,7 @@ it('returns published journeys', async () => {
   })
 
   expect(data?.journeys).toEqual([
-    pick(journey, ['id', 'title', 'published'])
+    pick(journey, ['id', 'title', 'published', 'locale'])
   ])
 })
 
@@ -47,7 +50,8 @@ it('returns journey', async () => {
   const journey = await db.journey.create({
     data: {
       title: 'published',
-      published: true
+      published: true,
+      locale: 'id-ID'
     }
   })
 
@@ -58,6 +62,7 @@ it('returns journey', async () => {
           id
           title
           published
+          locale
         }
       }
     `,
@@ -70,7 +75,7 @@ it('returns journey', async () => {
   })
 
   expect(data?.journey).toEqual(
-    pick(journey, ['id', 'title', 'published'])
+    pick(journey, ['id', 'title', 'published', 'locale'])
   )
 })
 
@@ -79,14 +84,15 @@ it('creates journey', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation($title: String!) {
-        journeyCreate(title: $title) {
+      mutation($title: String! $locale: String) {
+        journeyCreate(title: $title locale: $locale) {
           id
         }
       }
     `,
     variableValues: {
-      title: 'my journey'
+      title: 'my journey',
+      locale: 'hi-IN'
     },
     contextValue: {
       db
@@ -101,7 +107,40 @@ it('creates journey', async () => {
   expect(journey).toEqual({
     id: data?.journeyCreate.id,
     published: false,
-    title: 'my journey'
+    title: 'my journey',
+    locale: 'hi-IN'
+  })
+})
+
+it('creates journey in default locale', async () => {
+  const app = testkit.testModule(module, { schemaBuilder })
+
+  const { data } = await testkit.execute(app, {
+    document: gql`
+      mutation($title: String! $locale: String) {
+        journeyCreate(title: $title locale: $locale) {
+          id
+        }
+      }
+    `,
+    variableValues: {
+      title: 'my default locale journey'
+    },
+    contextValue: {
+      db
+    }
+  })
+  const journey = await db.journey.findUnique({
+    where: {
+      id: data?.journeyCreate.id
+    }
+  })
+
+  expect(journey).toEqual({
+    id: data?.journeyCreate.id,
+    published: false,
+    title: 'my default locale journey',
+    locale: 'en-US'
   })
 })
 
@@ -111,7 +150,8 @@ it('publishes journey', async () => {
   const journey = await db.journey.create({
     data: {
       title: 'my journey',
-      published: false
+      published: false,
+      locale: 'id-ID'
     }
   })
 
@@ -140,6 +180,7 @@ it('publishes journey', async () => {
   expect(uodatedJourney).toEqual({
     id: journey.id,
     published: true,
-    title: 'my journey'
+    title: 'my journey',
+    locale: 'id-ID'
   })
 })

@@ -9,7 +9,8 @@ async function main (): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: '#FallingPlates',
-        published: true
+        published: true,
+        locale: 'id-ID'
       }
     })
   }
@@ -174,6 +175,19 @@ async function main (): Promise<void> {
         }
       },
       parentOrder: 5
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
+      extraAttrs: {
+        content: 'Fantastis!',
+        variant: 'h1',
+        color: 'primary',
+        align: 'left'
+      }
     }
   })
 }

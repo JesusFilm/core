@@ -16,6 +16,7 @@ model Journey {
   title     String
   published Boolean @default(false)
   blocks    Block[]
+  locale    String  @default("en-US")
 }
 
 model Block {
@@ -35,4 +36,5 @@ enum BlockType {
   VideoBlock
   RadioQuestionBlock
   RadioOptionBlock
+  TypographyBlock
 }

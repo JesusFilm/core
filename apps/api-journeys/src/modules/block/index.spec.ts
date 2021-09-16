@@ -102,6 +102,19 @@ it('returns blocks', async () => {
       }
     }
   })
+  const block7 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: block1.id,
+      extraAttrs: {
+        content: 'text',
+        variant: 'h2',
+        color: 'primary',
+        align: 'left'
+      }
+    }
+  })
   await db.block.create({
     data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
   })
@@ -138,6 +151,12 @@ it('returns blocks', async () => {
                   url
                 }
               }
+            }
+            ... on TypographyBlock {
+              content
+              variant
+              color
+              align
             }
           }
         }
@@ -205,6 +224,15 @@ it('returns blocks', async () => {
       src: 'src',
       title: 'title',
       provider: 'YOUTUBE'
+    },
+    {
+      id: block7.id,
+      __typename: 'TypographyBlock',
+      parentBlockId: block1.id,
+      content: 'text',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left'
     }
   ])
 })

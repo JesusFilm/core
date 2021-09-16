@@ -72,6 +72,46 @@ const typeDefs = gql`
     label: String!
     action: Action
   }
+
+  enum TypographyVariant {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    subtitle1,
+    subtitle2,
+    body1,
+    body2,
+    button,
+    caption,
+    overline
+  }
+  
+  enum TypographyColor {
+    primary,
+    secondary,
+    error,
+    warning,
+    info,
+    success
+  }
+
+  enum TypographyAlign {
+    left,
+    center,
+    right
+  }
+
+  type TypographyBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    content: String!
+    variant: TypographyVariant
+    color: TypographyColor
+    align: TypographyAlign
+  }
 `
 
 const resolvers: Resolvers = {
