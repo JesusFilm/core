@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { Video } from './'
-import { Provider } from 'react-redux'
 import { configureStoreWithState, RootState } from '../../../libs/store/store'
 import { PreloadedState } from 'redux'
 import { TreeBlock } from '../../../libs/transformer/transformer'
