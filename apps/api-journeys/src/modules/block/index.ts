@@ -82,7 +82,7 @@ const typeDefs = gql`
     FormatQuote
     LockOpen
     ArrowForward
-    ChatBubbleOnline
+    ChatBubbleOutline
     LiveTv
     MenuBook
   }
