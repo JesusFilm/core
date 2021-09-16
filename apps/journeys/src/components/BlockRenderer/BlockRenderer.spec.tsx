@@ -9,7 +9,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       label: 'radio option',
       parentBlockId: null,
-      image: null,
+      action: null,
       children: []
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
