@@ -63,7 +63,7 @@ enum IconName {
   FormatQuote
   LockOpen
   ArrowForward
-  ChatBubbleOnline
+  ChatBubbleOutline
   LiveTv
   MenuBook
 }

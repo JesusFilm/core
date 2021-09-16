@@ -323,7 +323,7 @@ export type IconResolvers<ContextType = GraphQLModules.Context, ParentType exten
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type IconNameResolvers = EnumResolverSignature<{ PlayArrow?: any, Translate?: any, CheckCircle?: any, RadioButtonUnchecked?: any, FormatQuote?: any, LockOpen?: any, ArrowForward?: any, ChatBubbleOnline?: any, LiveTv?: any, MenuBook?: any }, ResolversTypes['IconName']>;
+export type IconNameResolvers = EnumResolverSignature<{ PlayArrow?: any, Translate?: any, CheckCircle?: any, RadioButtonUnchecked?: any, FormatQuote?: any, LockOpen?: any, ArrowForward?: any, ChatBubbleOutline?: any, LiveTv?: any, MenuBook?: any }, ResolversTypes['IconName']>;
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
