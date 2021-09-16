@@ -107,11 +107,14 @@ const resolvers: Resolvers = {
         where: { journeyId: journey.id },
         orderBy: [{ parentOrder: 'asc' }]
       })
-      return blocks.map((block) => ({
-        ...block,
-        ...(block.extraAttrs as Prisma.JsonObject),
-        __typename: block.blockType
-      } as unknown as ResolversTypes['Block']))
+      return blocks.map(
+        (block) =>
+          ({
+            ...block,
+            ...(block.extraAttrs as Prisma.JsonObject),
+            __typename: block.blockType
+          } as unknown as ResolversTypes['Block'])
+      )
     }
   },
   Action: {
