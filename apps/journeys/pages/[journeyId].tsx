@@ -2,28 +2,31 @@ import { ReactElement } from 'react'
 import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
 import { Container } from '@mui/material'
-import { Provider } from 'react-redux'
-import { store } from '../src/libs/store/store'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
-import { GetJourney, GetJourney_journey as Journey } from '../__generated__/GetJourney'
+import {
+  GetJourney,
+  GetJourney_journey as Journey
+} from '../__generated__/GetJourney'
 
 interface JourneyPageProps {
   journey: Journey
 }
 
-function JourneyPage ({ journey }: JourneyPageProps): ReactElement {
+function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <Container>
-      <Provider store={store}>
-        {(journey.blocks != null) && <Conductor blocks={transformer(journey.blocks)} />}
-      </Provider>
+      {journey.blocks != null && (
+        <Conductor blocks={transformer(journey.blocks)} />
+      )}
     </Container>
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (context) => {
+export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
+  context
+) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
       query GetJourney($id: ID!) {

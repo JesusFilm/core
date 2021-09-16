@@ -2,8 +2,10 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
 import { ReactElement, useEffect } from 'react'
+import { ApolloProvider } from '@apollo/client'
+import client from '../src/libs/client'
 
-function CustomApp ({ Component, pageProps }: AppProps): ReactElement {
+function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
@@ -16,11 +18,16 @@ function CustomApp ({ Component, pageProps }: AppProps): ReactElement {
     <>
       <Head>
         <title>My page</title>
-        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
       </Head>
-      <JourneysThemeProvider>
-        <Component {...pageProps} />
-      </JourneysThemeProvider>
+      <ApolloProvider client={client}>
+        <JourneysThemeProvider>
+          <Component {...pageProps} />
+        </JourneysThemeProvider>
+      </ApolloProvider>
     </>
   )
 }
