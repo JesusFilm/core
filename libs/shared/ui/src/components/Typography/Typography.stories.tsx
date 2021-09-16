@@ -1,5 +1,10 @@
-import { Story, Meta } from '@storybook/react'
-import { Typography, TypographyAlignments, TypographyColors, TypographyProps, TypographyVariants } from './Typography'
+import { Story } from '@storybook/react'
+import {
+  Typography,
+  TypographyAlignments,
+  TypographyColors,
+  TypographyVariants
+} from './Typography'
 
 const TypographyDemo = {
   component: Typography,
@@ -11,10 +16,12 @@ interface TypographyStoryProps extends TypographyProps {
 }
 
 const VariantTemplate: Story<TypographyStoryProps> = (args) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
     {args.variants.map((variant) => (
       <Typography
         {...args}
@@ -27,14 +34,30 @@ const VariantTemplate: Story<TypographyStoryProps> = (args) => (
 
 export const Variants = VariantTemplate.bind({})
 Variants.args = {
-  variants: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'subtitle1', 'subtitle2', 'body1', 'body2', 'button', 'caption', 'overline']
+  variants: [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'subtitle1',
+    'subtitle2',
+    'body1',
+    'body2',
+    'button',
+    'caption',
+    'overline'
+  ]
 }
 
 const ColorTemplate: Story<TypographyStoryProps> = (args) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
     {args.variants.map((variant) => (
       <Typography
         {...args}
@@ -51,17 +74,19 @@ Colors.args = {
 }
 
 const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
-     {args.variants.map((variant) => (
-       <Typography
-         {...args}
-         align={variant as TypographyAlignments}
-         content={`${variant}`}
-       />
-     ))}
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
+    {args.variants.map((variant) => (
+      <Typography
+        {...args}
+        align={variant as TypographyAlignments}
+        content={`${variant}`}
+      />
+    ))}
   </div>
 )
 

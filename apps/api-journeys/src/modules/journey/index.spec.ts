@@ -57,7 +57,7 @@ it('returns journey', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         journey(id: $id) {
           id
           title
@@ -84,8 +84,8 @@ it('creates journey', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation($title: String! $locale: String) {
-        journeyCreate(title: $title locale: $locale) {
+      mutation ($title: String!, $locale: String) {
+        journeyCreate(title: $title, locale: $locale) {
           id
         }
       }
@@ -117,8 +117,8 @@ it('creates journey in default locale', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation($title: String! $locale: String) {
-        journeyCreate(title: $title locale: $locale) {
+      mutation ($title: String!, $locale: String) {
+        journeyCreate(title: $title, locale: $locale) {
           id
         }
       }
@@ -157,7 +157,7 @@ it('publishes journey', async () => {
 
   await testkit.execute(app, {
     document: gql`
-      mutation($id: ID!) {
+      mutation ($id: ID!) {
         journeyPublish(id: $id) {
           id
         }
@@ -171,13 +171,13 @@ it('publishes journey', async () => {
     }
   })
 
-  const uodatedJourney = await db.journey.findUnique({
+  const updatedJourney = await db.journey.findUnique({
     where: {
       id: journey.id
     }
   })
 
-  expect(uodatedJourney).toEqual({
+  expect(updatedJourney).toEqual({
     id: journey.id,
     published: true,
     title: 'my journey',

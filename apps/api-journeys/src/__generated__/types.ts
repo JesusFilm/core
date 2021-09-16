@@ -56,8 +56,17 @@ export type MutationJourneyPublishArgs = {
   id: Scalars['ID'];
 };
 
+/**
+ * NavigateAction is an Action that navigates to the nextBlockId field set on the
+ * closest ancestor StepBlock.
+ */
 export type NavigateAction = Action & {
   __typename?: 'NavigateAction';
+  gtmEventName?: Maybe<Scalars['String']>;
+};
+
+export type NavigateToBlockAction = Action & {
+  __typename?: 'NavigateToBlockAction';
   gtmEventName?: Maybe<Scalars['String']>;
   blockId: Scalars['String'];
 };
@@ -103,6 +112,18 @@ export type RadioQuestionVariant =
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID'];
+  /**
+   * nextBlockId contains the preferred block to navigate to when a
+   * NavigateAction occurs or if the user manually tries to advance to the next
+   * step. If no nextBlockId is set it can be assumed that this step represents
+   * the end of the current journey.
+   */
+  nextBlockId?: Maybe<Scalars['ID']>;
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: Scalars['Boolean'];
   parentBlockId?: Maybe<Scalars['ID']>;
 };
 
@@ -228,7 +249,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Action: ResolversTypes['LinkAction'] | ResolversTypes['NavigateAction'] | ResolversTypes['NavigateToJourneyAction'];
+  Action: ResolversTypes['LinkAction'] | ResolversTypes['NavigateAction'] | ResolversTypes['NavigateToBlockAction'] | ResolversTypes['NavigateToJourneyAction'];
   String: ResolverTypeWrapper<Scalars['String']>;
   Block: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['TypographyBlock'] | ResolversTypes['VideoBlock'];
   ID: ResolverTypeWrapper<Scalars['ID']>;
@@ -237,6 +258,7 @@ export type ResolversTypes = {
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
   NavigateAction: ResolverTypeWrapper<NavigateAction>;
+  NavigateToBlockAction: ResolverTypeWrapper<NavigateToBlockAction>;
   NavigateToJourneyAction: ResolverTypeWrapper<NavigateToJourneyAction>;
   Query: ResolverTypeWrapper<{}>;
   RadioOptionBlock: ResolverTypeWrapper<RadioOptionBlock>;
@@ -253,7 +275,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Action: ResolversParentTypes['LinkAction'] | ResolversParentTypes['NavigateAction'] | ResolversParentTypes['NavigateToJourneyAction'];
+  Action: ResolversParentTypes['LinkAction'] | ResolversParentTypes['NavigateAction'] | ResolversParentTypes['NavigateToBlockAction'] | ResolversParentTypes['NavigateToJourneyAction'];
   String: Scalars['String'];
   Block: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['TypographyBlock'] | ResolversParentTypes['VideoBlock'];
   ID: Scalars['ID'];
@@ -262,6 +284,7 @@ export type ResolversParentTypes = {
   LinkAction: LinkAction;
   Mutation: {};
   NavigateAction: NavigateAction;
+  NavigateToBlockAction: NavigateToBlockAction;
   NavigateToJourneyAction: NavigateToJourneyAction;
   Query: {};
   RadioOptionBlock: RadioOptionBlock;
@@ -272,7 +295,7 @@ export type ResolversParentTypes = {
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
-  __resolveType: TypeResolveFn<'LinkAction' | 'NavigateAction' | 'NavigateToJourneyAction', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'LinkAction' | 'NavigateAction' | 'NavigateToBlockAction' | 'NavigateToJourneyAction', ParentType, ContextType>;
   gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
@@ -304,6 +327,11 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
 };
 
 export type NavigateActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateAction'] = ResolversParentTypes['NavigateAction']> = {
+  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type NavigateToBlockActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateToBlockAction'] = ResolversParentTypes['NavigateToBlockAction']> = {
   gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   blockId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -339,6 +367,8 @@ export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, Pa
 
 export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['StepBlock'] = ResolversParentTypes['StepBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  nextBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  locked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -370,6 +400,7 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   LinkAction?: LinkActionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NavigateAction?: NavigateActionResolvers<ContextType>;
+  NavigateToBlockAction?: NavigateToBlockActionResolvers<ContextType>;
   NavigateToJourneyAction?: NavigateToJourneyActionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RadioOptionBlock?: RadioOptionBlockResolvers<ContextType>;
