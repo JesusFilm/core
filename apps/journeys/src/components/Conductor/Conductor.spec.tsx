@@ -38,9 +38,7 @@ describe('Conductor', () => {
         variant: null
       }
     ]
-    const { getByText } = renderWithApolloClient(
-      <Conductor blocks={blocks} />
-    )
+    const { getByText } = renderWithApolloClient(<Conductor blocks={blocks} />)
     expect(treeBlocksVar()).toBe(blocks)
     expect(activeBlockVar()?.id).toBe('Question1')
     fireEvent.click(getByText('Option 1'))
@@ -50,9 +48,7 @@ describe('Conductor', () => {
 
   it('should not throw error if no blocks', () => {
     const blocks: TreeBlock[] = []
-    renderWithApolloClient(
-      <Conductor blocks={blocks} />
-    )
+    renderWithApolloClient(<Conductor blocks={blocks} />)
     expect(treeBlocksVar()).toBe(blocks)
     expect(activeBlockVar()).toBe(null)
   })

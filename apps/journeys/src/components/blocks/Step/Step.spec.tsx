@@ -7,23 +7,26 @@ const block: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',
   id: 'Step1',
   parentBlockId: null,
-  children: [{
-    __typename: 'RadioQuestionBlock',
-    id: 'Question1',
-    label: 'Question 1',
-    parentBlockId: 'Step1',
-    description: 'question description',
-    variant: null,
-    children: []
-  }, {
-    __typename: 'RadioQuestionBlock',
-    id: 'Question2',
-    label: 'Question 2',
-    parentBlockId: 'Step1',
-    description: 'question description',
-    variant: null,
-    children: []
-  }]
+  children: [
+    {
+      __typename: 'RadioQuestionBlock',
+      id: 'Question1',
+      label: 'Question 1',
+      parentBlockId: 'Step1',
+      description: 'question description',
+      variant: null,
+      children: []
+    },
+    {
+      __typename: 'RadioQuestionBlock',
+      id: 'Question2',
+      label: 'Question 2',
+      parentBlockId: 'Step1',
+      description: 'question description',
+      variant: null,
+      children: []
+    }
+  ]
 }
 
 describe('RadioQuestion', () => {

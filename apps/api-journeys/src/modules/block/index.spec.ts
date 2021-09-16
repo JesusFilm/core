@@ -3,7 +3,11 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
+<<<<<<< HEAD
 import { IconName } from './icon-enums'
+=======
+import { v4 as uuidv4 } from 'uuid'
+>>>>>>> main
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
@@ -22,8 +26,16 @@ it('returns blocks', async () => {
       published: true
     }
   })
+  const nextBlockId = uuidv4()
   const block1 = await db.block.create({
-    data: { journeyId: journey.id, blockType: 'StepBlock' }
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: true,
+        nextBlockId
+      }
+    }
   })
   const block2 = await db.block.create({
     data: {
@@ -84,6 +96,20 @@ it('returns blocks', async () => {
   const block6 = await db.block.create({
     data: {
       journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      extraAttrs: {
+        label: 'label',
+        description: 'description',
+        action: {
+          gtmEventName: 'gtmEventName'
+        }
+      }
+    }
+  })
+  const block7 = await db.block.create({
+    data: {
+      journeyId: journey.id,
       blockType: 'VideoBlock',
       parentBlockId: block1.id,
       extraAttrs: {
@@ -117,21 +143,38 @@ it('returns blocks', async () => {
           gtmEventName: 'gtmEventName',
           url: 'https://jesusfilm.org',
           target: 'target'
-        }
+        },
+  const block8 = await db.block.create({
+    data: {
+      id: nextBlockId,
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
       }
     }
   })
   await db.block.create({
-    data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
+    data: {
+      journeyId: otherJourney.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      }
+    }
   })
   const { data } = await testkit.execute(app, {
     document: gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         journey(id: $id) {
           blocks {
             id
             __typename
             parentBlockId
+            ... on StepBlock {
+              locked
+              nextBlockId
+            }
             ... on VideoBlock {
               src
               title
@@ -147,7 +190,7 @@ it('returns blocks', async () => {
               action {
                 __typename
                 gtmEventName
-                ... on NavigateAction {
+                ... on NavigateToBlockAction {
                   blockId
                 }
                 ... on NavigateToJourneyAction {
@@ -203,7 +246,9 @@ it('returns blocks', async () => {
     {
       id: block1.id,
       __typename: 'StepBlock',
-      parentBlockId: null
+      parentBlockId: null,
+      locked: true,
+      nextBlockId
     },
     {
       id: block2.id,
@@ -219,7 +264,7 @@ it('returns blocks', async () => {
       parentBlockId: block2.id,
       label: 'label',
       action: {
-        __typename: 'NavigateAction',
+        __typename: 'NavigateToBlockAction',
         gtmEventName: 'gtmEventName',
         blockId: block1.id
       }
@@ -248,6 +293,16 @@ it('returns blocks', async () => {
     },
     {
       id: block6.id,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: block2.id,
+      label: 'label',
+      action: {
+        __typename: 'NavigateAction',
+        gtmEventName: 'gtmEventName'
+      }
+    },
+    {
+      id: block7.id,
       __typename: 'VideoBlock',
       parentBlockId: block1.id,
       src: 'src',
@@ -278,6 +333,13 @@ it('returns blocks', async () => {
         url: 'https://jesusfilm.org',
         target: 'target'
       }
+    },
+    {
+      id: block8.id,
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      locked: false,
+      nextBlockId: null
     }
   ])
 })

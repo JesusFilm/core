@@ -8,9 +8,7 @@
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/api-gateway",
             "main": "apps/api-gateway/src/main.ts",
@@ -53,9 +51,13 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/api-gateway/**/*.ts"
-            ]
+            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/api-gateway/tsconfig.json"
           }
         },
         "generate-graphql": {
@@ -77,9 +79,7 @@
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/api-journeys",
             "main": "apps/api-journeys/src/main.ts",
@@ -108,16 +108,18 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/api-journeys/**/*.ts"
-            ]
+            "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/api-journeys/tsconfig.json"
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/api-journeys"
-          ],
+          "outputs": ["coverage/apps/api-journeys"],
           "options": {
             "jestConfig": "apps/api-journeys/jest.config.js",
             "passWithNoTests": true
@@ -177,9 +179,7 @@
       "targets": {
         "build": {
           "executor": "@nrwl/next:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "root": "apps/journeys",
             "outputPath": "dist/apps/journeys"
@@ -211,9 +211,7 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/journeys"
-          ],
+          "outputs": ["coverage/apps/journeys"],
           "options": {
             "jestConfig": "apps/journeys/jest.config.js",
             "passWithNoTests": true
@@ -222,9 +220,13 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/journeys/**/*.{ts,tsx,js,jsx}"
-            ]
+            "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/journeys/tsconfig.json"
           }
         },
         "storybook": {
@@ -246,6 +248,9 @@
           "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
+              {
+                "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+              },
               {
                 "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
               }
@@ -275,9 +280,13 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/journeys-e2e/**/*.{js,ts}"
-            ]
+            "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/journeys-e2e/tsconfig.json"
           }
         }
       }
@@ -304,9 +313,7 @@
         },
         "build-storybook": {
           "executor": "@nrwl/storybook:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "uiFramework": "@storybook/react",
             "outputPath": "dist/storybook/shared-storybook",
@@ -330,16 +337,18 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/shared/ui/**/*.{ts,tsx,js,jsx}"
-            ]
+            "lintFilePatterns": ["libs/shared/ui/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b libs/shared/ui/tsconfig.json"
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/shared/ui"
-          ],
+          "outputs": ["coverage/libs/shared/ui"],
           "options": {
             "jestConfig": "libs/shared/ui/jest.config.js",
             "passWithNoTests": true
@@ -365,6 +374,9 @@
           "options": {
             "commands": [
               {
+                "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+              },
+              {
                 "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript  --globalTypesFile=libs/shared/ui/__generated__/globalTypes.ts"
               }
             ]
@@ -380,16 +392,18 @@
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/shared/util-graphql/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/shared/util-graphql/**/*.ts"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b libs/shared/util-graphql/tsconfig.json"
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/shared/util-graphql"
-          ],
+          "outputs": ["coverage/libs/shared/util-graphql"],
           "options": {
             "jestConfig": "libs/shared/util-graphql/jest.config.js",
             "passWithNoTests": true

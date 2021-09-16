@@ -1,9 +1,9 @@
 export const parameters = {
-    chromatic: { viewports: [320] },
-    controls: { disabled: true },
-    backgrounds: {
-        grid: {
-            disable: true,
-        },
-    },
-};
+  chromatic: { viewports: [320] },
+  controls: { disabled: true },
+  backgrounds: {
+    grid: {
+      disable: true
+    }
+  }
+}
