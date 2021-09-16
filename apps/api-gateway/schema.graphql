@@ -96,9 +96,29 @@ type VideoBlock implements Block {
   description: String
   id: ID!
   parentBlockId: ID
-  provider: VideoProviderEnum
+  provider: VideoProviderEnum!
   src: String!
   title: String!
+}
+
+enum VideoEventEnum {
+  ENDED
+  PAUSED
+  READY
+  TIMEREACHED
+}
+
+type VideoOverlayBlock implements Block {
+  displayOn: [VideoEventEnum]
+  id: ID!
+  location: VideoOverlayLocationEnum
+  parentBlockId: ID
+}
+
+enum VideoOverlayLocationEnum {
+  CENTER
+  EAST
+  WEST
 }
 
 enum VideoProviderEnum {

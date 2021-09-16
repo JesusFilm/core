@@ -1,4 +1,4 @@
-import { renderWithStore } from '../../../../test/testingLibrary'
+import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { Video } from '.'
@@ -42,7 +42,7 @@ const block: TreeBlock<VideoBlock> = {
 
 describe('VideoComponent', () => {
   it('should render the video successfully', () => {
-    const { getByTestId } = renderWithStore(<Video {...block} />)
+    const { getByTestId } = renderWithApolloClient(<Video {...block} />)
     expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })

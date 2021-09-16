@@ -1,22 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { Video } from './'
-import { configureStoreWithState, RootState } from '../../../libs/store/store'
-import { PreloadedState } from 'redux'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { journeysConfig } from '../../../libs/storybook/decorators'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
-let preloadedState: PreloadedState<RootState>
-
 const Demo = {
+  ...journeysConfig,
   component: Video,
-  title: 'Journeys/Blocks/Video',
-  decorators: [
-    (Story) => (
-      <Provider store={configureStoreWithState(preloadedState)}>
-        <Story />
-      </Provider>
-    )
-  ]
+  title: 'Journeys/Blocks/Video'
 }
 
 const Template: Story<TreeBlock<VideoBlock>> = ({ ...props }) => <Video {...props} />

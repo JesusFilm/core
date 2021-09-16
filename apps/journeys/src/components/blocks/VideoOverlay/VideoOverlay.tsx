@@ -1,10 +1,10 @@
-import { VideoOverlayType } from '../../../types'
+import { GetJourney_journey_blocks_VideoOverlayBlock as VideoOverlayBlock } from '../../../../__generated__/GetJourney'
 import { ReactElement } from 'react'
 import { RadioQuestion } from '../RadioQuestion/'
 import { makeStyles, createStyles } from '@mui/styles'
 import { Grid } from '@mui/material'
 
-type VideoOverlayProps = VideoOverlayType & {
+type VideoOverlayProps = VideoOverlayBlock & {
   latestEvent
 }
 

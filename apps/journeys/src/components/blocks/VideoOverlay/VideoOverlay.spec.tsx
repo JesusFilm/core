@@ -1,8 +1,8 @@
 import { VideoOverlay } from './VideoOverlay'
-import { renderWithStore } from '../../../../test/testingLibrary'
-import { VideoOverlayType } from '../../../types'
+import { renderWithApolloClient } from '../../../../test/testingLibrary'
+import { GetJourney_journey_blocks_VideoOverlayBlock as VideoOverlayBlock } from '../../../../__generated__/GetJourney'
 
-const block: VideoOverlayType = {
+const block: VideoOverlayBlock = {
   __typename: 'VideoOverlay',
   id: 'VideoOverlay1',
   displayOn: ['ready'],
@@ -27,7 +27,7 @@ const block: VideoOverlayType = {
 
 describe('VideoOverlay', () => {
   it('should display radio option', () => {
-    const { getByText } = renderWithStore(
+    const { getByText } = renderWithApolloClient(
       <VideoOverlay
         {...block}
         latestEvent={'ready'}

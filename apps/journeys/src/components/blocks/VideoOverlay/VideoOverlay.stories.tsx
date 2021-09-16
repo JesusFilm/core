@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { VideoOverlayType } from '../../../types'
+import { GetJourney_journey_blocks_VideoOverlayBlock as VideoOverlayBlock } from '../../../../__generated__/GetJourney'
 import VideoOverlay from './VideoOverlay'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 
@@ -9,7 +9,7 @@ const Demo = {
   title: 'Journeys/Blocks/VideoOverlay'
 }
 
-const DefaultTemplate: Story<VideoOverlayType> = ({ ...props }) => (
+const DefaultTemplate: Story<VideoOverlayBlock> = ({ ...props }) => (
   <VideoOverlay {...props} latestEvent={'ready'} />
 )
 
