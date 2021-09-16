@@ -1,7 +1,8 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
-import db from '../../lib/db'
+import { v4 as uuidv4 } from 'uuid'
+import { prismaMock } from '../../lib/mockDb'
 import Journey from '../journey'
 import Block from '../block'
 
@@ -10,12 +11,10 @@ it('creates a journey session', async () => {
     schemaBuilder,
     modules: [Journey, Block]
   })
-  const journey = await db.journey.create({
-    data: {
-      title: 'factoried journey',
-      published: true
-    }
-  })
+  const sessionId = uuidv4()
+  const journeyId = uuidv4()
+  prismaMock.userSession.create.mockResolvedValue({ id: sessionId })
+
   const query = gql`
     mutation ($journeyId: ID!) {
       userSessionCreate(journeyId: $journeyId) {
@@ -26,18 +25,8 @@ it('creates a journey session', async () => {
 
   const { data } = await testkit.execute(app, {
     document: query,
-    variableValues: { journeyId: journey.id },
-    contextValue: { db }
+    variableValues: { journeyId: journeyId },
+    contextValue: { db: prismaMock }
   })
-
-  const journeySession = await db.userSession.findUnique({
-    where: {
-      id: data?.userSessionCreate
-    }
-  })
-
-  expect(journeySession).toEqual({
-    id: journeySession?.id,
-    journeyId: journey.id
-  })
+  expect(data?.userSessionCreate).toEqual(sessionId)
 })
