@@ -15,7 +15,7 @@ export interface ButtonProps extends ButtonBlockFields {
   disabled?: boolean
 }
 
-export function Button({ variant, label, color, size, startIcon, endIcon, loading }: ButtonProps): ReactElement {
+export function Button({ variant, label, color, size, startIcon, endIcon, loading, disabled }: ButtonProps): ReactElement {
   const classes = useStyles()
 
   return (
@@ -23,6 +23,7 @@ export function Button({ variant, label, color, size, startIcon, endIcon, loadin
       data-testid='ButtonComponent'
       className={classes.spacing}
       variant={variant ?? undefined}
+      disabled={disabled}
       color={color ?? undefined}
       size={size ?? undefined}
       startIcon={startIcon?.name !== null ? <Icon icon={startIcon?.name} /> : null}

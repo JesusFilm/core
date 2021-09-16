@@ -76,7 +76,7 @@ Size.args = {
   variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
 }
 
-const startIconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
+const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
@@ -85,7 +85,7 @@ const startIconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   </div>
 )
 
-export const startIcon = startIconTemplate.bind({})
+export const startIcon = IconTemplate.bind({})
 startIcon.args = {
   __typename: 'ButtonBlock',
   id: 'button',
@@ -101,16 +101,7 @@ startIcon.args = {
   endIcon: null
 }
 
-const endIconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
-    <Button {...args} />
-  </div>
-)
-
-export const endIcon = endIconTemplate.bind({})
+export const endIcon = IconTemplate.bind({})
 endIcon.args = {
   __typename: 'ButtonBlock',
   id: 'button',
@@ -126,7 +117,7 @@ endIcon.args = {
   }
 }
 
-const loadingTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
+const Template: Story<ButtonStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
@@ -135,7 +126,7 @@ const loadingTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   </div>
 )
 
-export const Loading = loadingTemplate.bind({})
+export const Loading = Template.bind({})
 Loading.args = {
   __typename: 'ButtonBlock',
   id: 'button',
@@ -145,6 +136,18 @@ Loading.args = {
   startIcon: null,
   endIcon: null,
   loading: false
+}
+
+export const Disabled = Template.bind({})
+Disabled.args = {
+  __typename: 'ButtonBlock',
+  id: 'button',
+  parentBlockId: 'question',
+  label: 'End Icon',
+  variant: ButtonBlockVariant.contained,
+  startIcon: null,
+  endIcon: null,
+  disabled: true
 }
 
 export default ButtonDemo as Meta
