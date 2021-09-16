@@ -27,14 +27,14 @@ describe('transformer', () => {
           id: 'Option1',
           parentBlockId: 'Question1',
           label: 'Option 1',
-          image: null
+          action: null
         },
         {
           __typename: 'RadioOptionBlock',
           id: 'Option2',
           parentBlockId: 'Question1',
           label: 'Option 2',
-          image: null
+          action: null
         },
         {
           __typename: 'RadioQuestionBlock',
@@ -49,14 +49,14 @@ describe('transformer', () => {
           id: 'Option3',
           parentBlockId: 'Question2',
           label: 'Option 3',
-          image: null
+          action: null
         },
         {
           __typename: 'RadioOptionBlock',
           id: 'Option4',
           parentBlockId: 'Question2',
           label: 'Option 4',
-          image: null
+          action: null
         }
       ])
     ).toEqual([
@@ -70,7 +70,7 @@ describe('transformer', () => {
                 id: 'Option1',
                 parentBlockId: 'Question1',
                 label: 'Option 1',
-                image: null
+                action: null
               },
               {
                 children: [],
@@ -78,7 +78,7 @@ describe('transformer', () => {
                 id: 'Option2',
                 parentBlockId: 'Question1',
                 label: 'Option 2',
-                image: null
+                action: null
               }
             ],
             __typename: 'RadioQuestionBlock',
@@ -103,7 +103,7 @@ describe('transformer', () => {
                 id: 'Option3',
                 parentBlockId: 'Question2',
                 label: 'Option 3',
-                image: null
+                action: null
               },
               {
                 children: [],
@@ -111,7 +111,7 @@ describe('transformer', () => {
                 id: 'Option4',
                 parentBlockId: 'Question2',
                 label: 'Option 4',
-                image: null
+                action: null
               }
             ],
             __typename: 'RadioQuestionBlock',

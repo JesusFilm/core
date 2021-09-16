@@ -54,6 +54,12 @@
             "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
           }
         },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/api-gateway/tsconfig.json"
+          }
+        },
         "generate-graphql": {
           "executor": "@nrwl/workspace:run-commands",
           "options": {
@@ -103,6 +109,12 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/api-journeys/tsconfig.json"
           }
         },
         "test": {
@@ -211,6 +223,12 @@
             "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
           }
         },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/journeys/tsconfig.json"
+          }
+        },
         "storybook": {
           "executor": "@nrwl/storybook:storybook",
           "options": {
@@ -260,6 +278,12 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/journeys-e2e/tsconfig.json"
           }
         }
       }
@@ -313,6 +337,12 @@
             "lintFilePatterns": ["libs/shared/ui/**/*.{ts,tsx,js,jsx}"]
           }
         },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b libs/shared/ui/tsconfig.json"
+          }
+        },
         "test": {
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/shared/ui"],
@@ -347,6 +377,12 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/shared/util-graphql/**/*.ts"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b libs/shared/util-graphql/tsconfig.json"
           }
         },
         "test": {
