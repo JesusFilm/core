@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
-    StepBlock: 'id' | 'parentBlockId';
+    StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
     NavigateAction: 'gtmEventName';
@@ -70,6 +70,8 @@ export namespace BlockModule {
     StepBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
+      nextBlockId?: gm.Middleware[];
+      locked?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
     };
     VideoBlock?: {
