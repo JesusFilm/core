@@ -10,7 +10,7 @@ const typeDefs = gql`
 
 const resolvers: UserSessionModule.Resolvers = {
   Mutation: {
-    async userSessionCreate (_parent, { journeyId }, { db }) {
+    async userSessionCreate(_parent, { journeyId }, { db }) {
       const session = await db.userSession.create({
         data: {
           journeyId

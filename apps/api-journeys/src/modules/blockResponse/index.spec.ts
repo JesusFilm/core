@@ -20,7 +20,11 @@ const factoryJourney = async (): Promise<Prisma.Journey> => {
     }
   })
 }
-const executeGQL = async (app, query, variables): Promise<{ data?, errors? }> => {
+const executeGQL = async (
+  app,
+  query,
+  variables
+): Promise<{ data?; errors? }> => {
   return await testkit.execute(app, {
     document: query,
     variableValues: variables,
@@ -31,15 +35,17 @@ const executeGQL = async (app, query, variables): Promise<{ data?, errors? }> =>
 it('creates a video block response', async () => {
   const app = setupApp()
   const journey = await factoryJourney()
-  const userSession = await db.userSession.create({ data: { journeyId: journey.id } })
+  const userSession = await db.userSession.create({
+    data: { journeyId: journey.id }
+  })
   const block = await db.block.create({ data: { journeyId: journey.id } })
   const query = gql`
-    mutation($userSessionId: ID!, $blockId: ID!) {
+    mutation ($userSessionId: ID!, $blockId: ID!) {
       videoBlockResponseCreate(
         input: {
-          userSessionId: $userSessionId,
-          blockId: $blockId,
-          position: 4.1,
+          userSessionId: $userSessionId
+          blockId: $blockId
+          position: 4.1
           state: PAUSED
         }
       ) {
@@ -48,7 +54,10 @@ it('creates a video block response', async () => {
     }
   `
 
-  const { data } = await executeGQL(app, query, { userSessionId: userSession.id, blockId: block.id })
+  const { data } = await executeGQL(app, query, {
+    userSessionId: userSession.id,
+    blockId: block.id
+  })
 
   const blockResponse = await db.blockResponse.findUnique({
     where: {

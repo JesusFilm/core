@@ -31,13 +31,15 @@ const typeDefs = gql`
   extend type Mutation {
     signupBlockResponseCreate(input: SignupBlockResponseInput!): ID!
     videoBlockResponseCreate(input: VideoBlockResponseInput!): ID!
-    radioQuestionBlockResponseCreate(input: RadioQuestionBlockResponseInput!): ID!
+    radioQuestionBlockResponseCreate(
+      input: RadioQuestionBlockResponseInput!
+    ): ID!
   }
 `
 
 const resolvers: BlockResponseModule.Resolvers = {
   Mutation: {
-    async signupBlockResponseCreate (_parent, { input }, { db }) {
+    async signupBlockResponseCreate(_parent, { input }, { db }) {
       const { userSessionId, blockId, name, email } = input
       const { id } = await db.blockResponse.create({
         data: {
@@ -48,7 +50,7 @@ const resolvers: BlockResponseModule.Resolvers = {
       })
       return id
     },
-    async videoBlockResponseCreate (_parent, { input }, { db }) {
+    async videoBlockResponseCreate(_parent, { input }, { db }) {
       const { userSessionId, blockId, position, state } = input
       const { id } = await db.blockResponse.create({
         data: {
@@ -59,7 +61,7 @@ const resolvers: BlockResponseModule.Resolvers = {
       })
       return id
     },
-    async radioQuestionBlockResponseCreate (_parent, { input }, { db }) {
+    async radioQuestionBlockResponseCreate(_parent, { input }, { db }) {
       const { userSessionId, blockId, selectedResponseBlockId } = input
       const { id } = await db.blockResponse.create({
         data: {

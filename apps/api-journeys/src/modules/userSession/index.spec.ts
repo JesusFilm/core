@@ -17,7 +17,7 @@ it('creates a journey session', async () => {
     }
   })
   const query = gql`
-    mutation($journeyId: ID!) {
+    mutation ($journeyId: ID!) {
       userSessionCreate(journeyId: $journeyId) {
         id
       }
