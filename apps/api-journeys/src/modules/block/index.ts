@@ -1,7 +1,12 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
-import { Block, NavigateAction, NavigateToJourneyAction, Resolvers } from '../../__generated__/types'
+import {
+  Block,
+  NavigateAction,
+  NavigateToJourneyAction,
+  Resolvers
+} from '../../__generated__/types'
 
 const typeDefs = gql`
   extend type Journey {
@@ -45,7 +50,7 @@ const typeDefs = gql`
     description: String
     variant: RadioQuestionVariant
   }
-  
+
   interface Action {
     gtmEventName: String
   }
@@ -76,7 +81,7 @@ const typeDefs = gql`
 
 const resolvers: Resolvers = {
   Journey: {
-    async blocks (journey, __, { db }) {
+    async blocks(journey, __, { db }) {
       const blocks = await db.block.findMany({
         where: { journeyId: journey.id },
         orderBy: [{ parentOrder: 'asc' }]
@@ -89,7 +94,7 @@ const resolvers: Resolvers = {
     }
   },
   Action: {
-    __resolveType (obj) {
+    __resolveType(obj) {
       if ((obj as NavigateAction).blockId != null) {
         return 'NavigateAction'
       }
