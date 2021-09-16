@@ -50,6 +50,10 @@ type LinkAction implements Action {
 type Mutation {
   journeyCreate(title: String!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+  radioQuestionBlockResponseCreate(input: RadioQuestionBlockResponseInput!): ID! @join__field(graph: JOURNEYS)
+  signupBlockResponseCreate(input: SignupBlockResponseInput!): ID! @join__field(graph: JOURNEYS)
+  userSessionCreate(journeyId: ID!): ID! @join__field(graph: JOURNEYS)
+  videoBlockResponseCreate(input: VideoBlockResponseInput!): ID! @join__field(graph: JOURNEYS)
 }
 
 type NavigateAction implements Action {
@@ -82,9 +86,22 @@ type RadioQuestionBlock implements Block {
   variant: RadioQuestionVariant
 }
 
+input RadioQuestionBlockResponseInput {
+  blockId: ID!
+  selectedResponseBlockId: ID!
+  userSessionId: ID!
+}
+
 enum RadioQuestionVariant {
   DARK
   LIGHT
+}
+
+input SignupBlockResponseInput {
+  blockId: ID!
+  email: String!
+  name: String!
+  userSessionId: ID!
 }
 
 type StepBlock implements Block {
@@ -96,9 +113,22 @@ type VideoBlock implements Block {
   description: String
   id: ID!
   parentBlockId: ID
-  provider: VideoProviderEnum
+  provider: VideoProviderEnum!
   src: String!
   title: String!
+}
+
+input VideoBlockResponseInput {
+  blockId: ID!
+  position: Float!
+  state: VideoBlockResponseStateEnum!
+  userSessionId: ID!
+}
+
+enum VideoBlockResponseStateEnum {
+  FINISHED
+  PAUSED
+  PLAYING
 }
 
 enum VideoProviderEnum {

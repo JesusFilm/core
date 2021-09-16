@@ -21,7 +21,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   parentBlockId: string | null;
   src: string;
   title: string;
-  provider: VideoProviderEnum | null;
+  provider: VideoProviderEnum;
 }
 
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
