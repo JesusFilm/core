@@ -6,12 +6,11 @@ import TextField from '../../../../../../libs/shared/ui/src/components/TextField
 
 import Button from '@mui/material/Button'
 
-// Placeholder for generated type
+// TODO: Placeholder for generated type
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: 'SignUpBlock'
   id: string
   parentBlockId: string | null
-  // other props to be defined
 }
 
 export interface SignUpProps extends GetJourney_journey_blocks_SignUpBlock {
@@ -30,7 +29,7 @@ const SignUp = ({
   ...props
 }: SignUpProps): ReactElement => {
   const initialValues: SignUpFormValues = { name: '', email: '' }
-  // Get finalised validation messages
+  // TODO: Get finalised validation messages - store messages in frontend
   const SignupSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Name must be 2 characters or more')
@@ -39,9 +38,9 @@ const SignUp = ({
   })
 
   return (
-    // Change div to step container
+    // TODO: Change div to step container
     <div>
-      {/* Use shared-ui Typography & spacing tokens */}
+      {/* TODO: Use shared-ui Typography & spacing tokens */}
       <div style={{ marginBottom: '32px' }}>
         <h1>{ heading }</h1>
         <p>{ description }</p>
@@ -71,7 +70,7 @@ const SignUp = ({
               name="email"
               label="Email"
             />
-            {/* Use shared-ui Button */}
+            {/* TODO: Use shared-ui Button */}
             <Button type="submit" variant='contained'>Submit</Button>
           </Form>
         )}

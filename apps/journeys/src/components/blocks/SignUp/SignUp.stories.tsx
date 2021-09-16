@@ -8,6 +8,7 @@ const Demo = {
 
 const Template: Story<SignUpProps> = ({ ...props }) => <SignUp {...props} />
 
+// TODO: Awaiting on final designs
 export const Default = Template.bind({})
 Default.args = {
   heading: 'Sign Up',

@@ -19,13 +19,13 @@ const TextField = ({
     <Field
       {...muiFieldProps}
       {...formikFieldProps}
-      // Await final designs
+      // TODO: Await final designs
       sx={{ marginBottom: '16px' }}
       fullWidth
       name={name}
       variant='outlined'
       error={hasError}
-      helperText={hasError ? <ErrorMessage name={name} /> : ' '}
+      helperText={hasError ? meta.error : ' '}
     />
   )
 }

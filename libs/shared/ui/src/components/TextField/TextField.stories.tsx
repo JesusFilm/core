@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Form, Formik } from 'formik'
+import { Form, Formik, FormikProps } from 'formik'
 import * as Yup from 'yup'
 
 import TextField, { TextFieldProps } from './TextField'
@@ -10,7 +10,7 @@ const Demo = {
 }
 
 const Template: Story<TextFieldProps> = () =>
-<Formik
+  <Formik
     initialValues={{ default: '', prepopulated: 'Prepopulated', errored: '', disabled: '' }}
     validationSchema={Yup.object().shape({
       errored: Yup.string().required('Required')
@@ -27,7 +27,7 @@ const Template: Story<TextFieldProps> = () =>
       flexDirection: 'column'
     }}>
       <TextField
-        {...props}
+        // {...props}
         name='default'
         label='Default'
       />
@@ -55,8 +55,18 @@ const Template: Story<TextFieldProps> = () =>
       />
       </Form>
     )}
-</Formik>
+  </Formik>
 
 export const States = Template.bind({})
+
+// TODO: Future variants
+
+// export const Size = Template.bind({})
+
+// export const MultiLine = Template.bind({})
+
+// export const Icon = Template.bind({})
+
+// export const Select = Template.bind({})
 
 export default Demo as Meta

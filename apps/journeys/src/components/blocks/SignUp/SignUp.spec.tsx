@@ -73,7 +73,12 @@ describe('SignUp', () => {
     expect(await inlineError).toHaveProperty('id', 'email-helper-text')
   })
 
+  // TODO: Awaiting on Button Component
+
   // it('should show loading button on form submit', async () => {
+  // })
+
+  // it('should submit form with ___', async () => {
   // })
 
   // it('should show error when submit fails', async () => {
