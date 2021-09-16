@@ -97,7 +97,7 @@ it('returns blocks', async () => {
   })
   const { data } = await testkit.execute(app, {
     document: gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         journey(id: $id) {
           blocks {
             id

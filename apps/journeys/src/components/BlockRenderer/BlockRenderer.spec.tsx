@@ -9,7 +9,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       label: 'radio option',
       parentBlockId: null,
-      image: null,
+      action: null,
       children: []
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
@@ -35,15 +35,17 @@ describe('BlockRenderer', () => {
       __typename: 'StepBlock',
       id: 'step',
       parentBlockId: null,
-      children: [{
-        __typename: 'RadioQuestionBlock',
-        id: 'question',
-        label: 'radio question',
-        parentBlockId: 'step',
-        description: 'description',
-        variant: null,
-        children: []
-      }]
+      children: [
+        {
+          __typename: 'RadioQuestionBlock',
+          id: 'question',
+          label: 'radio question',
+          parentBlockId: 'step',
+          description: 'description',
+          variant: null,
+          children: []
+        }
+      ]
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
