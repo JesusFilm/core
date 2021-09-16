@@ -23,27 +23,27 @@ const typeDefs = gql`
 
 const resolvers: JourneyModule.Resolvers = {
   Query: {
-    async journeys (_, __, { db }) {
+    async journeys(_, __, { db }) {
       return await db.journey.findMany({
         where: { published: true }
       })
     },
-    async journey (_parent, { id }, { db }) {
+    async journey(_parent, { id }, { db }) {
       return await db.journey.findUnique({
         where: { id }
       })
     }
   },
   Mutation: {
-    async journeyCreate (_parent, { title, locale }, { db }) {
+    async journeyCreate(_parent, { title, locale }, { db }) {
       return await db.journey.create({
         data: {
           title,
-          locale: locale as string ?? undefined
+          locale: (locale as string) ?? undefined
         }
       })
     },
-    async journeyPublish (_parent, { id }, { db }) {
+    async journeyPublish(_parent, { id }, { db }) {
       return await db.journey.update({
         where: { id },
         data: {

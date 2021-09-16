@@ -35,14 +35,14 @@
           }
         },
         "serve-all": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
                 "command": "nx serve api-journeys"
               },
               {
-                "command": "sleep 10; nx serve api-gateway"
+                "command": "nx serve api-gateway"
               }
             ],
             "parallel": true
@@ -54,12 +54,18 @@
             "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
           }
         },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/api-gateway/tsconfig.json"
+          }
+        },
         "generate-graphql": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
-                "command": "npx rover supergraph compose --config apps/api-gateway/supergraph.yml > apps/api-gateway/schema.graphql"
+                "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml > apps/api-gateway/schema.graphql"
               }
             ]
           }
@@ -105,6 +111,12 @@
             "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
           }
         },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+          }
+        },
         "test": {
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/apps/api-journeys"],
@@ -126,13 +138,13 @@
           }
         },
         "rollback": {
-          "builder": "@nx-tools/nx-prisma:rollback",
+          "executor": "@nx-tools/nx-prisma:rollback",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
           }
         },
         "seed": {
-          "builder": "@nx-tools/nx-prisma:seed",
+          "executor": "@nx-tools/nx-prisma:seed",
           "options": {
             "script": "apps/api-journeys/prisma/seed.ts",
             "tsConfig": "apps/api-journeys/tsconfig.app.json"
@@ -149,11 +161,11 @@
           }
         },
         "generate-graphql": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               {
-                "command": "npx rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+                "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
               }
             ]
           }
@@ -180,7 +192,9 @@
           "executor": "@nrwl/next:server",
           "options": {
             "buildTarget": "journeys:build",
-            "dev": true
+            "dev": true,
+            "hostname": "0.0.0.0",
+            "port": 4100
           },
           "configurations": {
             "production": {
@@ -207,6 +221,12 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/journeys/tsconfig.json"
           }
         },
         "storybook": {
@@ -259,6 +279,12 @@
           "options": {
             "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
           }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b apps/journeys-e2e/tsconfig.json"
+          }
         }
       }
     },
@@ -300,6 +326,48 @@
         }
       }
     },
+    "shared-ui": {
+      "root": "libs/shared/ui",
+      "sourceRoot": "libs/shared/ui/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/shared/ui/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b libs/shared/ui/tsconfig.json"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/shared/ui"],
+          "options": {
+            "jestConfig": "libs/shared/ui/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "storybook": {
+          "executor": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/react",
+            "port": 4400,
+            "config": {
+              "configFolder": ".storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        }
+      }
+    },
     "shared-util-graphql": {
       "root": "libs/shared/util-graphql",
       "sourceRoot": "libs/shared/util-graphql/src",
@@ -309,6 +377,12 @@
           "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/shared/util-graphql/**/*.ts"]
+          }
+        },
+        "type-check": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "command": "npx tsc -b libs/shared/util-graphql/tsconfig.json"
           }
         },
         "test": {
