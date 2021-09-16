@@ -10,23 +10,23 @@ export function Icon (props: IconProps): ReactElement | null {
   switch (props.icon) {
     case 'CheckCircle':
       return <CheckCircle />
-    case 'playArrow':
+    case 'PlayArrow':
       return <PlayArrow />
-    case 'translate':
+    case 'Translate':
       return <Translate />
-    case 'radioButtonUnchecked':
+    case 'RadioButtonUnchecked':
       return <RadioButtonUnchecked />
-    case 'formatQuote':
+    case 'FormatQuote':
       return <FormatQuote />
-    case 'lockOpen':
+    case 'LockOpen':
       return <LockOpen />
-    case 'arrowForward':
+    case 'ArrowForward':
       return <ArrowForward />
-    case 'chatBubbleOutline':
+    case 'ChatBubbleOutline':
       return <ChatBubbleOutline />
-    case 'liveTv':
+    case 'LiveTv':
       return <LiveTv />
-    case 'menuBook':
+    case 'MenuBook':
       return <MenuBook />
     default:
       return null

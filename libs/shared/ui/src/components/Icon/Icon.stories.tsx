@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { IconName } from '../../../__generated__/globalTypes'
 import { Icon, IconProps } from '.'
 
 const IconDemo = {
@@ -23,7 +24,7 @@ const Template: Story<IconStoryProps> = (args) => (
 
 export const Icons = Template.bind({})
 Icons.args = {
-  variants: ['playArrow', 'translate', 'checkCircle', 'radioButtonUnchecked', 'formatQuote', 'lockOpen', 'arrowForward', 'chatBubbleOutline', 'liveTv', 'menuBook']
+  variants: [IconName.ArrowForward, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
 }
 
 export default IconDemo as Meta
