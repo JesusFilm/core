@@ -11,23 +11,6 @@ interface ButtonStoryProps extends ButtonProps {
   variants: string[]
 }
 
-const Template: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
-    <Button {...args} variant={ButtonBlockVariant.contained} color={ButtonColor.primary} size={ButtonSize.large} startIcon={{ __typename: 'Icon', name: IconName.CheckCircle, color: IconColor.primary, size: IconSize.small }} endIcon={{ __typename: 'Icon', name: IconName.CheckCircle, color: IconColor.primary, size: IconSize.small }} action={null} />
-  </div>
-)
-
-export const Primary = Template.bind({})
-Primary.args = {
-  __typename: 'ButtonBlock',
-  id: 'button',
-  parentBlockId: 'question',
-  label: 'Button Text'
-}
-
 const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
