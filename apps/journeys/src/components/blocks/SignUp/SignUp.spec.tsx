@@ -47,7 +47,9 @@ describe('SignUp', () => {
     const inlineError = screen.findByText('Name must be 50 characters or less')
 
     await act(async () => {
-      fireEvent.change(name, { target: { value: '123456789012345678901234567890123456789012345678901' } })
+      fireEvent.change(name, {
+        target: { value: '123456789012345678901234567890123456789012345678901' }
+      })
     })
     await act(async () => {
       fireEvent.click(submit)

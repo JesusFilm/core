@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Form, Formik, FormikProps } from 'formik'
+import { Form, Formik } from 'formik'
 import * as Yup from 'yup'
 
 import TextField, { TextFieldProps } from './TextField'
@@ -9,9 +9,14 @@ const Demo = {
   title: 'shared-ui/TextField'
 }
 
-const Template: Story<TextFieldProps> = () =>
+const Template: Story<TextFieldProps> = () => (
   <Formik
-    initialValues={{ default: '', prepopulated: 'Prepopulated', errored: '', disabled: '' }}
+    initialValues={{
+      default: '',
+      prepopulated: 'Prepopulated',
+      errored: '',
+      disabled: ''
+    }}
     validationSchema={Yup.object().shape({
       errored: Yup.string().required('Required')
     })}
@@ -21,41 +26,22 @@ const Template: Story<TextFieldProps> = () =>
       console.log(values)
     }}
   >
-    {({ ...props }) => (
-    <Form style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <TextField
-        // {...props}
-        name='default'
-        label='Default'
-      />
-      <TextField
-        {...props}
-        name='prepopulated'
-        label='Prepopulated'
-      />
-      <TextField
-        {...props}
-        name='errored'
-        label='Errored'
-        />
-      <TextField
-        {...props}
-        name='focused'
-        label='Focused'
-        focused
-      />
-      <TextField
-        {...props}
-        name='disabled'
-        label='Disabled'
-        disabled
-      />
+    {() => (
+      <Form
+        style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <TextField name="default" label="Default" />
+        <TextField name="prepopulated" label="Prepopulated" />
+        <TextField name="errored" label="Errored" />
+        <TextField name="focused" label="Focused" focused />
+        <TextField name="disabled" label="Disabled" disabled />
       </Form>
     )}
   </Formik>
+)
 
 export const States = Template.bind({})
 
