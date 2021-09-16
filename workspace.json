@@ -249,6 +249,9 @@
           "options": {
             "commands": [
               {
+                "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+              },
+              {
                 "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
               }
             ]
@@ -364,6 +367,19 @@
             "ci": {
               "quiet": true
             }
+          }
+        },
+        "codegen": {
+          "executor": "@nrwl/workspace:run-commands",
+          "options": {
+            "commands": [
+              {
+                "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+              },
+              {
+                "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript  --globalTypesFile=libs/shared/ui/__generated__/globalTypes.ts"
+              }
+            ]
           }
         }
       }
