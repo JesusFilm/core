@@ -47,6 +47,7 @@
     "core-js": "^3.6.5",
     "express": "4.17.1",
     "fastify": "^3.20.2",
+    "formik": "^2.2.9",
     "graphql": "^15.5.3",
     "graphql-modules": "^1.4.4",
     "lodash": "^4.17.21",
@@ -60,7 +61,8 @@
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "subscriptions-transport-ws": "^0.10.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@apollo/rover": "^0.2.0",
