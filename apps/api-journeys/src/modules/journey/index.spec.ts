@@ -1,25 +1,19 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
-import db from '../../lib/db'
+import prismaMock from '../../lib/mockDb'
 import { pick } from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
-  const journey = await db.journey.create({
-    data: {
-      title: 'published',
-      published: true
-    }
-  })
-
-  await db.journey.create({
-    data: {
-      title: 'unpublished',
-      published: false
-    }
-  })
+  const publishedJourney = {
+    id: uuidv4(),
+    title: 'published',
+    published: true
+  }
+  prismaMock.journey.findMany.mockResolvedValue([publishedJourney])
 
   const { data } = await testkit.execute(app, {
     document: gql`
@@ -32,22 +26,24 @@ it('returns published journeys', async () => {
       }
     `,
     contextValue: {
-      db
+      db: prismaMock
     }
   })
 
-  expect(data?.journeys).toEqual([pick(journey, ['id', 'title', 'published'])])
+  expect(data?.journeys).toEqual([
+    pick(publishedJourney, ['id', 'title', 'published'])
+  ])
 })
 
 it('returns journey', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
-  const journey = await db.journey.create({
-    data: {
-      title: 'published',
-      published: true
-    }
-  })
+  const journey = {
+    id: uuidv4(),
+    title: 'published',
+    published: true
+  }
+  prismaMock.journey.findUnique.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {
     document: gql`
@@ -63,7 +59,7 @@ it('returns journey', async () => {
       id: journey.id
     },
     contextValue: {
-      db
+      db: prismaMock
     }
   })
 
@@ -73,11 +69,20 @@ it('returns journey', async () => {
 it('creates journey', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
+  const journey = {
+    id: uuidv4(),
+    title: 'published',
+    published: true
+  }
+  prismaMock.journey.create.mockResolvedValue(journey)
+
   const { data } = await testkit.execute(app, {
     document: gql`
       mutation ($title: String!) {
         journeyCreate(title: $title) {
           id
+          title
+          published
         }
       }
     `,
@@ -85,33 +90,20 @@ it('creates journey', async () => {
       title: 'my journey'
     },
     contextValue: {
-      db
-    }
-  })
-  const journey = await db.journey.findUnique({
-    where: {
-      id: data?.journeyCreate.id
+      db: prismaMock
     }
   })
 
-  expect(journey).toEqual({
-    id: data?.journeyCreate.id,
-    published: false,
-    title: 'my journey'
-  })
+  expect(data?.journeyCreate).toEqual(journey)
 })
 
 it('publishes journey', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
-  const journey = await db.journey.create({
-    data: {
-      title: 'my journey',
-      published: false
-    }
-  })
+  const journey = { id: uuidv4() }
+  prismaMock.journey.update.mockResolvedValue(journey)
 
-  await testkit.execute(app, {
+  const { data } = await testkit.execute(app, {
     document: gql`
       mutation ($id: ID!) {
         journeyPublish(id: $id) {
@@ -123,19 +115,9 @@ it('publishes journey', async () => {
       id: journey.id
     },
     contextValue: {
-      db
+      db: prismaMock
     }
   })
 
-  const updatedJourney = await db.journey.findUnique({
-    where: {
-      id: journey.id
-    }
-  })
-
-  expect(updatedJourney).toEqual({
-    id: journey.id,
-    published: true,
-    title: 'my journey'
-  })
+  expect(data?.journeyPublish).toEqual(journey)
 })

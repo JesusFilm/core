@@ -1,100 +1,86 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
-import db from '../../lib/db'
+import prismaMock from '../../lib/mockDb'
 import Journey from '../journey'
+import { v4 as uuidv4 } from 'uuid'
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
     schemaBuilder,
     modules: [Journey]
   })
-  const journey = await db.journey.create({
-    data: {
-      title: 'published',
-      published: true
+  const journeyId = uuidv4()
+  const otherJourneyId = uuidv4()
+  prismaMock.journey.findUnique.mockResolvedValue({ id: journeyId })
+
+  const block1 = { id: uuidv4(), journeyId: journeyId, blockType: 'StepBlock' }
+  const block2 = {
+    id: uuidv4(),
+    journeyId: journeyId,
+    blockType: 'RadioQuestionBlock',
+    parentBlockId: block1.id,
+    extraAttrs: {
+      label: 'label',
+      description: 'description'
     }
-  })
-  const otherJourney = await db.journey.create({
-    data: {
-      title: 'not "that" journey',
-      published: true
-    }
-  })
-  const block1 = await db.block.create({
-    data: { journeyId: journey.id, blockType: 'StepBlock' }
-  })
-  const block2 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: block1.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description'
+  }
+  const block3 = {
+    id: uuidv4(),
+    journeyId: journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: block2.id,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName',
+        blockId: block1.id
       }
     }
-  })
-  const block3 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName',
-          blockId: block1.id
-        }
+  }
+  const block4 = {
+    id: uuidv4(),
+    journeyId: journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: block2.id,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourneyId
       }
     }
-  })
-  const block4 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName',
-          journeyId: otherJourney.id
-        }
+  }
+  const block5 = {
+    id: uuidv4(),
+    journeyId: journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: block2.id,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org'
       }
     }
-  })
-  const block5 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName',
-          url: 'https://jesusfilm.org'
-        }
-      }
+  }
+  const block6 = {
+    id: uuidv4(),
+    journeyId: journeyId,
+    blockType: 'VideoBlock',
+    parentBlockId: block1.id,
+    extraAttrs: {
+      src: 'src',
+      title: 'title',
+      provider: 'YOUTUBE'
     }
-  })
-  const block6 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'VideoBlock',
-      parentBlockId: block1.id,
-      extraAttrs: {
-        src: 'src',
-        title: 'title',
-        provider: 'YOUTUBE'
-      }
-    }
-  })
-  await db.block.create({
-    data: { journeyId: otherJourney.id, blockType: 'StepBlock' }
-  })
+  }
+  const blocks = [block1, block2, block3, block4, block5, block6]
+  prismaMock.block.findMany.mockResolvedValue(blocks)
+
   const { data } = await testkit.execute(app, {
     document: gql`
       query ($id: ID!) {
@@ -134,10 +120,10 @@ it('returns blocks', async () => {
       }
     `,
     variableValues: {
-      id: journey.id
+      id: journeyId
     },
     contextValue: {
-      db
+      db: prismaMock
     }
   })
   expect(data?.journey.blocks).toEqual([
@@ -173,7 +159,7 @@ it('returns blocks', async () => {
       action: {
         __typename: 'NavigateToJourneyAction',
         gtmEventName: 'gtmEventName',
-        journeyId: otherJourney.id
+        journeyId: otherJourneyId
       }
     },
     {

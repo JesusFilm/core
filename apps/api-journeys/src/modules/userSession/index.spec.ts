@@ -2,7 +2,7 @@ import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import { v4 as uuidv4 } from 'uuid'
-import { prismaMock } from '../../lib/mockDb'
+import prismaMock from '../../lib/mockDb'
 import Journey from '../journey'
 import Block from '../block'
 
