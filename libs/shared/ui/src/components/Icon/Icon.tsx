@@ -1,15 +1,18 @@
 import { ReactElement } from 'react'
 import { CheckCircle, PlayArrow, Translate, RadioButtonUnchecked, FormatQuote, LockOpen, ArrowForward, ChatBubbleOutline, LiveTv, MenuBook } from '@mui/icons-material'
+import { IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
 
 export interface IconProps {
   ariaHidden?: boolean
-  icon: string | undefined
+  name: string | undefined
+  color?: IconColor
+  size?: IconSize
 }
 
-export function Icon (props: IconProps): ReactElement | null {
-  switch (props.icon) {
+export function Icon(props: IconProps): ReactElement | null {
+  switch (props.name) {
     case 'CheckCircle':
-      return <CheckCircle />
+      return <CheckCircle color={props.color ?? undefined} fontSize={props.size ?? undefined} />
     case 'PlayArrow':
       return <PlayArrow />
     case 'Translate':

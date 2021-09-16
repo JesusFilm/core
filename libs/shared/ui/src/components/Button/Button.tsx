@@ -26,8 +26,8 @@ export function Button({ variant, label, color, size, startIcon, endIcon, loadin
       disabled={disabled}
       color={color ?? undefined}
       size={size ?? undefined}
-      startIcon={startIcon?.name !== null ? <Icon icon={startIcon?.name} /> : null}
-      endIcon={endIcon?.name !== null ? <Icon icon={endIcon?.name} /> : null}>
+      startIcon={startIcon?.name !== null ? <Icon name={startIcon?.name} /> : null}
+      endIcon={endIcon?.name !== null ? <Icon name={endIcon?.name} /> : null}>
       {loading === false ? <CircularProgress color="secondary" /> : label}
     </MuiButton>
   )
