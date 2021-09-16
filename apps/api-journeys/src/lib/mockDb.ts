@@ -6,7 +6,7 @@ import prisma from './db'
 
 jest.mock('./db', () => ({
   __esModule: true,
-  default: mockDeep<PrismaClient>(),
+  default: mockDeep<PrismaClient>()
 }))
 
 beforeEach(() => {
