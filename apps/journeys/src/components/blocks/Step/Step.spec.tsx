@@ -1,4 +1,4 @@
-import { renderWithStore } from '../../../../test/testingLibrary'
+import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { Step } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
@@ -28,7 +28,7 @@ const block: TreeBlock<StepBlock> = {
 
 describe('RadioQuestion', () => {
   it('should render blocks', () => {
-    const { getByText } = renderWithStore(<Step {...block} />)
+    const { getByText } = renderWithApolloClient(<Step {...block} />)
     expect(getByText('Question 1')).toBeInTheDocument()
     expect(getByText('Question 2')).toBeInTheDocument()
   })
