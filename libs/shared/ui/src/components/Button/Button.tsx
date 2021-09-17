@@ -15,7 +15,7 @@ export interface ButtonProps extends ButtonBlockFields {
   disabled?: boolean
 }
 
-export function Button ({ variant, label, color, size, startIcon, endIcon, loading, disabled }: ButtonProps): ReactElement {
+export function Button({ variant, label, color, size, startIcon, endIcon, loading, disabled }: ButtonProps): ReactElement {
   const classes = useStyles()
 
   return (
@@ -26,8 +26,8 @@ export function Button ({ variant, label, color, size, startIcon, endIcon, loadi
       disabled={disabled}
       color={color ?? undefined}
       size={size ?? undefined}
-      startIcon={startIcon?.name !== undefined ? <Icon __typename='Icon' name={startIcon?.name} color={startIcon?.color} size={startIcon?.size} /> : null}
-      endIcon={endIcon?.name !== undefined ? <Icon __typename='Icon' name={endIcon?.name} color={endIcon?.color} size={endIcon?.size} /> : null}>
+      startIcon={startIcon?.name !== undefined ? <Icon __typename='Icon' name={startIcon?.name} color={startIcon?.color} fontSize='' size={null} /> : null}
+      endIcon={endIcon?.name !== undefined ? <Icon __typename='Icon' name={endIcon?.name} color={endIcon?.color} fontSize='' size={null} /> : null}>
       {loading === false ? <CircularProgress color="secondary" /> : label}
     </MuiButton>
   )

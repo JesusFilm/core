@@ -4,12 +4,13 @@ import { ButtonBlockFields_startIcon as IconType } from '../Button/__generated__
 
 export interface IconProps extends IconType {
   ariaHidden?: boolean
+  fontSize: string | undefined
 }
 
-export function Icon (props: IconProps): ReactElement | null {
+export function Icon(props: IconProps): ReactElement | null {
   switch (props.name) {
     case 'CheckCircle':
-      return <CheckCircle color={props.color ?? undefined} fontSize={props.size ?? undefined} />
+      return <CheckCircle sx={{ fontSize: props.fontSize }} />
     case 'PlayArrow':
       return <PlayArrow />
     case 'Translate':

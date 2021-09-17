@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
+import { IconName } from '../../../__generated__/globalTypes'
 import { Icon, IconProps } from '.'
 
 const IconDemo = {
@@ -30,32 +30,13 @@ Variant.args = {
   variants: [IconName.ArrowForward, IconName.ChatBubbleOutline, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
 }
 
-const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
-    {args.variants.map((variant) => (
-      <Icon {...args} color={variant as IconColor} />
-    ))}
-  </div>
-)
-
-export const Color = ColorTemplate.bind({})
-Color.args = {
-  __typename: 'Icon',
-  name: IconName.CheckCircle,
-  size: null,
-  variants: [IconColor.primary, IconColor.secondary, IconColor.error, IconColor.action, IconColor.disabled]
-}
-
 const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <div style={{
     display: 'flex',
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Icon {...args} size={variant as IconSize} />
+      <Icon {...args} fontSize={variant} />
     ))}
   </div>
 )
@@ -65,7 +46,7 @@ Size.args = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
   color: null,
-  variants: [IconSize.small, IconSize.medium, IconSize.large, IconSize.inherit]
+  variants: ['40px', '20px', '10px']
 }
 
 export default IconDemo as Meta
