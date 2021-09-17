@@ -1,10 +1,10 @@
-import { Story } from '@storybook/react'
+import { Story, Meta } from '@storybook/react'
+import { Typography, TypographyProps } from './Typography'
 import {
-  Typography,
-  TypographyAlignments,
-  TypographyColors,
-  TypographyVariants
-} from './Typography'
+  TypographyVariant,
+  TypographyColor,
+  TypographyAlign
+} from './../../../__generated__/globalTypes'
 
 const TypographyDemo = {
   component: Typography,
@@ -25,7 +25,7 @@ const VariantTemplate: Story<TypographyStoryProps> = (args) => (
     {args.variants.map((variant) => (
       <Typography
         {...args}
-        variant={variant as TypographyVariants}
+        variant={variant as TypographyVariant}
         content={`${variant}`}
       />
     ))}
@@ -61,7 +61,7 @@ const ColorTemplate: Story<TypographyStoryProps> = (args) => (
     {args.variants.map((variant) => (
       <Typography
         {...args}
-        color={variant as TypographyColors}
+        color={variant as TypographyColor}
         content={`${variant}`}
       />
     ))}
@@ -83,7 +83,7 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
     {args.variants.map((variant) => (
       <Typography
         {...args}
-        align={variant as TypographyAlignments}
+        align={variant as TypographyAlign}
         content={`${variant}`}
       />
     ))}
