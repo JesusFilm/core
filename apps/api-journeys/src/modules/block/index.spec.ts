@@ -3,11 +3,18 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import db from '../../lib/db'
 import Journey from '../journey'
-<<<<<<< HEAD
 import { IconName } from './icon-enums'
-=======
 import { v4 as uuidv4 } from 'uuid'
->>>>>>> main
+
+beforeEach(async () => {
+  await db.block.deleteMany()
+  await db.journey.deleteMany()
+})
+
+afterEach(async () => {
+  await db.block.deleteMany()
+  await db.journey.deleteMany()
+})
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
@@ -119,7 +126,7 @@ it('returns blocks', async () => {
       }
     }
   })
-  const block7 = await db.block.create({
+  const block8 = await db.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
@@ -143,8 +150,11 @@ it('returns blocks', async () => {
           gtmEventName: 'gtmEventName',
           url: 'https://jesusfilm.org',
           target: 'target'
-        },
-  const block8 = await db.block.create({
+        }
+      }
+    }
+  })
+  const block9 = await db.block.create({
     data: {
       id: nextBlockId,
       journeyId: journey.id,
@@ -310,7 +320,7 @@ it('returns blocks', async () => {
       provider: 'YOUTUBE'
     },
     {
-      id: block7.id,
+      id: block8.id,
       __typename: 'ButtonBlock',
       parentBlockId: block1.id,
       label: 'label',
@@ -335,7 +345,7 @@ it('returns blocks', async () => {
       }
     },
     {
-      id: block8.id,
+      id: block9.id,
       __typename: 'StepBlock',
       parentBlockId: null,
       locked: false,
