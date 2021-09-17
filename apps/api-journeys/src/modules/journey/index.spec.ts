@@ -36,9 +36,7 @@ it('returns published journeys', async () => {
     }
   })
 
-  expect(data?.journeys).toEqual([
-    pick(journey, ['id', 'title', 'published'])
-  ])
+  expect(data?.journeys).toEqual([pick(journey, ['id', 'title', 'published'])])
 })
 
 it('returns journey', async () => {
@@ -53,7 +51,7 @@ it('returns journey', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         journey(id: $id) {
           id
           title
@@ -69,9 +67,7 @@ it('returns journey', async () => {
     }
   })
 
-  expect(data?.journey).toEqual(
-    pick(journey, ['id', 'title', 'published'])
-  )
+  expect(data?.journey).toEqual(pick(journey, ['id', 'title', 'published']))
 })
 
 it('creates journey', async () => {
@@ -79,7 +75,7 @@ it('creates journey', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation($title: String!) {
+      mutation ($title: String!) {
         journeyCreate(title: $title) {
           id
         }
@@ -117,7 +113,7 @@ it('publishes journey', async () => {
 
   await testkit.execute(app, {
     document: gql`
-      mutation($id: ID!) {
+      mutation ($id: ID!) {
         journeyPublish(id: $id) {
           id
         }
@@ -131,13 +127,13 @@ it('publishes journey', async () => {
     }
   })
 
-  const uodatedJourney = await db.journey.findUnique({
+  const updatedJourney = await db.journey.findUnique({
     where: {
       id: journey.id
     }
   })
 
-  expect(uodatedJourney).toEqual({
+  expect(updatedJourney).toEqual({
     id: journey.id,
     published: true,
     title: 'my journey'

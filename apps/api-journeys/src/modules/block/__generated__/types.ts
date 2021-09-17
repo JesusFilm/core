@@ -3,10 +3,11 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
-    StepBlock: 'id' | 'parentBlockId';
+    StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
-    NavigateAction: 'gtmEventName' | 'blockId';
+    NavigateAction: 'gtmEventName';
+    NavigateToBlockAction: 'gtmEventName' | 'blockId';
     NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
     LinkAction: 'gtmEventName' | 'url' | 'target';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
@@ -37,6 +38,7 @@ export namespace BlockModule {
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type Action = Pick<Types.Action, DefinedFields['Action']>;
   export type NavigateAction = Pick<Types.NavigateAction, DefinedFields['NavigateAction']>;
+  export type NavigateToBlockAction = Pick<Types.NavigateToBlockAction, DefinedFields['NavigateToBlockAction']>;
   export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
   export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
@@ -53,6 +55,7 @@ export namespace BlockModule {
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
   export type NavigateActionResolvers = Pick<Types.NavigateActionResolvers, DefinedFields['NavigateAction'] | '__isTypeOf'>;
+  export type NavigateToBlockActionResolvers = Pick<Types.NavigateToBlockActionResolvers, DefinedFields['NavigateToBlockAction'] | '__isTypeOf'>;
   export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
   export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
@@ -67,6 +70,7 @@ export namespace BlockModule {
     VideoBlock?: VideoBlockResolvers;
     RadioQuestionBlock?: RadioQuestionBlockResolvers;
     NavigateAction?: NavigateActionResolvers;
+    NavigateToBlockAction?: NavigateToBlockActionResolvers;
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
     LinkAction?: LinkActionResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
@@ -86,6 +90,8 @@ export namespace BlockModule {
     StepBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
+      nextBlockId?: gm.Middleware[];
+      locked?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
     };
     VideoBlock?: {
@@ -106,6 +112,10 @@ export namespace BlockModule {
       variant?: gm.Middleware[];
     };
     NavigateAction?: {
+      '*'?: gm.Middleware[];
+      gtmEventName?: gm.Middleware[];
+    };
+    NavigateToBlockAction?: {
       '*'?: gm.Middleware[];
       gtmEventName?: gm.Middleware[];
       blockId?: gm.Middleware[];

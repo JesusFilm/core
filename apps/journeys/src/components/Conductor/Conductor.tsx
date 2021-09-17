@@ -1,22 +1,20 @@
 import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '../../libs/store/store'
-import { setBlocks } from './conductorSlice'
 import { TreeBlock } from '../../libs/transformer/transformer'
+import { useBlocks } from '../../libs/client/cache/blocks'
 
 interface ConductorProps {
   blocks: TreeBlock[]
 }
 
-export function Conductor ({ blocks }: ConductorProps): ReactElement {
-  const active = useAppSelector((state) => state.conductor.active)
-  const dispatch = useAppDispatch()
+export function Conductor({ blocks }: ConductorProps): ReactElement {
+  const { setTreeBlocks, activeBlock } = useBlocks()
 
   useEffect(() => {
-    dispatch(setBlocks(blocks))
-  }, [dispatch, blocks])
+    setTreeBlocks(blocks)
+  }, [setTreeBlocks, blocks])
 
-  return (active != null) ? <BlockRenderer {...active} /> : <></>
+  return activeBlock != null ? <BlockRenderer {...activeBlock} /> : <></>
 }
 
 export default Conductor
