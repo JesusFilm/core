@@ -45,12 +45,17 @@ export function RadioOption({
   selected = false,
   onClick
 }: RadioOptionProps): ReactElement {
-  const { setActiveBlockById } = useBlocks()
+  const { nextActiveBlock } = useBlocks()
   const classes = useStyles()
 
   const handleClick = (): void => {
-    if (action?.__typename === 'NavigateAction') {
-      setActiveBlockById(action.blockId)
+    switch (action?.__typename) {
+      case 'NavigateToBlockAction':
+        nextActiveBlock({ id: action.blockId })
+        break
+      case 'NavigateAction':
+        nextActiveBlock({ force: true })
+        break
     }
     onClick?.(id)
   }
