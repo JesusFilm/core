@@ -138,6 +138,12 @@ const typeDefs = gql`
     color: TypographyColor
     align: TypographyAlign
   }
+
+  type SignupBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    action: Action
+  }
 `
 
 const resolvers: Resolvers = {

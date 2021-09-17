@@ -138,6 +138,19 @@ it('returns blocks', async () => {
       }
     }
   })
+  const block10 = await db.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignupBlock',
+      parentBlockId: block9.id,
+      extraAttrs: {
+        action: {
+          gtmEventName: 'gtmEventName',
+          journeyId: otherJourney.id
+        }
+      }
+    }
+  })
   await db.block.create({
     data: {
       journeyId: otherJourney.id,
@@ -190,6 +203,21 @@ it('returns blocks', async () => {
               variant
               color
               align
+            }
+            ... on SignupBlock {
+              action {
+                __typename
+                gtmEventName
+                ... on NavigateToBlockAction {
+                  blockId
+                }
+                ... on NavigateToJourneyAction {
+                  journeyId
+                }
+                ... on LinkAction {
+                  url
+                }
+              }
             }
           }
         }
@@ -284,6 +312,16 @@ it('returns blocks', async () => {
       parentBlockId: null,
       locked: false,
       nextBlockId: null
+    },
+    {
+      id: block10.id,
+      __typename: 'SignupBlock',
+      parentBlockId: block9.id,
+      action: {
+        __typename: 'NavigateToJourneyAction',
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourney.id
+      }
     }
   ])
 })

@@ -29,6 +29,7 @@ export type Journey = {
   id: Scalars['ID'];
   locale: Scalars['String'];
   published: Scalars['Boolean'];
+  theme: ThemeName;
   title: Scalars['String'];
 };
 
@@ -49,6 +50,7 @@ export type Mutation = {
 export type MutationJourneyCreateArgs = {
   title: Scalars['String'];
   locale?: Maybe<Scalars['String']>;
+  theme?: Maybe<ThemeName>;
 };
 
 
@@ -109,6 +111,13 @@ export type RadioQuestionVariant =
   | 'LIGHT'
   | 'DARK';
 
+export type SignupBlock = Block & {
+  __typename?: 'SignupBlock';
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  action?: Maybe<Action>;
+};
+
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID'];
@@ -126,6 +135,9 @@ export type StepBlock = Block & {
   locked: Scalars['Boolean'];
   parentBlockId?: Maybe<Scalars['ID']>;
 };
+
+export type ThemeName =
+  | 'default';
 
 export type TypographyAlign =
   | 'left'
@@ -251,7 +263,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Action: ResolversTypes['LinkAction'] | ResolversTypes['NavigateAction'] | ResolversTypes['NavigateToBlockAction'] | ResolversTypes['NavigateToJourneyAction'];
   String: ResolverTypeWrapper<Scalars['String']>;
-  Block: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['TypographyBlock'] | ResolversTypes['VideoBlock'];
+  Block: ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['SignupBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['TypographyBlock'] | ResolversTypes['VideoBlock'];
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Journey: ResolverTypeWrapper<Journey>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -264,7 +276,9 @@ export type ResolversTypes = {
   RadioOptionBlock: ResolverTypeWrapper<RadioOptionBlock>;
   RadioQuestionBlock: ResolverTypeWrapper<RadioQuestionBlock>;
   RadioQuestionVariant: RadioQuestionVariant;
+  SignupBlock: ResolverTypeWrapper<SignupBlock>;
   StepBlock: ResolverTypeWrapper<StepBlock>;
+  ThemeName: ThemeName;
   TypographyAlign: TypographyAlign;
   TypographyBlock: ResolverTypeWrapper<TypographyBlock>;
   TypographyColor: TypographyColor;
@@ -277,7 +291,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Action: ResolversParentTypes['LinkAction'] | ResolversParentTypes['NavigateAction'] | ResolversParentTypes['NavigateToBlockAction'] | ResolversParentTypes['NavigateToJourneyAction'];
   String: Scalars['String'];
-  Block: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['TypographyBlock'] | ResolversParentTypes['VideoBlock'];
+  Block: ResolversParentTypes['RadioOptionBlock'] | ResolversParentTypes['RadioQuestionBlock'] | ResolversParentTypes['SignupBlock'] | ResolversParentTypes['StepBlock'] | ResolversParentTypes['TypographyBlock'] | ResolversParentTypes['VideoBlock'];
   ID: Scalars['ID'];
   Journey: Journey;
   Boolean: Scalars['Boolean'];
@@ -289,6 +303,7 @@ export type ResolversParentTypes = {
   Query: {};
   RadioOptionBlock: RadioOptionBlock;
   RadioQuestionBlock: RadioQuestionBlock;
+  SignupBlock: SignupBlock;
   StepBlock: StepBlock;
   TypographyBlock: TypographyBlock;
   VideoBlock: VideoBlock;
@@ -300,7 +315,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -310,6 +325,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  theme?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -365,6 +381,13 @@ export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, Pa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type SignupBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignupBlock'] = ResolversParentTypes['SignupBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['StepBlock'] = ResolversParentTypes['StepBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   nextBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -405,6 +428,7 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   Query?: QueryResolvers<ContextType>;
   RadioOptionBlock?: RadioOptionBlockResolvers<ContextType>;
   RadioQuestionBlock?: RadioQuestionBlockResolvers<ContextType>;
+  SignupBlock?: SignupBlockResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;
