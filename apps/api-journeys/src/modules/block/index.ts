@@ -120,19 +120,13 @@ const typeDefs = gql`
     action
     error
     disabled
-  }
-
-  enum IconSize {
-    small
-    medium
-    large
     inherit
   }
 
   type Icon {
     name: IconName!
     color: IconColor
-    size: IconSize
+    fontSize: String
   }
 
   enum ButtonBlockVariant {

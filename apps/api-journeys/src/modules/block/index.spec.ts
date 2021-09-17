@@ -116,7 +116,7 @@ it('returns blocks', async () => {
       }
     }
   })
-  const block8 = await db.block.create({
+  const testButtonBlock = await db.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
@@ -129,12 +129,12 @@ it('returns blocks', async () => {
         startIcon: {
           name: IconName.ArrowForward,
           color: 'secondary',
-          size: 'medium'
+          fontSize: '36px'
         },
         endIcon: {
           name: IconName.LockOpen,
           color: 'action',
-          size: 'small'
+          fontSize: '48px'
         },
         action: {
           gtmEventName: 'gtmEventName',
@@ -209,12 +209,12 @@ it('returns blocks', async () => {
               startIcon {
                 name
                 color
-                size
+                fontSize
               }
               endIcon {
                 name
                 color
-                size
+                fontSize
               }
               action {
                 __typename
@@ -310,7 +310,7 @@ it('returns blocks', async () => {
       provider: 'YOUTUBE'
     },
     {
-      id: block8.id,
+      id: testButtonBlock.id,
       __typename: 'ButtonBlock',
       parentBlockId: block1.id,
       label: 'label',
@@ -320,12 +320,12 @@ it('returns blocks', async () => {
       startIcon: {
         name: 'ArrowForward',
         color: 'secondary',
-        size: 'medium'
+        fontSize: '36px'
       },
       endIcon: {
         name: 'LockOpen',
         color: 'action',
-        size: 'small'
+        fontSize: '48px'
       },
       action: {
         __typename: 'LinkAction',

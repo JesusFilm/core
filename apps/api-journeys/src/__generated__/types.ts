@@ -61,7 +61,7 @@ export type Icon = {
   __typename?: 'Icon';
   name: IconName;
   color?: Maybe<IconColor>;
-  size?: Maybe<IconSize>;
+  fontSize?: Maybe<Scalars['String']>;
 };
 
 export type IconColor =
@@ -69,15 +69,10 @@ export type IconColor =
   | 'secondary'
   | 'action'
   | 'error'
-  | 'disabled';
+  | 'disabled'
+  | 'inherit';
 
 export { IconName };
-
-export type IconSize =
-  | 'small'
-  | 'medium'
-  | 'large'
-  | 'inherit';
 
 export type Journey = {
   __typename?: 'Journey';
@@ -276,7 +271,6 @@ export type ResolversTypes = {
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
   IconName: IconName;
-  IconSize: IconSize;
   Journey: ResolverTypeWrapper<Journey>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   LinkAction: ResolverTypeWrapper<LinkAction>;
@@ -342,7 +336,7 @@ export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
 export type IconResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Icon'] = ResolversParentTypes['Icon']> = {
   name?: Resolver<ResolversTypes['IconName'], ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['IconColor']>, ParentType, ContextType>;
-  size?: Resolver<Maybe<ResolversTypes['IconSize']>, ParentType, ContextType>;
+  fontSize?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

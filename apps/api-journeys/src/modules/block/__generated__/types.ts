@@ -11,7 +11,7 @@ export namespace BlockModule {
     NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
     LinkAction: 'gtmEventName' | 'url' | 'target';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
-    Icon: 'name' | 'color' | 'size';
+    Icon: 'name' | 'color' | 'fontSize';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     Journey: 'blocks';
     Block: 'id' | 'parentBlockId';
@@ -22,8 +22,7 @@ export namespace BlockModule {
     VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
-    IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled';
-    IconSize: 'small' | 'medium' | 'large' | 'inherit';
+    IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
     ButtonBlockVariant: 'text' | 'outlined' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
@@ -44,7 +43,6 @@ export namespace BlockModule {
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   export type IconName = DefinedEnumValues['IconName'];
   export type IconColor = DefinedEnumValues['IconColor'];
-  export type IconSize = DefinedEnumValues['IconSize'];
   export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
   export type ButtonBlockVariant = DefinedEnumValues['ButtonBlockVariant'];
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
@@ -142,7 +140,7 @@ export namespace BlockModule {
       '*'?: gm.Middleware[];
       name?: gm.Middleware[];
       color?: gm.Middleware[];
-      size?: gm.Middleware[];
+      fontSize?: gm.Middleware[];
     };
     ButtonBlock?: {
       '*'?: gm.Middleware[];
