@@ -5,6 +5,7 @@ import {
   LinkAction,
   NavigateToBlockAction,
   NavigateToJourneyAction,
+  IconName,
   Resolvers,
   IconName,
   ResolversTypes
@@ -120,19 +121,13 @@ const typeDefs = gql`
     action
     error
     disabled
-  }
-
-  enum IconSize {
-    small
-    medium
-    large
     inherit
   }
 
   type Icon {
     name: IconName!
     color: IconColor
-    size: IconSize
+    fontSize: String
   }
 
   enum ButtonBlockVariant {
