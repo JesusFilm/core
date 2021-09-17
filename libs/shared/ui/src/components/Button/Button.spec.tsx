@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { Button, ButtonProps } from '.'
-import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
+import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName } from '../../../__generated__/globalTypes'
 
 const block: ButtonProps = {
   __typename: 'ButtonBlock',
@@ -27,7 +27,7 @@ describe('Button', () => {
       __typename: 'Icon',
       name: IconName.CheckCircle,
       color: IconColor.primary,
-      size: IconSize.small
+      fontSize: '48px'
     }} />)
     expect(getByTestId('CheckCircleIcon')).toBeTruthy()
   })

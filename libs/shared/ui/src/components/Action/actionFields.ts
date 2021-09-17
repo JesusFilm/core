@@ -5,7 +5,7 @@ export const ACTION_FIELDS = gql`
     __typename
     gtmEventName
     ... on NavigateAction {
-      blockId
+      gtmEventName
     }
     ... on NavigateToJourneyAction {
       journeyId

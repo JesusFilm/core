@@ -7,10 +7,14 @@
 // GraphQL fragment: ActionFields
 // ====================================================
 
+export interface ActionFields_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+}
+
 export interface ActionFields_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
-  blockId: string;
 }
 
 export interface ActionFields_NavigateToJourneyAction {
@@ -25,4 +29,4 @@ export interface ActionFields_LinkAction {
   url: string;
 }
 
-export type ActionFields = ActionFields_NavigateAction | ActionFields_NavigateToJourneyAction | ActionFields_LinkAction;
+export type ActionFields = ActionFields_NavigateToBlockAction | ActionFields_NavigateAction | ActionFields_NavigateToJourneyAction | ActionFields_LinkAction;

@@ -13,12 +13,12 @@ export const BUTTON_FIELDS = gql`
     startIcon {
       name
       color
-      size
+      fontSize
     }
     endIcon {
       name
       color
-      size
+      fontSize
     }
     action {
       ...ActionFields

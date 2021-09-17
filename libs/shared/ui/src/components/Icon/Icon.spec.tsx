@@ -1,12 +1,12 @@
 import { render } from '@testing-library/react'
 import { Icon, IconProps } from '.'
-import { IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
+import { IconColor, IconName } from '../../../__generated__/globalTypes'
 
 const block: IconProps = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
   color: IconColor.error,
-  size: IconSize.large
+  fontSize: '48px'
 }
 
 describe('Icon', () => {

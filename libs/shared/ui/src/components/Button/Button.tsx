@@ -6,7 +6,8 @@ import { ButtonBlockFields } from './__generated__/ButtonBlockFields'
 
 const useStyles = makeStyles(() => ({
   spacing: {
-    margin: '5px 0'
+    margin: '5px 0',
+    borderRadius: 13
   }
 }))
 
@@ -26,8 +27,8 @@ export function Button({ variant, label, color, size, startIcon, endIcon, loadin
       disabled={disabled}
       color={color ?? undefined}
       size={size ?? undefined}
-      startIcon={startIcon?.name !== undefined ? <Icon __typename='Icon' name={startIcon?.name} color={startIcon?.color} fontSize='' size={null} /> : null}
-      endIcon={endIcon?.name !== undefined ? <Icon __typename='Icon' name={endIcon?.name} color={endIcon?.color} fontSize='' size={null} /> : null}>
+      startIcon={startIcon?.name !== undefined ? <Icon __typename='Icon' name={startIcon?.name} color={startIcon?.color} fontSize={startIcon?.fontSize} /> : null}
+      endIcon={endIcon?.name !== undefined ? <Icon __typename='Icon' name={endIcon?.name} color={endIcon?.color} fontSize={endIcon?.fontSize} /> : null}>
       {loading === false ? <CircularProgress color="secondary" /> : label}
     </MuiButton>
   )

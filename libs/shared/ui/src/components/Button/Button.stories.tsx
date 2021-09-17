@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { Button, ButtonProps } from '.'
-import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
+import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName } from '../../../__generated__/globalTypes'
 
 const ButtonDemo = {
   component: Button,
@@ -95,8 +95,8 @@ startIcon.args = {
   startIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
-    color: IconColor.primary,
-    size: IconSize.small
+    color: IconColor.inherit,
+    fontSize: '48px'
   },
   endIcon: null
 }
@@ -112,8 +112,8 @@ endIcon.args = {
   endIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
-    color: IconColor.primary,
-    size: IconSize.small
+    color: IconColor.inherit,
+    fontSize: '48px'
   }
 }
 

@@ -33,6 +33,7 @@ export enum IconColor {
   action = "action",
   disabled = "disabled",
   error = "error",
+  inherit = "inherit",
   primary = "primary",
   secondary = "secondary",
 }
@@ -48,13 +49,6 @@ export enum IconName {
   PlayArrow = "PlayArrow",
   RadioButtonUnchecked = "RadioButtonUnchecked",
   Translate = "Translate",
-}
-
-export enum IconSize {
-  inherit = "inherit",
-  large = "large",
-  medium = "medium",
-  small = "small",
 }
 
 //==============================================================

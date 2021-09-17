@@ -7,7 +7,6 @@ import {
   NavigateToJourneyAction,
   IconName,
   Resolvers,
-  IconName,
   ResolversTypes
 } from '../../__generated__/types'
 
