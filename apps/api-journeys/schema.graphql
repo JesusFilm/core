@@ -11,18 +11,12 @@ type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
-  variant: ButtonBlockVariant
+  variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
   startIcon: Icon
   endIcon: Icon
   action: Action
-}
-
-enum ButtonBlockVariant {
-  text
-  outlined
-  contained
 }
 
 enum ButtonColor {
@@ -39,6 +33,12 @@ enum ButtonSize {
   small
   medium
   large
+}
+
+enum ButtonVariant {
+  text
+  outlined
+  contained
 }
 
 type Icon {

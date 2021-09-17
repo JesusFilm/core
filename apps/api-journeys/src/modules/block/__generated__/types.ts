@@ -23,7 +23,7 @@ export namespace BlockModule {
     RadioQuestionVariant: 'LIGHT' | 'DARK';
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
-    ButtonBlockVariant: 'text' | 'outlined' | 'contained';
+    ButtonVariant: 'text' | 'outlined' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
   };
@@ -44,7 +44,7 @@ export namespace BlockModule {
   export type IconName = DefinedEnumValues['IconName'];
   export type IconColor = DefinedEnumValues['IconColor'];
   export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
-  export type ButtonBlockVariant = DefinedEnumValues['ButtonBlockVariant'];
+  export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
   export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;

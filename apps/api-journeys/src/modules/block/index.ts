@@ -129,7 +129,7 @@ const typeDefs = gql`
     fontSize: String
   }
 
-  enum ButtonBlockVariant {
+  enum ButtonVariant {
     text
     outlined
     contained
@@ -155,7 +155,7 @@ const typeDefs = gql`
     id: ID!
     parentBlockId: ID
     label: String!
-    variant: ButtonBlockVariant
+    variant: ButtonVariant
     color: ButtonColor
     size: ButtonSize
     startIcon: Icon
