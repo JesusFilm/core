@@ -34,7 +34,8 @@ const server = new ApolloServer({
     try {
       const { uid } = await admin.auth().verifyIdToken(token)
       return { userId: uid }
-    } catch {
+    } catch (err) {
+      console.log(err)
       return {}
     }
   }
@@ -43,6 +44,6 @@ const server = new ApolloServer({
 server
   .listen(config.listenOptions)
   .then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}`)
+    console.log(`🚀 Server ready at ${url}/graphql`)
   })
   .catch((err) => console.error(err))
