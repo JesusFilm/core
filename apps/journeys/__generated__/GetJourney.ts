@@ -3,7 +3,12 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoProviderEnum, VideoOverlayLocationEnum, VideoEventEnum, RadioQuestionVariant } from "./globalTypes";
+import {
+  VideoProviderEnum,
+  VideoOverlayLocationEnum,
+  VideoEventEnum,
+  RadioQuestionVariant
+} from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -13,6 +18,16 @@ export interface GetJourney_journey_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
+  /**
+   * locked will be set to true if the user should not be able to manually advance to the next step.
+   */
+  locked: boolean;
+  /**
+   * nextBlockId contains the preferred block to navigate to when a NavigateAction occurs or if the user manually
+   * tries to advance to the next step. If no nextBlockId is set it can be assumed that this step represents the
+   * end of the current journey.
+   */
+  nextBlockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock {
@@ -66,7 +81,11 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   url: string;
 }
 
-export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
+export type GetJourney_journey_blocks_RadioOptionBlock_action =
+  | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction
+  | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction
+  | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction
+  | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -76,7 +95,12 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoOverlayBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock;
+export type GetJourney_journey_blocks =
+  | GetJourney_journey_blocks_StepBlock
+  | GetJourney_journey_blocks_VideoBlock
+  | GetJourney_journey_blocks_VideoOverlayBlock
+  | GetJourney_journey_blocks_RadioQuestionBlock
+  | GetJourney_journey_blocks_RadioOptionBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

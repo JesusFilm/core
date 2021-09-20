@@ -35,6 +35,8 @@ describe('BlockRenderer', () => {
       __typename: 'StepBlock',
       id: 'step',
       parentBlockId: null,
+      nextBlockId: null,
+      locked: false,
       children: [
         {
           __typename: 'RadioQuestionBlock',

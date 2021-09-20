@@ -35,6 +35,10 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           blocks {
             id
             parentBlockId
+            ... on StepBlock {
+              locked
+              nextBlockId
+            }
             ... on VideoBlock {
               src
               title

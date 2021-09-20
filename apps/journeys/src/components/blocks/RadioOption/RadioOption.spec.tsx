@@ -38,12 +38,16 @@ describe('RadioOption', () => {
       id: 'abc',
       __typename: 'StepBlock',
       parentBlockId: null,
+      nextBlockId: null,
+      locked: false,
       children: []
     }
     const blockDef: TreeBlock = {
       id: 'def',
       __typename: 'StepBlock',
       parentBlockId: null,
+      nextBlockId: null,
+      locked: false,
       children: []
     }
     treeBlocksVar([blockAbc, blockDef])
