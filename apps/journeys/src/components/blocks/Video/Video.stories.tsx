@@ -3,6 +3,7 @@ import { Video } from './'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
+import { VideoEventEnum, VideoOverlayLocationEnum } from '../../../../__generated__/globalTypes'
 
 const Demo = {
   ...journeysConfig,
@@ -31,16 +32,15 @@ OverlayOnPauseEnded.args = {
   autoplay: false,
   children: [
     {
-      __typename: 'VideoOverlay',
+      __typename: 'VideoOverlayBlock',
       id: 'videooverlay',
-      displayOn: ['paused', 'ended'],
-      location: 'flex-end',
+      displayOn: [VideoEventEnum.PAUSED, VideoEventEnum.ENDED],
       parent: {
         id: 'Video1'
       },
       children: [
         {
-          __typename: 'RadioQuestion',
+          __typename: 'RadioQuestionBlock',
           id: 'Question1',
           label: 'show on',
           description: 'pause/ended',
@@ -82,15 +82,16 @@ OverlayOnReadyPlay.args = {
   src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
   children: [
     {
-      __typename: 'VideoOverlay',
+      __typename: 'VideoOverlayBlock',
       id: 'videooverlay',
-      displayOn: ['ready', 'played'],
+      displayOn: [VideoEventEnum.READY],
+      location: VideoOverlayLocationEnum.CENTER,
       parent: {
         id: 'Video1'
       },
       children: [
         {
-          __typename: 'RadioQuestion',
+          __typename: 'RadioQuestionBlock',
           id: 'Question4321',
           label: 'appears',
           description: 'on ready',

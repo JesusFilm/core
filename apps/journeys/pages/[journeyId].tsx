@@ -33,6 +33,12 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (c
               title
               provider
             }
+            ... on VideoOverlayBlock {
+              id
+              parentBlockId
+              location
+              displayOn
+            }
             ... on RadioQuestionBlock {
               label
               description

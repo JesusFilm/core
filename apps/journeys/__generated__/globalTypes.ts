@@ -12,6 +12,19 @@ export enum RadioQuestionVariant {
   LIGHT = "LIGHT",
 }
 
+export enum VideoEventEnum {
+  ENDED = "ENDED",
+  PAUSED = "PAUSED",
+  READY = "READY",
+  TIMEREACHED = "TIMEREACHED",
+}
+
+export enum VideoOverlayLocationEnum {
+  CENTER = "CENTER",
+  EAST = "EAST",
+  WEST = "WEST",
+}
+
 export enum VideoProviderEnum {
   ARCLIGHT = "ARCLIGHT",
   VIMEO = "VIMEO",

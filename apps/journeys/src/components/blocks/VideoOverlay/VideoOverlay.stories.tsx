@@ -1,7 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { GetJourney_journey_blocks_VideoOverlayBlock as VideoOverlayBlock } from '../../../../__generated__/GetJourney'
 import VideoOverlay from './VideoOverlay'
 import { journeysConfig } from '../../../libs/storybook/decorators'
+import { VideoEventEnum, VideoOverlayLocationEnum } from '../../../../__generated__/globalTypes'
+import { VideoOverlayProps } from '.'
 
 const Demo = {
   ...journeysConfig,
@@ -9,19 +10,21 @@ const Demo = {
   title: 'Journeys/Blocks/VideoOverlay'
 }
 
-const DefaultTemplate: Story<VideoOverlayBlock> = ({ ...props }) => (
-  <VideoOverlay {...props} latestEvent={'ready'} />
+const DefaultTemplate: Story<VideoOverlayProps> = ({ ...props }) => (
+  <VideoOverlay {...props} latestEvent='ready' />
 )
 
 export const Default = DefaultTemplate.bind({})
 Default.args = {
-  id: 'VideoOverlay',
-  displayOn: ['ready'],
+  __typename: 'VideoOverlayBlock',
+  id: 'VideoOverlayss',
+  displayOn: [VideoEventEnum.READY],
+  location: VideoOverlayLocationEnum.CENTER,
   parent: {
     id: 'Video'
   },
   children: [{
-    __typename: 'RadioQuestion',
+    __typename: 'RadioQuestionBlock',
     id: 'Question1',
     label: 'Question 1',
     description: '',
@@ -41,14 +44,15 @@ Default.args = {
 
 export const Paused = DefaultTemplate.bind({})
 Paused.args = {
+  __typename: 'VideoOverlayBlock',
   id: 'VideoOverlay',
-  displayOn: ['paused'],
-  location: 'flex-end',
+  displayOn: [VideoEventEnum.PAUSED],
+  location: VideoOverlayLocationEnum.CENTER,
   parent: {
     id: 'Video'
   },
   children: [{
-    __typename: 'RadioQuestion',
+    __typename: 'RadioQuestionBlock',
     id: 'Question1',
     label: 'Question 1',
     parent: {

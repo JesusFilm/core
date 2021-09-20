@@ -35,7 +35,7 @@ export const Video = ({ src, volume = 0, autoplay = 'muted', children }: TreeBlo
         {children != null
           ? children?.map(
             (block) => {
-              if (block.__typename === 'VideoOverlay') return <VideoOverlay {...block} key={block.id} latestEvent={latestEvent} />
+              if (block.__typename === 'VideoOverlayBlock') return <VideoOverlay {...block} key={block.id} latestEvent={latestEvent} />
               return null
             }
           )
