@@ -54,7 +54,7 @@ export function RadioOption({
         nextActiveBlock({ id: action.blockId })
         break
       case 'NavigateAction':
-        nextActiveBlock({ force: true })
+        nextActiveBlock()
         break
     }
     onClick?.(id)

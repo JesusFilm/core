@@ -9,13 +9,10 @@ interface nextActiveBlockArgs {
   /** StepBlock id to set as activeBlock. If no id is set, block will be set to
    *  activeBlock.nextBlockId */
   id?: string
-  /** If no id is set, block will only be set to activeBlock.nextBlockId if
-   *  activeBlock.locked is false. Force skips this constraint. */
-  force?: boolean
 }
 
 interface UseBlocksHook {
-  nextActiveBlock: (args: nextActiveBlockArgs) => void
+  nextActiveBlock: (args?: nextActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   activeBlock: TreeBlock | null
   treeBlocks: TreeBlock[]
@@ -25,32 +22,25 @@ export function useBlocks(): UseBlocksHook {
   const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
 
-  const nextActiveBlock = useCallback(
-    ({ id, force }: nextActiveBlockArgs): void => {
-      const blocks = treeBlocksVar()
-      const activeBlock = activeBlockVar()
-      let block: TreeBlock | undefined
-      if (id != null) {
-        block = blocks.find(
-          (block) => block.__typename === 'StepBlock' && block.id === id
-        )
-      } else if (
-        activeBlock != null &&
-        activeBlock.__typename === 'StepBlock' &&
-        (!activeBlock.locked || force === true)
-      ) {
-        block = blocks.find(
-          (block) =>
-            block.__typename === 'StepBlock' &&
-            block.id === activeBlock.nextBlockId
-        )
-      }
-      if (block != null) {
-        activeBlockVar(block)
-      }
-    },
-    []
-  )
+  const nextActiveBlock = useCallback((args?: nextActiveBlockArgs): void => {
+    const blocks = treeBlocksVar()
+    const activeBlock = activeBlockVar()
+    let block: TreeBlock | undefined
+    if (args?.id != null) {
+      block = blocks.find(
+        (block) => block.__typename === 'StepBlock' && block.id === args.id
+      )
+    } else if (activeBlock != null && activeBlock.__typename === 'StepBlock') {
+      block = blocks.find(
+        (block) =>
+          block.__typename === 'StepBlock' &&
+          block.id === activeBlock.nextBlockId
+      )
+    }
+    if (block != null) {
+      activeBlockVar(block)
+    }
+  }, [])
 
   const setTreeBlocks = useCallback(
     (blocks: TreeBlock[]): void => {
