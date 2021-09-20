@@ -27,15 +27,18 @@ export function VideoOverlay({
   latestEvent,
   location = VideoOverlayLocationEnum.CENTER
 }: VideoOverlayProps): ReactElement {
-  const event = displayOn?.map((display) => display?.toLowerCase())
-  const show = event.includes(latestEvent)
+  const show = displayOn?.includes(latestEvent) ?? false
   const classes = useStyles()
+  const justify = 
+    location === 'CENTER' ? 'center' 
+    : location === 'WEST' ? 'flex-start' 
+    : 'flex-end'
 
   return (
     <Grid
       container
       direction="row"
-      justifyContent={location ?? undefined}
+      justifyContent={justify}
       alignItems="center"
       className={classes.container}
     >

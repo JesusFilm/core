@@ -48,7 +48,9 @@ const typeDefs = gql`
     src: String!
     title: String!
     description: String
-    provider: VideoProviderEnum!
+    volume: Int
+    autoplay: Boolean
+    provider: VideoProviderEnum
   }
 
   type VideoOverlayBlock implements Block {
@@ -61,7 +63,7 @@ const typeDefs = gql`
   enum VideoEventEnum {
     READY
     PAUSED
-    TIMEREACHED
+    PLAYED
     ENDED
   }
 

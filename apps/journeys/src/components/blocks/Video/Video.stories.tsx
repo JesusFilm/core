@@ -84,7 +84,7 @@ OverlayOnReadyPlay.args = {
     {
       __typename: 'VideoOverlayBlock',
       id: 'videooverlay',
-      displayOn: [VideoEventEnum.READY],
+      displayOn: [VideoEventEnum.READY, VideoEventEnum.PLAYED],
       location: VideoOverlayLocationEnum.CENTER,
       parent: {
         id: 'Video1'

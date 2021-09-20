@@ -15,8 +15,8 @@ export enum RadioQuestionVariant {
 export enum VideoEventEnum {
   ENDED = "ENDED",
   PAUSED = "PAUSED",
+  PLAYED = "PLAYED",
   READY = "READY",
-  TIMEREACHED = "TIMEREACHED",
 }
 
 export enum VideoOverlayLocationEnum {

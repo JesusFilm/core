@@ -5,23 +5,22 @@ import { VideoOverlay } from '../VideoOverlay/'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
-export const Video = ({ src, volume = 0, autoplay = 'muted', children }: TreeBlock<VideoBlock>): ReactElement => {
-  const [latestEvent, setLatestEvent] = useState('ready')
+export const Video = ({ src, volume = 0, autoplay = false, children }: TreeBlock<VideoBlock>): ReactElement => {
+  const [latestEvent, setLatestEvent] = useState('READY')
 
   const handlePlayerReady = (player): void => {
-    player.on('timeupdate', () => { console.log(player.currentTime()) })
-    player.on('pause', () => { setLatestEvent('paused') })
-    player.on('play', () => { setLatestEvent('played') })
-    player.on('end', () => { setLatestEvent('ended') })
+    player.on('pause', () => { setLatestEvent('PAUSED') })
+    player.on('play', () => { setLatestEvent('PLAYED') })
+    player.on('end', () => { setLatestEvent('ENDED') })
   }
 
   const videoJsOptions = {
-    autoplay: autoplay,
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    autoplay: autoplay ? 'muted' : false,
     controls: true,
     volume: volume,
     initialLoad: true,
     bigPlayButton: false,
-    controlBar: true,
     sources: [
       {
         src: src

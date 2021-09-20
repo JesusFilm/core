@@ -34,10 +34,10 @@ export interface RadioOptionType extends BaseBlockType {
   image?: string
 }
 
-export type VideoEvent = 'ready' | 'paused' | 'timeReached' | 'ended'
+export type VideoEvent = 'READY' | 'PAUSED' | 'PLAYED' | 'ENDED'
 export interface VideoOverlayType extends BaseBlockType {
   __typename: 'VideoOverlay'
-  location: 'flex-start' | 'flex-end' | 'center'
+  location: 'WEST' | 'EAST' | 'CENTER'
   displayOn: VideoEvent[]
 }
 

@@ -57,8 +57,10 @@ describe('BlockRenderer', () => {
       id: 'main',
       src: 'https://www.youtube.com',
       title: 'title',
-      parentBlockId: null,
       provider: null,
+      volume: 0,
+      autoplay: false,
+      parentBlockId: null,
       children: []
     }
     const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)

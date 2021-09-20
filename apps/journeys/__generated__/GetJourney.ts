@@ -21,7 +21,9 @@ export interface GetJourney_journey_blocks_VideoBlock {
   parentBlockId: string | null;
   src: string;
   title: string;
-  provider: VideoProviderEnum;
+  provider: VideoProviderEnum | null;
+  volume: number | null;
+  autoplay: boolean | null;
 }
 
 export interface GetJourney_journey_blocks_VideoOverlayBlock {
@@ -42,9 +44,8 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
-  __typename: "NavigateAction";
+  __typename: "NavigateAction" | "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {

@@ -39,6 +39,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               src
               title
               provider
+              volume
+              autoplay
             }
             ... on VideoOverlayBlock {
               id
@@ -56,9 +58,6 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               action {
                 __typename
                 gtmEventName
-                ... on NavigateAction {
-                  blockId
-                }
                 ... on NavigateToJourneyAction {
                   journeyId
                 }
