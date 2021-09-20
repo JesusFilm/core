@@ -12,7 +12,10 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <Step {...block} />
     case 'VideoBlock':
       return <Video {...block} />
+    default:
+      return <></>
   }
 }
+
 
 export default BlockRenderer

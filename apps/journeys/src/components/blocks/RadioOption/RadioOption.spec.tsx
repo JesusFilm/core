@@ -17,7 +17,7 @@ describe('RadioOption', () => {
     label: 'This is a test question 2!',
     parentBlockId: null,
     action: {
-      __typename: 'NavigateAction',
+      __typename: 'NavigateToBlockAction',
       gtmEventName: 'gtmEventName',
       blockId: 'def'
     },

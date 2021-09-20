@@ -44,8 +44,14 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
-  __typename: "NavigateAction" | "NavigateToBlockAction";
+  __typename: "NavigateAction";
   gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
@@ -60,7 +66,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   url: string;
 }
 
-export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
+export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";

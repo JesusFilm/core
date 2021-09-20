@@ -59,7 +59,7 @@ export interface VideoType extends BaseBlockType {
   }]
   poster?: string
   volume?: number
-  autoplay?: 'muted' | true | false
+  autoplay?: boolean
 }
 
 export type OnTimeReachedType = BaseBlockType & {

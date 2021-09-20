@@ -8,6 +8,8 @@ const block: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   id: 'Video1',
   parentBlockId: '',
+  volume: 1,
+  autoplay: false,
   src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
   title: 'Video',
   provider: VideoProviderEnum.ARCLIGHT,

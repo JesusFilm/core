@@ -58,6 +58,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               action {
                 __typename
                 gtmEventName
+                ... on NavigateToBlockAction {
+                  blockId
+                }
                 ... on NavigateToJourneyAction {
                   journeyId
                 }

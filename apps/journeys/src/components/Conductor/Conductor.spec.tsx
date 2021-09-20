@@ -17,7 +17,7 @@ describe('Conductor', () => {
             label: 'Option 1',
             parentBlockId: 'Question1',
             action: {
-              __typename: 'NavigateAction',
+              __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'Question2'
             },

@@ -49,7 +49,7 @@ export function RadioOption({
   const classes = useStyles()
 
   const handleClick = (): void => {
-    if (action?.__typename === 'NavigateAction') {
+    if (action?.__typename === 'NavigateToBlockAction') {
       setActiveBlockById(action.blockId)
     }
     onClick?.(id)
