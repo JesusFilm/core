@@ -1,4 +1,3 @@
-
 import { Client } from 'pg'
 import NodeEnvironment from 'jest-environment-node'
 import { nanoid } from 'nanoid'
@@ -12,7 +11,7 @@ class PrismaEnvironment extends NodeEnvironment {
   schema: string
   connectionString: string
 
-  constructor (config) {
+  constructor(config) {
     super(config)
 
     // Generate a unique schema identifier for this test context
@@ -22,7 +21,7 @@ class PrismaEnvironment extends NodeEnvironment {
     this.connectionString = `postgresql://test-user:test-password@localhost:5432/jf-core-journeys?schema=${this.schema}`
   }
 
-  async setup (): Promise<void> {
+  async setup(): Promise<void> {
     // Set the required environment variable to contain the connection string
     // to our database test schema
     process.env.DATABASE_URL = this.connectionString
@@ -31,11 +30,13 @@ class PrismaEnvironment extends NodeEnvironment {
     this.global.process.env.SCHEMA = this.schema
 
     // Run the migrations to ensure our schema has the required structure
-    await promisedExec(`${prismaBinary} migrate dev --schema apps/api-journeys/prisma/schema.prisma`)
+    await promisedExec(
+      `${prismaBinary} migrate dev --schema apps/api-journeys/prisma/schema.prisma`
+    )
     await super.setup()
   }
 
-  async teardown (): Promise<void> {
+  async teardown(): Promise<void> {
     // Drop the schema after the tests have completed
     const client = new Client({
       connectionString: this.connectionString

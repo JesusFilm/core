@@ -6,12 +6,8 @@ export interface TypographyProps {
   content: string
 }
 
-export function Typography (props: TypographyProps): ReactElement {
-  return (
-    <MuiTypography {...props} >
-      {props.content}
-    </MuiTypography>
-  )
+export function Typography(props: TypographyProps): ReactElement {
+  return <MuiTypography {...props}>{props.content}</MuiTypography>
 }
 
 export default Typography

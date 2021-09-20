@@ -12,7 +12,7 @@ interface UseBlocksHook {
   treeBlocks: TreeBlock[]
 }
 
-export function useBlocks (): UseBlocksHook {
+export function useBlocks(): UseBlocksHook {
   const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
 
@@ -35,10 +35,13 @@ export function useBlocks (): UseBlocksHook {
     }
   }, [])
 
-  const setTreeBlocks = useCallback((blocks: TreeBlock[]): void => {
-    treeBlocksVar(blocks)
-    setActiveBlockById(blocks[0]?.id)
-  }, [setActiveBlockById])
+  const setTreeBlocks = useCallback(
+    (blocks: TreeBlock[]): void => {
+      treeBlocksVar(blocks)
+      setActiveBlockById(blocks[0]?.id)
+    },
+    [setActiveBlockById]
+  )
 
   return {
     setActiveBlockById,

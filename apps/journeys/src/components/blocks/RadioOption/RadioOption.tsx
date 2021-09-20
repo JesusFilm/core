@@ -36,7 +36,7 @@ type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
   onClick?: (selected: string) => void
 }
 
-export function RadioOption ({
+export function RadioOption({
   className,
   label,
   action,
@@ -62,16 +62,14 @@ export function RadioOption ({
       disabled={disabled}
       onClick={handleClick}
       startIcon={
-        selected
-          ? (
-            <CheckCircleIcon
-              data-testid="RadioOptionCheckCircleIcon"
-              className={classes.highlightIcon}
-            />
-            )
-          : (
-            <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
-            )
+        selected ? (
+          <CheckCircleIcon
+            data-testid="RadioOptionCheckCircleIcon"
+            className={classes.highlightIcon}
+          />
+        ) : (
+          <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
+        )
       }
     >
       {label}

@@ -1,5 +1,11 @@
 import { ReactElement, useState } from 'react'
-import { Typography, Container, Card, CardContent, ButtonGroup } from '@mui/material'
+import {
+  Typography,
+  Container,
+  Card,
+  CardContent,
+  ButtonGroup
+} from '@mui/material'
 import { makeStyles, createStyles } from '@mui/styles'
 import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
@@ -20,7 +26,7 @@ const useStyles = makeStyles(
   { name: 'MuiRadioQuestionComponent' }
 )
 
-export function RadioQuestion ({
+export function RadioQuestion({
   label,
   description,
   children,
@@ -36,9 +42,11 @@ export function RadioQuestion ({
   return (
     <Container maxWidth="sm">
       <Card
-          data-testid="RadioQuestionCard"
-          className={variant === RadioQuestionVariant.DARK ? classes.dark : classes.light}
-        >
+        data-testid="RadioQuestionCard"
+        className={
+          variant === RadioQuestionVariant.DARK ? classes.dark : classes.light
+        }
+      >
         <CardContent>
           <Typography variant="h1" gutterBottom>
             {label}

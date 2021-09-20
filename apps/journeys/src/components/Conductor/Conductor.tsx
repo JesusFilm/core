@@ -7,14 +7,14 @@ interface ConductorProps {
   blocks: TreeBlock[]
 }
 
-export function Conductor ({ blocks }: ConductorProps): ReactElement {
+export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, activeBlock } = useBlocks()
 
   useEffect(() => {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
-  return (activeBlock != null) ? <BlockRenderer {...activeBlock} /> : <></>
+  return activeBlock != null ? <BlockRenderer {...activeBlock} /> : <></>
 }
 
 export default Conductor
