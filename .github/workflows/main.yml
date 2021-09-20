@@ -11,11 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'pull_request' }}
+      - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          fetch-depth: 2
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,lint,type-check
@@ -25,11 +32,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'pull_request' }}
+      - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          fetch-depth: 2
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,build
@@ -50,11 +64,18 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'pull_request' }}
+      - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          fetch-depth: 2
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,migrations,test
@@ -62,11 +83,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'pull_request' }}
+      - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          fetch-depth: 2
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook
         with:
