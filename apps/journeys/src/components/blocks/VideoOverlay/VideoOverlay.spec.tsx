@@ -8,7 +8,7 @@ describe('VideoOverlay', () => {
   const block: TreeBlock<VideoOverlayBlock> = {
     __typename: 'VideoOverlayBlock',
     id: 'VideoOverlay',
-    displayOn: [VideoEventEnum.READY],
+    displayOn: [VideoEventEnum.READY, VideoEventEnum.PLAYED],
     location: VideoOverlayLocationEnum.CENTER,
     parentBlockId: 'Video',
     children: [{
@@ -33,7 +33,7 @@ describe('VideoOverlay', () => {
     const { getByText } = renderWithApolloClient(
       <VideoOverlay
         {...block}
-        latestEvent={'ready'}
+        latestEvent={'READY'}
       />
     )
     expect(getByText('Chat Privately')).toBeInTheDocument()
