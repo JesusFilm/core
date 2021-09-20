@@ -27,11 +27,11 @@ interface Block {
 
 type ImageBlock implements Block {
   alt: String
-  backgroundColor: String
-  fontColor: String
+  height: Int!
   id: ID!
   parentBlockId: ID
   src: String!
+  width: Int!
 }
 
 scalar join__FieldSet

@@ -9,8 +9,8 @@ import { VideoProviderEnum, RadioQuestionVariant } from "./globalTypes";
 // GraphQL query operation: GetJourney
 // ====================================================
 
-export interface GetJourney_journey_blocks_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock";
+export interface GetJourney_journey_blocks_StepBlock {
+  __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -31,6 +31,16 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   label: string;
   description: string | null;
   variant: RadioQuestionVariant | null;
+}
+
+export interface GetJourney_journey_blocks_ImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  src: string;
+  width: number;
+  height: number;
+  alt: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
@@ -61,7 +71,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

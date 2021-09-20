@@ -45,6 +45,12 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               description
               variant
             }
+            ... on ImageBlock {
+              src
+              width
+              height
+              alt
+            }
             ... on RadioOptionBlock {
               label
               action {

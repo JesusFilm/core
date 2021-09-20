@@ -55,8 +55,8 @@ const typeDefs = gql`
     id: ID!
     parentBlockId: ID
     src: String!
-    backgroundColor: String
-    fontColor: String
+    width: Int!
+    height: Int!
     alt: String
   }
 
