@@ -3,7 +3,10 @@ import { Video } from './'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
-import { VideoEventEnum, VideoOverlayLocationEnum } from '../../../../__generated__/globalTypes'
+import {
+  VideoEventEnum,
+  VideoOverlayLocationEnum
+} from '../../../../__generated__/globalTypes'
 
 const Demo = {
   ...journeysConfig,
@@ -11,7 +14,9 @@ const Demo = {
   title: 'Journeys/Blocks/Video'
 }
 
-const Template: Story<TreeBlock<VideoBlock>> = ({ ...props }) => <Video {...props} />
+const Template: Story<TreeBlock<VideoBlock>> = ({ ...props }) => (
+  <Video {...props} />
+)
 
 export const Default = Template.bind({})
 Default.args = {

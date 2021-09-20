@@ -87,7 +87,12 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   }, [options, videoNode, onReady])
 
   useEffect(() => {
-    if ((isReady === true) && (initialOptions.autoplay === true) && !autoPlaySuccess && (navigator.userAgent.match(/Firefox/i) != null)) {
+    if (
+      isReady === true &&
+      initialOptions.autoplay === true &&
+      !autoPlaySuccess &&
+      navigator.userAgent.match(/Firefox/i) != null
+    ) {
       player.current?.defaultMuted(true)
       player.current?.setAttribute('autoplay', '')
       player.current?.play()
@@ -97,11 +102,11 @@ export const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   return (
     <Container className={classes.container}>
       <video ref={videoNode} className="video-js" />
-      {children != null
-        ? (<Container className={classes.overlayHolder}>
+      {children != null ? (
+        <Container className={classes.overlayHolder}>
           {children as unknown as JSX.Element}
-        </Container>)
-        : null}
+        </Container>
+      ) : null}
     </Container>
   )
 }

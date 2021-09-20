@@ -29,10 +29,12 @@ export function VideoOverlay({
 }: VideoOverlayProps): ReactElement {
   const show = displayOn?.includes(latestEvent) ?? false
   const classes = useStyles()
-  const justify = 
-    location === 'CENTER' ? 'center' 
-    : location === 'WEST' ? 'flex-start' 
-    : 'flex-end'
+  const justify =
+    location === 'CENTER'
+      ? 'center'
+      : location === 'WEST'
+      ? 'flex-start'
+      : 'flex-end'
 
   return (
     <Grid
@@ -43,15 +45,13 @@ export function VideoOverlay({
       className={classes.container}
     >
       <Grid item p={2}>
-        {
-          children !== null && show
-            ? children?.map(
-              (block) => {
-                if (block.__typename === 'RadioQuestionBlock') return <RadioQuestion {...block} key={block.id} />
-                return null
-              }
-            )
-            : null}
+        {children !== null && show
+          ? children?.map((block) => {
+              if (block.__typename === 'RadioQuestionBlock')
+                return <RadioQuestion {...block} key={block.id} />
+              return null
+            })
+          : null}
       </Grid>
     </Grid>
   )

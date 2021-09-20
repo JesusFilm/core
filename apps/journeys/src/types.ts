@@ -1,5 +1,9 @@
-
-export type TypeName = 'RadioOption' | 'RadioQuestion' | 'Step' | 'Video' | 'VideoOverlay'
+export type TypeName =
+  | 'RadioOption'
+  | 'RadioQuestion'
+  | 'Step'
+  | 'Video'
+  | 'VideoOverlay'
 interface BaseBlockType {
   id: string
   parent?: {
@@ -54,9 +58,11 @@ export interface StepType extends BaseBlockType {
 
 export interface VideoType extends BaseBlockType {
   __typename: 'Video'
-  sources: [{
-    src: string
-  }]
+  sources: [
+    {
+      src: string
+    }
+  ]
   poster?: string
   volume?: number
   autoplay?: boolean
@@ -71,7 +77,12 @@ export type OnVideoPausedType = BaseBlockType & {
   __typename: 'OnVideoPaused'
 }
 
-export type BlockType = RadioOptionType | StepType | VideoType | RadioQuestionType | VideoOverlayType
+export type BlockType =
+  | RadioOptionType
+  | StepType
+  | VideoType
+  | RadioQuestionType
+  | VideoOverlayType
 
 export type NextStepProps = (id?: string) => void
 export interface GoTo {

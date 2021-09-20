@@ -17,5 +17,4 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
   }
 }
 
-
 export default BlockRenderer
