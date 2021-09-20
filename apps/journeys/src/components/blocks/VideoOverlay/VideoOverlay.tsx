@@ -21,7 +21,7 @@ const useStyles = makeStyles(
   { name: 'VideoOverlay' }
 )
 
-export function VideoOverlay ({
+export function VideoOverlay({
   children,
   displayOn,
   latestEvent,

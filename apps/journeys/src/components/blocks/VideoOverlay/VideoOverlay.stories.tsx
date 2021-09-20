@@ -20,24 +20,18 @@ Default.args = {
   id: 'VideoOverlayss',
   displayOn: [VideoEventEnum.READY],
   location: VideoOverlayLocationEnum.CENTER,
-  parent: {
-    id: 'Video'
-  },
+  parentBlockId: 'Video',
   children: [{
     __typename: 'RadioQuestionBlock',
     id: 'Question1',
     label: 'Question 1',
     description: '',
-    parent: {
-      id: 'Video'
-    },
+    parentBlockId: 'Video',
     children: [{
       id: 'NestedOptions',
       __typename: 'RadioOptionBlock',
       label: 'Chat Privately',
-      parent: {
-        id: 'Question1'
-      }
+      parentBlockId: 'Question1'
     }]
   }]
 }
@@ -48,23 +42,17 @@ Paused.args = {
   id: 'VideoOverlay',
   displayOn: [VideoEventEnum.PAUSED],
   location: VideoOverlayLocationEnum.CENTER,
-  parent: {
-    id: 'Video'
-  },
+  parentBlockId: 'Video',
   children: [{
     __typename: 'RadioQuestionBlock',
     id: 'Question1',
     label: 'Question 1',
-    parent: {
-      id: 'Video'
-    },
+    parentBlockId: 'Video',
     children: [{
       id: 'NestedOptions',
       __typename: 'RadioOptionBlock',
       label: 'Chat Privately',
-      parent: {
-        id: 'Question1'
-      }
+      parentBlockId: 'Question1'
     }]
   }]
 }
