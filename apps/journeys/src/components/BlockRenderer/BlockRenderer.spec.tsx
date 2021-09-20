@@ -3,7 +3,6 @@ import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { VideoProviderEnum } from '../../../__generated__/globalTypes'
 
-
 describe('BlockRenderer', () => {
   it('should render RadioOption', () => {
     const block: TreeBlock = {
@@ -37,6 +36,8 @@ describe('BlockRenderer', () => {
       __typename: 'StepBlock',
       id: 'step',
       parentBlockId: null,
+      nextBlockId: null,
+      locked: false,
       children: [
         {
           __typename: 'RadioQuestionBlock',
