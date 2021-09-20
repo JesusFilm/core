@@ -14,7 +14,7 @@ const server = new ApolloServer({
 server
   .listen({ host: '0.0.0.0', port: 4001 })
   .then(({ url }) => {
-    console.log(`🚀  Server ready at ${url}/graphql`)
+    console.log(`🚀  Server ready at ${url}graphql`)
   })
   .catch((err) => {
     console.error(err)

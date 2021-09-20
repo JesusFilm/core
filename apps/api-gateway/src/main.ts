@@ -44,6 +44,6 @@ const server = new ApolloServer({
 server
   .listen(config.listenOptions)
   .then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}/graphql`)
+    console.log(`🚀 Server ready at ${url}graphql`)
   })
   .catch((err) => console.error(err))
