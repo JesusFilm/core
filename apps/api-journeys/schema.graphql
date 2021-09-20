@@ -98,26 +98,6 @@ type VideoBlock implements Block {
   provider: VideoProviderEnum
 }
 
-enum VideoEventEnum {
-  READY
-  PAUSED
-  PLAYED
-  ENDED
-}
-
-type VideoOverlayBlock implements Block {
-  id: ID!
-  parentBlockId: ID
-  location: VideoOverlayLocationEnum
-  displayOn: [VideoEventEnum]
-}
-
-enum VideoOverlayLocationEnum {
-  WEST
-  EAST
-  CENTER
-}
-
 enum VideoProviderEnum {
   YOUTUBE
   VIMEO

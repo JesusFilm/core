@@ -125,26 +125,6 @@ type VideoBlock implements Block {
   volume: Int
 }
 
-enum VideoEventEnum {
-  ENDED
-  PAUSED
-  PLAYED
-  READY
-}
-
-type VideoOverlayBlock implements Block {
-  displayOn: [VideoEventEnum]
-  id: ID!
-  location: VideoOverlayLocationEnum
-  parentBlockId: ID
-}
-
-enum VideoOverlayLocationEnum {
-  CENTER
-  EAST
-  WEST
-}
-
 enum VideoProviderEnum {
   ARCLIGHT
   VIMEO

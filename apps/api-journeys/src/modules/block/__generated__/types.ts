@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
-    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
+    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay' | 'provider';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
     NavigateAction: 'gtmEventName';
     NavigateToBlockAction: 'gtmEventName' | 'blockId';
@@ -81,6 +81,8 @@ export namespace BlockModule {
       src?: gm.Middleware[];
       title?: gm.Middleware[];
       description?: gm.Middleware[];
+      volume?: gm.Middleware[];
+      autoplay?: gm.Middleware[];
       provider?: gm.Middleware[];
     };
     RadioQuestionBlock?: {

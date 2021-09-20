@@ -53,26 +53,6 @@ const typeDefs = gql`
     provider: VideoProviderEnum
   }
 
-  type VideoOverlayBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    location: VideoOverlayLocationEnum
-    displayOn: [VideoEventEnum]
-  }
-
-  enum VideoEventEnum {
-    READY
-    PAUSED
-    PLAYED
-    ENDED
-  }
-
-  enum VideoOverlayLocationEnum {
-    WEST
-    EAST
-    CENTER
-  }
-
   enum RadioQuestionVariant {
     LIGHT
     DARK
