@@ -26,7 +26,7 @@ export const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'Icon',
   color: null,
-  size: null,
+  fontSize: null,
   variants: [IconName.ArrowForward, IconName.ChatBubbleOutline, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
 }
 

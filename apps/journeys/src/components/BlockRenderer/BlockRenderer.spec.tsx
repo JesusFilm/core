@@ -1,6 +1,8 @@
 import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
+import { VideoProviderEnum } from '../../../__generated__/globalTypes'
+
 
 describe('BlockRenderer', () => {
   it('should render RadioOption', () => {
@@ -58,7 +60,7 @@ describe('BlockRenderer', () => {
       src: 'https://www.youtube.com',
       title: 'title',
       parentBlockId: null,
-      provider: null,
+      provider: VideoProviderEnum.YOUTUBE,
       children: []
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
