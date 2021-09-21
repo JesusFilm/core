@@ -132,13 +132,9 @@ export type VideoBlock = Block & {
   src: Scalars['String'];
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  provider: VideoProviderEnum;
+  volume?: Maybe<Scalars['Int']>;
+  autoplay?: Maybe<Scalars['Boolean']>;
 };
-
-export type VideoProviderEnum =
-  | 'YOUTUBE'
-  | 'VIMEO'
-  | 'ARCLIGHT';
 
 
 
@@ -226,7 +222,7 @@ export type ResolversTypes = {
   RadioQuestionVariant: RadioQuestionVariant;
   StepBlock: ResolverTypeWrapper<StepBlock>;
   VideoBlock: ResolverTypeWrapper<VideoBlock>;
-  VideoProviderEnum: VideoProviderEnum;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -247,6 +243,7 @@ export type ResolversParentTypes = {
   RadioQuestionBlock: RadioQuestionBlock;
   StepBlock: StepBlock;
   VideoBlock: VideoBlock;
+  Int: Scalars['Int'];
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
@@ -333,7 +330,8 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  provider?: Resolver<ResolversTypes['VideoProviderEnum'], ParentType, ContextType>;
+  volume?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  autoplay?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

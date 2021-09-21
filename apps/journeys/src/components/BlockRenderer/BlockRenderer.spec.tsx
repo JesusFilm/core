@@ -35,6 +35,8 @@ describe('BlockRenderer', () => {
       __typename: 'StepBlock',
       id: 'step',
       parentBlockId: null,
+      nextBlockId: null,
+      locked: false,
       children: [
         {
           __typename: 'RadioQuestionBlock',
@@ -57,11 +59,12 @@ describe('BlockRenderer', () => {
       id: 'main',
       src: 'https://www.youtube.com',
       title: 'title',
+      volume: 0,
+      autoplay: false,
       parentBlockId: null,
-      provider: null,
       children: []
     }
-    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
-    expect(getByText('Render title Here')).toBeInTheDocument()
+    const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })
