@@ -217,7 +217,7 @@ async function main(): Promise<void> {
         startIcon: {
           name: 'PLAY_ARROW',
           color: 'secondary',
-          fontSize: '48px'
+          size: 'xl'
         },
         action: {
           gtmEventName: 'signup',

@@ -61,8 +61,8 @@ enum ButtonVariant {
 
 type Icon {
   color: IconColor
-  fontSize: String
   name: IconName!
+  size: IconSize
 }
 
 enum IconColor {
@@ -85,6 +85,14 @@ enum IconName {
   PlayArrow
   RadioButtonUnchecked
   Translate
+}
+
+enum IconSize {
+  inherit
+  l
+  m
+  s
+  xl
 }
 
 scalar join__FieldSet

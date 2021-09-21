@@ -123,10 +123,18 @@ const typeDefs = gql`
     inherit
   }
 
+  enum IconSize {
+    s
+    m
+    l
+    xl
+    inherit
+  }
+
   type Icon {
     name: IconName!
     color: IconColor
-    fontSize: String
+    size: IconSize
   }
 
   enum ButtonVariant {

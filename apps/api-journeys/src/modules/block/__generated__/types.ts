@@ -11,7 +11,7 @@ export namespace BlockModule {
     NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
     LinkAction: 'gtmEventName' | 'url' | 'target';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
-    Icon: 'name' | 'color' | 'fontSize';
+    Icon: 'name' | 'color' | 'size';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     Journey: 'blocks';
     Block: 'id' | 'parentBlockId';
@@ -23,6 +23,7 @@ export namespace BlockModule {
     RadioQuestionVariant: 'LIGHT' | 'DARK';
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
+    IconSize: 's' | 'm' | 'l' | 'xl' | 'inherit';
     ButtonVariant: 'text' | 'outlined' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
@@ -43,6 +44,7 @@ export namespace BlockModule {
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   export type IconName = DefinedEnumValues['IconName'];
   export type IconColor = DefinedEnumValues['IconColor'];
+  export type IconSize = DefinedEnumValues['IconSize'];
   export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
   export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
@@ -140,7 +142,7 @@ export namespace BlockModule {
       '*'?: gm.Middleware[];
       name?: gm.Middleware[];
       color?: gm.Middleware[];
-      fontSize?: gm.Middleware[];
+      size?: gm.Middleware[];
     };
     ButtonBlock?: {
       '*'?: gm.Middleware[];

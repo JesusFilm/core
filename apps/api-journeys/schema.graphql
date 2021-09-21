@@ -44,7 +44,7 @@ enum ButtonVariant {
 type Icon {
   name: IconName!
   color: IconColor
-  fontSize: String
+  size: IconSize
 }
 
 enum IconColor {
@@ -67,6 +67,14 @@ enum IconName {
   ChatBubbleOutline
   LiveTv
   MenuBook
+}
+
+enum IconSize {
+  s
+  m
+  l
+  xl
+  inherit
 }
 
 type Journey @key(fields: "id") {
