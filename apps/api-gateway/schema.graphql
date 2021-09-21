@@ -34,13 +34,7 @@ type ButtonBlock implements Block {
   parentBlockId: ID
   size: ButtonSize
   startIcon: Icon
-  variant: ButtonBlockVariant
-}
-
-enum ButtonBlockVariant {
-  contained
-  outlined
-  text
+  variant: ButtonVariant
 }
 
 enum ButtonColor {
@@ -59,10 +53,16 @@ enum ButtonSize {
   small
 }
 
+enum ButtonVariant {
+  contained
+  outlined
+  text
+}
+
 type Icon {
   color: IconColor
-  fontSize: String
   name: IconName!
+  size: IconSize
 }
 
 enum IconColor {
@@ -85,6 +85,14 @@ enum IconName {
   PlayArrow
   RadioButtonUnchecked
   Translate
+}
+
+enum IconSize {
+  inherit
+  l
+  m
+  s
+  xl
 }
 
 scalar join__FieldSet

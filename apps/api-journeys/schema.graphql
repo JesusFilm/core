@@ -11,18 +11,12 @@ type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
-  variant: ButtonBlockVariant
+  variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
   startIcon: Icon
   endIcon: Icon
   action: Action
-}
-
-enum ButtonBlockVariant {
-  text
-  outlined
-  contained
 }
 
 enum ButtonColor {
@@ -41,10 +35,16 @@ enum ButtonSize {
   large
 }
 
+enum ButtonVariant {
+  text
+  outlined
+  contained
+}
+
 type Icon {
   name: IconName!
   color: IconColor
-  fontSize: String
+  size: IconSize
 }
 
 enum IconColor {
@@ -67,6 +67,14 @@ enum IconName {
   ChatBubbleOutline
   LiveTv
   MenuBook
+}
+
+enum IconSize {
+  s
+  m
+  l
+  xl
+  inherit
 }
 
 type Journey @key(fields: "id") {

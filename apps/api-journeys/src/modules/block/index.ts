@@ -123,13 +123,21 @@ const typeDefs = gql`
     inherit
   }
 
+  enum IconSize {
+    s
+    m
+    l
+    xl
+    inherit
+  }
+
   type Icon {
     name: IconName!
     color: IconColor
-    fontSize: String
+    size: IconSize
   }
 
-  enum ButtonBlockVariant {
+  enum ButtonVariant {
     text
     outlined
     contained
@@ -155,7 +163,7 @@ const typeDefs = gql`
     id: ID!
     parentBlockId: ID
     label: String!
-    variant: ButtonBlockVariant
+    variant: ButtonVariant
     color: ButtonColor
     size: ButtonSize
     startIcon: Icon

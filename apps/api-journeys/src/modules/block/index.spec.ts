@@ -129,12 +129,12 @@ it('returns blocks', async () => {
         startIcon: {
           name: IconName.ArrowForward,
           color: 'secondary',
-          fontSize: '36px'
+          size: 'l'
         },
         endIcon: {
           name: IconName.LockOpen,
           color: 'action',
-          fontSize: '48px'
+          size: 'xl'
         },
         action: {
           gtmEventName: 'gtmEventName',
@@ -209,12 +209,12 @@ it('returns blocks', async () => {
               startIcon {
                 name
                 color
-                fontSize
+                size
               }
               endIcon {
                 name
                 color
-                fontSize
+                size
               }
               action {
                 __typename
@@ -320,12 +320,12 @@ it('returns blocks', async () => {
       startIcon: {
         name: 'ArrowForward',
         color: 'secondary',
-        fontSize: '36px'
+        size: 'l'
       },
       endIcon: {
         name: 'LockOpen',
         color: 'action',
-        fontSize: '48px'
+        size: 'xl'
       },
       action: {
         __typename: 'LinkAction',

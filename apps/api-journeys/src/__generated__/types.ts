@@ -30,18 +30,13 @@ export type ButtonBlock = Block & {
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
   label: Scalars['String'];
-  variant?: Maybe<ButtonBlockVariant>;
+  variant?: Maybe<ButtonVariant>;
   color?: Maybe<ButtonColor>;
   size?: Maybe<ButtonSize>;
   startIcon?: Maybe<Icon>;
   endIcon?: Maybe<Icon>;
   action?: Maybe<Action>;
 };
-
-export type ButtonBlockVariant =
-  | 'text'
-  | 'outlined'
-  | 'contained';
 
 export type ButtonColor =
   | 'primary'
@@ -57,11 +52,16 @@ export type ButtonSize =
   | 'medium'
   | 'large';
 
+export type ButtonVariant =
+  | 'text'
+  | 'outlined'
+  | 'contained';
+
 export type Icon = {
   __typename?: 'Icon';
   name: IconName;
   color?: Maybe<IconColor>;
-  fontSize?: Maybe<Scalars['String']>;
+  size?: Maybe<IconSize>;
 };
 
 export type IconColor =
@@ -73,6 +73,13 @@ export type IconColor =
   | 'inherit';
 
 export { IconName };
+
+export type IconSize =
+  | 's'
+  | 'm'
+  | 'l'
+  | 'xl'
+  | 'inherit';
 
 export type Journey = {
   __typename?: 'Journey';
@@ -266,12 +273,13 @@ export type ResolversTypes = {
   Block: ResolversTypes['ButtonBlock'] | ResolversTypes['RadioOptionBlock'] | ResolversTypes['RadioQuestionBlock'] | ResolversTypes['StepBlock'] | ResolversTypes['VideoBlock'];
   ID: ResolverTypeWrapper<Scalars['ID']>;
   ButtonBlock: ResolverTypeWrapper<ButtonBlock>;
-  ButtonBlockVariant: ButtonBlockVariant;
   ButtonColor: ButtonColor;
   ButtonSize: ButtonSize;
+  ButtonVariant: ButtonVariant;
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
   IconName: IconName;
+  IconSize: IconSize;
   Journey: ResolverTypeWrapper<Journey>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   LinkAction: ResolverTypeWrapper<LinkAction>;
@@ -325,7 +333,7 @@ export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  variant?: Resolver<Maybe<ResolversTypes['ButtonBlockVariant']>, ParentType, ContextType>;
+  variant?: Resolver<Maybe<ResolversTypes['ButtonVariant']>, ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['ButtonColor']>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['ButtonSize']>, ParentType, ContextType>;
   startIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
@@ -337,7 +345,7 @@ export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
 export type IconResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Icon'] = ResolversParentTypes['Icon']> = {
   name?: Resolver<ResolversTypes['IconName'], ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['IconColor']>, ParentType, ContextType>;
-  fontSize?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  size?: Resolver<Maybe<ResolversTypes['IconSize']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
