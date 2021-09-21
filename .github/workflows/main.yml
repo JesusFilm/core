@@ -45,19 +45,6 @@ jobs:
           targets: generate,build
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: test-user
-          POSTGRES_PASSWORD: test-password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v2
         with:
@@ -71,7 +58,7 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: generate,migrations,test
+          targets: generate,test
   visual-test:
     runs-on: ubuntu-latest
     steps:
