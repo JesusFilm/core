@@ -1,5 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock, GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock,
+  GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock
+} from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
 import { journeysConfig } from '../../../libs/storybook/decorators'
@@ -67,11 +70,12 @@ const Demo = {
   title: 'Journeys/Blocks/RadioQuestion'
 }
 
-const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({ ...props }) => (
-  <RadioQuestion {...props} />
-)
+const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({
+  ...props
+}) => <RadioQuestion {...props} />
 
-export const Default: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<RadioQuestionBlock>> =
+  DefaultTemplate.bind({})
 Default.args = {
   id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
@@ -81,7 +85,9 @@ Default.args = {
   parentBlockId: 'Step1'
 }
 
-export const Long: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
+export const Long: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind(
+  {}
+)
 Long.args = {
   id: 'MoreQuestions',
   label: 'Have you accepted Jesus in your life?',
@@ -90,7 +96,9 @@ Long.args = {
   children: longLabel
 }
 
-export const Dark: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
+export const Dark: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind(
+  {}
+)
 Dark.args = {
   id: 'AnotherQuestion',
   label: 'Dark Background',

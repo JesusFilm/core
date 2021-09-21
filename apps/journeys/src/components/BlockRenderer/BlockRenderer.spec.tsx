@@ -1,4 +1,4 @@
-import { renderWithStore } from '../../../test/testingLibrary'
+import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
@@ -9,10 +9,10 @@ describe('BlockRenderer', () => {
       id: 'main',
       label: 'radio option',
       parentBlockId: null,
-      image: null,
+      action: null,
       children: []
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio option')).toBeInTheDocument()
   })
 
@@ -26,7 +26,7 @@ describe('BlockRenderer', () => {
       variant: null,
       children: []
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
   })
 
@@ -35,17 +35,21 @@ describe('BlockRenderer', () => {
       __typename: 'StepBlock',
       id: 'step',
       parentBlockId: null,
-      children: [{
-        __typename: 'RadioQuestionBlock',
-        id: 'question',
-        label: 'radio question',
-        parentBlockId: 'step',
-        description: 'description',
-        variant: null,
-        children: []
-      }]
+      nextBlockId: null,
+      locked: false,
+      children: [
+        {
+          __typename: 'RadioQuestionBlock',
+          id: 'question',
+          label: 'radio question',
+          parentBlockId: 'step',
+          description: 'description',
+          variant: null,
+          children: []
+        }
+      ]
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
   })
 
@@ -55,11 +59,12 @@ describe('BlockRenderer', () => {
       id: 'main',
       src: 'https://www.youtube.com',
       title: 'title',
+      volume: 0,
+      autoplay: false,
       parentBlockId: null,
-      provider: null,
       children: []
     }
-    const { getByText } = renderWithStore(<BlockRenderer {...block} />)
-    expect(getByText('Render title Here')).toBeInTheDocument()
+    const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })

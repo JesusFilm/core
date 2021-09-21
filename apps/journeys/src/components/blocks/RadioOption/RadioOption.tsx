@@ -4,8 +4,9 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { ReactElement } from 'react'
 import { compact } from 'lodash'
-import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock, GetJourney_journey_blocks_RadioOptionBlock_action as Action } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { useBlocks } from '../../../libs/client/cache/blocks'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -32,37 +33,48 @@ type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
   className?: string
   selected?: boolean
   disabled?: boolean
-  handleClick?: (selected: string, action: Action | null) => void
+  onClick?: (selected: string) => void
 }
 
-export function RadioOption ({
+export function RadioOption({
   className,
   label,
   action,
   id,
   disabled = false,
   selected = false,
-  handleClick
+  onClick
 }: RadioOptionProps): ReactElement {
+  const { nextActiveBlock } = useBlocks()
   const classes = useStyles()
+
+  const handleClick = (): void => {
+    switch (action?.__typename) {
+      case 'NavigateToBlockAction':
+        nextActiveBlock({ id: action.blockId })
+        break
+      case 'NavigateAction':
+        nextActiveBlock()
+        break
+    }
+    onClick?.(id)
+  }
 
   return (
     <Button
       variant="contained"
       className={compact([className, classes.buttonLabels]).join(' ')}
       disabled={disabled}
-      onClick={() => handleClick?.(id, action)}
+      onClick={handleClick}
       startIcon={
-        selected
-          ? (
-            <CheckCircleIcon
+        selected ? (
+          <CheckCircleIcon
             data-testid="RadioOptionCheckCircleIcon"
             className={classes.highlightIcon}
           />
-            )
-          : (
-            <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
-            )
+        ) : (
+          <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
+        )
       }
     >
       {label}
