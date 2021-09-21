@@ -35,11 +35,7 @@
     "api-journeys": {
       "tags": []
     },
-<<<<<<< HEAD
-    "api-journeys-1": {
-=======
     "journeys": {
->>>>>>> origin/main
       "tags": []
     },
     "journeys-e2e": {
