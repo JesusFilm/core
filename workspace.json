@@ -4,8 +4,6 @@
     "api-gateway": {
       "root": "apps/api-gateway",
       "sourceRoot": "apps/api-gateway/src",
-<<<<<<< HEAD
-=======
       "projectType": "application",
       "targets": {
         "build": {
@@ -71,16 +69,15 @@
     "api-journeys": {
       "root": "apps/api-journeys",
       "sourceRoot": "apps/api-journeys/src",
->>>>>>> origin/main
       "projectType": "application",
       "targets": {
         "build": {
           "executor": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/api-gateway",
-            "main": "apps/api-gateway/src/main.ts",
-            "tsConfig": "apps/api-gateway/tsconfig.app.json"
+            "outputPath": "dist/apps/api-journeys",
+            "main": "apps/api-journeys/src/main.ts",
+            "tsConfig": "apps/api-journeys/tsconfig.app.json"
           },
           "configurations": {
             "production": {
@@ -89,8 +86,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/api-gateway/src/environments/environment.ts",
-                  "with": "apps/api-gateway/src/environments/environment.prod.ts"
+                  "replace": "apps/api-journeys/src/environments/environment.ts",
+                  "with": "apps/api-journeys/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -99,41 +96,7 @@
         "serve": {
           "executor": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "api-gateway:build"
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
-          }
-        }
-      }
-    },
-    "api-journeys": {
-      "root": "apps/api-journeys",
-      "projectType": "application",
-      "sourceRoot": "apps/api-journeys/src",
-      "targets": {
-        "build": {
-          "executor": "@ns3/nx-serverless:build",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "apps/api-journeys/.serverless"
-          },
-          "configurations": {
-            "production": {
-              "serviceStage": "prod"
-            },
-            "preprod": {
-              "serviceStage": "preprod"
-            }
-          }
-        },
-        "serve": {
-          "executor": "@ns3/nx-serverless:serve",
-          "options": {
-            "out": "../../dist/out-tsc/apps/api-journeys"
+            "buildTarget": "api-journeys:build"
           }
         },
         "deploy": {
@@ -146,18 +109,19 @@
         "remove": {
           "executor": "@ns3/nx-serverless:remove"
         },
+
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
+          }
+        },
         "test": {
           "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/apps/api-journeys"],
           "options": {
             "jestConfig": "apps/api-journeys/jest.config.js",
             "passWithNoTests": true
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/api-journeys/src/**/*.{ts,tsx,js,jsx}"]
           }
         },
         "generate": {
@@ -207,38 +171,15 @@
         }
       }
     },
-<<<<<<< HEAD
-    "api-journeys-1": {
-      "root": "apps/api-journeys-1",
-      "sourceRoot": "apps/api-journeys-1/src",
-=======
     "journeys": {
       "root": "apps/journeys",
       "sourceRoot": "apps/journeys",
->>>>>>> origin/main
       "projectType": "application",
       "targets": {
         "build": {
           "executor": "@nrwl/next:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-<<<<<<< HEAD
-            "outputPath": "dist/apps/api-journeys-1",
-            "main": "apps/api-journeys-1/src/main.ts",
-            "tsConfig": "apps/api-journeys-1/tsconfig.app.json"
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/api-journeys-1/src/environments/environment.ts",
-                  "with": "apps/api-journeys-1/src/environments/environment.prod.ts"
-                }
-              ]
-=======
             "root": "apps/journeys",
             "outputPath": "dist/apps/journeys"
           },
@@ -256,16 +197,12 @@
             "production": {
               "buildTarget": "journeys:build:production",
               "dev": false
->>>>>>> origin/main
             }
           }
         },
         "export": {
           "executor": "@nrwl/next:export",
           "options": {
-<<<<<<< HEAD
-            "buildTarget": "api-journeys-1:build"
-=======
             "buildTarget": "journeys:build:production"
           }
         },
@@ -275,35 +212,11 @@
           "options": {
             "jestConfig": "apps/journeys/jest.config.js",
             "passWithNoTests": true
->>>>>>> origin/main
           }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
           "options": {
-<<<<<<< HEAD
-            "lintFilePatterns": ["apps/api-journeys-1/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/api-journeys-1"],
-          "options": {
-            "jestConfig": "apps/api-journeys-1/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "generate": {
-          "executor": "@nx-tools/nx-prisma:generate",
-          "options": {
-            "schema": "apps/api-journeys-1/prisma/schema.prisma"
-          }
-        },
-        "migrations": {
-          "executor": "@nx-tools/nx-prisma:migrations",
-          "options": {
-            "schema": "apps/api-journeys-1/prisma/schema.prisma"
-=======
             "lintFilePatterns": ["apps/journeys/**/*.{ts,tsx,js,jsx}"]
           }
         },
@@ -320,7 +233,6 @@
             "ci": {
               "quiet": true
             }
->>>>>>> origin/main
           }
         },
         "codegen": {
@@ -328,11 +240,6 @@
           "options": {
             "commands": [
               {
-<<<<<<< HEAD
-                "command": "npx graphql-codegen --config apps/api-journeys-1/codegen.yml"
-              }
-            ]
-=======
                 "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
               }
             ]
@@ -400,7 +307,6 @@
             "ci": {
               "quiet": true
             }
->>>>>>> origin/main
           }
         }
       }
