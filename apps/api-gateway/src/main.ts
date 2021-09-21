@@ -29,7 +29,7 @@ export const gateway = new ApolloGateway({
 const server = new ApolloServer({
   gateway,
   context: async ({ req }) => {
-    const token = req.headers.authorization ?? ''
+    const token = req.headers.authorization
     if (token == null) return {}
     try {
       const { uid } = await admin.auth().verifyIdToken(token)
