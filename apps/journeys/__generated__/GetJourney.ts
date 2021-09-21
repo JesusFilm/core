@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoProviderEnum, RadioQuestionVariant } from "./globalTypes";
+import { RadioQuestionVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -33,7 +33,6 @@ export interface GetJourney_journey_blocks_VideoBlock {
   parentBlockId: string | null;
   src: string;
   title: string;
-  provider: VideoProviderEnum | null;
   volume: number | null;
   autoplay: boolean | null;
 }

@@ -2,7 +2,6 @@ import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { Video } from '.'
-import { VideoProviderEnum } from '../../../../__generated__/globalTypes'
 
 const block: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
@@ -12,7 +11,6 @@ const block: TreeBlock<VideoBlock> = {
   autoplay: false,
   src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
   title: 'Video',
-  provider: VideoProviderEnum.ARCLIGHT,
   children: []
 }
 

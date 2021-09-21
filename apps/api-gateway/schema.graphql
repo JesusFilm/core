@@ -119,14 +119,7 @@ type VideoBlock implements Block {
   description: String
   id: ID!
   parentBlockId: ID
-  provider: VideoProviderEnum
   src: String!
   title: String!
   volume: Int
-}
-
-enum VideoProviderEnum {
-  ARCLIGHT
-  VIMEO
-  YOUTUBE
 }

@@ -59,7 +59,6 @@ describe('BlockRenderer', () => {
       id: 'main',
       src: 'https://www.youtube.com',
       title: 'title',
-      provider: null,
       volume: 0,
       autoplay: false,
       parentBlockId: null,

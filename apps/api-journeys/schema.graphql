@@ -95,11 +95,4 @@ type VideoBlock implements Block {
   description: String
   volume: Int
   autoplay: Boolean
-  provider: VideoProviderEnum
-}
-
-enum VideoProviderEnum {
-  YOUTUBE
-  VIMEO
-  ARCLIGHT
 }

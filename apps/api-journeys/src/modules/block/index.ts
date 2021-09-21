@@ -36,12 +36,6 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
-  enum VideoProviderEnum {
-    YOUTUBE
-    VIMEO
-    ARCLIGHT
-  }
-
   type VideoBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -50,7 +44,6 @@ const typeDefs = gql`
     description: String
     volume: Int
     autoplay: Boolean
-    provider: VideoProviderEnum
   }
 
   enum RadioQuestionVariant {

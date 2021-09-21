@@ -42,7 +42,6 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on VideoBlock {
               src
               title
-              provider
               volume
               autoplay
             }
