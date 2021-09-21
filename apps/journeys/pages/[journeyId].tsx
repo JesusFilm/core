@@ -35,10 +35,15 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           blocks {
             id
             parentBlockId
+            ... on StepBlock {
+              locked
+              nextBlockId
+            }
             ... on VideoBlock {
               src
               title
-              provider
+              volume
+              autoplay
             }
             ... on RadioQuestionBlock {
               label
@@ -50,7 +55,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               action {
                 __typename
                 gtmEventName
-                ... on NavigateAction {
+                ... on NavigateToBlockAction {
                   blockId
                 }
                 ... on NavigateToJourneyAction {
