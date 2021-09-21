@@ -4,7 +4,6 @@ import {
   NormalizedCacheObject
 } from '@apollo/client'
 import { cache } from './cache'
-
 import { setContext } from '@apollo/client/link/context'
 
 export function createApolloClient(
