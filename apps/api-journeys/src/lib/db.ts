@@ -1,8 +1,5 @@
-import { PrismaClient } from '.prisma/api-journeys-client';
+import { PrismaClient } from '.prisma/api-journeys-client'
 
-<<<<<<< HEAD
-const db = new PrismaClient();
-=======
 let db: PrismaClient
 
 if (process.env.NODE_ENV === 'production') {
@@ -14,6 +11,5 @@ if (process.env.NODE_ENV === 'production') {
 
   db = global.db
 }
->>>>>>> origin/main
 
-export default db;
+export default db
