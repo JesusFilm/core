@@ -7,9 +7,8 @@ import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../
 export const Video = ({
   src,
   volume = 0,
-  autoplay = false,
+  autoplay = false
 }: TreeBlock<VideoBlock>): ReactElement => {
-
   const videoJsOptions = {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     autoplay: autoplay ? 'muted' : false,
