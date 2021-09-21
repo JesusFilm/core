@@ -1,8 +1,14 @@
-import { ReactElement } from 'react'
-import { Typography as MuiTypography } from '@mui/material'
-import { TypographyBlockProps } from './__generated__/TypographyBlockProps'
+import { ReactElement } from "react";
+import {
+  Typography as MuiTypography,
+  TypographyProps as MuiTypographyProps,
+} from "@mui/material";
+import { TypographyBlockProps } from "./__generated__/TypographyBlockProps";
+import { TypographyVariant } from "../../../__generated__/globalTypes";
 
-export interface TypographyProps extends TypographyBlockProps {}
+export interface TypographyProps
+  extends TypographyBlockProps,
+    Pick<MuiTypographyProps, "sx"> {}
 
 export function Typography({
   variant,
@@ -10,12 +16,19 @@ export function Typography({
   align,
   ...props
 }: TypographyProps): ReactElement {
-  return <MuiTypography
-    variant={ variant ?? undefined }
-    color={color ?? undefined}
-    align={ align ?? undefined }
-    {...props}
-  >{props.content}</MuiTypography>
+  return (
+    <MuiTypography
+      variant={variant ?? undefined}
+      color={color ?? undefined}
+      align={align ?? undefined}
+      sx={{
+        mb: variant === TypographyVariant.overline ? 0.5 : 2,
+      }}
+      {...props}
+    >
+      {props.content}
+    </MuiTypography>
+  );
 }
 
-export default Typography
+export default Typography;
