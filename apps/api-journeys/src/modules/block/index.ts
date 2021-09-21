@@ -124,9 +124,9 @@ const typeDefs = gql`
   }
 
   enum IconSize {
-    s
-    m
-    l
+    sm
+    md
+    lg
     xl
     inherit
   }

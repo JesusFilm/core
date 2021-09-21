@@ -23,7 +23,7 @@ export namespace BlockModule {
     RadioQuestionVariant: 'LIGHT' | 'DARK';
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
-    IconSize: 's' | 'm' | 'l' | 'xl' | 'inherit';
+    IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
     ButtonVariant: 'text' | 'outlined' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';

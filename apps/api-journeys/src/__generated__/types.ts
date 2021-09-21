@@ -75,9 +75,9 @@ export type IconColor =
 export { IconName };
 
 export type IconSize =
-  | 's'
-  | 'm'
-  | 'l'
+  | 'sm'
+  | 'md'
+  | 'lg'
   | 'xl'
   | 'inherit';
 

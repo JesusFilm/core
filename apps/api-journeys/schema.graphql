@@ -70,9 +70,9 @@ enum IconName {
 }
 
 enum IconSize {
-  s
-  m
-  l
+  sm
+  md
+  lg
   xl
   inherit
 }

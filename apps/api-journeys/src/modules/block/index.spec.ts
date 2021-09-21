@@ -129,7 +129,7 @@ it('returns blocks', async () => {
         startIcon: {
           name: IconName.ArrowForward,
           color: 'secondary',
-          size: 'l'
+          size: 'lg'
         },
         endIcon: {
           name: IconName.LockOpen,
@@ -320,7 +320,7 @@ it('returns blocks', async () => {
       startIcon: {
         name: 'ArrowForward',
         color: 'secondary',
-        size: 'l'
+        size: 'lg'
       },
       endIcon: {
         name: 'LockOpen',
