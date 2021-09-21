@@ -110,7 +110,6 @@ const typeDefs = gql`
     subtitle2,
     body1,
     body2,
-    button,
     caption,
     overline
   }
