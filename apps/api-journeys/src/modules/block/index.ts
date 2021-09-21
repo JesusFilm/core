@@ -2,10 +2,11 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { Prisma } from '.prisma/api-journeys-client'
 import {
-  Block,
-  NavigateAction,
+  LinkAction,
+  NavigateToBlockAction,
   NavigateToJourneyAction,
-  Resolvers
+  Resolvers,
+  ResolversTypes
 } from '../../__generated__/types'
 
 const typeDefs = gql`
@@ -20,6 +21,18 @@ const typeDefs = gql`
 
   type StepBlock implements Block {
     id: ID!
+    """
+    nextBlockId contains the preferred block to navigate to when a
+    NavigateAction occurs or if the user manually tries to advance to the next
+    step. If no nextBlockId is set it can be assumed that this step represents
+    the end of the current journey.
+    """
+    nextBlockId: ID
+    """
+    locked will be set to true if the user should not be able to manually
+    advance to the next step.
+    """
+    locked: Boolean!
     parentBlockId: ID
   }
 
@@ -55,7 +68,15 @@ const typeDefs = gql`
     gtmEventName: String
   }
 
+  """
+  NavigateAction is an Action that navigates to the nextBlockId field set on the
+  closest ancestor StepBlock.
+  """
   type NavigateAction implements Action {
+    gtmEventName: String
+  }
+
+  type NavigateToBlockAction implements Action {
     gtmEventName: String
     blockId: String!
   }
@@ -86,22 +107,28 @@ const resolvers: Resolvers = {
         where: { journeyId: journey.id },
         orderBy: [{ parentOrder: 'asc' }]
       })
-      return blocks.map((block) => ({
-        ...block,
-        ...(block.extraAttrs as Prisma.JsonObject),
-        __typename: block.blockType
-      })) as Block[]
+      return blocks.map(
+        (block) =>
+          ({
+            ...block,
+            ...(block.extraAttrs as Prisma.JsonObject),
+            __typename: block.blockType
+          } as unknown as ResolversTypes['Block'])
+      )
     }
   },
   Action: {
     __resolveType(obj) {
-      if ((obj as NavigateAction).blockId != null) {
-        return 'NavigateAction'
+      if ((obj as NavigateToBlockAction).blockId != null) {
+        return 'NavigateToBlockAction'
       }
       if ((obj as NavigateToJourneyAction).journeyId != null) {
         return 'NavigateToJourneyAction'
       }
-      return 'LinkAction'
+      if ((obj as LinkAction).url != null) {
+        return 'LinkAction'
+      }
+      return 'NavigateAction'
     }
   }
 }
