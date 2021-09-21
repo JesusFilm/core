@@ -5,8 +5,14 @@ import { TreeBlock } from '../../transformer/transformer'
 export const activeBlockVar = makeVar<TreeBlock | null>(null)
 export const treeBlocksVar = makeVar<TreeBlock[]>([])
 
+interface nextActiveBlockArgs {
+  /** StepBlock id to set as activeBlock. If no id is set, block will be set to
+   *  activeBlock.nextBlockId */
+  id?: string
+}
+
 interface UseBlocksHook {
-  setActiveBlockById: (id?: string) => void
+  nextActiveBlock: (args?: nextActiveBlockArgs) => void
   setTreeBlocks: (blocks: TreeBlock[]) => void
   activeBlock: TreeBlock | null
   treeBlocks: TreeBlock[]
@@ -16,35 +22,37 @@ export function useBlocks(): UseBlocksHook {
   const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
 
-  const setActiveBlockById = useCallback((id?: string): void => {
+  const nextActiveBlock = useCallback((args?: nextActiveBlockArgs): void => {
     const blocks = treeBlocksVar()
-    const activeBlockId = activeBlockVar()?.id
-
-    if (id != null) {
-      const block = blocks.find((block) => block.id === id)
-      if (block != null) {
-        activeBlockVar(block)
-      }
-    } else if (activeBlockId != null) {
-      const index = blocks.findIndex((block) => block.id === activeBlockId)
-      if (index > -1 && blocks[index + 1] != null) {
-        activeBlockVar(blocks[index + 1])
-      } else {
-        activeBlockVar(null)
-      }
+    const activeBlock = activeBlockVar()
+    let block: TreeBlock | undefined
+    if (args?.id != null) {
+      block = blocks.find(
+        (block) => block.__typename === 'StepBlock' && block.id === args.id
+      )
+    } else if (activeBlock != null && activeBlock.__typename === 'StepBlock') {
+      block = blocks.find(
+        (block) =>
+          block.__typename === 'StepBlock' &&
+          block.id === activeBlock.nextBlockId
+      )
+    }
+    if (block != null) {
+      activeBlockVar(block)
     }
   }, [])
 
   const setTreeBlocks = useCallback(
     (blocks: TreeBlock[]): void => {
       treeBlocksVar(blocks)
-      setActiveBlockById(blocks[0]?.id)
+      activeBlockVar(null)
+      nextActiveBlock({ id: blocks[0]?.id })
     },
-    [setActiveBlockById]
+    [nextActiveBlock]
   )
 
   return {
-    setActiveBlockById,
+    nextActiveBlock,
     setTreeBlocks,
     activeBlock,
     treeBlocks

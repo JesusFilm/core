@@ -7,6 +7,8 @@ const block: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',
   id: 'Step1',
   parentBlockId: null,
+  nextBlockId: null,
+  locked: false,
   children: [
     {
       __typename: 'RadioQuestionBlock',
