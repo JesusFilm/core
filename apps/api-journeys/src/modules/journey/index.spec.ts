@@ -4,11 +4,12 @@ import module from '.'
 import { pick } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import dbMock from '../../../tests/dbMock'
+import { Journey } from '.prisma/api-journeys-client'
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
-  const publishedJourney = {
+  const publishedJourney: Journey = {
     id: uuidv4(),
     title: 'published',
     published: true
@@ -69,7 +70,7 @@ it('returns journey', async () => {
 it('creates journey', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
-  const journey = {
+  const journey: Journey = {
     id: uuidv4(),
     title: 'published',
     published: true
@@ -100,7 +101,11 @@ it('creates journey', async () => {
 it('publishes journey', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
-  const journey = { id: uuidv4() }
+  const journey: Journey = {
+    id: uuidv4(),
+    title: 'my journey',
+    published: true
+  }
   dbMock.journey.update.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {
@@ -108,6 +113,8 @@ it('publishes journey', async () => {
       mutation ($id: ID!) {
         journeyPublish(id: $id) {
           id
+          title
+          published
         }
       }
     `,

@@ -4,6 +4,7 @@ import module from '.'
 import dbMock from '../../../tests/dbMock'
 import Journey from '../journey'
 import { v4 as uuidv4 } from 'uuid'
+import { Block } from '.prisma/api-journeys-client'
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
@@ -13,41 +14,50 @@ it('returns blocks', async () => {
   const journeyId = uuidv4()
   const otherJourneyId = uuidv4()
   const nextBlockId = uuidv4()
-  dbMock.journey.findUnique.mockResolvedValue({ id: journeyId })
-  const step1 = {
+  dbMock.journey.findUnique.mockResolvedValue({
+    id: journeyId,
+    title: 'published',
+    published: true
+  })
+  const step1: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
     extraAttrs: {
       locked: true,
       nextBlockId
     }
   }
-  const video1 = {
+  const video1: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'VideoBlock',
     parentBlockId: step1.id,
+    parentOrder: 1,
     extraAttrs: {
       src: 'src',
       title: 'title'
     }
   }
-  const radioQuestion1 = {
+  const radioQuestion1: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'RadioQuestionBlock',
     parentBlockId: step1.id,
+    parentOrder: 2,
     extraAttrs: {
       label: 'label',
       description: 'description'
     }
   }
-  const radioOption1 = {
+  const radioOption1: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'RadioOptionBlock',
     parentBlockId: radioQuestion1.id,
+    parentOrder: 3,
     extraAttrs: {
       label: 'label',
       description: 'description',
@@ -57,11 +67,12 @@ it('returns blocks', async () => {
       }
     }
   }
-  const radioOption2 = {
+  const radioOption2: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'RadioOptionBlock',
     parentBlockId: radioQuestion1.id,
+    parentOrder: 4,
     extraAttrs: {
       label: 'label',
       description: 'description',
@@ -71,11 +82,12 @@ it('returns blocks', async () => {
       }
     }
   }
-  const radioOption3 = {
+  const radioOption3: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'RadioOptionBlock',
     parentBlockId: radioQuestion1.id,
+    parentOrder: 5,
     extraAttrs: {
       label: 'label',
       description: 'description',
@@ -85,11 +97,12 @@ it('returns blocks', async () => {
       }
     }
   }
-  const radioOption4 = {
+  const radioOption4: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'RadioOptionBlock',
     parentBlockId: radioQuestion1.id,
+    parentOrder: 6,
     extraAttrs: {
       label: 'label',
       description: 'description',
@@ -98,10 +111,12 @@ it('returns blocks', async () => {
       }
     }
   }
-  const step2 = {
+  const step2: Block = {
     id: nextBlockId,
     journeyId,
     blockType: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 7,
     extraAttrs: {
       locked: false
     }
