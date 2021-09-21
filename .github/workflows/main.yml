@@ -39,6 +39,8 @@ jobs:
           node-version: '14'
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
+        env:
+          NEXT_PUBLIC_FIREBASE_CONFIG_JSON: ${{ secrets.NEXT_PUBLIC_FIREBASE_CONFIG_JSON }}
         with:
           targets: generate,build
   test:
