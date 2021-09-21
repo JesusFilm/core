@@ -3,7 +3,10 @@ import { ApolloServer } from 'apollo-server'
 import { config } from './environments/environment'
 import * as admin from 'firebase-admin'
 
-if (process.env.GOOGLE_APPLICATION_JSON != null) {
+if (
+  process.env.GOOGLE_APPLICATION_JSON != null &&
+  process.env.GOOGLE_APPLICATION_JSON !== ''
+) {
   admin.initializeApp({
     credential: admin.credential.cert(
       JSON.parse(process.env.GOOGLE_APPLICATION_JSON)
