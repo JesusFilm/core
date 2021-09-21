@@ -110,8 +110,7 @@ it('returns blocks', async () => {
       parentBlockId: block1.id,
       extraAttrs: {
         src: 'src',
-        title: 'title',
-        provider: 'YOUTUBE'
+        title: 'title'
       }
     }
   })
@@ -149,7 +148,6 @@ it('returns blocks', async () => {
             ... on VideoBlock {
               src
               title
-              provider
             }
             ... on RadioQuestionBlock {
               label
@@ -247,8 +245,7 @@ it('returns blocks', async () => {
       __typename: 'VideoBlock',
       parentBlockId: block1.id,
       src: 'src',
-      title: 'title',
-      provider: 'YOUTUBE'
+      title: 'title'
     },
     {
       id: block8.id,
