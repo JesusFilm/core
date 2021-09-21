@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockVariant, ButtonColor, ButtonSize, IconName, IconColor } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonBlockFields
@@ -13,14 +13,14 @@ export interface ButtonBlockFields_startIcon {
   __typename: "Icon";
   name: IconName;
   color: IconColor | null;
-  fontSize: string | null;
+  size: IconSize | null;
 }
 
 export interface ButtonBlockFields_endIcon {
   __typename: "Icon";
   name: IconName;
   color: IconColor | null;
-  fontSize: string | null;
+  size: IconSize | null;
 }
 
 export interface ButtonBlockFields_action_NavigateToBlockAction {
@@ -52,7 +52,7 @@ export interface ButtonBlockFields {
   id: string;
   parentBlockId: string | null;
   label: string;
-  variant: ButtonBlockVariant | null;
+  variant: ButtonVariant | null;
   color: ButtonColor | null;
   size: ButtonSize | null;
   startIcon: ButtonBlockFields_startIcon | null;

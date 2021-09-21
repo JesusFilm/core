@@ -7,12 +7,6 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum ButtonBlockVariant {
-  contained = "contained",
-  outlined = "outlined",
-  text = "text",
-}
-
 export enum ButtonColor {
   error = "error",
   info = "info",
@@ -27,6 +21,12 @@ export enum ButtonSize {
   large = "large",
   medium = "medium",
   small = "small",
+}
+
+export enum ButtonVariant {
+  contained = "contained",
+  outlined = "outlined",
+  text = "text",
 }
 
 export enum IconColor {
@@ -49,6 +49,14 @@ export enum IconName {
   PlayArrow = "PlayArrow",
   RadioButtonUnchecked = "RadioButtonUnchecked",
   Translate = "Translate",
+}
+
+export enum IconSize {
+  inherit = "inherit",
+  l = "l",
+  m = "m",
+  s = "s",
+  xl = "xl",
 }
 
 //==============================================================

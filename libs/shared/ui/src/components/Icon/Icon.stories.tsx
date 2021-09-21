@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { IconName } from '../../../__generated__/globalTypes'
+import { IconName, IconSize } from '../../../__generated__/globalTypes'
 import { Icon, IconProps } from '.'
 
 const IconDemo = {
@@ -26,7 +26,7 @@ export const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'Icon',
   color: null,
-  fontSize: null,
+  size: null,
   variants: [IconName.ArrowForward, IconName.ChatBubbleOutline, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
 }
 
@@ -36,7 +36,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Icon {...args} fontSize={variant} />
+      <Icon {...args} size={variant as IconSize} />
     ))}
   </div>
 )
@@ -46,7 +46,7 @@ Size.args = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
   color: null,
-  variants: ['40px', '20px', '10px']
+  variants: [IconSize.s, IconSize.m, IconSize.l, IconSize.xl, IconSize.inherit]
 }
 
 export default IconDemo as Meta

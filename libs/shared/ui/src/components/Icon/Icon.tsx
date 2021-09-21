@@ -6,10 +6,10 @@ export interface IconProps extends IconType {
   ariaHidden?: boolean
 }
 
-export function Icon({ name, color, fontSize }: IconProps): ReactElement | null {
+export function Icon({ name, color, size }: IconProps): ReactElement | null {
   switch (name) {
     case 'CheckCircle':
-      return <CheckCircle color={color ?? undefined} sx={{ fontSize: fontSize }} />
+      return <CheckCircle color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'PlayArrow':
       return <PlayArrow />
     case 'Translate':

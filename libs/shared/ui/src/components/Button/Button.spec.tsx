@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react'
 import { Button, ButtonProps } from '.'
-import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName } from '../../../__generated__/globalTypes'
+import { ButtonVariant, ButtonColor, ButtonSize, IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
 
 const block: ButtonProps = {
   __typename: 'ButtonBlock',
   id: 'button',
   parentBlockId: 'question',
   label: 'This is a button',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   color: ButtonColor.primary,
   size: ButtonSize.small,
   startIcon: null,
@@ -27,7 +27,7 @@ describe('Button', () => {
       __typename: 'Icon',
       name: IconName.CheckCircle,
       color: IconColor.primary,
-      fontSize: '48px'
+      size: IconSize.l
     }} />)
     expect(getByTestId('CheckCircleIcon')).toBeTruthy()
   })

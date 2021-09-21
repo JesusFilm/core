@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { Button, ButtonProps } from '.'
-import { ButtonBlockVariant, ButtonColor, ButtonSize, IconColor, IconName } from '../../../__generated__/globalTypes'
+import { ButtonVariant, ButtonColor, ButtonSize, IconColor, IconName, IconSize } from '../../../__generated__/globalTypes'
 
 const ButtonDemo = {
   component: Button,
@@ -17,7 +17,7 @@ const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
     flexDirection: 'column'
   }}>
     {args.variants.map((variant) => (
-      <Button {...args} label={`${variant}`} variant={variant as ButtonBlockVariant} />
+      <Button {...args} label={`${variant}`} variant={variant as ButtonVariant} />
     ))}
   </div>
 )
@@ -29,7 +29,7 @@ Variant.args = {
   parentBlockId: 'question',
   startIcon: null,
   endIcon: null,
-  variants: [ButtonBlockVariant.contained, ButtonBlockVariant.outlined, ButtonBlockVariant.text]
+  variants: [ButtonVariant.contained, ButtonVariant.outlined, ButtonVariant.text]
 }
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
@@ -47,7 +47,7 @@ export const Color = ColorTemplate.bind({})
 Color.args = {
   __typename: 'ButtonBlock',
   id: 'button',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   parentBlockId: 'question',
   startIcon: null,
   endIcon: null,
@@ -70,7 +70,7 @@ Size.args = {
   __typename: 'ButtonBlock',
   id: 'button',
   parentBlockId: 'question',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   startIcon: null,
   endIcon: null,
   variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
@@ -91,12 +91,12 @@ startIcon.args = {
   id: 'button',
   parentBlockId: 'question',
   label: 'Start Icon',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   startIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
     color: IconColor.inherit,
-    fontSize: '48px'
+    size: IconSize.m
   },
   endIcon: null
 }
@@ -107,13 +107,13 @@ endIcon.args = {
   id: 'button',
   parentBlockId: 'question',
   label: 'End Icon',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   startIcon: null,
   endIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
     color: IconColor.inherit,
-    fontSize: '48px'
+    size: IconSize.m
   }
 }
 
@@ -132,7 +132,7 @@ Loading.args = {
   id: 'button',
   parentBlockId: 'question',
   label: 'End Icon',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   startIcon: null,
   endIcon: null,
   loading: false
@@ -144,7 +144,7 @@ Disabled.args = {
   id: 'button',
   parentBlockId: 'question',
   label: 'End Icon',
-  variant: ButtonBlockVariant.contained,
+  variant: ButtonVariant.contained,
   startIcon: null,
   endIcon: null,
   disabled: true
