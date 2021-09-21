@@ -12,10 +12,13 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
   const client = createApolloClient(user?.accessToken)
-
   const signIn = useCallback(async (): Promise<void> => {
     await signInAnonymously(auth)
   }, [auth])
+
+  useEffect(() => {
+    void signIn()
+  }, [signIn])
 
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -23,8 +26,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
-    void signIn()
-  }, [signIn])
+  }, [])
 
   return (
     <>
