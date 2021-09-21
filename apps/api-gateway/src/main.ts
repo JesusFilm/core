@@ -3,11 +3,13 @@ import { ApolloServer } from 'apollo-server'
 import { config } from './environments/environment'
 import * as admin from 'firebase-admin'
 
-admin.initializeApp({
-  credential: admin.credential.cert(
-    JSON.parse(process.env.GOOGLE_APPLICATION_JSON ?? '{}')
-  )
-})
+if (process.env.GOOGLE_APPLICATION_JSON != null) {
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      JSON.parse(process.env.GOOGLE_APPLICATION_JSON)
+    )
+  })
+}
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }): void {
@@ -29,8 +31,8 @@ export const gateway = new ApolloGateway({
 const server = new ApolloServer({
   gateway,
   context: async ({ req }) => {
-    const token = req.headers.authorization ?? ''
-    if (token == null) return {}
+    const token = req.headers.authorization
+    if (process.env.GOOGLE_APPLICATION_JSON == null || token == null) return {}
     try {
       const { uid } = await admin.auth().verifyIdToken(token)
       return { userId: uid }
