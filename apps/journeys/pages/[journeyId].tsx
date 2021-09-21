@@ -52,23 +52,20 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on RadioOptionBlock {
               label
               action {
-                ...ActionFields
+                __typename
+                gtmEventName
+                ... on NavigateToBlockAction {
+                  blockId
+                }
+                ... on NavigateToJourneyAction {
+                  journeyId
+                }
+                ... on LinkAction {
+                  url
+                }
               }
             }
           }
-        }
-      }
-      fragment ActionFields on Action {
-        __typename
-        gtmEventName
-        ... on NavigateAction {
-          gtmEventName
-        }
-        ... on NavigateToJourneyAction {
-          journeyId
-        }
-        ... on LinkAction {
-          url
         }
       }
     `,
