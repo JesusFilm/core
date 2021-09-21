@@ -1,18 +1,30 @@
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useCallback, useEffect } from 'react'
 import { ApolloProvider } from '@apollo/client'
-import client from '../src/libs/client'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { getAuth, signInAnonymously } from 'firebase/auth'
+import { createApolloClient } from '../src/libs/client'
+import { firebaseClient } from '../src/libs/firebaseClient'
 
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
+  const auth = getAuth(firebaseClient)
+  const [user] = useAuthState(auth)
+  const client = createApolloClient(user?.accessToken)
+
+  const signIn = useCallback(async (): Promise<void> => {
+    await signInAnonymously(auth)
+  }, [auth])
+
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
-  }, [])
+    void signIn()
+  }, [signIn])
 
   return (
     <>
