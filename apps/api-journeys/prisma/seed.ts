@@ -13,7 +13,8 @@ async function main(): Promise<void> {
       data: {
         title: '#FallingPlates',
         published: true,
-        locale: 'id-ID'
+        locale: 'id-ID',
+        theme: 'default'
       }
     })
   }
@@ -215,6 +216,29 @@ async function main(): Promise<void> {
         variant: 'h1',
         color: 'primary',
         align: 'left'
+      }
+    }
+  })
+  const stepSignup = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: true
+      },
+      parentOrder: 7
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignupBlock',
+      parentBlockId: stepSignup.id,
+      extraAttrs: {
+        action: {
+          gtmEventName: 'signup',
+          url: 'https://signup-complete.jesusfilm.org'
+        }
       }
     }
   })

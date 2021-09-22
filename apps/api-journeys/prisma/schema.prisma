@@ -12,11 +12,12 @@ generator client {
 }
 
 model Journey {
-  id        String  @id @default(uuid())
+  id        String     @id @default(uuid())
   title     String
-  published Boolean @default(false)
+  published Boolean    @default(false)
   blocks    Block[]
-  locale    String  @default("en-US")
+  locale    String     @default("en-US")
+  theme     ThemeName  @default(default)
 }
 
 model Block {
@@ -31,10 +32,15 @@ model Block {
   parentOrder   Int       @default(0)
 }
 
+enum ThemeName {
+  default
+}
+
 enum BlockType {
   StepBlock
   VideoBlock
   RadioQuestionBlock
   RadioOptionBlock
   TypographyBlock
+  SignupBlock
 }

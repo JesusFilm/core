@@ -11,7 +11,8 @@ it('returns published journeys', async () => {
     data: {
       title: 'published',
       published: true,
-      locale: 'id-ID'
+      locale: 'id-ID',
+      theme: 'default'
     }
   })
 
@@ -19,7 +20,8 @@ it('returns published journeys', async () => {
     data: {
       title: 'unpublished',
       published: false,
-      locale: 'hi-IN'
+      locale: 'hi-IN',
+      theme: 'default'
     }
   })
 
@@ -31,6 +33,7 @@ it('returns published journeys', async () => {
           title
           published
           locale
+          theme
         }
       }
     `,
@@ -40,7 +43,7 @@ it('returns published journeys', async () => {
   })
 
   expect(data?.journeys).toEqual([
-    pick(journey, ['id', 'title', 'published', 'locale'])
+    pick(journey, ['id', 'title', 'published', 'locale', 'theme'])
   ])
 })
 
@@ -51,7 +54,8 @@ it('returns journey', async () => {
     data: {
       title: 'published',
       published: true,
-      locale: 'id-ID'
+      locale: 'id-ID',
+      theme: 'default'
     }
   })
 
@@ -63,6 +67,7 @@ it('returns journey', async () => {
           title
           published
           locale
+          theme
         }
       }
     `,
@@ -75,7 +80,7 @@ it('returns journey', async () => {
   })
 
   expect(data?.journey).toEqual(
-    pick(journey, ['id', 'title', 'published', 'locale'])
+    pick(journey, ['id', 'title', 'published', 'locale', 'theme'])
   )
 })
 
@@ -84,15 +89,16 @@ it('creates journey', async () => {
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation ($title: String!, $locale: String) {
-        journeyCreate(title: $title, locale: $locale) {
+      mutation ($title: String!, $locale: String, $theme: ThemeName) {
+        journeyCreate(title: $title, locale: $locale, theme: $theme) {
           id
         }
       }
     `,
     variableValues: {
       title: 'my journey',
-      locale: 'hi-IN'
+      locale: 'hi-IN',
+      theme: 'default'
     },
     contextValue: {
       db
@@ -108,17 +114,18 @@ it('creates journey', async () => {
     id: data?.journeyCreate.id,
     published: false,
     title: 'my journey',
-    locale: 'hi-IN'
+    locale: 'hi-IN',
+    theme: 'default'
   })
 })
 
-it('creates journey in default locale', async () => {
+it('creates journey with default locale and theme', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation ($title: String!, $locale: String) {
-        journeyCreate(title: $title, locale: $locale) {
+      mutation ($title: String!, $locale: String, $theme: ThemeName) {
+        journeyCreate(title: $title, locale: $locale, theme: $theme) {
           id
         }
       }
@@ -140,7 +147,8 @@ it('creates journey in default locale', async () => {
     id: data?.journeyCreate.id,
     published: false,
     title: 'my default locale journey',
-    locale: 'en-US'
+    locale: 'en-US',
+    theme: 'default'
   })
 })
 
@@ -151,7 +159,8 @@ it('publishes journey', async () => {
     data: {
       title: 'my journey',
       published: false,
-      locale: 'id-ID'
+      locale: 'id-ID',
+      theme: 'default'
     }
   })
 
@@ -181,6 +190,7 @@ it('publishes journey', async () => {
     id: journey.id,
     published: true,
     title: 'my journey',
-    locale: 'id-ID'
+    locale: 'id-ID',
+    theme: 'default'
   })
 })

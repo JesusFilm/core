@@ -110,7 +110,6 @@ const typeDefs = gql`
     subtitle2,
     body1,
     body2,
-    button,
     caption,
     overline
   }
@@ -118,10 +117,7 @@ const typeDefs = gql`
   enum TypographyColor {
     primary,
     secondary,
-    error,
-    warning,
-    info,
-    success
+    error
   }
 
   enum TypographyAlign {
@@ -137,6 +133,12 @@ const typeDefs = gql`
     variant: TypographyVariant
     color: TypographyColor
     align: TypographyAlign
+  }
+
+  type SignupBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    action: Action
   }
 `
 
