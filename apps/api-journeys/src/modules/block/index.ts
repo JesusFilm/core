@@ -139,17 +139,13 @@ const typeDefs = gql`
 
   enum ButtonVariant {
     text
-    outlined
     contained
   }
 
   enum ButtonColor {
     primary
     secondary
-    success
     error
-    info
-    warning
     inherit
   }
 

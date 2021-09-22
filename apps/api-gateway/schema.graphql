@@ -39,12 +39,9 @@ type ButtonBlock implements Block {
 
 enum ButtonColor {
   error
-  info
   inherit
   primary
   secondary
-  success
-  warning
 }
 
 enum ButtonSize {
@@ -55,7 +52,6 @@ enum ButtonSize {
 
 enum ButtonVariant {
   contained
-  outlined
   text
 }
 

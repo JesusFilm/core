@@ -41,10 +41,7 @@ export type ButtonBlock = Block & {
 export type ButtonColor =
   | 'primary'
   | 'secondary'
-  | 'success'
   | 'error'
-  | 'info'
-  | 'warning'
   | 'inherit';
 
 export type ButtonSize =
@@ -54,7 +51,6 @@ export type ButtonSize =
 
 export type ButtonVariant =
   | 'text'
-  | 'outlined'
   | 'contained';
 
 export type Icon = {

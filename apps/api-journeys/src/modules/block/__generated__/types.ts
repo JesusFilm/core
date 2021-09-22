@@ -24,8 +24,8 @@ export namespace BlockModule {
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
     IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
-    ButtonVariant: 'text' | 'outlined' | 'contained';
-    ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
+    ButtonVariant: 'text' | 'contained';
+    ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
   };
   
