@@ -157,10 +157,7 @@ export type TypographyBlock = Block & {
 export type TypographyColor =
   | 'primary'
   | 'secondary'
-  | 'error'
-  | 'warning'
-  | 'info'
-  | 'success';
+  | 'error';
 
 export type TypographyVariant =
   | 'h1'

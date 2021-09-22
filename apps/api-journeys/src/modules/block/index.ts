@@ -117,10 +117,7 @@ const typeDefs = gql`
   enum TypographyColor {
     primary,
     secondary,
-    error,
-    warning,
-    info,
-    success
+    error
   }
 
   enum TypographyAlign {

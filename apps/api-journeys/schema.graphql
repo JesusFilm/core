@@ -118,9 +118,6 @@ enum TypographyColor {
   primary
   secondary
   error
-  warning
-  info
-  success
 }
 
 enum TypographyVariant {

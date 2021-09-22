@@ -143,11 +143,8 @@ type TypographyBlock implements Block {
 
 enum TypographyColor {
   error
-  info
   primary
   secondary
-  success
-  warning
 }
 
 enum TypographyVariant {
