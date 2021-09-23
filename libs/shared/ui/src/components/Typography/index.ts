@@ -1,2 +1,2 @@
-export { Typography, TypographyProps } from "./Typography";
-export { TYPOGRAPHY_TYPE } from "./typographyType";
+export { Typography, TypographyProps } from './Typography'
+export { TYPOGRAPHY_TYPE } from './typographyType'

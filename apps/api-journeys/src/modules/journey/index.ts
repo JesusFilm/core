@@ -44,7 +44,7 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.create({
         data: {
           title,
-          locale: locale as string ?? undefined,
+          locale: (locale as string) ?? undefined,
           theme: theme ?? undefined
         }
       })

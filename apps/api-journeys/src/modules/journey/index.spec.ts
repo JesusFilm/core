@@ -15,7 +15,7 @@ it('returns published journeys', async () => {
     published: true,
     locale: 'id-ID',
     theme: ThemeName.default
-}
+  }
   dbMock.journey.findMany.mockResolvedValue([publishedJourney])
 
   const { data } = await testkit.execute(app, {
@@ -49,7 +49,7 @@ it('returns journey', async () => {
     published: true,
     locale: 'hi-IN',
     theme: ThemeName.default
-}
+  }
   dbMock.journey.findUnique.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {
@@ -72,7 +72,9 @@ it('returns journey', async () => {
     }
   })
 
-  expect(data?.journey).toEqual(pick(journey, ['id', 'title', 'published', 'locale', 'theme']))
+  expect(data?.journey).toEqual(
+    pick(journey, ['id', 'title', 'published', 'locale', 'theme'])
+  )
 })
 
 it('creates journey', async () => {
@@ -156,7 +158,7 @@ it('publishes journey', async () => {
     published: true,
     locale: 'id-ID',
     theme: ThemeName.default
-}
+  }
   dbMock.journey.update.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {

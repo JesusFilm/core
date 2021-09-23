@@ -3,7 +3,7 @@ export const parameters = {
   controls: { disabled: true },
   backgrounds: {
     grid: {
-      disable: true,
-    },
-  },
-};
+      disable: true
+    }
+  }
+}
