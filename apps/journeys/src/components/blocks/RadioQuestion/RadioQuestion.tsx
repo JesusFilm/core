@@ -13,6 +13,7 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 import { useMutation, gql } from '@apollo/client'
 import { RadioQuestionResponseCreate } from '../../../../__generated__/RadioQuestionResponseCreate'
+import { v4 as uuidv4 } from 'uuid'
 
 const useStyles = makeStyles(
   () =>
@@ -51,14 +52,16 @@ export function RadioQuestion({
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
+    const uuid = uuidv4()
     await radioQuestionResponseCreate({
       variables: {
+        id: uuid,
         blockId: id,
         radioOptionBlockId
       },
       optimisticResponse: {
         radioQuestionResponseCreate: {
-          id: 'test',
+          id: uuid,
           __typename: 'RadioQuestionResponse',
           radioOptionBlockId
         }

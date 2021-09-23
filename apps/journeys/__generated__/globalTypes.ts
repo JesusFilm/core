@@ -14,6 +14,7 @@ export enum RadioQuestionVariant {
 
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
+  id?: string | null;
   radioOptionBlockId: string;
 }
 

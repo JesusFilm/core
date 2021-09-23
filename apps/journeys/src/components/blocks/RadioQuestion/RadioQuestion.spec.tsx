@@ -10,6 +10,11 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 import { MockedProvider } from '@apollo/client/testing'
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
+
 describe('RadioQuestion', () => {
   const block: TreeBlock<RadioQuestionBlock> = {
     __typename: 'RadioQuestionBlock',
@@ -72,6 +77,7 @@ describe('RadioQuestion', () => {
             request: {
               query: RADIO_QUESTION_RESPONSE_CREATE,
               variables: {
+                id: 'uuid',
                 blockId: 'RadioQuestion1',
                 radioOptionBlockId: 'RadioOption1'
               }
@@ -79,7 +85,7 @@ describe('RadioQuestion', () => {
             result: {
               data: {
                 radioQuestionResponseCreate: {
-                  id: '1',
+                  id: 'uuid',
                   radioOptionBlockId: 'RadioOption1'
                 }
               }
@@ -107,6 +113,7 @@ describe('RadioQuestion', () => {
             request: {
               query: RADIO_QUESTION_RESPONSE_CREATE,
               variables: {
+                id: 'uuid',
                 blockId: 'RadioQuestion1',
                 radioOptionBlockId: 'RadioOption1'
               }
@@ -114,7 +121,7 @@ describe('RadioQuestion', () => {
             result: {
               data: {
                 radioQuestionResponseCreate: {
-                  id: '1',
+                  id: 'uuid',
                   radioOptionBlockId: 'RadioOption1'
                 }
               }
