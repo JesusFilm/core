@@ -1,7 +1,8 @@
 import { ReactElement } from 'react'
 import {
   Typography as MuiTypography,
-  TypographyProps as MuiTypographyProps
+  TypographyProps as MuiTypographyProps,
+  useTheme
 } from '@mui/material'
 import { TypographyBlockProps } from './__generated__/TypographyBlockProps'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
@@ -17,6 +18,8 @@ export function Typography({
   content,
   ...props
 }: TypographyProps): ReactElement {
+  const theme = useTheme()
+
   return (
     <MuiTypography
       {...props}
@@ -24,7 +27,10 @@ export function Typography({
       align={align ?? undefined}
       color={color ?? undefined}
       sx={{
-        mb: variant === TypographyVariant.overline ? 0.5 : 2,
+        mb:
+          variant === TypographyVariant.overline
+            ? theme.space.sm
+            : theme.space.lg,
         textShadow:
           variant === TypographyVariant.h1
             ? '0px 1px 3px rgba(0, 0, 0, 0.25)'

@@ -10,7 +10,7 @@ import {
   TypographyAlign
 } from './../../../__generated__/globalTypes'
 import { sharedUiConfig } from '../../libs/storybook/decorators'
-import { darkTheme } from '../../libs/theme/theme'
+import { baseDark } from '../../libs/theme/themes'
 
 const TypographyDemo = {
   ...sharedUiConfig,
@@ -37,9 +37,9 @@ const Card = ({ children }: CardProps): ReactElement => {
         flexDirection: 'column',
         backgroundColor: theme.palette.surface.main,
         color: theme.palette.surface.contrastText,
-        p: 3,
+        p: theme.space.lg,
         borderRadius: 4,
-        mb: 2
+        mb: theme.space.lg
       }}
     >
       {children}
@@ -119,7 +119,7 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
     }}
   >
     <ColorCards {...props} variants={props.variants} heading={'Surface'} />
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={baseDark}>
       <ColorCards
         {...props}
         variants={props.variants}

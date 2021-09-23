@@ -1,16 +1,19 @@
 import { ReactElement, ReactNode } from 'react'
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { lightTheme as theme } from './theme'
+import { themes } from '@core/shared/ui'
 
-interface JourneysThemeProviderProps {
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+
+interface JourneysThemeProviderProps extends Pick<Journey, 'theme'> {
   children: ReactNode
 }
 
 export const JourneysThemeProvider = ({
+  theme,
   children
 }: JourneysThemeProviderProps): ReactElement => {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={themes[theme]}>
       <CssBaseline />
       {children}
     </ThemeProvider>

@@ -10,8 +10,8 @@ import {
 } from '@mui/material'
 
 import { Typography, TypographyProps } from '../../components/Typography'
-import { sharedUiConfig } from '../../libs/storybook/decorators'
-import { darkTheme, lightTheme } from '../theme/theme'
+import { sharedUiConfig } from '../storybook/decorators'
+import { baseDark, baseLight } from './themes'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 
 const TypographyDemo = {
@@ -44,11 +44,11 @@ const ColorPalettes = ({
     >
       <Box
         sx={{
-          bgcolor: `${theme.palette.background.default}`,
-          color: `${theme.palette.text.primary}`,
-          mb: 2,
-          p: 2,
-          boxShadow: 1
+          bgcolor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          mb: theme.space.lg,
+          p: theme.space.lg,
+          boxShadow: theme.shadows[1]
         }}
       >
         <Typography
@@ -66,20 +66,20 @@ const ColorPalettes = ({
         {variants.map((variant: keyof PaletteOptions) => {
           const paletteColor = theme.palette[variant] as PaletteColor
           return (
-            <div
-              style={{
+            <Box
+              sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                marginBottom: '16px'
+                mb: theme.space.lg
               }}
             >
               <Box
                 sx={{
-                  bgcolor: `${paletteColor.light}`,
-                  color: `${paletteColor.contrastText}`,
                   width: '100%',
-                  p: 2
+                  bgcolor: paletteColor.light,
+                  color: paletteColor.contrastText,
+                  p: theme.space.lg
                 }}
               >
                 <Typography
@@ -91,10 +91,10 @@ const ColorPalettes = ({
 
               <Box
                 sx={{
-                  bgcolor: `${paletteColor.main}`,
-                  color: `${paletteColor.contrastText}`,
                   width: '100%',
-                  p: 2
+                  bgcolor: paletteColor.main,
+                  color: paletteColor.contrastText,
+                  p: theme.space.lg
                 }}
               >
                 <Typography
@@ -106,10 +106,10 @@ const ColorPalettes = ({
 
               <Box
                 sx={{
-                  bgcolor: `${paletteColor.dark}`,
-                  color: `${paletteColor.contrastText}`,
                   width: '100%',
-                  p: 2
+                  bgcolor: paletteColor.dark,
+                  color: paletteColor.contrastText,
+                  p: theme.space.lg
                 }}
               >
                 <Typography
@@ -118,7 +118,7 @@ const ColorPalettes = ({
                   content={`${variant} dark`}
                 />
               </Box>
-            </div>
+            </Box>
           )
         })}
       </div>
@@ -128,7 +128,7 @@ const ColorPalettes = ({
 
 const ColorTemplate: Story<TypographyStoryProps> = (args) => (
   // TODO: Update when adding Storybook theme toggle
-  <ThemeProvider theme={args.mode === 'dark' ? darkTheme : lightTheme}>
+  <ThemeProvider theme={args.mode === 'dark' ? baseDark : baseLight}>
     <ColorPalettes {...args} variants={args.variants} />
   </ThemeProvider>
 )

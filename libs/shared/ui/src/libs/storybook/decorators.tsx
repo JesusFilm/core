@@ -6,7 +6,7 @@
 import { ThemeProvider } from 'emotion-theming'
 import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material'
 import { parameters as rootParameters } from '../../../../../../.storybook/preview'
-import { lightTheme } from '../theme/theme'
+import { themes } from '../../index'
 
 // Must set parameters at component level for shared-storybook stories to work
 export const sharedUiConfig = {
@@ -14,8 +14,8 @@ export const sharedUiConfig = {
     (Story: () => unknown) => (
       // TODO: Addon to allow changing themes
       <div style={{ margin: '0.5em' }}>
-        <MuiThemeProvider theme={lightTheme}>
-          <ThemeProvider theme={lightTheme}>
+        <MuiThemeProvider theme={themes.default}>
+          <ThemeProvider theme={themes.default}>
             <CssBaseline />
             {Story()}
           </ThemeProvider>

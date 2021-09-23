@@ -91,6 +91,7 @@ export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
   blocks: GetJourney_journey_blocks[] | null;
+  theme: string;
 }
 
 export interface GetJourney {
