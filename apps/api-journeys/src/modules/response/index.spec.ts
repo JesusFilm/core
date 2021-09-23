@@ -57,6 +57,7 @@ describe('Response', () => {
         `,
         variableValues: {
           input: {
+            id: response1.id,
             blockId: response1.blockId,
             name: 'Robert Smith',
             email: 'robert.smith@jesusfilm.org'
@@ -147,6 +148,7 @@ describe('Response', () => {
         `,
         variableValues: {
           input: {
+            id: response1.id,
             blockId: response1.blockId,
             radioOptionBlockId: get(response1.extraAttrs, 'radioOptionBlockId')
           }
@@ -235,6 +237,7 @@ describe('Response', () => {
         `,
         variableValues: {
           input: {
+            id: response1.id,
             blockId: response1.blockId,
             state: get(response1.extraAttrs, 'state')
           }

@@ -7,11 +7,19 @@ import { ResponseResolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   input RadioQuestionResponseCreateInput {
+    """
+    ID should be unique Response UUID (Provided for optimistic mutation result matching)
+    """
+    id: ID
     blockId: ID!
     radioOptionBlockId: ID!
   }
 
   input SignupResponseCreateInput {
+    """
+    ID should be unique Response UUID (Provided for optimistic mutation result matching)
+    """
+    id: ID
     blockId: ID!
     name: String!
     email: String!
@@ -24,6 +32,10 @@ const typeDefs = gql`
   }
 
   input VideoResponseCreateInput {
+    """
+    ID should be unique Response UUID (Provided for optimistic mutation result matching)
+    """
+    id: ID
     blockId: ID!
     state: VideoResponseStateEnum!
   }
@@ -69,13 +81,14 @@ const resolvers: Resolvers = {
   Mutation: {
     async signupResponseCreate(
       _parent,
-      { input: { blockId, name, email } },
+      { input: { id, blockId, name, email } },
       { db, userId }
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
       return await db.response.create({
         data: {
+          id: id as string | undefined,
           type: 'SignupResponse',
           blockId,
           userId,
@@ -86,13 +99,14 @@ const resolvers: Resolvers = {
     },
     async radioQuestionResponseCreate(
       _parent,
-      { input: { blockId, radioOptionBlockId } },
+      { input: { id, blockId, radioOptionBlockId } },
       { db, userId }
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
       return await db.response.create({
         data: {
+          id: id as string | undefined,
           type: 'RadioQuestionResponse',
           blockId,
           userId,
@@ -103,13 +117,14 @@ const resolvers: Resolvers = {
     },
     async videoResponseCreate(
       _parent,
-      { input: { blockId, state } },
+      { input: { id, blockId, state } },
       { db, userId }
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
       return await db.response.create({
         data: {
+          id: id as string | undefined,
           type: 'VideoResponse',
           blockId,
           userId,

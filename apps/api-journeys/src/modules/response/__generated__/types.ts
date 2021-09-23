@@ -15,15 +15,15 @@ export namespace ResponseModule {
   };
   
   interface DefinedInputFields {
-    RadioQuestionResponseInput: 'blockId' | 'radioOptionBlockId';
-    SignupResponseInput: 'blockId' | 'name' | 'email';
-    VideoResponseInput: 'blockId' | 'state';
+    RadioQuestionResponseCreateInput: 'id' | 'blockId' | 'radioOptionBlockId';
+    SignupResponseCreateInput: 'id' | 'blockId' | 'name' | 'email';
+    VideoResponseCreateInput: 'id' | 'blockId' | 'state';
   };
   
-  export type RadioQuestionResponseInput = Pick<Types.RadioQuestionResponseInput, DefinedInputFields['RadioQuestionResponseInput']>;
-  export type SignupResponseInput = Pick<Types.SignupResponseInput, DefinedInputFields['SignupResponseInput']>;
+  export type RadioQuestionResponseCreateInput = Pick<Types.RadioQuestionResponseCreateInput, DefinedInputFields['RadioQuestionResponseCreateInput']>;
+  export type SignupResponseCreateInput = Pick<Types.SignupResponseCreateInput, DefinedInputFields['SignupResponseCreateInput']>;
   export type VideoResponseStateEnum = DefinedEnumValues['VideoResponseStateEnum'];
-  export type VideoResponseInput = Pick<Types.VideoResponseInput, DefinedInputFields['VideoResponseInput']>;
+  export type VideoResponseCreateInput = Pick<Types.VideoResponseCreateInput, DefinedInputFields['VideoResponseCreateInput']>;
   export type Response = Pick<Types.Response, DefinedFields['Response']>;
   export type RadioQuestionResponse = Pick<Types.RadioQuestionResponse, DefinedFields['RadioQuestionResponse']>;
   export type SignupResponse = Pick<Types.SignupResponse, DefinedFields['SignupResponse']>;

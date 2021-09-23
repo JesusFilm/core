@@ -61,17 +61,17 @@ export type MutationJourneyPublishArgs = {
 
 
 export type MutationRadioQuestionResponseCreateArgs = {
-  input: RadioQuestionResponseInput;
+  input: RadioQuestionResponseCreateInput;
 };
 
 
 export type MutationSignupResponseCreateArgs = {
-  input: SignupResponseInput;
+  input: SignupResponseCreateInput;
 };
 
 
 export type MutationVideoResponseCreateArgs = {
-  input: VideoResponseInput;
+  input: VideoResponseCreateInput;
 };
 
 /**
@@ -131,7 +131,9 @@ export type RadioQuestionResponse = Response & {
   userId: Scalars['ID'];
 };
 
-export type RadioQuestionResponseInput = {
+export type RadioQuestionResponseCreateInput = {
+  /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
+  id?: Maybe<Scalars['ID']>;
   blockId: Scalars['ID'];
   radioOptionBlockId: Scalars['ID'];
 };
@@ -160,7 +162,9 @@ export type SignupResponse = Response & {
   userId: Scalars['ID'];
 };
 
-export type SignupResponseInput = {
+export type SignupResponseCreateInput = {
+  /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
+  id?: Maybe<Scalars['ID']>;
   blockId: Scalars['ID'];
   name: Scalars['String'];
   email: Scalars['String'];
@@ -203,7 +207,9 @@ export type VideoResponse = Response & {
   userId: Scalars['ID'];
 };
 
-export type VideoResponseInput = {
+export type VideoResponseCreateInput = {
+  /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
+  id?: Maybe<Scalars['ID']>;
   blockId: Scalars['ID'];
   state: VideoResponseStateEnum;
 };
@@ -297,17 +303,17 @@ export type ResolversTypes = {
   RadioOptionBlock: ResolverTypeWrapper<BlockType>;
   RadioQuestionBlock: ResolverTypeWrapper<BlockType>;
   RadioQuestionResponse: ResolverTypeWrapper<ResponseType>;
-  RadioQuestionResponseInput: RadioQuestionResponseInput;
+  RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
   RadioQuestionVariant: RadioQuestionVariant;
   Response: ResolversTypes['RadioQuestionResponse'] | ResolversTypes['SignupResponse'] | ResolversTypes['VideoResponse'];
   SignupBlock: ResolverTypeWrapper<SignupBlock>;
   SignupResponse: ResolverTypeWrapper<ResponseType>;
-  SignupResponseInput: SignupResponseInput;
+  SignupResponseCreateInput: SignupResponseCreateInput;
   StepBlock: ResolverTypeWrapper<BlockType>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   VideoResponse: ResolverTypeWrapper<ResponseType>;
-  VideoResponseInput: VideoResponseInput;
+  VideoResponseCreateInput: VideoResponseCreateInput;
   VideoResponseStateEnum: VideoResponseStateEnum;
 };
 
@@ -328,16 +334,16 @@ export type ResolversParentTypes = {
   RadioOptionBlock: BlockType;
   RadioQuestionBlock: BlockType;
   RadioQuestionResponse: ResponseType;
-  RadioQuestionResponseInput: RadioQuestionResponseInput;
+  RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
   Response: ResolversParentTypes['RadioQuestionResponse'] | ResolversParentTypes['SignupResponse'] | ResolversParentTypes['VideoResponse'];
   SignupBlock: SignupBlock;
   SignupResponse: ResponseType;
-  SignupResponseInput: SignupResponseInput;
+  SignupResponseCreateInput: SignupResponseCreateInput;
   StepBlock: BlockType;
   VideoBlock: BlockType;
   Int: Scalars['Int'];
   VideoResponse: ResponseType;
-  VideoResponseInput: VideoResponseInput;
+  VideoResponseCreateInput: VideoResponseCreateInput;
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
