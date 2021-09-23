@@ -14,6 +14,9 @@ export namespace BlockModule {
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
     SignupBlock: 'id' | 'parentBlockId' | 'action';
     Journey: 'blocks';
+    RadioQuestionResponse: 'block';
+    SignupResponse: 'block';
+    VideoResponse: 'block';
     Block: 'id' | 'parentBlockId';
     Action: 'gtmEventName';
   };
@@ -42,6 +45,9 @@ export namespace BlockModule {
   export type TypographyAlign = DefinedEnumValues['TypographyAlign'];
   export type TypographyBlock = Pick<Types.TypographyBlock, DefinedFields['TypographyBlock']>;
   export type SignupBlock = Pick<Types.SignupBlock, DefinedFields['SignupBlock']>;
+  export type RadioQuestionResponse = Types.RadioQuestionResponse;
+  export type SignupResponse = Types.SignupResponse;
+  export type VideoResponse = Types.VideoResponse;
   
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
@@ -54,6 +60,9 @@ export namespace BlockModule {
   export type TypographyBlockResolvers = Pick<Types.TypographyBlockResolvers, DefinedFields['TypographyBlock'] | '__isTypeOf'>;
   export type SignupBlockResolvers = Pick<Types.SignupBlockResolvers, DefinedFields['SignupBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
+  export type RadioQuestionResponseResolvers = Pick<Types.RadioQuestionResponseResolvers, DefinedFields['RadioQuestionResponse']>;
+  export type SignupResponseResolvers = Pick<Types.SignupResponseResolvers, DefinedFields['SignupResponse']>;
+  export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse']>;
   export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
   export type ActionResolvers = Pick<Types.ActionResolvers, DefinedFields['Action']>;
   
@@ -69,6 +78,9 @@ export namespace BlockModule {
     TypographyBlock?: TypographyBlockResolvers;
     SignupBlock?: SignupBlockResolvers;
     Journey?: JourneyResolvers;
+    RadioQuestionResponse?: RadioQuestionResponseResolvers;
+    SignupResponse?: SignupResponseResolvers;
+    VideoResponse?: VideoResponseResolvers;
   };
   
   export interface MiddlewareMap {
@@ -145,6 +157,18 @@ export namespace BlockModule {
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
       action?: gm.Middleware[];
+    };
+    RadioQuestionResponse?: {
+      '*'?: gm.Middleware[];
+      block?: gm.Middleware[];
+    };
+    SignupResponse?: {
+      '*'?: gm.Middleware[];
+      block?: gm.Middleware[];
+    };
+    VideoResponse?: {
+      '*'?: gm.Middleware[];
+      block?: gm.Middleware[];
     };
   };
 }

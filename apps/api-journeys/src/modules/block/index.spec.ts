@@ -51,7 +51,8 @@ it('returns blocks', async () => {
     parentOrder: 2,
     extraAttrs: {
       label: 'label',
-      description: 'description'
+      description: 'description',
+      variant: 'DARK'
     }
   }
   const radioOption1: Block = {
@@ -252,7 +253,7 @@ it('returns blocks', async () => {
       parentBlockId: step1.id,
       label: 'label',
       description: 'description',
-      variant: null
+      variant: 'DARK'
     },
     {
       id: radioOption1.id,
