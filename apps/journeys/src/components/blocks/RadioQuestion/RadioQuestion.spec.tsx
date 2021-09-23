@@ -77,9 +77,11 @@ describe('RadioQuestion', () => {
             request: {
               query: RADIO_QUESTION_RESPONSE_CREATE,
               variables: {
-                id: 'uuid',
-                blockId: 'RadioQuestion1',
-                radioOptionBlockId: 'RadioOption1'
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1'
+                }
               }
             },
             result: {
@@ -113,9 +115,11 @@ describe('RadioQuestion', () => {
             request: {
               query: RADIO_QUESTION_RESPONSE_CREATE,
               variables: {
-                id: 'uuid',
-                blockId: 'RadioQuestion1',
-                radioOptionBlockId: 'RadioOption1'
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1'
+                }
               }
             },
             result: {

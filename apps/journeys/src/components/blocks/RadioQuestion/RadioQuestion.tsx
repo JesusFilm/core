@@ -55,9 +55,11 @@ export function RadioQuestion({
     const uuid = uuidv4()
     await radioQuestionResponseCreate({
       variables: {
-        id: uuid,
-        blockId: id,
-        radioOptionBlockId
+        input: {
+          id: uuid,
+          blockId: id,
+          radioOptionBlockId
+        }
       },
       optimisticResponse: {
         radioQuestionResponseCreate: {
