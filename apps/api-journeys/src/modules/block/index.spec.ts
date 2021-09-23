@@ -165,40 +165,44 @@ it('returns blocks', async () => {
   dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
     document: gql`
+      fragment ActionFields on Action {
+        __typename
+        gtmEventName
+        ... on NavigateToBlockAction {
+          blockId
+        }
+        ... on NavigateToJourneyAction {
+          journeyId
+        }
+        ... on LinkAction {
+          url
+        }
+      }
       query ($id: ID!) {
         journey(id: $id) {
           blocks {
             id
             __typename
             parentBlockId
-            ... on StepBlock {
-              locked
-              nextBlockId
-            }
-            ... on VideoBlock {
-              src
-              title
+            ... on RadioOptionBlock {
+              label
+              action {
+                ...ActionFields
+              }
             }
             ... on RadioQuestionBlock {
               label
               description
               variant
             }
-            ... on RadioOptionBlock {
-              label
+            ... on SignupBlock {
               action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
+                ...ActionFields
               }
+            }
+            ... on StepBlock {
+              locked
+              nextBlockId
             }
             ... on TypographyBlock {
               content
@@ -206,20 +210,9 @@ it('returns blocks', async () => {
               color
               align
             }
-            ... on SignupBlock {
-              action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
-              }
+            ... on VideoBlock {
+              src
+              title
             }
           }
         }

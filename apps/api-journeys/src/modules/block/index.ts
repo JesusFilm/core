@@ -5,55 +5,6 @@ import { ActionResolvers, BlockResolvers } from '../../__generated__/types'
 import { get } from 'lodash'
 
 const typeDefs = gql`
-  extend type Journey {
-    blocks: [Block!]
-  }
-
-  interface Block {
-    id: ID!
-    parentBlockId: ID
-  }
-
-  type StepBlock implements Block {
-    id: ID!
-    """
-    nextBlockId contains the preferred block to navigate to when a
-    NavigateAction occurs or if the user manually tries to advance to the next
-    step. If no nextBlockId is set it can be assumed that this step represents
-    the end of the current journey.
-    """
-    nextBlockId: ID
-    """
-    locked will be set to true if the user should not be able to manually
-    advance to the next step.
-    """
-    locked: Boolean!
-    parentBlockId: ID
-  }
-
-  type VideoBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    src: String!
-    title: String!
-    description: String
-    volume: Int
-    autoplay: Boolean
-  }
-
-  enum RadioQuestionVariant {
-    LIGHT
-    DARK
-  }
-
-  type RadioQuestionBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    label: String!
-    description: String
-    variant: RadioQuestionVariant
-  }
-
   interface Action {
     gtmEventName: String
   }
@@ -82,11 +33,52 @@ const typeDefs = gql`
     target: String
   }
 
+  interface Block {
+    id: ID!
+    parentBlockId: ID
+  }
+
   type RadioOptionBlock implements Block {
     id: ID!
     parentBlockId: ID
     label: String!
     action: Action
+  }
+
+  enum RadioQuestionVariant {
+    LIGHT
+    DARK
+  }
+
+  type RadioQuestionBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    label: String!
+    description: String
+    variant: RadioQuestionVariant
+  }
+
+  type SignupBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    action: Action
+  }
+
+  type StepBlock implements Block {
+    id: ID!
+    """
+    nextBlockId contains the preferred block to navigate to when a
+    NavigateAction occurs or if the user manually tries to advance to the next
+    step. If no nextBlockId is set it can be assumed that this step represents
+    the end of the current journey.
+    """
+    nextBlockId: ID
+    """
+    locked will be set to true if the user should not be able to manually
+    advance to the next step.
+    """
+    locked: Boolean!
+    parentBlockId: ID
   }
 
   enum TypographyVariant {
@@ -125,10 +117,18 @@ const typeDefs = gql`
     align: TypographyAlign
   }
 
-  type SignupBlock implements Block {
+  type VideoBlock implements Block {
     id: ID!
     parentBlockId: ID
-    action: Action
+    src: String!
+    title: String!
+    description: String
+    volume: Int
+    autoplay: Boolean
+  }
+
+  extend type Journey {
+    blocks: [Block!]
   }
 
   extend type RadioQuestionResponse {
@@ -150,14 +150,6 @@ type Resolvers = BlockModule.Resolvers & {
 }
 
 const resolvers: Resolvers = {
-  Journey: {
-    async blocks(journey, __, { db }) {
-      return await db.block.findMany({
-        where: { journeyId: journey.id },
-        orderBy: [{ parentOrder: 'asc' }]
-      })
-    }
-  },
   Action: {
     __resolveType(action) {
       if ((action as BlockModule.NavigateToBlockAction).blockId != null) {
@@ -175,22 +167,39 @@ const resolvers: Resolvers = {
   Block: {
     __resolveType: ({ blockType }) => blockType
   },
+  Journey: {
+    async blocks(journey, __, { db }) {
+      return await db.block.findMany({
+        where: { journeyId: journey.id },
+        orderBy: [{ parentOrder: 'asc' }]
+      })
+    }
+  },
+  SignupBlock: {
+    action: ({ extraAttrs }) => get(extraAttrs, 'action')
+  },
   StepBlock: {
     locked: ({ extraAttrs }) => get(extraAttrs, 'locked'),
     nextBlockId: ({ extraAttrs }) => get(extraAttrs, 'nextBlockId')
   },
-  VideoBlock: {
-    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
-    title: ({ extraAttrs }) => get(extraAttrs, 'title')
+  TypographyBlock: {
+    content: ({ extraAttrs }) => get(extraAttrs, 'content'),
+    variant: ({ extraAttrs }) => get(extraAttrs, 'variant'),
+    color: ({ extraAttrs }) => get(extraAttrs, 'color'),
+    align: ({ extraAttrs }) => get(extraAttrs, 'align')
+  },
+  RadioOptionBlock: {
+    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
+    action: ({ extraAttrs }) => get(extraAttrs, 'action')
   },
   RadioQuestionBlock: {
     label: ({ extraAttrs }) => get(extraAttrs, 'label'),
     description: ({ extraAttrs }) => get(extraAttrs, 'description'),
     variant: ({ extraAttrs }) => get(extraAttrs, 'variant')
   },
-  RadioOptionBlock: {
-    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
-    action: ({ extraAttrs }) => get(extraAttrs, 'action')
+  VideoBlock: {
+    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
+    title: ({ extraAttrs }) => get(extraAttrs, 'title')
   }
 }
 

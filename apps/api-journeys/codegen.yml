@@ -11,10 +11,12 @@ generates:
       contextType: GraphQLModules.Context
       mappers:
         Block: .prisma/api-journeys-client#Block as BlockType
-        StepBlock: .prisma/api-journeys-client#Block as BlockType
-        VideoBlock: .prisma/api-journeys-client#Block as BlockType
         RadioQuestionBlock: .prisma/api-journeys-client#Block as BlockType
         RadioOptionBlock: .prisma/api-journeys-client#Block as BlockType
+        SignupBlock: .prisma/api-journeys-client#Block as BlockType
+        StepBlock: .prisma/api-journeys-client#Block as BlockType
+        TypographyBlock: .prisma/api-journeys-client#Block as BlockType
+        VideoBlock: .prisma/api-journeys-client#Block as BlockType
         RadioQuestionResponse: .prisma/api-journeys-client#Response as ResponseType
         SignupResponse: .prisma/api-journeys-client#Response as ResponseType
         VideoResponse: .prisma/api-journeys-client#Response as ResponseType
