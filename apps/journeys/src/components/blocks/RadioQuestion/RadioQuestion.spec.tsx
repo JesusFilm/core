@@ -1,11 +1,20 @@
 import {
   fireEvent,
-  renderWithApolloClient
+  renderWithApolloClient,
+  render,
+  waitFor
 } from '../../../../test/testingLibrary'
-import { RadioQuestion } from '.'
+import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
+import { MockedProvider } from '@apollo/client/testing'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
+
 describe('RadioQuestion', () => {
   const block: TreeBlock<RadioQuestionBlock> = {
     __typename: 'RadioQuestionBlock',
@@ -60,24 +69,77 @@ describe('RadioQuestion', () => {
     )
   })
 
-  it('should select an option OnClick', () => {
-    const { getByTestId, getAllByRole } = renderWithApolloClient(
-      <RadioQuestion {...block} />
+  it('should select an option onClick', async () => {
+    const { getByTestId, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_RESPONSE_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionResponseCreate: {
+                  id: 'uuid',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            }
+          }
+        ]}
+        addTypename={false}
+      >
+        <RadioQuestion {...block} />
+      </MockedProvider>
     )
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    expect(buttons[0]).not.toBeDisabled()
+    await waitFor(() => expect(buttons[0]).toBeDisabled())
     expect(buttons[0]).toContainElement(
       getByTestId('RadioOptionCheckCircleIcon')
     )
   })
 
-  it('should disable unselected options', () => {
-    const { getByTestId, getAllByRole } = renderWithApolloClient(
-      <RadioQuestion {...block} />
+  it('should disable unselected options', async () => {
+    const { getByTestId, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_RESPONSE_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionResponseCreate: {
+                  id: 'uuid',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            }
+          }
+        ]}
+        addTypename={false}
+      >
+        <RadioQuestion {...block} />
+      </MockedProvider>
     )
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
+    await waitFor(() => expect(buttons[0]).toBeDisabled())
     expect(
       getByTestId('RadioOptionRadioButtonUncheckedIcon')
     ).toBeInTheDocument()
