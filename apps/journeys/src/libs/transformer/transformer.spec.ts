@@ -7,12 +7,16 @@ describe('transformer', () => {
         {
           __typename: 'StepBlock',
           parentBlockId: null,
-          id: 'Root1'
+          id: 'Root1',
+          nextBlockId: null,
+          locked: false
         },
         {
           __typename: 'StepBlock',
           parentBlockId: null,
-          id: 'Root2'
+          id: 'Root2',
+          nextBlockId: null,
+          locked: false
         },
         {
           __typename: 'RadioQuestionBlock',
@@ -91,7 +95,9 @@ describe('transformer', () => {
         ],
         id: 'Root1',
         __typename: 'StepBlock',
-        parentBlockId: null
+        parentBlockId: null,
+        nextBlockId: null,
+        locked: false
       },
       {
         children: [
@@ -124,7 +130,9 @@ describe('transformer', () => {
         ],
         id: 'Root2',
         __typename: 'StepBlock',
-        parentBlockId: null
+        parentBlockId: null,
+        nextBlockId: null,
+        locked: false
       }
     ])
   })

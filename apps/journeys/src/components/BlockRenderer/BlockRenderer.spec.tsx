@@ -1,7 +1,6 @@
 import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
-import { VideoProviderEnum } from '../../../__generated__/globalTypes'
 
 describe('BlockRenderer', () => {
   it('should render RadioOption', () => {
@@ -36,6 +35,8 @@ describe('BlockRenderer', () => {
       __typename: 'StepBlock',
       id: 'step',
       parentBlockId: null,
+      nextBlockId: null,
+      locked: false,
       children: [
         {
           __typename: 'RadioQuestionBlock',
@@ -58,11 +59,12 @@ describe('BlockRenderer', () => {
       id: 'main',
       src: 'https://www.youtube.com',
       title: 'title',
+      volume: 0,
+      autoplay: false,
       parentBlockId: null,
-      provider: VideoProviderEnum.YOUTUBE,
       children: []
     }
-    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
-    expect(getByText('Render title Here')).toBeInTheDocument()
+    const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })

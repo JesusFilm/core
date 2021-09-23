@@ -1,5 +1,6 @@
 import { PrismaClient } from '.prisma/api-journeys-client'
 import { noop } from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 
 const prisma = new PrismaClient()
 
@@ -16,10 +17,15 @@ async function main(): Promise<void> {
     })
   }
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
+  const nextBlockId = uuidv4()
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
       parentOrder: 0
     }
   })
@@ -29,11 +35,10 @@ async function main(): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: step.id,
       extraAttrs: {
-        src: 'https://www.youtube.com/watch?v=KGlx11BxF24',
+        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
         description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
-        provider: 'YOUTUBE'
+          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
       }
     }
   })
@@ -49,8 +54,12 @@ async function main(): Promise<void> {
   })
   const stepWhenNo = await prisma.block.create({
     data: {
+      id: nextBlockId,
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 1
     }
   })
@@ -73,6 +82,9 @@ async function main(): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 2
     }
   })
@@ -95,6 +107,9 @@ async function main(): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 3
     }
   })
@@ -117,6 +132,9 @@ async function main(): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 4
     }
   })
@@ -139,6 +157,9 @@ async function main(): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 5
     }
   })
@@ -161,6 +182,9 @@ async function main(): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
       parentOrder: 6
     }
   })

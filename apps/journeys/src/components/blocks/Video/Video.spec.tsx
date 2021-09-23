@@ -1,22 +1,22 @@
-import { render } from '@testing-library/react'
+import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { Video } from '.'
-import { VideoProviderEnum } from '../../../../__generated__/globalTypes'
 
-describe('BlockRendererVideo', () => {
+describe('VideoComponent', () => {
   const block: TreeBlock<VideoBlock> = {
     __typename: 'VideoBlock',
-    id: 'main',
-    src: 'https://www.youtube.com',
-    title: 'title',
-    provider: VideoProviderEnum.ARCLIGHT,
-    parentBlockId: null,
+    id: 'Video1',
+    parentBlockId: '',
+    volume: 1,
+    autoplay: false,
+    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+    title: 'Video',
     children: []
   }
-  it('should render successfully', () => {
-    const { getByText } = render(<Video {...block} />)
 
-    expect(getByText('Render title Here')).toBeInTheDocument()
+  it('should render the video successfully', () => {
+    const { getByTestId } = renderWithApolloClient(<Video {...block} />)
+    expect(getByTestId('VideoComponent')).toBeInTheDocument()
   })
 })

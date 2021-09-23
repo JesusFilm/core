@@ -1,5 +1,8 @@
-name: Main - Pull Request
+name: Main
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -9,15 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,lint,type-check
@@ -28,62 +30,48 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
+        env:
+          NEXT_PUBLIC_FIREBASE_CONFIG_JSON: ${{ secrets.NEXT_PUBLIC_FIREBASE_CONFIG_JSON }}
         with:
           targets: generate,build
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: test-user
-          POSTGRES_PASSWORD: test-password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: generate,migrations,test
+          targets: generate,test
   visual-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          cache: 'npm'
-      - run: npm install
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook
         with:

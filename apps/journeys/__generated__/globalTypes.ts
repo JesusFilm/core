@@ -12,12 +12,6 @@ export enum RadioQuestionVariant {
   LIGHT = "LIGHT",
 }
 
-export enum VideoProviderEnum {
-  ARCLIGHT = "ARCLIGHT",
-  VIMEO = "VIMEO",
-  YOUTUBE = "YOUTUBE",
-}
-
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
