@@ -181,16 +181,11 @@ type StepBlock implements Block {
 }
 
 type VideoBlock implements Block {
+  autoplay: Boolean
   description: String
   id: ID!
   parentBlockId: ID
-  provider: VideoProviderEnum!
   src: String!
   title: String!
-}
-
-enum VideoProviderEnum {
-  ARCLIGHT
-  VIMEO
-  YOUTUBE
+  volume: Int
 }
