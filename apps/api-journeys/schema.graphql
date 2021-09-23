@@ -7,6 +7,14 @@ interface Block {
   parentBlockId: ID
 }
 
+type CardBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  imgSrc: String
+  backgroundColor: String
+  fontColor: String
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!

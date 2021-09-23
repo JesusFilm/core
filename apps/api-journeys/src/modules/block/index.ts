@@ -36,6 +36,14 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
+  type CardBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    imgSrc: String
+    backgroundColor: String
+    fontColor: String
+  }
+
   type VideoBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -93,7 +101,7 @@ const typeDefs = gql`
     label: String!
     action: Action
   }
-`
+`;
 
 const resolvers: Resolvers = {
   Journey: {

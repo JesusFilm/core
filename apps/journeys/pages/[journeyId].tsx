@@ -45,6 +45,11 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               volume
               autoplay
             }
+            ... on CardBlock {
+              imgSrc
+              backgroundColor
+              fontColor
+            }
             ... on RadioQuestionBlock {
               label
               description
@@ -71,9 +76,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       }
     `,
     variables: {
-      id: context.query.journeyId
-    }
-  })
+      id: context.query.journeyId,
+    },
+  });
 
   if (data.journey === null) {
     return {

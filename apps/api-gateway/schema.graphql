@@ -25,6 +25,14 @@ interface Block {
   parentBlockId: ID
 }
 
+type CardBlock implements Block {
+  backgroundColor: String
+  fontColor: String
+  id: ID!
+  imgSrc: String
+  parentBlockId: ID
+}
+
 scalar join__FieldSet
 
 enum join__Graph {
