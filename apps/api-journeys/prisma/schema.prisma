@@ -28,6 +28,7 @@ model Block {
   childBlocks   Block[]   @relation("BlockChildren")
   extraAttrs    Json?
   parentOrder   Int       @default(0)
+  responses     Response[]
 }
 
 enum BlockType {
@@ -35,4 +36,20 @@ enum BlockType {
   VideoBlock
   RadioQuestionBlock
   RadioOptionBlock
+  SignupBlock
+}
+
+model Response {
+  id            String       @id @default(uuid())
+  type          ResponseType
+  userId        String
+  block         Block        @relation(fields: [blockId], references: [id])
+  blockId       String
+  extraAttrs    Json
+}
+
+enum ResponseType {
+  RadioQuestionResponse
+  SignupResponse
+  VideoResponse
 }
