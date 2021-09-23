@@ -14,19 +14,24 @@ export function Typography({
   variant,
   color,
   align,
+  content,
   ...props
 }: TypographyProps): ReactElement {
   return (
     <MuiTypography
+      {...props}
       variant={variant ?? undefined}
-      color={color ?? undefined}
       align={align ?? undefined}
+      color={color ?? undefined}
       sx={{
         mb: variant === TypographyVariant.overline ? 0.5 : 2,
+        textShadow:
+          variant === TypographyVariant.h1
+            ? "0px 1px 3px rgba(0, 0, 0, 0.25)"
+            : undefined,
       }}
-      {...props}
     >
-      {props.content}
+      {variant === "h6" ? content.toUpperCase() : content}
     </MuiTypography>
   );
 }

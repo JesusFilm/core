@@ -1,4 +1,6 @@
+import { ReactElement, ReactNode } from "react";
 import { Story, Meta } from "@storybook/react";
+import { ThemeProvider, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
 
 import { Typography, TypographyProps } from "./Typography";
@@ -7,36 +9,88 @@ import {
   TypographyColor,
   TypographyAlign,
 } from "./../../../__generated__/globalTypes";
-import { journeysConfig } from "../../libs/storybook/decorators";
-import { lightTheme } from "../../libs/theme/theme";
+import { sharedUiConfig } from "../../libs/storybook/decorators";
+import { darkTheme } from "../../libs/theme/theme";
 
 const TypographyDemo = {
-  ...journeysConfig,
+  ...sharedUiConfig,
   component: Typography,
   title: "shared-ui/Typography",
 };
 
 interface TypographyStoryProps extends TypographyProps {
-  variants: string[];
+  variants: Array<string | null>;
+  heading?: string;
 }
 
-const VariantTemplate: Story<TypographyStoryProps> = (args) => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-    }}
-  >
-    {args.variants.map((variant) => (
+// TODO: Replace with real card component
+interface CardProps {
+  children: ReactNode;
+}
+
+const Card = ({ children }: CardProps): ReactElement => {
+  const theme = useTheme();
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: theme.palette.surface.main,
+        color: theme.palette.surface.contrastText,
+        p: 3,
+        borderRadius: 4,
+        mb: 2,
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+const ColorCards = ({
+  variants,
+  heading = "",
+  ...props
+}: TypographyStoryProps): ReactElement => {
+  return (
+    <Card>
       <Typography
-        {...args}
+        {...props}
+        sx={{ m: 0 }}
+        variant={TypographyVariant.h6}
+        content={heading}
+      />
+      {variants.map((variant) => (
+        <>
+          <Typography
+            {...props}
+            sx={{ m: 0 }}
+            variant={TypographyVariant.overline}
+            content={variant ?? "Default"}
+          />
+          <Typography
+            {...props}
+            sx={{ m: 0 }}
+            variant={TypographyVariant.h5}
+            color={variant as TypographyColor}
+            content="Heading"
+          />
+        </>
+      ))}
+    </Card>
+  );
+};
+
+const VariantTemplate: Story<TypographyStoryProps> = (props) => (
+  <Card>
+    {props.variants.map((variant) => (
+      <Typography
+        {...props}
         variant={variant as TypographyVariant}
-        content={`${variant} ${
-          variant === "button" ? "this needs theming" : ""
-        }`}
+        content={variant ?? ""}
       />
     ))}
-  </div>
+  </Card>
 );
 
 export const Variants = VariantTemplate.bind({});
@@ -52,146 +106,45 @@ Variants.args = {
     "subtitle2",
     "body1",
     "body2",
-    "button",
     "caption",
     "overline",
   ],
 };
 
-const ColorTemplate: Story<TypographyStoryProps> = (args) => (
+const ColorTemplate: Story<TypographyStoryProps> = (props) => (
   <div
     style={{
       display: "flex",
       flexDirection: "column",
     }}
   >
-    Temp Note: Text color will be preset based on the background color
-    (inherited from theme) unless it is overriden. We currently support the
-    following override variants - these are the default material-ui typography
-    color variants:
-    <Box
-      sx={{
-        bgcolor: `${lightTheme.palette.background.default}`,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        p: 2,
-        mb: 1,
-      }}
-    >
-      <Typography {...args} sx={{ m: 0 }} content={`Default background`} />
-      {args.variants.map((variant) => (
-        <Typography
-          {...args}
-          sx={{ m: 0 }}
-          color={variant as TypographyColor}
-          content={`${variant}`}
-        />
-      ))}
-    </Box>
-    <Box
-      sx={{
-        bgcolor: `${lightTheme.palette.primary.main}`,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        p: 2,
-        mb: 1,
-      }}
-    >
-      <Typography {...args} sx={{ m: 0 }} content={`Primary background`} />
-      {args.variants.map((variant) => (
-        <Typography
-          {...args}
-          sx={{ m: 0 }}
-          color={variant as TypographyColor}
-          content={`${variant}`}
-        />
-      ))}
-    </Box>
-    <Box
-      sx={{
-        bgcolor: `${lightTheme.palette.secondary.main}`,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        p: 2,
-        mb: 1,
-      }}
-    >
-      <Typography {...args} sx={{ m: 0 }} content={`Secondary background`} />
-      {args.variants.map((variant) => (
-        <Typography
-          {...args}
-          sx={{ m: 0 }}
-          color={variant as TypographyColor}
-          content={`${variant}`}
-        />
-      ))}
-    </Box>
-    <Box
-      sx={{
-        bgcolor: `${lightTheme.palette.surface.main}`,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        p: 2,
-        mb: 1,
-      }}
-    >
-      <Typography {...args} sx={{ m: 0 }} content={`Surface background`} />
-      {args.variants.map((variant) => (
-        <Typography
-          {...args}
-          sx={{ m: 0 }}
-          color={variant as TypographyColor}
-          content={`${variant}`}
-        />
-      ))}
-    </Box>
-    <Box
-      sx={{
-        bgcolor: `${lightTheme.palette.error.main}`,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        p: 2,
-        mb: 1,
-      }}
-    >
-      <Typography {...args} sx={{ m: 0 }} content={`Error background`} />
-      {args.variants.map((variant) => (
-        <Typography
-          {...args}
-          sx={{ m: 0 }}
-          color={variant as TypographyColor}
-          content={`${variant}`}
-        />
-      ))}
-    </Box>
+    <ColorCards {...props} variants={props.variants} heading={"Surface"} />
+    <ThemeProvider theme={darkTheme}>
+      <ColorCards
+        {...props}
+        variants={props.variants}
+        heading={"Surface Alt"}
+      />
+    </ThemeProvider>
   </div>
 );
 
 export const Colors = ColorTemplate.bind({});
 Colors.args = {
-  variants: ["primary", "secondary", "error", "warning", "info", "success"],
+  variants: [null, "primary", "secondary", "error"],
 };
 
-const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-    }}
-  >
-    {args.variants.map((variant) => (
+const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
+  <Card>
+    {props.variants.map((variant) => (
       <Typography
-        {...args}
+        {...props}
+        variant={TypographyVariant.h6}
         align={variant as TypographyAlign}
-        content={`${variant}`}
+        content={variant ?? ""}
       />
     ))}
-  </div>
+  </Card>
 );
 
 export const Alignment = AlignmentTemplate.bind({});

@@ -15,17 +15,13 @@ export enum TypographyAlign {
 
 export enum TypographyColor {
   error = "error",
-  info = "info",
   primary = "primary",
   secondary = "secondary",
-  success = "success",
-  warning = "warning",
 }
 
 export enum TypographyVariant {
   body1 = "body1",
   body2 = "body2",
-  button = "button",
   caption = "caption",
   h1 = "h1",
   h2 = "h2",

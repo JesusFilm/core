@@ -1,118 +1,142 @@
+import { ReactElement } from "react";
 import { Story, Meta } from "@storybook/react";
 import { Box } from "@mui/system";
+import {
+  ThemeProvider,
+  useTheme,
+  PaletteColor,
+  PaletteMode,
+  PaletteOptions,
+} from "@mui/material";
 
 import { Typography, TypographyProps } from "../../components/Typography";
-import { journeysConfig } from "../../libs/storybook/decorators";
-import { lightTheme } from "../theme/theme";
-import { PaletteOptions } from "@mui/material";
+import { sharedUiConfig } from "../../libs/storybook/decorators";
+import { darkTheme, lightTheme } from "../theme/theme";
+import { TypographyVariant } from "../../../__generated__/globalTypes";
 
 const TypographyDemo = {
-  ...journeysConfig,
+  ...sharedUiConfig,
   component: Typography,
-  title: "LightTheme",
+  title: "Default Theme",
 };
 
-interface TypographyStoryProps extends TypographyProps {
+interface ColorPaletteProps extends TypographyProps {
   variants: Array<keyof PaletteOptions>;
 }
 
-const ColorTemplate: Story<TypographyStoryProps> = (args) => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-    }}
-  >
-    <p>Are we ignoring warning / info / success for now?</p>
-    <p>
-      Default text color for these backgrounds are black until I get
-      confirmation on onPrimary, onSecondary, onSurface, onBackground is for
-      text color.
-    </p>
-    <Box
-      sx={{
-        bgcolor: `${lightTheme.palette.background.default}`,
-        border: `1px solid ${lightTheme.palette.text.secondary}`,
-        mb: 2,
-        p: 2,
+interface TypographyStoryProps extends TypographyProps {
+  variants: Array<keyof PaletteOptions>;
+  mode: PaletteMode;
+}
+
+const ColorPalettes = ({
+  variants,
+  ...props
+}: ColorPaletteProps): ReactElement => {
+  const theme = useTheme();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Typography
-        {...args}
-        sx={{ mb: 0 }}
-        // color={lightTheme.palette[variant as Palette].contrastText}
-        content={`Background`}
-      />
-    </Box>
-    {args.variants.map((variant: keyof PaletteOptions) => (
+      <Box
+        sx={{
+          bgcolor: `${theme.palette.background.default}`,
+          color: `${theme.palette.text.primary}`,
+          mb: 2,
+          p: 2,
+          boxShadow: 1,
+        }}
+      >
+        <Typography
+          {...props}
+          variant={TypographyVariant.overline}
+          content={"Background"}
+        />
+      </Box>
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: "16px",
+          flexDirection: "column",
         }}
       >
-        <Box
-          sx={{
-            bgcolor: `${lightTheme.palette[variant].light}`,
-            width: "100%",
-            p: 2,
-          }}
-        >
-          <Typography
-            {...args}
-            sx={{ mb: 0 }}
-            // color={lightTheme.palette[variant as Palette].contrastText}
-            content={`${variant} light`}
-          />
-        </Box>
+        {variants.map((variant: keyof PaletteOptions) => {
+          const paletteColor = theme.palette[variant] as PaletteColor;
+          return (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                marginBottom: "16px",
+              }}
+            >
+              <Box
+                sx={{
+                  bgcolor: `${paletteColor.light}`,
+                  color: `${paletteColor.contrastText}`,
+                  width: "100%",
+                  p: 2,
+                }}
+              >
+                <Typography
+                  {...props}
+                  variant={TypographyVariant.overline}
+                  content={`${variant} light`}
+                />
+              </Box>
 
-        <Box
-          sx={{
-            bgcolor: `${lightTheme.palette[variant].main}`,
-            width: "100%",
-            p: 2,
-          }}
-        >
-          <Typography
-            {...args}
-            sx={{ mb: 0 }}
-            // color={lightTheme.palette[variant as Palette].contrastText}
-            content={`${variant} main`}
-          />
-        </Box>
+              <Box
+                sx={{
+                  bgcolor: `${paletteColor.main}`,
+                  color: `${paletteColor.contrastText}`,
+                  width: "100%",
+                  p: 2,
+                }}
+              >
+                <Typography
+                  {...props}
+                  variant={TypographyVariant.overline}
+                  content={`${variant} main`}
+                />
+              </Box>
 
-        <Box
-          sx={{
-            bgcolor: `${lightTheme.palette[variant].dark}`,
-            width: "100%",
-            p: 2,
-          }}
-        >
-          <Typography
-            {...args}
-            sx={{ mb: 0 }}
-            // color={lightTheme.palette[variant as Palette].contrastText}
-            content={`${variant} dark`}
-          />
-        </Box>
+              <Box
+                sx={{
+                  bgcolor: `${paletteColor.dark}`,
+                  color: `${paletteColor.contrastText}`,
+                  width: "100%",
+                  p: 2,
+                }}
+              >
+                <Typography
+                  {...props}
+                  variant={TypographyVariant.overline}
+                  content={`${variant} dark`}
+                />
+              </Box>
+            </div>
+          );
+        })}
       </div>
-    ))}
-  </div>
+    </div>
+  );
+};
+
+const ColorTemplate: Story<TypographyStoryProps> = (args) => (
+  // TODO: Update when adding Storybook theme toggle
+  <ThemeProvider theme={args.mode === "dark" ? darkTheme : lightTheme}>
+    <ColorPalettes {...args} variants={args.variants} />
+  </ThemeProvider>
 );
 
 export const Colors = ColorTemplate.bind({});
 Colors.args = {
-  variants: [
-    "primary",
-    "secondary",
-    "surface",
-    "error",
-    "warning",
-    "info",
-    "success",
-  ],
+  mode: "light",
+  variants: ["surface", "surfaceAlt", "primary", "secondary", "error"],
 };
 
 export default TypographyDemo as Meta;
