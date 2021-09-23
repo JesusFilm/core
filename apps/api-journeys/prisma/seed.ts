@@ -37,11 +37,10 @@ async function main(): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: step.id,
       extraAttrs: {
-        src: 'https://www.youtube.com/watch?v=KGlx11BxF24',
+        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
         description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
-        provider: 'YOUTUBE'
+          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
       }
     }
   })
@@ -216,7 +215,8 @@ async function main(): Promise<void> {
         variant: 'h1',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 0
     }
   })
   const stepSignup = await prisma.block.create({
@@ -239,7 +239,8 @@ async function main(): Promise<void> {
           gtmEventName: 'signup',
           url: 'https://signup-complete.jesusfilm.org'
         }
-      }
+      },
+      parentOrder: 0
     }
   })
 }
