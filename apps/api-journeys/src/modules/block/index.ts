@@ -95,29 +95,29 @@ const typeDefs = gql`
   }
 
   enum TypographyVariant {
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    subtitle1,
-    subtitle2,
-    body1,
-    body2,
-    caption,
+    h1
+    h2
+    h3
+    h4
+    h5
+    h6
+    subtitle1
+    subtitle2
+    body1
+    body2
+    caption
     overline
   }
-  
+
   enum TypographyColor {
-    primary,
-    secondary,
+    primary
+    secondary
     error
   }
 
   enum TypographyAlign {
-    left,
-    center,
+    left
+    center
     right
   }
 
