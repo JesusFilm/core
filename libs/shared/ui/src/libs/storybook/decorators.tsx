@@ -11,13 +11,13 @@ import { lightTheme } from "../theme/theme";
 // Must set parameters at component level for shared-storybook stories to work
 export const sharedUiConfig = {
   decorators: [
-    (Story) => (
+    (Story: () => unknown) => (
       // TODO: Addon to allow changing themes
       <div style={{ margin: "0.5em" }}>
         <MuiThemeProvider theme={lightTheme}>
           <ThemeProvider theme={lightTheme}>
             <CssBaseline />
-            <Story />
+            {Story()}
           </ThemeProvider>
         </MuiThemeProvider>
       </div>
