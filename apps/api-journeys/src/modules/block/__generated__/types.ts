@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
-    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
+    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
     NavigateAction: 'gtmEventName';
     NavigateToBlockAction: 'gtmEventName' | 'blockId';
@@ -19,7 +19,6 @@ export namespace BlockModule {
   };
   
   interface DefinedEnumValues {
-    VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
     TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
     TypographyColor: 'primary' | 'secondary' | 'error';
@@ -29,7 +28,6 @@ export namespace BlockModule {
   export type Journey = Types.Journey;
   export type Block = Pick<Types.Block, DefinedFields['Block']>;
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
-  export type VideoProviderEnum = DefinedEnumValues['VideoProviderEnum'];
   export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
@@ -95,7 +93,8 @@ export namespace BlockModule {
       src?: gm.Middleware[];
       title?: gm.Middleware[];
       description?: gm.Middleware[];
-      provider?: gm.Middleware[];
+      volume?: gm.Middleware[];
+      autoplay?: gm.Middleware[];
     };
     RadioQuestionBlock?: {
       '*'?: gm.Middleware[];
