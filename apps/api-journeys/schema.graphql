@@ -11,6 +11,8 @@ type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!
   title: String!
+  locale: String!
+  theme: ThemeName!
   blocks: [Block!]
 }
 
@@ -21,7 +23,7 @@ type LinkAction implements Action {
 }
 
 extend type Mutation {
-  journeyCreate(title: String!): Journey!
+  journeyCreate(title: String!, locale: String, theme: ThemeName): Journey!
   journeyPublish(id: ID!): Journey
   signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
@@ -95,6 +97,7 @@ interface Response {
 type SignupBlock implements Block {
   id: ID!
   parentBlockId: ID
+  action: Action
 }
 
 type SignupResponse implements Response {
@@ -132,6 +135,46 @@ type StepBlock implements Block {
   """
   locked: Boolean!
   parentBlockId: ID
+}
+
+enum ThemeName {
+  default
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+type TypographyBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
 }
 
 type VideoBlock implements Block {

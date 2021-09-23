@@ -37,7 +37,9 @@ type Journey
 {
   blocks: [Block!] @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
+  locale: String! @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
+  theme: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
 }
 
@@ -48,7 +50,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
-  journeyCreate(title: String!): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(locale: String, theme: ThemeName, title: String!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse! @join__field(graph: JOURNEYS)
@@ -121,6 +123,7 @@ interface Response {
 }
 
 type SignupBlock implements Block {
+  action: Action
   id: ID!
   parentBlockId: ID
 }
@@ -161,6 +164,46 @@ type StepBlock implements Block {
   """
   nextBlockId: ID
   parentBlockId: ID
+}
+
+enum ThemeName {
+  default
+}
+
+enum TypographyAlign {
+  center
+  left
+  right
+}
+
+type TypographyBlock implements Block {
+  align: TypographyAlign
+  color: TypographyColor
+  content: String!
+  id: ID!
+  parentBlockId: ID
+  variant: TypographyVariant
+}
+
+enum TypographyColor {
+  error
+  primary
+  secondary
+}
+
+enum TypographyVariant {
+  body1
+  body2
+  caption
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  overline
+  subtitle1
+  subtitle2
 }
 
 type VideoBlock implements Block {

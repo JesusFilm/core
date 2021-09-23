@@ -29,7 +29,9 @@ export type Journey = {
   __typename?: 'Journey';
   blocks?: Maybe<Array<Block>>;
   id: Scalars['ID'];
+  locale: Scalars['String'];
   published: Scalars['Boolean'];
+  theme: ThemeName;
   title: Scalars['String'];
 };
 
@@ -52,6 +54,8 @@ export type Mutation = {
 
 export type MutationJourneyCreateArgs = {
   title: Scalars['String'];
+  locale?: Maybe<Scalars['String']>;
+  theme?: Maybe<ThemeName>;
 };
 
 
@@ -151,6 +155,7 @@ export type SignupBlock = Block & {
   __typename?: 'SignupBlock';
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
+  action?: Maybe<Action>;
 };
 
 export type SignupResponse = Response & {
@@ -187,6 +192,43 @@ export type StepBlock = Block & {
   locked: Scalars['Boolean'];
   parentBlockId?: Maybe<Scalars['ID']>;
 };
+
+export type ThemeName =
+  | 'default';
+
+export type TypographyAlign =
+  | 'left'
+  | 'center'
+  | 'right';
+
+export type TypographyBlock = Block & {
+  __typename?: 'TypographyBlock';
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  content: Scalars['String'];
+  variant?: Maybe<TypographyVariant>;
+  color?: Maybe<TypographyColor>;
+  align?: Maybe<TypographyAlign>;
+};
+
+export type TypographyColor =
+  | 'primary'
+  | 'secondary'
+  | 'error';
+
+export type TypographyVariant =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'subtitle1'
+  | 'subtitle2'
+  | 'body1'
+  | 'body2'
+  | 'caption'
+  | 'overline';
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
@@ -306,10 +348,15 @@ export type ResolversTypes = {
   RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
   RadioQuestionVariant: RadioQuestionVariant;
   Response: ResolversTypes['RadioQuestionResponse'] | ResolversTypes['SignupResponse'] | ResolversTypes['VideoResponse'];
-  SignupBlock: ResolverTypeWrapper<SignupBlock>;
+  SignupBlock: ResolverTypeWrapper<BlockType>;
   SignupResponse: ResolverTypeWrapper<ResponseType>;
   SignupResponseCreateInput: SignupResponseCreateInput;
   StepBlock: ResolverTypeWrapper<BlockType>;
+  ThemeName: ThemeName;
+  TypographyAlign: TypographyAlign;
+  TypographyBlock: ResolverTypeWrapper<BlockType>;
+  TypographyColor: TypographyColor;
+  TypographyVariant: TypographyVariant;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   VideoResponse: ResolverTypeWrapper<ResponseType>;
@@ -336,10 +383,11 @@ export type ResolversParentTypes = {
   RadioQuestionResponse: ResponseType;
   RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
   Response: ResolversParentTypes['RadioQuestionResponse'] | ResolversParentTypes['SignupResponse'] | ResolversParentTypes['VideoResponse'];
-  SignupBlock: SignupBlock;
+  SignupBlock: BlockType;
   SignupResponse: ResponseType;
   SignupResponseCreateInput: SignupResponseCreateInput;
   StepBlock: BlockType;
+  TypographyBlock: BlockType;
   VideoBlock: BlockType;
   Int: Scalars['Int'];
   VideoResponse: ResponseType;
@@ -352,7 +400,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -360,7 +408,9 @@ export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType exte
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  theme?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -436,6 +486,7 @@ export type ResponseResolvers<ContextType = GraphQLModules.Context, ParentType e
 export type SignupBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignupBlock'] = ResolversParentTypes['SignupBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -453,6 +504,16 @@ export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   nextBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   locked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['TypographyBlock'] = ResolversParentTypes['TypographyBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  variant?: Resolver<Maybe<ResolversTypes['TypographyVariant']>, ParentType, ContextType>;
+  color?: Resolver<Maybe<ResolversTypes['TypographyColor']>, ParentType, ContextType>;
+  align?: Resolver<Maybe<ResolversTypes['TypographyAlign']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -492,6 +553,7 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   SignupBlock?: SignupBlockResolvers<ContextType>;
   SignupResponse?: SignupResponseResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
+  TypographyBlock?: TypographyBlockResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;
   VideoResponse?: VideoResponseResolvers<ContextType>;
 };
