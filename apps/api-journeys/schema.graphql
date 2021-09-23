@@ -23,6 +23,9 @@ type LinkAction implements Action {
 extend type Mutation {
   journeyCreate(title: String!): Journey!
   journeyPublish(id: ID!): Journey
+  signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
+  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
 """
@@ -63,9 +66,53 @@ type RadioQuestionBlock implements Block {
   variant: RadioQuestionVariant
 }
 
+type RadioQuestionResponse implements Response {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock!
+}
+
+input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
 enum RadioQuestionVariant {
   LIGHT
   DARK
+}
+
+interface Response {
+  id: ID!
+  userId: ID!
+}
+
+type SignupBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+}
+
+type SignupResponse implements Response {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignupBlock!
+}
+
+input SignupResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
 }
 
 type StepBlock implements Block {
@@ -95,4 +142,26 @@ type VideoBlock implements Block {
   description: String
   volume: Int
   autoplay: Boolean
+}
+
+type VideoResponse implements Response {
+  id: ID!
+  userId: ID!
+  state: VideoResponseStateEnum!
+  block: VideoBlock!
+}
+
+input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoResponseStateEnum!
+}
+
+enum VideoResponseStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
 }

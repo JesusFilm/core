@@ -49,7 +49,8 @@ it('returns blocks', async () => {
     parentOrder: 2,
     extraAttrs: {
       label: 'label',
-      description: 'description'
+      description: 'description',
+      variant: 'DARK'
     }
   }
   const radioOption1: Block = {
@@ -121,6 +122,14 @@ it('returns blocks', async () => {
       locked: false
     }
   }
+  const signup1: Block = {
+    id: nextBlockId,
+    journeyId,
+    blockType: 'SignupBlock',
+    parentBlockId: step2.id,
+    parentOrder: 7,
+    extraAttrs: {}
+  }
   const blocks = [
     step1,
     video1,
@@ -129,7 +138,8 @@ it('returns blocks', async () => {
     radioOption2,
     radioOption3,
     radioOption4,
-    step2
+    step2,
+    signup1
   ]
   dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
@@ -201,7 +211,7 @@ it('returns blocks', async () => {
       parentBlockId: step1.id,
       label: 'label',
       description: 'description',
-      variant: null
+      variant: 'DARK'
     },
     {
       id: radioOption1.id,
@@ -252,6 +262,11 @@ it('returns blocks', async () => {
       parentBlockId: null,
       locked: false,
       nextBlockId: null
+    },
+    {
+      id: signup1.id,
+      __typename: 'SignupBlock',
+      parentBlockId: step2.id
     }
   ])
 })
