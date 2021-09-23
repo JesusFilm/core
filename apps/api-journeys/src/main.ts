@@ -1,10 +1,9 @@
 import { ApolloServer } from 'apollo-server'
-import { ApolloServerLambda } from 'apollo-server-lambda'
+import { ApolloServer as ApolloServerLambda } from 'apollo-server-lambda'
 import application from './modules/application'
 import db from './lib/db'
 
 const schema = application.createSchemaForApollo()
-
 
 if (require.main === module) {
   const server = new ApolloServer({
@@ -22,16 +21,13 @@ if (require.main === module) {
     })
     .catch((err) => {
       console.error(err)
-    });
-  }
-  else {
-     
-    const lambdaserver = new ApolloServerLambda({
-      schema,
-      context: {
-        db
-      }
     })
-    exports.handler = lambdaserver.createHandler();
-  
-  }
+} else {
+  const lambdaserver = new ApolloServerLambda({
+    schema,
+    context: {
+      db
+    }
+  })
+  exports.handler = lambdaserver.createHandler()
+}
