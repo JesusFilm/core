@@ -51,7 +51,8 @@ it('returns blocks', async () => {
     parentOrder: 2,
     extraAttrs: {
       label: 'label',
-      description: 'description'
+      description: 'description',
+      variant: 'DARK'
     }
   }
   const radioOption1: Block = {
@@ -164,40 +165,44 @@ it('returns blocks', async () => {
   dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
     document: gql`
+      fragment ActionFields on Action {
+        __typename
+        gtmEventName
+        ... on NavigateToBlockAction {
+          blockId
+        }
+        ... on NavigateToJourneyAction {
+          journeyId
+        }
+        ... on LinkAction {
+          url
+        }
+      }
       query ($id: ID!) {
         journey(id: $id) {
           blocks {
             id
             __typename
             parentBlockId
-            ... on StepBlock {
-              locked
-              nextBlockId
-            }
-            ... on VideoBlock {
-              src
-              title
+            ... on RadioOptionBlock {
+              label
+              action {
+                ...ActionFields
+              }
             }
             ... on RadioQuestionBlock {
               label
               description
               variant
             }
-            ... on RadioOptionBlock {
-              label
+            ... on SignupBlock {
               action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
+                ...ActionFields
               }
+            }
+            ... on StepBlock {
+              locked
+              nextBlockId
             }
             ... on TypographyBlock {
               content
@@ -205,20 +210,9 @@ it('returns blocks', async () => {
               color
               align
             }
-            ... on SignupBlock {
-              action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
-              }
+            ... on VideoBlock {
+              src
+              title
             }
           }
         }
@@ -252,7 +246,7 @@ it('returns blocks', async () => {
       parentBlockId: step1.id,
       label: 'label',
       description: 'description',
-      variant: null
+      variant: 'DARK'
     },
     {
       id: radioOption1.id,

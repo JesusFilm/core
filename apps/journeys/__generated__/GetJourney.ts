@@ -10,7 +10,7 @@ import { RadioQuestionVariant } from "./globalTypes";
 // ====================================================
 
 export interface GetJourney_journey_blocks_SignupBlock {
-  __typename: "SignupBlock" | "TypographyBlock";
+  __typename: "SignupBlock";
   id: string;
   parentBlockId: string | null;
 }

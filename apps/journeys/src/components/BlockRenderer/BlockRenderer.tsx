@@ -13,7 +13,7 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
     case 'VideoBlock':
       return <Video {...block} />
     default:
-      return <div />
+      return <></>
   }
 }
 
