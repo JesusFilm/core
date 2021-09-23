@@ -1,13 +1,8 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { Prisma } from '.prisma/api-journeys-client'
-import {
-  LinkAction,
-  NavigateToBlockAction,
-  NavigateToJourneyAction,
-  Resolvers,
-  ResolversTypes
-} from '../../__generated__/types'
+import { BlockModule } from './__generated__/types'
+import { ActionResolvers, BlockResolvers } from '../../__generated__/types'
+import { get } from 'lodash'
 
 const typeDefs = gql`
   extend type Journey {
@@ -93,38 +88,72 @@ const typeDefs = gql`
     label: String!
     action: Action
   }
+
+  type SignupBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+  }
+
+  extend type RadioQuestionResponse {
+    block: RadioQuestionBlock!
+  }
+
+  extend type SignupResponse {
+    block: SignupBlock!
+  }
+
+  extend type VideoResponse {
+    block: VideoBlock!
+  }
 `
+
+type Resolvers = BlockModule.Resolvers & {
+  Action: ActionResolvers
+  Block: BlockResolvers
+}
 
 const resolvers: Resolvers = {
   Journey: {
     async blocks(journey, __, { db }) {
-      const blocks = await db.block.findMany({
+      return await db.block.findMany({
         where: { journeyId: journey.id },
         orderBy: [{ parentOrder: 'asc' }]
       })
-      return blocks.map(
-        (block) =>
-          ({
-            ...block,
-            ...(block.extraAttrs as Prisma.JsonObject),
-            __typename: block.blockType
-          } as unknown as ResolversTypes['Block'])
-      )
     }
   },
   Action: {
-    __resolveType(obj) {
-      if ((obj as NavigateToBlockAction).blockId != null) {
+    __resolveType(action) {
+      if ((action as BlockModule.NavigateToBlockAction).blockId != null) {
         return 'NavigateToBlockAction'
       }
-      if ((obj as NavigateToJourneyAction).journeyId != null) {
+      if ((action as BlockModule.NavigateToJourneyAction).journeyId != null) {
         return 'NavigateToJourneyAction'
       }
-      if ((obj as LinkAction).url != null) {
+      if ((action as BlockModule.LinkAction).url != null) {
         return 'LinkAction'
       }
       return 'NavigateAction'
     }
+  },
+  Block: {
+    __resolveType: ({ blockType }) => blockType
+  },
+  StepBlock: {
+    locked: ({ extraAttrs }) => get(extraAttrs, 'locked'),
+    nextBlockId: ({ extraAttrs }) => get(extraAttrs, 'nextBlockId')
+  },
+  VideoBlock: {
+    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
+    title: ({ extraAttrs }) => get(extraAttrs, 'title')
+  },
+  RadioQuestionBlock: {
+    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
+    description: ({ extraAttrs }) => get(extraAttrs, 'description'),
+    variant: ({ extraAttrs }) => get(extraAttrs, 'variant')
+  },
+  RadioOptionBlock: {
+    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
+    action: ({ extraAttrs }) => get(extraAttrs, 'action')
   }
 }
 
