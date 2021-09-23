@@ -12,6 +12,11 @@ export enum RadioQuestionVariant {
   LIGHT = "LIGHT",
 }
 
+export interface RadioQuestionResponseCreateInput {
+  blockId: string;
+  radioOptionBlockId: string;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
