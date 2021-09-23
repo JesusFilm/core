@@ -124,31 +124,31 @@ it('returns blocks', async () => {
   }
   const button1: Block = {
     id: uuidv4(),
-	  journeyId,
-	  blockType: 'ButtonBlock',
-	  parentBlockId: step2.id,
+    journeyId,
+    blockType: 'ButtonBlock',
+    parentBlockId: step2.id,
     parentOrder: 1,
-	  extraAttrs: {
-	    label: 'label',
-	    variant: 'contained',
-	    color: 'primary',
-	    size: 'large',
-	    startIcon: {
-	      name: IconName.ArrowForward,
-	      color: 'secondary',
-	      size: 'lg'
-	    },
-	    endIcon: {
-	      name: IconName.LockOpen,
-	      color: 'action',
-	      size: 'xl'
-	    },
-	    action: {
-	      gtmEventName: 'gtmEventName',
-	      url: 'https://jesusfilm.org',
-	      target: 'target'
-	    }
-	  }
+    extraAttrs: {
+      label: 'label',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
+      startIcon: {
+        name: IconName.ArrowForward,
+        color: 'secondary',
+        size: 'lg'
+      },
+      endIcon: {
+        name: IconName.LockOpen,
+        color: 'action',
+        size: 'xl'
+      },
+      action: {
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org',
+        target: 'target'
+      }
+    }
   }
   const blocks = [
     step1,
