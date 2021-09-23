@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
-    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'provider';
+    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
     NavigateAction: 'gtmEventName';
     NavigateToBlockAction: 'gtmEventName' | 'blockId';
@@ -19,20 +19,18 @@ export namespace BlockModule {
   };
   
   interface DefinedEnumValues {
-    VideoProviderEnum: 'YOUTUBE' | 'VIMEO' | 'ARCLIGHT';
     RadioQuestionVariant: 'LIGHT' | 'DARK';
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
-    IconSize: 's' | 'm' | 'l' | 'xl' | 'inherit';
-    ButtonVariant: 'text' | 'outlined' | 'contained';
-    ButtonColor: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'inherit';
+    IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
+    ButtonVariant: 'text' | 'contained';
+    ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
   };
   
   export type Journey = Types.Journey;
   export type Block = Pick<Types.Block, DefinedFields['Block']>;
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
-  export type VideoProviderEnum = DefinedEnumValues['VideoProviderEnum'];
   export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
@@ -101,7 +99,8 @@ export namespace BlockModule {
       src?: gm.Middleware[];
       title?: gm.Middleware[];
       description?: gm.Middleware[];
-      provider?: gm.Middleware[];
+      volume?: gm.Middleware[];
+      autoplay?: gm.Middleware[];
     };
     RadioQuestionBlock?: {
       '*'?: gm.Middleware[];

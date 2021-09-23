@@ -37,19 +37,14 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
-  enum VideoProviderEnum {
-    YOUTUBE
-    VIMEO
-    ARCLIGHT
-  }
-
   type VideoBlock implements Block {
     id: ID!
     parentBlockId: ID
     src: String!
     title: String!
     description: String
-    provider: VideoProviderEnum!
+    volume: Int
+    autoplay: Boolean
   }
 
   enum RadioQuestionVariant {
@@ -124,9 +119,9 @@ const typeDefs = gql`
   }
 
   enum IconSize {
-    s
-    m
-    l
+    sm
+    md
+    lg
     xl
     inherit
   }
@@ -139,17 +134,13 @@ const typeDefs = gql`
 
   enum ButtonVariant {
     text
-    outlined
     contained
   }
 
   enum ButtonColor {
     primary
     secondary
-    success
     error
-    info
-    warning
     inherit
   }
 
