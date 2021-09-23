@@ -74,6 +74,10 @@ type RadioQuestionResponse implements Response {
 }
 
 input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
   blockId: ID!
   radioOptionBlockId: ID!
 }
@@ -102,6 +106,10 @@ type SignupResponse implements Response {
 }
 
 input SignupResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
   blockId: ID!
   name: String!
   email: String!
@@ -144,6 +152,10 @@ type VideoResponse implements Response {
 }
 
 input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
   blockId: ID!
   state: VideoResponseStateEnum!
 }
