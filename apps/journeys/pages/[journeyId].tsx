@@ -32,6 +32,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
+          theme
+          locale
           blocks {
             id
             parentBlockId
