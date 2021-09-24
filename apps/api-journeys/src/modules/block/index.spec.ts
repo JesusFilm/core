@@ -3,7 +3,6 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import dbMock from '../../../tests/dbMock'
 import Journey from '../journey'
-import { IconName } from './icon-enums'
 import { v4 as uuidv4 } from 'uuid'
 import { Block } from '.prisma/api-journeys-client'
 
@@ -18,7 +17,9 @@ it('returns blocks', async () => {
   dbMock.journey.findUnique.mockResolvedValue({
     id: journeyId,
     title: 'published',
-    published: true
+    published: true,
+    locale: 'en-US',
+    theme: 'default'
   })
   const step1: Block = {
     id: uuidv4(),
@@ -50,7 +51,8 @@ it('returns blocks', async () => {
     parentOrder: 2,
     extraAttrs: {
       label: 'label',
-      description: 'description'
+      description: 'description',
+      variant: 'DARK'
     }
   }
   const radioOption1: Block = {
@@ -112,6 +114,19 @@ it('returns blocks', async () => {
       }
     }
   }
+  const typography1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'TypographyBlock',
+    parentBlockId: step1.id,
+    parentOrder: 7,
+    extraAttrs: {
+      content: 'text',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left'
+    }
+  }
   const step2: Block = {
     id: nextBlockId,
     journeyId,
@@ -120,6 +135,19 @@ it('returns blocks', async () => {
     parentOrder: 7,
     extraAttrs: {
       locked: false
+    }
+  }
+  const signup1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'SignupBlock',
+    parentBlockId: step2.id,
+    parentOrder: 2,
+    extraAttrs: {
+      action: {
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourneyId
+      }
     }
   }
   const button1: Block = {
@@ -134,12 +162,12 @@ it('returns blocks', async () => {
       color: 'primary',
       size: 'large',
       startIcon: {
-        name: IconName.ArrowForward,
+        name: 'ArrowForward',
         color: 'secondary',
         size: 'lg'
       },
       endIcon: {
-        name: IconName.LockOpen,
+        name: 'LockOpen',
         color: 'action',
         size: 'xl'
       },
@@ -158,47 +186,34 @@ it('returns blocks', async () => {
     radioOption2,
     radioOption3,
     radioOption4,
+    typography1,
     step2,
+    signup1,
     button1
   ]
   dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
     document: gql`
+      fragment ActionFields on Action {
+        __typename
+        gtmEventName
+        ... on NavigateToBlockAction {
+          blockId
+        }
+        ... on NavigateToJourneyAction {
+          journeyId
+        }
+        ... on LinkAction {
+          url
+          target
+        }
+      }
       query ($id: ID!) {
         journey(id: $id) {
           blocks {
             id
             __typename
             parentBlockId
-            ... on StepBlock {
-              locked
-              nextBlockId
-            }
-            ... on VideoBlock {
-              src
-              title
-            }
-            ... on RadioQuestionBlock {
-              label
-              description
-              variant
-            }
-            ... on RadioOptionBlock {
-              label
-              action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
-              }
-            }
             ... on ButtonBlock {
               label
               variant
@@ -215,19 +230,38 @@ it('returns blocks', async () => {
                 size
               }
               action {
-                __typename
-                gtmEventName
-                ... on NavigateAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                  target
-                }
+                ...ActionFields
               }
+            }
+            ... on RadioOptionBlock {
+              label
+              action {
+                ...ActionFields
+              }
+            }
+            ... on RadioQuestionBlock {
+              label
+              description
+              variant
+            }
+            ... on SignupBlock {
+              action {
+                ...ActionFields
+              }
+            }
+            ... on StepBlock {
+              locked
+              nextBlockId
+            }
+            ... on TypographyBlock {
+              content
+              variant
+              color
+              align
+            }
+            ... on VideoBlock {
+              src
+              title
             }
           }
         }
@@ -261,7 +295,7 @@ it('returns blocks', async () => {
       parentBlockId: step1.id,
       label: 'label',
       description: 'description',
-      variant: null
+      variant: 'DARK'
     },
     {
       id: radioOption1.id,
@@ -293,7 +327,8 @@ it('returns blocks', async () => {
       action: {
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
-        url: 'https://jesusfilm.org'
+        url: 'https://jesusfilm.org',
+        target: null
       }
     },
     {
@@ -307,11 +342,30 @@ it('returns blocks', async () => {
       }
     },
     {
+      id: typography1.id,
+      __typename: 'TypographyBlock',
+      parentBlockId: step1.id,
+      content: 'text',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left'
+    },
+    {
       id: step2.id,
       __typename: 'StepBlock',
       parentBlockId: null,
       locked: false,
       nextBlockId: null
+    },
+    {
+      id: signup1.id,
+      __typename: 'SignupBlock',
+      parentBlockId: step2.id,
+      action: {
+        __typename: 'NavigateToJourneyAction',
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourneyId
+      }
     },
     {
       id: button1.id,

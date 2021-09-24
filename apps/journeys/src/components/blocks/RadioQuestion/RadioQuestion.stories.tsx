@@ -7,6 +7,7 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
+import { MockedProvider } from '@apollo/client/testing'
 
 const options: Array<TreeBlock<RadioOptionBlock>> = [
   {
@@ -72,7 +73,11 @@ const Demo = {
 
 const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({
   ...props
-}) => <RadioQuestion {...props} />
+}) => (
+  <MockedProvider>
+    <RadioQuestion {...props} />
+  </MockedProvider>
+)
 
 export const Default: Story<TreeBlock<RadioQuestionBlock>> =
   DefaultTemplate.bind({})

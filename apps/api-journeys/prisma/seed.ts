@@ -12,7 +12,9 @@ async function main(): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: '#FallingPlates',
-        published: true
+        published: true,
+        locale: 'id-ID',
+        theme: 'default'
       }
     })
   }
@@ -178,6 +180,29 @@ async function main(): Promise<void> {
       parentOrder: 4
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: stepWhenIWantToStart.id,
+      extraAttrs: {
+        label: 'Sign me up',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PLAY_ARROW',
+          color: 'secondary',
+          size: 'xl'
+        },
+        action: {
+          gtmEventName: 'signup',
+          url: 'https://signup.jesusfilm.org'
+        }
+      },
+      parentOrder: 0
+    }
+  })
   const stepWhenIAmAlreadyFollowingYou = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -206,21 +231,36 @@ async function main(): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'ButtonBlock',
-      parentBlockId: stepWhenIWantToStart.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
       extraAttrs: {
-        label: 'Sign me up',
-        variant: 'contained',
+        content: 'Fantastis!',
+        variant: 'h1',
         color: 'primary',
-        size: 'large',
-        startIcon: {
-          name: 'PLAY_ARROW',
-          color: 'secondary',
-          size: 'xl'
-        },
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  const stepSignup = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: true
+      },
+      parentOrder: 7
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignupBlock',
+      parentBlockId: stepSignup.id,
+      extraAttrs: {
         action: {
           gtmEventName: 'signup',
-          url: 'https://signup.jesusfilm.org'
+          url: 'https://signup-complete.jesusfilm.org'
         }
       },
       parentOrder: 0
