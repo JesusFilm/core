@@ -1,28 +1,85 @@
-name: Stage Push
+name: Stage Merge
 on:
-  push:
+  workflow_dispatch:
     branches:
-      - stage
+      - add-ns3-serverless
+#on:
+#  push:
+#    branches:
+#      - stage
 jobs:
-  build:
+  build-and-deploy:
+    environment: Preview
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
+      - name: Get Github action IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Allow Github Actions Access to Postgres
+        run: aws ec2 authorize-security-group-ingress --group-name ark-weave-postgres --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+
+      - name: Check infrastructure stack for updates
+        run: aws cloudformation deploy --template-file ./resources/cf-stacks/core.preview.yml
+
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
           cache: "npm"
-      - run: npm install
-      - name: Fetch other branches
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: mansagroup/nrwl-nx-action@v2
+
+      - name: NPM Install
+        run: npm install
+
+      - name: Run NX generate and build
+        uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,build
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: AWS CLI
-        uses: ItsKarma/aws-cli@v1.70.0
+
+      - name: Perform Prisma Migrations
+        run: |
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > .env
+          npx prisma migrate deploy
+
+      - name: Deploy api-journeys API
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: deploy
+
+      - name: Remove Github Actions Access to Postgres
+        run: aws ec2 revoke-security-group-ingress --group-name ark-weave-postgres --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+# name: Stage Push
+# on:
+#   push:
+#     branches:
+#       - stage
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#         with:
+#           ref: ${{ github.event.pull_request.head.ref }}
+#           fetch-depth: 0
+#       - uses: actions/setup-node@v2
+#         with:
+#           node-version: "16"
+#           cache: "npm"
+#       - run: npm install
+#       - name: Fetch other branches
+#         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+
+#       - uses: mansagroup/nrwl-nx-action@v2
+#         with:
+#           targets: generate,build
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: AWS CLI
+#         uses: ItsKarma/aws-cli@v1.70.0
