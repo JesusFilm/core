@@ -7,6 +7,72 @@ interface Block {
   parentBlockId: ID
 }
 
+type ButtonBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIcon: Icon
+  endIcon: Icon
+  action: Action
+}
+
+enum ButtonColor {
+  primary
+  secondary
+  error
+  inherit
+}
+
+enum ButtonSize {
+  small
+  medium
+  large
+}
+
+enum ButtonVariant {
+  text
+  contained
+}
+
+type Icon {
+  name: IconName!
+  color: IconColor
+  size: IconSize
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconName {
+  PlayArrow
+  Translate
+  CheckCircle
+  RadioButtonUnchecked
+  FormatQuote
+  LockOpen
+  ArrowForward
+  ChatBubbleOutline
+  LiveTv
+  MenuBook
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!

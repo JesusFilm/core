@@ -180,6 +180,29 @@ async function main(): Promise<void> {
       parentOrder: 4
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: stepWhenIWantToStart.id,
+      extraAttrs: {
+        label: 'Sign me up',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PLAY_ARROW',
+          color: 'secondary',
+          size: 'xl'
+        },
+        action: {
+          gtmEventName: 'signup',
+          url: 'https://signup.jesusfilm.org'
+        }
+      },
+      parentOrder: 0
+    }
+  })
   const stepWhenIAmAlreadyFollowingYou = await prisma.block.create({
     data: {
       journeyId: journey.id,

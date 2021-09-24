@@ -38,6 +38,75 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
+  """
+  IconName is equivalent to the icons found in @mui/icons-material
+  """
+  enum IconName {
+    PlayArrow
+    Translate
+    CheckCircle
+    RadioButtonUnchecked
+    FormatQuote
+    LockOpen
+    ArrowForward
+    ChatBubbleOutline
+    LiveTv
+    MenuBook
+  }
+
+  enum IconColor {
+    primary
+    secondary
+    action
+    error
+    disabled
+    inherit
+  }
+
+  enum IconSize {
+    sm
+    md
+    lg
+    xl
+    inherit
+  }
+
+  type Icon {
+    name: IconName!
+    color: IconColor
+    size: IconSize
+  }
+
+  enum ButtonVariant {
+    text
+    contained
+  }
+
+  enum ButtonColor {
+    primary
+    secondary
+    error
+    inherit
+  }
+
+  enum ButtonSize {
+    small
+    medium
+    large
+  }
+
+  type ButtonBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    label: String!
+    variant: ButtonVariant
+    color: ButtonColor
+    size: ButtonSize
+    startIcon: Icon
+    endIcon: Icon
+    action: Action
+  }
+
   type RadioOptionBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -174,6 +243,15 @@ const resolvers: Resolvers = {
         orderBy: [{ parentOrder: 'asc' }]
       })
     }
+  },
+  ButtonBlock: {
+    action: ({ extraAttrs }) => get(extraAttrs, 'action'),
+    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
+    variant: ({ extraAttrs }) => get(extraAttrs, 'variant'),
+    color: ({ extraAttrs }) => get(extraAttrs, 'color'),
+    size: ({ extraAttrs }) => get(extraAttrs, 'size'),
+    startIcon: ({ extraAttrs }) => get(extraAttrs, 'startIcon'),
+    endIcon: ({ extraAttrs }) => get(extraAttrs, 'endIcon')
   },
   SignupBlock: {
     action: ({ extraAttrs }) => get(extraAttrs, 'action')

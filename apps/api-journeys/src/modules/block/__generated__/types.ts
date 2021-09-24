@@ -13,6 +13,8 @@ export namespace BlockModule {
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
     VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
+    Icon: 'name' | 'color' | 'size';
+    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     Journey: 'blocks';
     RadioQuestionResponse: 'block';
     SignupResponse: 'block';
@@ -26,6 +28,12 @@ export namespace BlockModule {
     TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
     TypographyColor: 'primary' | 'secondary' | 'error';
     TypographyAlign: 'left' | 'center' | 'right';
+    IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
+    IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
+    IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
+    ButtonVariant: 'text' | 'contained';
+    ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
+    ButtonSize: 'small' | 'medium' | 'large';
   };
   
   export type Action = Pick<Types.Action, DefinedFields['Action']>;
@@ -48,6 +56,14 @@ export namespace BlockModule {
   export type RadioQuestionResponse = Types.RadioQuestionResponse;
   export type SignupResponse = Types.SignupResponse;
   export type VideoResponse = Types.VideoResponse;
+  export type IconName = DefinedEnumValues['IconName'];
+  export type IconColor = DefinedEnumValues['IconColor'];
+  export type IconSize = DefinedEnumValues['IconSize'];
+  export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
+  export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
+  export type ButtonColor = DefinedEnumValues['ButtonColor'];
+  export type ButtonSize = DefinedEnumValues['ButtonSize'];
+  export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
   
   export type NavigateActionResolvers = Pick<Types.NavigateActionResolvers, DefinedFields['NavigateAction'] | '__isTypeOf'>;
   export type NavigateToBlockActionResolvers = Pick<Types.NavigateToBlockActionResolvers, DefinedFields['NavigateToBlockAction'] | '__isTypeOf'>;
@@ -59,6 +75,8 @@ export namespace BlockModule {
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type TypographyBlockResolvers = Pick<Types.TypographyBlockResolvers, DefinedFields['TypographyBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
+  export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
+  export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
   export type RadioQuestionResponseResolvers = Pick<Types.RadioQuestionResponseResolvers, DefinedFields['RadioQuestionResponse']>;
   export type SignupResponseResolvers = Pick<Types.SignupResponseResolvers, DefinedFields['SignupResponse']>;
@@ -77,6 +95,8 @@ export namespace BlockModule {
     StepBlock?: StepBlockResolvers;
     TypographyBlock?: TypographyBlockResolvers;
     VideoBlock?: VideoBlockResolvers;
+    Icon?: IconResolvers;
+    ButtonBlock?: ButtonBlockResolvers;
     Journey?: JourneyResolvers;
     RadioQuestionResponse?: RadioQuestionResponseResolvers;
     SignupResponse?: SignupResponseResolvers;
@@ -169,6 +189,24 @@ export namespace BlockModule {
     VideoResponse?: {
       '*'?: gm.Middleware[];
       block?: gm.Middleware[];
+    };
+    Icon?: {
+      '*'?: gm.Middleware[];
+      name?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+    };
+    ButtonBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      label?: gm.Middleware[];
+      variant?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+      startIcon?: gm.Middleware[];
+      endIcon?: gm.Middleware[];
+      action?: gm.Middleware[];
     };
   };
 }

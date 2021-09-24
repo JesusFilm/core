@@ -38,12 +38,13 @@ enum ThemeName {
 }
 
 enum BlockType {
-  StepBlock
-  VideoBlock
-  RadioQuestionBlock
+  ButtonBlock
   RadioOptionBlock
-  TypographyBlock
+  RadioQuestionBlock
   SignupBlock
+  StepBlock
+  TypographyBlock
+  VideoBlock
 }
 
 model Response {
