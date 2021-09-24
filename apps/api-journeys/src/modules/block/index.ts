@@ -39,6 +39,75 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
+  """
+  IconName is equivalent to the icons found in @mui/icons-material
+  """
+  enum IconName {
+    PlayArrow
+    Translate
+    CheckCircle
+    RadioButtonUnchecked
+    FormatQuote
+    LockOpen
+    ArrowForward
+    ChatBubbleOutline
+    LiveTv
+    MenuBook
+  }
+
+  enum IconColor {
+    primary
+    secondary
+    action
+    error
+    disabled
+    inherit
+  }
+
+  enum IconSize {
+    sm
+    md
+    lg
+    xl
+    inherit
+  }
+
+  type Icon {
+    name: IconName!
+    color: IconColor
+    size: IconSize
+  }
+
+  enum ButtonVariant {
+    text
+    contained
+  }
+
+  enum ButtonColor {
+    primary
+    secondary
+    error
+    inherit
+  }
+
+  enum ButtonSize {
+    small
+    medium
+    large
+  }
+
+  type ButtonBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    label: String!
+    variant: ButtonVariant
+    color: ButtonColor
+    size: ButtonSize
+    startIcon: Icon
+    endIcon: Icon
+    action: Action
+  }
+
   type RadioOptionBlock implements Block {
     id: ID!
     parentBlockId: ID
