@@ -4,7 +4,7 @@ import { baseSpacing } from './tokens/spacing'
 import { baseTypography } from './tokens/typography'
 
 const baseTheme = createTheme({
-  typography: { ...baseTypography },
+  ...baseTypography,
   ...baseSpacing,
   // BUTTON TODO
   shape: { borderRadius: 8 }
