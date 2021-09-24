@@ -1,2 +1,3 @@
-export { Typography, TypographyProps } from './Typography'
+export { Typography } from './Typography'
+export type { TypographyProps } from './Typography'
 export { TYPOGRAPHY_FIELDS } from './typographyFields'

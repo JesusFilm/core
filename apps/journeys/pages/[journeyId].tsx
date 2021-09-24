@@ -9,6 +9,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
+import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
 
 interface JourneyPageProps {
   journey: Journey
@@ -16,11 +17,13 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
-    <Container>
-      {journey.blocks != null && (
-        <Conductor blocks={transformer(journey.blocks)} />
-      )}
-    </Container>
+    <JourneysThemeProvider theme={journey.theme}>
+      <Container>
+        {journey.blocks != null && (
+          <Conductor blocks={transformer(journey.blocks)} />
+        )}
+      </Container>
+    </JourneysThemeProvider>
   )
 }
 
