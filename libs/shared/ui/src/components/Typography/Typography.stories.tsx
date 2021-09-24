@@ -54,23 +54,16 @@ const ColorCards = ({
 }: TypographyStoryProps): ReactElement => {
   return (
     <Card>
-      <Typography
-        {...props}
-        sx={{ m: 0 }}
-        variant={TypographyVariant.h6}
-        content={heading}
-      />
+      <Typography {...props} variant={TypographyVariant.h6} content={heading} />
       {variants.map((variant) => (
         <>
           <Typography
             {...props}
-            sx={{ m: 0 }}
             variant={TypographyVariant.overline}
             content={variant ?? 'Default'}
           />
           <Typography
             {...props}
-            sx={{ m: 0 }}
             variant={TypographyVariant.h5}
             color={variant as TypographyColor}
             content="Heading"
