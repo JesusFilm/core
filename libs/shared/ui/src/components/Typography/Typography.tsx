@@ -3,10 +3,10 @@ import {
   Typography as MuiTypography,
   TypographyProps as MuiTypographyProps
 } from '@mui/material'
-import { TypographyBlockProps } from './__generated__/TypographyBlockProps'
+import { TypographyFields } from './__generated__/TypographyFields'
 
 export interface TypographyProps
-  extends TypographyBlockProps,
+  extends TypographyFields,
     Omit<MuiTypographyProps, 'id' | 'variant' | 'color' | 'align'> {}
 
 export function Typography({
