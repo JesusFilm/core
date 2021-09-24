@@ -1,0 +1,18 @@
+Type: 'AWS::EC2::SecurityGroup'
+Properties:
+  GroupDescription: !Ref 'AWS::StackName'
+  SecurityGroupIngress:
+  - IpProtocol: tcp
+    FromPort: ${self:custom.dbparams.port}
+    ToPort: ${self:custom.dbparams.port}
+    SourceSecurityGroupId: {'Fn::ImportValue': !Sub '${ParentSSHBastionStack}-BastionSecurityGroupID'}
+    Description: 'Access to Bastion Host Security Group'
+  - IpProtocol: tcp
+    FromPort: ${self:custom.dbparams.port}
+    ToPort: ${self:custom.dbparams.port}
+    SourceSecurityGroupId: {'Fn::ImportValue': !Sub '${ParentVPCStack}-SecretRotationLambdaSecurityGroup'}
+    Description: 'Access to Lambda Security Group'
+  VpcId: {'Fn::ImportValue': !Sub '${ParentVPCStack}-VPC'}
+  Tags:
+  - Key: Name
+    Value: !Sub '${AWS::StackName}-AuroraClusterSecurityGroup'

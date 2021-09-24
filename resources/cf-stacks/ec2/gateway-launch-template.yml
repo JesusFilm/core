@@ -1,0 +1,11 @@
+Type: AWS::EC2::LaunchTemplate
+Properties:
+  LaunchTemplateName: apollo-gateway-ec2-launch
+  LaunchTemplateData: 
+    ImageId: ami-0c2b8ca1dad447f8a
+    InstanceType: t4g.small
+    KeyName: jfm-prod
+    SecurityGroups:
+      - !Ref ApolloGatewaySecurityGroup
+
+            

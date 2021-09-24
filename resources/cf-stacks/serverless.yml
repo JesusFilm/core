@@ -1,0 +1,37 @@
+service:
+  name: ark-core-journeys
+provider:
+  name: aws
+  stage: ${opt:env}
+custom:
+  dbparams:
+    port: 5432
+functions: # None - this is backing infrastructure only.
+
+resources:
+  Resources:
+    ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
+    # ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
+    # ArkWeaveCoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
+    # ArkWeaveDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
+    # ArkWeaveDBReplica: ${file(resources/cf-stacks/db/replica-insexptance.yml)}
+    # DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
+    # DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
+    # DBSecurityGroup: ${file(resources/cf-stacks/ec2/db-security-group.yml)}
+    # DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
+  # Outputs:
+  #   ConnectionString:
+  #     Description: "Connection String"
+  #     Value: !Join
+  #       - ""
+  #       - - "postgresql://"
+  #         - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUsername
+  #         - ":"
+  #         - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUserPassword
+  #         - "@"
+  #         - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Address
+  #         - ":"
+  #         - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Port
+  #         - "/"
+  #         - !Ref ArkWeaveCoreDBCluster.Properties.DatabaseName
+  #         - "?schema=public"

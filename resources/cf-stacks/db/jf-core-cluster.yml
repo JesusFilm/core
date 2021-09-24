@@ -1,0 +1,13 @@
+Type: AWS::RDS::DBCluster
+DeletionPolicy: Snapshot
+UpdateReplacePolicy: Snapshot
+Properties:
+  Engine: aurora-postgresql
+  EngineVersion: 13.3
+  DatabaseName: jf-core-journeys
+  Port: 5432
+  MasterUsername: test-user
+  MasterUserPassword: test-password
+  DBSubnetGroupName: !Ref DBSubnetGroup
+  VpcSecurityGroupIds:
+    - !Ref ClusterSecurityGroup

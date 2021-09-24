@@ -1,0 +1,12 @@
+Type: AWS::EC2::SecurityGroup
+Properties:
+  GroupDescription: Security group for Apollo Gateway instances
+  VpcId: vpc-9c5371f0
+  SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: "443"
+      ToPort: "443"
+      CidrIp: "0.0.0.0/0"
+  Tags:
+    - Key: "Name"
+      Value: "apollo-gateway-instances-${opt:env}"

@@ -1,0 +1,6 @@
+Type: AWS::RDS::DBClusterParameterGroup
+Properties:
+  Description: Postgres DB Cluster Param Group for Ark Weave
+  Family: aurora-postgresql13 
+  Parameters:
+    rds.force_ssl: 0
