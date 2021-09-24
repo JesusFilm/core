@@ -25,6 +25,72 @@ interface Block {
   parentBlockId: ID
 }
 
+type ButtonBlock implements Block {
+  action: Action
+  color: ButtonColor
+  endIcon: Icon
+  id: ID!
+  label: String!
+  parentBlockId: ID
+  size: ButtonSize
+  startIcon: Icon
+  variant: ButtonVariant
+}
+
+enum ButtonColor {
+  error
+  inherit
+  primary
+  secondary
+}
+
+enum ButtonSize {
+  large
+  medium
+  small
+}
+
+enum ButtonVariant {
+  contained
+  text
+}
+
+type Icon {
+  color: IconColor
+  name: IconName!
+  size: IconSize
+}
+
+enum IconColor {
+  action
+  disabled
+  error
+  inherit
+  primary
+  secondary
+}
+
+enum IconName {
+  ArrowForward
+  ChatBubbleOutline
+  CheckCircle
+  FormatQuote
+  LiveTv
+  LockOpen
+  MenuBook
+  PlayArrow
+  RadioButtonUnchecked
+  Translate
+}
+
+enum IconSize {
+  inherit
+  lg
+  md
+  sm
+  xl
+}
+
 scalar join__FieldSet
 
 enum join__Graph {

@@ -150,6 +150,34 @@ it('returns blocks', async () => {
       }
     }
   }
+  const button1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'ButtonBlock',
+    parentBlockId: step2.id,
+    parentOrder: 1,
+    extraAttrs: {
+      label: 'label',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
+      startIcon: {
+        name: 'ArrowForward',
+        color: 'secondary',
+        size: 'lg'
+      },
+      endIcon: {
+        name: 'LockOpen',
+        color: 'action',
+        size: 'xl'
+      },
+      action: {
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org',
+        target: 'target'
+      }
+    }
+  }
   const blocks = [
     step1,
     video1,
@@ -160,7 +188,8 @@ it('returns blocks', async () => {
     radioOption4,
     typography1,
     step2,
-    signup1
+    signup1,
+    button1
   ]
   dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
@@ -176,6 +205,7 @@ it('returns blocks', async () => {
         }
         ... on LinkAction {
           url
+          target
         }
       }
       query ($id: ID!) {
@@ -184,6 +214,25 @@ it('returns blocks', async () => {
             id
             __typename
             parentBlockId
+            ... on ButtonBlock {
+              label
+              variant
+              color
+              size
+              startIcon {
+                name
+                color
+                size
+              }
+              endIcon {
+                name
+                color
+                size
+              }
+              action {
+                ...ActionFields
+              }
+            }
             ... on RadioOptionBlock {
               label
               action {
@@ -278,7 +327,8 @@ it('returns blocks', async () => {
       action: {
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
-        url: 'https://jesusfilm.org'
+        url: 'https://jesusfilm.org',
+        target: null
       }
     },
     {
@@ -315,6 +365,31 @@ it('returns blocks', async () => {
         __typename: 'NavigateToJourneyAction',
         gtmEventName: 'gtmEventName',
         journeyId: otherJourneyId
+      }
+    },
+    {
+      id: button1.id,
+      __typename: 'ButtonBlock',
+      parentBlockId: step2.id,
+      label: 'label',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
+      startIcon: {
+        name: 'ArrowForward',
+        color: 'secondary',
+        size: 'lg'
+      },
+      endIcon: {
+        name: 'LockOpen',
+        color: 'action',
+        size: 'xl'
+      },
+      action: {
+        __typename: 'LinkAction',
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org',
+        target: 'target'
       }
     }
   ])

@@ -1,7 +1,8 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { BlockModule } from './__generated__/types'
 import { ActionResolvers, BlockResolvers } from '../../__generated__/types'
+import { BlockModule } from './__generated__/types'
+
 import { get } from 'lodash'
 
 const typeDefs = gql`
@@ -142,6 +143,73 @@ const typeDefs = gql`
   extend type VideoResponse {
     block: VideoBlock!
   }
+
+  # MaterialUI Icon Type Names:
+  enum IconName {
+    PlayArrow
+    Translate
+    CheckCircle
+    RadioButtonUnchecked
+    FormatQuote
+    LockOpen
+    ArrowForward
+    ChatBubbleOutline
+    LiveTv
+    MenuBook
+  }
+
+  enum IconColor {
+    primary
+    secondary
+    action
+    error
+    disabled
+    inherit
+  }
+
+  enum IconSize {
+    sm
+    md
+    lg
+    xl
+    inherit
+  }
+
+  type Icon {
+    name: IconName!
+    color: IconColor
+    size: IconSize
+  }
+
+  enum ButtonVariant {
+    text
+    contained
+  }
+
+  enum ButtonColor {
+    primary
+    secondary
+    error
+    inherit
+  }
+
+  enum ButtonSize {
+    small
+    medium
+    large
+  }
+
+  type ButtonBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    label: String!
+    variant: ButtonVariant
+    color: ButtonColor
+    size: ButtonSize
+    startIcon: Icon
+    endIcon: Icon
+    action: Action
+  }
 `
 
 type Resolvers = BlockModule.Resolvers & {
@@ -174,6 +242,15 @@ const resolvers: Resolvers = {
         orderBy: [{ parentOrder: 'asc' }]
       })
     }
+  },
+  ButtonBlock: {
+    action: ({ extraAttrs }) => get(extraAttrs, 'action'),
+    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
+    variant: ({ extraAttrs }) => get(extraAttrs, 'variant'),
+    color: ({ extraAttrs }) => get(extraAttrs, 'color'),
+    size: ({ extraAttrs }) => get(extraAttrs, 'size'),
+    startIcon: ({ extraAttrs }) => get(extraAttrs, 'startIcon'),
+    endIcon: ({ extraAttrs }) => get(extraAttrs, 'endIcon')
   },
   SignupBlock: {
     action: ({ extraAttrs }) => get(extraAttrs, 'action')
