@@ -4,6 +4,7 @@ declare global {
   namespace GraphQLModules {
     interface GlobalContext {
       db: PrismaClient
+      userId?: string
     }
   }
   namespace NodeJS {
