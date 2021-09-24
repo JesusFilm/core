@@ -6,10 +6,10 @@
 import { TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
-// GraphQL fragment: TypographyBlockProps
+// GraphQL fragment: TypographyFields
 // ====================================================
 
-export interface TypographyBlockProps {
+export interface TypographyFields {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
