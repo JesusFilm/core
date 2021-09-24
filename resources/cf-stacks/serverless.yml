@@ -6,19 +6,21 @@ provider:
 custom:
   dbparams:
     port: 5432
+    name: core_journeys_${opt:env}
+    cluster:
 functions: # None - this is backing infrastructure only.
 
 resources:
   Resources:
-    ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
-    # ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
-    # ArkWeaveCoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
-    # ArkWeaveDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
-    # ArkWeaveDBReplica: ${file(resources/cf-stacks/db/replica-insexptance.yml)}
-    # DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
-    # DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
-    # DBSecurityGroup: ${file(resources/cf-stacks/ec2/db-security-group.yml)}
-    # DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
+    #ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
+    #ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
+    CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
+    CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
+    CoreDBReplica: ${file(resources/cf-stacks/db/replica-instance.yml)}
+    #DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
+    #DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
+    DBSecurityGroup: ${file(resources/cf-stacks/ec2/db-security-group.yml)}
+    DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
   # Outputs:
   #   ConnectionString:
   #     Description: "Connection String"

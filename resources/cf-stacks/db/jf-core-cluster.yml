@@ -4,10 +4,12 @@ UpdateReplacePolicy: Snapshot
 Properties:
   Engine: aurora-postgresql
   EngineVersion: 13.3
-  DatabaseName: jf-core-journeys
-  Port: 5432
-  MasterUsername: test-user
-  MasterUserPassword: test-password
+  DatabaseName: ${self:custom.dbparams.name}
+  Port: ${self:custom.dbparams.port}
+  MasterUsername: ${self:custom.dbparams.dbuser}
+  MasterUserPassword: ${self:custom.dbparams.dbpassword}
+  DBClusterIdentifier: ${self:custom.dbparams.clustername}
   DBSubnetGroupName: !Ref DBSubnetGroup
+  DBClusterParameterGroupName: default.aurora-postgresql13
   VpcSecurityGroupIds:
     - !Ref ClusterSecurityGroup
