@@ -1,28 +1,28 @@
-import { Story, Meta } from "@storybook/react";
-import { Button, ButtonProps } from ".";
+import { Story, Meta } from '@storybook/react'
+import { Button, ButtonProps } from '.'
 import {
   ButtonVariant,
   ButtonColor,
   ButtonSize,
   IconColor,
   IconName,
-  IconSize,
-} from "../../../__generated__/globalTypes";
+  IconSize
+} from '../../../__generated__/globalTypes'
 
 const ButtonDemo = {
   component: Button,
-  title: "shared-ui/Button",
-};
+  title: 'shared-ui/Button'
+}
 
 interface ButtonStoryProps extends ButtonProps {
-  variants: string[];
+  variants: string[]
 }
 
 const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div
     style={{
-      display: "flex",
-      flexDirection: "column",
+      display: 'flex',
+      flexDirection: 'column'
     }}
   >
     {args.variants.map((variant) => (
@@ -33,153 +33,110 @@ const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       />
     ))}
   </div>
-);
+)
 
-export const Variant = VariantTemplate.bind({});
+export const Variant = VariantTemplate.bind({})
 Variant.args = {
-  __typename: "ButtonBlock",
-  id: "button",
-  parentBlockId: "question",
-  startIcon: null,
-  endIcon: null,
-  variants: [
-    ButtonVariant.contained,
-    ButtonVariant.outlined,
-    ButtonVariant.text,
-  ],
-};
+  variants: [ButtonVariant.contained, ButtonVariant.text]
+}
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div
     style={{
-      display: "flex",
-      flexDirection: "column",
+      display: 'flex',
+      flexDirection: 'column'
     }}
   >
     {args.variants.map((variant) => (
       <Button {...args} label={`${variant}`} color={variant as ButtonColor} />
     ))}
   </div>
-);
+)
 
-export const Color = ColorTemplate.bind({});
+export const Color = ColorTemplate.bind({})
 Color.args = {
-  __typename: "ButtonBlock",
-  id: "button",
   variant: ButtonVariant.contained,
-  parentBlockId: "question",
-  startIcon: null,
-  endIcon: null,
-  variants: [
-    ButtonColor.primary,
-    ButtonColor.secondary,
-    ButtonColor.success,
-    ButtonColor.warning,
-    ButtonColor.error,
-    ButtonColor.info,
-  ],
-};
+  variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error]
+}
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div
     style={{
-      display: "flex",
-      flexDirection: "column",
+      display: 'flex',
+      flexDirection: 'column'
     }}
   >
     {args.variants.map((variant) => (
       <Button {...args} label={`${variant}`} size={variant as ButtonSize} />
     ))}
   </div>
-);
+)
 
-export const Size = SizeTemplate.bind({});
+export const Size = SizeTemplate.bind({})
 Size.args = {
-  __typename: "ButtonBlock",
-  id: "button",
-  parentBlockId: "question",
   variant: ButtonVariant.contained,
-  startIcon: null,
-  endIcon: null,
-  variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large],
-};
+  variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
+}
 
 const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div
     style={{
-      display: "flex",
-      flexDirection: "column",
+      display: 'flex',
+      flexDirection: 'column'
     }}
   >
     <Button {...args} />
+    <Button {...args} />
   </div>
-);
+)
 
-export const startIcon = IconTemplate.bind({});
+export const startIcon = IconTemplate.bind({})
 startIcon.args = {
-  __typename: "ButtonBlock",
-  id: "button",
-  parentBlockId: "question",
-  label: "Start Icon",
+  label: 'Start Icon',
   variant: ButtonVariant.contained,
   startIcon: {
-    __typename: "Icon",
+    __typename: 'Icon',
     name: IconName.CheckCircle,
     color: IconColor.inherit,
-    size: IconSize.m,
-  },
-  endIcon: null,
-};
+    size: IconSize.md
+  }
+}
 
-export const endIcon = IconTemplate.bind({});
+export const endIcon = IconTemplate.bind({})
 endIcon.args = {
-  __typename: "ButtonBlock",
-  id: "button",
-  parentBlockId: "question",
-  label: "End Icon",
+  label: 'End Icon',
   variant: ButtonVariant.contained,
-  startIcon: null,
   endIcon: {
-    __typename: "Icon",
+    __typename: 'Icon',
     name: IconName.CheckCircle,
     color: IconColor.inherit,
-    size: IconSize.m,
-  },
-};
+    size: IconSize.md
+  }
+}
 
 const Template: Story<ButtonStoryProps> = ({ ...args }) => (
   <div
     style={{
-      display: "flex",
-      flexDirection: "column",
+      display: 'flex',
+      flexDirection: 'column'
     }}
   >
     <Button {...args} />
   </div>
-);
+)
 
-export const Loading = Template.bind({});
+export const Loading = Template.bind({})
 Loading.args = {
-  __typename: "ButtonBlock",
-  id: "button",
-  parentBlockId: "question",
-  label: "End Icon",
+  label: 'Loading',
   variant: ButtonVariant.contained,
-  startIcon: null,
-  endIcon: null,
-  loading: false,
-};
+  loading: false
+}
 
-export const Disabled = Template.bind({});
+export const Disabled = Template.bind({})
 Disabled.args = {
-  __typename: "ButtonBlock",
-  id: "button",
-  parentBlockId: "question",
-  label: "End Icon",
+  label: 'Disabled',
   variant: ButtonVariant.contained,
-  startIcon: null,
-  endIcon: null,
-  disabled: true,
-};
+  disabled: true
+}
 
-export default ButtonDemo as Meta;
+export default ButtonDemo as Meta

@@ -12,10 +12,12 @@ interface IconStoryProps extends IconProps {
 }
 
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
     {args.variants.map((variant) => (
       <Icon {...args} name={variant as IconName} />
     ))}
@@ -27,14 +29,27 @@ Variant.args = {
   __typename: 'Icon',
   color: null,
   size: null,
-  variants: [IconName.ArrowForward, IconName.ChatBubbleOutline, IconName.CheckCircle, IconName.FormatQuote, IconName.LiveTv, IconName.LockOpen, IconName.MenuBook, IconName.PlayArrow, IconName.RadioButtonUnchecked, IconName.Translate]
+  variants: [
+    IconName.ArrowForward,
+    IconName.ChatBubbleOutline,
+    IconName.CheckCircle,
+    IconName.FormatQuote,
+    IconName.LiveTv,
+    IconName.LockOpen,
+    IconName.MenuBook,
+    IconName.PlayArrow,
+    IconName.RadioButtonUnchecked,
+    IconName.Translate
+  ]
 }
 
 const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column'
-  }}>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
     {args.variants.map((variant) => (
       <Icon {...args} size={variant as IconSize} />
     ))}
@@ -46,7 +61,13 @@ Size.args = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
   color: null,
-  variants: [IconSize.s, IconSize.m, IconSize.l, IconSize.xl, IconSize.inherit]
+  variants: [
+    IconSize.sm,
+    IconSize.md,
+    IconSize.lg,
+    IconSize.xl,
+    IconSize.inherit
+  ]
 }
 
 export default IconDemo as Meta

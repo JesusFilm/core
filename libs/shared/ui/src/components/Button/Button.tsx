@@ -1,19 +1,11 @@
-import { ReactElement } from "react";
-import { Button as MuiButton, CircularProgress } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { Icon } from "../Icon/";
-import { ButtonBlockFields } from "./__generated__/ButtonBlockFields";
-
-const useStyles = makeStyles(() => ({
-  spacing: {
-    margin: "5px 0",
-    borderRadius: 13,
-  },
-}));
+import { ReactElement } from 'react'
+import { Button as MuiButton, CircularProgress } from '@mui/material'
+import { Icon } from '../Icon/'
+import { ButtonBlockFields } from './__generated__/ButtonBlockFields'
 
 export interface ButtonProps extends ButtonBlockFields {
-  loading?: boolean;
-  disabled?: boolean;
+  loading?: boolean
+  disabled?: boolean
 }
 
 export function Button({
@@ -24,14 +16,10 @@ export function Button({
   startIcon,
   endIcon,
   loading,
-  disabled,
+  disabled
 }: ButtonProps): ReactElement {
-  const classes = useStyles();
-
   return (
     <MuiButton
-      data-testid="ButtonComponent"
-      className={classes.spacing}
       variant={variant ?? undefined}
       disabled={disabled}
       color={color ?? undefined}
@@ -59,5 +47,5 @@ export function Button({
     >
       {loading === false ? <CircularProgress color="secondary" /> : label}
     </MuiButton>
-  );
+  )
 }
