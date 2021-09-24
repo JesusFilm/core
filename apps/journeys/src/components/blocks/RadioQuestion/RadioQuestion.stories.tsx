@@ -81,7 +81,6 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({
 
 export const Default: Story<TreeBlock<RadioQuestionBlock>> =
   DefaultTemplate.bind({})
-
 Default.args = {
   id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
@@ -99,7 +98,7 @@ Long.args = {
   label: 'Have you accepted Jesus in your life?',
   description:
     'Have you declared that you want to accept Jesus in your life as your Lord and savior?',
-  children: [...longLabel]
+  children: longLabel
 }
 
 export const Dark: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind(
@@ -110,7 +109,7 @@ Dark.args = {
   label: 'Dark Background',
   description: 'Testing to see if the dark background is working',
   variant: RadioQuestionVariant.DARK,
-  children: [...options],
+  children: options,
   parentBlockId: 'AStep'
 }
 

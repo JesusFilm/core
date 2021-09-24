@@ -142,48 +142,6 @@ const typeDefs = gql`
   extend type VideoResponse {
     block: VideoBlock!
   }
-
-  enum TypographyVariant {
-    h1
-    h2
-    h3
-    h4
-    h5
-    h6
-    subtitle1
-    subtitle2
-    body1
-    body2
-    caption
-    overline
-  }
-
-  enum TypographyColor {
-    primary
-    secondary
-    error
-  }
-
-  enum TypographyAlign {
-    left
-    center
-    right
-  }
-
-  type TypographyBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    content: String!
-    variant: TypographyVariant
-    color: TypographyColor
-    align: TypographyAlign
-  }
-
-  type SignupBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    action: Action
-  }
 `
 
 type Resolvers = BlockModule.Resolvers & {

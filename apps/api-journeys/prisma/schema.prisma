@@ -37,10 +37,6 @@ enum ThemeName {
   default
 }
 
-enum ThemeName {
-  default
-}
-
 enum BlockType {
   StepBlock
   VideoBlock
