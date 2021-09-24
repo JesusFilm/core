@@ -7,56 +7,31 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum ButtonColor {
+export enum TypographyAlign {
+  center = "center",
+  left = "left",
+  right = "right",
+}
+
+export enum TypographyColor {
   error = "error",
-  info = "info",
-  inherit = "inherit",
-  primary = "primary",
-  secondary = "secondary",
-  success = "success",
-  warning = "warning",
-}
-
-export enum ButtonSize {
-  large = "large",
-  medium = "medium",
-  small = "small",
-}
-
-export enum ButtonVariant {
-  contained = "contained",
-  outlined = "outlined",
-  text = "text",
-}
-
-export enum IconColor {
-  action = "action",
-  disabled = "disabled",
-  error = "error",
-  inherit = "inherit",
   primary = "primary",
   secondary = "secondary",
 }
 
-export enum IconName {
-  ArrowForward = "ArrowForward",
-  ChatBubbleOutline = "ChatBubbleOutline",
-  CheckCircle = "CheckCircle",
-  FormatQuote = "FormatQuote",
-  LiveTv = "LiveTv",
-  LockOpen = "LockOpen",
-  MenuBook = "MenuBook",
-  PlayArrow = "PlayArrow",
-  RadioButtonUnchecked = "RadioButtonUnchecked",
-  Translate = "Translate",
-}
-
-export enum IconSize {
-  inherit = "inherit",
-  l = "l",
-  m = "m",
-  s = "s",
-  xl = "xl",
+export enum TypographyVariant {
+  body1 = "body1",
+  body2 = "body2",
+  caption = "caption",
+  h1 = "h1",
+  h2 = "h2",
+  h3 = "h3",
+  h4 = "h4",
+  h5 = "h5",
+  h6 = "h6",
+  overline = "overline",
+  subtitle1 = "subtitle1",
+  subtitle2 = "subtitle2",
 }
 
 //==============================================================

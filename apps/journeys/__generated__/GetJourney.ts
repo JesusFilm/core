@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioQuestionVariant } from "./globalTypes";
+import { ThemeName, RadioQuestionVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
 // ====================================================
 
 export interface GetJourney_journey_blocks_ButtonBlock {
-  __typename: "ButtonBlock";
+  __typename: "ButtonBlock" | "SignupBlock" | "TypographyBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -90,6 +90,8 @@ export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | 
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
+  theme: ThemeName;
+  locale: string;
   blocks: GetJourney_journey_blocks[] | null;
 }
 

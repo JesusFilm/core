@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Box, Button, Container } from '@mui/material'
+import { Box, Button, Container, ThemeProvider } from '@mui/material'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
@@ -8,6 +8,7 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../__generated__/GetJourneys'
+import { themes } from '@core/shared/ui'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -15,17 +16,19 @@ interface JourneysPageProps {
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
-    <Container>
-      {journeys.map(({ id, title }) => (
-        <Box key={id} my={2}>
-          <Link href={`/${id}`} passHref>
-            <Button variant="contained" color="primary" fullWidth>
-              {title}
-            </Button>
-          </Link>
-        </Box>
-      ))}
-    </Container>
+    <ThemeProvider theme={themes.default}>
+      <Container>
+        {journeys.map(({ id, title }) => (
+          <Box key={id} my={2}>
+            <Link href={`/${id}`} passHref>
+              <Button variant="contained" color="primary" fullWidth>
+                {title}
+              </Button>
+            </Link>
+          </Box>
+        ))}
+      </Container>
+    </ThemeProvider>
   )
 }
 

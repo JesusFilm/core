@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import {
   Typography,
   Container,
@@ -11,6 +11,9 @@ import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
+import { useMutation, gql } from '@apollo/client'
+import { RadioQuestionResponseCreate } from '../../../../__generated__/RadioQuestionResponseCreate'
+import { v4 as uuidv4 } from 'uuid'
 
 const useStyles = makeStyles(
   () =>
@@ -26,18 +29,49 @@ const useStyles = makeStyles(
   { name: 'MuiRadioQuestionComponent' }
 )
 
+export const RADIO_QUESTION_RESPONSE_CREATE = gql`
+  mutation RadioQuestionResponseCreate(
+    $input: RadioQuestionResponseCreateInput!
+  ) {
+    radioQuestionResponseCreate(input: $input) {
+      id
+      radioOptionBlockId
+    }
+  }
+`
+
 export function RadioQuestion({
+  id,
   label,
   description,
   children,
   variant = RadioQuestionVariant.LIGHT
 }: TreeBlock<RadioQuestionBlock>): ReactElement {
   const classes = useStyles()
-  const [selectedId, setSelectedId] = useState<string>('')
+  const [radioQuestionResponseCreate, { data }] =
+    useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
 
-  const handleClick = (id: string): void => {
-    setSelectedId(id)
+  const handleClick = async (radioOptionBlockId: string): Promise<void> => {
+    const uuid = uuidv4()
+    await radioQuestionResponseCreate({
+      variables: {
+        input: {
+          id: uuid,
+          blockId: id,
+          radioOptionBlockId
+        }
+      },
+      optimisticResponse: {
+        radioQuestionResponseCreate: {
+          id: uuid,
+          __typename: 'RadioQuestionResponse',
+          radioOptionBlockId
+        }
+      }
+    })
   }
+
+  const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
   return (
     <Container maxWidth="sm">
@@ -66,7 +100,7 @@ export function RadioQuestion({
                     {...option}
                     key={option.id}
                     selected={selectedId === option.id}
-                    disabled={selectedId !== '' && selectedId !== option.id}
+                    disabled={Boolean(selectedId)}
                     onClick={handleClick}
                   />
                 )
