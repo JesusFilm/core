@@ -1,12 +1,12 @@
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { Chapters } from '.'
+import { JourneyProgress } from '.'
 import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
-describe('Conductor', () => {
+describe('JourneyProgress', () => {
   it('returns 0 when no activeBlock or treeBlocks', () => {
-    const { getByRole } = renderWithApolloClient(<Chapters />)
+    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
@@ -22,7 +22,7 @@ describe('Conductor', () => {
     activeBlockVar(activeBlock)
     const blocks: TreeBlock[] = [activeBlock]
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<Chapters />)
+    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
   })
 
@@ -38,7 +38,7 @@ describe('Conductor', () => {
     activeBlockVar(activeBlock)
     const blocks: TreeBlock[] = []
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<Chapters />)
+    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
@@ -80,7 +80,7 @@ describe('Conductor', () => {
       }
     ]
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<Chapters />)
+    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
@@ -122,7 +122,7 @@ describe('Conductor', () => {
       }
     ]
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<Chapters />)
+    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50')
   })
 })

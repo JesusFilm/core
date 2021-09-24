@@ -1,15 +1,15 @@
 import { journeysConfig } from '../../libs/storybook/decorators'
 import { Meta } from '@storybook/react'
 import { ReactElement } from 'react'
-import { Chapters } from '.'
+import { JourneyProgress } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 
 const Demo = {
   ...journeysConfig,
-  component: Chapters,
-  title: 'Journeys/Chapters'
+  component: JourneyProgress,
+  title: 'Journeys/JourneyProgress'
 }
 
 const blocks: TreeBlock[] = [
@@ -58,7 +58,7 @@ export const Default = (): ReactElement => {
   }
   activeBlockVar(activeBlock)
   treeBlocksVar(blocks)
-  return <Chapters />
+  return <JourneyProgress />
 }
 
 export const Halfway = (): ReactElement => {
@@ -72,7 +72,7 @@ export const Halfway = (): ReactElement => {
   }
   activeBlockVar(activeBlock)
   treeBlocksVar(blocks)
-  return <Chapters />
+  return <JourneyProgress />
 }
 
 export const Full = (): ReactElement => {
@@ -86,7 +86,7 @@ export const Full = (): ReactElement => {
   }
   activeBlockVar(activeBlock)
   treeBlocksVar(blocks)
-  return <Chapters />
+  return <JourneyProgress />
 }
 
 export default Demo as Meta

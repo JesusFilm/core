@@ -19,7 +19,7 @@ const BorderLinearProgress = withStyles((theme) => ({
   }
 }))(LinearProgress)
 
-export function Chapters(): ReactElement {
+export function JourneyProgress(): ReactElement {
   const { activeBlock, treeBlocks } = useBlocks()
   const [percentage, setPercentage] = useState(0)
 

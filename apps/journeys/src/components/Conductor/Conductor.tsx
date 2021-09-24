@@ -2,7 +2,7 @@ import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect } from 'react'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { useBlocks } from '../../libs/client/cache/blocks'
-import { Chapters } from '../Chapters'
+import { JourneyProgress } from '../JourneyProgress'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -17,7 +17,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   return activeBlock != null ? (
     <>
-      <Chapters />
+      <JourneyProgress />
       <BlockRenderer {...activeBlock} />
     </>
   ) : (
