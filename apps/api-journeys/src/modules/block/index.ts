@@ -144,7 +144,9 @@ const typeDefs = gql`
     block: VideoBlock!
   }
 
-  # MaterialUI Icon Type Names:
+  """
+  IconName is equivalent to the icons found in @mui/icons-material
+  """
   enum IconName {
     PlayArrow
     Translate
