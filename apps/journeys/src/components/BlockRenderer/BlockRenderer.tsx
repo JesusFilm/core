@@ -1,4 +1,4 @@
-import { RadioOption, RadioQuestion, Video, Step } from '../blocks'
+import { RadioOption, RadioQuestion, Video, Step, Image } from '../blocks'
 import { ReactElement } from 'react'
 import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transformer'
 
@@ -12,6 +12,8 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <Step {...block} />
     case 'VideoBlock':
       return <Video {...block} />
+    case 'ImageBlock':
+      return <Image {...block} />
     default:
       return <></>
   }

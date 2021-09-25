@@ -16,4 +16,3 @@ const nextConfig = {
   }
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)
-// module.exports = withImages(nextConfig)

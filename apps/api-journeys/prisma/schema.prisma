@@ -35,4 +35,5 @@ enum BlockType {
   VideoBlock
   RadioQuestionBlock
   RadioOptionBlock
+  ImageBlock
 }

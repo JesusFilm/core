@@ -55,6 +55,9 @@ It's important that once you've started on a schema extension that you to regene
 2. In another terminal run the schema generator against the backend project e.g `nx generate-graphql api-journeys`
 3. Run the gateway schema `nx generate-graphql api-gateway`
 4. Commit the changed schema.graphql files
+5. Add block to journeys/pages/[journeyId]
+6. run `nx codegen journeys`
+7. if step 6 fails, run `rm -rf node_modules/apollo-language-server/node_modules/graphql/`
 
 ### Front-end Architecture
 

@@ -67,8 +67,6 @@ Run `nx affected:test` to execute the unit tests affected by a change.
 
 Run `nx storybook my-app` to view components of my-app via [Storybook](https://storybook.js.org/).
 
-rm -rf node_modules/apollo-language-server/node_modules/graphql/
-
 Run `nx storybook shared-storybook` to view all components across projects via [Storybook](https://storybook.js.org/).
 
 ## Running end-to-end tests
