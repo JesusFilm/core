@@ -5,7 +5,7 @@ import { JourneysThemeProvider } from '.'
 describe('journeys theme provider', () => {
   it('should render the component', () => {
     const { getByText } = render(
-      <JourneysThemeProvider theme={'default' as ThemeName}>
+      <JourneysThemeProvider themeName={'light' as ThemeName}>
         Hello from JourneysThemeProvider
       </JourneysThemeProvider>
     )

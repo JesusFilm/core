@@ -90,7 +90,7 @@ export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | 
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
-  theme: ThemeName;
+  themeName: ThemeName;
   locale: string;
   blocks: GetJourney_journey_blocks[] | null;
 }

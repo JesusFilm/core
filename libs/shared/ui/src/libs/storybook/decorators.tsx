@@ -14,8 +14,8 @@ export const sharedUiConfig = {
     (Story: () => unknown) => (
       // TODO: Addon to allow changing themes
       <div style={{ margin: '0.5em' }}>
-        <MuiThemeProvider theme={themes.default}>
-          <ThemeProvider theme={themes.default}>
+        <MuiThemeProvider theme={themes.light}>
+          <ThemeProvider theme={themes.light}>
             <CssBaseline />
             {Story()}
           </ThemeProvider>

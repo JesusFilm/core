@@ -13,7 +13,7 @@ export enum RadioQuestionVariant {
 }
 
 export enum ThemeName {
-  default = "default",
+  light = "light",
 }
 
 export interface RadioQuestionResponseCreateInput {

@@ -17,7 +17,7 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
-    <JourneysThemeProvider theme={journey.theme}>
+    <JourneysThemeProvider themeName={journey.themeName}>
       <Container>
         {journey.blocks != null && (
           <Conductor blocks={transformer(journey.blocks)} />
@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
-          theme
+          themeName
           locale
           blocks {
             id
