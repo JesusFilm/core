@@ -12,7 +12,7 @@ functions: # None - this is backing infrastructure only.
 
 resources:
   Resources:
-    #ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
+    ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
     #ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
     #CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
     #CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
