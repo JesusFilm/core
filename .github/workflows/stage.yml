@@ -45,7 +45,7 @@ jobs:
         uses: haythem/public-ip@v1.2
 
       - name: Allow Github Actions Access to Postgres
-        run: aws ec2 authorize-security-group-ingress --group-name ark-weave-postgres --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: aws ec2 authorize-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Perform Prisma Migrations
         run: |
