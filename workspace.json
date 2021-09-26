@@ -136,7 +136,7 @@
             "passWithNoTests": true
           }
         },
-        "generate": {
+        "prismagenerate": {
           "executor": "@nx-tools/nx-prisma:generate",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"

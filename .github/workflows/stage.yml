@@ -37,7 +37,7 @@ jobs:
       - name: Run NX generate and build
         uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: deploy
+          targets: prismagenerate,deploy
           projects: api-journeys
 
       - name: Get Github action IP
@@ -50,7 +50,6 @@ jobs:
       - name: Perform Prisma Migrations
         run: |
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} > .env 
-          npx prisma generate
           npx prisma migrate deploy
 
       - name: Remove Github Actions Access to Postgres
