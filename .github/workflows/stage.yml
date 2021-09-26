@@ -28,6 +28,9 @@ jobs:
       - name: NPM Install
         run: npm install
 
+      - name: Install Serverless
+        run: npm install -g serverless
+
       - name: Deploy/Update Infrastructure
         run: serverless deploy --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
 
