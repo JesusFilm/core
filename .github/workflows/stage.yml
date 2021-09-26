@@ -52,4 +52,4 @@ jobs:
         run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
 
       - name: Remove Github Actions Access to Postgres
-        run: aws ec2 revoke-security-group-ingress --group-name ark-weave-postgres --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: aws ec2 revoke-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
