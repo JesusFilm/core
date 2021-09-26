@@ -47,10 +47,15 @@ jobs:
       - name: Allow Github Actions Access to Postgres
         run: aws ec2 authorize-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-      - name: Perform Prisma Migrations
+      - name: Set local environment for prisma
         run: |
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > apps/api-journeys/.env 
-          nx run api-journeys:migrations
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > apps/api-journeys/.env
+
+      - name: Prisma Migrations
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: migrations
+          projects: api-journeys
 
         #npx prisma migrate deploy --schema
       - name: Remove Github Actions Access to Postgres
