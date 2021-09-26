@@ -70,6 +70,7 @@ enum IconColor {
   secondary
 }
 
+"""IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
   ArrowForward
   ChatBubbleOutline
@@ -105,7 +106,7 @@ type Journey
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
-  theme: ThemeName! @join__field(graph: JOURNEYS)
+  themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
 }
 
@@ -116,7 +117,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
-  journeyCreate(locale: String, theme: ThemeName, title: String!): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(locale: String, themeName: ThemeName, title: String!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse! @join__field(graph: JOURNEYS)
@@ -233,7 +234,7 @@ type StepBlock implements Block {
 }
 
 enum ThemeName {
-  default
+  light
 }
 
 enum TypographyAlign {
