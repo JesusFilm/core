@@ -3,12 +3,33 @@ import { baseSpacing } from './spacing'
 
 export const baseComponents = {
   components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          marginBottom: baseSpacing.space.lg * baseSpacing.spacing
+        }
+      },
+      variants: [
+        {
+          props: { variant: 'overline' as const },
+          style: {
+            marginBottom: baseSpacing.space.sm * baseSpacing.spacing
+          }
+        }
+      ]
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           marginBottom: baseSpacing.space.lg * baseSpacing.spacing,
           backgroundColor: baseColorsLight.palette.surface.main,
-          color: baseColorsLight.palette.surface.contrastText
+          color: baseColorsLight.palette.surface.contrastText,
+          '&:hover': {
+            backgroundColor: baseColorsLight.palette.surface.light
+          },
+          '&:focus': {
+            backgroundColor: baseColorsLight.palette.surface.light
+          }
         }
       },
       defaultProps: {
@@ -34,6 +55,19 @@ export const baseComponents = {
           style: {
             marginBottom: baseSpacing.space.sm * baseSpacing.spacing,
             borderRadius: '8px'
+          }
+        },
+        {
+          props: { variant: 'text' as const },
+          style: {
+            color: baseColorsLight.palette.surfaceAlt.contrastText,
+            backgroundColor: 'transparent',
+            '&:hover': {
+              backgroundColor: 'transparent'
+            },
+            '&:focus': {
+              backgroundColor: 'transparent'
+            }
           }
         }
       ]

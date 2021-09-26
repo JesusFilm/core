@@ -8,8 +8,10 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
+import { sharedUiConfig } from '../../libs/storybook/decorators'
 
 const ButtonDemo = {
+  ...sharedUiConfig,
   component: Button,
   title: 'shared-ui/Button'
 }
@@ -85,7 +87,6 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       flexDirection: 'column'
     }}
   >
-    <Button {...args} />
     <Button {...args} />
   </div>
 )

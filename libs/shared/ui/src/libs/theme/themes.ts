@@ -7,9 +7,8 @@ import { baseTypography } from './tokens/typography'
 const baseTheme = createTheme({
   ...baseComponents,
   ...baseTypography,
-  ...baseSpacing,
-  // BUTTON TODO
-  shape: { borderRadius: 8 }
+  ...baseSpacing
+  // shape: { borderRadius: 8 }
 })
 
 export const baseLight = createTheme({

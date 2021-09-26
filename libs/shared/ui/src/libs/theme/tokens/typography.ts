@@ -1,5 +1,3 @@
-import { baseSpacing } from './spacing'
-
 // Update the Typography's variant prop options
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
@@ -8,23 +6,7 @@ declare module '@mui/material/Typography' {
 }
 
 export const baseTypography = {
-  components: {
-    MuiTypography: {
-      styleOverrides: {
-        root: {
-          marginBottom: baseSpacing.space.lg * baseSpacing.spacing
-        }
-      },
-      variants: [
-        {
-          props: { variant: 'overline' as const },
-          style: {
-            marginBottom: baseSpacing.space.sm * baseSpacing.spacing
-          }
-        }
-      ]
-    }
-  },
+  // Rest of MuiTypography style overrides in components.ts
   typography: {
     fontFamily: [
       '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
@@ -97,6 +79,9 @@ export const baseTypography = {
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '20px'
+    },
+    button: {
+      textTransform: 'none' as const
     }
   }
 }
