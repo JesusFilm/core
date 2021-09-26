@@ -17,7 +17,7 @@ model Journey {
   published Boolean    @default(false)
   blocks    Block[]
   locale    String     @default("en-US")
-  theme     ThemeName  @default(default)
+  themeName ThemeName  @default(light)
 }
 
 model Block {
@@ -34,7 +34,7 @@ model Block {
 }
 
 enum ThemeName {
-  default
+  light
 }
 
 enum BlockType {

@@ -3,13 +3,13 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'published' | 'title' | 'locale' | 'theme';
+    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeName';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyPublish';
   };
   
   interface DefinedEnumValues {
-    ThemeName: 'default';
+    ThemeName: 'light';
   };
   
   export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
@@ -37,7 +37,7 @@ export namespace JourneyModule {
       published?: gm.Middleware[];
       title?: gm.Middleware[];
       locale?: gm.Middleware[];
-      theme?: gm.Middleware[];
+      themeName?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];
