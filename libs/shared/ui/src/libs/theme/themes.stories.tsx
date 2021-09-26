@@ -6,10 +6,11 @@ import {
   useTheme,
   PaletteColor,
   PaletteMode,
-  PaletteOptions
+  PaletteOptions,
+  Typography,
+  TypographyProps
 } from '@mui/material'
 
-import { Typography, TypographyProps } from '../../components/Typography'
 import { sharedUiConfig } from '../storybook/decorators'
 import { baseDark, baseLight } from './themes'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
@@ -51,11 +52,9 @@ const ColorPalettes = ({
           boxShadow: theme.shadows[1]
         }}
       >
-        <Typography
-          {...props}
-          variant={TypographyVariant.overline}
-          content={'Background'}
-        />
+        <Typography {...props} variant={TypographyVariant.overline}>
+          Background
+        </Typography>
       </Box>
       <div
         style={{
@@ -82,11 +81,9 @@ const ColorPalettes = ({
                   p: theme.space.lg
                 }}
               >
-                <Typography
-                  {...props}
-                  variant={TypographyVariant.overline}
-                  content={`${variant} light`}
-                />
+                <Typography {...props} variant={TypographyVariant.overline}>
+                  {`${variant} light`}
+                </Typography>
               </Box>
 
               <Box
@@ -97,11 +94,9 @@ const ColorPalettes = ({
                   p: theme.space.lg
                 }}
               >
-                <Typography
-                  {...props}
-                  variant={TypographyVariant.overline}
-                  content={`${variant} main`}
-                />
+                <Typography {...props} variant={TypographyVariant.overline}>
+                  {`${variant} main`}
+                </Typography>
               </Box>
 
               <Box
@@ -112,11 +107,9 @@ const ColorPalettes = ({
                   p: theme.space.lg
                 }}
               >
-                <Typography
-                  {...props}
-                  variant={TypographyVariant.overline}
-                  content={`${variant} dark`}
-                />
+                <Typography {...props} variant={TypographyVariant.overline}>
+                  {`${variant} dark`}
+                </Typography>
               </Box>
             </Box>
           )
