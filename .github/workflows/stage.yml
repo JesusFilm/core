@@ -1,6 +1,6 @@
 name: Stage Merge
 on:
-  workflow_dispatch:
+  push:
     branches:
       - add-ns3-serverless
 #on:
