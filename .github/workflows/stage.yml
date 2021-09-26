@@ -16,6 +16,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
@@ -47,9 +48,10 @@ jobs:
       - name: Allow Github Actions Access to Postgres
         run: aws ec2 authorize-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-      - name: Set local environment for prisma
-        run: |
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > apps/api-journeys/.env
+      # - name: Set local environment for prisma
+      #   run: |
+      #     cat apps/api-journeys/.env
+      #     echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > apps/api-journeys/.env
 
       - name: Prisma Migrations
         uses: mansagroup/nrwl-nx-action@v2
