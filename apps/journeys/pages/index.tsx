@@ -16,7 +16,7 @@ interface JourneysPageProps {
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
-    <ThemeProvider theme={themes.default}>
+    <ThemeProvider theme={themes.light}>
       <Container>
         {journeys.map(({ id, title }) => (
           <Box key={id} my={2}>
