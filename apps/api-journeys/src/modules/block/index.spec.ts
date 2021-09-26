@@ -19,7 +19,7 @@ it('returns blocks', async () => {
     title: 'published',
     published: true,
     locale: 'en-US',
-    theme: 'default'
+    themeName: 'light'
   })
   const step1: Block = {
     id: uuidv4(),
