@@ -53,12 +53,14 @@ jobs:
       #     cat apps/api-journeys/.env
       #     echo DATABASE_URL="${{ secrets.DATABASE_URL }}" > apps/api-journeys/.env
 
-      - name: Prisma Migrations
-        uses: mansagroup/nrwl-nx-action@v2
-        with:
-          targets: migrations
-          projects: api-journeys
+      # - name: Prisma Migrations
+      #   uses: mansagroup/nrwl-nx-action@v2
+      #   with:
+      #     targets: migrations
+      #     projects: api-journeys
 
-        #npx prisma migrate deploy --schema
+      - name: Prisma Migrations api-journeys
+        run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
+
       - name: Remove Github Actions Access to Postgres
         run: aws ec2 revoke-security-group-ingress --group-name ark-weave-postgres --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
