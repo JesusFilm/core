@@ -12,7 +12,9 @@ async function main(): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: '#FallingPlates',
-        published: true
+        published: true,
+        locale: 'id-ID',
+        theme: 'default'
       }
     })
   }
@@ -35,11 +37,10 @@ async function main(): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: step.id,
       extraAttrs: {
-        src: 'https://www.youtube.com/watch?v=KGlx11BxF24',
+        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
         description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
-        provider: 'YOUTUBE'
+          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
       }
     }
   })
@@ -179,6 +180,29 @@ async function main(): Promise<void> {
       parentOrder: 4
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: stepWhenIWantToStart.id,
+      extraAttrs: {
+        label: 'Sign me up',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PLAY_ARROW',
+          color: 'secondary',
+          size: 'xl'
+        },
+        action: {
+          gtmEventName: 'signup',
+          url: 'https://signup.jesusfilm.org'
+        }
+      },
+      parentOrder: 0
+    }
+  })
   const stepWhenIAmAlreadyFollowingYou = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -202,6 +226,44 @@ async function main(): Promise<void> {
         }
       },
       parentOrder: 5
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
+      extraAttrs: {
+        content: 'Fantastis!',
+        variant: 'h1',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  const stepSignup = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: true
+      },
+      parentOrder: 7
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignupBlock',
+      parentBlockId: stepSignup.id,
+      extraAttrs: {
+        action: {
+          gtmEventName: 'signup',
+          url: 'https://signup-complete.jesusfilm.org'
+        }
+      },
+      parentOrder: 0
     }
   })
 }

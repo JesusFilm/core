@@ -12,10 +12,10 @@ export enum RadioQuestionVariant {
   LIGHT = "LIGHT",
 }
 
-export enum VideoProviderEnum {
-  ARCLIGHT = "ARCLIGHT",
-  VIMEO = "VIMEO",
-  YOUTUBE = "YOUTUBE",
+export interface RadioQuestionResponseCreateInput {
+  blockId: string;
+  id?: string | null;
+  radioOptionBlockId: string;
 }
 
 //==============================================================

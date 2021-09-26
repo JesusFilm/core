@@ -1,241 +1,340 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
-import db from '../../lib/db'
+import dbMock from '../../../tests/dbMock'
 import Journey from '../journey'
 import { v4 as uuidv4 } from 'uuid'
+import { Block } from '.prisma/api-journeys-client'
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
     schemaBuilder,
     modules: [Journey]
   })
-  const journey = await db.journey.create({
-    data: {
-      title: 'published',
-      published: true
-    }
-  })
-  const otherJourney = await db.journey.create({
-    data: {
-      title: 'not "that" journey',
-      published: true
-    }
-  })
+  const journeyId = uuidv4()
+  const otherJourneyId = uuidv4()
   const nextBlockId = uuidv4()
-  const block1 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'StepBlock',
-      extraAttrs: {
-        locked: true,
-        nextBlockId
+  dbMock.journey.findUnique.mockResolvedValue({
+    id: journeyId,
+    title: 'published',
+    published: true,
+    locale: 'en-US',
+    theme: 'default'
+  })
+  const step1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    extraAttrs: {
+      locked: true,
+      nextBlockId
+    }
+  }
+  const video1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'VideoBlock',
+    parentBlockId: step1.id,
+    parentOrder: 1,
+    extraAttrs: {
+      src: 'src',
+      title: 'title'
+    }
+  }
+  const radioQuestion1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'RadioQuestionBlock',
+    parentBlockId: step1.id,
+    parentOrder: 2,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      variant: 'DARK'
+    }
+  }
+  const radioOption1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: radioQuestion1.id,
+    parentOrder: 3,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName',
+        blockId: step1.id
       }
     }
-  })
-  const block2 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: block1.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description'
+  }
+  const radioOption2: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: radioQuestion1.id,
+    parentOrder: 4,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourneyId
       }
     }
-  })
-  const block3 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName',
-          blockId: block1.id
-        }
+  }
+  const radioOption3: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: radioQuestion1.id,
+    parentOrder: 5,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org'
       }
     }
-  })
-  const block4 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName',
-          journeyId: otherJourney.id
-        }
+  }
+  const radioOption4: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'RadioOptionBlock',
+    parentBlockId: radioQuestion1.id,
+    parentOrder: 6,
+    extraAttrs: {
+      label: 'label',
+      description: 'description',
+      action: {
+        gtmEventName: 'gtmEventName'
       }
     }
-  })
-  const block5 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName',
-          url: 'https://jesusfilm.org'
-        }
+  }
+  const typography1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'TypographyBlock',
+    parentBlockId: step1.id,
+    parentOrder: 7,
+    extraAttrs: {
+      content: 'text',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left'
+    }
+  }
+  const step2: Block = {
+    id: nextBlockId,
+    journeyId,
+    blockType: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 7,
+    extraAttrs: {
+      locked: false
+    }
+  }
+  const signup1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'SignupBlock',
+    parentBlockId: step2.id,
+    parentOrder: 2,
+    extraAttrs: {
+      action: {
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourneyId
       }
     }
-  })
-  const block6 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: block2.id,
-      extraAttrs: {
-        label: 'label',
-        description: 'description',
-        action: {
-          gtmEventName: 'gtmEventName'
-        }
+  }
+  const button1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'ButtonBlock',
+    parentBlockId: step2.id,
+    parentOrder: 1,
+    extraAttrs: {
+      label: 'label',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
+      startIcon: {
+        name: 'ArrowForward',
+        color: 'secondary',
+        size: 'lg'
+      },
+      endIcon: {
+        name: 'LockOpen',
+        color: 'action',
+        size: 'xl'
+      },
+      action: {
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org',
+        target: 'target'
       }
     }
-  })
-  const block7 = await db.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'VideoBlock',
-      parentBlockId: block1.id,
-      extraAttrs: {
-        src: 'src',
-        title: 'title',
-        provider: 'YOUTUBE'
-      }
-    }
-  })
-  const block8 = await db.block.create({
-    data: {
-      id: nextBlockId,
-      journeyId: journey.id,
-      blockType: 'StepBlock',
-      extraAttrs: {
-        locked: false
-      }
-    }
-  })
-  await db.block.create({
-    data: {
-      journeyId: otherJourney.id,
-      blockType: 'StepBlock',
-      extraAttrs: {
-        locked: false
-      }
-    }
-  })
+  }
+  const blocks = [
+    step1,
+    video1,
+    radioQuestion1,
+    radioOption1,
+    radioOption2,
+    radioOption3,
+    radioOption4,
+    typography1,
+    step2,
+    signup1,
+    button1
+  ]
+  dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
     document: gql`
+      fragment ActionFields on Action {
+        __typename
+        gtmEventName
+        ... on NavigateToBlockAction {
+          blockId
+        }
+        ... on NavigateToJourneyAction {
+          journeyId
+        }
+        ... on LinkAction {
+          url
+          target
+        }
+      }
       query ($id: ID!) {
         journey(id: $id) {
           blocks {
             id
             __typename
             parentBlockId
-            ... on StepBlock {
-              locked
-              nextBlockId
+            ... on ButtonBlock {
+              label
+              variant
+              color
+              size
+              startIcon {
+                name
+                color
+                size
+              }
+              endIcon {
+                name
+                color
+                size
+              }
+              action {
+                ...ActionFields
+              }
             }
-            ... on VideoBlock {
-              src
-              title
-              provider
+            ... on RadioOptionBlock {
+              label
+              action {
+                ...ActionFields
+              }
             }
             ... on RadioQuestionBlock {
               label
               description
               variant
             }
-            ... on RadioOptionBlock {
-              label
+            ... on SignupBlock {
               action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
+                ...ActionFields
               }
+            }
+            ... on StepBlock {
+              locked
+              nextBlockId
+            }
+            ... on TypographyBlock {
+              content
+              variant
+              color
+              align
+            }
+            ... on VideoBlock {
+              src
+              title
             }
           }
         }
       }
     `,
     variableValues: {
-      id: journey.id
+      id: journeyId
     },
     contextValue: {
-      db
+      db: dbMock
     }
   })
   expect(data?.journey.blocks).toEqual([
     {
-      id: block1.id,
+      id: step1.id,
       __typename: 'StepBlock',
       parentBlockId: null,
       locked: true,
       nextBlockId
     },
     {
-      id: block2.id,
-      __typename: 'RadioQuestionBlock',
-      parentBlockId: block1.id,
-      label: 'label',
-      description: 'description',
-      variant: null
+      id: video1.id,
+      __typename: 'VideoBlock',
+      parentBlockId: step1.id,
+      src: 'src',
+      title: 'title'
     },
     {
-      id: block3.id,
+      id: radioQuestion1.id,
+      __typename: 'RadioQuestionBlock',
+      parentBlockId: step1.id,
+      label: 'label',
+      description: 'description',
+      variant: 'DARK'
+    },
+    {
+      id: radioOption1.id,
       __typename: 'RadioOptionBlock',
-      parentBlockId: block2.id,
+      parentBlockId: radioQuestion1.id,
       label: 'label',
       action: {
         __typename: 'NavigateToBlockAction',
         gtmEventName: 'gtmEventName',
-        blockId: block1.id
+        blockId: step1.id
       }
     },
     {
-      id: block4.id,
+      id: radioOption2.id,
       __typename: 'RadioOptionBlock',
-      parentBlockId: block2.id,
+      parentBlockId: radioQuestion1.id,
       label: 'label',
       action: {
         __typename: 'NavigateToJourneyAction',
         gtmEventName: 'gtmEventName',
-        journeyId: otherJourney.id
+        journeyId: otherJourneyId
       }
     },
     {
-      id: block5.id,
+      id: radioOption3.id,
       __typename: 'RadioOptionBlock',
-      parentBlockId: block2.id,
+      parentBlockId: radioQuestion1.id,
       label: 'label',
       action: {
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
-        url: 'https://jesusfilm.org'
+        url: 'https://jesusfilm.org',
+        target: null
       }
     },
     {
-      id: block6.id,
+      id: radioOption4.id,
       __typename: 'RadioOptionBlock',
-      parentBlockId: block2.id,
+      parentBlockId: radioQuestion1.id,
       label: 'label',
       action: {
         __typename: 'NavigateAction',
@@ -243,19 +342,55 @@ it('returns blocks', async () => {
       }
     },
     {
-      id: block7.id,
-      __typename: 'VideoBlock',
-      parentBlockId: block1.id,
-      src: 'src',
-      title: 'title',
-      provider: 'YOUTUBE'
+      id: typography1.id,
+      __typename: 'TypographyBlock',
+      parentBlockId: step1.id,
+      content: 'text',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left'
     },
     {
-      id: block8.id,
+      id: step2.id,
       __typename: 'StepBlock',
       parentBlockId: null,
       locked: false,
       nextBlockId: null
+    },
+    {
+      id: signup1.id,
+      __typename: 'SignupBlock',
+      parentBlockId: step2.id,
+      action: {
+        __typename: 'NavigateToJourneyAction',
+        gtmEventName: 'gtmEventName',
+        journeyId: otherJourneyId
+      }
+    },
+    {
+      id: button1.id,
+      __typename: 'ButtonBlock',
+      parentBlockId: step2.id,
+      label: 'label',
+      variant: 'contained',
+      color: 'primary',
+      size: 'large',
+      startIcon: {
+        name: 'ArrowForward',
+        color: 'secondary',
+        size: 'lg'
+      },
+      endIcon: {
+        name: 'LockOpen',
+        color: 'action',
+        size: 'xl'
+      },
+      action: {
+        __typename: 'LinkAction',
+        gtmEventName: 'gtmEventName',
+        url: 'https://jesusfilm.org',
+        target: 'target'
+      }
     }
   ])
 })

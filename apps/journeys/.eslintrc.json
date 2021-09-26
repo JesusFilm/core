@@ -18,7 +18,9 @@
       "parserOptions": {
         "project": ["apps/journeys/tsconfig.*?.json"]
       },
-      "rules": {}
+      "rules": {
+        "no-void": ["error", { "allowAsStatement": true }]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
