@@ -49,8 +49,9 @@ jobs:
 
       - name: Perform Prisma Migrations
         run: |
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > .env 
-          npx prisma migrate deploy
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > apps/api-journeys/.env 
+          nx run api-journeys:migrations
 
+        #npx prisma migrate deploy --schema
       - name: Remove Github Actions Access to Postgres
         run: aws ec2 revoke-security-group-ingress --group-name ark-weave-postgres --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
