@@ -11,13 +11,13 @@ generator client {
   output   = "../../../node_modules/.prisma/api-journeys-client"
 }
 
-enum ThemeName {
-  base
-}
-
 enum ThemeMode {
   light
   dark
+}
+
+enum ThemeName {
+  base
 }
 
 model Journey {
@@ -26,8 +26,8 @@ model Journey {
   published Boolean    @default(false)
   blocks    Block[]
   locale    String     @default("en-US")
-  themeName ThemeName  @default(base)
   themeMode ThemeMode  @default(light)
+  themeName ThemeName  @default(base)
 }
 
 enum BlockType {

@@ -1,4 +1,4 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
+import { PrismaClient, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { noop } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -14,7 +14,8 @@ async function main(): Promise<void> {
         title: '#FallingPlates',
         published: true,
         locale: 'id-ID',
-        themeName: 'light'
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base
       }
     })
   }
