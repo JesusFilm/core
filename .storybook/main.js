@@ -26,9 +26,20 @@ module.exports = {
         outline: false
       }
     },
-    '@nrwl/react/plugins/storybook',
     '@storybook/addon-a11y'
-  ]
+  ],
+  core: {
+    builder: 'webpack5'
+  },
+  babel: async (options) => ({
+    ...options,
+    plugins: [
+      ...options.plugins,
+      ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+      ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ['@babel/plugin-proposal-class-properties', { loose: true }]
+    ]
+  })
   // uncomment the property below if you want to apply some webpack config globally
   // webpackFinal: async (config, { configType }) => {
   //   // Make whatever fine-grained changes you need that should apply to all storybook configs

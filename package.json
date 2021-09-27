@@ -38,7 +38,6 @@
     "@mui/icons-material": "^5.0.0-rc.1",
     "@mui/material": "^5.0.0-rc.1",
     "@mui/styles": "^5.0.0-rc.1",
-    "@nrwl/next": "^12.8.0",
     "@prisma/client": "^2.28.0",
     "apollo-datasource": "^3.0.3",
     "apollo-server": "^3.1.2",
@@ -74,9 +73,10 @@
     "@nrwl/express": "^12.6.3",
     "@nrwl/jest": "12.6.3",
     "@nrwl/linter": "12.6.3",
+    "@nrwl/next": "^12.8.0",
     "@nrwl/node": "^12.6.3",
     "@nrwl/nx-cloud": "latest",
-    "@nrwl/react": "12.7.2",
+    "@nrwl/react": "^12.7.2",
     "@nrwl/storybook": "^12.8.0",
     "@nrwl/tao": "12.6.3",
     "@nrwl/web": "12.7.2",
@@ -84,6 +84,8 @@
     "@nx-tools/nx-prisma": "^1.0.1",
     "@storybook/addon-a11y": "^6.3.7",
     "@storybook/addon-essentials": "~6.3.0",
+    "@storybook/builder-webpack5": "^6.3.0",
+    "@storybook/manager-webpack5": "^6.3.0",
     "@storybook/react": "~6.3.0",
     "@svgr/webpack": "^5.4.0",
     "@testing-library/jest-dom": "^5.14.1",
@@ -126,6 +128,7 @@
     "ts-jest": "27.0.3",
     "ts-node": "~9.1.1",
     "typescript": "~4.3.5",
-    "url-loader": "^3.0.0"
+    "url-loader": "^3.0.0",
+    "webpack": "^5.54.0"
   }
 }
