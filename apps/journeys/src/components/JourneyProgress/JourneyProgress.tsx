@@ -4,14 +4,10 @@ import { findIndex } from 'lodash'
 import { ReactElement, useEffect, useState } from 'react'
 import { useBlocks } from '../../libs/client/cache/blocks'
 
-const BorderLinearProgress = withStyles((theme) => ({
+const BorderLinearProgress = withStyles(() => ({
   root: {
     height: 10,
     borderRadius: 5
-  },
-  colorPrimary: {
-    background:
-      'linear-gradient(90deg, rgba(192,193,207,1) 0%, rgba(255,255,255,1) 100%)'
   },
   bar: {
     borderRadius: 5,
@@ -44,7 +40,17 @@ export function JourneyProgress(): ReactElement {
 
   return (
     <Box my={2} sx={{ position: 'relative' }}>
-      <BorderLinearProgress variant="determinate" value={percentage} />
+      <BorderLinearProgress
+        variant="determinate"
+        value={percentage}
+        sx={{
+          transition: 'background ease-out 0.5s',
+          background:
+            percentage === 0
+              ? 'linear-gradient(90deg, rgba(192,193,207,1) 0%, rgba(192,193,207,1) 100%)'
+              : 'linear-gradient(90deg, rgba(192,193,207,1) 0%, rgba(255,255,255,1) 100%)'
+        }}
+      />
       <Box
         sx={{
           position: 'absolute',
@@ -53,7 +59,9 @@ export function JourneyProgress(): ReactElement {
           backgroundColor: '#6D6E80',
           borderRadius: '50%',
           top: 0,
-          right: 0
+          right: 0,
+          transition: 'opacity ease-out 0.5s',
+          opacity: percentage === 0 ? 0 : 1
         }}
       />
     </Box>
