@@ -72,5 +72,3 @@ export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
     }
   }
 }
-
-// Add other theme color tokens here

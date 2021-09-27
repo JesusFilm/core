@@ -5,10 +5,7 @@ import { ThemeProvider } from '.'
 describe('journeys theme provider', () => {
   it('should render the component', () => {
     const { getByText } = render(
-      <ThemeProvider
-        themeName={'base' as ThemeName}
-        themeMode={'light' as ThemeMode}
-      >
+      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         Hello from ThemeProvider
       </ThemeProvider>
     )

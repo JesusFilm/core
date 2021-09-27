@@ -5,7 +5,8 @@
     TODO: Use mui ThemeProvider only when https://github.com/storybookjs/storybook/pull/13300 merged */
 import { ThemeProvider as EmotionTheming } from 'emotion-theming'
 import { parameters as rootParameters } from '../../../../../../.storybook/preview'
-import themes, { ThemeProvider } from '../../index'
+import { ThemeProvider } from '../../index'
+import { themes } from '../themes'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ReactElement } from 'react'
 

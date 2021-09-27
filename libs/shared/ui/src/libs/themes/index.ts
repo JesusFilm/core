@@ -4,8 +4,6 @@ import { baseDark, baseLight } from './base/theme'
 
 type ThemeMap = Record<ThemeName, Record<ThemeMode, Theme>>
 
-const themes: ThemeMap = {
+export const themes: ThemeMap = {
   base: { light: baseLight, dark: baseDark }
 }
-
-export default themes

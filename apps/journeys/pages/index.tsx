@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { Box, Button, Container, ThemeProvider } from '@mui/material'
+import { Box, Button, Container } from '@mui/material'
+import { ThemeProvider } from '@core/shared/ui'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
@@ -8,7 +9,7 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../__generated__/GetJourneys'
-import themes from '@core/shared/ui'
+import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -16,7 +17,7 @@ interface JourneysPageProps {
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
-    <ThemeProvider theme={themes.base.light}>
+    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       <Container>
         {journeys.map(({ id, title }) => (
           <Box key={id} my={2}>

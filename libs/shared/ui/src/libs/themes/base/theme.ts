@@ -18,5 +18,3 @@ export const baseDark = createTheme({
   ...baseTheme,
   ...baseColorsDark
 })
-
-// Add other themes
