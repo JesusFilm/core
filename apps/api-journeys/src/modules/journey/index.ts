@@ -9,10 +9,16 @@ const typeDefs = gql`
     title: String!
     locale: String!
     themeName: ThemeName!
+    themeMode: ThemeMode!
   }
 
   enum ThemeName {
+    base
+  }
+
+  enum ThemeMode {
     light
+    dark
   }
 
   extend type Query {
@@ -20,12 +26,20 @@ const typeDefs = gql`
     journey(id: ID!): Journey
   }
 
+  input JourneyCreateInput {
+    """
+    ID should be unique Response UUID
+    (Provided for optimistic mutation result matching)
+    """
+    id: ID
+    title: String!
+    locale: String
+    themeName: ThemeName
+    themeMode: ThemeMode
+  }
+
   extend type Mutation {
-    journeyCreate(
-      title: String!
-      locale: String
-      themeName: ThemeName
-    ): Journey!
+    journeyCreate(input: JourneyCreateInput!): Journey!
     journeyPublish(id: ID!): Journey
   }
 `
@@ -44,13 +58,9 @@ const resolvers: JourneyModule.Resolvers = {
     }
   },
   Mutation: {
-    async journeyCreate(_parent, { title, locale, themeName }, { db }) {
+    async journeyCreate(_parent, { input }, { db }) {
       return await db.journey.create({
-        data: {
-          title,
-          locale: (locale as string) ?? undefined,
-          themeName: themeName ?? undefined
-        }
+        data: input
       })
     },
     async journeyPublish(_parent, { id }, { db }) {
