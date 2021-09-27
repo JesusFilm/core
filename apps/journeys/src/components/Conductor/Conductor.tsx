@@ -6,6 +6,7 @@ import { Navigation, Swiper as SwiperAPI } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css/bundle'
 import { findIndex } from 'lodash'
+import { JourneyProgress } from '../JourneyProgress'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -30,6 +31,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   return (
     <>
+      <JourneyProgress />
       <Swiper
         modules={[Navigation]}
         spaceBetween={50}
