@@ -37,7 +37,6 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           id
           themeName
           themeMode
-          locale
           blocks {
             id
             parentBlockId

@@ -12,6 +12,6 @@ describe('journeys theme provider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(getByText('Hello from hemeProvider')).toBeDefined()
+    expect(getByText('Hello from ThemeProvider')).toBeDefined()
   })
 })
