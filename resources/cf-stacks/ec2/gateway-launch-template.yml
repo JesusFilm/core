@@ -1,11 +1,18 @@
 Type: AWS::EC2::LaunchTemplate
 Properties:
-  LaunchTemplateName: apollo-gateway-ec2-launch
-  LaunchTemplateData: 
+  LaunchTemplateName: apollo-gateway-ec2-launch-${opt:env}
+  LaunchTemplateData:
     ImageId: ami-0c2b8ca1dad447f8a
     InstanceType: t4g.small
-    KeyName: jfm-prod
+    KeyName: jfmprod
     SecurityGroups:
       - !Ref ApolloGatewaySecurityGroup
+    UserData: !Base64 |
+      #!/bin/bash -ex
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+      . ~/.nvm/nvm.sh
+      nvm install node
+      npm install -g npm
+      npm install -g pm2
+      mkdir -p /opt/apollo-gateway
 
-            

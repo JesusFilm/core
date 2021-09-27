@@ -4,8 +4,8 @@ Properties:
   VpcId: vpc-9c5371f0
   SecurityGroupIngress:
     - IpProtocol: tcp
-      FromPort: "443"
-      ToPort: "443"
+      FromPort: "4000"
+      ToPort: "4000"
       CidrIp: "0.0.0.0/0"
   Tags:
     - Key: "Name"
