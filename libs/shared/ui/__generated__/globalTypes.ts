@@ -7,6 +7,16 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ThemeMode {
+  light = "light",
+  dark = 'dark'
+}
+
+export enum ThemeName {
+  base = "base",
+  alt = "alt"
+}
+
 export enum TypographyAlign {
   center = "center",
   left = "left",

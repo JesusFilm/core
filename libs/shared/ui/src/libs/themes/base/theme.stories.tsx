@@ -11,9 +11,9 @@ import {
   TypographyProps
 } from '@mui/material'
 
-import { sharedUiConfig } from '../storybook/decorators'
-import { baseDark, baseLight } from './themes'
-import { TypographyVariant } from '../../../__generated__/globalTypes'
+import { sharedUiConfig } from '../../storybook/decorators'
+import { baseDark, baseLight } from './theme'
+import { TypographyVariant } from '../../../../__generated__/globalTypes'
 
 const TypographyDemo = {
   ...sharedUiConfig,
@@ -47,8 +47,8 @@ const ColorPalettes = ({
         sx={{
           bgcolor: theme.palette.background.default,
           color: theme.palette.text.primary,
-          mb: theme.space.lg,
-          p: theme.space.lg,
+          mb: theme.spacing(3),
+          p: theme.spacing(3),
           boxShadow: theme.shadows[1]
         }}
       >
@@ -70,7 +70,7 @@ const ColorPalettes = ({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                mb: theme.space.lg
+                mb: theme.spacing(3)
               }}
             >
               <Box
@@ -78,10 +78,14 @@ const ColorPalettes = ({
                   width: '100%',
                   bgcolor: paletteColor.light,
                   color: paletteColor.contrastText,
-                  p: theme.space.lg
+                  p: theme.spacing(3)
                 }}
               >
-                <Typography {...props} variant={TypographyVariant.overline}>
+                <Typography
+                  {...props}
+                  variant={TypographyVariant.overline}
+                  gutterBottom
+                >
                   {`${variant} light`}
                 </Typography>
               </Box>
@@ -91,7 +95,7 @@ const ColorPalettes = ({
                   width: '100%',
                   bgcolor: paletteColor.main,
                   color: paletteColor.contrastText,
-                  p: theme.space.lg
+                  p: theme.spacing(3)
                 }}
               >
                 <Typography {...props} variant={TypographyVariant.overline}>
@@ -104,7 +108,7 @@ const ColorPalettes = ({
                   width: '100%',
                   bgcolor: paletteColor.dark,
                   color: paletteColor.contrastText,
-                  p: theme.space.lg
+                  p: theme.spacing(3)
                 }}
               >
                 <Typography {...props} variant={TypographyVariant.overline}>

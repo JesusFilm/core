@@ -1,23 +1,23 @@
-import { PaletteMode } from '@mui/material'
+import { ThemeOptions } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface Palette {
     surface: Palette['primary']
   }
   interface PaletteOptions {
-    surface: PaletteOptions['primary']
+    surface?: PaletteOptions['primary']
   }
   interface Palette {
     surfaceAlt: Palette['primary']
   }
   interface PaletteOptions {
-    surfaceAlt: PaletteOptions['primary']
+    surfaceAlt?: PaletteOptions['primary']
   }
 }
 
-export const baseColorsLight = {
+export const baseColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
-    mode: 'light' as PaletteMode,
+    mode: 'light',
     // DEFAULT CONTAINER COLORS
     background: { default: '#FEFEFE' },
     surface: {
@@ -59,16 +59,16 @@ export const baseColorsLight = {
   }
 }
 
-export const baseColorsDark = {
+export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     ...baseColorsLight.palette,
-    mode: 'dark' as PaletteMode,
+    mode: 'dark',
     background: { default: '#26262E' },
     surface: baseColorsLight.palette.surfaceAlt,
     surfaceAlt: baseColorsLight.palette.surface,
     text: {
-      primary: baseColorsLight.palette.text.secondary,
-      secondary: baseColorsLight.palette.text.primary
+      primary: baseColorsLight.palette.text?.secondary,
+      secondary: baseColorsLight.palette.text?.primary
     }
   }
 }

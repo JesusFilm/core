@@ -1,25 +1,28 @@
-import { baseSpacing } from './spacing'
+import { ThemeOptions } from '@mui/material'
+import { spacingTheme } from './spacing'
 
 // Update the Typography's variant prop options
-declare module '@mui/material/Typography' {
+declare module '@mui/material' {
   interface TypographyPropsVariantOverrides {
     button: false
   }
 }
 
-export const baseTypography = {
+// const spacing: SpacingOptions = baseSpacing.spacing(1) as number
+
+export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
   components: {
     MuiTypography: {
       styleOverrides: {
-        root: {
-          marginBottom: baseSpacing.space.lg * baseSpacing.spacing
+        gutterBottom: {
+          marginBottom: spacingTheme.spacing(3)
         }
       },
       variants: [
         {
-          props: { variant: 'overline' as const },
+          props: { variant: 'overline' as const, gutterBottom: true },
           style: {
-            marginBottom: baseSpacing.space.sm * baseSpacing.spacing
+            marginBottom: spacingTheme.spacing(1)
           }
         }
       ]

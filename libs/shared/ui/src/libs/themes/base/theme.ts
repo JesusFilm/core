@@ -1,13 +1,12 @@
-import { createTheme } from '@mui/material/styles'
+import { createTheme } from '@mui/material'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
 import { baseSpacing } from './tokens/spacing'
 import { baseTypography } from './tokens/typography'
 
-const baseTheme = createTheme({
+export const baseTheme = createTheme({
   ...baseTypography,
-  ...baseSpacing,
+  ...baseSpacing
   // BUTTON TODO
-  shape: { borderRadius: 8 }
 })
 
 export const baseLight = createTheme({

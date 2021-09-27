@@ -8,7 +8,7 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../__generated__/GetJourneys'
-import { themes } from '@core/shared/ui'
+import themes from '@core/shared/ui'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -16,7 +16,7 @@ interface JourneysPageProps {
 
 function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
-    <ThemeProvider theme={themes.light}>
+    <ThemeProvider theme={themes.base.light}>
       <Container>
         {journeys.map(({ id, title }) => (
           <Box key={id} my={2}>
