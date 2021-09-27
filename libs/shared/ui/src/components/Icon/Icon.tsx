@@ -11,23 +11,23 @@ export function Icon({ name, color, size }: IconProps): ReactElement | null {
     case 'CheckCircle':
       return <CheckCircle color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'PlayArrow':
-      return <PlayArrow />
+      return <PlayArrow color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'Translate':
-      return <Translate />
+      return <Translate color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'RadioButtonUnchecked':
-      return <RadioButtonUnchecked />
+      return <RadioButtonUnchecked color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'FormatQuote':
-      return <FormatQuote />
+      return <FormatQuote color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'LockOpen':
-      return <LockOpen />
+      return <LockOpen color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'ArrowForward':
-      return <ArrowForward />
+      return <ArrowForward color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'ChatBubbleOutline':
-      return <ChatBubbleOutline />
+      return <ChatBubbleOutline color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'LiveTv':
-      return <LiveTv />
+      return <LiveTv color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     case 'MenuBook':
-      return <MenuBook />
+      return <MenuBook color={color ?? undefined} sx={{ fontSize: 'inherit' }} />
     default:
       return null
   }

@@ -20,6 +20,24 @@ interface ButtonStoryProps extends ButtonProps {
   variants: string[]
 }
 
+const DefaultTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
+    <Button {...args} color={'error' as ButtonColor} />
+  </div>
+)
+
+export const Default = DefaultTemplate.bind({})
+Default.args = {
+  variant: ButtonVariant.contained,
+  label: ButtonVariant.contained,
+  size: ButtonSize.large
+}
+
 const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <div
     style={{

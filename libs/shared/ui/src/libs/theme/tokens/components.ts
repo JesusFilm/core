@@ -37,7 +37,10 @@ export const baseComponents = {
       },
       variants: [
         {
-          props: { variant: 'contained' as const, size: 'large' as const },
+          props: {
+            variant: 'contained' as const,
+            size: 'large' as const
+          },
           style: {
             marginBottom: baseSpacing.space.lg * baseSpacing.spacing,
             borderRadius: '16px'
