@@ -4,7 +4,7 @@ import module from '.'
 import dbMock from '../../../tests/dbMock'
 import Journey from '../journey'
 import { v4 as uuidv4 } from 'uuid'
-import { Block } from '.prisma/api-journeys-client'
+import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
@@ -19,7 +19,8 @@ it('returns blocks', async () => {
     title: 'published',
     published: true,
     locale: 'en-US',
-    themeName: 'light'
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base
   })
   const step1: Block = {
     id: uuidv4(),
