@@ -14,7 +14,6 @@ export enum ThemeMode {
 
 export enum ThemeName {
   base = "base",
-  alt = "alt"
 }
 
 export enum TypographyAlign {
