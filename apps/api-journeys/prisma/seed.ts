@@ -14,7 +14,7 @@ async function main(): Promise<void> {
         title: '#FallingPlates',
         published: true,
         locale: 'id-ID',
-        theme: 'default'
+        themeName: 'light'
       }
     })
   }

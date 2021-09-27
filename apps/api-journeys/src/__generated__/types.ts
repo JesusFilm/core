@@ -68,6 +68,7 @@ export type IconColor =
   | 'disabled'
   | 'inherit';
 
+/** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
   | 'PlayArrow'
   | 'Translate'
@@ -93,7 +94,7 @@ export type Journey = {
   id: Scalars['ID'];
   locale: Scalars['String'];
   published: Scalars['Boolean'];
-  theme: ThemeName;
+  themeName: ThemeName;
   title: Scalars['String'];
 };
 
@@ -117,7 +118,7 @@ export type Mutation = {
 export type MutationJourneyCreateArgs = {
   title: Scalars['String'];
   locale?: Maybe<Scalars['String']>;
-  theme?: Maybe<ThemeName>;
+  themeName?: Maybe<ThemeName>;
 };
 
 
@@ -256,7 +257,7 @@ export type StepBlock = Block & {
 };
 
 export type ThemeName =
-  | 'default';
+  | 'light';
 
 export type TypographyAlign =
   | 'left'
@@ -502,7 +503,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  theme?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
+  themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

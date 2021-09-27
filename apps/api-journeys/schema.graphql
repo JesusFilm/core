@@ -52,6 +52,7 @@ enum IconColor {
   inherit
 }
 
+"""IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
   PlayArrow
   Translate
@@ -78,7 +79,7 @@ type Journey @key(fields: "id") {
   published: Boolean!
   title: String!
   locale: String!
-  theme: ThemeName!
+  themeName: ThemeName!
   blocks: [Block!]
 }
 
@@ -89,7 +90,7 @@ type LinkAction implements Action {
 }
 
 extend type Mutation {
-  journeyCreate(title: String!, locale: String, theme: ThemeName): Journey!
+  journeyCreate(title: String!, locale: String, themeName: ThemeName): Journey!
   journeyPublish(id: ID!): Journey
   signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
@@ -204,7 +205,7 @@ type StepBlock implements Block {
 }
 
 enum ThemeName {
-  default
+  light
 }
 
 enum TypographyAlign {

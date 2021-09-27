@@ -14,7 +14,7 @@ it('returns published journeys', async () => {
     title: 'published',
     published: true,
     locale: 'id-ID',
-    theme: ThemeName.default
+    themeName: ThemeName.light
   }
   dbMock.journey.findMany.mockResolvedValue([publishedJourney])
 
@@ -26,7 +26,7 @@ it('returns published journeys', async () => {
           title
           published
           locale
-          theme
+          themeName
         }
       }
     `,
@@ -36,7 +36,7 @@ it('returns published journeys', async () => {
   })
 
   expect(data?.journeys).toEqual([
-    pick(publishedJourney, ['id', 'title', 'published', 'locale', 'theme'])
+    pick(publishedJourney, ['id', 'title', 'published', 'locale', 'themeName'])
   ])
 })
 
@@ -48,7 +48,7 @@ it('returns journey', async () => {
     title: 'published',
     published: true,
     locale: 'hi-IN',
-    theme: ThemeName.default
+    themeName: ThemeName.light
   }
   dbMock.journey.findUnique.mockResolvedValue(journey)
 
@@ -85,19 +85,19 @@ it('creates journey', async () => {
     title: 'published',
     published: true,
     locale: 'hi-IN',
-    theme: ThemeName.default
+    themeName: ThemeName.light
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation ($title: String!, $locale: String, $theme: ThemeName) {
-        journeyCreate(title: $title, locale: $locale, theme: $theme) {
+      mutation ($title: String!, $locale: String, $themeName: ThemeName) {
+        journeyCreate(title: $title, locale: $locale, themeName: $themeName) {
           id
           title
           published
           locale
-          theme
+          themeName
         }
       }
     `,
@@ -122,19 +122,19 @@ it('creates journey with default locale and theme', async () => {
     title: 'published',
     published: true,
     locale: 'en-US',
-    theme: ThemeName.default
+    themeName: ThemeName.light
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation ($title: String!, $locale: String, $theme: ThemeName) {
-        journeyCreate(title: $title, locale: $locale, theme: $theme) {
+      mutation ($title: String!, $locale: String, $themeName: ThemeName) {
+        journeyCreate(title: $title, locale: $locale, themeName: $themeName) {
           id
           title
           published
           locale
-          theme
+          themeName
         }
       }
     `,
@@ -157,7 +157,7 @@ it('publishes journey', async () => {
     title: 'my journey',
     published: true,
     locale: 'id-ID',
-    theme: ThemeName.default
+    themeName: ThemeName.light
   }
   dbMock.journey.update.mockResolvedValue(journey)
 
@@ -169,7 +169,7 @@ it('publishes journey', async () => {
           title
           published
           locale
-          theme
+          themeName
         }
       }
     `,
