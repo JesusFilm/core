@@ -103,5 +103,3 @@ export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
     }
   }
 }
-
-// Add other theme typography tokens here
