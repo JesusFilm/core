@@ -1,6 +1,5 @@
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
 import { ReactElement, useCallback, useEffect } from 'react'
 import { ApolloProvider } from '@apollo/client'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -38,9 +37,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
         />
       </Head>
       <ApolloProvider client={client}>
-        <JourneysThemeProvider>
-          <Component {...pageProps} />
-        </JourneysThemeProvider>
+        <Component {...pageProps} />
       </ApolloProvider>
     </>
   )
