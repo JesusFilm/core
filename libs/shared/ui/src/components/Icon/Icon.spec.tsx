@@ -6,7 +6,7 @@ const block: IconProps = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
   color: IconColor.error,
-  size: IconSize.l
+  size: IconSize.md
 }
 
 describe('Icon', () => {

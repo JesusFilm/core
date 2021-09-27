@@ -61,6 +61,24 @@ export const baseComponents = {
           }
         },
         {
+          props: { color: 'primary' as const },
+          style: {
+            backgroundColor: baseColorsLight.palette.primary.dark
+          }
+        },
+        {
+          props: { color: 'secondary' as const },
+          style: {
+            backgroundColor: baseColorsLight.palette.secondary.dark
+          }
+        },
+        {
+          props: { color: 'error' as const },
+          style: {
+            backgroundColor: baseColorsLight.palette.error.dark
+          }
+        },
+        {
           props: { variant: 'text' as const },
           style: {
             color: baseColorsLight.palette.surfaceAlt.contrastText,

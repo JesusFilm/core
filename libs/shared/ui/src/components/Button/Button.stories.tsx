@@ -27,7 +27,7 @@ const DefaultTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       flexDirection: 'column'
     }}
   >
-    <Button {...args} color={'error' as ButtonColor} />
+    <Button {...args} />
   </div>
 )
 
@@ -35,6 +35,7 @@ export const Default = DefaultTemplate.bind({})
 Default.args = {
   variant: ButtonVariant.contained,
   label: ButtonVariant.contained,
+  color: ButtonColor.primary,
   size: ButtonSize.large
 }
 
@@ -116,7 +117,7 @@ startIcon.args = {
   startIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
-    color: IconColor.inherit,
+    color: IconColor.secondary,
     size: IconSize.md
   }
 }
@@ -128,7 +129,7 @@ endIcon.args = {
   endIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
-    color: IconColor.inherit,
+    color: IconColor.error,
     size: IconSize.md
   }
 }

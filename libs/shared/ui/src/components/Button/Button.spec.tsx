@@ -24,9 +24,10 @@ const block: ButtonProps = {
 
 describe("Button", () => {
   it("should render the button successfully", () => {
-    const { getByText, getByTestId } = render(<Button {...block} />);
-    expect(getByText("This is a button")).toBeTruthy();
-    expect(getByTestId("ButtonComponent")).toBeTruthy();
+    const { getByText, getByRole } = render(<Button {...block} />);
+    const button = getByRole('button')
+    expect(button).toBeTruthy()
+    expect(getByText('This is a button')).toBeTruthy()
   });
 
   it("should render the correct icon", () => {
@@ -37,7 +38,7 @@ describe("Button", () => {
           __typename: "Icon",
           name: IconName.CheckCircle,
           color: IconColor.primary,
-          size: IconSize.l,
+          size: IconSize.md,
         }}
       />
     );

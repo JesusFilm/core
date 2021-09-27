@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { IconName, IconSize } from '../../../__generated__/globalTypes'
+import { IconName, IconSize, IconColor } from '../../../__generated__/globalTypes'
 import { Icon, IconProps } from '.'
 
 const IconDemo = {
@@ -40,6 +40,34 @@ Variant.args = {
     IconName.PlayArrow,
     IconName.RadioButtonUnchecked,
     IconName.Translate
+  ]
+}
+
+const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
+    {args.variants.map((variant) => (
+      <Icon {...args} color={variant as IconColor} />
+    ))}
+  </div>
+)
+
+export const Color = ColorTemplate.bind({})
+Color.args = {
+  __typename: 'Icon',
+  name: IconName.CheckCircle,
+  size: IconSize.md,
+  variants: [
+    IconColor.primary,
+    IconColor.secondary,
+    IconColor.error,
+    IconColor.action,
+    IconColor.disabled,
+    IconColor.inherit
   ]
 }
 
