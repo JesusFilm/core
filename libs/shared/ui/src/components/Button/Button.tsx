@@ -20,7 +20,11 @@ export function Button({
   disabled
 }: ButtonProps): ReactElement {
   if (loading === false) {
-    return <LoadingButton loading variant={variant ?? undefined}>{label}</LoadingButton>
+    return (
+      <LoadingButton loading variant={variant ?? undefined}>
+        {label}
+      </LoadingButton>
+    )
   } else {
     return (
       <MuiButton

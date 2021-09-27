@@ -1,5 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { IconName, IconSize, IconColor } from '../../../__generated__/globalTypes'
+import {
+  IconName,
+  IconSize,
+  IconColor
+} from '../../../__generated__/globalTypes'
 import { Icon, IconProps } from '.'
 
 const IconDemo = {
