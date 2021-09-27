@@ -6,11 +6,11 @@ import { useBlocks } from '../../libs/client/cache/blocks'
 
 const BorderLinearProgress = withStyles(() => ({
   root: {
-    height: 10,
-    borderRadius: 5
+    height: 6,
+    borderRadius: 3
   },
   bar: {
-    borderRadius: 5,
+    borderRadius: 3,
     backgroundColor: '#6D6E80'
   }
 }))(LinearProgress)
@@ -54,10 +54,10 @@ export function JourneyProgress(): ReactElement {
       <Box
         sx={{
           position: 'absolute',
-          height: '10px',
-          width: '10px',
+          height: 6,
+          width: 6,
           backgroundColor: '#6D6E80',
-          borderRadius: '50%',
+          borderRadius: 3,
           top: 0,
           right: 0,
           transition: 'opacity ease-out 0.5s',
