@@ -40,7 +40,7 @@ const Card = ({
         flexDirection: 'column',
         backgroundColor:
           background === 'background'
-            ? background
+            ? theme.palette.background
             : theme.palette[background].main,
         color:
           background === 'background'
