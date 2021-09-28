@@ -10,14 +10,14 @@ import {
   TypographyAlign,
   ThemeName,
   ThemeMode
-} from './../../../__generated__/globalTypes'
-import { sharedUiConfig } from '../../libs/storybook/decorators'
-import { ThemeProvider } from '../ThemeProvider'
+} from '../../../../__generated__/globalTypes'
+import { ThemeProvider } from '@core/shared/ui'
+import { journeysConfig } from '../../../libs/storybook/decorators'
 
 const TypographyDemo = {
-  ...sharedUiConfig,
+  ...journeysConfig,
   component: Typography,
-  title: 'shared-ui/Typography'
+  title: 'Journeys/Blocks/Typography'
 }
 
 interface TypographyStoryProps extends TypographyProps {
@@ -81,6 +81,7 @@ const VariantTemplate: Story<TypographyStoryProps> = (props) => (
     {props.variants.map((variant) => (
       <Typography
         {...props}
+        key={variant}
         variant={variant as TypographyVariant}
         content={variant ?? ''}
       />
@@ -134,6 +135,7 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
     {props.variants.map((variant) => (
       <Typography
         {...props}
+        key={variant}
         variant={TypographyVariant.h6}
         align={variant as TypographyAlign}
         content={variant ?? ''}

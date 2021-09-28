@@ -4,7 +4,7 @@ import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
-} from '../../../__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 
 import Typography from './Typography'
 
@@ -15,7 +15,7 @@ describe('Typography', () => {
         __typename="TypographyBlock"
         id="heading3"
         parentBlockId="question"
-        content={'Hello World!'}
+        content="Hello World!"
         variant={TypographyVariant.h3}
         color={TypographyColor.primary}
         align={TypographyAlign.left}
@@ -23,6 +23,6 @@ describe('Typography', () => {
     )
     expect(
       getByRole('heading', { name: 'Hello World!', level: 3 })
-    ).toBeTruthy()
+    ).toBeInTheDocument()
   })
 })

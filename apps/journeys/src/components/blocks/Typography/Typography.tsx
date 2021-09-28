@@ -1,13 +1,8 @@
 import { ReactElement } from 'react'
-import {
-  Typography as MuiTypography,
-  TypographyProps as MuiTypographyProps
-} from '@mui/material'
-import { TypographyFields } from './__generated__/TypographyFields'
+import { Typography as MuiTypography } from '@mui/material'
+import { TypographyFields } from '../../../../__generated__/TypographyFields'
 
-export interface TypographyProps
-  extends TypographyFields,
-    Omit<MuiTypographyProps, 'id' | 'variant' | 'color' | 'align'> {}
+export interface TypographyProps extends TypographyFields {}
 
 export function Typography({
   variant,

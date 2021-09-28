@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
+import { TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: TypographyFields
