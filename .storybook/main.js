@@ -1,3 +1,4 @@
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const storiesForProject = {
   journeys: [
     '../apps/journeys/src/**/*.stories.@(js|jsx|ts|tsx)',
@@ -22,12 +23,16 @@ module.exports = {
   addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
   core: {
     builder: 'webpack5'
-  }
-  // uncomment the property below if you want to apply some webpack config globally
-  // webpackFinal: async (config, { configType }) => {
-  //   // Make whatever fine-grained changes you need that should apply to all storybook configs
+  },
+  webpackFinal: async (config) => {
+    const tsPaths = new TsconfigPathsPlugin({
+      configFile: './tsconfig.base.json'
+    })
 
-  //   // Return the altered config
-  //   return config;
-  // },
+    config.resolve.plugins
+      ? config.resolve.plugins.push(tsPaths)
+      : (config.resolve.plugins = [tsPaths])
+
+    return config
+  }
 }
