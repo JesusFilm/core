@@ -20,7 +20,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
       },
       variants: [
         {
-          props: { variant: 'overline' as const, gutterBottom: true },
+          props: { variant: 'overline', gutterBottom: true },
           style: {
             marginBottom: spacingTheme.spacing(1)
           }
@@ -63,7 +63,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
       fontWeight: 600,
       lineHeight: '20px',
       letterSpacing: 2,
-      textTransform: 'uppercase' as const
+      textTransform: 'uppercase'
     },
     subtitle1: {
       fontSize: 18,

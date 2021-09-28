@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '.'
 
 describe('journeys theme provider', () => {
