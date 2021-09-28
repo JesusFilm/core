@@ -1,12 +1,13 @@
 import { createTheme } from '@mui/material'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
+import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
 import { baseTypography } from './tokens/typography'
 
 export const baseTheme = createTheme({
   ...baseTypography,
-  ...baseSpacing
-  // BUTTON TODO
+  ...baseSpacing,
+  ...baseComponents
 })
 
 export const baseLight = createTheme({

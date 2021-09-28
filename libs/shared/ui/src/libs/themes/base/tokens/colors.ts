@@ -1,4 +1,4 @@
-import { ThemeOptions } from '@mui/material/styles'
+import { ThemeOptions, createTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -72,3 +72,5 @@ export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
     }
   }
 }
+
+export const lightThemeToken = createTheme(baseColorsLight)

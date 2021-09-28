@@ -5,4 +5,4 @@ export const baseSpacing: Required<Pick<ThemeOptions, 'spacing'>> = {
 }
 
 // Required to use baseSpacing in theme tokens
-export const spacingTheme = createTheme(baseSpacing)
+export const spacingThemeToken = createTheme(baseSpacing)

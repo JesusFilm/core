@@ -11,6 +11,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { sharedUiConfig } from '../../libs/storybook/decorators'
 
+
 const ButtonDemo = {
   ...sharedUiConfig,
   component: Button,
@@ -35,9 +36,9 @@ const Card = ({ children }: CardProps): ReactElement => {
         flexDirection: 'column',
         backgroundColor: theme.palette.surface.main,
         color: theme.palette.surface.contrastText,
-        p: theme.space.lg,
+        p: theme.spacing(3),
         borderRadius: 4,
-        mb: theme.space.lg
+        mb: theme.spacing(3)
       }}
     >
       {children}
@@ -72,7 +73,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
     }}
   >
     {args.variants.map((variant) => (
-      <Button {...args} label={variant === null ? '' : `${variant}`} color={variant as ButtonColor} />
+      <Button {...args} label={variant === null ? 'Default' : `${variant}`} color={variant as ButtonColor} />
     ))}
   </div>
 )

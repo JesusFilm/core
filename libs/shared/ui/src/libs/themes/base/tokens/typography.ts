@@ -1,5 +1,5 @@
 import { ThemeOptions } from '@mui/material'
-import { spacingTheme } from './spacing'
+import { spacingThemeToken } from './spacing'
 
 // Update the Typography's variant prop options
 declare module '@mui/material' {
@@ -15,14 +15,14 @@ export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: spacingTheme.spacing(3)
+          marginBottom: spacingThemeToken.spacing(3)
         }
       },
       variants: [
         {
           props: { variant: 'overline', gutterBottom: true },
           style: {
-            marginBottom: spacingTheme.spacing(1)
+            marginBottom: spacingThemeToken.spacing(1)
           }
         }
       ]
