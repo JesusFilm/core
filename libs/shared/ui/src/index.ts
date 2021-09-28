@@ -1,2 +1,2 @@
-export { themes } from './libs/theme/themeMap'
-export { TYPOGRAPHY_FIELDS } from './components/Typography'
+export { ThemeProvider } from './components/ThemeProvider'
+export { sharedUiConfig } from './libs/storybook/decorators'
