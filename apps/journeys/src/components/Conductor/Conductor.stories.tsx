@@ -52,7 +52,7 @@ export const Default = (): ReactElement => (
           id: 'step2.id',
           __typename: 'StepBlock',
           parentBlockId: null,
-          locked: false,
+          locked: true,
           nextBlockId: 'step3.id',
           children: [
             {
@@ -60,7 +60,7 @@ export const Default = (): ReactElement => (
               __typename: 'RadioQuestionBlock',
               parentBlockId: 'step2.id',
               label: 'Step 2',
-              description: null,
+              description: 'This step is locked',
               variant: null,
               children: [
                 {
