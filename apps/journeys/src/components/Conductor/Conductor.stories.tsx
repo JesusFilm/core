@@ -7,7 +7,10 @@ import { journeysConfig } from '../../libs/storybook/decorators'
 const Demo = {
   ...journeysConfig,
   component: Conductor,
-  title: 'Journeys/Conductor'
+  title: 'Journeys/Conductor',
+  parameters: {
+    layout: 'fullscreen'
+  }
 }
 
 export const Default = (): ReactElement => (
@@ -18,7 +21,7 @@ export const Default = (): ReactElement => (
           id: 'step1.id',
           __typename: 'StepBlock',
           parentBlockId: null,
-          locked: true,
+          locked: false,
           nextBlockId: 'step2.id',
           children: [
             {
@@ -50,7 +53,7 @@ export const Default = (): ReactElement => (
           __typename: 'StepBlock',
           parentBlockId: null,
           locked: false,
-          nextBlockId: null,
+          nextBlockId: 'step3.id',
           children: [
             {
               id: 'radioQuestion1.id',
@@ -61,7 +64,7 @@ export const Default = (): ReactElement => (
               variant: null,
               children: [
                 {
-                  id: 'radioOption1.id',
+                  id: 'radioOption3.id',
                   __typename: 'RadioOptionBlock',
                   parentBlockId: 'radioQuestion1.id',
                   label: 'Go to Step 1',
@@ -69,6 +72,49 @@ export const Default = (): ReactElement => (
                     __typename: 'NavigateToBlockAction',
                     gtmEventName: 'gtmEventName',
                     blockId: 'step1.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption4.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Go to Step 3',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step3.id'
+                  },
+                  children: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'step3.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: false,
+          nextBlockId: null,
+          children: [
+            {
+              id: 'radioQuestion2.id',
+              __typename: 'RadioQuestionBlock',
+              parentBlockId: 'step3.id',
+              label: 'Step 3',
+              description: null,
+              variant: null,
+              children: [
+                {
+                  id: 'radioOption5.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion2.id',
+                  label: 'Go to Step 2',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step2.id'
                   },
                   children: []
                 }

@@ -15,13 +15,11 @@ export const sharedUiConfig = {
   decorators: [
     (Story: () => ReactElement) => (
       // TODO: Addon to allow changing themes
-      <div style={{ margin: '0.5em' }}>
-        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-          <EmotionTheming theme={themes.base.light}>
-            <Story />
-          </EmotionTheming>
-        </ThemeProvider>
-      </div>
+      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+        <EmotionTheming theme={themes.base.light}>
+          <Story />
+        </EmotionTheming>
+      </ThemeProvider>
     )
   ],
   parameters: {
