@@ -7,11 +7,8 @@ import { Typography, TypographyProps } from './Typography'
 import {
   TypographyVariant,
   TypographyColor,
-  TypographyAlign,
-  ThemeName,
-  ThemeMode
+  TypographyAlign
 } from '../../../../__generated__/globalTypes'
-import { ThemeProvider } from '@core/shared/ui'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 
 const TypographyDemo = {
@@ -23,22 +20,24 @@ const TypographyDemo = {
 interface TypographyStoryProps extends TypographyProps {
   variants: Array<string | null>
   heading?: string
+  useAlt?: boolean
 }
 
 // TODO: Replace with real card component
 interface CardProps {
+  useAlt?: boolean
   children: ReactNode
 }
 
-const Card = ({ children }: CardProps): ReactElement => {
+const Card = ({ children, useAlt = false }: CardProps): ReactElement => {
   const theme = useTheme()
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: theme.palette.surface.main,
-        color: theme.palette.surface.contrastText,
+        backgroundColor: theme.palette[useAlt ? 'surfaceAlt' : 'surface'].main,
+        color: theme.palette[useAlt ? 'surfaceAlt' : 'surface'].contrastText,
         p: theme.spacing(3),
         borderRadius: 4,
         mb: theme.spacing(3)
@@ -52,10 +51,11 @@ const Card = ({ children }: CardProps): ReactElement => {
 const ColorCards = ({
   variants,
   heading = '',
+  useAlt,
   ...props
 }: TypographyStoryProps): ReactElement => {
   return (
-    <Card>
+    <Card useAlt={useAlt}>
       <Typography {...props} variant={TypographyVariant.h6} content={heading} />
       {variants.map((variant) => (
         <>
@@ -115,13 +115,12 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
     }}
   >
     <ColorCards {...props} variants={props.variants} heading={'Surface'} />
-    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
-      <ColorCards
-        {...props}
-        variants={props.variants}
-        heading={'Surface Alt'}
-      />
-    </ThemeProvider>
+    <ColorCards
+      {...props}
+      useAlt
+      variants={props.variants}
+      heading={'Surface Alt'}
+    />
   </div>
 )
 
