@@ -34,7 +34,7 @@ jobs:
         run: npm install -g serverless
 
       - name: Install Rover
-        run: npm install -g rover
+        run: npm install -g @apollo/rover
 
       - name: Deploy/Update Infrastructure
         run: serverless deploy --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
