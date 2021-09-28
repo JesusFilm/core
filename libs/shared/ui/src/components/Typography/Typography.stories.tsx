@@ -1,16 +1,18 @@
 import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { ThemeProvider, useTheme } from '@mui/material'
+import { useTheme } from '@mui/material'
 import { Box } from '@mui/system'
 
 import { Typography, TypographyProps } from './Typography'
 import {
   TypographyVariant,
   TypographyColor,
-  TypographyAlign
+  TypographyAlign,
+  ThemeName,
+  ThemeMode
 } from './../../../__generated__/globalTypes'
 import { sharedUiConfig } from '../../libs/storybook/decorators'
-import { baseDark } from '../../libs/theme/themes'
+import { ThemeProvider } from '../ThemeProvider'
 
 const TypographyDemo = {
   ...sharedUiConfig,
@@ -37,9 +39,9 @@ const Card = ({ children }: CardProps): ReactElement => {
         flexDirection: 'column',
         backgroundColor: theme.palette.surface.main,
         color: theme.palette.surface.contrastText,
-        p: theme.space.lg,
+        p: theme.spacing(3),
         borderRadius: 4,
-        mb: theme.space.lg
+        mb: theme.spacing(3)
       }}
     >
       {children}
@@ -112,7 +114,7 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
     }}
   >
     <ColorCards {...props} variants={props.variants} heading={'Surface'} />
-    <ThemeProvider theme={baseDark}>
+    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.dark}>
       <ColorCards
         {...props}
         variants={props.variants}
