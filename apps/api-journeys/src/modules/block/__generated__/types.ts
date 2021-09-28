@@ -7,14 +7,15 @@ export namespace BlockModule {
     NavigateToBlockAction: 'gtmEventName' | 'blockId';
     NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
     LinkAction: 'gtmEventName' | 'url' | 'target';
+    Icon: 'name' | 'color' | 'size';
+    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
+    ImageBlock: 'id' | 'parentBlockId' | 'src' | 'width' | 'height' | 'alt';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
     SignupBlock: 'id' | 'parentBlockId' | 'action';
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
     VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
-    Icon: 'name' | 'color' | 'size';
-    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     Journey: 'blocks';
     RadioQuestionResponse: 'block';
     SignupResponse: 'block';
@@ -24,16 +25,16 @@ export namespace BlockModule {
   };
   
   interface DefinedEnumValues {
-    RadioQuestionVariant: 'LIGHT' | 'DARK';
-    TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
-    TypographyColor: 'primary' | 'secondary' | 'error';
-    TypographyAlign: 'left' | 'center' | 'right';
     IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
     IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
     ButtonVariant: 'text' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
+    RadioQuestionVariant: 'LIGHT' | 'DARK';
+    TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
+    TypographyColor: 'primary' | 'secondary' | 'error';
+    TypographyAlign: 'left' | 'center' | 'right';
   };
   
   export type Action = Pick<Types.Action, DefinedFields['Action']>;
@@ -42,6 +43,15 @@ export namespace BlockModule {
   export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
   export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
   export type Block = Pick<Types.Block, DefinedFields['Block']>;
+  export type IconName = DefinedEnumValues['IconName'];
+  export type IconColor = DefinedEnumValues['IconColor'];
+  export type IconSize = DefinedEnumValues['IconSize'];
+  export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
+  export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
+  export type ButtonColor = DefinedEnumValues['ButtonColor'];
+  export type ButtonSize = DefinedEnumValues['ButtonSize'];
+  export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
+  export type ImageBlock = Pick<Types.ImageBlock, DefinedFields['ImageBlock']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
@@ -56,27 +66,20 @@ export namespace BlockModule {
   export type RadioQuestionResponse = Types.RadioQuestionResponse;
   export type SignupResponse = Types.SignupResponse;
   export type VideoResponse = Types.VideoResponse;
-  export type IconName = DefinedEnumValues['IconName'];
-  export type IconColor = DefinedEnumValues['IconColor'];
-  export type IconSize = DefinedEnumValues['IconSize'];
-  export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
-  export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
-  export type ButtonColor = DefinedEnumValues['ButtonColor'];
-  export type ButtonSize = DefinedEnumValues['ButtonSize'];
-  export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
   
   export type NavigateActionResolvers = Pick<Types.NavigateActionResolvers, DefinedFields['NavigateAction'] | '__isTypeOf'>;
   export type NavigateToBlockActionResolvers = Pick<Types.NavigateToBlockActionResolvers, DefinedFields['NavigateToBlockAction'] | '__isTypeOf'>;
   export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
   export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
+  export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
+  export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
+  export type ImageBlockResolvers = Pick<Types.ImageBlockResolvers, DefinedFields['ImageBlock'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
   export type SignupBlockResolvers = Pick<Types.SignupBlockResolvers, DefinedFields['SignupBlock'] | '__isTypeOf'>;
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type TypographyBlockResolvers = Pick<Types.TypographyBlockResolvers, DefinedFields['TypographyBlock'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
-  export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
-  export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
   export type RadioQuestionResponseResolvers = Pick<Types.RadioQuestionResponseResolvers, DefinedFields['RadioQuestionResponse']>;
   export type SignupResponseResolvers = Pick<Types.SignupResponseResolvers, DefinedFields['SignupResponse']>;
@@ -89,14 +92,15 @@ export namespace BlockModule {
     NavigateToBlockAction?: NavigateToBlockActionResolvers;
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
     LinkAction?: LinkActionResolvers;
+    Icon?: IconResolvers;
+    ButtonBlock?: ButtonBlockResolvers;
+    ImageBlock?: ImageBlockResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
     RadioQuestionBlock?: RadioQuestionBlockResolvers;
     SignupBlock?: SignupBlockResolvers;
     StepBlock?: StepBlockResolvers;
     TypographyBlock?: TypographyBlockResolvers;
     VideoBlock?: VideoBlockResolvers;
-    Icon?: IconResolvers;
-    ButtonBlock?: ButtonBlockResolvers;
     Journey?: JourneyResolvers;
     RadioQuestionResponse?: RadioQuestionResponseResolvers;
     SignupResponse?: SignupResponseResolvers;
@@ -126,6 +130,33 @@ export namespace BlockModule {
       gtmEventName?: gm.Middleware[];
       url?: gm.Middleware[];
       target?: gm.Middleware[];
+    };
+    Icon?: {
+      '*'?: gm.Middleware[];
+      name?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+    };
+    ButtonBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      label?: gm.Middleware[];
+      variant?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+      startIcon?: gm.Middleware[];
+      endIcon?: gm.Middleware[];
+      action?: gm.Middleware[];
+    };
+    ImageBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      src?: gm.Middleware[];
+      width?: gm.Middleware[];
+      height?: gm.Middleware[];
+      alt?: gm.Middleware[];
     };
     RadioOptionBlock?: {
       '*'?: gm.Middleware[];
@@ -189,24 +220,6 @@ export namespace BlockModule {
     VideoResponse?: {
       '*'?: gm.Middleware[];
       block?: gm.Middleware[];
-    };
-    Icon?: {
-      '*'?: gm.Middleware[];
-      name?: gm.Middleware[];
-      color?: gm.Middleware[];
-      size?: gm.Middleware[];
-    };
-    ButtonBlock?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      parentBlockId?: gm.Middleware[];
-      label?: gm.Middleware[];
-      variant?: gm.Middleware[];
-      color?: gm.Middleware[];
-      size?: gm.Middleware[];
-      startIcon?: gm.Middleware[];
-      endIcon?: gm.Middleware[];
-      action?: gm.Middleware[];
     };
   };
 }

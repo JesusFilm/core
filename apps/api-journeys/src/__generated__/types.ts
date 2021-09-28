@@ -68,6 +68,7 @@ export type IconColor =
   | 'disabled'
   | 'inherit';
 
+/** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
   | 'PlayArrow'
   | 'Translate'
@@ -86,6 +87,16 @@ export type IconSize =
   | 'lg'
   | 'xl'
   | 'inherit';
+
+export type ImageBlock = Block & {
+  __typename?: 'ImageBlock';
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  src: Scalars['String'];
+  width: Scalars['Int'];
+  height: Scalars['Int'];
+  alt?: Maybe<Scalars['String']>;
+};
 
 export type Journey = {
   __typename?: 'Journey';
@@ -404,6 +415,8 @@ export type ResolversTypes = {
   IconColor: IconColor;
   IconName: IconName;
   IconSize: IconSize;
+  ImageBlock: ResolverTypeWrapper<BlockType>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   LinkAction: ResolverTypeWrapper<LinkAction>;
@@ -428,7 +441,6 @@ export type ResolversTypes = {
   TypographyColor: TypographyColor;
   TypographyVariant: TypographyVariant;
   VideoBlock: ResolverTypeWrapper<BlockType>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   VideoResponse: ResolverTypeWrapper<ResponseType>;
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoResponseStateEnum: VideoResponseStateEnum;
@@ -442,6 +454,8 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   ButtonBlock: BlockType;
   Icon: Icon;
+  ImageBlock: BlockType;
+  Int: Scalars['Int'];
   Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
   Boolean: Scalars['Boolean'];
   LinkAction: LinkAction;
@@ -461,7 +475,6 @@ export type ResolversParentTypes = {
   StepBlock: BlockType;
   TypographyBlock: BlockType;
   VideoBlock: BlockType;
-  Int: Scalars['Int'];
   VideoResponse: ResponseType;
   VideoResponseCreateInput: VideoResponseCreateInput;
 };
@@ -472,7 +485,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'ButtonBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ButtonBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -494,6 +507,16 @@ export type IconResolvers<ContextType = GraphQLModules.Context, ParentType exten
   name?: Resolver<ResolversTypes['IconName'], ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['IconColor']>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['IconSize']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['ImageBlock'] = ResolversParentTypes['ImageBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  alt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -633,6 +656,7 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   Block?: BlockResolvers<ContextType>;
   ButtonBlock?: ButtonBlockResolvers<ContextType>;
   Icon?: IconResolvers<ContextType>;
+  ImageBlock?: ImageBlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;
   LinkAction?: LinkActionResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

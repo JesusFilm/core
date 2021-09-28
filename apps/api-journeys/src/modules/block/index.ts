@@ -107,6 +107,15 @@ const typeDefs = gql`
     action: Action
   }
 
+  type ImageBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    src: String!
+    width: Int!
+    height: Int!
+    alt: String
+  }
+
   type RadioOptionBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -125,15 +134,6 @@ const typeDefs = gql`
     label: String!
     description: String
     variant: RadioQuestionVariant
-  }
-
-  type ImageBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    src: String!
-    width: Int!
-    height: Int!
-    alt: String
   }
 
   type SignupBlock implements Block {
@@ -262,6 +262,12 @@ const resolvers: Resolvers = {
     startIcon: ({ extraAttrs }) => get(extraAttrs, 'startIcon'),
     endIcon: ({ extraAttrs }) => get(extraAttrs, 'endIcon')
   },
+  ImageBlock: {
+    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
+    width: ({ extraAttrs }) => get(extraAttrs, 'width'),
+    height: ({ extraAttrs }) => get(extraAttrs, 'height'),
+    alt: ({ extraAttrs }) => get(extraAttrs, 'alt')
+  },
   SignupBlock: {
     action: ({ extraAttrs }) => get(extraAttrs, 'action')
   },
@@ -283,12 +289,6 @@ const resolvers: Resolvers = {
     label: ({ extraAttrs }) => get(extraAttrs, 'label'),
     description: ({ extraAttrs }) => get(extraAttrs, 'description'),
     variant: ({ extraAttrs }) => get(extraAttrs, 'variant')
-  },
-  ImageBlock: {
-    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
-    width: ({ extraAttrs }) => get(extraAttrs, 'width'),
-    height: ({ extraAttrs }) => get(extraAttrs, 'height'),
-    alt: ({ extraAttrs }) => get(extraAttrs, 'alt')
   },
   VideoBlock: {
     src: ({ extraAttrs }) => get(extraAttrs, 'src'),
