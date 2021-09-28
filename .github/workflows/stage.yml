@@ -9,7 +9,7 @@ on:
 #      - stage
 jobs:
   build-and-deploy:
-    environment: Preview
+    environment: Stage
     runs-on: ubuntu-latest
     env:
       ENV_SUFFIX: stage
