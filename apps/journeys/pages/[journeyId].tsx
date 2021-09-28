@@ -71,6 +71,12 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
                 }
               }
             }
+            ... on TypographyBlock {
+              align
+              color
+              content
+              variant
+            }
           }
         }
       }
