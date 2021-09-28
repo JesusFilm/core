@@ -52,10 +52,7 @@ jobs:
         run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
 
       - name: Seed DB
-        uses: mansagroup/nrwl-nx-action@v2
-        with:
-          targets: seed
-          projects: api-journeys
+        run: npx prisma db seed --schema apps/api-journeys/prisma/schema.prisma
 
       - name: Remove Github Actions Access to Postgres
         run: aws ec2 revoke-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
