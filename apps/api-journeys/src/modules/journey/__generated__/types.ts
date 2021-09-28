@@ -3,23 +3,23 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeName' | 'themeMode';
+    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyPublish';
   };
   
   interface DefinedEnumValues {
-    ThemeName: 'base';
     ThemeMode: 'light' | 'dark';
+    ThemeName: 'base';
   };
   
   interface DefinedInputFields {
-    JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeName' | 'themeMode';
+    JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName';
   };
   
-  export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
-  export type ThemeName = DefinedEnumValues['ThemeName'];
   export type ThemeMode = DefinedEnumValues['ThemeMode'];
+  export type ThemeName = DefinedEnumValues['ThemeName'];
+  export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
@@ -44,8 +44,8 @@ export namespace JourneyModule {
       published?: gm.Middleware[];
       title?: gm.Middleware[];
       locale?: gm.Middleware[];
-      themeName?: gm.Middleware[];
       themeMode?: gm.Middleware[];
+      themeName?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];

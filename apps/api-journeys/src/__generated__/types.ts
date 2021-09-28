@@ -117,8 +117,8 @@ export type JourneyCreateInput = {
   id?: Maybe<Scalars['ID']>;
   title: Scalars['String'];
   locale?: Maybe<Scalars['String']>;
-  themeName?: Maybe<ThemeName>;
   themeMode?: Maybe<ThemeMode>;
+  themeName?: Maybe<ThemeName>;
 };
 
 export type LinkAction = Action & {
