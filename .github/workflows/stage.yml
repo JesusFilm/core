@@ -17,6 +17,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
@@ -31,6 +32,9 @@ jobs:
 
       - name: Install Serverless
         run: npm install -g serverless
+
+      - name: Install Rover
+        run: npm install -g rover
 
       - name: Deploy/Update Infrastructure
         run: serverless deploy --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
@@ -53,6 +57,9 @@ jobs:
 
       - name: Seed DB
         run: npx prisma db seed --preview-feature --schema apps/api-journeys/prisma/schema.prisma
+
+      - name: Publish Apollo Graph
+        run: rover subgraph publish ark-weave-journeys@preprod --name journeys --schema apps/api-journeys/schema.graphql --routing-url https://q2hqgdvfmk.execute-api.us-east-1.amazonaws.com/dev/journeys
 
       - name: Remove Github Actions Access to Postgres
         if: always()
