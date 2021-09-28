@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta } from '@storybook/react'
 import { ReactElement } from 'react'
 import { Conductor } from '.'
@@ -9,6 +10,75 @@ const Demo = {
   title: 'Journeys/Conductor'
 }
 
-export const Default = (): ReactElement => <Conductor blocks={[]} />
+export const Default = (): ReactElement => (
+  <MockedProvider>
+    <Conductor
+      blocks={[
+        {
+          id: 'step1.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: true,
+          nextBlockId: 'step2.id',
+          children: [
+            {
+              id: 'radioQuestion0.id',
+              __typename: 'RadioQuestionBlock',
+              parentBlockId: 'step1.id',
+              label: 'Step 1',
+              description: null,
+              variant: null,
+              children: [
+                {
+                  id: 'radioOption1.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Go to Step 2',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step2.id'
+                  },
+                  children: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'step2.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: false,
+          nextBlockId: null,
+          children: [
+            {
+              id: 'radioQuestion1.id',
+              __typename: 'RadioQuestionBlock',
+              parentBlockId: 'step2.id',
+              label: 'Step 2',
+              description: null,
+              variant: null,
+              children: [
+                {
+                  id: 'radioOption1.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Go to Step 1',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step1.id'
+                  },
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ]}
+    />
+  </MockedProvider>
+)
 
 export default Demo as Meta

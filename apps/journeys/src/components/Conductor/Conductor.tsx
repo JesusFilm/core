@@ -4,9 +4,10 @@ import { TreeBlock } from '../../libs/transformer/transformer'
 import { useBlocks } from '../../libs/client/cache/blocks'
 import { Navigation, Swiper as SwiperAPI } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css/bundle'
 import { findIndex } from 'lodash'
 import { JourneyProgress } from '../JourneyProgress'
+import 'swiper/css'
+import 'swiper/css/navigation'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -39,9 +40,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         navigation
         onSlideChange={() => console.log('slide change')}
         onSwiper={(swiper) => setSwiper(swiper)}
-        allowSlideNext={
-          activeBlock?.__typename === 'StepBlock' && !activeBlock.locked
-        }
+        allowSlideNext={activeBlock !== null && !activeBlock.locked}
       >
         {treeBlocks.map((block) => (
           <SwiperSlide key={block.id}>
