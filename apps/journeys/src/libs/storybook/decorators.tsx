@@ -1,9 +1,6 @@
-import { parameters as rootParameters } from '../../../../../.storybook/preview'
+import { sharedUiConfig } from '@core/shared/ui'
 
-// Must set parameters at component level for share-library stories to work
+// Must set parameters at component level for shared-storybook stories to work
 export const journeysConfig = {
-  decorators: [(Story) => <Story />],
-  parameters: {
-    ...rootParameters
-  }
+  ...sharedUiConfig
 }

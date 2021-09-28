@@ -6,8 +6,8 @@ const storiesForProject = {
     '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'shared-ui': [
-    '../libs/shared/ui/src/components/**/*.stories.mdx',
-    '../libs/shared/ui/src/components/**/*.stories.@(js|jsx|ts|tsx)'
+    '../libs/shared/ui/src/**/**/*.stories.mdx',
+    '../libs/shared/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -19,15 +19,7 @@ const allStories = [
 
 module.exports = {
   stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || allStories,
-  addons: [
-    {
-      name: '@storybook/addon-essentials',
-      options: {
-        outline: false
-      }
-    },
-    '@storybook/addon-a11y'
-  ],
+  addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
   core: {
     builder: 'webpack5'
   }
