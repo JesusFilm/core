@@ -12,10 +12,12 @@ generator client {
 }
 
 model Journey {
-  id        String  @id @default(uuid())
+  id        String     @id @default(uuid())
   title     String
-  published Boolean @default(false)
+  published Boolean    @default(false)
   blocks    Block[]
+  locale    String     @default("en-US")
+  theme     ThemeName  @default(default)
 }
 
 model Block {
@@ -28,12 +30,35 @@ model Block {
   childBlocks   Block[]   @relation("BlockChildren")
   extraAttrs    Json?
   parentOrder   Int       @default(0)
+  responses     Response[]
+}
+
+enum ThemeName {
+  default
 }
 
 enum BlockType {
-  StepBlock
-  VideoBlock
-  RadioQuestionBlock
+  ButtonBlock
   RadioOptionBlock
+  RadioQuestionBlock
+  SignupBlock
+  StepBlock
+  TypographyBlock
+  VideoBlock
   ImageBlock
+}
+
+model Response {
+  id            String       @id @default(uuid())
+  type          ResponseType
+  userId        String
+  block         Block        @relation(fields: [blockId], references: [id])
+  blockId       String
+  extraAttrs    Json
+}
+
+enum ResponseType {
+  RadioQuestionResponse
+  SignupResponse
+  VideoResponse
 }
