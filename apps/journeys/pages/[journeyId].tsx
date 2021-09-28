@@ -9,7 +9,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
-import { JourneysThemeProvider } from '../src/components/JourneysThemeProvider'
+import { ThemeProvider } from '@core/shared/ui'
 
 interface JourneyPageProps {
   journey: Journey
@@ -17,13 +17,13 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
-    <JourneysThemeProvider theme={journey.theme}>
+    <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
       <Container>
         {journey.blocks != null && (
           <Conductor blocks={transformer(journey.blocks)} />
         )}
       </Container>
-    </JourneysThemeProvider>
+    </ThemeProvider>
   )
 }
 
@@ -35,8 +35,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
-          theme
-          locale
+          themeName
+          themeMode
           blocks {
             id
             parentBlockId

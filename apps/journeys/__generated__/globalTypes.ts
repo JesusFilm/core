@@ -12,8 +12,13 @@ export enum RadioQuestionVariant {
   LIGHT = "LIGHT",
 }
 
+export enum ThemeMode {
+  dark = "dark",
+  light = "light",
+}
+
 export enum ThemeName {
-  default = "default",
+  base = "base",
 }
 
 export interface RadioQuestionResponseCreateInput {

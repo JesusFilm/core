@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, RadioQuestionVariant } from "./globalTypes";
+import { ThemeName, ThemeMode, RadioQuestionVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -90,8 +90,8 @@ export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | 
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
-  theme: ThemeName;
-  locale: string;
+  themeName: ThemeName;
+  themeMode: ThemeMode;
   blocks: GetJourney_journey_blocks[] | null;
 }
 
