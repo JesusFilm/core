@@ -12,6 +12,7 @@ generates:
       mappers:
         Block: .prisma/api-journeys-client#Block as BlockType
         ButtonBlock: .prisma/api-journeys-client#Block as BlockType
+        ImageBlock: .prisma/api-journeys-client#Block as BlockType
         RadioQuestionBlock: .prisma/api-journeys-client#Block as BlockType
         RadioOptionBlock: .prisma/api-journeys-client#Block as BlockType
         SignupBlock: .prisma/api-journeys-client#Block as BlockType
