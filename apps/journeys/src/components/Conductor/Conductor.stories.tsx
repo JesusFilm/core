@@ -25,22 +25,46 @@ export const Default = (): ReactElement => (
           nextBlockId: 'step2.id',
           children: [
             {
-              id: 'radioQuestion0.id',
+              id: 'radioQuestion1.id',
               __typename: 'RadioQuestionBlock',
               parentBlockId: 'step1.id',
               label: 'Step 1',
-              description: null,
+              description: 'Start',
               variant: null,
               children: [
                 {
-                  id: 'radioOption1.id',
+                  id: 'radioOption2.id',
                   __typename: 'RadioOptionBlock',
                   parentBlockId: 'radioQuestion1.id',
-                  label: 'Go to Step 2',
+                  label: 'Step 2 (Locked)',
                   action: {
                     __typename: 'NavigateToBlockAction',
                     gtmEventName: 'gtmEventName',
                     blockId: 'step2.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption3.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 3 (No nextBlockId)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step3.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption4.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 4 (End)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step4.id'
                   },
                   children: []
                 }
@@ -60,14 +84,14 @@ export const Default = (): ReactElement => (
               __typename: 'RadioQuestionBlock',
               parentBlockId: 'step2.id',
               label: 'Step 2',
-              description: 'This step is locked',
+              description: 'Locked',
               variant: null,
               children: [
                 {
-                  id: 'radioOption3.id',
+                  id: 'radioOption1.id',
                   __typename: 'RadioOptionBlock',
                   parentBlockId: 'radioQuestion1.id',
-                  label: 'Go to Step 1',
+                  label: 'Step 1 (Start)',
                   action: {
                     __typename: 'NavigateToBlockAction',
                     gtmEventName: 'gtmEventName',
@@ -76,14 +100,26 @@ export const Default = (): ReactElement => (
                   children: []
                 },
                 {
-                  id: 'radioOption4.id',
+                  id: 'radioOption3.id',
                   __typename: 'RadioOptionBlock',
                   parentBlockId: 'radioQuestion1.id',
-                  label: 'Go to Step 3',
+                  label: 'Step 3 (No nextBlockId)',
                   action: {
                     __typename: 'NavigateToBlockAction',
                     gtmEventName: 'gtmEventName',
                     blockId: 'step3.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption4.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 4 (End)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step4.id'
                   },
                   children: []
                 }
@@ -99,22 +135,101 @@ export const Default = (): ReactElement => (
           nextBlockId: null,
           children: [
             {
-              id: 'radioQuestion2.id',
+              id: 'radioQuestion1.id',
               __typename: 'RadioQuestionBlock',
-              parentBlockId: 'step3.id',
+              parentBlockId: 'step1.id',
               label: 'Step 3',
-              description: null,
+              description: 'No nextBlockId',
               variant: null,
               children: [
                 {
-                  id: 'radioOption5.id',
+                  id: 'radioOption1.id',
                   __typename: 'RadioOptionBlock',
-                  parentBlockId: 'radioQuestion2.id',
-                  label: 'Go to Step 2',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 1 (Start)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step1.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption2.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 2 (Locked)',
                   action: {
                     __typename: 'NavigateToBlockAction',
                     gtmEventName: 'gtmEventName',
                     blockId: 'step2.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption4.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 4 (End)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step4.id'
+                  },
+                  children: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'step4.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: false,
+          nextBlockId: null,
+          children: [
+            {
+              id: 'radioQuestion1.id',
+              __typename: 'RadioQuestionBlock',
+              parentBlockId: 'step4.id',
+              label: 'Step 4',
+              description: 'End',
+              variant: null,
+              children: [
+                {
+                  id: 'radioOption1.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 1 (Start)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step1.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption2.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 2 (Locked)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step2.id'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption3.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  label: 'Step 3 (No nextBlockId)',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step3.id'
                   },
                   children: []
                 }

@@ -1,13 +1,13 @@
 import { BlockRenderer } from '../BlockRenderer'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { useBlocks } from '../../libs/client/cache/blocks'
-import SwiperCore, { Navigation } from 'swiper'
+import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import { JourneyProgress } from '../JourneyProgress'
-import 'swiper/css'
 import { Box, Container } from '@mui/material'
+import 'swiper/css'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -17,8 +17,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const navigationPrevRef = useRef<HTMLDivElement>()
-  const navigationNextRef = useRef<HTMLDivElement>()
 
   useEffect(() => {
     setTreeBlocks(blocks)
@@ -36,6 +34,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, activeBlock, treeBlocks])
 
+  function handleNext(): void {
+    if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
+  }
+
   return (
     <Container sx={{ p: 0 }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -44,18 +46,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         </Box>
       </Box>
       <Swiper
-        modules={[Navigation]}
         spaceBetween={10}
         slidesPerView="auto"
         centeredSlides={true}
-        onSlideChange={(swiper) =>
-          nextActiveBlock(treeBlocks[swiper.activeIndex])
-        }
         onSwiper={(swiper) => setSwiper(swiper)}
-        navigation={{
-          prevEl: navigationPrevRef.current,
-          nextEl: navigationNextRef.current
-        }}
+        allowTouchMove={false}
       >
         {treeBlocks.map((block) => (
           <SwiperSlide
@@ -66,7 +61,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           </SwiperSlide>
         ))}
         <Box
-          ref={navigationPrevRef}
+          data-testid="conductorPrevButton"
           sx={{
             position: 'absolute',
             top: 0,
@@ -78,7 +73,21 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }}
         />
         <Box
-          ref={navigationNextRef}
+          data-testid="conductorNextButton"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            zIndex: 2,
+            width: 20,
+            right: 0,
+            background: '#FFF',
+            transition: 'opacity 0.5s ease-out',
+            opacity: activeBlock?.nextBlockId != null ? 0 : 1
+          }}
+        />
+        <Box
+          onClick={handleNext}
           sx={{
             position: 'absolute',
             top: 0,
