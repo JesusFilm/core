@@ -52,7 +52,7 @@ jobs:
         run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
 
       - name: Seed DB
-        run: npx prisma db seed --schema apps/api-journeys/prisma/schema.prisma
+        run: npx prisma db seed --preview-feature --schema apps/api-journeys/prisma/schema.prisma
 
       - name: Remove Github Actions Access to Postgres
         if: always()
