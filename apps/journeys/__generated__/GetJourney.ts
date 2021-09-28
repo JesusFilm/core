@@ -9,8 +9,8 @@ import { RadioQuestionVariant } from "./globalTypes";
 // GraphQL query operation: GetJourney
 // ====================================================
 
-export interface GetJourney_journey_blocks_SignupBlock {
-  __typename: "SignupBlock";
+export interface GetJourney_journey_blocks_ButtonBlock {
+  __typename: "ButtonBlock" | "SignupBlock" | "TypographyBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -95,7 +95,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_SignupBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_ImageBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

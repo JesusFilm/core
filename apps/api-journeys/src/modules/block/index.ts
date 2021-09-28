@@ -286,8 +286,8 @@ const resolvers: Resolvers = {
   },
   ImageBlock: {
     src: ({ extraAttrs }) => get(extraAttrs, 'src'),
-    width: ({ extraAttrs }) => get(extraAttrs, 'width')
-    height: ({ extraAttrs }) => get(extraAttrs, 'height')
+    width: ({ extraAttrs }) => get(extraAttrs, 'width'),
+    height: ({ extraAttrs }) => get(extraAttrs, 'height'),
     alt: ({ extraAttrs }) => get(extraAttrs, 'alt')
   },
   VideoBlock: {

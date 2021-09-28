@@ -7,15 +7,6 @@ interface Block {
   parentBlockId: ID
 }
 
-type ImageBlock implements Block {
-  id: ID!
-  parentBlockId: ID
-  src: String!
-  width: Int!
-  height: Int!
-  alt: String
-}
-
 type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
@@ -61,6 +52,7 @@ enum IconColor {
   inherit
 }
 
+"""IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
   PlayArrow
   Translate
@@ -80,6 +72,15 @@ enum IconSize {
   lg
   xl
   inherit
+}
+
+type ImageBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  src: String!
+  width: Int!
+  height: Int!
+  alt: String
 }
 
 type Journey @key(fields: "id") {
