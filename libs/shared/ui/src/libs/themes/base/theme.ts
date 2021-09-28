@@ -8,7 +8,6 @@ export const baseTheme = createTheme({
   ...baseTypography,
   ...baseSpacing,
   ...baseComponents
-  // TODO: Add components BUTTON TODO
 })
 
 export const baseLight = createTheme({

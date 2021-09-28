@@ -18,5 +18,6 @@ export const baseComponents: Pick<ThemeOptions, 'components'> = {
         }
       ]
     }
+    // TODO: Add Button component override
   }
 }
