@@ -1,12 +1,18 @@
+import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
+import { Icon, IconProps } from '.'
+import { Box } from '@mui/system'
+import { Typography, useTheme } from '@mui/material'
 import {
   IconName,
   IconSize,
   IconColor
 } from '../../../__generated__/globalTypes'
-import { Icon, IconProps } from '.'
+
+import { sharedUiConfig } from '../../libs/storybook/decorators'
 
 const IconDemo = {
+  ...sharedUiConfig,
   component: Icon,
   title: 'shared-ui/Icon'
 }
@@ -15,24 +21,52 @@ interface IconStoryProps extends IconProps {
   variants: string[]
 }
 
+// TODO: Replace with real card component
+interface CardProps {
+  children: ReactNode
+}
+
+const Card = ({ children }: CardProps): ReactElement => {
+  const theme = useTheme()
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: theme.palette.surface.main,
+        color: theme.palette.surface.contrastText,
+        p: theme.space.lg,
+        borderRadius: 4,
+        mb: theme.space.lg
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
+
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     {args.variants.map((variant) => (
-      <Icon {...args} name={variant as IconName} />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography>{`${variant}`}</Typography>
+        <Icon {...args} name={variant as IconName} />
+      </Box>
     ))}
-  </div>
+  </Card>
 )
 
 export const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'Icon',
   color: null,
-  size: null,
+  size: IconSize.lg,
   variants: [
     IconName.ArrowForward,
     IconName.ChatBubbleOutline,
@@ -48,44 +82,52 @@ Variant.args = {
 }
 
 const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     {args.variants.map((variant) => (
-      <Icon {...args} color={variant as IconColor} />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography>{`${variant}`}</Typography>
+        <Icon {...args} color={variant as IconColor} />
+      </Box>
     ))}
-  </div>
+  </Card>
 )
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
-  size: IconSize.md,
+  size: IconSize.lg,
   variants: [
+    IconColor.inherit,
     IconColor.primary,
     IconColor.secondary,
     IconColor.error,
     IconColor.action,
     IconColor.disabled,
-    IconColor.inherit
   ]
 }
 
 const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     {args.variants.map((variant) => (
-      <Icon {...args} size={variant as IconSize} />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography>{`${variant}`}</Typography>
+        <Icon {...args} size={variant as IconSize} />
+      </Box>
     ))}
-  </div>
+  </Card>
 )
 
 export const Size = SizeTemplate.bind({})
@@ -94,11 +136,11 @@ Size.args = {
   name: IconName.CheckCircle,
   color: null,
   variants: [
+    IconSize.inherit,
     IconSize.sm,
     IconSize.md,
     IconSize.lg,
     IconSize.xl,
-    IconSize.inherit
   ]
 }
 

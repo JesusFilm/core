@@ -2,11 +2,11 @@ import { createTheme } from '@mui/material/styles'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
 import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
-import { baseTypography } from './tokens/typography'
+// import { baseTypography } from './tokens/typography'
 
 const baseTheme = createTheme({
   ...baseComponents,
-  ...baseTypography,
+  // ...baseTypography,
   ...baseSpacing
   // shape: { borderRadius: 8 }
 })
