@@ -13,5 +13,8 @@ export const parameters = {
     grid: {
       disable: true
     }
+  },
+  viewport: {
+    defaultViewport: 'mobile1'
   }
 }

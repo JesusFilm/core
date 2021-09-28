@@ -115,8 +115,21 @@ type Journey
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
-  theme: ThemeName! @join__field(graph: JOURNEYS)
+  themeMode: ThemeMode! @join__field(graph: JOURNEYS)
+  themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
+}
+
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID
+  (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  title: String!
 }
 
 type LinkAction implements Action {
@@ -126,7 +139,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
-  journeyCreate(locale: String, theme: ThemeName, title: String!): Journey! @join__field(graph: JOURNEYS)
+  journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse! @join__field(graph: JOURNEYS)
@@ -242,8 +255,13 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
+enum ThemeMode {
+  dark
+  light
+}
+
 enum ThemeName {
-  default
+  base
 }
 
 enum TypographyAlign {

@@ -1,3 +1,4 @@
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const storiesForProject = {
   journeys: [
     '../apps/journeys/src/**/*.stories.@(js|jsx|ts|tsx)',
@@ -6,8 +7,8 @@ const storiesForProject = {
     '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'shared-ui': [
-    '../libs/shared/ui/src/components/**/*.stories.mdx',
-    '../libs/shared/ui/src/components/**/*.stories.@(js|jsx|ts|tsx)'
+    '../libs/shared/ui/src/**/**/*.stories.mdx',
+    '../libs/shared/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -19,21 +20,19 @@ const allStories = [
 
 module.exports = {
   stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || allStories,
-  addons: [
-    {
-      name: '@storybook/addon-essentials',
-      options: {
-        outline: false
-      }
-    },
-    '@nrwl/react/plugins/storybook',
-    '@storybook/addon-a11y'
-  ]
-  // uncomment the property below if you want to apply some webpack config globally
-  // webpackFinal: async (config, { configType }) => {
-  //   // Make whatever fine-grained changes you need that should apply to all storybook configs
+  addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
+  core: {
+    builder: 'webpack5'
+  },
+  webpackFinal: async (config) => {
+    const tsPaths = new TsconfigPathsPlugin({
+      configFile: './tsconfig.base.json'
+    })
 
-  //   // Return the altered config
-  //   return config;
-  // },
+    config.resolve.plugins
+      ? config.resolve.plugins.push(tsPaths)
+      : (config.resolve.plugins = [tsPaths])
+
+    return config
+  }
 }

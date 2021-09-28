@@ -88,8 +88,21 @@ type Journey @key(fields: "id") {
   published: Boolean!
   title: String!
   locale: String!
-  theme: ThemeName!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
   blocks: [Block!]
+}
+
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID
+  (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  title: String!
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
 }
 
 type LinkAction implements Action {
@@ -99,7 +112,7 @@ type LinkAction implements Action {
 }
 
 extend type Mutation {
-  journeyCreate(title: String!, locale: String, theme: ThemeName): Journey!
+  journeyCreate(input: JourneyCreateInput!): Journey!
   journeyPublish(id: ID!): Journey
   signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
@@ -213,8 +226,13 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
+enum ThemeMode {
+  light
+  dark
+}
+
 enum ThemeName {
-  default
+  base
 }
 
 enum TypographyAlign {
