@@ -22,6 +22,7 @@ export function Typography({
       variant={variant ?? undefined}
       align={align ?? undefined}
       color={color ?? undefined}
+      gutterBottom
     >
       {content}
     </MuiTypography>

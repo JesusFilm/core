@@ -8,8 +8,6 @@ declare module '@mui/material' {
   }
 }
 
-// const spacing: SpacingOptions = baseSpacing.spacing(1) as number
-
 export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
   components: {
     MuiTypography: {
