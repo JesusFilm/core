@@ -1,2 +1,2 @@
-export { ThemeProvider } from './libs/themes/ThemeProvider'
+export { ThemeProvider } from './components/ThemeProvider'
 export { sharedUiConfig } from './libs/storybook/decorators'
