@@ -42,14 +42,9 @@ describe('RadioQuestion', () => {
   }
 
   it('should render question props', () => {
-    const { getByText, getByTestId } = renderWithApolloClient(
-      <RadioQuestion {...block} />
-    )
+    const { getByText } = renderWithApolloClient(<RadioQuestion {...block} />)
     expect(getByText('Label')).toBeInTheDocument()
     expect(getByText('Description')).toBeInTheDocument()
-    expect(getByTestId('RadioQuestionCard')).toHaveClass(
-      'MuiRadioQuestionComponent-light'
-    )
   })
 
   it('should display the correct options', () => {

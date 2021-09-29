@@ -140,7 +140,6 @@ describe('Response', () => {
                 id
                 label
                 description
-                variant
               }
             }
           }
@@ -164,8 +163,7 @@ describe('Response', () => {
         block: {
           id: block1.id,
           label: 'label',
-          description: 'description',
-          variant: 'DARK'
+          description: 'description'
         }
       })
     })
