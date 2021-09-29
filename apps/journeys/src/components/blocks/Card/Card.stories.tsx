@@ -3,6 +3,11 @@ import { Card } from './Card'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import {
+  ThemeMode,
+  ThemeName,
+  TypographyVariant
+} from '../../../../__generated__/globalTypes'
 
 const Demo = {
   ...journeysConfig,
@@ -14,75 +19,55 @@ const DefaultTemplate: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
   <Card {...props} />
 )
 
+const children: TreeBlock[] = [
+  {
+    id: 'typographyBlockId1',
+    __typename: 'TypographyBlock',
+    parentBlockId: null,
+    align: null,
+    color: null,
+    content: "What's the purpose, and how did we get here?",
+    variant: TypographyVariant.h3,
+    children: []
+  },
+  {
+    id: 'typographyBlockId2',
+    __typename: 'TypographyBlock',
+    parentBlockId: null,
+    align: null,
+    color: null,
+    content:
+      'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
+    variant: null,
+    children: []
+  }
+]
+
 export const Default: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
 Default.args = {
-  id: 'Card',
-  backgroundColor: 'aliceblue',
-  fontColor: 'black',
-  imgSrc:
-    'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80',
-  children: [
-    {
-      __typename: 'RadioQuestionBlock',
-      id: 'Question1',
-      label: 'Question 1',
-      parentBlockId: 'Card1',
-      description: 'question description',
-      variant: null,
-      children: [
-        {
-          __typename: 'RadioOptionBlock',
-          label: 'Chat Privately',
-          id: 'Question1',
-          parentBlockId: 'MoreQuestions',
-          action: null,
-          children: []
-        },
-        {
-          __typename: 'RadioOptionBlock',
-          label: 'Get a bible',
-          id: 'Question2',
-          parentBlockId: 'MoreQuestions',
-          action: null,
-          children: []
-        }
-      ]
-    }
-  ]
+  children
 }
 
-export const NoImage: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
-NoImage.args = {
-  backgroundColor: 'black',
-  fontColor: 'white',
-  children: [
-    {
-      __typename: 'RadioQuestionBlock',
-      id: 'Question1',
-      label: 'Question 1',
-      parentBlockId: 'Card1',
-      description: 'question description',
-      variant: null,
-      children: [
-        {
-          __typename: 'RadioOptionBlock',
-          label: 'Chat Privately',
-          id: 'Question1',
-          parentBlockId: 'MoreQuestions',
-          action: null,
-          children: []
-        },
-        {
-          __typename: 'RadioOptionBlock',
-          label: 'Get a bible',
-          id: 'Question2',
-          parentBlockId: 'MoreQuestions',
-          action: null,
-          children: []
-        }
-      ]
-    }
-  ]
+export const Light: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
+Light.args = {
+  themeMode: ThemeMode.light,
+  themeName: ThemeName.base,
+  children
+}
+
+export const Dark: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
+Dark.args = {
+  themeMode: ThemeMode.dark,
+  themeName: ThemeName.base,
+  children
+}
+
+export const CustomColor: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
+CustomColor.args = {
+  themeMode: ThemeMode.dark,
+  themeName: ThemeName.base,
+  backgroundColor: '#F1A025',
+  children
 }
 
 export default Demo as Meta
