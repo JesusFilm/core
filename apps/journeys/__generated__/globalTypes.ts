@@ -12,6 +12,21 @@ export enum RadioQuestionVariant {
   LIGHT = "LIGHT",
 }
 
+export enum ThemeMode {
+  dark = "dark",
+  light = "light",
+}
+
+export enum ThemeName {
+  base = "base",
+}
+
+export interface RadioQuestionResponseCreateInput {
+  blockId: string;
+  id?: string | null;
+  radioOptionBlockId: string;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

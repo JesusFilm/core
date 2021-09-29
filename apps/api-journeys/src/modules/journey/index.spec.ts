@@ -4,7 +4,7 @@ import module from '.'
 import { pick } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import dbMock from '../../../tests/dbMock'
-import { Journey } from '.prisma/api-journeys-client'
+import { Journey, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(module, { schemaBuilder })
@@ -12,7 +12,10 @@ it('returns published journeys', async () => {
   const publishedJourney: Journey = {
     id: uuidv4(),
     title: 'published',
-    published: true
+    published: true,
+    locale: 'id-ID',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
   }
   dbMock.journey.findMany.mockResolvedValue([publishedJourney])
 
@@ -23,6 +26,9 @@ it('returns published journeys', async () => {
           id
           title
           published
+          locale
+          themeName
+          themeMode
         }
       }
     `,
@@ -32,7 +38,14 @@ it('returns published journeys', async () => {
   })
 
   expect(data?.journeys).toEqual([
-    pick(publishedJourney, ['id', 'title', 'published'])
+    pick(publishedJourney, [
+      'id',
+      'title',
+      'published',
+      'locale',
+      'themeName',
+      'themeMode'
+    ])
   ])
 })
 
@@ -42,7 +55,10 @@ it('returns journey', async () => {
   const journey = {
     id: uuidv4(),
     title: 'published',
-    published: true
+    published: true,
+    locale: 'hi-IN',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
   }
   dbMock.journey.findUnique.mockResolvedValue(journey)
 
@@ -53,6 +69,9 @@ it('returns journey', async () => {
           id
           title
           published
+          locale
+          themeName
+          themeMode
         }
       }
     `,
@@ -64,7 +83,16 @@ it('returns journey', async () => {
     }
   })
 
-  expect(data?.journey).toEqual(pick(journey, ['id', 'title', 'published']))
+  expect(data?.journey).toEqual(
+    pick(journey, [
+      'id',
+      'title',
+      'published',
+      'locale',
+      'themeName',
+      'themeMode'
+    ])
+  )
 })
 
 it('creates journey', async () => {
@@ -72,23 +100,73 @@ it('creates journey', async () => {
 
   const journey: Journey = {
     id: uuidv4(),
-    title: 'published',
-    published: true
+    title: 'my journey',
+    published: false,
+    locale: 'hi-IN',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
   const { data } = await testkit.execute(app, {
     document: gql`
-      mutation ($title: String!) {
-        journeyCreate(title: $title) {
+      mutation ($input: JourneyCreateInput!) {
+        journeyCreate(input: $input) {
           id
           title
           published
+          locale
+          themeName
+          themeMode
         }
       }
     `,
     variableValues: {
-      title: 'my journey'
+      input: {
+        title: 'my journey',
+        locale: 'hi-IN',
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light
+      }
+    },
+    contextValue: {
+      db: dbMock
+    }
+  })
+
+  expect(data?.journeyCreate).toEqual(journey)
+})
+
+it('creates journey with default locale and theme', async () => {
+  const app = testkit.testModule(module, { schemaBuilder })
+
+  const journey: Journey = {
+    id: uuidv4(),
+    title: 'my journey',
+    published: false,
+    locale: 'en-US',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
+  }
+  dbMock.journey.create.mockResolvedValue(journey)
+
+  const { data } = await testkit.execute(app, {
+    document: gql`
+      mutation ($input: JourneyCreateInput!) {
+        journeyCreate(input: $input) {
+          id
+          title
+          published
+          locale
+          themeName
+          themeMode
+        }
+      }
+    `,
+    variableValues: {
+      input: {
+        title: 'my journey'
+      }
     },
     contextValue: {
       db: dbMock
@@ -104,7 +182,10 @@ it('publishes journey', async () => {
   const journey: Journey = {
     id: uuidv4(),
     title: 'my journey',
-    published: true
+    published: true,
+    locale: 'id-ID',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light
   }
   dbMock.journey.update.mockResolvedValue(journey)
 
@@ -115,6 +196,9 @@ it('publishes journey', async () => {
           id
           title
           published
+          locale
+          themeName
+          themeMode
         }
       }
     `,

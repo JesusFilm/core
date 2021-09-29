@@ -7,19 +7,93 @@ interface Block {
   parentBlockId: ID
 }
 
-type CardBlock implements Block {
+type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
-  imgSrc: String
-  backgroundColor: String
-  fontColor: String
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIcon: Icon
+  endIcon: Icon
+  action: Action
+}
+
+enum ButtonColor {
+  primary
+  secondary
+  error
+  inherit
+}
+
+enum ButtonSize {
+  small
+  medium
+  large
+}
+
+enum ButtonVariant {
+  text
+  contained
+}
+
+type Icon {
+  name: IconName!
+  color: IconColor
+  size: IconSize
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+"""IconName is equivalent to the icons found in @mui/icons-material"""
+enum IconName {
+  PlayArrow
+  Translate
+  CheckCircle
+  RadioButtonUnchecked
+  FormatQuote
+  LockOpen
+  ArrowForward
+  ChatBubbleOutline
+  LiveTv
+  MenuBook
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
 }
 
 type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!
   title: String!
+  locale: String!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
   blocks: [Block!]
+}
+
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID
+  (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  title: String!
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
 }
 
 type LinkAction implements Action {
@@ -29,8 +103,11 @@ type LinkAction implements Action {
 }
 
 extend type Mutation {
-  journeyCreate(title: String!): Journey!
+  journeyCreate(input: JourneyCreateInput!): Journey!
   journeyPublish(id: ID!): Journey
+  signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
+  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
 """
@@ -71,9 +148,54 @@ type RadioQuestionBlock implements Block {
   variant: RadioQuestionVariant
 }
 
+type RadioQuestionResponse implements Response {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock!
+}
+
+input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
 enum RadioQuestionVariant {
   LIGHT
   DARK
+}
+
+interface Response {
+  id: ID!
+  userId: ID!
+}
+
+type SignupBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  action: Action
+}
+
+type SignupResponse implements Response {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignupBlock!
+}
+
+input SignupResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
 }
 
 type StepBlock implements Block {
@@ -95,6 +217,51 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
+enum ThemeMode {
+  light
+  dark
+}
+
+enum ThemeName {
+  base
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+type TypographyBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
+}
+
 type VideoBlock implements Block {
   id: ID!
   parentBlockId: ID
@@ -103,4 +270,26 @@ type VideoBlock implements Block {
   description: String
   volume: Int
   autoplay: Boolean
+}
+
+type VideoResponse implements Response {
+  id: ID!
+  userId: ID!
+  state: VideoResponseStateEnum!
+  block: VideoBlock!
+}
+
+input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoResponseStateEnum!
+}
+
+enum VideoResponseStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
 }

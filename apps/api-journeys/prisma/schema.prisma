@@ -11,11 +11,33 @@ generator client {
   output   = "../../../node_modules/.prisma/api-journeys-client"
 }
 
+enum ThemeMode {
+  light
+  dark
+}
+
+enum ThemeName {
+  base
+}
+
 model Journey {
-  id        String  @id @default(uuid())
+  id        String     @id @default(uuid())
   title     String
-  published Boolean @default(false)
+  published Boolean    @default(false)
   blocks    Block[]
+  locale    String     @default("en-US")
+  themeMode ThemeMode  @default(light)
+  themeName ThemeName  @default(base)
+}
+
+enum BlockType {
+  ButtonBlock
+  RadioOptionBlock
+  RadioQuestionBlock
+  SignupBlock
+  StepBlock
+  TypographyBlock
+  VideoBlock
 }
 
 model Block {
@@ -28,11 +50,20 @@ model Block {
   childBlocks   Block[]   @relation("BlockChildren")
   extraAttrs    Json?
   parentOrder   Int       @default(0)
+  responses     Response[]
 }
 
-enum BlockType {
-  StepBlock
-  VideoBlock
-  RadioQuestionBlock
-  RadioOptionBlock
+enum ResponseType {
+  RadioQuestionResponse
+  SignupResponse
+  VideoResponse
+}
+
+model Response {
+  id            String       @id @default(uuid())
+  type          ResponseType
+  userId        String
+  block         Block        @relation(fields: [blockId], references: [id])
+  blockId       String
+  extraAttrs    Json
 }

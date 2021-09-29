@@ -3,10 +3,22 @@ import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
 
 const typeDefs = gql`
+  enum ThemeMode {
+    light
+    dark
+  }
+
+  enum ThemeName {
+    base
+  }
+
   type Journey @key(fields: "id") {
     id: ID!
     published: Boolean!
     title: String!
+    locale: String!
+    themeMode: ThemeMode!
+    themeName: ThemeName!
   }
 
   extend type Query {
@@ -14,8 +26,20 @@ const typeDefs = gql`
     journey(id: ID!): Journey
   }
 
+  input JourneyCreateInput {
+    """
+    ID should be unique Response UUID
+    (Provided for optimistic mutation result matching)
+    """
+    id: ID
+    title: String!
+    locale: String
+    themeMode: ThemeMode
+    themeName: ThemeName
+  }
+
   extend type Mutation {
-    journeyCreate(title: String!): Journey!
+    journeyCreate(input: JourneyCreateInput!): Journey!
     journeyPublish(id: ID!): Journey
   }
 `
@@ -34,10 +58,18 @@ const resolvers: JourneyModule.Resolvers = {
     }
   },
   Mutation: {
-    async journeyCreate(_parent, { title }, { db }) {
+    async journeyCreate(
+      _parent,
+      { input: { id, title, locale, themeMode, themeName } },
+      { db }
+    ) {
       return await db.journey.create({
         data: {
-          title
+          id: id as string | undefined,
+          title,
+          locale: locale ?? undefined,
+          themeMode: themeMode ?? undefined,
+          themeName: themeName ?? undefined
         }
       })
     },
