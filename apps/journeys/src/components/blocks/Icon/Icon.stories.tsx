@@ -53,7 +53,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'space-between'
         }}
       >
         <Typography>{`${variant}`}</Typography>
@@ -90,7 +90,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'space-between'
         }}
       >
         <Typography>{`${variant}`}</Typography>
@@ -111,7 +111,7 @@ Color.args = {
     IconColor.secondary,
     IconColor.error,
     IconColor.action,
-    IconColor.disabled,
+    IconColor.disabled
   ]
 }
 
@@ -123,7 +123,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'space-between'
         }}
       >
         <Typography>{`${variant}`}</Typography>
@@ -143,7 +143,7 @@ Size.args = {
     IconSize.sm,
     IconSize.md,
     IconSize.lg,
-    IconSize.xl,
+    IconSize.xl
   ]
 }
 

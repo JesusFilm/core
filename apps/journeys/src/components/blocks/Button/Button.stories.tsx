@@ -9,8 +9,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 
-
-
 const ButtonDemo = {
   ...journeysConfig,
   component: Button,
@@ -28,9 +26,7 @@ const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       flexDirection: 'column'
     }}
   >
-    <Button
-      {...args}
-    />
+    <Button {...args} />
   </div>
 )
 
@@ -48,7 +44,12 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
     }}
   >
     {args.variants.map((variant, i) => (
-      <Button {...args} key={i} label={variant === null ? 'Default' : `${variant}`} color={variant as ButtonColor} />
+      <Button
+        {...args}
+        key={i}
+        label={variant === null ? 'Default' : `${variant}`}
+        color={variant as ButtonColor}
+      />
     ))}
   </div>
 )
@@ -56,7 +57,12 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 export const Color = ColorTemplate.bind({})
 Color.args = {
   variant: ButtonVariant.contained,
-  variants: [null, ButtonColor.primary, ButtonColor.secondary, ButtonColor.error]
+  variants: [
+    null,
+    ButtonColor.primary,
+    ButtonColor.secondary,
+    ButtonColor.error
+  ]
 }
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
@@ -67,7 +73,12 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
     }}
   >
     {args.variants.map((variant, i) => (
-      <Button {...args} key={i} label={`${variant ?? ''}`} size={variant as ButtonSize} />
+      <Button
+        {...args}
+        key={i}
+        label={`${variant ?? ''}`}
+        size={variant as ButtonSize}
+      />
     ))}
   </div>
 )

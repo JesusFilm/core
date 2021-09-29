@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client'
 
 export const BUTTON_FIELDS = gql`
   fragment ButtonBlockFields on ButtonBlock {
@@ -32,4 +32,4 @@ export const BUTTON_FIELDS = gql`
       }
     }
   }
-`;
+`
