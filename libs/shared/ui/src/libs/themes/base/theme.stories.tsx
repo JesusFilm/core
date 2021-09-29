@@ -46,8 +46,8 @@ const ColorPalettes = ({
         sx={{
           bgcolor: theme.palette.background.default,
           color: theme.palette.text.primary,
-          mb: theme.spacing(3),
-          p: theme.spacing(3),
+          mb: theme.spacing(4),
+          p: theme.spacing(4),
           boxShadow: theme.shadows[1]
         }}
       >
@@ -69,7 +69,7 @@ const ColorPalettes = ({
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                mb: theme.spacing(3)
+                mb: theme.spacing(4)
               }}
             >
               <Box
@@ -77,7 +77,7 @@ const ColorPalettes = ({
                   width: '100%',
                   bgcolor: paletteColor.light,
                   color: paletteColor.contrastText,
-                  p: theme.spacing(3)
+                  p: theme.spacing(4)
                 }}
               >
                 <Typography {...props} variant="overline" gutterBottom>
@@ -90,7 +90,7 @@ const ColorPalettes = ({
                   width: '100%',
                   bgcolor: paletteColor.main,
                   color: paletteColor.contrastText,
-                  p: theme.spacing(3)
+                  p: theme.spacing(4)
                 }}
               >
                 <Typography {...props} variant="overline">
@@ -103,7 +103,7 @@ const ColorPalettes = ({
                   width: '100%',
                   bgcolor: paletteColor.dark,
                   color: paletteColor.contrastText,
-                  p: theme.spacing(3)
+                  p: theme.spacing(4)
                 }}
               >
                 <Typography {...props} variant="overline">
