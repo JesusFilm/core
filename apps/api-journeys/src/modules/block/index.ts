@@ -114,17 +114,11 @@ const typeDefs = gql`
     action: Action
   }
 
-  enum RadioQuestionVariant {
-    LIGHT
-    DARK
-  }
-
   type RadioQuestionBlock implements Block {
     id: ID!
     parentBlockId: ID
     label: String!
     description: String
-    variant: RadioQuestionVariant
   }
 
   type SignupBlock implements Block {
@@ -272,8 +266,7 @@ const resolvers: Resolvers = {
   },
   RadioQuestionBlock: {
     label: ({ extraAttrs }) => get(extraAttrs, 'label'),
-    description: ({ extraAttrs }) => get(extraAttrs, 'description'),
-    variant: ({ extraAttrs }) => get(extraAttrs, 'variant')
+    description: ({ extraAttrs }) => get(extraAttrs, 'description')
   },
   VideoBlock: {
     src: ({ extraAttrs }) => get(extraAttrs, 'src'),

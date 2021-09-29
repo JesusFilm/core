@@ -55,7 +55,6 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on RadioQuestionBlock {
               label
               description
-              variant
             }
             ... on RadioOptionBlock {
               label

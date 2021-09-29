@@ -23,7 +23,6 @@ describe('BlockRenderer', () => {
       label: 'radio question',
       parentBlockId: null,
       description: 'description',
-      variant: null,
       children: []
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
@@ -44,7 +43,6 @@ describe('BlockRenderer', () => {
           label: 'radio question',
           parentBlockId: 'step',
           description: 'description',
-          variant: null,
           children: []
         }
       ]

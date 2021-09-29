@@ -10,7 +10,7 @@ export namespace BlockModule {
     Icon: 'name' | 'color' | 'size';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
-    RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
+    RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description';
     SignupBlock: 'id' | 'parentBlockId' | 'action';
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
@@ -30,7 +30,6 @@ export namespace BlockModule {
     ButtonVariant: 'text' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
-    RadioQuestionVariant: 'LIGHT' | 'DARK';
     TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
     TypographyColor: 'primary' | 'secondary' | 'error';
     TypographyAlign: 'left' | 'center' | 'right';
@@ -51,7 +50,6 @@ export namespace BlockModule {
   export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
-  export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type SignupBlock = Pick<Types.SignupBlock, DefinedFields['SignupBlock']>;
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
@@ -158,7 +156,6 @@ export namespace BlockModule {
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
       description?: gm.Middleware[];
-      variant?: gm.Middleware[];
     };
     SignupBlock?: {
       '*'?: gm.Middleware[];

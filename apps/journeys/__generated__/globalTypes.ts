@@ -7,11 +7,6 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum RadioQuestionVariant {
-  DARK = "DARK",
-  LIGHT = "LIGHT",
-}
-
 export enum ThemeMode {
   dark = "dark",
   light = "light",
