@@ -8,11 +8,14 @@ custom:
     port: 5432
     name: core_journeys_${opt:env}
     cluster:
+  aws:
+    vpc-id: vpc-9c5371f0
 functions: # None - this is backing infrastructure only.
 
 resources:
   Resources:
     ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
+    ApolloGatewayLBSecurityGroup: ${file(resources/cf-stacks/security/gateway-lb-security-group.yml)}
     # ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
     # CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
     # CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
