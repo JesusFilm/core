@@ -1,6 +1,23 @@
 {
   "version": 2,
   "projects": {
+    "infrastructure": {
+      "root": "resources/cf-stacks",
+      "targets": {
+        "deploy": {
+          "executor": "@nrwl/workspace:run-commands",
+          "configurations": {
+            "stage": {
+              "commands": [
+                {
+                  "command": "serverless deploy"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
     "api-gateway": {
       "root": "apps/api-gateway",
       "sourceRoot": "apps/api-gateway/src",

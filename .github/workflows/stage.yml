@@ -36,8 +36,16 @@ jobs:
       - name: Install Rover
         run: npm install -g @apollo/rover
 
+      # - name: Deploy/Update Infrastructure
+      #   run: serverless deploy --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
+
       - name: Deploy/Update Infrastructure
-        run: serverless deploy --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: deploy
+          projects: infrastructure
+          workingDirectory: resources/cf-stacks/serverless.yml
+          args: --env $ENV_SUFFIX
 
       - name: Run NX generate and build
         uses: mansagroup/nrwl-nx-action@v2
