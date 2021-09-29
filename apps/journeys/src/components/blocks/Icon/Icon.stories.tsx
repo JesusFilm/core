@@ -45,6 +45,24 @@ const Card = ({ children }: CardProps): ReactElement => {
   )
 }
 
+const IconColors = ({ children }: CardProps): ReactElement => {
+  const theme = useTheme()
+  return (
+    <Box
+      sx={{
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.primary.main,
+        p: theme.spacing(3),
+        mb: theme.spacing(4),
+        borderRadius: '12px',
+        boxShadow: theme.shadows[3]
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
+
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <Card>
     {args.variants.map((variant, i) => (
@@ -83,7 +101,7 @@ Variant.args = {
 }
 
 const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <Card>
+  <IconColors>
     {args.variants.map((variant, i) => (
       <Box
         key={i}
@@ -97,7 +115,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
         <Icon {...args} color={variant as IconColor} />
       </Box>
     ))}
-  </Card>
+  </IconColors>
 )
 
 export const Color = ColorTemplate.bind({})

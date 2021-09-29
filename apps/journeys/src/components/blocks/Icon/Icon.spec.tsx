@@ -16,6 +16,6 @@ const block: IconProps = {
 describe('Icon', () => {
   it('should render the icon successfully', () => {
     const { getByTestId } = render(<Icon {...block} />)
-    expect(getByTestId('CheckCircleIcon')).toBeTruthy()
+    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
   })
 })

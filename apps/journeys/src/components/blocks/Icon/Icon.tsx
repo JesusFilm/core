@@ -11,7 +11,7 @@ import {
   LiveTv,
   MenuBook
 } from '@mui/icons-material'
-import { ButtonBlockFields_startIcon as IconType } from '../../../../__generated__/ButtonBlockFields'
+import { ButtonFields_startIcon as IconType } from '../../../../__generated__/ButtonFields'
 
 export interface IconProps extends IconType {
   ariaHidden?: boolean

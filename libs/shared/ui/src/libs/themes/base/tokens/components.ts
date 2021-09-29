@@ -1,8 +1,8 @@
-import { lightThemeToken } from "./colors";
-import { ThemeOptions } from "@mui/material";
-import { spacingThemeToken } from "./spacing";
+import { lightThemeToken } from './colors'
+import { ThemeOptions } from '@mui/material'
+import { spacingThemeToken } from './spacing'
 
-export const baseComponents: Required<Pick<ThemeOptions, "components">> = {
+export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
     MuiButton: {
       styleOverrides: {
@@ -10,13 +10,13 @@ export const baseComponents: Required<Pick<ThemeOptions, "components">> = {
           marginBottom: spacingThemeToken.spacing(3),
           backgroundColor: lightThemeToken.palette.primary.main,
           color: lightThemeToken.palette.primary.contrastText,
-          "&:hover": {
+          '&:hover': {
             backgroundColor: lightThemeToken.palette.primary.light
           },
-          "&:focus": {
+          '&:focus': {
             backgroundColor: lightThemeToken.palette.primary.light
           },
-          "&:disabled": {
+          '&:disabled': {
             backgroundColor: lightThemeToken.palette.primary.light,
             color: lightThemeToken.palette.primary.contrastText
           }
@@ -25,14 +25,15 @@ export const baseComponents: Required<Pick<ThemeOptions, "components">> = {
           marginBottom: spacingThemeToken.spacing(3),
           backgroundColor: lightThemeToken.palette.secondary.main,
           color: lightThemeToken.palette.secondary.contrastText,
-          "&:hover": {
+          '&:hover': {
             backgroundColor: lightThemeToken.palette.secondary.light
           },
-          "&:focus": {
+          '&:focus': {
             backgroundColor: lightThemeToken.palette.secondary.light
           },
-          "&:disabled": {
-            backgroundColor: lightThemeToken.palette.secondary.light
+          '&:disabled': {
+            backgroundColor: lightThemeToken.palette.secondary.light,
+            color: lightThemeToken.palette.secondary.contrastText
           }
         }
       },
@@ -42,31 +43,31 @@ export const baseComponents: Required<Pick<ThemeOptions, "components">> = {
       variants: [
         {
           props: {
-            variant: "contained",
-            size: "large"
+            variant: 'contained',
+            size: 'large'
           },
           style: {
             marginBottom: spacingThemeToken.spacing(3),
-            borderRadius: "16px"
+            borderRadius: '16px'
           }
         },
         {
-          props: { variant: "contained", size: "medium" },
+          props: { variant: 'contained', size: 'medium' },
           style: {
             marginBottom: spacingThemeToken.spacing(2),
-            borderRadius: "12px"
+            borderRadius: '12px'
           }
         },
         {
-          props: { variant: "contained", size: "small" },
+          props: { variant: 'contained', size: 'small' },
           style: {
             marginBottom: spacingThemeToken.spacing(1),
-            borderRadius: "8px"
+            borderRadius: '8px'
           }
         }
       ]
     }
   }
-};
+}
 
 // Add other component override tokens here

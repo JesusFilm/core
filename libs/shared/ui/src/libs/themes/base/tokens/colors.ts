@@ -1,42 +1,42 @@
-import { ThemeOptions, createTheme } from "@mui/material/styles";
+import { ThemeOptions, createTheme } from '@mui/material/styles'
 
-export const baseColorsLight: Required<Pick<ThemeOptions, "palette">> = {
+export const baseColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
-    mode: "light",
+    mode: 'light',
     // DEFAULT CONTAINER COLORS
-    background: { default: "#FEFEFE" },
+    background: { default: '#FEFEFE' },
     primary: {
-      light: "#6D6F81",
-      main: "#30313D",
-      dark: "#26262E",
-      contrastText: "#FFFFFF"
+      light: '#6D6F81',
+      main: '#30313D',
+      dark: '#26262E',
+      contrastText: '#FFFFFF'
     },
     // OVERRIDE COLORS
     secondary: {
-      light: "#FEFEFE",
-      main: "#BDBFCF",
-      dark: "#AAACBB",
-      contrastText: "#26262E"
+      light: '#FEFEFE',
+      main: '#BDBFCF',
+      dark: '#AAACBB',
+      contrastText: '#26262E'
     },
     error: {
-      light: "#FC624E",
-      main: "#EE4C37",
-      dark: "#C52713",
-      contrastText: "#FFFFFF"
+      light: '#FC624E',
+      main: '#EE4C37',
+      dark: '#C52713',
+      contrastText: '#FFFFFF'
     },
     // BACKGROUND TEXT COLORS
     text: {
-      primary: "#26262E",
-      secondary: "#FFFFFF"
+      primary: '#26262E',
+      secondary: '#FFFFFF'
     }
   }
-};
+}
 
-export const baseColorsDark: Required<Pick<ThemeOptions, "palette">> = {
+export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     ...baseColorsLight.palette,
-    mode: "dark",
-    background: { default: "#26262E" },
+    mode: 'dark',
+    background: { default: '#26262E' },
     primary: baseColorsLight.palette.secondary,
     secondary: baseColorsLight.palette.primary,
     text: {
@@ -44,6 +44,6 @@ export const baseColorsDark: Required<Pick<ThemeOptions, "palette">> = {
       secondary: baseColorsLight.palette.text?.primary
     }
   }
-};
+}
 
-export const lightThemeToken = createTheme(baseColorsLight);
+export const lightThemeToken = createTheme(baseColorsLight)

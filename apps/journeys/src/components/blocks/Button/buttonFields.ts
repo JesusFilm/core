@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const BUTTON_FIELDS = gql`
-  fragment ButtonBlockFields on ButtonBlock {
+  fragment ButtonFields on ButtonBlock {
     id
     parentBlockId
     label

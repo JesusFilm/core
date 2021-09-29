@@ -25,8 +25,7 @@ const block: ButtonProps = {
 describe('Button', () => {
   it('should render the button successfully', () => {
     const { getByText, getByRole } = render(<Button {...block} />)
-    const button = getByRole('button')
-    expect(button).toBeTruthy()
+    expect(getByRole('button')).toHaveClass('MuiButton-root')
     expect(getByText('This is a button')).toBeTruthy()
   })
 

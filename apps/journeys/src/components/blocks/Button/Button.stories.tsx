@@ -1,4 +1,6 @@
+import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
+import { Box } from '@mui/system'
 import { Button, ButtonProps } from '.'
 import {
   ButtonVariant,
@@ -19,15 +21,28 @@ interface ButtonStoryProps extends ButtonProps {
   variants: Array<string | null>
 }
 
+interface CardProps {
+  background?: string
+  children: ReactNode
+}
+
+const Card = ({ children }: CardProps): ReactElement => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
+
 const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     <Button {...args} />
-  </div>
+  </Card>
 )
 
 export const Variant = VariantTemplate.bind({})
@@ -37,12 +52,7 @@ Variant.args = {
 }
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     {args.variants.map((variant, i) => (
       <Button
         {...args}
@@ -51,7 +61,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         color={variant as ButtonColor}
       />
     ))}
-  </div>
+  </Card>
 )
 
 export const Color = ColorTemplate.bind({})
@@ -66,12 +76,7 @@ Color.args = {
 }
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     {args.variants.map((variant, i) => (
       <Button
         {...args}
@@ -80,7 +85,7 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         size={variant as ButtonSize}
       />
     ))}
-  </div>
+  </Card>
 )
 
 export const Size = SizeTemplate.bind({})
@@ -90,14 +95,9 @@ Size.args = {
 }
 
 const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     <Button {...args} />
-  </div>
+  </Card>
 )
 
 export const startIcon = IconTemplate.bind({})
@@ -125,14 +125,9 @@ endIcon.args = {
 }
 
 const Template: Story<ButtonStoryProps> = ({ ...args }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column'
-    }}
-  >
+  <Card>
     <Button {...args} />
-  </div>
+  </Card>
 )
 
 export const Loading = Template.bind({})

@@ -2,9 +2,9 @@ import { ReactElement } from 'react'
 import { Button as MuiButton } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import { Icon } from '../Icon'
-import { ButtonBlockFields } from '../../../../__generated__/ButtonBlockFields'
+import { ButtonFields } from '../../../../__generated__/ButtonFields'
 
-export interface ButtonProps extends ButtonBlockFields {
+export interface ButtonProps extends ButtonFields {
   loading?: boolean
   disabled?: boolean
 }

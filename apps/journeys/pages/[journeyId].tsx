@@ -11,6 +11,7 @@ import {
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
 import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
+import { BUTTON_FIELDS } from '../src/components/blocks/Button'
 
 interface JourneyPageProps {
   journey: Journey
@@ -34,6 +35,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
   const { data } = await client.query<GetJourney>({
     query: gql`
       ${TYPOGRAPHY_FIELDS}
+      ${BUTTON_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -73,35 +75,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               }
             }
             ... on ButtonBlock {
-              id
-              parentBlockId
-              label
-              variant
-              color
-              size
-              startIcon {
-                name
-                color
-                size
-              }
-              endIcon {
-                name
-                color
-                size
-              }
-              action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
-              }
+              ...ButtonFields
+            }
             ... on TypographyBlock {
               ...TypographyFields
             }
