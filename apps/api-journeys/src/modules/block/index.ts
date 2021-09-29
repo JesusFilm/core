@@ -107,6 +107,31 @@ const typeDefs = gql`
     action: Action
   }
 
+  type CardBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    """
+    backgroundColor should be a HEX color value e.g #FFFFFF for white.
+    """
+    backgroundColor: String
+    """
+    coverBlockId is present if a child block should be used as a cover.
+    This child block should not be rendered normally, instead it should be used
+    as a background. Blocks are often of type ImageBlock or VideoBlock.
+    """
+    coverBlockId: ID
+    """
+    themeMode can override journey themeMode. If nothing is set then use
+    themeMode from journey
+    """
+    themeMode: ThemeMode
+    """
+    themeName can override journey themeName. If nothing is set then use
+    themeName from journey
+    """
+    themeName: ThemeName
+  }
+
   type RadioOptionBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -246,6 +271,12 @@ const resolvers: Resolvers = {
     size: ({ extraAttrs }) => get(extraAttrs, 'size'),
     startIcon: ({ extraAttrs }) => get(extraAttrs, 'startIcon'),
     endIcon: ({ extraAttrs }) => get(extraAttrs, 'endIcon')
+  },
+  CardBlock: {
+    backgroundColor: ({ extraAttrs }) => get(extraAttrs, 'backgroundColor'),
+    coverBlockId: ({ extraAttrs }) => get(extraAttrs, 'coverBlockId'),
+    themeMode: ({ extraAttrs }) => get(extraAttrs, 'themeMode'),
+    themeName: ({ extraAttrs }) => get(extraAttrs, 'themeName')
   },
   SignupBlock: {
     action: ({ extraAttrs }) => get(extraAttrs, 'action')

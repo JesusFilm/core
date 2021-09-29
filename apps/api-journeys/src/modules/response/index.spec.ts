@@ -3,6 +3,7 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
+import journey from '../journey'
 import block from '../block'
 import { Block, Response } from '.prisma/api-journeys-client'
 import { get } from 'lodash'
@@ -13,7 +14,7 @@ describe('Response', () => {
   beforeEach(() => {
     app = testkit.testModule(module, {
       schemaBuilder,
-      modules: [block]
+      modules: [journey, block]
     })
   })
 
