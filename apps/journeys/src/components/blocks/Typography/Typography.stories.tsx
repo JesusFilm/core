@@ -46,9 +46,9 @@ const Card = ({
           background === 'background'
             ? theme.palette.text.primary
             : theme.palette[background].contrastText,
-        p: theme.spacing(3),
+        p: theme.spacing(4),
         borderRadius: 4,
-        mb: theme.spacing(3)
+        mb: theme.spacing(4)
       }}
     >
       {children}

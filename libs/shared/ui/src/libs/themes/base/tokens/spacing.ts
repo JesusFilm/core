@@ -1,7 +1,7 @@
 import { ThemeOptions, createTheme } from '@mui/material'
 
 export const baseSpacing: Required<Pick<ThemeOptions, 'spacing'>> = {
-  spacing: [0, 4, 8, 16]
+  spacing: 4
 }
 
 // Required to use baseSpacing in theme tokens
