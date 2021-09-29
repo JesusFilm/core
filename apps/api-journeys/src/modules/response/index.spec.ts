@@ -3,6 +3,7 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
+import journey from '../journey'
 import block from '../block'
 import { Block, Response } from '.prisma/api-journeys-client'
 import { get } from 'lodash'
@@ -13,7 +14,7 @@ describe('Response', () => {
   beforeEach(() => {
     app = testkit.testModule(module, {
       schemaBuilder,
-      modules: [block]
+      modules: [journey, block]
     })
   })
 
@@ -114,8 +115,7 @@ describe('Response', () => {
         parentOrder: 0,
         extraAttrs: {
           label: 'label',
-          description: 'description',
-          variant: 'DARK'
+          description: 'description'
         }
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
@@ -141,7 +141,6 @@ describe('Response', () => {
                 id
                 label
                 description
-                variant
               }
             }
           }
@@ -165,8 +164,7 @@ describe('Response', () => {
         block: {
           id: block1.id,
           label: 'label',
-          description: 'description',
-          variant: 'DARK'
+          description: 'description'
         }
       })
     })

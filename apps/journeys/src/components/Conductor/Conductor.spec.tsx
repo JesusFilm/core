@@ -19,7 +19,6 @@ describe('Conductor', () => {
             parentBlockId: 'step1.id',
             label: 'Step 1',
             description: 'Start',
-            variant: null,
             children: [
               {
                 id: 'radioOption2.id',
@@ -74,7 +73,6 @@ describe('Conductor', () => {
             parentBlockId: 'step2.id',
             label: 'Step 2',
             description: 'Locked',
-            variant: null,
             children: [
               {
                 id: 'radioOption1.id',
@@ -129,7 +127,6 @@ describe('Conductor', () => {
             parentBlockId: 'step1.id',
             label: 'Step 3',
             description: 'No nextBlockId',
-            variant: null,
             children: [
               {
                 id: 'radioOption1.id',
@@ -184,7 +181,6 @@ describe('Conductor', () => {
             parentBlockId: 'step4.id',
             label: 'Step 4',
             description: 'End',
-            variant: null,
             children: [
               {
                 id: 'radioOption1.id',
