@@ -8,11 +8,13 @@
           "executor": "@nrwl/workspace:run-commands",
           "configurations": {
             "stage": {
-              "commands": [
-                {
-                  "command": "serverless deploy"
-                }
-              ]
+              "options": {
+                "commands": [
+                  {
+                    "command": "serverless deploy"
+                  }
+                ]
+              }
             }
           }
         }
