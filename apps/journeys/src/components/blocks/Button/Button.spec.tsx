@@ -7,7 +7,7 @@ import {
   IconColor,
   IconName,
   IconSize
-} from '../../../__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 
 const block: ButtonProps = {
   __typename: 'ButtonBlock',

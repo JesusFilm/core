@@ -7,14 +7,14 @@ import {
   IconName,
   IconSize,
   IconColor
-} from '../../../__generated__/globalTypes'
+} from '../../../../__generated__/globalTypes'
 
-import { sharedUiConfig } from '../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook/decorators'
 
 const IconDemo = {
-  ...sharedUiConfig,
+  ...journeysConfig,
   component: Icon,
-  title: 'shared-ui/Icon'
+  title: 'Journeys/Blocks/Icon'
 }
 
 interface IconStoryProps extends IconProps {
@@ -47,8 +47,9 @@ const Card = ({ children }: CardProps): ReactElement => {
 
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <Card>
-    {args.variants.map((variant) => (
+    {args.variants.map((variant, i) => (
       <Box
+        key={i}
         sx={{
           display: 'flex',
           flexDirection: 'row',
@@ -83,8 +84,9 @@ Variant.args = {
 
 const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <Card>
-    {args.variants.map((variant) => (
+    {args.variants.map((variant, i) => (
       <Box
+        key={i}
         sx={{
           display: 'flex',
           flexDirection: 'row',
@@ -115,8 +117,9 @@ Color.args = {
 
 const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <Card>
-    {args.variants.map((variant) => (
+    {args.variants.map((variant, i) => (
       <Box
+        key={i}
         sx={{
           display: 'flex',
           flexDirection: 'row',

@@ -3,7 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./../../../../__generated__/globalTypes";
+import {
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize,
+  IconName,
+  IconColor,
+  IconSize
+} from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonBlockFields
@@ -23,14 +30,15 @@ export interface ButtonBlockFields_endIcon {
   size: IconSize | null;
 }
 
-export interface ButtonBlockFields_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  gtmEventName: string | null;
-}
-
 export interface ButtonBlockFields_action_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
+}
+
+export interface ButtonBlockFields_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
 }
 
 export interface ButtonBlockFields_action_NavigateToJourneyAction {
@@ -45,7 +53,11 @@ export interface ButtonBlockFields_action_LinkAction {
   url: string;
 }
 
-export type ButtonBlockFields_action = ButtonBlockFields_action_NavigateToBlockAction | ButtonBlockFields_action_NavigateAction | ButtonBlockFields_action_NavigateToJourneyAction | ButtonBlockFields_action_LinkAction;
+export type ButtonBlockFields_action =
+  | ButtonBlockFields_action_NavigateAction
+  | ButtonBlockFields_action_NavigateToBlockAction
+  | ButtonBlockFields_action_NavigateToJourneyAction
+  | ButtonBlockFields_action_LinkAction;
 
 export interface ButtonBlockFields {
   __typename: "ButtonBlock";

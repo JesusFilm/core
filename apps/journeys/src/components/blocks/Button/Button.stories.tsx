@@ -8,14 +8,15 @@ import {
   ButtonSize,
   IconName,
   IconSize
-} from '../../../__generated__/globalTypes'
-import { sharedUiConfig } from '../../libs/storybook/decorators'
+} from '../../../../__generated__/globalTypes'
+import { journeysConfig } from '../../../libs/storybook/decorators'
+
 
 
 const ButtonDemo = {
-  ...sharedUiConfig,
+  ...journeysConfig,
   component: Button,
-  title: 'shared-ui/Button'
+  title: 'Journeys/Blocks/Button'
 }
 
 interface ButtonStoryProps extends ButtonProps {
@@ -72,8 +73,8 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       flexDirection: 'column'
     }}
   >
-    {args.variants.map((variant) => (
-      <Button {...args} label={variant === null ? 'Default' : `${variant}`} color={variant as ButtonColor} />
+    {args.variants.map((variant, i) => (
+      <Button {...args} key={i} label={variant === null ? 'Default' : `${variant}`} color={variant as ButtonColor} />
     ))}
   </div>
 )
@@ -91,8 +92,8 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       flexDirection: 'column'
     }}
   >
-    {args.variants.map((variant) => (
-      <Button {...args} label={`${variant ?? ''}`} size={variant as ButtonSize} />
+    {args.variants.map((variant, i) => (
+      <Button {...args} key={i} label={`${variant ?? ''}`} size={variant as ButtonSize} />
     ))}
   </div>
 )

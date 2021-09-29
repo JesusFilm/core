@@ -11,7 +11,7 @@ import {
   LiveTv,
   MenuBook
 } from '@mui/icons-material'
-import { ButtonBlockFields_startIcon as IconType } from '../Button/__generated__/ButtonBlockFields'
+import { ButtonBlockFields_startIcon as IconType } from '../../../../__generated__/ButtonBlockFields'
 
 export interface IconProps extends IconType {
   ariaHidden?: boolean
@@ -22,12 +22,12 @@ export function Icon({ name, color, size }: IconProps): ReactElement | null {
     size === 'sm'
       ? '16px'
       : size === 'md'
-      ? '20px'
-      : size === 'lg'
-      ? '28px'
-      : size === 'xl'
-      ? '48px'
-      : 'inherit'
+        ? '20px'
+        : size === 'lg'
+          ? '28px'
+          : size === 'xl'
+            ? '48px'
+            : 'inherit'
 
   switch (name) {
     case 'CheckCircle':

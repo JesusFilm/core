@@ -1,8 +1,6 @@
-import { gql } from '@apollo/client'
-import { ACTION_FIELDS } from '../Action'
+import { gql } from "@apollo/client";
 
 export const BUTTON_FIELDS = gql`
-  ${ACTION_FIELDS}
   fragment ButtonBlockFields on ButtonBlock {
     id
     parentBlockId
@@ -21,7 +19,17 @@ export const BUTTON_FIELDS = gql`
       size
     }
     action {
-      ...ActionFields
+      __typename
+      gtmEventName
+      ... on NavigateToBlockAction {
+        blockId
+      }
+      ... on NavigateToJourneyAction {
+        journeyId
+      }
+      ... on LinkAction {
+        url
+      }
     }
   }
-`
+`;
