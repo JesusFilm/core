@@ -50,6 +50,11 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               volume
               autoplay
             }
+            ... on CardBlock {
+              imgSrc
+              backgroundColor
+              fontColor
+            }
             ... on RadioQuestionBlock {
               label
               description
