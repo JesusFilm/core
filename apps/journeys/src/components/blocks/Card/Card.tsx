@@ -18,7 +18,7 @@ export function Card({
       <Paper
         data-testid={id}
         sx={{
-          p: 3,
+          p: 7,
           borderRadius: (theme) => theme.spacing(3),
           backgroundColor
         }}
