@@ -10,6 +10,10 @@ custom:
     cluster:
   aws:
     vpc-id: vpc-9c5371f0
+    gateway-ssl-cert-arn: arn:aws:acm:us-east-1:894231352815:certificate/0ebf2bf0-bab3-4070-b042-5e3a42929b70
+    subnets:
+      - subnet-99b842c3
+      - subnet-905371fc
 functions: # None - this is backing infrastructure only.
 
 resources:
