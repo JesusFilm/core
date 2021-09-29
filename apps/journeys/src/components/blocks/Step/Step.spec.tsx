@@ -16,7 +16,6 @@ const block: TreeBlock<StepBlock> = {
       label: 'Question 1',
       parentBlockId: 'Step1',
       description: 'question description',
-      variant: null,
       children: []
     },
     {
@@ -25,7 +24,6 @@ const block: TreeBlock<StepBlock> = {
       label: 'Question 2',
       parentBlockId: 'Step1',
       description: 'question description',
-      variant: null,
       children: []
     }
   ]

@@ -222,7 +222,6 @@ export type RadioQuestionBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']>;
   label: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  variant?: Maybe<RadioQuestionVariant>;
 };
 
 export type RadioQuestionResponse = Response & {
@@ -239,10 +238,6 @@ export type RadioQuestionResponseCreateInput = {
   blockId: Scalars['ID'];
   radioOptionBlockId: Scalars['ID'];
 };
-
-export type RadioQuestionVariant =
-  | 'LIGHT'
-  | 'DARK';
 
 export type Response = {
   id: Scalars['ID'];
@@ -458,7 +453,6 @@ export type ResolversTypes = {
   RadioQuestionBlock: ResolverTypeWrapper<BlockType>;
   RadioQuestionResponse: ResolverTypeWrapper<ResponseType>;
   RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
-  RadioQuestionVariant: RadioQuestionVariant;
   Response: ResolversTypes['RadioQuestionResponse'] | ResolversTypes['SignupResponse'] | ResolversTypes['VideoResponse'];
   SignupBlock: ResolverTypeWrapper<BlockType>;
   SignupResponse: ResolverTypeWrapper<ResponseType>;
@@ -613,7 +607,6 @@ export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, Pa
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  variant?: Resolver<Maybe<ResolversTypes['RadioQuestionVariant']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
