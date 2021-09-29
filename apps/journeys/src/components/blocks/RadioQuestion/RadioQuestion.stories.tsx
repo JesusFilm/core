@@ -6,7 +6,6 @@ import {
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
 import { journeysConfig } from '../../../libs/storybook/decorators'
-import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 import { MockedProvider } from '@apollo/client/testing'
 
 const options: Array<TreeBlock<RadioOptionBlock>> = [
@@ -99,18 +98,6 @@ Long.args = {
   description:
     'Have you declared that you want to accept Jesus in your life as your Lord and savior?',
   children: longLabel
-}
-
-export const Dark: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind(
-  {}
-)
-Dark.args = {
-  id: 'AnotherQuestion',
-  label: 'Dark Background',
-  description: 'Testing to see if the dark background is working',
-  variant: RadioQuestionVariant.DARK,
-  children: options,
-  parentBlockId: 'AStep'
 }
 
 export default Demo as Meta

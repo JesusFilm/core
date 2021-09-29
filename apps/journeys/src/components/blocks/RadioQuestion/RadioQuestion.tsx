@@ -10,24 +10,9 @@ import { makeStyles, createStyles } from '@mui/styles'
 import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { RadioQuestionVariant } from '../../../../__generated__/globalTypes'
 import { useMutation, gql } from '@apollo/client'
 import { RadioQuestionResponseCreate } from '../../../../__generated__/RadioQuestionResponseCreate'
 import { v4 as uuidv4 } from 'uuid'
-
-const useStyles = makeStyles(
-  () =>
-    createStyles({
-      light: {
-        background: '#ffffff'
-      },
-      dark: {
-        background: '#3b3b3b',
-        color: '#ffffff'
-      }
-    }),
-  { name: 'MuiRadioQuestionComponent' }
-)
 
 export const RADIO_QUESTION_RESPONSE_CREATE = gql`
   mutation RadioQuestionResponseCreate(
@@ -44,10 +29,8 @@ export function RadioQuestion({
   id,
   label,
   description,
-  children,
-  variant = RadioQuestionVariant.LIGHT
+  children
 }: TreeBlock<RadioQuestionBlock>): ReactElement {
-  const classes = useStyles()
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
 
@@ -75,12 +58,7 @@ export function RadioQuestion({
 
   return (
     <Container maxWidth="sm">
-      <Card
-        data-testid="RadioQuestionCard"
-        className={
-          variant === RadioQuestionVariant.DARK ? classes.dark : classes.light
-        }
-      >
+      <Card data-testid="RadioQuestionCard">
         <CardContent>
           <Typography variant="h1" gutterBottom>
             {label}

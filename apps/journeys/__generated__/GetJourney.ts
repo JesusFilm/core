@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, RadioQuestionVariant } from "./globalTypes";
+import { ThemeName, ThemeMode } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -49,7 +49,6 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   parentBlockId: string | null;
   label: string;
   description: string | null;
-  variant: RadioQuestionVariant | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {

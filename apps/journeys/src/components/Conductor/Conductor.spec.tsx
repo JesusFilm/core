@@ -31,8 +31,7 @@ describe('Conductor', () => {
               }
             ],
             parentBlockId: null,
-            description: 'description',
-            variant: null
+            description: 'description'
           }
         ]
       },
@@ -57,8 +56,7 @@ describe('Conductor', () => {
             label: 'Question 2',
             children: [],
             parentBlockId: null,
-            description: 'description',
-            variant: null
+            description: 'description'
           }
         ]
       }
