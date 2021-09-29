@@ -2,12 +2,12 @@ import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect, useState } from 'react'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { useBlocks } from '../../libs/client/cache/blocks'
-import SwiperCore from 'swiper'
+import type SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import { JourneyProgress } from '../JourneyProgress'
 import { Box, Container } from '@mui/material'
-import 'swiper/css'
+import 'swiper/swiper.min.css'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -73,7 +73,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }}
         />
         <Box
-          data-testid="conductorNextButton"
           sx={{
             position: 'absolute',
             top: 0,
@@ -87,8 +86,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }}
         />
         <Box
+          data-testid="conductorNextButton"
           onClick={handleNext}
           sx={{
+            cursor: activeBlock?.locked === true ? 'auto' : 'pointer',
+            display: 'block',
             position: 'absolute',
             top: 0,
             bottom: 0,

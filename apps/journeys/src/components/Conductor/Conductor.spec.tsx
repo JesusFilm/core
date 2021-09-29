@@ -25,7 +25,7 @@ describe('Conductor', () => {
                 id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 2 (Locked)',
+                label: '1. Step 2 (Locked)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -37,7 +37,7 @@ describe('Conductor', () => {
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 3 (No nextBlockId)',
+                label: '1. Step 3 (No nextBlockId)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -49,7 +49,7 @@ describe('Conductor', () => {
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 4 (End)',
+                label: '1. Step 4 (End)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -80,7 +80,7 @@ describe('Conductor', () => {
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 1 (Start)',
+                label: '2. Step 1 (Start)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -92,7 +92,7 @@ describe('Conductor', () => {
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 3 (No nextBlockId)',
+                label: '2. Step 3 (No nextBlockId)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -104,7 +104,7 @@ describe('Conductor', () => {
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 4 (End)',
+                label: '2. Step 4 (End)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -135,7 +135,7 @@ describe('Conductor', () => {
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 1 (Start)',
+                label: '3. Step 1 (Start)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -147,7 +147,7 @@ describe('Conductor', () => {
                 id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 2 (Locked)',
+                label: '3. Step 2 (Locked)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -159,7 +159,7 @@ describe('Conductor', () => {
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 4 (End)',
+                label: '3. Step 4 (End)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -190,7 +190,7 @@ describe('Conductor', () => {
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 1 (Start)',
+                label: '4. Step 1 (Start)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -202,7 +202,7 @@ describe('Conductor', () => {
                 id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 2 (Locked)',
+                label: '4. Step 2 (Locked)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -214,7 +214,7 @@ describe('Conductor', () => {
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 3 (No nextBlockId)',
+                label: '4. Step 3 (No nextBlockId)',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -227,12 +227,22 @@ describe('Conductor', () => {
         ]
       }
     ]
-    const { getByText } = renderWithApolloClient(<Conductor blocks={blocks} />)
+    const { getByRole, getByTestId } = renderWithApolloClient(
+      <Conductor blocks={blocks} />
+    )
+    const conductorNextButton = getByTestId('conductorNextButton')
     expect(treeBlocksVar()).toBe(blocks)
-    expect((activeBlockVar() as TreeBlock).id).toBe('Step1')
-    fireEvent.click(getByText('Option 1'))
-    expect((activeBlockVar() as TreeBlock).id).toBe('Step3')
-    expect(getByText('Question 2')).toBeInTheDocument()
+    expect(activeBlockVar()?.id).toBe('step1.id')
+    fireEvent.click(conductorNextButton)
+    expect(activeBlockVar()?.id).toBe('step2.id')
+    fireEvent.click(conductorNextButton)
+    expect(activeBlockVar()?.id).toBe('step2.id')
+    fireEvent.click(getByRole('button', { name: '2. Step 3 (No nextBlockId)' }))
+    expect(activeBlockVar()?.id).toBe('step3.id')
+    fireEvent.click(conductorNextButton)
+    expect(activeBlockVar()?.id).toBe('step3.id')
+    fireEvent.click(getByRole('button', { name: '3. Step 4 (End)' }))
+    expect(activeBlockVar()?.id).toBe('step4.id')
   })
 
   it('should not throw error if no blocks', () => {
