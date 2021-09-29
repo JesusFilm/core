@@ -7,15 +7,17 @@ on:
 #  push:
 #    branches:
 #      - stage
-env:
-  ENV_SUFFIX: stage
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+
 jobs:
   build-and-deploy:
+    env:
+      ENV_SUFFIX: stage
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+
     environment: ${{ env.ENV_SUFFIX }}
     runs-on: ubuntu-latest
 
