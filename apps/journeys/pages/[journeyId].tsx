@@ -81,9 +81,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       }
     `,
     variables: {
-      id: context.query.journeyId,
-    },
-  });
+      id: context.query.journeyId
+    }
+  })
 
   if (data.journey === null) {
     return {

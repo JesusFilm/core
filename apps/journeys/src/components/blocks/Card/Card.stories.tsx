@@ -14,9 +14,7 @@ const DefaultTemplate: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
   <Card {...props} />
 )
 
-export const Default: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind(
-  {}
-)
+export const Default: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'Card',
   backgroundColor: 'aliceblue',
