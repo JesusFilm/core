@@ -38,8 +38,8 @@ async function main(): Promise<void> {
       blockType: 'CardBlock',
       parentBlockId: step.id,
       extraAttrs: {
-        ThemeMode: ThemeMode.dark,
-        ThemeName: ThemeName.base
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base
       },
       parentOrder: 0
     }
