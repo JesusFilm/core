@@ -4,7 +4,7 @@ export const baseColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'light',
     // DEFAULT CONTAINER COLORS
-    background: { default: '#FEFEFE' },
+    background: { default: '#FEFEFE', paper: '#FEFEFE' },
     primary: {
       light: '#6D6F81',
       main: '#30313D',
@@ -36,7 +36,7 @@ export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     ...baseColorsLight.palette,
     mode: 'dark',
-    background: { default: '#26262E' },
+    background: { default: '#26262E', paper: '#26262E' },
     primary: baseColorsLight.palette.secondary,
     secondary: baseColorsLight.palette.primary,
     text: {
