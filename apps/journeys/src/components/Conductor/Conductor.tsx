@@ -40,7 +40,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   return (
     <Container sx={{ p: 0 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
         <Box sx={{ width: 'calc(100% - 20px - 20px)' }}>
           <JourneyProgress />
         </Box>
@@ -69,7 +69,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             zIndex: 2,
             width: 20,
             left: 0,
-            background: 'linear-gradient(90deg, #FFFF 0%, #FFF0 100%)'
+            background: (theme) =>
+              `linear-gradient(90deg, ${theme.palette.background.default}FF 0%, ${theme.palette.background.default}00 100%)`
           }}
         />
         <Box
@@ -80,7 +81,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             zIndex: 2,
             width: 20,
             right: 0,
-            background: '#FFF',
+            background: (theme) => theme.palette.background.default,
             transition: 'opacity 0.5s ease-out',
             opacity: activeBlock?.nextBlockId != null ? 0 : 1
           }}
@@ -97,7 +98,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             zIndex: 2,
             width: 20,
             right: 0,
-            background: 'linear-gradient(90deg, #FFF0 0%, #FFFF 100%)'
+            background: (theme) =>
+              `linear-gradient(90deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 100%)`
           }}
         />
       </Swiper>

@@ -1,5 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { ThemeProvider } from '@core/shared/ui'
 import { Meta } from '@storybook/react'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ReactElement } from 'react'
 import { Conductor } from '.'
 import { journeysConfig } from '../../libs/storybook/decorators'
@@ -236,6 +238,12 @@ export const Default = (): ReactElement => (
       ]}
     />
   </MockedProvider>
+)
+
+export const Dark = (): ReactElement => (
+  <ThemeProvider themeMode={ThemeMode.dark} themeName={ThemeName.base}>
+    <Default />
+  </ThemeProvider>
 )
 
 export default Demo as Meta
