@@ -20,24 +20,32 @@ const TypographyDemo = {
 interface TypographyStoryProps extends TypographyProps {
   variants: Array<string | null>
   heading?: string
-  useAlt?: boolean
 }
 
 // TODO: Replace with real card component
 interface CardProps {
-  useAlt?: boolean
+  background?: string
   children: ReactNode
 }
 
-const Card = ({ children, useAlt = false }: CardProps): ReactElement => {
+const Card = ({
+  background = 'primary',
+  children
+}: CardProps): ReactElement => {
   const theme = useTheme()
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: theme.palette[useAlt ? 'surfaceAlt' : 'surface'].main,
-        color: theme.palette[useAlt ? 'surfaceAlt' : 'surface'].contrastText,
+        backgroundColor:
+          background === 'background'
+            ? theme.palette.background
+            : theme.palette[background].main,
+        color:
+          background === 'background'
+            ? theme.palette.text.primary
+            : theme.palette[background].contrastText,
         p: theme.spacing(3),
         borderRadius: 4,
         mb: theme.spacing(3)
@@ -48,21 +56,19 @@ const Card = ({ children, useAlt = false }: CardProps): ReactElement => {
   )
 }
 
-const ColorCards = ({
+const TypographyColors = ({
   variants,
   heading = '',
-  useAlt,
   ...props
 }: TypographyStoryProps): ReactElement => {
   return (
-    <Card useAlt={useAlt}>
-      <Typography {...props} variant={TypographyVariant.h6} content={heading} />
+    <>
       {variants.map((variant) => (
         <>
           <Typography
             {...props}
             variant={TypographyVariant.overline}
-            content={variant ?? 'Default'}
+            content={variant ?? heading}
           />
           <Typography
             {...props}
@@ -72,7 +78,7 @@ const ColorCards = ({
           />
         </>
       ))}
-    </Card>
+    </>
   )
 }
 
@@ -114,19 +120,38 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
       flexDirection: 'column'
     }}
   >
-    <ColorCards {...props} variants={props.variants} heading={'Surface'} />
-    <ColorCards
-      {...props}
-      useAlt
-      variants={props.variants}
-      heading={'Surface Alt'}
-    />
+    <Card>
+      <TypographyColors
+        {...props}
+        variants={[null]}
+        heading={'Default on Primary'}
+      />
+    </Card>
+    <Card background={'secondary'}>
+      <TypographyColors
+        {...props}
+        variants={[null]}
+        heading={'Default on Secondary'}
+      />
+    </Card>
+    <Card background={'background'}>
+      <Typography
+        {...props}
+        variant={TypographyVariant.h6}
+        content={'Override Colors'}
+      />
+      <TypographyColors
+        {...props}
+        variants={props.variants}
+        heading={'Override colors'}
+      />
+    </Card>
   </div>
 )
 
 export const Colors = ColorTemplate.bind({})
 Colors.args = {
-  variants: [null, 'primary', 'secondary', 'error']
+  variants: ['primary', 'secondary', 'error']
 }
 
 const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (

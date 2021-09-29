@@ -128,7 +128,7 @@ const ColorTemplate: Story<TypographyStoryProps> = (args) => (
 export const Colors = ColorTemplate.bind({})
 Colors.args = {
   mode: 'light',
-  variants: ['surface', 'surfaceAlt', 'primary', 'secondary', 'error']
+  variants: ['primary', 'secondary', 'error']
 }
 
 export default TypographyDemo as Meta
