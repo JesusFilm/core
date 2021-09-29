@@ -23,8 +23,7 @@ describe('transformer', () => {
           id: 'Question1',
           parentBlockId: 'Root1',
           label: 'Question 1',
-          description: 'Question 1 description',
-          variant: null
+          description: 'Question 1 description'
         },
         {
           __typename: 'RadioOptionBlock',
@@ -45,8 +44,7 @@ describe('transformer', () => {
           id: 'Question2',
           parentBlockId: 'Root2',
           label: 'Question 2',
-          description: 'Question 2 description',
-          variant: null
+          description: 'Question 2 description'
         },
         {
           __typename: 'RadioOptionBlock',
@@ -89,8 +87,7 @@ describe('transformer', () => {
             id: 'Question1',
             parentBlockId: 'Root1',
             label: 'Question 1',
-            description: 'Question 1 description',
-            variant: null
+            description: 'Question 1 description'
           }
         ],
         id: 'Root1',
@@ -124,8 +121,7 @@ describe('transformer', () => {
             id: 'Question2',
             parentBlockId: 'Root2',
             label: 'Question 2',
-            description: 'Question 2 description',
-            variant: null
+            description: 'Question 2 description'
           }
         ],
         id: 'Root2',

@@ -3,14 +3,20 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, RadioQuestionVariant, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./globalTypes";
+import {
+  ThemeName,
+  ThemeMode,
+  TypographyAlign,
+  TypographyColor,
+  TypographyVariant
+} from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
 // ====================================================
 
-export interface GetJourney_journey_blocks_SignupBlock {
-  __typename: "SignupBlock" | "TypographyBlock";
+export interface GetJourney_journey_blocks_ButtonBlock {
+  __typename: "ButtonBlock" | "SignupBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -49,7 +55,6 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   parentBlockId: string | null;
   label: string;
   description: string | null;
-  variant: RadioQuestionVariant | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
@@ -75,7 +80,11 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   url: string;
 }
 
-export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
+export type GetJourney_journey_blocks_RadioOptionBlock_action =
+  | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction
+  | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction
+  | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction
+  | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -85,59 +94,23 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_endIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  gtmEventName: string | null;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  gtmEventName: string | null;
-  journeyId: string;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
-  __typename: "LinkAction";
-  gtmEventName: string | null;
-  url: string;
-}
-
-export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction;
-
-export interface GetJourney_journey_blocks_ButtonBlock {
-  __typename: "ButtonBlock";
+export interface GetJourney_journey_blocks_TypographyBlock {
+  __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
-  label: string;
-  variant: ButtonVariant | null;
-  color: ButtonColor | null;
-  size: ButtonSize | null;
-  startIcon: GetJourney_journey_blocks_ButtonBlock_startIcon | null;
-  endIcon: GetJourney_journey_blocks_ButtonBlock_endIcon | null;
-  action: GetJourney_journey_blocks_ButtonBlock_action | null;
+  align: TypographyAlign | null;
+  color: TypographyColor | null;
+  content: string;
+  variant: TypographyVariant | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_SignupBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_ButtonBlock;
+export type GetJourney_journey_blocks =
+  | GetJourney_journey_blocks_ButtonBlock
+  | GetJourney_journey_blocks_StepBlock
+  | GetJourney_journey_blocks_VideoBlock
+  | GetJourney_journey_blocks_RadioQuestionBlock
+  | GetJourney_journey_blocks_RadioOptionBlock
+  | GetJourney_journey_blocks_TypographyBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

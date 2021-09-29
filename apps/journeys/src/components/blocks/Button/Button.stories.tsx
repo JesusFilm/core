@@ -1,7 +1,5 @@
-import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { Button, ButtonProps } from '.'
-import { useTheme, Box, Typography } from '@mui/material'
 import {
   ButtonVariant,
   ButtonColor,
@@ -21,30 +19,6 @@ const ButtonDemo = {
 
 interface ButtonStoryProps extends ButtonProps {
   variants: Array<string | null>
-}
-
-// TODO: Replace with real card component
-interface CardProps {
-  children: ReactNode
-}
-
-const Card = ({ children }: CardProps): ReactElement => {
-  const theme = useTheme()
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: theme.palette.surface.main,
-        color: theme.palette.surface.contrastText,
-        p: theme.spacing(3),
-        borderRadius: 4,
-        mb: theme.spacing(3)
-      }}
-    >
-      {children}
-    </Box>
-  )
 }
 
 const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
@@ -140,10 +114,14 @@ endIcon.args = {
 }
 
 const Template: Story<ButtonStoryProps> = ({ ...args }) => (
-  <Card>
-    <Typography>{args.label}</Typography>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column'
+    }}
+  >
     <Button {...args} />
-  </Card>
+  </div>
 )
 
 export const Loading = Template.bind({})

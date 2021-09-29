@@ -11,18 +11,18 @@ export enum ButtonColor {
   error = "error",
   inherit = "inherit",
   primary = "primary",
-  secondary = "secondary",
+  secondary = "secondary"
 }
 
 export enum ButtonSize {
   large = "large",
   medium = "medium",
-  small = "small",
+  small = "small"
 }
 
 export enum ButtonVariant {
   contained = "contained",
-  text = "text",
+  text = "text"
 }
 
 export enum IconColor {
@@ -31,7 +31,7 @@ export enum IconColor {
   error = "error",
   inherit = "inherit",
   primary = "primary",
-  secondary = "secondary",
+  secondary = "secondary"
 }
 
 /**
@@ -47,7 +47,7 @@ export enum IconName {
   MenuBook = "MenuBook",
   PlayArrow = "PlayArrow",
   RadioButtonUnchecked = "RadioButtonUnchecked",
-  Translate = "Translate",
+  Translate = "Translate"
 }
 
 export enum IconSize {
@@ -55,21 +55,48 @@ export enum IconSize {
   lg = "lg",
   md = "md",
   sm = "sm",
-  xl = "xl",
+  xl = "xl"
 }
 
 export enum RadioQuestionVariant {
   DARK = "DARK",
-  LIGHT = "LIGHT",
+  LIGHT = "LIGHT"
 }
 
 export enum ThemeMode {
   dark = "dark",
-  light = "light",
+  light = "light"
 }
 
 export enum ThemeName {
-  base = "base",
+  base = "base"
+}
+
+export enum TypographyAlign {
+  center = "center",
+  left = "left",
+  right = "right"
+}
+
+export enum TypographyColor {
+  error = "error",
+  primary = "primary",
+  secondary = "secondary"
+}
+
+export enum TypographyVariant {
+  body1 = "body1",
+  body2 = "body2",
+  caption = "caption",
+  h1 = "h1",
+  h2 = "h2",
+  h3 = "h3",
+  h4 = "h4",
+  h5 = "h5",
+  h6 = "h6",
+  overline = "overline",
+  subtitle1 = "subtitle1",
+  subtitle2 = "subtitle2"
 }
 
 export interface RadioQuestionResponseCreateInput {

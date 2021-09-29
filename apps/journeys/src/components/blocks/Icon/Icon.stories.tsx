@@ -33,8 +33,8 @@ const Card = ({ children }: CardProps): ReactElement => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: theme.palette.surface.main,
-        color: theme.palette.surface.contrastText,
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
         p: theme.spacing(3),
         borderRadius: 4,
         mb: theme.spacing(3)
