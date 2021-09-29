@@ -44,7 +44,7 @@ jobs:
         with:
           targets: deploy
           projects: infrastructure
-          workingDirectory: resources/cf-stacks/serverless.yml
+          workingDirectory: resources/cf-stacks
           args: --env $ENV_SUFFIX
 
       - name: Run NX generate and build
