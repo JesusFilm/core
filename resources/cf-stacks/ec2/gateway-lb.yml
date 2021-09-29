@@ -2,17 +2,15 @@ Type: AWS::ElasticLoadBalancing::LoadBalancer
 Properties:
   Scheme: internal
   SecurityGroups:
-    - sg-id
-  Subnets:
-    - subnet-id
-  Instances:
-    - instance-id
+    - !Ref ApolloGatewayLBSecurityGroup
+  Subnets: ${self:custom.aws.subnets}
+
   Listeners:
     - LoadBalancerPort: "443"
       InstancePort: "4000"
       Protocol: HTTPS
       InstanceProtocol: HTTP
-      SSLCertificateId: arn:aws:acm:us-east-1:894231352815:certificate/0ebf2bf0-bab3-4070-b042-5e3a42929b70
+      SSLCertificateId: ${self:custom.aws.gateway-ssl-cert-arn}
   HealthCheck:
     Target: TCP:4000
     HealthyThreshold: 2
