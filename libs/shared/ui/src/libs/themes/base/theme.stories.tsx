@@ -13,7 +13,6 @@ import {
 
 import { sharedUiConfig } from '../../storybook/decorators'
 import { baseDark, baseLight } from './theme'
-import { TypographyVariant } from '../../../../__generated__/globalTypes'
 
 const TypographyDemo = {
   ...sharedUiConfig,
@@ -52,7 +51,7 @@ const ColorPalettes = ({
           boxShadow: theme.shadows[1]
         }}
       >
-        <Typography {...props} variant={TypographyVariant.overline}>
+        <Typography {...props} variant="overline">
           Background
         </Typography>
       </Box>
@@ -81,11 +80,7 @@ const ColorPalettes = ({
                   p: theme.spacing(3)
                 }}
               >
-                <Typography
-                  {...props}
-                  variant={TypographyVariant.overline}
-                  gutterBottom
-                >
+                <Typography {...props} variant="overline" gutterBottom>
                   {`${variant} light`}
                 </Typography>
               </Box>
@@ -98,7 +93,7 @@ const ColorPalettes = ({
                   p: theme.spacing(3)
                 }}
               >
-                <Typography {...props} variant={TypographyVariant.overline}>
+                <Typography {...props} variant="overline">
                   {`${variant} main`}
                 </Typography>
               </Box>
@@ -111,7 +106,7 @@ const ColorPalettes = ({
                   p: theme.spacing(3)
                 }}
               >
-                <Typography {...props} variant={TypographyVariant.overline}>
+                <Typography {...props} variant="overline">
                   {`${variant} dark`}
                 </Typography>
               </Box>

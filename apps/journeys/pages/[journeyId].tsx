@@ -10,7 +10,7 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-// import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
+import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
 
 interface JourneyPageProps {
   journey: Journey
@@ -33,6 +33,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
 ) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
+      ${TYPOGRAPHY_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -70,6 +71,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
                   url
                 }
               }
+            }
+            ... on TypographyBlock {
+              ...TypographyFields
             }
           }
         }
