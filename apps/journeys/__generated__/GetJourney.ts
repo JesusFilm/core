@@ -43,15 +43,6 @@ export interface GetJourney_journey_blocks_VideoBlock {
   autoplay: boolean | null;
 }
 
-export interface GetJourney_journey_blocks_CardBlock {
-  __typename: "CardBlock";
-  id: string;
-  parentBlockId: string | null;
-  imgSrc: string | null;
-  backgroundColor: string | null;
-  fontColor: string | null;
-}
-
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
