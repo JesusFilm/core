@@ -6,16 +6,12 @@
       "targets": {
         "deploy": {
           "executor": "@nrwl/workspace:run-commands",
-          "configurations": {
-            "stage": {
-              "options": {
-                "commands": [
-                  {
-                    "command": "serverless deploy"
-                  }
-                ]
+          "options": {
+            "commands": [
+              {
+                "command": "serverless deploy"
               }
-            }
+            ]
           }
         }
       }
