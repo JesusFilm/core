@@ -44,8 +44,7 @@ jobs:
         with:
           targets: deploy
           projects: infrastructure
-          workingDirectory: resources/cf-stacks
-          args: --env $ENV_SUFFIX
+          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
 
       - name: Run NX generate and build
         uses: mansagroup/nrwl-nx-action@v2
