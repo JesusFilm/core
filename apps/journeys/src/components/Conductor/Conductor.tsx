@@ -90,7 +90,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           data-testid="conductorNextButton"
           onClick={handleNext}
           sx={{
-            cursor: activeBlock?.locked === true ? 'auto' : 'pointer',
+            cursor:
+              activeBlock?.locked === true || activeBlock?.nextBlockId == null
+                ? 'auto'
+                : 'pointer',
             display: 'block',
             position: 'absolute',
             top: 0,
