@@ -52,8 +52,7 @@ it('returns blocks', async () => {
     parentOrder: 2,
     extraAttrs: {
       label: 'label',
-      description: 'description',
-      variant: 'DARK'
+      description: 'description'
     }
   }
   const radioOption1: Block = {
@@ -243,7 +242,6 @@ it('returns blocks', async () => {
             ... on RadioQuestionBlock {
               label
               description
-              variant
             }
             ... on SignupBlock {
               action {
@@ -295,8 +293,7 @@ it('returns blocks', async () => {
       __typename: 'RadioQuestionBlock',
       parentBlockId: step1.id,
       label: 'label',
-      description: 'description',
-      variant: 'DARK'
+      description: 'description'
     },
     {
       id: radioOption1.id,
