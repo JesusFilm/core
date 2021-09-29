@@ -114,8 +114,7 @@ describe('Response', () => {
         parentOrder: 0,
         extraAttrs: {
           label: 'label',
-          description: 'description',
-          variant: 'DARK'
+          description: 'description'
         }
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
@@ -141,7 +140,6 @@ describe('Response', () => {
                 id
                 label
                 description
-                variant
               }
             }
           }
@@ -165,8 +163,7 @@ describe('Response', () => {
         block: {
           id: block1.id,
           label: 'label',
-          description: 'description',
-          variant: 'DARK'
+          description: 'description'
         }
       })
     })

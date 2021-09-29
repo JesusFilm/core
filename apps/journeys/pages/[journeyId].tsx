@@ -10,6 +10,7 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
+// import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
 
 interface JourneyPageProps {
   journey: Journey
@@ -53,7 +54,6 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on RadioQuestionBlock {
               label
               description
-              variant
             }
             ... on RadioOptionBlock {
               label

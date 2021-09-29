@@ -145,7 +145,6 @@ type RadioQuestionBlock implements Block {
   parentBlockId: ID
   label: String!
   description: String
-  variant: RadioQuestionVariant
 }
 
 type RadioQuestionResponse implements Response {
@@ -162,11 +161,6 @@ input RadioQuestionResponseCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
-}
-
-enum RadioQuestionVariant {
-  LIGHT
-  DARK
 }
 
 interface Response {
