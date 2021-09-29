@@ -4,6 +4,13 @@ import { spacingThemeToken } from './spacing'
 
 export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
+    MuiButtonGroup: {
+      styleOverrides: {
+        groupedContainedVertical: {
+          margin: 0
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         containedPrimary: {
