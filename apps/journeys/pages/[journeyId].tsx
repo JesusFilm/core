@@ -72,7 +72,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
                 }
               }
             }
-            ...TypographyFields
+            ... on TypographyBlock {
+              ...TypographyFields
+            }
           }
         }
       }
