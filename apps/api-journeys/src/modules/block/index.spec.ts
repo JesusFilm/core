@@ -2,14 +2,14 @@ import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import module from '.'
 import dbMock from '../../../tests/dbMock'
-import Journey from '../journey'
+import journey from '../journey'
 import { v4 as uuidv4 } from 'uuid'
 import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 
 it('returns blocks', async () => {
   const app = testkit.testModule(module, {
     schemaBuilder,
-    modules: [Journey]
+    modules: [journey]
   })
   const journeyId = uuidv4()
   const otherJourneyId = uuidv4()
@@ -33,11 +33,25 @@ it('returns blocks', async () => {
       nextBlockId
     }
   }
+  const coverBlockId = uuidv4()
+  const card1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'CardBlock',
+    parentBlockId: step1.id,
+    parentOrder: 0,
+    extraAttrs: {
+      backgroundColor: '#FFF',
+      coverBlockId,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base
+    }
+  }
   const video1: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'VideoBlock',
-    parentBlockId: step1.id,
+    parentBlockId: card1.id,
     parentOrder: 1,
     extraAttrs: {
       src: 'src',
@@ -48,7 +62,7 @@ it('returns blocks', async () => {
     id: uuidv4(),
     journeyId,
     blockType: 'RadioQuestionBlock',
-    parentBlockId: step1.id,
+    parentBlockId: card1.id,
     parentOrder: 2,
     extraAttrs: {
       label: 'label',
@@ -119,7 +133,7 @@ it('returns blocks', async () => {
     id: uuidv4(),
     journeyId,
     blockType: 'TypographyBlock',
-    parentBlockId: step1.id,
+    parentBlockId: card1.id,
     parentOrder: 7,
     extraAttrs: {
       content: 'text',
@@ -138,11 +152,22 @@ it('returns blocks', async () => {
       locked: false
     }
   }
+  const card2: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'CardBlock',
+    parentBlockId: step2.id,
+    parentOrder: 0,
+    extraAttrs: {
+      backgroundColor: null,
+      coverBlockId: null
+    }
+  }
   const signup1: Block = {
     id: uuidv4(),
     journeyId,
     blockType: 'SignupBlock',
-    parentBlockId: step2.id,
+    parentBlockId: card2.id,
     parentOrder: 2,
     extraAttrs: {
       action: {
@@ -155,7 +180,7 @@ it('returns blocks', async () => {
     id: uuidv4(),
     journeyId,
     blockType: 'ButtonBlock',
-    parentBlockId: step2.id,
+    parentBlockId: card2.id,
     parentOrder: 1,
     extraAttrs: {
       label: 'label',
@@ -181,6 +206,7 @@ it('returns blocks', async () => {
   }
   const blocks = [
     step1,
+    card1,
     video1,
     radioQuestion1,
     radioOption1,
@@ -189,6 +215,7 @@ it('returns blocks', async () => {
     radioOption4,
     typography1,
     step2,
+    card2,
     signup1,
     button1
   ]
@@ -233,6 +260,12 @@ it('returns blocks', async () => {
               action {
                 ...ActionFields
               }
+            }
+            ... on CardBlock {
+              backgroundColor
+              coverBlockId
+              themeMode
+              themeName
             }
             ... on RadioOptionBlock {
               label
@@ -284,16 +317,25 @@ it('returns blocks', async () => {
       nextBlockId
     },
     {
+      id: card1.id,
+      __typename: 'CardBlock',
+      parentBlockId: step1.id,
+      backgroundColor: '#FFF',
+      coverBlockId,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base
+    },
+    {
       id: video1.id,
       __typename: 'VideoBlock',
-      parentBlockId: step1.id,
+      parentBlockId: card1.id,
       src: 'src',
       title: 'title'
     },
     {
       id: radioQuestion1.id,
       __typename: 'RadioQuestionBlock',
-      parentBlockId: step1.id,
+      parentBlockId: card1.id,
       label: 'label',
       description: 'description',
       variant: 'DARK'
@@ -345,7 +387,7 @@ it('returns blocks', async () => {
     {
       id: typography1.id,
       __typename: 'TypographyBlock',
-      parentBlockId: step1.id,
+      parentBlockId: card1.id,
       content: 'text',
       variant: 'h2',
       color: 'primary',
@@ -359,9 +401,18 @@ it('returns blocks', async () => {
       nextBlockId: null
     },
     {
+      id: card2.id,
+      __typename: 'CardBlock',
+      parentBlockId: step2.id,
+      backgroundColor: null,
+      coverBlockId: null,
+      themeMode: null,
+      themeName: null
+    },
+    {
       id: signup1.id,
       __typename: 'SignupBlock',
-      parentBlockId: step2.id,
+      parentBlockId: card2.id,
       action: {
         __typename: 'NavigateToJourneyAction',
         gtmEventName: 'gtmEventName',
@@ -371,7 +422,7 @@ it('returns blocks', async () => {
     {
       id: button1.id,
       __typename: 'ButtonBlock',
-      parentBlockId: step2.id,
+      parentBlockId: card2.id,
       label: 'label',
       variant: 'contained',
       color: 'primary',
