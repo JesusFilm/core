@@ -147,7 +147,7 @@ export type Mutation = {
   journeyCreate: Journey;
   journeyPublish?: Maybe<Journey>;
   radioQuestionResponseCreate: RadioQuestionResponse;
-  signupResponseCreate: SignupResponse;
+  signUpResponseCreate: SignUpResponse;
   videoResponseCreate: VideoResponse;
 };
 
@@ -167,8 +167,8 @@ export type MutationRadioQuestionResponseCreateArgs = {
 };
 
 
-export type MutationSignupResponseCreateArgs = {
-  input: SignupResponseCreateInput;
+export type MutationSignUpResponseCreateArgs = {
+  input: SignUpResponseCreateInput;
 };
 
 
@@ -244,23 +244,23 @@ export type Response = {
   userId: Scalars['ID'];
 };
 
-export type SignupBlock = Block & {
-  __typename?: 'SignupBlock';
+export type SignUpBlock = Block & {
+  __typename?: 'SignUpBlock';
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
   action?: Maybe<Action>;
 };
 
-export type SignupResponse = Response & {
-  __typename?: 'SignupResponse';
-  block: SignupBlock;
+export type SignUpResponse = Response & {
+  __typename?: 'SignUpResponse';
+  block: SignUpBlock;
   email: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
   userId: Scalars['ID'];
 };
 
-export type SignupResponseCreateInput = {
+export type SignUpResponseCreateInput = {
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: Maybe<Scalars['ID']>;
   blockId: Scalars['ID'];
@@ -453,10 +453,10 @@ export type ResolversTypes = {
   RadioQuestionBlock: ResolverTypeWrapper<BlockType>;
   RadioQuestionResponse: ResolverTypeWrapper<ResponseType>;
   RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
-  Response: ResolversTypes['RadioQuestionResponse'] | ResolversTypes['SignupResponse'] | ResolversTypes['VideoResponse'];
-  SignupBlock: ResolverTypeWrapper<BlockType>;
-  SignupResponse: ResolverTypeWrapper<ResponseType>;
-  SignupResponseCreateInput: SignupResponseCreateInput;
+  Response: ResolversTypes['RadioQuestionResponse'] | ResolversTypes['SignUpResponse'] | ResolversTypes['VideoResponse'];
+  SignUpBlock: ResolverTypeWrapper<BlockType>;
+  SignUpResponse: ResolverTypeWrapper<ResponseType>;
+  SignUpResponseCreateInput: SignUpResponseCreateInput;
   StepBlock: ResolverTypeWrapper<BlockType>;
   ThemeMode: ThemeMode;
   ThemeName: ThemeName;
@@ -493,10 +493,10 @@ export type ResolversParentTypes = {
   RadioQuestionBlock: BlockType;
   RadioQuestionResponse: ResponseType;
   RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
-  Response: ResolversParentTypes['RadioQuestionResponse'] | ResolversParentTypes['SignupResponse'] | ResolversParentTypes['VideoResponse'];
-  SignupBlock: BlockType;
-  SignupResponse: ResponseType;
-  SignupResponseCreateInput: SignupResponseCreateInput;
+  Response: ResolversParentTypes['RadioQuestionResponse'] | ResolversParentTypes['SignUpResponse'] | ResolversParentTypes['VideoResponse'];
+  SignUpBlock: BlockType;
+  SignUpResponse: ResponseType;
+  SignUpResponseCreateInput: SignUpResponseCreateInput;
   StepBlock: BlockType;
   TypographyBlock: BlockType;
   VideoBlock: BlockType;
@@ -511,7 +511,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -568,7 +568,7 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyCreate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyCreateArgs, 'input'>>;
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
-  signupResponseCreate?: Resolver<ResolversTypes['SignupResponse'], ParentType, ContextType, RequireFields<MutationSignupResponseCreateArgs, 'input'>>;
+  signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };
 
@@ -619,20 +619,20 @@ export type RadioQuestionResponseResolvers<ContextType = GraphQLModules.Context,
 };
 
 export type ResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Response'] = ResolversParentTypes['Response']> = {
-  __resolveType: TypeResolveFn<'RadioQuestionResponse' | 'SignupResponse' | 'VideoResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'RadioQuestionResponse' | 'SignUpResponse' | 'VideoResponse', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
-export type SignupBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignupBlock'] = ResolversParentTypes['SignupBlock']> = {
+export type SignUpBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpBlock'] = ResolversParentTypes['SignUpBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SignupResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignupResponse'] = ResolversParentTypes['SignupResponse']> = {
-  block?: Resolver<ResolversTypes['SignupBlock'], ParentType, ContextType>;
+export type SignUpResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpResponse'] = ResolversParentTypes['SignUpResponse']> = {
+  block?: Resolver<ResolversTypes['SignUpBlock'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -694,8 +694,8 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   RadioQuestionBlock?: RadioQuestionBlockResolvers<ContextType>;
   RadioQuestionResponse?: RadioQuestionResponseResolvers<ContextType>;
   Response?: ResponseResolvers<ContextType>;
-  SignupBlock?: SignupBlockResolvers<ContextType>;
-  SignupResponse?: SignupResponseResolvers<ContextType>;
+  SignUpBlock?: SignUpBlockResolvers<ContextType>;
+  SignUpResponse?: SignUpResponseResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;

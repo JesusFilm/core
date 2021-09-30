@@ -132,7 +132,7 @@ type LinkAction implements Action {
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyPublish(id: ID!): Journey
-  signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
@@ -195,21 +195,21 @@ interface Response {
   userId: ID!
 }
 
-type SignupBlock implements Block {
+type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
   action: Action
 }
 
-type SignupResponse implements Response {
+type SignUpResponse implements Response {
   id: ID!
   userId: ID!
   name: String!
   email: String!
-  block: SignupBlock!
+  block: SignUpBlock!
 }
 
-input SignupResponseCreateInput {
+input SignUpResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
