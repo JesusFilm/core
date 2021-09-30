@@ -1,2 +1,2 @@
 export { default } from './SignUp'
-export { SIGNUP_FIELDS } from './signUpFields'
+export { SIGN_UP_FIELDS } from './signUpFields'

@@ -7,10 +7,30 @@
 // GraphQL fragment: SignUpFields
 // ====================================================
 
-export interface SignUpFields_action {
-  __typename: "LinkAction" | "NavigateAction" | "NavigateToBlockAction" | "NavigateToJourneyAction";
+export interface SignUpFields_action_NavigateAction {
+  __typename: "NavigateAction";
   gtmEventName: string | null;
 }
+
+export interface SignUpFields_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface SignUpFields_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journeyId: string;
+}
+
+export interface SignUpFields_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction;
 
 export interface SignUpFields {
   __typename: "SignupBlock";

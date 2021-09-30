@@ -110,10 +110,30 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export interface GetJourney_journey_blocks_SignupBlock_action {
-  __typename: "LinkAction" | "NavigateAction" | "NavigateToBlockAction" | "NavigateToJourneyAction";
+export interface GetJourney_journey_blocks_SignupBlock_action_NavigateAction {
+  __typename: "NavigateAction";
   gtmEventName: string | null;
 }
+
+export interface GetJourney_journey_blocks_SignupBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_SignupBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journeyId: string;
+}
+
+export interface GetJourney_journey_blocks_SignupBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_SignupBlock_action = GetJourney_journey_blocks_SignupBlock_action_NavigateAction | GetJourney_journey_blocks_SignupBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignupBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_SignupBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_SignupBlock {
   __typename: "SignupBlock";

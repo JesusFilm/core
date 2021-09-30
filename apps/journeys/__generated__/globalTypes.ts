@@ -49,6 +49,13 @@ export interface RadioQuestionResponseCreateInput {
   radioOptionBlockId: string;
 }
 
+export interface SignupResponseCreateInput {
+  blockId: string;
+  email: string;
+  id?: string | null;
+  name: string;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
