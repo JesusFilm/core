@@ -1,5 +1,7 @@
+export { Card } from './Card'
 export { RadioOption } from './RadioOption'
 export { RadioQuestion } from './RadioQuestion'
 export { Video } from './Video'
 export { Step } from './Step'
-export { default as SignUp } from './SignUp'
+export { SignUp } from './SignUp'
+export { Typography } from './Typography'

@@ -1,10 +1,19 @@
-import { RadioOption, RadioQuestion, Video, Step, SignUp } from '../blocks'
+import {
+  Card,
+  RadioOption,
+  RadioQuestion,
+  Video,
+  Step,
+  SignUp,
+  Typography
+} from '../blocks'
 import { ReactElement } from 'react'
 import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transformer'
-import { Typography } from '../blocks/Typography'
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {
+    case 'CardBlock':
+      return <Card {...block} />
     case 'RadioOptionBlock':
       return <RadioOption {...block} />
     case 'RadioQuestionBlock':

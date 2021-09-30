@@ -1,35 +1,10 @@
-import { Story, Meta } from '@storybook/react'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { Meta } from '@storybook/react'
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { journeysConfig } from '../../../libs/storybook/decorators'
-import { Card } from '../Card'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
-import SignUp from './SignUp'
+import { SignUp } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
-
-const children: TreeBlock[] = [
-  {
-    id: 'typographyBlockId1',
-    __typename: 'TypographyBlock',
-    parentBlockId: null,
-    align: null,
-    color: null,
-    content: 'Sign up',
-    variant: TypographyVariant.h1,
-    children: []
-  },
-  {
-    id: 'signUpBlockId1',
-    __typename: 'SignUpBlock',
-    parentBlockId: null,
-    action: {
-      __typename: 'LinkAction',
-      gtmEventName: 'signUp',
-      url: '#'
-    },
-    children: []
-  }
-]
+import { Conductor } from '../../Conductor'
+import { ReactElement } from 'react'
 
 const Demo = {
   ...journeysConfig,
@@ -37,17 +12,86 @@ const Demo = {
   title: 'Journeys/Blocks/SignUp'
 }
 
-const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
+export const Default = (): ReactElement => (
   <MockedProvider>
-    <Card {...props} />
+    <Conductor
+      blocks={[
+        {
+          id: 'step1.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: true,
+          nextBlockId: 'step2.id',
+          children: [
+            {
+              id: 'card1.id',
+              __typename: 'CardBlock',
+              parentBlockId: 'step1.id',
+              backgroundColor: null,
+              coverBlockId: null,
+              themeMode: null,
+              themeName: null,
+
+              children: [
+                {
+                  id: 'typographyBlockId1',
+                  __typename: 'TypographyBlock',
+                  parentBlockId: null,
+                  align: null,
+                  color: null,
+                  content: 'Sign up',
+                  variant: TypographyVariant.h1,
+                  children: []
+                },
+                {
+                  id: 'signUpBlockId1',
+                  __typename: 'SignUpBlock',
+                  parentBlockId: null,
+                  action: {
+                    __typename: 'LinkAction',
+                    gtmEventName: 'signUp',
+                    url: '#'
+                  },
+                  children: []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'step2.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: true,
+          nextBlockId: null,
+          children: [
+            {
+              id: 'card2.id',
+              __typename: 'CardBlock',
+              parentBlockId: 'step2.id',
+              backgroundColor: null,
+              coverBlockId: null,
+              themeMode: null,
+              themeName: null,
+              children: [
+                {
+                  id: 'typographyBlockId2',
+                  __typename: 'TypographyBlock',
+                  parentBlockId: null,
+                  align: null,
+                  color: null,
+                  content: 'Success',
+                  variant: TypographyVariant.h1,
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ]}
+    />
   </MockedProvider>
 )
-
-// TODO: Awaiting on final designs
-export const Default = Template.bind({})
-Default.args = {
-  children
-}
 
 // export const SubmitError = Template.bind({})
 // SubmitError.args = {

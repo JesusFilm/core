@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Typography, Card, CardContent, ButtonGroup } from '@mui/material'
+import { Typography, CardContent, ButtonGroup } from '@mui/material'
 import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -50,7 +50,7 @@ export function RadioQuestion({
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
   return (
-    <Card data-testid="RadioQuestionCard">
+    <div data-testid="RadioQuestionCard">
       <CardContent>
         <Typography variant="h1" gutterBottom>
           {label}
@@ -77,6 +77,6 @@ export function RadioQuestion({
           )}
         </ButtonGroup>
       </CardContent>
-    </Card>
+    </div>
   )
 }

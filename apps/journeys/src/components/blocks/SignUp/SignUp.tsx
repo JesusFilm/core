@@ -26,7 +26,10 @@ interface SignUpFormValues {
   email: string
 }
 
-const SignUp = ({ id, action }: TreeBlock<SignUpBlock>): ReactElement => {
+export const SignUp = ({
+  id,
+  action
+}: TreeBlock<SignUpBlock>): ReactElement => {
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
   )
@@ -101,5 +104,3 @@ const SignUp = ({ id, action }: TreeBlock<SignUpBlock>): ReactElement => {
     </Formik>
   )
 }
-
-export default SignUp
