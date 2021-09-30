@@ -3,6 +3,30 @@ import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
 describe('BlockRenderer', () => {
+  it('should render Card', () => {
+    const block: TreeBlock = {
+      __typename: 'CardBlock',
+      id: 'step',
+      parentBlockId: null,
+      backgroundColor: null,
+      coverBlockId: null,
+      themeMode: null,
+      themeName: null,
+      children: [
+        {
+          __typename: 'RadioQuestionBlock',
+          id: 'question',
+          label: 'radio question',
+          parentBlockId: 'step',
+          description: 'description',
+          children: []
+        }
+      ]
+    }
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByText('radio question')).toBeInTheDocument()
+  })
+
   it('should render RadioOption', () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
