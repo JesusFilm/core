@@ -17,7 +17,8 @@ const useStyles = makeStyles(() => ({
     fontWeight: 700,
     lineHeight: 1.4,
     textAlign: 'start',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    borderRadius: '8px'
   }
 }))
 

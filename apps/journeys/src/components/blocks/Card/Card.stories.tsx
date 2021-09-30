@@ -6,7 +6,10 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
   ThemeMode,
   ThemeName,
-  TypographyVariant
+  TypographyVariant,
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize,
 } from '../../../../__generated__/globalTypes'
 
 const Demo = {
@@ -40,7 +43,20 @@ const children: TreeBlock[] = [
       'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
     variant: null,
     children: []
-  }
+  },
+  {
+    __typename: 'ButtonBlock',
+    id: 'button',
+    parentBlockId: 'question',
+    label: 'Click to Continue',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.small,
+    startIcon: null,
+    endIcon: null,
+    action: null,
+    children: []
+  },
 ]
 
 export const Default: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})

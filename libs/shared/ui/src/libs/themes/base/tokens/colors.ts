@@ -28,6 +28,11 @@ export const baseColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
     text: {
       primary: '#26262E',
       secondary: '#FFFFFF'
+    },
+    action: {
+      // DISABLED BUTTON COLORS
+      disabled: '#FFFFFF',
+      disabledBackground: '#30313D'
     }
   }
 }
@@ -42,6 +47,11 @@ export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
     text: {
       primary: baseColorsLight.palette.text?.secondary,
       secondary: baseColorsLight.palette.text?.primary
+    },
+    action: {
+      // DISABLED BUTTON COLORS
+      disabled: '#26262E',
+      disabledBackground: '#BDBFCF'
     }
   }
 }

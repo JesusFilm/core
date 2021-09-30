@@ -6,6 +6,8 @@ import { Button } from '../blocks/Button'
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {
+    case 'ButtonBlock':
+      return <Button {...block} />
     case 'RadioOptionBlock':
       return <RadioOption {...block} />
     case 'RadioQuestionBlock':
@@ -16,8 +18,6 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <Typography {...block} />
     case 'VideoBlock':
       return <Video {...block} />
-    case 'ButtonBlock':
-      return <Button {...block} />
     default:
       return <></>
   }
