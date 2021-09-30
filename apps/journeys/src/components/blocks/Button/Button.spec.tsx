@@ -42,6 +42,11 @@ describe('Button', () => {
     expect(getByRole('button')).not.toHaveClass('MuiButton-containedSizeSmall')
   })
 
+  it('should render the default color value', () => {
+    const { getByRole } = render(<Button {...block} color={null} />)
+    expect(getByRole('button')).toHaveClass('MuiButton-containedPrimary')
+  })
+
   it('should render the start icon', () => {
     const { getByTestId } = render(
       <Button
@@ -55,5 +60,21 @@ describe('Button', () => {
       />
     )
     expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass('MuiButton-startIcon')
+  })
+  it('should render the end icon', () => {
+    const { getByTestId } = render(
+      <Button
+        {...block}
+        endIcon={{
+          __typename: 'Icon',
+          name: IconName.CheckCircle,
+          color: IconColor.primary,
+          size: IconSize.md
+        }}
+      />
+    )
+    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass('MuiButton-endIcon')
   })
 })

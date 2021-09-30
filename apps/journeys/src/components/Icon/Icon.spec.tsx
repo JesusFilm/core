@@ -17,6 +17,21 @@ describe('Icon', () => {
   it('should render the icon successfully', () => {
     const { getByTestId } = render(<Icon {...block} />)
     expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-fontSizeMedium')
+  })
+  it('should render small icon', () => {
+    const { getByTestId } = render(<Icon {...block} size={IconSize.sm} />)
+    expect(getByTestId('CheckCircleIcon')).toHaveStyle('font-size: 16px')
+  })
+  it('should render medium icon', () => {
+    const { getByTestId } = render(<Icon {...block} size={IconSize.md} />)
+    expect(getByTestId('CheckCircleIcon')).toHaveStyle('font-size: 20px')
+  })
+  it('should render large icon', () => {
+    const { getByTestId } = render(<Icon {...block} size={IconSize.lg} />)
+    expect(getByTestId('CheckCircleIcon')).toHaveStyle('font-size: 28px')
+  })
+  it('should render extra large icon', () => {
+    const { getByTestId } = render(<Icon {...block} size={IconSize.xl} />)
+    expect(getByTestId('CheckCircleIcon')).toHaveStyle('font-size: 48px')
   })
 })
