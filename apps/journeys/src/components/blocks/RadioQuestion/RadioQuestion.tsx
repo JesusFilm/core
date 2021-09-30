@@ -1,11 +1,5 @@
 import { ReactElement } from 'react'
-import {
-  Typography,
-  Container,
-  Card,
-  CardContent,
-  ButtonGroup
-} from '@mui/material'
+import { Typography, Card, CardContent, ButtonGroup } from '@mui/material'
 import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -56,35 +50,33 @@ export function RadioQuestion({
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
   return (
-    <Container maxWidth="sm">
-      <Card data-testid="RadioQuestionCard">
-        <CardContent>
-          <Typography variant="h1" gutterBottom>
-            {label}
-          </Typography>
-          <Typography variant="h6">{description}</Typography>
-        </CardContent>
-        <CardContent>
-          <ButtonGroup
-            orientation="vertical"
-            variant="contained"
-            fullWidth={true}
-          >
-            {children?.map(
-              (option) =>
-                option.__typename === 'RadioOptionBlock' && (
-                  <RadioOption
-                    {...option}
-                    key={option.id}
-                    selected={selectedId === option.id}
-                    disabled={Boolean(selectedId)}
-                    onClick={handleClick}
-                  />
-                )
-            )}
-          </ButtonGroup>
-        </CardContent>
-      </Card>
-    </Container>
+    <Card data-testid="RadioQuestionCard">
+      <CardContent>
+        <Typography variant="h1" gutterBottom>
+          {label}
+        </Typography>
+        <Typography variant="h6">{description}</Typography>
+      </CardContent>
+      <CardContent>
+        <ButtonGroup
+          orientation="vertical"
+          variant="contained"
+          fullWidth={true}
+        >
+          {children?.map(
+            (option) =>
+              option.__typename === 'RadioOptionBlock' && (
+                <RadioOption
+                  {...option}
+                  key={option.id}
+                  selected={selectedId === option.id}
+                  disabled={Boolean(selectedId)}
+                  onClick={handleClick}
+                />
+              )
+          )}
+        </ButtonGroup>
+      </CardContent>
+    </Card>
   )
 }

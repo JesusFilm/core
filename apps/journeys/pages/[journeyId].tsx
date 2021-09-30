@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
-import { Container } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
@@ -19,11 +18,9 @@ interface JourneyPageProps {
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-      <Container>
-        {journey.blocks != null && (
-          <Conductor blocks={transformer(journey.blocks)} />
-        )}
-      </Container>
+      {journey.blocks != null && (
+        <Conductor blocks={transformer(journey.blocks)} />
+      )}
     </ThemeProvider>
   )
 }
