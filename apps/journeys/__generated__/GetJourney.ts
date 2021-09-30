@@ -154,8 +154,8 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   label: string;
-  variant: ButtonVariant | null;
-  color: ButtonColor | null;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
   size: ButtonSize | null;
   startIcon: GetJourney_journey_blocks_ButtonBlock_startIcon | null;
   endIcon: GetJourney_journey_blocks_ButtonBlock_endIcon | null;

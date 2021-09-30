@@ -5,9 +5,9 @@ import { ButtonFields } from '../../../../__generated__/ButtonFields'
 import { handleAction } from '../../../libs/action'
 
 export function Button({
-  variant,
+  buttonVariant,
   label,
-  color,
+  buttonColor,
   size,
   startIcon,
   endIcon,
@@ -19,8 +19,8 @@ export function Button({
 
   return (
     <MuiButton
-      variant={variant ?? undefined}
-      color={color ?? undefined}
+      variant={buttonVariant ?? undefined}
+      color={buttonColor ?? undefined}
       size={size ?? undefined}
       startIcon={
         startIcon != null && (

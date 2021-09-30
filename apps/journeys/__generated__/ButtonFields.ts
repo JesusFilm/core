@@ -53,8 +53,8 @@ export interface ButtonFields {
   id: string;
   parentBlockId: string | null;
   label: string;
-  variant: ButtonVariant | null;
-  color: ButtonColor | null;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
   size: ButtonSize | null;
   startIcon: ButtonFields_startIcon | null;
   endIcon: ButtonFields_endIcon | null;

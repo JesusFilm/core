@@ -48,7 +48,7 @@ const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Variant = VariantTemplate.bind({})
 Variant.args = {
-  variant: ButtonVariant.contained,
+  buttonVariant: ButtonVariant.contained,
   label: ButtonVariant.contained
 }
 
@@ -59,7 +59,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         {...args}
         key={i}
         label={variant === null ? 'default' : `${variant}`}
-        color={variant as ButtonColor}
+        buttonColor={variant as ButtonColor}
       />
     ))}
   </Card>
@@ -67,7 +67,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
-  variant: ButtonVariant.contained,
+  buttonVariant: ButtonVariant.contained,
   variants: [
     null,
     ButtonColor.primary,
@@ -91,7 +91,7 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Size = SizeTemplate.bind({})
 Size.args = {
-  variant: ButtonVariant.contained,
+  buttonVariant: ButtonVariant.contained,
   variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
 }
 
@@ -104,7 +104,7 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 export const startIcon = IconTemplate.bind({})
 startIcon.args = {
   label: 'Start Icon',
-  variant: ButtonVariant.contained,
+  buttonVariant: ButtonVariant.contained,
   startIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,
@@ -116,7 +116,7 @@ startIcon.args = {
 export const endIcon = IconTemplate.bind({})
 endIcon.args = {
   label: 'End Icon',
-  variant: ButtonVariant.contained,
+  buttonVariant: ButtonVariant.contained,
   endIcon: {
     __typename: 'Icon',
     name: IconName.CheckCircle,

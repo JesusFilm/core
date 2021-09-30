@@ -16,8 +16,8 @@ describe('Button', () => {
     id: 'button',
     parentBlockId: 'question',
     label: 'This is a button',
-    variant: ButtonVariant.contained,
-    color: ButtonColor.primary,
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
     size: ButtonSize.small,
     startIcon: null,
     endIcon: null,
@@ -33,7 +33,7 @@ describe('Button', () => {
   })
 
   it('should not render with the contained value', () => {
-    const { getByRole } = render(<Button {...block} variant={null} />)
+    const { getByRole } = render(<Button {...block} buttonVariant={null} />)
     expect(getByRole('button')).not.toHaveClass('MuiButton-contained')
   })
 
@@ -43,7 +43,7 @@ describe('Button', () => {
   })
 
   it('should render the default color value', () => {
-    const { getByRole } = render(<Button {...block} color={null} />)
+    const { getByRole } = render(<Button {...block} buttonColor={null} />)
     expect(getByRole('button')).toHaveClass('MuiButton-containedPrimary')
   })
 

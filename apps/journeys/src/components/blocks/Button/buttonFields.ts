@@ -7,8 +7,8 @@ export const BUTTON_FIELDS = gql`
     id
     parentBlockId
     label
-    variant
-    color
+    buttonVariant: variant
+    buttonColor: color
     size
     startIcon {
       name
