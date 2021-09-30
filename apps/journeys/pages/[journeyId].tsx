@@ -11,6 +11,7 @@ import {
 import { ThemeProvider } from '@core/shared/ui'
 import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
 import { BUTTON_FIELDS } from '../src/components/blocks/Button'
+import { ACTION_FIELDS } from '../src/libs/action'
 
 interface JourneyPageProps {
   journey: Journey
@@ -31,6 +32,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
 ) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
+      ${ACTION_FIELDS}
       ${BUTTON_FIELDS}
       ${TYPOGRAPHY_FIELDS}
       query GetJourney($id: ID!) {
@@ -64,17 +66,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on RadioOptionBlock {
               label
               action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
+                ...ActionFields
               }
             }
             ... on ButtonBlock {

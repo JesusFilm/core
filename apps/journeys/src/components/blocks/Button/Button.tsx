@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { Button as MuiButton } from '@mui/material'
 import { Icon } from '../../Icon'
 import { ButtonFields } from '../../../../__generated__/ButtonFields'
+import { handleAction } from '../../../libs/action'
 
 export function Button({
   variant,
@@ -9,8 +10,13 @@ export function Button({
   color,
   size,
   startIcon,
-  endIcon
+  endIcon,
+  action
 }: ButtonFields): ReactElement {
+  const handleClick = (): void => {
+    handleAction(action)
+  }
+
   return (
     <MuiButton
       variant={variant ?? undefined}
@@ -36,8 +42,9 @@ export function Button({
           />
         )
       }
+      onClick={handleClick}
     >
       {label}
-    </MuiButton>
+    </MuiButton >
   )
 }

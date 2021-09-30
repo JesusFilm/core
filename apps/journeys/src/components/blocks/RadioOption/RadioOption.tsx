@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 import { compact } from 'lodash'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { useBlocks } from '../../../libs/client/cache/blocks'
+import { handleAction } from '../../../libs/action'
 
 const useStyles = makeStyles(() => ({
   highlightIcon: {
@@ -37,18 +37,10 @@ export function RadioOption({
   selected = false,
   onClick
 }: RadioOptionProps): ReactElement {
-  const { nextActiveBlock } = useBlocks()
   const classes = useStyles()
 
   const handleClick = (): void => {
-    switch (action?.__typename) {
-      case 'NavigateToBlockAction':
-        nextActiveBlock({ id: action.blockId })
-        break
-      case 'NavigateAction':
-        nextActiveBlock()
-        break
-    }
+    handleAction(action)
     onClick?.(id)
   }
 
