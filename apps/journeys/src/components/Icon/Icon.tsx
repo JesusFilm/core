@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { createElement, ReactElement } from 'react'
 import {
   CheckCircle,
   PlayArrow,
@@ -29,30 +29,21 @@ export function Icon({ name, color, size }: IconProps): ReactElement | null {
       ? '48px'
       : 'inherit'
 
-  switch (name) {
-    case 'CheckCircle':
-      return <CheckCircle color={color ?? undefined} sx={{ fontSize }} />
-    case 'PlayArrow':
-      return <PlayArrow color={color ?? undefined} sx={{ fontSize }} />
-    case 'Translate':
-      return <Translate color={color ?? undefined} sx={{ fontSize }} />
-    case 'RadioButtonUnchecked':
-      return (
-        <RadioButtonUnchecked color={color ?? undefined} sx={{ fontSize }} />
-      )
-    case 'FormatQuote':
-      return <FormatQuote color={color ?? undefined} sx={{ fontSize }} />
-    case 'LockOpen':
-      return <LockOpen color={color ?? undefined} sx={{ fontSize }} />
-    case 'ArrowForward':
-      return <ArrowForward color={color ?? undefined} sx={{ fontSize }} />
-    case 'ChatBubbleOutline':
-      return <ChatBubbleOutline color={color ?? undefined} sx={{ fontSize }} />
-    case 'LiveTv':
-      return <LiveTv color={color ?? undefined} sx={{ fontSize }} />
-    case 'MenuBook':
-      return <MenuBook color={color ?? undefined} sx={{ fontSize }} />
-    default:
-      return null
+  const icons = {
+    CheckCircle,
+    PlayArrow,
+    Translate,
+    RadioButtonUnchecked,
+    FormatQuote,
+    LockOpen,
+    ArrowForward,
+    ChatBubbleOutline,
+    LiveTv,
+    MenuBook
   }
+
+  return createElement(icons[name], {
+    color: color ?? undefined,
+    sx: { fontSize }
+  })
 }
