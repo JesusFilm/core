@@ -60,7 +60,9 @@ describe('Button', () => {
       />
     )
     expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass('MuiButton-startIcon')
+    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass(
+      'MuiButton-startIcon'
+    )
   })
   it('should render the end icon', () => {
     const { getByTestId } = render(
@@ -75,6 +77,8 @@ describe('Button', () => {
       />
     )
     expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass('MuiButton-endIcon')
+    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass(
+      'MuiButton-endIcon'
+    )
   })
 })
