@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           themeName
           themeMode
           blocks {
-          id
+            id
             parentBlockId
             ... on StepBlock {
               locked
