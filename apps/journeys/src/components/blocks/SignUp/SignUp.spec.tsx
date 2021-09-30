@@ -1,23 +1,47 @@
 import { render, screen, act, fireEvent } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 
-import SignUp, { SignUpProps } from './SignUp'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { GetJourney_journey_blocks_SignupBlock as SignupBlock } from '../../../../__generated__/GetJourney'
 
-const props: SignUpProps = {
+import SignUp, { SIGN_UP_RESPONSE_CREATE } from './SignUp'
+import { ReactElement } from 'react'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
+
+const props: TreeBlock<SignupBlock> = {
   __typename: 'SignupBlock',
-  id: '1',
+  id: 'SignUp1',
   parentBlockId: '0',
   action: {
     __typename: 'LinkAction',
-    gtmEventName: 'signUp'
-  }
+    gtmEventName: 'signUp',
+    url: '#'
+  },
+  children: []
 }
+
+interface SignUpMockProps {
+  mocks?: Array<MockedResponse<Record<string, unknown>>>
+}
+
+const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
+  <MockedProvider mocks={mocks} addTypename={false}>
+    <SignUp {...props} />
+  </MockedProvider>
+)
 
 describe('SignUp', () => {
   it('should validate when fields are empty', async () => {
-    render(<SignUp {...props} />)
+    render(<SignUpMock />)
+
+    const submit = screen.getByRole('button')
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button'))
+      fireEvent.click(submit)
     })
 
     const inlineErrors = screen.getAllByText('Required')
@@ -27,11 +51,10 @@ describe('SignUp', () => {
   })
 
   it('should validate when name is too short', async () => {
-    render(<SignUp {...props} />)
+    render(<SignUpMock />)
 
     const name = screen.getByLabelText('Name')
     const submit = screen.getByRole('button')
-    const inlineError = screen.findByText('Name must be 2 characters or more')
 
     await act(async () => {
       fireEvent.change(name, { target: { value: 'S' } })
@@ -40,15 +63,16 @@ describe('SignUp', () => {
       fireEvent.click(submit)
     })
 
+    const inlineError = screen.findByText('Name must be 2 characters or more')
+
     expect(await inlineError).toHaveProperty('id', 'name-helper-text')
   })
 
   it('should validate when name is too long', async () => {
-    render(<SignUp {...props} />)
+    render(<SignUpMock />)
 
     const name = screen.getByLabelText('Name')
     const submit = screen.getByRole('button')
-    const inlineError = screen.findByText('Name must be 50 characters or less')
 
     await act(async () => {
       fireEvent.change(name, {
@@ -59,33 +83,71 @@ describe('SignUp', () => {
       fireEvent.click(submit)
     })
 
+    const inlineError = screen.findByText('Name must be 50 characters or less')
+
     expect(await inlineError).toHaveProperty('id', 'name-helper-text')
   })
 
   it('should validate when email is invalid', async () => {
-    render(<SignUp {...props} />)
+    render(<SignUpMock />)
 
-    const name = screen.getByLabelText('Email')
+    const email = screen.getByLabelText('Email')
     const submit = screen.getByRole('button')
-    const inlineError = screen.findByText('Please enter a valid email address')
 
     await act(async () => {
-      fireEvent.change(name, { target: { value: '123abc@' } })
+      fireEvent.change(email, { target: { value: '123abc@' } })
     })
     await act(async () => {
       fireEvent.click(submit)
     })
 
+    const inlineError = screen.findByText('Please enter a valid email address')
+
     expect(await inlineError).toHaveProperty('id', 'email-helper-text')
   })
 
-  // TODO: Awaiting on Button Component
+  it('should redirect when form submit suceeds', async () => {
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_RESPONSE_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'SignUp1',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        result: {
+          data: {
+            signupResponseCreate: {
+              id: 'uuid',
+              blockId: 'SignUp1',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        }
+      }
+    ]
 
-  // it('should show loading button on form submit', async () => {
-  // })
+    render(<SignUpMock mocks={mocks} />)
 
-  // it('should submit form with ___', async () => {
-  // })
+    const name = screen.getByLabelText('Name')
+    const email = screen.getByLabelText('Email')
+    const submit = screen.getByRole('button')
+
+    await act(async () => {
+      fireEvent.change(name, { target: { value: 'Anon' } })
+      fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    })
+    await act(async () => {
+      fireEvent.click(submit)
+    })
+    // TODO: Check that generic action handler is called
+  })
 
   // it('should show error when submit fails', async () => {
   // })

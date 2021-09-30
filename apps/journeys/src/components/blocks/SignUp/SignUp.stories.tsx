@@ -5,6 +5,7 @@ import { journeysConfig } from '../../../libs/storybook/decorators'
 import { Card } from '../Card'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import SignUp from './SignUp'
+import { MockedProvider } from '@apollo/client/testing'
 
 const children: TreeBlock[] = [
   {
@@ -23,7 +24,8 @@ const children: TreeBlock[] = [
     parentBlockId: null,
     action: {
       __typename: 'LinkAction',
-      gtmEventName: 'signUp'
+      gtmEventName: 'signUp',
+      url: '#'
     },
     children: []
   }
@@ -36,7 +38,9 @@ const Demo = {
 }
 
 const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
-  <Card {...props} />
+  <MockedProvider>
+    <Card {...props} />
+  </MockedProvider>
 )
 
 // TODO: Awaiting on final designs

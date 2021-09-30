@@ -18,7 +18,7 @@ jest.mock('formik', () => ({
 }))
 
 describe('TextField', () => {
-  it('should show errors when', () => {
+  it('should show correct error', () => {
     const errorMock = { ...metaMock, error: 'Required', touched: true }
     const useFieldMock = useField as jest.Mock
     useFieldMock.mockImplementation(() => [fieldMock, errorMock])
