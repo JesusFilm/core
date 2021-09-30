@@ -10,7 +10,7 @@ import { ThemeName, ThemeMode, TypographyAlign, TypographyColor, TypographyVaria
 // ====================================================
 
 export interface GetJourney_journey_blocks_ButtonBlock {
-  __typename: "ButtonBlock" | "SignupBlock";
+  __typename: "ButtonBlock" | "SignUpBlock";
   id: string;
   parentBlockId: string | null;
 }

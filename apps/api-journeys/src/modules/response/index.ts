@@ -15,7 +15,7 @@ const typeDefs = gql`
     radioOptionBlockId: ID!
   }
 
-  input SignupResponseCreateInput {
+  input SignUpResponseCreateInput {
     """
     ID should be unique Response UUID (Provided for optimistic mutation result matching)
     """
@@ -51,7 +51,7 @@ const typeDefs = gql`
     radioOptionBlockId: ID!
   }
 
-  type SignupResponse implements Response {
+  type SignUpResponse implements Response {
     id: ID!
     userId: ID!
     name: String!
@@ -65,7 +65,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
+    signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
     radioQuestionResponseCreate(
       input: RadioQuestionResponseCreateInput!
     ): RadioQuestionResponse!
@@ -79,7 +79,7 @@ type Resolvers = ResponseModule.Resolvers & {
 
 const resolvers: Resolvers = {
   Mutation: {
-    async signupResponseCreate(
+    async signUpResponseCreate(
       _parent,
       { input: { id, blockId, name, email } },
       { db, userId }
@@ -89,7 +89,7 @@ const resolvers: Resolvers = {
       return await db.response.create({
         data: {
           id: id as string | undefined,
-          type: 'SignupResponse',
+          type: 'SignUpResponse',
           blockId,
           userId,
           extraAttrs: { name, email }
@@ -141,7 +141,7 @@ const resolvers: Resolvers = {
     radioOptionBlockId: ({ extraAttrs }) =>
       get(extraAttrs, 'radioOptionBlockId')
   },
-  SignupResponse: {
+  SignUpResponse: {
     name: ({ extraAttrs }) => get(extraAttrs, 'name'),
     email: ({ extraAttrs }) => get(extraAttrs, 'email')
   },
