@@ -1,19 +1,19 @@
 import { Story, Meta } from '@storybook/react'
+import { Paper } from '@mui/material'
 import { Form, Formik } from 'formik'
 import * as Yup from 'yup'
-import { sharedUiConfig } from '../../../../../../../libs/shared/ui/src/index'
 import { ThemeProvider } from '@core/shared/ui'
 
 import TextField, { TextFieldProps } from './TextField'
 import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
-import { Paper } from '@mui/material'
+import { journeysConfig } from '../../../../libs/storybook/decorators'
 
 interface TextFieldStoryProps extends TextFieldProps {
   themeModes: ThemeMode[]
 }
 
 const Demo = {
-  ...sharedUiConfig,
+  ...journeysConfig,
   component: TextField,
   title: 'Journeys/Blocks/SignUp/TextField'
 }
