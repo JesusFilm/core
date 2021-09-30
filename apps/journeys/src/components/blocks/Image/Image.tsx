@@ -5,16 +5,17 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 
 export function Image({
   src,
-  width,
+  alt,
   height,
-  alt
+  width
 }: TreeBlock<ImageBlock>): ReactElement {
   return (
     <Img
       src={src}
-      alt={alt === null ? undefined : alt}
-      width={width}
+      alt={alt}
       height={height}
+      width={width}
+      layout="responsive"
     />
   )
 }

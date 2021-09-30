@@ -10,18 +10,15 @@ const Demo = {
   title: 'Journeys/Blocks/Image'
 }
 
-const DefaultTemplate: Story<TreeBlock<ImageBlock>> = ({
-  ...props
-  // eslint-disable-next-line jsx-a11y/alt-text
-}) => <Image {...props} />
+const DefaultTemplate: Story<TreeBlock<ImageBlock>> = ({ alt, ...props }) => (
+  <Image {...props} alt={alt} />
+)
 
 export const Default: Story<TreeBlock<ImageBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'Image',
   alt: 'How can we help you know more about Jesus?',
-  src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80',
-  height: 500,
-  width: 500
+  src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
 }
 
 export default Demo as Meta

@@ -1,4 +1,4 @@
-import { renderWithApolloClient } from '../../../../test/testingLibrary'
+import { render } from '../../../../test/testingLibrary'
 import { Image } from '.'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -16,10 +16,7 @@ describe('Image', () => {
   }
 
   it('should have alt props', () => {
-    const { getByAltText } = renderWithApolloClient(
-      // eslint-disable-next-line jsx-a11y/alt-text
-      <Image {...block} />
-    )
+    const { getByAltText } = render(<Image {...block} alt={block.alt} />)
     expect(getByAltText('ducks')).toBeInTheDocument()
   })
 })

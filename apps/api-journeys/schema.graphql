@@ -107,7 +107,7 @@ type ImageBlock implements Block {
   src: String!
   width: Int!
   height: Int!
-  alt: String
+  alt: String!
 }
 
 type Journey @key(fields: "id") {

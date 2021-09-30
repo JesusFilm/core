@@ -138,7 +138,7 @@ const typeDefs = gql`
     src: String!
     width: Int!
     height: Int!
-    alt: String
+    alt: String!
   }
 
   type RadioOptionBlock implements Block {

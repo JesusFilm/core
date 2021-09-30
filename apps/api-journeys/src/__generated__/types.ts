@@ -119,7 +119,7 @@ export type ImageBlock = Block & {
   src: Scalars['String'];
   width: Scalars['Int'];
   height: Scalars['Int'];
-  alt?: Maybe<Scalars['String']>;
+  alt: Scalars['String'];
 };
 
 export type Journey = {
@@ -564,7 +564,7 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  alt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  alt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

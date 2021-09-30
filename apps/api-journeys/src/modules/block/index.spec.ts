@@ -203,6 +203,19 @@ it('returns blocks', async () => {
       }
     }
   }
+  const image1: Block = {
+    id: uuidv4(),
+    journeyId,
+    blockType: 'ImageBlock',
+    parentBlockId: card2.id,
+    parentOrder: 2,
+    extraAttrs: {
+      src: 'https://source.unsplash.com/random/1920x1080',
+      alt: 'random image from unsplash',
+      width: 1920,
+      height: 1080
+    }
+  }
   const blocks = [
     step1,
     card1,
@@ -216,7 +229,8 @@ it('returns blocks', async () => {
     step2,
     card2,
     signup1,
-    button1
+    button1,
+    image1
   ]
   dbMock.block.findMany.mockResolvedValue(blocks)
   const { data } = await testkit.execute(app, {
@@ -265,6 +279,12 @@ it('returns blocks', async () => {
               coverBlockId
               themeMode
               themeName
+            }
+            ... on ImageBlock {
+              src
+              alt
+              width
+              height
             }
             ... on RadioOptionBlock {
               label
@@ -440,6 +460,15 @@ it('returns blocks', async () => {
         url: 'https://jesusfilm.org',
         target: 'target'
       }
+    },
+    {
+      id: image1.id,
+      __typename: 'ImageBlock',
+      parentBlockId: card2.id,
+      src: 'https://source.unsplash.com/random/1920x1080',
+      alt: 'random image from unsplash',
+      width: 1920,
+      height: 1080
     }
   ])
 })
