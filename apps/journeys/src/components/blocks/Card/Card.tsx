@@ -53,7 +53,7 @@ export function Card({
 }
 
 interface CardWrapperProps
-  extends Pick<TreeBlock<CardBlock>, 'themeMode' | 'themeName'> {
+  extends Pick<TreeBlock<CardBlock>, 'themmeMode' | 'themeName'> {
   children: ReactNode
 }
 

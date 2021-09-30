@@ -168,7 +168,7 @@ type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
-  signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse! @join__field(graph: JOURNEYS)
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -231,21 +231,21 @@ interface Response {
   userId: ID!
 }
 
-type SignupBlock implements Block {
+type SignUpBlock implements Block {
   action: Action
   id: ID!
   parentBlockId: ID
 }
 
-type SignupResponse implements Response {
-  block: SignupBlock!
+type SignUpResponse implements Response {
+  block: SignUpBlock!
   email: String!
   id: ID!
   name: String!
   userId: ID!
 }
 
-input SignupResponseCreateInput {
+input SignUpResponseCreateInput {
   blockId: ID!
   email: String!
 
