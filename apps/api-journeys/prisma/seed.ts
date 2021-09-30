@@ -32,11 +32,23 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  const card = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: step.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base
+      },
+      parentOrder: 0
+    }
+  })
   await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step.id,
+      parentBlockId: card.id,
       extraAttrs: {
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
@@ -49,7 +61,7 @@ async function main(): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: step.id,
+      parentBlockId: card.id,
       extraAttrs: {
         label: 'Jesus asks you, "Will you follow Me?"'
       }

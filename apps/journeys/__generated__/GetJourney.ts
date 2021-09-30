@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, RadioQuestionVariant } from "./globalTypes";
+import { ThemeName, ThemeMode, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
 // ====================================================
 
 export interface GetJourney_journey_blocks_ButtonBlock {
-  __typename: "ButtonBlock" | "SignupBlock" | "TypographyBlock";
+  __typename: "ButtonBlock" | "SignupBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -49,7 +49,6 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   parentBlockId: string | null;
   label: string;
   description: string | null;
-  variant: RadioQuestionVariant | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
@@ -85,7 +84,17 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock;
+export interface GetJourney_journey_blocks_TypographyBlock {
+  __typename: "TypographyBlock";
+  id: string;
+  parentBlockId: string | null;
+  align: TypographyAlign | null;
+  color: TypographyColor | null;
+  content: string;
+  variant: TypographyVariant | null;
+}
+
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_TypographyBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

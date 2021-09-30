@@ -1,5 +1,4 @@
 import { ThemeOptions } from '@mui/material'
-import { spacingTheme } from './spacing'
 
 // Update the Typography's variant prop options
 declare module '@mui/material' {
@@ -8,24 +7,7 @@ declare module '@mui/material' {
   }
 }
 
-export const baseTypography: Pick<ThemeOptions, 'typography' | 'components'> = {
-  components: {
-    MuiTypography: {
-      styleOverrides: {
-        gutterBottom: {
-          marginBottom: spacingTheme.spacing(3)
-        }
-      },
-      variants: [
-        {
-          props: { variant: 'overline', gutterBottom: true },
-          style: {
-            marginBottom: spacingTheme.spacing(1)
-          }
-        }
-      ]
-    }
-  },
+export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: [
       '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
