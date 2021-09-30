@@ -78,7 +78,7 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 8. The VS Code window (instance) will reload, clone the source code, and start building the dev container. A progress notification provides status updates.
 9. After the build completes, VS Code will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
 
-### Starting the gateway, back-end and front-end projects
+## Starting the gateway, back-end and front-end projects
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
 
