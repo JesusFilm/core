@@ -4,9 +4,9 @@ import * as gm from "graphql-modules";
 export namespace ResponseModule {
   interface DefinedFields {
     RadioQuestionResponse: 'id' | 'userId' | 'radioOptionBlockId';
-    SignupResponse: 'id' | 'userId' | 'name' | 'email';
+    SignUpResponse: 'id' | 'userId' | 'name' | 'email';
     VideoResponse: 'id' | 'userId' | 'state';
-    Mutation: 'signupResponseCreate' | 'radioQuestionResponseCreate' | 'videoResponseCreate';
+    Mutation: 'signUpResponseCreate' | 'radioQuestionResponseCreate' | 'videoResponseCreate';
     Response: 'id' | 'userId';
   };
   
@@ -16,29 +16,29 @@ export namespace ResponseModule {
   
   interface DefinedInputFields {
     RadioQuestionResponseCreateInput: 'id' | 'blockId' | 'radioOptionBlockId';
-    SignupResponseCreateInput: 'id' | 'blockId' | 'name' | 'email';
+    SignUpResponseCreateInput: 'id' | 'blockId' | 'name' | 'email';
     VideoResponseCreateInput: 'id' | 'blockId' | 'state';
   };
   
   export type RadioQuestionResponseCreateInput = Pick<Types.RadioQuestionResponseCreateInput, DefinedInputFields['RadioQuestionResponseCreateInput']>;
-  export type SignupResponseCreateInput = Pick<Types.SignupResponseCreateInput, DefinedInputFields['SignupResponseCreateInput']>;
+  export type SignUpResponseCreateInput = Pick<Types.SignUpResponseCreateInput, DefinedInputFields['SignUpResponseCreateInput']>;
   export type VideoResponseStateEnum = DefinedEnumValues['VideoResponseStateEnum'];
   export type VideoResponseCreateInput = Pick<Types.VideoResponseCreateInput, DefinedInputFields['VideoResponseCreateInput']>;
   export type Response = Pick<Types.Response, DefinedFields['Response']>;
   export type RadioQuestionResponse = Pick<Types.RadioQuestionResponse, DefinedFields['RadioQuestionResponse']>;
-  export type SignupResponse = Pick<Types.SignupResponse, DefinedFields['SignupResponse']>;
+  export type SignUpResponse = Pick<Types.SignUpResponse, DefinedFields['SignUpResponse']>;
   export type VideoResponse = Pick<Types.VideoResponse, DefinedFields['VideoResponse']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
   export type RadioQuestionResponseResolvers = Pick<Types.RadioQuestionResponseResolvers, DefinedFields['RadioQuestionResponse'] | '__isTypeOf'>;
-  export type SignupResponseResolvers = Pick<Types.SignupResponseResolvers, DefinedFields['SignupResponse'] | '__isTypeOf'>;
+  export type SignUpResponseResolvers = Pick<Types.SignUpResponseResolvers, DefinedFields['SignUpResponse'] | '__isTypeOf'>;
   export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse'] | '__isTypeOf'>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
   export type ResponseResolvers = Pick<Types.ResponseResolvers, DefinedFields['Response']>;
   
   export interface Resolvers {
     RadioQuestionResponse?: RadioQuestionResponseResolvers;
-    SignupResponse?: SignupResponseResolvers;
+    SignUpResponse?: SignUpResponseResolvers;
     VideoResponse?: VideoResponseResolvers;
     Mutation?: MutationResolvers;
   };
@@ -53,7 +53,7 @@ export namespace ResponseModule {
       userId?: gm.Middleware[];
       radioOptionBlockId?: gm.Middleware[];
     };
-    SignupResponse?: {
+    SignUpResponse?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
       userId?: gm.Middleware[];
@@ -68,7 +68,7 @@ export namespace ResponseModule {
     };
     Mutation?: {
       '*'?: gm.Middleware[];
-      signupResponseCreate?: gm.Middleware[];
+      signUpResponseCreate?: gm.Middleware[];
       radioQuestionResponseCreate?: gm.Middleware[];
       videoResponseCreate?: gm.Middleware[];
     };

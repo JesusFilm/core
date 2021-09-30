@@ -146,7 +146,7 @@ const typeDefs = gql`
     description: String
   }
 
-  type SignupBlock implements Block {
+  type SignUpBlock implements Block {
     id: ID!
     parentBlockId: ID
     action: Action
@@ -223,8 +223,8 @@ const typeDefs = gql`
     block: RadioQuestionBlock!
   }
 
-  extend type SignupResponse {
-    block: SignupBlock!
+  extend type SignUpResponse {
+    block: SignUpBlock!
   }
 
   extend type VideoResponse {
@@ -278,7 +278,7 @@ const resolvers: Resolvers = {
     themeMode: ({ extraAttrs }) => get(extraAttrs, 'themeMode'),
     themeName: ({ extraAttrs }) => get(extraAttrs, 'themeName')
   },
-  SignupBlock: {
+  SignUpBlock: {
     action: ({ extraAttrs }) => get(extraAttrs, 'action')
   },
   StepBlock: {

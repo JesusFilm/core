@@ -162,10 +162,10 @@ it('returns blocks', async () => {
       coverBlockId: null
     }
   }
-  const signup1: Block = {
+  const signUp1: Block = {
     id: uuidv4(),
     journeyId,
-    blockType: 'SignupBlock',
+    blockType: 'SignUpBlock',
     parentBlockId: card2.id,
     parentOrder: 2,
     extraAttrs: {
@@ -215,7 +215,7 @@ it('returns blocks', async () => {
     typography1,
     step2,
     card2,
-    signup1,
+    signUp1,
     button1
   ]
   dbMock.block.findMany.mockResolvedValue(blocks)
@@ -276,7 +276,7 @@ it('returns blocks', async () => {
               label
               description
             }
-            ... on SignupBlock {
+            ... on SignUpBlock {
               action {
                 ...ActionFields
               }
@@ -407,8 +407,8 @@ it('returns blocks', async () => {
       themeName: null
     },
     {
-      id: signup1.id,
-      __typename: 'SignupBlock',
+      id: signUp1.id,
+      __typename: 'SignUpBlock',
       parentBlockId: card2.id,
       action: {
         __typename: 'NavigateToJourneyAction',
