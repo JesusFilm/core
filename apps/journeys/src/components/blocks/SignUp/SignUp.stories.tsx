@@ -1,7 +1,33 @@
-import { Typography } from '@mui/material'
 import { Story, Meta } from '@storybook/react'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { journeysConfig } from '../../../libs/storybook/decorators'
-import SignUp, { SignUpProps } from './SignUp'
+import { Card } from '../Card'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import SignUp from './SignUp'
+
+const children: TreeBlock[] = [
+  {
+    id: 'typographyBlockId1',
+    __typename: 'TypographyBlock',
+    parentBlockId: null,
+    align: null,
+    color: null,
+    content: 'Sign up',
+    variant: TypographyVariant.h1,
+    children: []
+  },
+  {
+    id: 'signUpBlockId1',
+    __typename: 'SignupBlock',
+    parentBlockId: null,
+    action: {
+      __typename: 'LinkAction',
+      gtmEventName: 'signUp'
+    },
+    children: []
+  }
+]
 
 const Demo = {
   ...journeysConfig,
@@ -9,20 +35,14 @@ const Demo = {
   title: 'Journeys/Blocks/SignUp'
 }
 
-const Template: Story<SignUpProps> = ({ ...props }) => (
-  <>
-    <div style={{ marginBottom: '32px' }}>
-      <Typography variant="h1">Sign up</Typography>
-    </div>
-    <SignUp {...props} />
-  </>
+const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
+  <Card {...props} />
 )
 
 // TODO: Awaiting on final designs
 export const Default = Template.bind({})
 Default.args = {
-  heading: 'Sign Up',
-  description: 'Lorem ipsum dolor sit amet.'
+  children
 }
 
 // export const SubmitError = Template.bind({})

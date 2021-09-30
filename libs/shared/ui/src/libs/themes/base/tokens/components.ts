@@ -38,7 +38,13 @@ export const baseComponents: Pick<ThemeOptions, 'components'> = {
         input: {
           // color: ,
           transform: `translate(0px, 6px) scale(1)`,
-          transition: `color 200ms cubic-bezier(0.0,0,0.2,1) 0ms,transform 200ms cubic-bezier(0.0,0,0.2,1) 0ms,max-width 200ms cubic-bezier(0.0,0,0.2,1) 0ms`
+          transition: `color 200ms cubic-bezier(0.0,0,0.2,1) 0ms,transform 200ms cubic-bezier(0.0,0,0.2,1) 0ms,max-width 200ms cubic-bezier(0.0,0,0.2,1) 0ms`,
+          // https://github.com/mui-org/material-ui/issues/14427
+          '&:-webkit-autofill': {
+            transitionDelay: '9999s',
+            transitionProperty: 'background-color, color',
+            '-webkit-box-shadow': 'none'
+          }
         }
       }
     },
