@@ -31,7 +31,7 @@ export function useBlocks(): UseBlocksHook {
       block = blocks.find(
         (block) => block.__typename === 'StepBlock' && block.id === args.id
       ) as TreeBlock<StepBlock> | undefined
-    } else if (activeBlock != null && activeBlock.__typename === 'StepBlock') {
+    } else if (activeBlock != null) {
       block = blocks.find(
         (block) =>
           block.__typename === 'StepBlock' &&
