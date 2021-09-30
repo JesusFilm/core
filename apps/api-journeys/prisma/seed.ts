@@ -207,7 +207,7 @@ async function main(): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PLAY_ARROW',
+          name: 'PlayArrow',
           color: 'secondary',
           size: 'xl'
         },
