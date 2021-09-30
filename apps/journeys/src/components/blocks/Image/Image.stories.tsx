@@ -17,8 +17,10 @@ const DefaultTemplate: Story<TreeBlock<ImageBlock>> = ({ alt, ...props }) => (
 export const Default: Story<TreeBlock<ImageBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'Image',
-  alt: 'How can we help you know more about Jesus?',
-  src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+  src: 'https://source.unsplash.com/random/1920x1080',
+  alt: 'random image from unsplash',
+  width: 1920,
+  height: 1080
 }
 
 export default Demo as Meta

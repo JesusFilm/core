@@ -1,8 +1,10 @@
-const nextImage = require('next/image')
+const NextImage = require('next/image')
 
-Object.defineProperty(nextImage, 'default', {
+const OriginalNextImage = NextImage.default
+
+Object.defineProperty(NextImage, 'default', {
   configurable: true,
-  value: (props) => <img {...props} />
+  value: (props) => <OriginalNextImage {...props} unoptimized />
 })
 
 module.exports = {
