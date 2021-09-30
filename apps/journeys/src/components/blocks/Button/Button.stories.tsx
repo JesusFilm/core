@@ -58,7 +58,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       <Button
         {...args}
         key={i}
-        label={variant === null ? 'Default' : `${variant}`}
+        label={variant === null ? 'default' : `${variant}`}
         color={variant as ButtonColor}
       />
     ))}

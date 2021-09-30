@@ -27,6 +27,12 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
       }
     },
     MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          boxShadow: 'none'
+        }
+      },
       defaultProps: {
         disableRipple: true
       },

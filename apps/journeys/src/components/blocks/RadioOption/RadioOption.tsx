@@ -16,16 +16,8 @@ const useStyles = makeStyles(() => ({
     fontSize: 16,
     fontWeight: 700,
     lineHeight: 1.4,
-    textTransform: 'none',
     textAlign: 'start',
     justifyContent: 'flex-start'
-  },
-  light: {
-    background: '#ffffff'
-  },
-  dark: {
-    background: '#3b3b3b',
-    color: '#ffffff'
   }
 }))
 
