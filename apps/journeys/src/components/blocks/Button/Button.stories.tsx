@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { Box } from '@mui/system'
-import { Button, ButtonProps } from '.'
+import { Button } from '.'
 import {
   ButtonVariant,
   ButtonColor,
@@ -10,6 +10,7 @@ import {
   IconSize
 } from '../../../../__generated__/globalTypes'
 import { journeysConfig } from '../../../libs/storybook/decorators'
+import { ButtonFields } from '../../../../__generated__/ButtonFields'
 
 const ButtonDemo = {
   ...journeysConfig,
@@ -17,7 +18,7 @@ const ButtonDemo = {
   title: 'Journeys/Blocks/Button'
 }
 
-interface ButtonStoryProps extends ButtonProps {
+interface ButtonStoryProps extends ButtonFields {
   variants: Array<string | null>
 }
 
@@ -122,26 +123,6 @@ endIcon.args = {
     color: null,
     size: IconSize.md
   }
-}
-
-const Template: Story<ButtonStoryProps> = ({ ...args }) => (
-  <Card>
-    <Button {...args} />
-  </Card>
-)
-
-export const Loading = Template.bind({})
-Loading.args = {
-  label: 'Loading Button',
-  variant: ButtonVariant.contained,
-  loading: false
-}
-
-export const Disabled = Template.bind({})
-Disabled.args = {
-  label: 'Disabled Button',
-  variant: ButtonVariant.contained,
-  disabled: true
 }
 
 export default ButtonDemo as Meta

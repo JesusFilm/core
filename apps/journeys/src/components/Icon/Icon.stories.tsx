@@ -7,14 +7,14 @@ import {
   IconName,
   IconSize,
   IconColor
-} from '../../../../__generated__/globalTypes'
+} from '../../../__generated__/globalTypes'
 
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../libs/storybook/decorators'
 
 const IconDemo = {
   ...journeysConfig,
   component: Icon,
-  title: 'Journeys/Blocks/Icon'
+  title: 'Journeys/Icon'
 }
 
 interface IconStoryProps extends IconProps {

@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { ActionResolvers, BlockResolvers } from '../../__generated__/types'
 import { BlockModule } from './__generated__/types'
+import { ActionResolvers, BlockResolvers } from '../../__generated__/types'
 
 import { get } from 'lodash'
 

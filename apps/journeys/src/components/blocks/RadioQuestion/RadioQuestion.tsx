@@ -59,10 +59,10 @@ export function RadioQuestion({
     <Container maxWidth="sm">
       <Card data-testid="RadioQuestionCard">
         <CardContent>
-          <Typography variant="h1" gutterBottom>
+          <Typography variant="h3" gutterBottom>
             {label}
           </Typography>
-          <Typography variant="h6">{description}</Typography>
+          <Typography variant="body2">{description}</Typography>
         </CardContent>
         <CardContent>
           <ButtonGroup

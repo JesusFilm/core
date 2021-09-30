@@ -34,15 +34,15 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
 ) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
-      ${TYPOGRAPHY_FIELDS}
       ${BUTTON_FIELDS}
+      ${TYPOGRAPHY_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
           themeName
           themeMode
           blocks {
-            id
+          id
             parentBlockId
             ... on StepBlock {
               locked

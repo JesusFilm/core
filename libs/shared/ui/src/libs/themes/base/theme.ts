@@ -1,8 +1,8 @@
 import { createTheme } from '@mui/material'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
-import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
 import { baseTypography } from './tokens/typography'
+import { baseComponents } from './tokens/components'
 
 export const baseTheme = createTheme({
   ...baseTypography,

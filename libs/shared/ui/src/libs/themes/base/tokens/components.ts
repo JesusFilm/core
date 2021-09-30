@@ -1,9 +1,24 @@
-import { lightThemeToken } from './colors'
+// import { lightThemeToken } from './colors'
 import { ThemeOptions } from '@mui/material'
 import { spacingThemeToken } from './spacing'
 
 export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
+    MuiTypography: {
+      styleOverrides: {
+        gutterBottom: {
+          marginBottom: spacingThemeToken.spacing(4)
+        }
+      },
+      variants: [
+        {
+          props: { variant: 'overline', gutterBottom: true },
+          style: {
+            marginBottom: spacingThemeToken.spacing(1)
+          }
+        }
+      ]
+    },
     MuiButtonGroup: {
       styleOverrides: {
         groupedContainedVertical: {
@@ -12,38 +27,6 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
       }
     },
     MuiButton: {
-      styleOverrides: {
-        containedPrimary: {
-          marginBottom: spacingThemeToken.spacing(3),
-          backgroundColor: lightThemeToken.palette.primary.main,
-          color: lightThemeToken.palette.primary.contrastText,
-          '&:hover': {
-            backgroundColor: lightThemeToken.palette.primary.light
-          },
-          '&:focus': {
-            backgroundColor: lightThemeToken.palette.primary.light
-          },
-          '&:disabled': {
-            backgroundColor: lightThemeToken.palette.primary.light,
-            color: lightThemeToken.palette.primary.contrastText
-          }
-        },
-        containedSecondary: {
-          marginBottom: spacingThemeToken.spacing(3),
-          backgroundColor: lightThemeToken.palette.secondary.main,
-          color: lightThemeToken.palette.secondary.contrastText,
-          '&:hover': {
-            backgroundColor: lightThemeToken.palette.secondary.light
-          },
-          '&:focus': {
-            backgroundColor: lightThemeToken.palette.secondary.light
-          },
-          '&:disabled': {
-            backgroundColor: lightThemeToken.palette.secondary.light,
-            color: lightThemeToken.palette.secondary.contrastText
-          }
-        }
-      },
       defaultProps: {
         disableRipple: true
       },

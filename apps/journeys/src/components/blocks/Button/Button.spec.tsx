@@ -9,24 +9,24 @@ import {
   IconSize
 } from '../../../../__generated__/globalTypes'
 
-const block: ButtonProps = {
-  __typename: 'ButtonBlock',
-  id: 'button',
-  parentBlockId: 'question',
-  label: 'This is a button',
-  variant: ButtonVariant.contained,
-  color: ButtonColor.primary,
-  size: ButtonSize.small,
-  startIcon: null,
-  endIcon: null,
-  action: null
-}
-
 describe('Button', () => {
+  const block: ButtonProps = {
+    __typename: 'ButtonBlock',
+    id: 'button',
+    parentBlockId: 'question',
+    label: 'This is a button',
+    variant: ButtonVariant.contained,
+    color: ButtonColor.primary,
+    size: ButtonSize.small,
+    startIcon: null,
+    endIcon: null,
+    action: null
+  }
+
   it('should render the button successfully', () => {
     const { getByText, getByRole } = render(<Button {...block} />)
     expect(getByRole('button')).toHaveClass('MuiButton-root')
-    expect(getByText('This is a button')).toBeTruthy()
+    expect(getByText('This is a button')).toBeInTheDocument()
   })
 
   it('should render the correct icon', () => {
@@ -41,6 +41,6 @@ describe('Button', () => {
         }}
       />
     )
-    expect(getByTestId('CheckCircleIcon')).toBeTruthy()
+    expect(getByTestId('CheckCircleIcon')).toBeInTheDocument()
   })
 })

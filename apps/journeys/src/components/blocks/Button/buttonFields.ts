@@ -19,7 +19,6 @@ export const BUTTON_FIELDS = gql`
       size
     }
     action {
-      __typename
       gtmEventName
       ... on NavigateToBlockAction {
         blockId
