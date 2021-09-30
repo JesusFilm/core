@@ -107,6 +107,31 @@ const typeDefs = gql`
     action: Action
   }
 
+  type CardBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    """
+    backgroundColor should be a HEX color value e.g #FFFFFF for white.
+    """
+    backgroundColor: String
+    """
+    coverBlockId is present if a child block should be used as a cover.
+    This child block should not be rendered normally, instead it should be used
+    as a background. Blocks are often of type ImageBlock or VideoBlock.
+    """
+    coverBlockId: ID
+    """
+    themeMode can override journey themeMode. If nothing is set then use
+    themeMode from journey
+    """
+    themeMode: ThemeMode
+    """
+    themeName can override journey themeName. If nothing is set then use
+    themeName from journey
+    """
+    themeName: ThemeName
+  }
+
   type ImageBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -123,17 +148,11 @@ const typeDefs = gql`
     action: Action
   }
 
-  enum RadioQuestionVariant {
-    LIGHT
-    DARK
-  }
-
   type RadioQuestionBlock implements Block {
     id: ID!
     parentBlockId: ID
     label: String!
     description: String
-    variant: RadioQuestionVariant
   }
 
   type SignupBlock implements Block {
@@ -262,6 +281,12 @@ const resolvers: Resolvers = {
     startIcon: ({ extraAttrs }) => get(extraAttrs, 'startIcon'),
     endIcon: ({ extraAttrs }) => get(extraAttrs, 'endIcon')
   },
+  CardBlock: {
+    backgroundColor: ({ extraAttrs }) => get(extraAttrs, 'backgroundColor'),
+    coverBlockId: ({ extraAttrs }) => get(extraAttrs, 'coverBlockId'),
+    themeMode: ({ extraAttrs }) => get(extraAttrs, 'themeMode'),
+    themeName: ({ extraAttrs }) => get(extraAttrs, 'themeName')
+  },
   ImageBlock: {
     src: ({ extraAttrs }) => get(extraAttrs, 'src'),
     width: ({ extraAttrs }) => get(extraAttrs, 'width'),
@@ -287,8 +312,7 @@ const resolvers: Resolvers = {
   },
   RadioQuestionBlock: {
     label: ({ extraAttrs }) => get(extraAttrs, 'label'),
-    description: ({ extraAttrs }) => get(extraAttrs, 'description'),
-    variant: ({ extraAttrs }) => get(extraAttrs, 'variant')
+    description: ({ extraAttrs }) => get(extraAttrs, 'description')
   },
   VideoBlock: {
     src: ({ extraAttrs }) => get(extraAttrs, 'src'),

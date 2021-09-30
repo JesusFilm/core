@@ -9,9 +9,10 @@ export namespace BlockModule {
     LinkAction: 'gtmEventName' | 'url' | 'target';
     Icon: 'name' | 'color' | 'size';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
+    CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'themeMode' | 'themeName';
     ImageBlock: 'id' | 'parentBlockId' | 'src' | 'width' | 'height' | 'alt';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
-    RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description' | 'variant';
+    RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description';
     SignupBlock: 'id' | 'parentBlockId' | 'action';
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
@@ -31,7 +32,6 @@ export namespace BlockModule {
     ButtonVariant: 'text' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
-    RadioQuestionVariant: 'LIGHT' | 'DARK';
     TypographyVariant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
     TypographyColor: 'primary' | 'secondary' | 'error';
     TypographyAlign: 'left' | 'center' | 'right';
@@ -51,9 +51,11 @@ export namespace BlockModule {
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
   export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
+  export type CardBlock = Pick<Types.CardBlock, DefinedFields['CardBlock']>;
+  export type ThemeMode = Types.ThemeMode;
+  export type ThemeName = Types.ThemeName;
   export type ImageBlock = Pick<Types.ImageBlock, DefinedFields['ImageBlock']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
-  export type RadioQuestionVariant = DefinedEnumValues['RadioQuestionVariant'];
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type SignupBlock = Pick<Types.SignupBlock, DefinedFields['SignupBlock']>;
   export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
@@ -73,6 +75,7 @@ export namespace BlockModule {
   export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
   export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
+  export type CardBlockResolvers = Pick<Types.CardBlockResolvers, DefinedFields['CardBlock'] | '__isTypeOf'>;
   export type ImageBlockResolvers = Pick<Types.ImageBlockResolvers, DefinedFields['ImageBlock'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
@@ -94,6 +97,7 @@ export namespace BlockModule {
     LinkAction?: LinkActionResolvers;
     Icon?: IconResolvers;
     ButtonBlock?: ButtonBlockResolvers;
+    CardBlock?: CardBlockResolvers;
     ImageBlock?: ImageBlockResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
     RadioQuestionBlock?: RadioQuestionBlockResolvers;
@@ -149,6 +153,15 @@ export namespace BlockModule {
       endIcon?: gm.Middleware[];
       action?: gm.Middleware[];
     };
+    CardBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      backgroundColor?: gm.Middleware[];
+      coverBlockId?: gm.Middleware[];
+      themeMode?: gm.Middleware[];
+      themeName?: gm.Middleware[];
+    };
     ImageBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
@@ -171,7 +184,6 @@ export namespace BlockModule {
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
       description?: gm.Middleware[];
-      variant?: gm.Middleware[];
     };
     SignupBlock?: {
       '*'?: gm.Middleware[];

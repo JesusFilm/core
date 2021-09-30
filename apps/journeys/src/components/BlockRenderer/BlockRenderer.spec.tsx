@@ -23,7 +23,6 @@ describe('BlockRenderer', () => {
       label: 'radio question',
       parentBlockId: null,
       description: 'description',
-      variant: null,
       children: []
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
@@ -44,13 +43,27 @@ describe('BlockRenderer', () => {
           label: 'radio question',
           parentBlockId: 'step',
           description: 'description',
-          variant: null,
           children: []
         }
       ]
     }
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('radio question')).toBeInTheDocument()
+  })
+
+  it('should render Typography', () => {
+    const block: TreeBlock = {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'How did we get here?',
+      variant: null,
+      children: []
+    }
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByText('How did we get here?')).toBeInTheDocument()
   })
 
   it('should render Video', () => {

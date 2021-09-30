@@ -53,6 +53,30 @@ export type ButtonVariant =
   | 'text'
   | 'contained';
 
+export type CardBlock = Block & {
+  __typename?: 'CardBlock';
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
+  backgroundColor?: Maybe<Scalars['String']>;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId?: Maybe<Scalars['ID']>;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode?: Maybe<ThemeMode>;
+  /**
+   * themeName can override journey themeName. If nothing is set then use
+   * themeName from journey
+   */
+  themeName?: Maybe<ThemeName>;
+};
+
 export type Icon = {
   __typename?: 'Icon';
   name: IconName;
@@ -208,7 +232,6 @@ export type RadioQuestionBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']>;
   label: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  variant?: Maybe<RadioQuestionVariant>;
 };
 
 export type RadioQuestionResponse = Response & {
@@ -225,10 +248,6 @@ export type RadioQuestionResponseCreateInput = {
   blockId: Scalars['ID'];
   radioOptionBlockId: Scalars['ID'];
 };
-
-export type RadioQuestionVariant =
-  | 'LIGHT'
-  | 'DARK';
 
 export type Response = {
   id: Scalars['ID'];
@@ -426,6 +445,7 @@ export type ResolversTypes = {
   ButtonColor: ButtonColor;
   ButtonSize: ButtonSize;
   ButtonVariant: ButtonVariant;
+  CardBlock: ResolverTypeWrapper<BlockType>;
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
   IconName: IconName;
@@ -445,7 +465,6 @@ export type ResolversTypes = {
   RadioQuestionBlock: ResolverTypeWrapper<BlockType>;
   RadioQuestionResponse: ResolverTypeWrapper<ResponseType>;
   RadioQuestionResponseCreateInput: RadioQuestionResponseCreateInput;
-  RadioQuestionVariant: RadioQuestionVariant;
   Response: ResolversTypes['RadioQuestionResponse'] | ResolversTypes['SignupResponse'] | ResolversTypes['VideoResponse'];
   SignupBlock: ResolverTypeWrapper<BlockType>;
   SignupResponse: ResolverTypeWrapper<ResponseType>;
@@ -470,6 +489,7 @@ export type ResolversParentTypes = {
   Block: BlockType;
   ID: Scalars['ID'];
   ButtonBlock: BlockType;
+  CardBlock: BlockType;
   Icon: Icon;
   ImageBlock: BlockType;
   Int: Scalars['Int'];
@@ -503,7 +523,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'ButtonBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignupBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -518,6 +538,16 @@ export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
   startIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
   endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
   action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['CardBlock'] = ResolversParentTypes['CardBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  backgroundColor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  coverBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  themeMode?: Resolver<Maybe<ResolversTypes['ThemeMode']>, ParentType, ContextType>;
+  themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -599,7 +629,6 @@ export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, Pa
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  variant?: Resolver<Maybe<ResolversTypes['RadioQuestionVariant']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -674,6 +703,7 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   Action?: ActionResolvers<ContextType>;
   Block?: BlockResolvers<ContextType>;
   ButtonBlock?: ButtonBlockResolvers<ContextType>;
+  CardBlock?: CardBlockResolvers<ContextType>;
   Icon?: IconResolvers<ContextType>;
   ImageBlock?: ImageBlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;

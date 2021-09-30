@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, RadioQuestionVariant } from "./globalTypes";
+import { ThemeName, ThemeMode, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
 // ====================================================
 
 export interface GetJourney_journey_blocks_ButtonBlock {
-  __typename: "ButtonBlock" | "SignupBlock" | "TypographyBlock";
+  __typename: "ButtonBlock" | "SignupBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -43,13 +43,38 @@ export interface GetJourney_journey_blocks_VideoBlock {
   autoplay: boolean | null;
 }
 
+export interface GetJourney_journey_blocks_CardBlock {
+  __typename: "CardBlock";
+  id: string;
+  parentBlockId: string | null;
+  /**
+   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   */
+  backgroundColor: string | null;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode: ThemeMode | null;
+  /**
+   * themeName can override journey themeName. If nothing is set then use
+   * themeName from journey
+   */
+  themeName: ThemeName | null;
+}
+
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   label: string;
   description: string | null;
-  variant: RadioQuestionVariant | null;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
@@ -95,7 +120,17 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock;
+export interface GetJourney_journey_blocks_TypographyBlock {
+  __typename: "TypographyBlock";
+  id: string;
+  parentBlockId: string | null;
+  align: TypographyAlign | null;
+  color: TypographyColor | null;
+  content: string;
+  variant: TypographyVariant | null;
+}
+
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_TypographyBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";
