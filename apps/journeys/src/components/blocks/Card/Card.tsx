@@ -3,7 +3,8 @@ import { ReactElement, ReactNode } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { Paper } from '@mui/material'
+import { Paper, Box } from '@mui/material'
+import { Image } from '..'
 
 export function Card({
   id,
@@ -13,6 +14,10 @@ export function Card({
   themeMode,
   themeName
 }: TreeBlock<CardBlock>): ReactElement {
+  const coverBlock = children.find(
+    (block) => block.id === coverBlockId && block.__typename === 'ImageBlock'
+  )
+
   return (
     <CardWrapper themeMode={themeMode} themeName={themeName}>
       <Paper
@@ -24,6 +29,19 @@ export function Card({
         }}
         elevation={3}
       >
+        {coverBlock != null && coverBlock.__typename === 'ImageBlock' && (
+          <Box
+            sx={{
+              m: -7,
+              mb: 7,
+              borderTopLeftRadius: (theme) => theme.spacing(3),
+              borderTopRightRadius: (theme) => theme.spacing(3),
+              overflow: 'hidden'
+            }}
+          >
+            <Image {...coverBlock} alt={coverBlock.alt} />
+          </Box>
+        )}
         {children
           .filter(({ id }) => id !== coverBlockId)
           .map((block) => (
