@@ -17,7 +17,7 @@ const secondary: PaletteColorOptions = {
 export const baseColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'light',
-    background: { default: '#FEFEFE' },
+    background: { default: '#FEFEFE', paper: '#FEFEFE' },
     primary,
     secondary,
     error: {
@@ -37,7 +37,7 @@ export const baseColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     ...baseColorsLight.palette,
     mode: 'dark',
-    background: { default: '#26262E' },
+    background: { default: '#26262E', paper: '#26262E' },
     primary: secondary,
     secondary: primary,
     text: {
