@@ -2,7 +2,7 @@ import { render, screen, act, fireEvent } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { GetJourney_journey_blocks_SignupBlock as SignupBlock } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 
 import SignUp, { SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { ReactElement } from 'react'
@@ -12,8 +12,8 @@ jest.mock('uuid', () => ({
   v4: () => 'uuid'
 }))
 
-const props: TreeBlock<SignupBlock> = {
-  __typename: 'SignupBlock',
+const props: TreeBlock<SignUpBlock> = {
+  __typename: 'SignUpBlock',
   id: 'SignUp1',
   parentBlockId: '0',
   action: {
@@ -122,7 +122,7 @@ describe('SignUp', () => {
         },
         result: {
           data: {
-            signupResponseCreate: {
+            signUpResponseCreate: {
               id: 'uuid',
               blockId: 'SignUp1',
               name: 'Anon',

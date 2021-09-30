@@ -209,8 +209,8 @@ async function main(): Promise<void> {
           size: 'xl'
         },
         action: {
-          gtmEventName: 'signup',
-          url: 'https://signup.jesusfilm.org'
+          gtmEventName: 'signUp',
+          url: 'https://signUp.jesusfilm.org'
         }
       },
       parentOrder: 0
@@ -255,7 +255,7 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
-  const stepSignup = await prisma.block.create({
+  const stepSignUp = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -268,12 +268,12 @@ async function main(): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'SignupBlock',
-      parentBlockId: stepSignup.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: stepSignUp.id,
       extraAttrs: {
         action: {
-          gtmEventName: 'signup',
-          url: 'https://signup-complete.jesusfilm.org'
+          gtmEventName: 'signUp',
+          url: 'https://signUp-complete.jesusfilm.org'
         }
       },
       parentOrder: 0

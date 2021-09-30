@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
-import { Container } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
@@ -11,7 +10,7 @@ import {
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
 import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
-import { SIGNUP_FIELDS } from '../src/components/blocks/SignUp'
+import { SIGN_UP_FIELDS } from '../src/components/blocks/SignUp'
 
 interface JourneyPageProps {
   journey: Journey
@@ -20,11 +19,9 @@ interface JourneyPageProps {
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-      <Container>
-        {journey.blocks != null && (
-          <Conductor blocks={transformer(journey.blocks)} />
-        )}
-      </Container>
+      {journey.blocks != null && (
+        <Conductor blocks={transformer(journey.blocks)} />
+      )}
     </ThemeProvider>
   )
 }
@@ -35,7 +32,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
   const { data } = await client.query<GetJourney>({
     query: gql`
       ${TYPOGRAPHY_FIELDS}
-      ${SIGNUP_FIELDS}
+      ${SIGN_UP_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -80,7 +77,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
                 }
               }
             }
-            ... on SignupBlock {
+            ... on SignUpBlock {
               ...SignUpFields
             }
             ... on TypographyBlock {

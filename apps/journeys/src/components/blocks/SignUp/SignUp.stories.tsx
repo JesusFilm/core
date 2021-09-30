@@ -20,7 +20,7 @@ const children: TreeBlock[] = [
   },
   {
     id: 'signUpBlockId1',
-    __typename: 'SignupBlock',
+    __typename: 'SignUpBlock',
     parentBlockId: null,
     action: {
       __typename: 'LinkAction',

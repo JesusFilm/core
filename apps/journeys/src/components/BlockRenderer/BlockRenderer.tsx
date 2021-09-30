@@ -9,7 +9,7 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <RadioOption {...block} />
     case 'RadioQuestionBlock':
       return <RadioQuestion {...block} />
-    case 'SignupBlock':
+    case 'SignUpBlock':
       return <SignUp {...block} />
     case 'StepBlock':
       return <Step {...block} />

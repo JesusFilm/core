@@ -35,7 +35,7 @@ enum BlockType {
   CardBlock
   RadioOptionBlock
   RadioQuestionBlock
-  SignupBlock
+  SignUpBlock
   StepBlock
   TypographyBlock
   VideoBlock
@@ -56,7 +56,7 @@ model Block {
 
 enum ResponseType {
   RadioQuestionResponse
-  SignupResponse
+  SignUpResponse
   VideoResponse
 }
 

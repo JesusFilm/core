@@ -49,7 +49,7 @@ export interface RadioQuestionResponseCreateInput {
   radioOptionBlockId: string;
 }
 
-export interface SignupResponseCreateInput {
+export interface SignUpResponseCreateInput {
   blockId: string;
   email: string;
   id?: string | null;

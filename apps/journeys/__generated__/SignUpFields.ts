@@ -33,7 +33,7 @@ export interface SignUpFields_action_LinkAction {
 export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction;
 
 export interface SignUpFields {
-  __typename: "SignupBlock";
+  __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   action: SignUpFields_action | null;

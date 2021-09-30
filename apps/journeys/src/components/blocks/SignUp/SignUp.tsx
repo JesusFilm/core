@@ -6,14 +6,14 @@ import { Button } from '@mui/material'
 import { v4 as uuidv4 } from 'uuid'
 
 import TextField from './TextField'
-import { GetJourney_journey_blocks_SignupBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { SignupResponseCreate } from '../../../../__generated__/SignupResponseCreate'
+import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'
 import { useBlocks } from '../../../libs/client/cache/blocks'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
-  mutation SignupResponseCreate($input: SignupResponseCreateInput!) {
-    signupResponseCreate(input: $input) {
+  mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
+    signUpResponseCreate(input: $input) {
       id
       name
       email
@@ -27,7 +27,7 @@ interface SignUpFormValues {
 }
 
 const SignUp = ({ id, action }: TreeBlock<SignUpBlock>): ReactElement => {
-  const [signupResponseCreate] = useMutation<SignupResponseCreate>(
+  const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
   )
   const { nextActiveBlock } = useBlocks()
@@ -45,7 +45,7 @@ const SignUp = ({ id, action }: TreeBlock<SignUpBlock>): ReactElement => {
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
     const uuid = uuidv4()
-    await signupResponseCreate({
+    await signUpResponseCreate({
       variables: {
         input: {
           id: uuid,

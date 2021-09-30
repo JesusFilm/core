@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const SIGN_UP_FIELDS = gql`
-  fragment SignUpFields on SignupBlock {
+  fragment SignUpFields on SignUpBlock {
     id
     parentBlockId
     action {
