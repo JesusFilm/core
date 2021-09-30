@@ -5,6 +5,8 @@ import { Typography } from '../blocks/Typography'
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {
+    case 'ImageBlock':
+      return <Image {...block} alt={block.alt} />
     case 'RadioOptionBlock':
       return <RadioOption {...block} />
     case 'RadioQuestionBlock':
@@ -15,8 +17,6 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <Typography {...block} />
     case 'VideoBlock':
       return <Video {...block} />
-    case 'ImageBlock':
-      return <Image {...block} />
     default:
       return <></>
   }

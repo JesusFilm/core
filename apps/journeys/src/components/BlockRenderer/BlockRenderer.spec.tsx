@@ -3,6 +3,23 @@ import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
 describe('BlockRenderer', () => {
+  it('should render Image', () => {
+    const block: TreeBlock = {
+      __typename: 'ImageBlock',
+      id: 'main',
+      src: 'https://source.unsplash.com/random/1920x1080',
+      alt: 'random image from unsplash',
+      width: 1920,
+      height: 1080,
+      parentBlockId: null,
+      children: []
+    }
+    const { getByRole } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByRole('img')).toHaveAttribute(
+      'alt',
+      'random image from unsplash'
+    )
+  })
   it('should render RadioOption', () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
