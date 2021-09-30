@@ -17,5 +17,6 @@ describe('Icon', () => {
   it('should render the icon successfully', () => {
     const { getByTestId } = render(<Icon {...block} />)
     expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-fontSizeMedium')
   })
 })

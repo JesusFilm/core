@@ -17,22 +17,22 @@ export function Button({
       color={color ?? undefined}
       size={size ?? undefined}
       startIcon={
-        startIcon !== null && (
+        startIcon != null && (
           <Icon
             __typename="Icon"
-            name={startIcon?.name}
-            color={startIcon?.color}
-            size={startIcon?.size}
+            name={startIcon.name}
+            color={startIcon.color}
+            size={startIcon.size}
           />
         )
       }
       endIcon={
-        endIcon !== null && (
+        endIcon != null && (
           <Icon
             __typename="Icon"
-            name={endIcon?.name}
-            color={endIcon?.color}
-            size={endIcon?.size}
+            name={endIcon.name}
+            color={endIcon.color}
+            size={endIcon.size}
           />
         )
       }

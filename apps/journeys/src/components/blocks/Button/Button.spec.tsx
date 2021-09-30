@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
-import { Button, ButtonProps } from '.'
+import { ButtonFields } from '../../../../__generated__/ButtonFields'
+import { Button } from '.'
 import {
   ButtonVariant,
   ButtonColor,
@@ -10,7 +11,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 
 describe('Button', () => {
-  const block: ButtonProps = {
+  const block: ButtonFields = {
     __typename: 'ButtonBlock',
     id: 'button',
     parentBlockId: 'question',
@@ -26,10 +27,22 @@ describe('Button', () => {
   it('should render the button successfully', () => {
     const { getByText, getByRole } = render(<Button {...block} />)
     expect(getByRole('button')).toHaveClass('MuiButton-root')
+    expect(getByRole('button')).toHaveClass('MuiButton-contained')
+    expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
     expect(getByText('This is a button')).toBeInTheDocument()
   })
 
-  it('should render the correct icon', () => {
+  it('should not render with the contained value', () => {
+    const { getByRole } = render(<Button {...block} variant={null} />)
+    expect(getByRole('button')).not.toHaveClass('MuiButton-contained')
+  })
+
+  it('should not render with the size value', () => {
+    const { getByRole } = render(<Button {...block} size={null} />)
+    expect(getByRole('button')).not.toHaveClass('MuiButton-containedSizeSmall')
+  })
+
+  it('should render the start icon', () => {
     const { getByTestId } = render(
       <Button
         {...block}
@@ -41,6 +54,6 @@ describe('Button', () => {
         }}
       />
     )
-    expect(getByTestId('CheckCircleIcon')).toBeInTheDocument()
+    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
   })
 })
