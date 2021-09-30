@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 
-import { TextField } from '@core/shared/ui'
+import TextField from './TextField'
 
 import Button from '@mui/material/Button'
 
@@ -43,10 +43,8 @@ const SignUp = ({
   return (
     // TODO: Change div to step container
     <div>
-      {/* TODO: Use shared-ui Typography & spacing tokens */}
       <div style={{ marginBottom: '32px' }}>
         <h1>{heading}</h1>
-        <p>{description}</p>
       </div>
       <Formik
         initialValues={initialValues}
