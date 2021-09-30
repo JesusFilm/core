@@ -183,7 +183,6 @@ export type MutationVideoResponseCreateArgs = {
 export type NavigateAction = Action & {
   __typename?: 'NavigateAction';
   gtmEventName?: Maybe<Scalars['String']>;
-  blockId: Scalars['String'];
 };
 
 export type NavigateToBlockAction = Action & {
