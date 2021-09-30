@@ -7,66 +7,242 @@ describe('Conductor', () => {
   it('should show first block', () => {
     const blocks: TreeBlock[] = [
       {
+        id: 'step1.id',
         __typename: 'StepBlock',
-        id: 'Step1',
         parentBlockId: null,
-        locked: true,
-        nextBlockId: 'Step3',
+        locked: false,
+        nextBlockId: 'step2.id',
         children: [
           {
+            id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
-            id: 'Question1',
-            label: 'Question 1',
+            parentBlockId: 'step1.id',
+            label: 'Step 1',
+            description: 'Start',
             children: [
               {
+                id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
-                id: 'Option1',
-                label: 'Option 1',
-                parentBlockId: 'Question1',
+                parentBlockId: 'radioQuestion1.id',
+                label: '1. Step 2 (Locked)',
                 action: {
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption3.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '1. Step 3 (No nextBlockId)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption4.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '1. Step 4 (End)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
                 },
                 children: []
               }
-            ],
-            parentBlockId: null,
-            description: 'description'
+            ]
           }
         ]
       },
       {
+        id: 'step2.id',
         __typename: 'StepBlock',
-        id: 'Step2',
         parentBlockId: null,
         locked: true,
-        nextBlockId: 'Step3',
-        children: []
+        nextBlockId: 'step3.id',
+        children: [
+          {
+            id: 'radioQuestion1.id',
+            __typename: 'RadioQuestionBlock',
+            parentBlockId: 'step2.id',
+            label: 'Step 2',
+            description: 'Locked',
+            children: [
+              {
+                id: 'radioOption1.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '2. Step 1 (Start)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step1.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption3.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '2. Step 3 (No nextBlockId)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption4.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '2. Step 4 (End)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
       },
       {
+        id: 'step3.id',
         __typename: 'StepBlock',
-        id: 'Step3',
         parentBlockId: null,
-        locked: true,
+        locked: false,
         nextBlockId: null,
         children: [
           {
+            id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
-            id: 'Question2',
-            label: 'Question 2',
-            children: [],
-            parentBlockId: null,
-            description: 'description'
+            parentBlockId: 'step1.id',
+            label: 'Step 3',
+            description: 'No nextBlockId',
+            children: [
+              {
+                id: 'radioOption1.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '3. Step 1 (Start)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step1.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption2.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '3. Step 2 (Locked)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption4.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '3. Step 4 (End)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'step4.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        locked: false,
+        nextBlockId: null,
+        children: [
+          {
+            id: 'radioQuestion1.id',
+            __typename: 'RadioQuestionBlock',
+            parentBlockId: 'step4.id',
+            label: 'Step 4',
+            description: 'End',
+            children: [
+              {
+                id: 'radioOption1.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '4. Step 1 (Start)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step1.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption2.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '4. Step 2 (Locked)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption3.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                label: '4. Step 3 (No nextBlockId)',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
+                },
+                children: []
+              }
+            ]
           }
         ]
       }
     ]
-    const { getByText } = renderWithApolloClient(<Conductor blocks={blocks} />)
+    const { getByRole, getByTestId } = renderWithApolloClient(
+      <Conductor blocks={blocks} />
+    )
+    const conductorNextButton = getByTestId('conductorNextButton')
     expect(treeBlocksVar()).toBe(blocks)
-    expect((activeBlockVar() as TreeBlock).id).toBe('Step1')
-    fireEvent.click(getByText('Option 1'))
-    expect((activeBlockVar() as TreeBlock).id).toBe('Step3')
-    expect(getByText('Question 2')).toBeInTheDocument()
+    expect(activeBlockVar()?.id).toBe('step1.id')
+    expect(conductorNextButton).toHaveStyle('cursor: pointer;')
+    fireEvent.click(conductorNextButton)
+    expect(activeBlockVar()?.id).toBe('step2.id')
+    fireEvent.click(conductorNextButton)
+    expect(activeBlockVar()?.id).toBe('step2.id')
+    expect(conductorNextButton).toHaveStyle('cursor: auto;')
+    fireEvent.click(getByRole('button', { name: '2. Step 3 (No nextBlockId)' }))
+    expect(activeBlockVar()?.id).toBe('step3.id')
+    fireEvent.click(conductorNextButton)
+    expect(activeBlockVar()?.id).toBe('step3.id')
+    expect(conductorNextButton).toHaveStyle('cursor: auto;')
+    fireEvent.click(getByRole('button', { name: '3. Step 4 (End)' }))
+    expect(activeBlockVar()?.id).toBe('step4.id')
+    expect(conductorNextButton).toHaveStyle('cursor: auto;')
   })
 
   it('should not throw error if no blocks', () => {

@@ -39,7 +39,7 @@ export function JourneyProgress(): ReactElement {
   }, [activeBlock, treeBlocks])
 
   return (
-    <Box my={2} sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative' }}>
       <BorderLinearProgress
         variant="determinate"
         value={percentage}
