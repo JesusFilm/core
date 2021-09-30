@@ -3,9 +3,13 @@ import { render, screen, act, fireEvent } from '@testing-library/react'
 import SignUp, { SignUpProps } from './SignUp'
 
 const props: SignUpProps = {
-  __typename: 'SignUpBlock',
+  __typename: 'SignupBlock',
   id: '1',
-  parentBlockId: '0'
+  parentBlockId: '0',
+  action: {
+    __typename: 'LinkAction',
+    gtmEventName: 'signUp'
+  }
 }
 
 describe('SignUp', () => {

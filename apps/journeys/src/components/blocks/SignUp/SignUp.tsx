@@ -1,35 +1,21 @@
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
+import { Button } from '@mui/material'
+
+import { SignUpFields } from '../../../../__generated__/SignUpFields'
 
 import TextField from './TextField'
 
-import Button from '@mui/material/Button'
-
-// TODO: Placeholder for generated type
-export interface GetJourney_journey_blocks_SignUpBlock {
-  __typename: 'SignUpBlock'
-  id: string
-  parentBlockId: string | null
-}
-
-export interface SignUpProps extends GetJourney_journey_blocks_SignUpBlock {
-  heading?: string
-  description?: string
-}
+export interface SignUpProps extends SignUpFields {}
 
 interface SignUpFormValues {
   name: string
   email: string
 }
 
-const SignUp = ({
-  heading,
-  description,
-  ...props
-}: SignUpProps): ReactElement => {
+const SignUp = ({ action, ...props }: SignUpProps): ReactElement => {
   const initialValues: SignUpFormValues = { name: '', email: '' }
-  // TODO: Get finalised validation messages - store messages in frontend
   const SignupSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Name must be 2 characters or more')
@@ -40,37 +26,35 @@ const SignUp = ({
       .required('Required')
   })
 
+  const onSubmitHandler = (values: SignUpFormValues): void => {
+    console.log(values)
+  }
+
   return (
-    // TODO: Change div to step container
-    <div>
-      <div style={{ marginBottom: '32px' }}>
-        <h1>{heading}</h1>
-      </div>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={SignupSchema}
-        onSubmit={(values, actions) => {
-          console.log(values)
-          actions.setSubmitting(false)
-        }}
-      >
-        {({ ...formikProps }) => (
-          <Form
-            style={{
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            <TextField {...formikProps} id="name" name="name" label="Name" />
-            <TextField {...formikProps} id="email" name="email" label="Email" />
-            {/* TODO: Use shared-ui Button */}
-            <Button type="submit" variant="contained">
-              Submit
-            </Button>
-          </Form>
-        )}
-      </Formik>
-    </div>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={SignupSchema}
+      onSubmit={(values, actions) => {
+        onSubmitHandler(values)
+        actions.setSubmitting(false)
+      }}
+    >
+      {({ ...formikProps }) => (
+        <Form
+          style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <TextField {...formikProps} id="name" name="name" label="Name" />
+          <TextField {...formikProps} id="email" name="email" label="Email" />
+          {/* TODO: Use shared-ui Button */}
+          <Button type="submit" variant="contained" size="large">
+            Submit
+          </Button>
+        </Form>
+      )}
+    </Formik>
   )
 }
 

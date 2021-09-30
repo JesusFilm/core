@@ -10,7 +10,7 @@ import { ThemeName, ThemeMode, TypographyAlign, TypographyColor, TypographyVaria
 // ====================================================
 
 export interface GetJourney_journey_blocks_ButtonBlock {
-  __typename: "ButtonBlock" | "SignupBlock";
+  __typename: "ButtonBlock" | "CardBlock";
   id: string;
   parentBlockId: string | null;
 }
@@ -84,6 +84,18 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
+export interface GetJourney_journey_blocks_SignupBlock_action {
+  __typename: "LinkAction" | "NavigateAction" | "NavigateToBlockAction" | "NavigateToJourneyAction";
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_SignupBlock {
+  __typename: "SignupBlock";
+  id: string;
+  parentBlockId: string | null;
+  action: GetJourney_journey_blocks_SignupBlock_action | null;
+}
+
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -94,7 +106,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_TypographyBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_SignupBlock | GetJourney_journey_blocks_TypographyBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";
