@@ -33,6 +33,7 @@ model Journey {
 
 enum BlockType {
   ButtonBlock
+  CardBlock
   RadioOptionBlock
   RadioQuestionBlock
   SignupBlock

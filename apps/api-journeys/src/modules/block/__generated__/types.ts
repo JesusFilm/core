@@ -9,6 +9,7 @@ export namespace BlockModule {
     LinkAction: 'gtmEventName' | 'url' | 'target';
     Icon: 'name' | 'color' | 'size';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
+    CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'themeMode' | 'themeName';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description';
     SignupBlock: 'id' | 'parentBlockId' | 'action';
@@ -49,6 +50,9 @@ export namespace BlockModule {
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
   export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
+  export type CardBlock = Pick<Types.CardBlock, DefinedFields['CardBlock']>;
+  export type ThemeMode = Types.ThemeMode;
+  export type ThemeName = Types.ThemeName;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type SignupBlock = Pick<Types.SignupBlock, DefinedFields['SignupBlock']>;
@@ -69,6 +73,7 @@ export namespace BlockModule {
   export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
   export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
+  export type CardBlockResolvers = Pick<Types.CardBlockResolvers, DefinedFields['CardBlock'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
   export type SignupBlockResolvers = Pick<Types.SignupBlockResolvers, DefinedFields['SignupBlock'] | '__isTypeOf'>;
@@ -89,6 +94,7 @@ export namespace BlockModule {
     LinkAction?: LinkActionResolvers;
     Icon?: IconResolvers;
     ButtonBlock?: ButtonBlockResolvers;
+    CardBlock?: CardBlockResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
     RadioQuestionBlock?: RadioQuestionBlockResolvers;
     SignupBlock?: SignupBlockResolvers;
@@ -142,6 +148,15 @@ export namespace BlockModule {
       startIcon?: gm.Middleware[];
       endIcon?: gm.Middleware[];
       action?: gm.Middleware[];
+    };
+    CardBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      backgroundColor?: gm.Middleware[];
+      coverBlockId?: gm.Middleware[];
+      themeMode?: gm.Middleware[];
+      themeName?: gm.Middleware[];
     };
     RadioOptionBlock?: {
       '*'?: gm.Middleware[];

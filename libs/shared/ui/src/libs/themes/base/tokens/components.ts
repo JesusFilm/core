@@ -6,7 +6,7 @@ export const baseComponents: Pick<ThemeOptions, 'components'> = {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: spacingTheme.spacing(3)
+          marginBottom: spacingTheme.spacing(4)
         }
       },
       variants: [
