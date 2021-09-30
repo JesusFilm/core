@@ -10,13 +10,16 @@ describe('Image', () => {
     src: 'https://images.unsplash.com/photo-1600133153574-25d98a99528c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80',
     width: 500,
     height: 500,
-    alt: 'ducks',
+    alt: 'random image from unsplash',
     parentBlockId: 'Image1',
     children: []
   }
 
-  it('should have alt props', () => {
-    const { getByAltText } = render(<Image {...block} alt={block.alt} />)
-    expect(getByAltText('ducks')).toBeInTheDocument()
+  it('should have correct props', () => {
+    const { getByRole } = render(<Image {...block} alt={block.alt} />)
+    expect(getByRole('img')).toHaveAttribute(
+      'alt',
+      'random image from unsplash'
+    )
   })
 })
