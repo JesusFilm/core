@@ -8,7 +8,7 @@ import TextField, { TextFieldProps } from './TextField'
 const Demo = {
   ...sharedUiConfig,
   component: TextField,
-  title: 'shared-ui/TextField'
+  title: 'Journeys/Blocks/SignUp/TextField'
 }
 
 const Template: Story<TextFieldProps> = () => (
@@ -20,7 +20,9 @@ const Template: Story<TextFieldProps> = () => (
       disabled: ''
     }}
     validationSchema={Yup.object().shape({
-      errored: Yup.string().required('Required')
+      errored: Yup.string()
+        .min(50, 'Must be 50 characters or more')
+        .required('Required')
     })}
     initialTouched={{ errored: true }}
     validateOnMount
