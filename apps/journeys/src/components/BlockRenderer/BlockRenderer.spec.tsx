@@ -103,8 +103,8 @@ describe('BlockRenderer', () => {
     const { getByLabelText } = renderWithApolloClient(
       <BlockRenderer {...block} />
     )
-    expect(getByLabelText('name')).toBeInTheDocument()
-    expect(getByLabelText('email')).toBeInTheDocument()
+    expect(getByLabelText('Name')).toBeInTheDocument()
+    expect(getByLabelText('Email')).toBeInTheDocument()
   })
 
   it('should render Step', () => {
