@@ -43,7 +43,7 @@ export const baseColorsLight: Required<
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {
+        containedPrimary: {
           backgroundColor: primary.dark,
           '&:hover': {
             backgroundColor: primary.main
@@ -76,7 +76,7 @@ export const baseColorsDark: Required<
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {
+        containedPrimary: {
           backgroundColor: secondary.light,
           '&:hover': {
             backgroundColor: secondary.main
