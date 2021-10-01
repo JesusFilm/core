@@ -28,7 +28,13 @@ export function Image({
         }
       }}
     >
-      <NextImage src={src} alt={alt} height={height} width={width} />
+      <NextImage
+        src={src}
+        alt={alt}
+        height={height}
+        width={width}
+        objectFit="cover"
+      />
     </Box>
   )
 }
