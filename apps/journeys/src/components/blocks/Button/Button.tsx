@@ -43,6 +43,7 @@ export function Button({
         )
       }
       onClick={handleClick}
+      fullWidth
     >
       {label}
     </MuiButton>
