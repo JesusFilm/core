@@ -9,7 +9,7 @@ import {
   TypographyVariant,
   ButtonVariant,
   ButtonColor,
-  ButtonSize,
+  ButtonSize
 } from '../../../../__generated__/globalTypes'
 
 const Demo = {
@@ -56,7 +56,7 @@ const children: TreeBlock[] = [
     endIcon: null,
     action: null,
     children: []
-  },
+  }
 ]
 
 export const Default: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})

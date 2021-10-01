@@ -45,6 +45,6 @@ export function Button({
       onClick={handleClick}
     >
       {label}
-    </MuiButton >
+    </MuiButton>
   )
 }

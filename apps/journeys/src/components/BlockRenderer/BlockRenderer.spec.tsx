@@ -3,6 +3,23 @@ import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
 describe('BlockRenderer', () => {
+  it('should render Button', () => {
+    const block: TreeBlock = {
+      __typename: 'ButtonBlock',
+      id: 'button',
+      parentBlockId: 'question',
+      label: 'Click to continue',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIcon: null,
+      endIcon: null,
+      action: null,
+      children: []
+    }
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByText('Click to continue')).toBeInTheDocument()
+  })
   it('should render Card', () => {
     const block: TreeBlock = {
       __typename: 'CardBlock',
