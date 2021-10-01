@@ -1,12 +1,13 @@
 import { render } from '@testing-library/react'
-import { Icon, IconProps } from '.'
+import { Icon } from '.'
 import {
   IconColor,
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
+import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
 
-const block: IconProps = {
+const block: IconType = {
   __typename: 'Icon',
   name: IconName.CheckCircle,
   color: IconColor.error,
