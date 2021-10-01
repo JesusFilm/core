@@ -3,7 +3,8 @@ import { ReactElement, ReactNode } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { Paper, Box } from '@mui/material'
+import { Paper, Box, Grid } from '@mui/material'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { Image } from '..'
 
 export function Card({
@@ -42,18 +43,23 @@ export function Card({
             <Image {...coverBlock} alt={coverBlock.alt} />
           </Box>
         )}
-        {children
-          .filter(({ id }) => id !== coverBlockId)
-          .map((block) => (
-            <BlockRenderer {...block} key={block.id} />
-          ))}
+        <Grid direction="column" spacing={4}>
+          {children
+            .filter(({ id }) => id !== coverBlockId)
+            .map((block) => (
+              <Grid item key={block.id}>
+                <BlockRenderer {...block} />
+              </Grid>
+            ))}
+        </Grid>
       </Paper>
     </CardWrapper>
   )
 }
 
-interface CardWrapperProps
-  extends Pick<TreeBlock<CardBlock>, 'themmeMode' | 'themeName'> {
+interface CardWrapperProps {
+  themeMode: ThemeMode | null
+  themeName: ThemeName | null
   children: ReactNode
 }
 
