@@ -3,7 +3,7 @@ import { ReactElement, ReactNode } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { Paper, Box, Grid } from '@mui/material'
+import { Paper } from '@mui/material'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { Image } from '..'
 
@@ -31,27 +31,23 @@ export function Card({
         elevation={3}
       >
         {coverBlock != null && coverBlock.__typename === 'ImageBlock' && (
-          <Box
+          <Image
+            {...coverBlock}
+            alt={coverBlock.alt}
             sx={{
-              m: -7,
+              mx: -7,
+              mt: -7,
               mb: 7,
-              borderTopLeftRadius: (theme) => theme.spacing(3),
-              borderTopRightRadius: (theme) => theme.spacing(3),
-              overflow: 'hidden'
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0
             }}
-          >
-            <Image {...coverBlock} alt={coverBlock.alt} />
-          </Box>
+          />
         )}
-        <Grid direction="column" spacing={4}>
-          {children
-            .filter(({ id }) => id !== coverBlockId)
-            .map((block) => (
-              <Grid item key={block.id}>
-                <BlockRenderer {...block} />
-              </Grid>
-            ))}
-        </Grid>
+        {children
+          .filter(({ id }) => id !== coverBlockId)
+          .map((block) => (
+            <BlockRenderer {...block} key={block.id} />
+          ))}
       </Paper>
     </CardWrapper>
   )

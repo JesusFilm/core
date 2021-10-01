@@ -6,14 +6,20 @@ export const baseComponents: Pick<ThemeOptions, 'components'> = {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: spacingTheme.spacing(4)
+          marginBottom: spacingTheme.spacing(4),
+          '&:last-child': {
+            marginBottom: 0
+          }
         }
       },
       variants: [
         {
           props: { variant: 'overline', gutterBottom: true },
           style: {
-            marginBottom: spacingTheme.spacing(1)
+            marginBottom: spacingTheme.spacing(1),
+            '&:last-child': {
+              marginBottom: 0
+            }
           }
         }
       ]

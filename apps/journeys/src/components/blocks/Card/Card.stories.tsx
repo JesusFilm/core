@@ -90,4 +90,45 @@ CoverBlockId.args = {
   ]
 }
 
+export const ImageAndText: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind(
+  {}
+)
+ImageAndText.args = {
+  themeMode: ThemeMode.dark,
+  themeName: ThemeName.base,
+  backgroundColor: '#3C4543',
+  children: [
+    {
+      id: 'imageBlockId1',
+      __typename: 'ImageBlock',
+      src: 'https://images.unsplash.com/photo-1631749665601-99bde3aae4d3?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=1080&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTYzMjk4Mzg0Nw&ixlib=rb-1.2.1&q=80&w=1920',
+      width: 1600,
+      height: 1067,
+      alt: 'random image from unsplash',
+      parentBlockId: 'Image1',
+      children: []
+    },
+    {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'Regular Image Example',
+      variant: TypographyVariant.overline,
+      children: []
+    },
+    {
+      id: 'typographyBlockId2',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'The only impossible journey is the one you never begin.',
+      variant: TypographyVariant.h3,
+      children: []
+    }
+  ]
+}
+
 export default Demo as Meta
