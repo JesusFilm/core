@@ -67,23 +67,22 @@ export const SignUp = ({
       validationSchema={signUpSchema}
       onSubmit={(values) => {
         // TODO: Handle server error responses when available
-        void onSubmitHandler(values).then(() => {
-          // TODO: Replace with generic action handler
-          switch (action?.__typename) {
-            case 'NavigateAction':
-              nextActiveBlock()
-              break
-            case 'NavigateToBlockAction':
-              nextActiveBlock({ id: action.blockId })
-              break
-            case 'NavigateToJourneyAction':
-              nextActiveBlock({ id: action.journeyId })
-              break
-            case 'LinkAction':
-              nextActiveBlock({ id: action.url })
-              break
-          }
-        })
+        void onSubmitHandler(values)
+        // TODO: Replace with generic action handler
+        switch (action?.__typename) {
+          case 'NavigateAction':
+            nextActiveBlock()
+            break
+          case 'NavigateToBlockAction':
+            nextActiveBlock({ id: action.blockId })
+            break
+          case 'NavigateToJourneyAction':
+            nextActiveBlock({ id: action.journeyId })
+            break
+          case 'LinkAction':
+            nextActiveBlock({ id: action.url })
+            break
+        }
       }}
     >
       {({ ...formikProps }) => (

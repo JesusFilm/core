@@ -48,9 +48,9 @@ export const Default = (): ReactElement => (
                   __typename: 'SignUpBlock',
                   parentBlockId: null,
                   action: {
-                    __typename: 'LinkAction',
-                    gtmEventName: 'signUp',
-                    url: '#'
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'step2.id'
                   },
                   children: []
                 }
