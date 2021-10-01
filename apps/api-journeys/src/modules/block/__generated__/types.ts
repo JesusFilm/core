@@ -10,6 +10,7 @@ export namespace BlockModule {
     Icon: 'name' | 'color' | 'size';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'themeMode' | 'themeName';
+    ImageBlock: 'id' | 'parentBlockId' | 'src' | 'width' | 'height' | 'alt';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description';
     SignUpBlock: 'id' | 'parentBlockId' | 'action';
@@ -53,6 +54,7 @@ export namespace BlockModule {
   export type CardBlock = Pick<Types.CardBlock, DefinedFields['CardBlock']>;
   export type ThemeMode = Types.ThemeMode;
   export type ThemeName = Types.ThemeName;
+  export type ImageBlock = Pick<Types.ImageBlock, DefinedFields['ImageBlock']>;
   export type RadioOptionBlock = Pick<Types.RadioOptionBlock, DefinedFields['RadioOptionBlock']>;
   export type RadioQuestionBlock = Pick<Types.RadioQuestionBlock, DefinedFields['RadioQuestionBlock']>;
   export type SignUpBlock = Pick<Types.SignUpBlock, DefinedFields['SignUpBlock']>;
@@ -74,6 +76,7 @@ export namespace BlockModule {
   export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
   export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
   export type CardBlockResolvers = Pick<Types.CardBlockResolvers, DefinedFields['CardBlock'] | '__isTypeOf'>;
+  export type ImageBlockResolvers = Pick<Types.ImageBlockResolvers, DefinedFields['ImageBlock'] | '__isTypeOf'>;
   export type RadioOptionBlockResolvers = Pick<Types.RadioOptionBlockResolvers, DefinedFields['RadioOptionBlock'] | '__isTypeOf'>;
   export type RadioQuestionBlockResolvers = Pick<Types.RadioQuestionBlockResolvers, DefinedFields['RadioQuestionBlock'] | '__isTypeOf'>;
   export type SignUpBlockResolvers = Pick<Types.SignUpBlockResolvers, DefinedFields['SignUpBlock'] | '__isTypeOf'>;
@@ -95,6 +98,7 @@ export namespace BlockModule {
     Icon?: IconResolvers;
     ButtonBlock?: ButtonBlockResolvers;
     CardBlock?: CardBlockResolvers;
+    ImageBlock?: ImageBlockResolvers;
     RadioOptionBlock?: RadioOptionBlockResolvers;
     RadioQuestionBlock?: RadioQuestionBlockResolvers;
     SignUpBlock?: SignUpBlockResolvers;
@@ -157,6 +161,15 @@ export namespace BlockModule {
       coverBlockId?: gm.Middleware[];
       themeMode?: gm.Middleware[];
       themeName?: gm.Middleware[];
+    };
+    ImageBlock?: {
+      '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
+      parentBlockId?: gm.Middleware[];
+      src?: gm.Middleware[];
+      width?: gm.Middleware[];
+      height?: gm.Middleware[];
+      alt?: gm.Middleware[];
     };
     RadioOptionBlock?: {
       '*'?: gm.Middleware[];

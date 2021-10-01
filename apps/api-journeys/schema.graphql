@@ -101,6 +101,15 @@ enum IconSize {
   inherit
 }
 
+type ImageBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  src: String!
+  width: Int!
+  height: Int!
+  alt: String!
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!

@@ -54,4 +54,32 @@ describe('CardBlock', () => {
       `background-color: ${themes.base.dark.palette.background.paper}`
     )
   })
+
+  it('should render card with coverBlockId', () => {
+    const { getByRole } = render(
+      <Card
+        {...{
+          ...block,
+          children: [
+            ...block.children,
+            {
+              id: 'imageBlockId1',
+              __typename: 'ImageBlock',
+              src: 'https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=1080&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2lyY2xlfHx8fHx8MTYzMzA2MjI4MQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1920',
+              width: 1600,
+              height: 1067,
+              alt: 'random image from unsplash',
+              parentBlockId: 'Image1',
+              children: []
+            }
+          ]
+        }}
+        coverBlockId="imageBlockId1"
+      />
+    )
+    expect(getByRole('img')).toHaveAttribute(
+      'alt',
+      'random image from unsplash'
+    )
+  })
 })

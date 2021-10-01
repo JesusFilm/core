@@ -255,6 +255,20 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
+      extraAttrs: {
+        src: 'https://source.unsplash.com/random/1920x1080',
+        alt: 'random image from unsplash',
+        width: 1920,
+        height: 1080
+      },
+      parentOrder: 1
+    }
+  })
   const stepSignUp = await prisma.block.create({
     data: {
       journeyId: journey.id,

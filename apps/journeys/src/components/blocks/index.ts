@@ -1,4 +1,7 @@
+export { Card } from './Card'
+export { Image } from './Image'
 export { RadioOption } from './RadioOption'
 export { RadioQuestion } from './RadioQuestion'
-export { Video } from './Video'
 export { Step } from './Step'
+export { Typography } from './Typography'
+export { Video } from './Video'
