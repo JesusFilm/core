@@ -13,21 +13,17 @@ import {
 } from '@mui/icons-material'
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
 
-export interface IconProps extends IconType {
-  ariaHidden?: boolean
-}
-
-export function Icon({ name, color, size }: IconProps): ReactElement | null {
+export function Icon({ name, color, size }: IconType): ReactElement | null {
   const fontSize =
     size === 'sm'
       ? '16px'
       : size === 'md'
-      ? '20px'
-      : size === 'lg'
-      ? '28px'
-      : size === 'xl'
-      ? '48px'
-      : 'inherit'
+        ? '20px'
+        : size === 'lg'
+          ? '28px'
+          : size === 'xl'
+            ? '48px'
+            : 'inherit'
 
   const icons = {
     CheckCircle,

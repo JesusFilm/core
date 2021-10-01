@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { ButtonFields } from '../../../../__generated__/ButtonFields'
 import { Button } from '.'
 import {
@@ -32,14 +32,14 @@ describe('Button', () => {
     expect(getByText('This is a button')).toBeInTheDocument()
   })
 
-  it('should not render with the contained value', () => {
-    const { getByRole } = render(<Button {...block} buttonVariant={null} />)
-    expect(getByRole('button')).not.toHaveClass('MuiButton-contained')
+  it('should render with the contained value', () => {
+    const { getByRole } = render(<Button {...block} buttonVariant={ButtonVariant.contained} />)
+    expect(getByRole('button')).toHaveClass('MuiButton-contained')
   })
 
-  it('should not render with the size value', () => {
-    const { getByRole } = render(<Button {...block} size={null} />)
-    expect(getByRole('button')).not.toHaveClass('MuiButton-containedSizeSmall')
+  it('should render with the size value', () => {
+    const { getByRole } = render(<Button {...block} size={ButtonSize.small} />)
+    expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
   })
 
   it('should render the default color value', () => {
@@ -80,5 +80,19 @@ describe('Button', () => {
     expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass(
       'MuiButton-endIcon'
     )
+  })
+
+  it('should call actionHandler on click', () => {
+    const handleClick = jest.fn
+    const { getByRole } = render(<Button {...block}
+      action={{
+        __typename: 'NavigateToBlockAction',
+        gtmEventName: 'gtmEventName',
+        blockId: 'def'
+      }}
+    // onClick={handleClick}
+    />)
+    fireEvent.click(getByRole('button'))
+    // expect(handleClick).toBeCalledWith(block.id)
   })
 })

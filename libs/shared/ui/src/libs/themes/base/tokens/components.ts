@@ -44,26 +44,29 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           },
           style: {
             marginBottom: spacingThemeToken.spacing(3),
-            borderRadius: '16px'
+            borderRadius: '16px',
+            fontWeight: 700,
+            '&:last-child': { marginBottom: 0 }
           }
         },
         {
           props: { variant: 'contained', size: 'medium' },
           style: {
             marginBottom: spacingThemeToken.spacing(2),
-            borderRadius: '12px'
+            borderRadius: '12px',
+            fontWeight: 700,
+            '&:last-child': { marginBottom: 0 }
           }
         },
         {
           props: { variant: 'contained', size: 'small' },
           style: {
             marginBottom: spacingThemeToken.spacing(1),
-            borderRadius: '8px'
+            borderRadius: '8px',
+            '&:last-child': { marginBottom: 0 }
           }
         }
       ]
     }
   }
 }
-
-// Add other component override tokens here

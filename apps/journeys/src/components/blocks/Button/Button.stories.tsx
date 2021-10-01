@@ -11,6 +11,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 import { ButtonFields } from '../../../../__generated__/ButtonFields'
+import { Typography } from '@mui/material'
 
 const ButtonDemo = {
   ...journeysConfig,
@@ -79,13 +80,17 @@ Color.args = {
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <Card>
     {args.variants.map((variant, i) => (
-      <Button
-        {...args}
-        key={i}
-        label={`${variant ?? ''}`}
-        size={variant as ButtonSize}
-      />
+      <>
+        <Button
+          {...args}
+          key={i}
+          label={`${variant ?? ''}`}
+          size={variant as ButtonSize}
+        />
+        <Typography variant="overline" gutterBottom>Some element under it</Typography>
+      </>
     ))}
+
   </Card>
 )
 

@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { Icon, IconProps } from '.'
+import { Icon } from '.'
 import { Box } from '@mui/system'
 import { Typography, useTheme } from '@mui/material'
 import {
@@ -9,6 +9,7 @@ import {
   IconColor
 } from '../../../__generated__/globalTypes'
 
+import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
 import { journeysConfig } from '../../libs/storybook/decorators'
 
 const IconDemo = {
@@ -17,7 +18,7 @@ const IconDemo = {
   title: 'Journeys/Icon'
 }
 
-interface IconStoryProps extends IconProps {
+interface IconStoryProps extends IconType {
   variants: string[]
 }
 
