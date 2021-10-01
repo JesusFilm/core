@@ -1,19 +1,25 @@
 import { ThemeOptions } from '@mui/material'
 import { spacingThemeToken } from '../tokens/spacing'
 
-export const baseComponents: Pick<ThemeOptions, 'components'> = {
+export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: spacingThemeToken.spacing(4)
+          marginBottom: spacingThemeToken.spacing(4),
+          '&:last-child': {
+            marginBottom: 0
+          }
         }
       },
       variants: [
         {
           props: { variant: 'overline', gutterBottom: true },
           style: {
-            marginBottom: spacingThemeToken.spacing(1)
+            marginBottom: spacingThemeToken.spacing(1),
+            '&:last-child': {
+              marginBottom: 0
+            }
           }
         }
       ]

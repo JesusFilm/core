@@ -9,7 +9,7 @@ import TextField from './TextField'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'
-import { useBlocks } from '../../../libs/client/cache/blocks'
+import { handleAction } from '../../../libs/action'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
   mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
@@ -33,7 +33,6 @@ export const SignUp = ({
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
   )
-  const { nextActiveBlock } = useBlocks()
 
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = Yup.object().shape({
@@ -68,21 +67,7 @@ export const SignUp = ({
       onSubmit={(values) => {
         // TODO: Handle server error responses when available
         void onSubmitHandler(values)
-        // TODO: Replace with generic action handler
-        switch (action?.__typename) {
-          case 'NavigateAction':
-            nextActiveBlock()
-            break
-          case 'NavigateToBlockAction':
-            nextActiveBlock({ id: action.blockId })
-            break
-          case 'NavigateToJourneyAction':
-            nextActiveBlock({ id: action.journeyId })
-            break
-          case 'LinkAction':
-            nextActiveBlock({ id: action.url })
-            break
-        }
+        handleAction(action)
       }}
     >
       {({ ...formikProps }) => (
@@ -94,7 +79,6 @@ export const SignUp = ({
         >
           <TextField {...formikProps} id="name" name="name" label="Name" />
           <TextField {...formikProps} id="email" name="email" label="Email" />
-          {/* TODO: Use shared-ui Button */}
           <Button type="submit" variant="contained" size="large">
             Submit
           </Button>
