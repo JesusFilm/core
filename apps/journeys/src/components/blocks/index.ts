@@ -1,3 +1,4 @@
+export { Button } from './Button'
 export { Card } from './Card'
 export { Image } from './Image'
 export { RadioOption } from './RadioOption'

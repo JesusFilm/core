@@ -1,17 +1,20 @@
 import {
+  Button,
+  Card,
+  Image,
   RadioOption,
   RadioQuestion,
-  Video,
   Step,
-  Image,
-  Card,
-  Typography
+  Typography,
+  Video
 } from '../blocks'
 import { ReactElement } from 'react'
 import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transformer'
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {
+    case 'ButtonBlock':
+      return <Button {...block} />
     case 'CardBlock':
       return <Card {...block} />
     case 'ImageBlock':

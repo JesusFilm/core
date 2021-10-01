@@ -3,6 +3,48 @@ import { BlockRenderer } from '.'
 import { TreeBlock } from '../../libs/transformer/transformer'
 
 describe('BlockRenderer', () => {
+  it('should render Button', () => {
+    const block: TreeBlock = {
+      __typename: 'ButtonBlock',
+      id: 'button',
+      parentBlockId: 'question',
+      label: 'Click to continue',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIcon: null,
+      endIcon: null,
+      action: null,
+      children: []
+    }
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByText('Click to continue')).toBeInTheDocument()
+  })
+
+  it('should render Card', () => {
+    const block: TreeBlock = {
+      __typename: 'CardBlock',
+      id: 'step',
+      parentBlockId: null,
+      backgroundColor: null,
+      coverBlockId: null,
+      themeMode: null,
+      themeName: null,
+      children: [
+        {
+          __typename: 'RadioQuestionBlock',
+          id: 'question',
+          label: 'radio question',
+          parentBlockId: 'step',
+          description: 'description',
+          children: []
+        }
+      ]
+    }
+    const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
+    expect(getByText('radio question')).toBeInTheDocument()
+  })
+
   it('should render Image', () => {
     const block: TreeBlock = {
       __typename: 'ImageBlock',
@@ -20,6 +62,7 @@ describe('BlockRenderer', () => {
       'random image from unsplash'
     )
   })
+
   it('should render RadioOption', () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',

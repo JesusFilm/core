@@ -19,6 +19,9 @@ async function main(): Promise<void> {
       }
     })
   }
+  await prisma.response.deleteMany({
+    where: { block: { journeyId: journey.id } }
+  })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
   const step = await prisma.block.create({
@@ -204,7 +207,7 @@ async function main(): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PLAY_ARROW',
+          name: 'PlayArrow',
           color: 'secondary',
           size: 'xl'
         },
