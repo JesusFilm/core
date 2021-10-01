@@ -20,7 +20,7 @@ describe('BlockRenderer', () => {
     const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
-  
+
   it('should render Card', () => {
     const block: TreeBlock = {
       __typename: 'CardBlock',
