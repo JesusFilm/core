@@ -13,13 +13,6 @@ import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transfor
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {
-    case 'ButtonBlock':
-      return <Button {...block} />
-    case 'CardBlock':
-      return <Card {...block} />
-
-export function BlockRenderer(block: BlockRendererProps): ReactElement {
-  switch (block.__typename) {
     case 'CardBlock':
       return <Card {...block} />
     case 'ImageBlock':
