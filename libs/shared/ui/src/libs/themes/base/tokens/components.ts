@@ -75,7 +75,6 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
     },
     MuiOutlinedInput: {
       styleOverrides: {
-        // Name of the slot
         root: {
           backgroundColor: 'rgba(173, 173, 173, 0.3)',
           borderBottomLeftRadius: 0,
@@ -90,8 +89,6 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           borderBottomRightRadius: 0
         },
         input: {
-          // color: ,
-
           transform: `translate(0px, 6px) scale(1)`,
           transition: `color 200ms cubic-bezier(0.0,0,0.2,1) 0ms,transform 200ms cubic-bezier(0.0,0,0.2,1) 0ms,max-width 200ms cubic-bezier(0.0,0,0.2,1) 0ms`,
           // https://github.com/mui-org/material-ui/issues/14427
