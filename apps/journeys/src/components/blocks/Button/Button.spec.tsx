@@ -9,6 +9,16 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
+import { handleAction } from '../../../libs/action'
+
+jest.mock('../../../libs/action', () => {
+  const originalModule = jest.requireActual('../../../libs/action')
+  return {
+    __esModule: true,
+    ...originalModule,
+    handleAction: jest.fn()
+  }
+})
 
 describe('Button', () => {
   const block: ButtonFields = {
@@ -33,7 +43,9 @@ describe('Button', () => {
   })
 
   it('should render with the contained value', () => {
-    const { getByRole } = render(<Button {...block} buttonVariant={ButtonVariant.contained} />)
+    const { getByRole } = render(
+      <Button {...block} buttonVariant={ButtonVariant.contained} />
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-contained')
   })
 
@@ -83,16 +95,21 @@ describe('Button', () => {
   })
 
   it('should call actionHandler on click', () => {
-    const handleClick = jest.fn
-    const { getByRole } = render(<Button {...block}
-      action={{
-        __typename: 'NavigateToBlockAction',
-        gtmEventName: 'gtmEventName',
-        blockId: 'def'
-      }}
-    // onClick={handleClick}
-    />)
+    const { getByRole } = render(
+      <Button
+        {...block}
+        action={{
+          __typename: 'NavigateToBlockAction',
+          gtmEventName: 'gtmEventName',
+          blockId: 'def'
+        }}
+      />
+    )
     fireEvent.click(getByRole('button'))
-    // expect(handleClick).toBeCalledWith(block.id)
+    expect(handleAction).toBeCalledWith({
+      __typename: 'NavigateToBlockAction',
+      gtmEventName: 'gtmEventName',
+      blockId: 'def'
+    })
   })
 })
