@@ -87,10 +87,11 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
           label={`${variant ?? ''}`}
           size={variant as ButtonSize}
         />
-        <Typography variant="overline" gutterBottom>Some element under it</Typography>
+        <Typography variant="overline" gutterBottom>
+          Some element under it
+        </Typography>
       </>
     ))}
-
   </Card>
 )
 
