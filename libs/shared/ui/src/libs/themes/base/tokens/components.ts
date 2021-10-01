@@ -1,24 +1,72 @@
 import { ThemeOptions } from '@mui/material'
-import { spacingTheme } from '../tokens/spacing'
+import { spacingThemeToken } from '../tokens/spacing'
 
 export const baseComponents: Pick<ThemeOptions, 'components'> = {
   components: {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: spacingTheme.spacing(4)
+          marginBottom: spacingThemeToken.spacing(4)
         }
       },
       variants: [
         {
           props: { variant: 'overline', gutterBottom: true },
           style: {
-            marginBottom: spacingTheme.spacing(1)
+            marginBottom: spacingThemeToken.spacing(1)
           }
         }
       ]
     },
-    // TODO: Add Button component override
+    MuiButtonGroup: {
+      styleOverrides: {
+        groupedContainedVertical: {
+          margin: 0
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          boxShadow: 'none'
+        }
+      },
+      defaultProps: {
+        disableRipple: true
+      },
+      variants: [
+        {
+          props: {
+            variant: 'contained',
+            size: 'large'
+          },
+          style: {
+            marginBottom: spacingThemeToken.spacing(3),
+            borderRadius: '16px',
+            fontWeight: 700,
+            '&:last-child': { marginBottom: 0 }
+          }
+        },
+        {
+          props: { variant: 'contained', size: 'medium' },
+          style: {
+            marginBottom: spacingThemeToken.spacing(2),
+            borderRadius: '12px',
+            fontWeight: 700,
+            '&:last-child': { marginBottom: 0 }
+          }
+        },
+        {
+          props: { variant: 'contained', size: 'small' },
+          style: {
+            marginBottom: spacingThemeToken.spacing(1),
+            borderRadius: '8px',
+            '&:last-child': { marginBottom: 0 }
+          }
+        }
+      ]
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         // Name of the slot
@@ -37,6 +85,7 @@ export const baseComponents: Pick<ThemeOptions, 'components'> = {
         },
         input: {
           // color: ,
+
           transform: `translate(0px, 6px) scale(1)`,
           transition: `color 200ms cubic-bezier(0.0,0,0.2,1) 0ms,transform 200ms cubic-bezier(0.0,0,0.2,1) 0ms,max-width 200ms cubic-bezier(0.0,0,0.2,1) 0ms`,
           // https://github.com/mui-org/material-ui/issues/14427

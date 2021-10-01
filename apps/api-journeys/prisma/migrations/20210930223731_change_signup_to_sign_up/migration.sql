@@ -7,6 +7,11 @@
 */
 -- AlterEnum
 BEGIN;
+ALTER TYPE "BlockType" ADD VALUE 'SignUpBlock';
+COMMIT;
+
+BEGIN;
+UPDATE "Block" SET "blockType" = 'SignUpBlock' WHERE "blockType" = 'SignupBlock';
 CREATE TYPE "BlockType_new" AS ENUM ('ButtonBlock', 'CardBlock', 'RadioOptionBlock', 'RadioQuestionBlock', 'SignUpBlock', 'StepBlock', 'TypographyBlock', 'VideoBlock');
 ALTER TABLE "Block" ALTER COLUMN "blockType" DROP DEFAULT;
 ALTER TABLE "Block" ALTER COLUMN "blockType" TYPE "BlockType_new" USING ("blockType"::text::"BlockType_new");
@@ -18,6 +23,11 @@ COMMIT;
 
 -- AlterEnum
 BEGIN;
+ALTER TYPE "ResponseType" ADD VALUE 'SignUpResponse';
+COMMIT;
+
+BEGIN;
+UPDATE "Response" SET "type" = 'SignUpResponse' WHERE "type" = 'SignupResponse';
 CREATE TYPE "ResponseType_new" AS ENUM ('RadioQuestionResponse', 'SignUpResponse', 'VideoResponse');
 ALTER TABLE "Response" ALTER COLUMN "type" TYPE "ResponseType_new" USING ("type"::text::"ResponseType_new");
 ALTER TYPE "ResponseType" RENAME TO "ResponseType_old";

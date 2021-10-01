@@ -118,6 +118,15 @@ enum IconSize {
   xl
 }
 
+type ImageBlock implements Block {
+  alt: String!
+  height: Int!
+  id: ID!
+  parentBlockId: ID
+  src: String!
+  width: Int!
+}
+
 scalar join__FieldSet
 
 enum join__Graph {

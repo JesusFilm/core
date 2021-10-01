@@ -132,6 +132,15 @@ const typeDefs = gql`
     themeName: ThemeName
   }
 
+  type ImageBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    src: String!
+    width: Int!
+    height: Int!
+    alt: String!
+  }
+
   type RadioOptionBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -277,6 +286,12 @@ const resolvers: Resolvers = {
     coverBlockId: ({ extraAttrs }) => get(extraAttrs, 'coverBlockId'),
     themeMode: ({ extraAttrs }) => get(extraAttrs, 'themeMode'),
     themeName: ({ extraAttrs }) => get(extraAttrs, 'themeName')
+  },
+  ImageBlock: {
+    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
+    width: ({ extraAttrs }) => get(extraAttrs, 'width'),
+    height: ({ extraAttrs }) => get(extraAttrs, 'height'),
+    alt: ({ extraAttrs }) => get(extraAttrs, 'alt')
   },
   SignUpBlock: {
     action: ({ extraAttrs }) => get(extraAttrs, 'action')

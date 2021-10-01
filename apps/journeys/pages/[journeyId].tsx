@@ -9,8 +9,11 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
+import { ACTION_FIELDS } from '../src/libs/action'
+import { BUTTON_FIELDS } from '../src/components/blocks/Button'
+import { IMAGE_FIELDS } from '../src/components/blocks/Image'
 import { SIGN_UP_FIELDS } from '../src/components/blocks/SignUp'
+import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
 
 interface JourneyPageProps {
   journey: Journey
@@ -31,8 +34,11 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
 ) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
-      ${TYPOGRAPHY_FIELDS}
+      ${ACTION_FIELDS}
+      ${BUTTON_FIELDS}
+      ${IMAGE_FIELDS}
       ${SIGN_UP_FIELDS}
+      ${TYPOGRAPHY_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -57,6 +63,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               themeMode
               themeName
             }
+            ... on ImageBlock {
+              ...ImageFields
+            }
             ... on RadioQuestionBlock {
               label
               description
@@ -64,18 +73,11 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on RadioOptionBlock {
               label
               action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
+                ...ActionFields
               }
+            }
+            ... on ButtonBlock {
+              ...ButtonFields
             }
             ... on SignUpBlock {
               ...SignUpFields

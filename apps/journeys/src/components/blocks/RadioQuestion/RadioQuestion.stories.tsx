@@ -7,6 +7,8 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
 import { journeysConfig } from '../../../libs/storybook/decorators'
 import { MockedProvider } from '@apollo/client/testing'
+import { ThemeProvider } from '@core/shared/ui'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 
 const options: Array<TreeBlock<RadioOptionBlock>> = [
   {
@@ -81,6 +83,20 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({
 export const Default: Story<TreeBlock<RadioQuestionBlock>> =
   DefaultTemplate.bind({})
 Default.args = {
+  id: 'MoreQuestions',
+  label: 'How can we help you know more about Jesus?',
+  description:
+    'What do you think would be the next step to help you grow in your relationship with Jesus?',
+  children: options,
+  parentBlockId: 'Step1'
+}
+
+export const Dark: Story<TreeBlock<RadioQuestionBlock>> = (props) => (
+  <ThemeProvider themeMode={ThemeMode.dark} themeName={ThemeName.base}>
+    <DefaultTemplate {...props} />
+  </ThemeProvider>
+)
+Dark.args = {
   id: 'MoreQuestions',
   label: 'How can we help you know more about Jesus?',
   description:

@@ -8,8 +8,8 @@
 //==============================================================
 
 export enum ThemeMode {
+  dark = "dark",
   light = "light",
-  dark = 'dark'
 }
 
 export enum ThemeName {

@@ -19,6 +19,9 @@ async function main(): Promise<void> {
       }
     })
   }
+  await prisma.response.deleteMany({
+    where: { block: { journeyId: journey.id } }
+  })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
   const step = await prisma.block.create({
@@ -204,7 +207,7 @@ async function main(): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PLAY_ARROW',
+          name: 'PlayArrow',
           color: 'secondary',
           size: 'xl'
         },
@@ -253,6 +256,20 @@ async function main(): Promise<void> {
         align: 'left'
       },
       parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
+      extraAttrs: {
+        src: 'https://source.unsplash.com/random/1920x1080',
+        alt: 'random image from unsplash',
+        width: 1920,
+        height: 1080
+      },
+      parentOrder: 1
     }
   })
   const stepSignUp = await prisma.block.create({
