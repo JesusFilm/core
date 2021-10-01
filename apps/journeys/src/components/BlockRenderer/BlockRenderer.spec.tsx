@@ -29,6 +29,24 @@ describe('BlockRenderer', () => {
     expect(getByText('radio question')).toBeInTheDocument()
   })
 
+  it('should render SignUp', () => {
+    const block: TreeBlock = {
+      __typename: 'SignUpBlock',
+      id: 'signUp',
+      parentBlockId: null,
+      action: {
+        __typename: 'NavigateAction',
+        gtmEventName: 'gtmEventName'
+      },
+      children: []
+    }
+    const { getByLabelText } = renderWithApolloClient(
+      <BlockRenderer {...block} />
+    )
+    expect(getByLabelText('name')).toBeInTheDocument()
+    expect(getByLabelText('email')).toBeInTheDocument()
+  })
+
   it('should render Step', () => {
     const block: TreeBlock = {
       __typename: 'StepBlock',
