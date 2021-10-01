@@ -6,11 +6,21 @@ import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../.
 
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { ReactElement } from 'react'
+import { handleAction } from '../../../libs/action'
 
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'uuid'
 }))
+
+jest.mock('../../../libs/action', () => {
+  const originalModule = jest.requireActual('../../../libs/action')
+  return {
+    __esModule: true,
+    ...originalModule,
+    handleAction: jest.fn()
+  }
+})
 
 const props: TreeBlock<SignUpBlock> = {
   __typename: 'SignUpBlock',
@@ -146,7 +156,12 @@ describe('SignUp', () => {
     await act(async () => {
       fireEvent.click(submit)
     })
-    // TODO: Check that generic action handler is called
+
+    expect(handleAction).toBeCalledWith({
+      __typename: 'LinkAction',
+      gtmEventName: 'signUp',
+      url: '#'
+    })
   })
 
   // it('should show error when submit fails', async () => {
