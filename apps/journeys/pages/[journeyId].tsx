@@ -10,8 +10,9 @@ import {
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
 import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
-import { BUTTON_FIELDS } from '../src/components/blocks/Button'
 import { ACTION_FIELDS } from '../src/libs/action'
+import { BUTTON_FIELDS } from '../src/components/blocks/Button'
+import { IMAGE_FIELDS } from '../src/components/blocks/Image'
 
 interface JourneyPageProps {
   journey: Journey
@@ -34,6 +35,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
     query: gql`
       ${ACTION_FIELDS}
       ${BUTTON_FIELDS}
+      ${IMAGE_FIELDS}
       ${TYPOGRAPHY_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
@@ -58,6 +60,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               coverBlockId
               themeMode
               themeName
+            }
+            ... on ImageBlock {
+              ...ImageFields
             }
             ... on RadioQuestionBlock {
               label

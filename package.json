@@ -126,6 +126,8 @@
     "jest": "27.0.3",
     "jest-mock-extended": "^2.0.2-beta2",
     "mini-css-extract-plugin": "^2.1.0",
+    "next-compose-plugins": "^2.2.1",
+    "next-images": "^1.8.1",
     "pg": "^8.7.1",
     "prettier": "^2.3.1",
     "prisma": "^2.28.0",

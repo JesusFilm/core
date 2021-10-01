@@ -69,6 +69,16 @@ export interface GetJourney_journey_blocks_CardBlock {
   themeName: ThemeName | null;
 }
 
+export interface GetJourney_journey_blocks_ImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
@@ -172,7 +182,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_TypographyBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_TypographyBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";
