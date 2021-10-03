@@ -11,6 +11,8 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName,
 
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
+  id: string;
+  parentBlockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {

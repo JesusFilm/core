@@ -53,6 +53,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           themeName
           themeMode
           blocks {
+            id
+            parentBlockId
             ... on ButtonBlock {
               ...ButtonFields
             }
