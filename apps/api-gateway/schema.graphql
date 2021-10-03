@@ -235,6 +235,8 @@ type SignUpBlock implements Block {
   action: Action
   id: ID!
   parentBlockId: ID
+  submitIcon: Icon
+  submitLabel: String
 }
 
 type SignUpResponse implements Response {
