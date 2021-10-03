@@ -1,9 +1,7 @@
-import { render, screen, act, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
-
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { ReactElement } from 'react'
 import { handleAction } from '../../../libs/action'
@@ -46,74 +44,64 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 
 describe('SignUp', () => {
   it('should validate when fields are empty', async () => {
-    render(<SignUpMock />)
+    const { getByRole, getAllByText } = render(<SignUpMock />)
 
-    const submit = screen.getByRole('button')
+    const submit = getByRole('button')
 
-    await act(async () => {
-      fireEvent.click(submit)
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      const inlineErrors = getAllByText('Required')
+      expect(inlineErrors[0]).toHaveProperty('id', 'name-helper-text')
+      expect(inlineErrors[1]).toHaveProperty('id', 'email-helper-text')
     })
-
-    const inlineErrors = screen.getAllByText('Required')
-
-    expect(inlineErrors[0]).toHaveProperty('id', 'name-helper-text')
-    expect(inlineErrors[1]).toHaveProperty('id', 'email-helper-text')
   })
 
   it('should validate when name is too short', async () => {
-    render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
 
-    const name = screen.getByLabelText('Name')
-    const submit = screen.getByRole('button')
+    const name = getByLabelText('Name')
+    const submit = getByRole('button')
 
-    await act(async () => {
-      fireEvent.change(name, { target: { value: 'S' } })
+    fireEvent.change(name, { target: { value: 'S' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      const inlineError = getByText('Name must be 2 characters or more')
+      expect(inlineError).toHaveProperty('id', 'name-helper-text')
     })
-    await act(async () => {
-      fireEvent.click(submit)
-    })
-
-    const inlineError = screen.findByText('Name must be 2 characters or more')
-
-    expect(await inlineError).toHaveProperty('id', 'name-helper-text')
   })
 
   it('should validate when name is too long', async () => {
-    render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
 
-    const name = screen.getByLabelText('Name')
-    const submit = screen.getByRole('button')
+    const name = getByLabelText('Name')
+    const submit = getByRole('button')
 
-    await act(async () => {
-      fireEvent.change(name, {
-        target: { value: '123456789012345678901234567890123456789012345678901' }
-      })
+    fireEvent.change(name, {
+      target: { value: '123456789012345678901234567890123456789012345678901' }
     })
-    await act(async () => {
-      fireEvent.click(submit)
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      const inlineError = getByText('Name must be 50 characters or less')
+      expect(inlineError).toHaveProperty('id', 'name-helper-text')
     })
-
-    const inlineError = screen.findByText('Name must be 50 characters or less')
-
-    expect(await inlineError).toHaveProperty('id', 'name-helper-text')
   })
 
   it('should validate when email is invalid', async () => {
-    render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
 
-    const email = screen.getByLabelText('Email')
-    const submit = screen.getByRole('button')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
 
-    await act(async () => {
-      fireEvent.change(email, { target: { value: '123abc@' } })
+    fireEvent.change(email, { target: { value: '123abc@' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      const inlineError = getByText('Please enter a valid email address')
+      expect(inlineError).toHaveProperty('id', 'email-helper-text')
     })
-    await act(async () => {
-      fireEvent.click(submit)
-    })
-
-    const inlineError = screen.findByText('Please enter a valid email address')
-
-    expect(await inlineError).toHaveProperty('id', 'email-helper-text')
   })
 
   it('should redirect when form submit suceeds', async () => {
@@ -143,24 +131,22 @@ describe('SignUp', () => {
       }
     ]
 
-    render(<SignUpMock mocks={mocks} />)
+    const { getByLabelText, getByRole } = render(<SignUpMock mocks={mocks} />)
 
-    const name = screen.getByLabelText('Name')
-    const email = screen.getByLabelText('Email')
-    const submit = screen.getByRole('button')
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
 
-    await act(async () => {
-      fireEvent.change(name, { target: { value: 'Anon' } })
-      fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
-    })
-    await act(async () => {
-      fireEvent.click(submit)
-    })
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
 
-    expect(handleAction).toBeCalledWith({
-      __typename: 'LinkAction',
-      gtmEventName: 'signUp',
-      url: '#'
+    await waitFor(() => {
+      expect(handleAction).toBeCalledWith({
+        __typename: 'LinkAction',
+        gtmEventName: 'signUp',
+        url: '#'
+      })
     })
   })
 
