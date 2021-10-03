@@ -159,6 +159,8 @@ const typeDefs = gql`
     id: ID!
     parentBlockId: ID
     action: Action
+    submitIcon: Icon
+    submitLabel: String
   }
 
   type StepBlock implements Block {
@@ -294,7 +296,9 @@ const resolvers: Resolvers = {
     alt: ({ extraAttrs }) => get(extraAttrs, 'alt')
   },
   SignUpBlock: {
-    action: ({ extraAttrs }) => get(extraAttrs, 'action')
+    action: ({ extraAttrs }) => get(extraAttrs, 'action'),
+    submitIcon: ({ extraAttrs }) => get(extraAttrs, 'submitIcon'),
+    submitLabel: ({ extraAttrs }) => get(extraAttrs, 'submitLabel')
   },
   StepBlock: {
     locked: ({ extraAttrs }) => get(extraAttrs, 'locked'),

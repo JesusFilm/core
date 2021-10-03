@@ -172,7 +172,13 @@ it('returns blocks', async () => {
       action: {
         gtmEventName: 'gtmEventName',
         journeyId: otherJourneyId
-      }
+      },
+      submitIcon: {
+        name: 'LockOpen',
+        color: 'secondary',
+        size: 'lg'
+      },
+      submitLabel: 'Unlock Now!'
     }
   }
   const button1: Block = {
@@ -249,6 +255,11 @@ it('returns blocks', async () => {
           target
         }
       }
+      fragment IconFields on Icon {
+        name
+        color
+        size
+      }
       query ($id: ID!) {
         journey(id: $id) {
           blocks {
@@ -261,14 +272,10 @@ it('returns blocks', async () => {
               color
               size
               startIcon {
-                name
-                color
-                size
+                ...IconFields
               }
               endIcon {
-                name
-                color
-                size
+                ...IconFields
               }
               action {
                 ...ActionFields
@@ -300,6 +307,10 @@ it('returns blocks', async () => {
               action {
                 ...ActionFields
               }
+              submitIcon {
+                ...IconFields
+              }
+              submitLabel
             }
             ... on StepBlock {
               locked
@@ -434,7 +445,13 @@ it('returns blocks', async () => {
         __typename: 'NavigateToJourneyAction',
         gtmEventName: 'gtmEventName',
         journeyId: otherJourneyId
-      }
+      },
+      submitIcon: {
+        name: 'LockOpen',
+        color: 'secondary',
+        size: 'lg'
+      },
+      submitLabel: 'Unlock Now!'
     },
     {
       id: button1.id,
