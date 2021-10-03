@@ -5,6 +5,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
+import { IconName } from '../../../../__generated__/globalTypes'
+import { ButtonFields_startIcon as IconType } from '../../../../__generated__/ButtonFields'
 
 const Demo = {
   ...journeysConfig,
@@ -22,6 +24,13 @@ const signUpProps: TreeBlock<SignUpBlock> = {
     blockId: 'step2.id'
   },
   children: []
+}
+
+const icon: IconType = {
+  __typename: 'Icon',
+  name: IconName.LockOpen,
+  size: null,
+  color: null
 }
 
 export const Default = (): ReactElement => (
@@ -52,7 +61,12 @@ export const Default = (): ReactElement => (
       }
     ]}
   >
-    <SignUp {...signUpProps} uuid="uuid" />
+    <SignUp
+      {...signUpProps}
+      uuid="uuid"
+      submitIcon={icon}
+      submitLabel={'Unlock Now'}
+    />
   </MockedProvider>
 )
 
