@@ -18,28 +18,34 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
   }
 `
 
+interface RadioQuestionProps extends TreeBlock<RadioQuestionBlock> {
+  uuid?: () => string
+}
+
 export function RadioQuestion({
-  id,
+  id: blockId,
   label,
   description,
-  children
-}: TreeBlock<RadioQuestionBlock>): ReactElement {
+  children,
+  uuid = uuidv4
+}: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
-    const uuid = uuidv4()
+    console.log('HELLO')
+    const id = uuid()
     await radioQuestionResponseCreate({
       variables: {
         input: {
-          id: uuid,
-          blockId: id,
+          id,
+          blockId,
           radioOptionBlockId
         }
       },
       optimisticResponse: {
         radioQuestionResponseCreate: {
-          id: uuid,
+          id,
           __typename: 'RadioQuestionResponse',
           radioOptionBlockId
         }
