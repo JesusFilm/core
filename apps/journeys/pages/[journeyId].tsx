@@ -9,10 +9,16 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
-import { ACTION_FIELDS } from '../src/libs/action'
-import { BUTTON_FIELDS } from '../src/components/blocks/Button'
-import { IMAGE_FIELDS } from '../src/components/blocks/Image'
+import {
+  TYPOGRAPHY_FIELDS,
+  BUTTON_FIELDS,
+  IMAGE_FIELDS,
+  CARD_FIELDS,
+  STEP_FIELDS,
+  RADIO_OPTION_FIELDS,
+  RADIO_QUESTION_FIELDS,
+  VIDEO_FIELDS
+} from '../src/components/blocks'
 
 interface JourneyPageProps {
   journey: Journey
@@ -33,10 +39,14 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
 ) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
-      ${ACTION_FIELDS}
       ${BUTTON_FIELDS}
+      ${CARD_FIELDS}
       ${IMAGE_FIELDS}
+      ${RADIO_OPTION_FIELDS}
+      ${RADIO_QUESTION_FIELDS}
+      ${STEP_FIELDS}
       ${TYPOGRAPHY_FIELDS}
+      ${VIDEO_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -45,40 +55,29 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           blocks {
             id
             parentBlockId
-            ... on StepBlock {
-              locked
-              nextBlockId
-            }
-            ... on VideoBlock {
-              src
-              title
-              volume
-              autoplay
+            ... on ButtonBlock {
+              ...ButtonFields
             }
             ... on CardBlock {
-              backgroundColor
-              coverBlockId
-              themeMode
-              themeName
+              ...CardFields
             }
             ... on ImageBlock {
               ...ImageFields
             }
-            ... on RadioQuestionBlock {
-              label
-              description
-            }
             ... on RadioOptionBlock {
-              label
-              action {
-                ...ActionFields
-              }
+              ...RadioOptionFields
             }
-            ... on ButtonBlock {
-              ...ButtonFields
+            ... on RadioQuestionBlock {
+              ...RadioQuestionFields
+            }
+            ... on StepBlock {
+              ...StepFields
             }
             ... on TypographyBlock {
               ...TypographyFields
+            }
+            ... on VideoBlock {
+              ...VideoFields
             }
           }
         }
