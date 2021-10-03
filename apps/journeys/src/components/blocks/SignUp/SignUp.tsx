@@ -20,6 +20,11 @@ export const SIGN_UP_RESPONSE_CREATE = gql`
     }
   }
 `
+interface SignUpProps extends TreeBlock<SignUpBlock> {
+  uuid?: string
+  submitIcon?: string
+  submitLabel?: string
+}
 
 interface SignUpFormValues {
   name: string
@@ -28,8 +33,12 @@ interface SignUpFormValues {
 
 export const SignUp = ({
   id,
+  uuid = uuidv4(),
+  submitIcon,
+  // Use translated string when i18n is in
+  submitLabel = 'Submit',
   action
-}: TreeBlock<SignUpBlock>): ReactElement => {
+}: SignUpProps): ReactElement => {
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
   )
@@ -46,12 +55,19 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    const uuid = uuidv4()
     await signUpResponseCreate({
       variables: {
         input: {
           id: uuid,
           blockId: id,
+          name: values.name,
+          email: values.email
+        }
+      },
+      optimisticResponse: {
+        signUpResponseCreate: {
+          id: uuid,
+          __typename: 'SignUpResponse',
           name: values.name,
           email: values.email
         }
@@ -66,8 +82,9 @@ export const SignUp = ({
       validationSchema={signUpSchema}
       onSubmit={(values) => {
         // TODO: Handle server error responses when available
-        void onSubmitHandler(values)
-        handleAction(action)
+        void onSubmitHandler(values).then(() => {
+          handleAction(action)
+        })
       }}
     >
       {({ ...formikProps }) => (
@@ -79,8 +96,13 @@ export const SignUp = ({
         >
           <TextField {...formikProps} id="name" name="name" label="Name" />
           <TextField {...formikProps} id="email" name="email" label="Email" />
-          <Button type="submit" variant="contained" size="large">
-            Submit
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            startIcon={submitIcon}
+          >
+            {submitLabel}
           </Button>
         </Form>
       )}

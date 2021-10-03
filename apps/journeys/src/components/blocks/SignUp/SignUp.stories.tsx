@@ -1,10 +1,10 @@
 import { Meta } from '@storybook/react'
-import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { journeysConfig } from '../../../libs/storybook/decorators'
-import { SignUp } from './SignUp'
+import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
-import { Conductor } from '../../Conductor'
 import { ReactElement } from 'react'
+import { TreeBlock } from '../../../libs/transformer/transformer'
+import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 
 const Demo = {
   ...journeysConfig,
@@ -12,84 +12,47 @@ const Demo = {
   title: 'Journeys/Blocks/SignUp'
 }
 
-export const Default = (): ReactElement => (
-  <MockedProvider>
-    <Conductor
-      blocks={[
-        {
-          id: 'step1.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          locked: true,
-          nextBlockId: 'step2.id',
-          children: [
-            {
-              id: 'card1.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step1.id',
-              backgroundColor: null,
-              coverBlockId: null,
-              themeMode: null,
-              themeName: null,
+const signUpProps: TreeBlock<SignUpBlock> = {
+  id: 'signUpBlockId1',
+  __typename: 'SignUpBlock',
+  parentBlockId: null,
+  action: {
+    __typename: 'NavigateToBlockAction',
+    gtmEventName: 'gtmEventName',
+    blockId: 'step2.id'
+  },
+  children: []
+}
 
-              children: [
-                {
-                  id: 'typographyBlockId1',
-                  __typename: 'TypographyBlock',
-                  parentBlockId: null,
-                  align: null,
-                  color: null,
-                  content: 'Sign up',
-                  variant: TypographyVariant.h1,
-                  children: []
-                },
-                {
-                  id: 'signUpBlockId1',
-                  __typename: 'SignUpBlock',
-                  parentBlockId: null,
-                  action: {
-                    __typename: 'NavigateToBlockAction',
-                    gtmEventName: 'gtmEventName',
-                    blockId: 'step2.id'
-                  },
-                  children: []
-                }
-              ]
+export const Default = (): ReactElement => (
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: SIGN_UP_RESPONSE_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUpBlockId1',
+              name: 'Anon',
+              email: '123abc@gmail.com'
             }
-          ]
+          }
         },
-        {
-          id: 'step2.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          locked: true,
-          nextBlockId: null,
-          children: [
-            {
-              id: 'card2.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step2.id',
-              backgroundColor: null,
-              coverBlockId: null,
-              themeMode: null,
-              themeName: null,
-              children: [
-                {
-                  id: 'typographyBlockId2',
-                  __typename: 'TypographyBlock',
-                  parentBlockId: null,
-                  align: null,
-                  color: null,
-                  content: 'Success',
-                  variant: TypographyVariant.h1,
-                  children: []
-                }
-              ]
+        result: {
+          data: {
+            signUpResponseCreate: {
+              id: 'uuid',
+              blockId: 'signUpBlockId1',
+              name: 'Anon',
+              email: '123abc@gmail.com'
             }
-          ]
+          }
         }
-      ]}
-    />
+      }
+    ]}
+  >
+    <SignUp {...signUpProps} uuid="uuid" />
   </MockedProvider>
 )
 
