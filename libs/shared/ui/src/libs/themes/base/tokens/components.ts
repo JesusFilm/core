@@ -73,6 +73,15 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
         }
       ]
     },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          '&.MuiTextField-root': {
+            marginBottom: spacingThemeToken.spacing(2)
+          }
+        }
+      }
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
