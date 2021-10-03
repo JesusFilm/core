@@ -11,113 +11,6 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName,
 
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
-  id: string;
-  parentBlockId: string | null;
-}
-
-export interface GetJourney_journey_blocks_StepBlock {
-  __typename: "StepBlock";
-  id: string;
-  parentBlockId: string | null;
-  /**
-   * locked will be set to true if the user should not be able to manually
-   * advance to the next step.
-   */
-  locked: boolean;
-  /**
-   * nextBlockId contains the preferred block to navigate to when a
-   * NavigateAction occurs or if the user manually tries to advance to the next
-   * step. If no nextBlockId is set it can be assumed that this step represents
-   * the end of the current journey.
-   */
-  nextBlockId: string | null;
-}
-
-export interface GetJourney_journey_blocks_VideoBlock {
-  __typename: "VideoBlock";
-  id: string;
-  parentBlockId: string | null;
-  src: string;
-  title: string;
-  volume: number | null;
-  autoplay: boolean | null;
-}
-
-export interface GetJourney_journey_blocks_CardBlock {
-  __typename: "CardBlock";
-  id: string;
-  parentBlockId: string | null;
-  /**
-   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
-   */
-  backgroundColor: string | null;
-  /**
-   * coverBlockId is present if a child block should be used as a cover.
-   * This child block should not be rendered normally, instead it should be used
-   * as a background. Blocks are often of type ImageBlock or VideoBlock.
-   */
-  coverBlockId: string | null;
-  /**
-   * themeMode can override journey themeMode. If nothing is set then use
-   * themeMode from journey
-   */
-  themeMode: ThemeMode | null;
-  /**
-   * themeName can override journey themeName. If nothing is set then use
-   * themeName from journey
-   */
-  themeName: ThemeName | null;
-}
-
-export interface GetJourney_journey_blocks_ImageBlock {
-  __typename: "ImageBlock";
-  id: string;
-  parentBlockId: string | null;
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-}
-
-export interface GetJourney_journey_blocks_RadioQuestionBlock {
-  __typename: "RadioQuestionBlock";
-  id: string;
-  parentBlockId: string | null;
-  label: string;
-  description: string | null;
-}
-
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
-  __typename: "NavigateAction";
-  gtmEventName: string | null;
-}
-
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
-  __typename: "NavigateToJourneyAction";
-  gtmEventName: string | null;
-  journeyId: string;
-}
-
-export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
-  __typename: "LinkAction";
-  gtmEventName: string | null;
-  url: string;
-}
-
-export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
-
-export interface GetJourney_journey_blocks_RadioOptionBlock {
-  __typename: "RadioOptionBlock";
-  id: string;
-  parentBlockId: string | null;
-  label: string;
-  action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
@@ -172,6 +65,101 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
 }
 
+export interface GetJourney_journey_blocks_CardBlock {
+  __typename: "CardBlock";
+  id: string;
+  parentBlockId: string | null;
+  /**
+   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   */
+  backgroundColor: string | null;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode: ThemeMode | null;
+  /**
+   * themeName can override journey themeName. If nothing is set then use
+   * themeName from journey
+   */
+  themeName: ThemeName | null;
+}
+
+export interface GetJourney_journey_blocks_ImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journeyId: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
+
+export interface GetJourney_journey_blocks_RadioOptionBlock {
+  __typename: "RadioOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  label: string;
+  action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
+}
+
+export interface GetJourney_journey_blocks_RadioQuestionBlock {
+  __typename: "RadioQuestionBlock";
+  id: string;
+  parentBlockId: string | null;
+  label: string;
+  description: string | null;
+}
+
+export interface GetJourney_journey_blocks_StepBlock {
+  __typename: "StepBlock";
+  id: string;
+  parentBlockId: string | null;
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: boolean;
+  /**
+   * nextBlockId contains the preferred block to navigate to when a
+   * NavigateAction occurs or if the user manually tries to advance to the next
+   * step. If no nextBlockId is set it can be assumed that this step represents
+   * the end of the current journey.
+   */
+  nextBlockId: string | null;
+}
+
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -182,7 +170,17 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_TypographyBlock;
+export interface GetJourney_journey_blocks_VideoBlock {
+  __typename: "VideoBlock";
+  id: string;
+  parentBlockId: string | null;
+  src: string;
+  title: string;
+  volume: number | null;
+  autoplay: boolean | null;
+}
+
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";
