@@ -9,7 +9,6 @@ import TextField from './TextField'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'
-import { ButtonFields_startIcon as IconType } from '../../../../__generated__/ButtonFields'
 import { handleAction } from '../../../libs/action'
 import { Icon } from '../../Icon'
 
