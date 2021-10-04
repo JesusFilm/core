@@ -14,10 +14,19 @@ const Demo = {
   title: 'Journeys/Blocks/SignUp'
 }
 
+const icon: IconType = {
+  __typename: 'Icon',
+  name: IconName.LockOpen,
+  size: null,
+  color: null
+}
+
 const signUpProps: TreeBlock<SignUpBlock> = {
   id: 'signUpBlockId1',
   __typename: 'SignUpBlock',
   parentBlockId: null,
+  submitIcon: null,
+  submitLabel: null,
   action: {
     __typename: 'NavigateToBlockAction',
     gtmEventName: 'gtmEventName',
@@ -26,14 +35,7 @@ const signUpProps: TreeBlock<SignUpBlock> = {
   children: []
 }
 
-const icon: IconType = {
-  __typename: 'Icon',
-  name: IconName.LockOpen,
-  size: null,
-  color: null
-}
-
-export const Default = (): ReactElement => (
+const Template = ({ submitIcon, submitLabel }): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -64,11 +66,19 @@ export const Default = (): ReactElement => (
     <SignUp
       {...signUpProps}
       uuid={() => 'uuid'}
-      submitIcon={icon}
-      submitLabel={'Unlock Now'}
+      submitIcon={submitIcon}
+      submitLabel={submitLabel}
     />
   </MockedProvider>
 )
+
+export const Default = Template.bind({})
+
+export const CustomButton = Template.bind({})
+CustomButton.args = {
+  submitIcon: icon,
+  submitLabel: 'Unlock Now'
+}
 
 // export const SubmitError = Template.bind({})
 // SubmitError.args = {

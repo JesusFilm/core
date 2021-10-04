@@ -19,6 +19,8 @@ const props: TreeBlock<SignUpBlock> = {
   __typename: 'SignUpBlock',
   id: 'SignUp1',
   parentBlockId: '0',
+  submitIcon: null,
+  submitLabel: null,
   action: {
     __typename: 'LinkAction',
     gtmEventName: 'signUp',

@@ -24,8 +24,6 @@ export const SIGN_UP_RESPONSE_CREATE = gql`
 `
 interface SignUpProps extends TreeBlock<SignUpBlock> {
   uuid?: () => string
-  submitIcon?: IconType
-  submitLabel?: string
 }
 
 interface SignUpFormValues {

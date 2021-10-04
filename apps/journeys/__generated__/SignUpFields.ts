@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { IconName, IconColor, IconSize } from "./globalTypes";
+
 // ====================================================
 // GraphQL fragment: SignUpFields
 // ====================================================
@@ -32,9 +34,18 @@ export interface SignUpFields_action_LinkAction {
 
 export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction;
 
+export interface SignUpFields_submitIcon {
+  __typename: "Icon";
+  name: IconName;
+  color: IconColor | null;
+  size: IconSize | null;
+}
+
 export interface SignUpFields {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
+  submitLabel: string | null;
   action: SignUpFields_action | null;
+  submitIcon: SignUpFields_submitIcon | null;
 }

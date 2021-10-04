@@ -4,6 +4,7 @@ export const SIGN_UP_FIELDS = gql`
   fragment SignUpFields on SignUpBlock {
     id
     parentBlockId
+    submitLabel
     action {
       __typename
       gtmEventName
@@ -16,6 +17,11 @@ export const SIGN_UP_FIELDS = gql`
       ... on LinkAction {
         url
       }
+    }
+    submitIcon {
+      name
+      color
+      size
     }
   }
 `
