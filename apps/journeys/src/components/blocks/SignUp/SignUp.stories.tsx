@@ -63,7 +63,7 @@ export const Default = (): ReactElement => (
   >
     <SignUp
       {...signUpProps}
-      uuid="uuid"
+      uuid={() => 'uuid'}
       submitIcon={icon}
       submitLabel={'Unlock Now'}
     />
