@@ -1,5 +1,5 @@
 import { ThemeOptions } from '@mui/material'
-import { spacingThemeToken } from '../tokens/spacing'
+import { spacingThemeToken } from './spacing'
 
 export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
