@@ -259,6 +259,8 @@ export type SignUpBlock = Block & {
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
   action?: Maybe<Action>;
+  submitIcon?: Maybe<Icon>;
+  submitLabel?: Maybe<Scalars['String']>;
 };
 
 export type SignUpResponse = Response & {
@@ -650,6 +652,8 @@ export type SignUpBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  submitIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
+  submitLabel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
