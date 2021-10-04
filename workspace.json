@@ -229,7 +229,7 @@
             "command": "npx tsc -b apps/journeys/tsconfig.json"
           }
         },
-        "storybook": {
+        "demo": {
           "executor": "@nrwl/storybook:storybook",
           "options": {
             "uiFramework": "@storybook/react",
@@ -296,7 +296,7 @@
       "sourceRoot": "libs/shared/storybook/src",
       "projectType": "library",
       "targets": {
-        "storybook": {
+        "demo": {
           "executor": "@nrwl/storybook:storybook",
           "options": {
             "uiFramework": "@storybook/react",
@@ -354,7 +354,7 @@
             "passWithNoTests": true
           }
         },
-        "storybook": {
+        "demo": {
           "executor": "@nrwl/storybook:storybook",
           "options": {
             "uiFramework": "@storybook/react",
