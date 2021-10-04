@@ -13,7 +13,7 @@ export namespace BlockModule {
     ImageBlock: 'id' | 'parentBlockId' | 'src' | 'width' | 'height' | 'alt';
     RadioOptionBlock: 'id' | 'parentBlockId' | 'label' | 'action';
     RadioQuestionBlock: 'id' | 'parentBlockId' | 'label' | 'description';
-    SignUpBlock: 'id' | 'parentBlockId' | 'action';
+    SignUpBlock: 'id' | 'parentBlockId' | 'action' | 'submitIcon' | 'submitLabel';
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
     VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
@@ -190,6 +190,8 @@ export namespace BlockModule {
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
       action?: gm.Middleware[];
+      submitIcon?: gm.Middleware[];
+      submitLabel?: gm.Middleware[];
     };
     StepBlock?: {
       '*'?: gm.Middleware[];
