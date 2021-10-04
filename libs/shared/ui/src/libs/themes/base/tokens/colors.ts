@@ -19,7 +19,6 @@ export const baseColorsLight: Required<
 > = {
   palette: {
     mode: 'light',
-    // DEFAULT CONTAINER COLORS
     background: { default: '#FEFEFE', paper: '#FEFEFE' },
     primary,
     secondary,
@@ -29,10 +28,9 @@ export const baseColorsLight: Required<
       dark: '#C52713',
       contrastText: '#FFFFFF'
     },
-    // BACKGROUND TEXT COLORS
     text: {
-      primary: '#26262E',
-      secondary: '#FFFFFF'
+      primary: primary.dark,
+      secondary: primary.main
     },
     action: {
       // DISABLED BUTTON COLORS
@@ -61,11 +59,11 @@ export const baseColorsDark: Required<
     ...baseColorsLight.palette,
     mode: 'dark',
     background: { default: '#26262E', paper: '#26262E' },
-    primary: baseColorsLight.palette.secondary,
-    secondary: baseColorsLight.palette.primary,
+    primary: secondary,
+    secondary: primary,
     text: {
-      primary: baseColorsLight.palette.text?.secondary,
-      secondary: baseColorsLight.palette.text?.primary
+      primary: secondary.light,
+      secondary: secondary.main
     },
     action: {
       // DISABLED BUTTON COLORS

@@ -14,6 +14,7 @@ import {
   BUTTON_FIELDS,
   IMAGE_FIELDS,
   CARD_FIELDS,
+  SIGN_UP_FIELDS,
   STEP_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,
@@ -44,6 +45,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       ${IMAGE_FIELDS}
       ${RADIO_OPTION_FIELDS}
       ${RADIO_QUESTION_FIELDS}
+      ${SIGN_UP_FIELDS}
       ${STEP_FIELDS}
       ${TYPOGRAPHY_FIELDS}
       ${VIDEO_FIELDS}
@@ -69,6 +71,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             }
             ... on RadioQuestionBlock {
               ...RadioQuestionFields
+            }
+            ... on SignUpBlock {
+              ...SignUpFields
             }
             ... on StepBlock {
               ...StepFields

@@ -4,6 +4,7 @@ import {
   Image,
   RadioOption,
   RadioQuestion,
+  SignUp,
   Step,
   Typography,
   Video
@@ -23,6 +24,8 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <RadioOption {...block} />
     case 'RadioQuestionBlock':
       return <RadioQuestion {...block} />
+    case 'SignUpBlock':
+      return <SignUp {...block} />
     case 'StepBlock':
       return <Step {...block} />
     case 'TypographyBlock':
