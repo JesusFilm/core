@@ -1,8 +1,8 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { BlockModule } from './__generated__/types'
-import { ActionResolvers, BlockResolvers } from '../../__generated__/types'
-import { get } from 'lodash'
+import { ActionResolvers } from '../../__generated__/types'
+import { Prisma, Block } from '.prisma/api-journeys-client'
 
 const typeDefs = gql`
   interface Action {
@@ -231,21 +231,32 @@ const typeDefs = gql`
   }
 
   extend type RadioQuestionResponse {
-    block: RadioQuestionBlock!
+    block: RadioQuestionBlock
   }
 
   extend type SignUpResponse {
-    block: SignUpBlock!
+    block: SignUpBlock
   }
 
   extend type VideoResponse {
-    block: VideoBlock!
+    block: VideoBlock
   }
 `
 
+type TranformedBlock = Block & {
+  __typename: string
+}
+
+const transform = (block: Block): TranformedBlock => {
+  return {
+    ...block,
+    ...(block.extraAttrs as Prisma.JsonObject),
+    __typename: block.blockType
+  }
+}
+
 type Resolvers = BlockModule.Resolvers & {
   Action: ActionResolvers
-  Block: BlockResolvers
 }
 
 const resolvers: Resolvers = {
@@ -263,64 +274,41 @@ const resolvers: Resolvers = {
       return 'NavigateAction'
     }
   },
-  Block: {
-    __resolveType: ({ blockType }) => blockType
-  },
   Journey: {
     async blocks(journey, __, { db }) {
-      return await db.block.findMany({
+      const blocks = await db.block.findMany({
         where: { journeyId: journey.id },
         orderBy: [{ parentOrder: 'asc' }]
       })
+      return blocks.map(transform)
     }
   },
-  ButtonBlock: {
-    action: ({ extraAttrs }) => get(extraAttrs, 'action'),
-    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
-    variant: ({ extraAttrs }) => get(extraAttrs, 'variant'),
-    color: ({ extraAttrs }) => get(extraAttrs, 'color'),
-    size: ({ extraAttrs }) => get(extraAttrs, 'size'),
-    startIcon: ({ extraAttrs }) => get(extraAttrs, 'startIcon'),
-    endIcon: ({ extraAttrs }) => get(extraAttrs, 'endIcon')
+  RadioQuestionResponse: {
+    async block(response, __, { db }) {
+      const block = await db.block.findUnique({
+        where: { id: response.blockId }
+      })
+      if (block == null) return null
+      return transform(block)
+    }
   },
-  CardBlock: {
-    backgroundColor: ({ extraAttrs }) => get(extraAttrs, 'backgroundColor'),
-    coverBlockId: ({ extraAttrs }) => get(extraAttrs, 'coverBlockId'),
-    themeMode: ({ extraAttrs }) => get(extraAttrs, 'themeMode'),
-    themeName: ({ extraAttrs }) => get(extraAttrs, 'themeName')
+  SignUpResponse: {
+    async block(response, __, { db }) {
+      const block = await db.block.findUnique({
+        where: { id: response.blockId }
+      })
+      if (block == null) return null
+      return transform(block)
+    }
   },
-  ImageBlock: {
-    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
-    width: ({ extraAttrs }) => get(extraAttrs, 'width'),
-    height: ({ extraAttrs }) => get(extraAttrs, 'height'),
-    alt: ({ extraAttrs }) => get(extraAttrs, 'alt')
-  },
-  SignUpBlock: {
-    action: ({ extraAttrs }) => get(extraAttrs, 'action'),
-    submitIcon: ({ extraAttrs }) => get(extraAttrs, 'submitIcon'),
-    submitLabel: ({ extraAttrs }) => get(extraAttrs, 'submitLabel')
-  },
-  StepBlock: {
-    locked: ({ extraAttrs }) => get(extraAttrs, 'locked'),
-    nextBlockId: ({ extraAttrs }) => get(extraAttrs, 'nextBlockId')
-  },
-  TypographyBlock: {
-    content: ({ extraAttrs }) => get(extraAttrs, 'content'),
-    variant: ({ extraAttrs }) => get(extraAttrs, 'variant'),
-    color: ({ extraAttrs }) => get(extraAttrs, 'color'),
-    align: ({ extraAttrs }) => get(extraAttrs, 'align')
-  },
-  RadioOptionBlock: {
-    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
-    action: ({ extraAttrs }) => get(extraAttrs, 'action')
-  },
-  RadioQuestionBlock: {
-    label: ({ extraAttrs }) => get(extraAttrs, 'label'),
-    description: ({ extraAttrs }) => get(extraAttrs, 'description')
-  },
-  VideoBlock: {
-    src: ({ extraAttrs }) => get(extraAttrs, 'src'),
-    title: ({ extraAttrs }) => get(extraAttrs, 'title')
+  VideoResponse: {
+    async block(response, __, { db }) {
+      const block = await db.block.findUnique({
+        where: { id: response.blockId }
+      })
+      if (block == null) return null
+      return transform(block)
+    }
   }
 }
 

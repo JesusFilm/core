@@ -30,11 +30,10 @@ describe('Response', () => {
         extraAttrs: {}
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response & { block: Block } = {
+      const response1: Response = {
         id: uuidv4(),
         type: 'SignUpResponse',
         blockId: block1.id,
-        block: block1,
         userId,
         extraAttrs: {
           name: 'Robert Smith',
@@ -119,11 +118,10 @@ describe('Response', () => {
         }
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response & { block: Block } = {
+      const response1: Response = {
         id: uuidv4(),
         type: 'RadioQuestionResponse',
         blockId: block1.id,
-        block: block1,
         userId,
         extraAttrs: {
           radioOptionBlockId: uuidv4()
@@ -207,11 +205,10 @@ describe('Response', () => {
         }
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response & { block: Block } = {
+      const response1: Response = {
         id: uuidv4(),
         type: 'VideoResponse',
         blockId: block1.id,
-        block: block1,
         userId,
         extraAttrs: {
           state: 'PLAYING'
