@@ -6,11 +6,6 @@ import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { ReactElement } from 'react'
 import { handleAction } from '../../../libs/action'
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: () => 'uuid'
-}))
-
 jest.mock('../../../libs/action', () => {
   const originalModule = jest.requireActual('../../../libs/action')
   return {
@@ -38,7 +33,7 @@ interface SignUpMockProps {
 
 const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
-    <SignUp {...props} />
+    <SignUp {...props} uuid={() => 'uuid'} />
   </MockedProvider>
 )
 

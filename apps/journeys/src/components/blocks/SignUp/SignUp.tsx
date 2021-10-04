@@ -23,7 +23,7 @@ export const SIGN_UP_RESPONSE_CREATE = gql`
   }
 `
 interface SignUpProps extends TreeBlock<SignUpBlock> {
-  uuid?: string
+  uuid?: () => string
   submitIcon?: IconType
   submitLabel?: string
 }
@@ -34,8 +34,8 @@ interface SignUpFormValues {
 }
 
 export const SignUp = ({
-  id,
-  uuid = uuidv4(),
+  id: blockId,
+  uuid = uuidv4,
   submitIcon,
   // Use translated string when i18n is in
   submitLabel = 'Submit',
@@ -57,18 +57,19 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
+    const id = uuid()
     await signUpResponseCreate({
       variables: {
         input: {
-          id: uuid,
-          blockId: id,
+          id,
+          blockId,
           name: values.name,
           email: values.email
         }
       },
       optimisticResponse: {
         signUpResponseCreate: {
-          id: uuid,
+          id,
           __typename: 'SignUpResponse',
           name: values.name,
           email: values.email
