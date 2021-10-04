@@ -94,6 +94,8 @@ describe('BlockRenderer', () => {
       __typename: 'SignUpBlock',
       id: 'signUp',
       parentBlockId: null,
+      submitLabel: null,
+      submitIcon: null,
       action: {
         __typename: 'NavigateAction',
         gtmEventName: 'gtmEventName'
