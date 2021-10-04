@@ -33,7 +33,6 @@ export function RadioQuestion({
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
-    console.log('HELLO')
     const id = uuid()
     await radioQuestionResponseCreate({
       variables: {
