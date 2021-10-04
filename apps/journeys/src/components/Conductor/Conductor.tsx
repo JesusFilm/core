@@ -55,7 +55,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         {treeBlocks.map((block) => (
           <SwiperSlide
             key={block.id}
-            style={{ width: 'calc(100% - 20px - 20px)' }}
+            style={{
+              width: 'calc(100% - 24px - 24px)',
+              paddingTop: '4px',
+              paddingBottom: '4px'
+            }}
           >
             <BlockRenderer {...block} />
           </SwiperSlide>
