@@ -9,11 +9,6 @@ import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } fr
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { MockedProvider } from '@apollo/client/testing'
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: () => 'uuid'
-}))
-
 describe('RadioQuestion', () => {
   const block: TreeBlock<RadioQuestionBlock> = {
     __typename: 'RadioQuestionBlock',
@@ -80,7 +75,7 @@ describe('RadioQuestion', () => {
         ]}
         addTypename={false}
       >
-        <RadioQuestion {...block} />
+        <RadioQuestion {...block} uuid={() => 'uuid'} />
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
@@ -118,7 +113,7 @@ describe('RadioQuestion', () => {
         ]}
         addTypename={false}
       >
-        <RadioQuestion {...block} />
+        <RadioQuestion {...block} uuid={() => 'uuid'} />
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
