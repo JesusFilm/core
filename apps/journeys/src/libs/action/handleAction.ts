@@ -9,11 +9,5 @@ export function handleAction(action?: ActionFields | null): void {
     case 'NavigateAction':
       nextActiveBlock()
       break
-    case 'NavigateToJourneyAction':
-      nextActiveBlock({ id: action.journeyId })
-      break
-    case 'LinkAction':
-      nextActiveBlock({ id: action.url })
-      break
   }
 }
