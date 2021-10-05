@@ -210,7 +210,7 @@ type RadioQuestionBlock implements Block {
 }
 
 type RadioQuestionResponse implements Response {
-  block: RadioQuestionBlock!
+  block: RadioQuestionBlock
   id: ID!
   radioOptionBlockId: ID!
   userId: ID!
@@ -240,7 +240,7 @@ type SignUpBlock implements Block {
 }
 
 type SignUpResponse implements Response {
-  block: SignUpBlock!
+  block: SignUpBlock
   email: String!
   id: ID!
   name: String!
@@ -333,7 +333,7 @@ type VideoBlock implements Block {
 }
 
 type VideoResponse implements Response {
-  block: VideoBlock!
+  block: VideoBlock
   id: ID!
   state: VideoResponseStateEnum!
   userId: ID!

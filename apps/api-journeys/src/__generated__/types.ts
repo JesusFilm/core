@@ -236,7 +236,7 @@ export type RadioQuestionBlock = Block & {
 
 export type RadioQuestionResponse = Response & {
   __typename?: 'RadioQuestionResponse';
-  block: RadioQuestionBlock;
+  block?: Maybe<RadioQuestionBlock>;
   id: Scalars['ID'];
   radioOptionBlockId: Scalars['ID'];
   userId: Scalars['ID'];
@@ -265,7 +265,7 @@ export type SignUpBlock = Block & {
 
 export type SignUpResponse = Response & {
   __typename?: 'SignUpResponse';
-  block: SignUpBlock;
+  block?: Maybe<SignUpBlock>;
   email: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -352,7 +352,7 @@ export type VideoBlock = Block & {
 
 export type VideoResponse = Response & {
   __typename?: 'VideoResponse';
-  block: VideoBlock;
+  block?: Maybe<VideoBlock>;
   id: Scalars['ID'];
   state: VideoResponseStateEnum;
   userId: Scalars['ID'];
@@ -635,7 +635,7 @@ export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, Pa
 };
 
 export type RadioQuestionResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioQuestionResponse'] = ResolversParentTypes['RadioQuestionResponse']> = {
-  block?: Resolver<ResolversTypes['RadioQuestionBlock'], ParentType, ContextType>;
+  block?: Resolver<Maybe<ResolversTypes['RadioQuestionBlock']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   radioOptionBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -658,7 +658,7 @@ export type SignUpBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
 };
 
 export type SignUpResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpResponse'] = ResolversParentTypes['SignUpResponse']> = {
-  block?: Resolver<ResolversTypes['SignUpBlock'], ParentType, ContextType>;
+  block?: Resolver<Maybe<ResolversTypes['SignUpBlock']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -696,7 +696,7 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 };
 
 export type VideoResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoResponse'] = ResolversParentTypes['VideoResponse']> = {
-  block?: Resolver<ResolversTypes['VideoBlock'], ParentType, ContextType>;
+  block?: Resolver<Maybe<ResolversTypes['VideoBlock']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
