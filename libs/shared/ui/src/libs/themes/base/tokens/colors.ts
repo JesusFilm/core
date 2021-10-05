@@ -48,6 +48,15 @@ export const baseColorsLight: Required<
           }
         }
       }
+    },
+    MuiButtonGroup: {
+      styleOverrides: {
+        groupedContainedVertical: {
+          '&:not(:last-of-type)': {
+            borderColor: '#AAACBB'
+          }
+        }
+      }
     }
   }
 }
