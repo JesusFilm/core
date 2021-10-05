@@ -13,12 +13,12 @@ const useStyles = makeStyles(() => ({
     color: '#54A055'
   },
   buttonLabels: {
-    fontSize: 16,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: 1.4,
     textAlign: 'start',
     justifyContent: 'flex-start',
-    borderRadius: '8px'
+    borderRadius: '8px',
+    padding: '14px 10px 14px 14px'
   }
 }))
 
