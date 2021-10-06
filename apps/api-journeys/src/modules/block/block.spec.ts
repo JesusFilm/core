@@ -1,8 +1,8 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import module from '.'
+import { blockModule } from '.'
 import dbMock from '../../../tests/dbMock'
-import journey from '../journey'
+import { journeyModule } from '../journey'
 import { v4 as uuidv4 } from 'uuid'
 import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
@@ -11,9 +11,9 @@ describe('BlockModule', () => {
   let app, journeyId
 
   beforeEach(() => {
-    app = testkit.testModule(module, {
+    app = testkit.testModule(blockModule, {
       schemaBuilder,
-      modules: [journey]
+      modules: [journeyModule]
     })
     journeyId = uuidv4()
     dbMock.journey.findUnique.mockResolvedValue({

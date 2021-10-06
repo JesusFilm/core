@@ -1,10 +1,10 @@
 import { testkit, gql, Application } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import module from '.'
+import { responseModule } from '.'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
-import journey from '../journey'
-import block from '../block'
+import { journeyModule } from '../journey'
+import { blockModule } from '../block'
 import { Block, Response } from '.prisma/api-journeys-client'
 import { get } from 'lodash'
 
@@ -12,9 +12,9 @@ describe('Response', () => {
   let app: Application
 
   beforeEach(() => {
-    app = testkit.testModule(module, {
+    app = testkit.testModule(responseModule, {
       schemaBuilder,
-      modules: [journey, block]
+      modules: [journeyModule, blockModule]
     })
   })
 
@@ -38,7 +38,9 @@ describe('Response', () => {
         extraAttrs: {
           name: 'Robert Smith',
           email: 'robert.smith@jesusfilm.org'
-        }
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {
@@ -125,7 +127,9 @@ describe('Response', () => {
         userId,
         extraAttrs: {
           radioOptionBlockId: uuidv4()
-        }
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {
@@ -212,7 +216,9 @@ describe('Response', () => {
         userId,
         extraAttrs: {
           state: 'PLAYING'
-        }
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {
