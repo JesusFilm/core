@@ -44,6 +44,9 @@ export const baseColorsLight: Required<
           backgroundColor: primary.dark,
           '&:hover': {
             backgroundColor: primary.main
+          },
+          '&:disabled': {
+            color: '#FFFFFF80'
           }
         }
       }
@@ -91,6 +94,9 @@ export const baseColorsDark: Required<
           backgroundColor: secondary.light,
           '&:hover': {
             backgroundColor: secondary.main
+          },
+          '&:disabled': {
+            color: '#26262E80'
           }
         }
       }
