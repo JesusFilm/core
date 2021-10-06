@@ -71,10 +71,7 @@ export function Video({ src, autoplay }: TreeBlock<VideoBlock>): ReactElement {
   }, [player, isReady, autoPlaySuccess, autoplay])
 
   return (
-    <Container
-      data-testid="VideoComponent"
-      maxWidth="md"
-    >
+    <Container data-testid="VideoComponent" maxWidth="md">
       <video ref={videoNode} className="video-js" />
     </Container>
   )
