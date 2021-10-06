@@ -7,6 +7,7 @@ import { journeyModule } from '../journey'
 import { blockModule } from '../block'
 import { Block, Response } from '.prisma/api-journeys-client'
 import { get } from 'lodash'
+import { actionModule } from '../action'
 
 describe('Response', () => {
   let app: Application
@@ -14,7 +15,7 @@ describe('Response', () => {
   beforeEach(() => {
     app = testkit.testModule(responseModule, {
       schemaBuilder,
-      modules: [journeyModule, blockModule]
+      modules: [journeyModule, blockModule, actionModule]
     })
   })
 

@@ -1,38 +1,9 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { BlockModule } from './__generated__/types'
-import { ActionResolvers } from '../../__generated__/types'
 import { Prisma, Block } from '.prisma/api-journeys-client'
 
 const typeDefs = gql`
-  interface Action {
-    gtmEventName: String
-  }
-
-  """
-  NavigateAction is an Action that navigates to the nextBlockId field set on the
-  closest ancestor StepBlock.
-  """
-  type NavigateAction implements Action {
-    gtmEventName: String
-  }
-
-  type NavigateToBlockAction implements Action {
-    gtmEventName: String
-    blockId: String!
-  }
-
-  type NavigateToJourneyAction implements Action {
-    gtmEventName: String
-    journeyId: String!
-  }
-
-  type LinkAction implements Action {
-    gtmEventName: String
-    url: String!
-    target: String
-  }
-
   interface Block {
     id: ID!
     parentBlockId: ID
@@ -255,25 +226,7 @@ const transform = (block: Block): TranformedBlock => {
   }
 }
 
-type Resolvers = BlockModule.Resolvers & {
-  Action: ActionResolvers
-}
-
-const resolvers: Resolvers = {
-  Action: {
-    __resolveType(action) {
-      if ((action as BlockModule.NavigateToBlockAction).blockId != null) {
-        return 'NavigateToBlockAction'
-      }
-      if ((action as BlockModule.NavigateToJourneyAction).journeyId != null) {
-        return 'NavigateToJourneyAction'
-      }
-      if ((action as BlockModule.LinkAction).url != null) {
-        return 'LinkAction'
-      }
-      return 'NavigateAction'
-    }
-  },
+const resolvers: BlockModule.Resolvers = {
   Journey: {
     async blocks(journey, __, { db }) {
       const blocks = await db.block.findMany({

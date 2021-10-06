@@ -1,6 +1,7 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import { blockModule } from '.'
+import { actionModule } from '../action'
 import dbMock from '../../../tests/dbMock'
 import { journeyModule } from '../journey'
 import { v4 as uuidv4 } from 'uuid'
@@ -13,7 +14,7 @@ describe('BlockModule', () => {
   beforeEach(() => {
     app = testkit.testModule(blockModule, {
       schemaBuilder,
-      modules: [journeyModule]
+      modules: [journeyModule, actionModule]
     })
     journeyId = uuidv4()
     dbMock.journey.findUnique.mockResolvedValue({

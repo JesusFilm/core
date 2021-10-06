@@ -3,10 +3,6 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace BlockModule {
   interface DefinedFields {
-    NavigateAction: 'gtmEventName';
-    NavigateToBlockAction: 'gtmEventName' | 'blockId';
-    NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
-    LinkAction: 'gtmEventName' | 'url' | 'target';
     Icon: 'name' | 'color' | 'size';
     ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
     CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'themeMode' | 'themeName';
@@ -21,7 +17,6 @@ export namespace BlockModule {
     RadioQuestionResponse: 'block';
     SignUpResponse: 'block';
     VideoResponse: 'block';
-    Action: 'gtmEventName';
     Block: 'id' | 'parentBlockId';
   };
   
@@ -37,11 +32,6 @@ export namespace BlockModule {
     TypographyAlign: 'left' | 'center' | 'right';
   };
   
-  export type Action = Pick<Types.Action, DefinedFields['Action']>;
-  export type NavigateAction = Pick<Types.NavigateAction, DefinedFields['NavigateAction']>;
-  export type NavigateToBlockAction = Pick<Types.NavigateToBlockAction, DefinedFields['NavigateToBlockAction']>;
-  export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
-  export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
   export type Block = Pick<Types.Block, DefinedFields['Block']>;
   export type IconName = DefinedEnumValues['IconName'];
   export type IconColor = DefinedEnumValues['IconColor'];
@@ -51,6 +41,7 @@ export namespace BlockModule {
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
   export type ButtonSize = DefinedEnumValues['ButtonSize'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
+  export type Action = Types.Action;
   export type CardBlock = Pick<Types.CardBlock, DefinedFields['CardBlock']>;
   export type ThemeMode = Types.ThemeMode;
   export type ThemeName = Types.ThemeName;
@@ -69,10 +60,6 @@ export namespace BlockModule {
   export type SignUpResponse = Types.SignUpResponse;
   export type VideoResponse = Types.VideoResponse;
   
-  export type NavigateActionResolvers = Pick<Types.NavigateActionResolvers, DefinedFields['NavigateAction'] | '__isTypeOf'>;
-  export type NavigateToBlockActionResolvers = Pick<Types.NavigateToBlockActionResolvers, DefinedFields['NavigateToBlockAction'] | '__isTypeOf'>;
-  export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
-  export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
   export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
   export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
   export type CardBlockResolvers = Pick<Types.CardBlockResolvers, DefinedFields['CardBlock'] | '__isTypeOf'>;
@@ -87,14 +74,9 @@ export namespace BlockModule {
   export type RadioQuestionResponseResolvers = Pick<Types.RadioQuestionResponseResolvers, DefinedFields['RadioQuestionResponse']>;
   export type SignUpResponseResolvers = Pick<Types.SignUpResponseResolvers, DefinedFields['SignUpResponse']>;
   export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse']>;
-  export type ActionResolvers = Pick<Types.ActionResolvers, DefinedFields['Action']>;
   export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
   
   export interface Resolvers {
-    NavigateAction?: NavigateActionResolvers;
-    NavigateToBlockAction?: NavigateToBlockActionResolvers;
-    NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
-    LinkAction?: LinkActionResolvers;
     Icon?: IconResolvers;
     ButtonBlock?: ButtonBlockResolvers;
     CardBlock?: CardBlockResolvers;
@@ -114,26 +96,6 @@ export namespace BlockModule {
   export interface MiddlewareMap {
     '*'?: {
       '*'?: gm.Middleware[];
-    };
-    NavigateAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-    };
-    NavigateToBlockAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-      blockId?: gm.Middleware[];
-    };
-    NavigateToJourneyAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-      journeyId?: gm.Middleware[];
-    };
-    LinkAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-      url?: gm.Middleware[];
-      target?: gm.Middleware[];
     };
     Icon?: {
       '*'?: gm.Middleware[];
