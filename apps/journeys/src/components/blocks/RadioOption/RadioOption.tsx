@@ -9,9 +9,6 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { handleAction } from '../../../libs/action'
 
 const useStyles = makeStyles(() => ({
-  highlightIcon: {
-    color: '#54A055'
-  },
   buttonLabels: {
     fontWeight: 600,
     lineHeight: 1.4,
@@ -53,10 +50,7 @@ export function RadioOption({
       onClick={handleClick}
       startIcon={
         selected ? (
-          <CheckCircleIcon
-            data-testid="RadioOptionCheckCircleIcon"
-            className={classes.highlightIcon}
-          />
+          <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
         ) : (
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
