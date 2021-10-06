@@ -19,6 +19,9 @@ async function main(): Promise<void> {
       }
     })
   }
+  await prisma.response.deleteMany({
+    where: { block: { journeyId: journey.id } }
+  })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
   const step = await prisma.block.create({
@@ -204,13 +207,13 @@ async function main(): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PLAY_ARROW',
+          name: 'PlayArrow',
           color: 'secondary',
           size: 'xl'
         },
         action: {
-          gtmEventName: 'signup',
-          url: 'https://signup.jesusfilm.org'
+          gtmEventName: 'signUp',
+          url: 'https://signUp.jesusfilm.org'
         }
       },
       parentOrder: 0
@@ -255,7 +258,21 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
-  const stepSignup = await prisma.block.create({
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
+      extraAttrs: {
+        src: 'https://source.unsplash.com/random/1920x1080',
+        alt: 'random image from unsplash',
+        width: 1920,
+        height: 1080
+      },
+      parentOrder: 1
+    }
+  })
+  const stepSignUp = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -268,12 +285,12 @@ async function main(): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'SignupBlock',
-      parentBlockId: stepSignup.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: stepSignUp.id,
       extraAttrs: {
         action: {
-          gtmEventName: 'signup',
-          url: 'https://signup-complete.jesusfilm.org'
+          gtmEventName: 'signUp',
+          url: 'https://signUp-complete.jesusfilm.org'
         }
       },
       parentOrder: 0

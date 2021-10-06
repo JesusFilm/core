@@ -101,6 +101,15 @@ enum IconSize {
   inherit
 }
 
+type ImageBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  src: String!
+  width: Int!
+  height: Int!
+  alt: String!
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!
@@ -132,7 +141,7 @@ type LinkAction implements Action {
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyPublish(id: ID!): Journey
-  signupResponseCreate(input: SignupResponseCreateInput!): SignupResponse!
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
@@ -178,7 +187,7 @@ type RadioQuestionResponse implements Response {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
-  block: RadioQuestionBlock!
+  block: RadioQuestionBlock
 }
 
 input RadioQuestionResponseCreateInput {
@@ -195,21 +204,23 @@ interface Response {
   userId: ID!
 }
 
-type SignupBlock implements Block {
+type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
   action: Action
+  submitIcon: Icon
+  submitLabel: String
 }
 
-type SignupResponse implements Response {
+type SignUpResponse implements Response {
   id: ID!
   userId: ID!
   name: String!
   email: String!
-  block: SignupBlock!
+  block: SignUpBlock
 }
 
-input SignupResponseCreateInput {
+input SignUpResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
@@ -297,7 +308,7 @@ type VideoResponse implements Response {
   id: ID!
   userId: ID!
   state: VideoResponseStateEnum!
-  block: VideoBlock!
+  block: VideoBlock
 }
 
 input VideoResponseCreateInput {

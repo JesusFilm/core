@@ -9,7 +9,17 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { TYPOGRAPHY_FIELDS } from '../src/components/blocks/Typography'
+import {
+  TYPOGRAPHY_FIELDS,
+  BUTTON_FIELDS,
+  IMAGE_FIELDS,
+  CARD_FIELDS,
+  SIGN_UP_FIELDS,
+  STEP_FIELDS,
+  RADIO_OPTION_FIELDS,
+  RADIO_QUESTION_FIELDS,
+  VIDEO_FIELDS
+} from '../src/components/blocks'
 
 interface JourneyPageProps {
   journey: Journey
@@ -30,7 +40,15 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
 ) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
+      ${BUTTON_FIELDS}
+      ${CARD_FIELDS}
+      ${IMAGE_FIELDS}
+      ${RADIO_OPTION_FIELDS}
+      ${RADIO_QUESTION_FIELDS}
+      ${SIGN_UP_FIELDS}
+      ${STEP_FIELDS}
       ${TYPOGRAPHY_FIELDS}
+      ${VIDEO_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -39,44 +57,32 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           blocks {
             id
             parentBlockId
-            ... on StepBlock {
-              locked
-              nextBlockId
-            }
-            ... on VideoBlock {
-              src
-              title
-              volume
-              autoplay
+            ... on ButtonBlock {
+              ...ButtonFields
             }
             ... on CardBlock {
-              backgroundColor
-              coverBlockId
-              themeMode
-              themeName
+              ...CardFields
             }
-            ... on RadioQuestionBlock {
-              label
-              description
+            ... on ImageBlock {
+              ...ImageFields
             }
             ... on RadioOptionBlock {
-              label
-              action {
-                __typename
-                gtmEventName
-                ... on NavigateToBlockAction {
-                  blockId
-                }
-                ... on NavigateToJourneyAction {
-                  journeyId
-                }
-                ... on LinkAction {
-                  url
-                }
-              }
+              ...RadioOptionFields
+            }
+            ... on RadioQuestionBlock {
+              ...RadioQuestionFields
+            }
+            ... on SignUpBlock {
+              ...SignUpFields
+            }
+            ... on StepBlock {
+              ...StepFields
             }
             ... on TypographyBlock {
               ...TypographyFields
+            }
+            ... on VideoBlock {
+              ...VideoFields
             }
           }
         }

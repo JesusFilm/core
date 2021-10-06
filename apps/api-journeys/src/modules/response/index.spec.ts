@@ -18,23 +18,22 @@ describe('Response', () => {
     })
   })
 
-  describe('signupResponseCreate', () => {
-    it('creates a signup block response', async () => {
+  describe('signUpResponseCreate', () => {
+    it('creates a signUp block response', async () => {
       const userId = uuidv4()
       const block1: Block = {
         id: uuidv4(),
         journeyId: uuidv4(),
-        blockType: 'SignupBlock',
+        blockType: 'SignUpBlock',
         parentBlockId: null,
         parentOrder: 0,
         extraAttrs: {}
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response & { block: Block } = {
+      const response1: Response = {
         id: uuidv4(),
-        type: 'SignupResponse',
+        type: 'SignUpResponse',
         blockId: block1.id,
-        block: block1,
         userId,
         extraAttrs: {
           name: 'Robert Smith',
@@ -44,8 +43,8 @@ describe('Response', () => {
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {
         document: gql`
-          mutation ($input: SignupResponseCreateInput!) {
-            signupResponseCreate(input: $input) {
+          mutation ($input: SignUpResponseCreateInput!) {
+            signUpResponseCreate(input: $input) {
               id
               userId
               name
@@ -69,7 +68,7 @@ describe('Response', () => {
           userId
         }
       })
-      expect(data?.signupResponseCreate).toEqual({
+      expect(data?.signUpResponseCreate).toEqual({
         id: response1.id,
         userId,
         name: 'Robert Smith',
@@ -83,8 +82,8 @@ describe('Response', () => {
     it('throws authentication error if no user token', async () => {
       const { errors } = await testkit.execute(app, {
         document: gql`
-          mutation ($input: SignupResponseCreateInput!) {
-            signupResponseCreate(input: $input) {
+          mutation ($input: SignUpResponseCreateInput!) {
+            signUpResponseCreate(input: $input) {
               id
             }
           }
@@ -119,11 +118,10 @@ describe('Response', () => {
         }
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response & { block: Block } = {
+      const response1: Response = {
         id: uuidv4(),
         type: 'RadioQuestionResponse',
         blockId: block1.id,
-        block: block1,
         userId,
         extraAttrs: {
           radioOptionBlockId: uuidv4()
@@ -207,11 +205,10 @@ describe('Response', () => {
         }
       }
       dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response & { block: Block } = {
+      const response1: Response = {
         id: uuidv4(),
         type: 'VideoResponse',
         blockId: block1.id,
-        block: block1,
         userId,
         extraAttrs: {
           state: 'PLAYING'

@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Typography, Card, CardContent, ButtonGroup } from '@mui/material'
+import { Typography, ButtonGroup } from '@mui/material'
 import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -18,28 +18,33 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
   }
 `
 
+interface RadioQuestionProps extends TreeBlock<RadioQuestionBlock> {
+  uuid?: () => string
+}
+
 export function RadioQuestion({
-  id,
+  id: blockId,
   label,
   description,
-  children
-}: TreeBlock<RadioQuestionBlock>): ReactElement {
+  children,
+  uuid = uuidv4
+}: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
-    const uuid = uuidv4()
+    const id = uuid()
     await radioQuestionResponseCreate({
       variables: {
         input: {
-          id: uuid,
-          blockId: id,
+          id,
+          blockId,
           radioOptionBlockId
         }
       },
       optimisticResponse: {
         radioQuestionResponseCreate: {
-          id: uuid,
+          id,
           __typename: 'RadioQuestionResponse',
           radioOptionBlockId
         }
@@ -50,33 +55,29 @@ export function RadioQuestion({
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
   return (
-    <Card data-testid="RadioQuestionCard">
-      <CardContent>
-        <Typography variant="h1" gutterBottom>
-          {label}
+    <>
+      <Typography variant="h3" gutterBottom>
+        {label}
+      </Typography>
+      {description != null && (
+        <Typography variant="body2" gutterBottom>
+          {description}
         </Typography>
-        <Typography variant="h6">{description}</Typography>
-      </CardContent>
-      <CardContent>
-        <ButtonGroup
-          orientation="vertical"
-          variant="contained"
-          fullWidth={true}
-        >
-          {children?.map(
-            (option) =>
-              option.__typename === 'RadioOptionBlock' && (
-                <RadioOption
-                  {...option}
-                  key={option.id}
-                  selected={selectedId === option.id}
-                  disabled={Boolean(selectedId)}
-                  onClick={handleClick}
-                />
-              )
-          )}
-        </ButtonGroup>
-      </CardContent>
-    </Card>
+      )}
+      <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
+        {children?.map(
+          (option) =>
+            option.__typename === 'RadioOptionBlock' && (
+              <RadioOption
+                {...option}
+                key={option.id}
+                selected={selectedId === option.id}
+                disabled={Boolean(selectedId)}
+                onClick={handleClick}
+              />
+            )
+        )}
+      </ButtonGroup>
+    </>
   )
 }

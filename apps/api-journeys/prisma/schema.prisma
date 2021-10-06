@@ -34,9 +34,10 @@ model Journey {
 enum BlockType {
   ButtonBlock
   CardBlock
+  ImageBlock
   RadioOptionBlock
   RadioQuestionBlock
-  SignupBlock
+  SignUpBlock
   StepBlock
   TypographyBlock
   VideoBlock
@@ -57,7 +58,7 @@ model Block {
 
 enum ResponseType {
   RadioQuestionResponse
-  SignupResponse
+  SignUpResponse
   VideoResponse
 }
 
