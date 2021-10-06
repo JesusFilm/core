@@ -53,7 +53,7 @@ export const baseColorsLight: Required<
       styleOverrides: {
         groupedContainedVertical: {
           '&:not(:last-of-type)': {
-            borderColor: '#AAACBB'
+            borderColor: secondary.dark
           }
         }
       }

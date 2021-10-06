@@ -1,23 +1,10 @@
 import { Button } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { ReactElement } from 'react'
-import { compact } from 'lodash'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { handleAction } from '../../../libs/action'
-
-const useStyles = makeStyles(() => ({
-  buttonLabels: {
-    fontWeight: 600,
-    lineHeight: 1.4,
-    textAlign: 'start',
-    justifyContent: 'flex-start',
-    borderRadius: '8px',
-    padding: '14px 10px 14px 14px'
-  }
-}))
 
 type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
   className?: string
@@ -35,8 +22,6 @@ export function RadioOption({
   selected = false,
   onClick
 }: RadioOptionProps): ReactElement {
-  const classes = useStyles()
-
   const handleClick = (): void => {
     handleAction(action)
     onClick?.(id)
@@ -45,7 +30,7 @@ export function RadioOption({
   return (
     <Button
       variant="contained"
-      className={compact([className, classes.buttonLabels]).join(' ')}
+      className={className}
       disabled={disabled}
       onClick={handleClick}
       startIcon={
@@ -55,6 +40,15 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
+      sx={{
+        fontSize: (theme) => theme.typography.body2.fontSize,
+        fontWeight: 600,
+        lineHeight: 1.4,
+        textAlign: 'start',
+        justifyContent: 'flex-start',
+        borderRadius: '8px',
+        padding: '14px 10px 14px 14px'
+      }}
     >
       {label}
     </Button>
