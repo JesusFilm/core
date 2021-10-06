@@ -34,6 +34,7 @@ export const baseColorsLight: Required<
     },
     action: {
       // DISABLED BUTTON COLORS
+      disabled: primary.light,
       disabledBackground: primary.dark
     }
   },
@@ -44,9 +45,6 @@ export const baseColorsLight: Required<
           backgroundColor: primary.dark,
           '&:hover': {
             backgroundColor: primary.main
-          },
-          '&:disabled': {
-            color: '#FFFFFF80'
           }
         }
       }
@@ -54,14 +52,8 @@ export const baseColorsLight: Required<
     MuiButtonGroup: {
       styleOverrides: {
         groupedContainedVertical: {
-          '&:not(:last-of-type)': {
-            borderColor: secondary.dark
-          },
-          '&:disabled': {
-            color: '#FFFFFF80',
-            '&:not(:last-of-type)': {
-              borderColor: secondary.dark
-            }
+          '&:not(:last-of-type), &:disabled': {
+            borderBottom: `1px solid ${secondary.main}`
           }
         }
       }
@@ -84,31 +76,18 @@ export const baseColorsDark: Required<
     },
     action: {
       // DISABLED BUTTON COLORS
-      disabledBackground: secondary.light
+      disabled: secondary.light,
+      disabledBackground: secondary.dark
     }
   },
   components: {
+    ...baseColorsLight.components,
     MuiButton: {
       styleOverrides: {
         containedPrimary: {
           backgroundColor: secondary.light,
           '&:hover': {
             backgroundColor: secondary.main
-          },
-          '&:disabled': {
-            color: '#26262E80'
-          }
-        }
-      }
-    },
-    MuiButtonGroup: {
-      styleOverrides: {
-        groupedContainedVertical: {
-          '&:disabled': {
-            color: '#26262E80',
-            '&:not(:last-of-type)': {
-              borderColor: secondary.dark
-            }
           }
         }
       }

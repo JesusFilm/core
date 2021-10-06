@@ -80,11 +80,9 @@ describe('RadioQuestion', () => {
     )
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    await waitFor(() => expect(buttons[0]).not.toBeDisabled())
-    await waitFor(() =>
-      expect(buttons[0]).toContainElement(
-        getByTestId('RadioOptionCheckCircleIcon')
-      )
+    await waitFor(() => expect(buttons[0]).toBeDisabled())
+    expect(buttons[0]).toContainElement(
+      getByTestId('RadioOptionCheckCircleIcon')
     )
   })
 
@@ -120,10 +118,10 @@ describe('RadioQuestion', () => {
     )
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    await waitFor(() => expect(buttons[0]).not.toBeDisabled())
-    await waitFor(() =>
-      expect(getByTestId('RadioOptionCheckCircleIcon')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(buttons[0]).toBeDisabled())
+    expect(
+      getByTestId('RadioOptionRadioButtonUncheckedIcon')
+    ).toBeInTheDocument()
     expect(buttons[1]).toBeDisabled()
     expect(buttons[1]).toContainElement(
       getByTestId('RadioOptionRadioButtonUncheckedIcon')

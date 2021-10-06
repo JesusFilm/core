@@ -1,4 +1,4 @@
-import { Button } from '@mui/material'
+import { Button, useTheme } from '@mui/material'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { ReactElement } from 'react'
@@ -22,6 +22,8 @@ export function RadioOption({
   selected = false,
   onClick
 }: RadioOptionProps): ReactElement {
+  const theme = useTheme()
+
   const handleClick = (): void => {
     handleAction(action)
     onClick?.(id)
@@ -41,9 +43,10 @@ export function RadioOption({
         )
       }
       sx={{
-        fontSize: (theme) => theme.typography.body2.fontSize,
+        fontFamily: theme.typography.body2.fontFamily,
+        fontSize: theme.typography.body2.fontSize,
         fontWeight: 600,
-        lineHeight: 1.4,
+        lineHeight: theme.typography.body2.lineHeight,
         textAlign: 'start',
         justifyContent: 'flex-start',
         borderRadius: '8px',
