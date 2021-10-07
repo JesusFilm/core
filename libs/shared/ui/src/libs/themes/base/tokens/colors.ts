@@ -34,8 +34,8 @@ export const baseColorsLight: Required<
     },
     action: {
       // DISABLED BUTTON COLORS
-      disabled: '#FFFFFF',
-      disabledBackground: '#30313D'
+      disabled: primary.light,
+      disabledBackground: primary.dark
     }
   },
   components: {
@@ -45,6 +45,15 @@ export const baseColorsLight: Required<
           backgroundColor: primary.dark,
           '&:hover': {
             backgroundColor: primary.main
+          }
+        }
+      }
+    },
+    MuiButtonGroup: {
+      styleOverrides: {
+        groupedContainedVertical: {
+          '&:not(:last-of-type), &:disabled': {
+            borderBottom: `1px solid ${secondary.main}`
           }
         }
       }
@@ -67,11 +76,12 @@ export const baseColorsDark: Required<
     },
     action: {
       // DISABLED BUTTON COLORS
-      disabled: '#26262E',
-      disabledBackground: '#BDBFCF'
+      disabled: secondary.light,
+      disabledBackground: secondary.dark
     }
   },
   components: {
+    ...baseColorsLight.components,
     MuiButton: {
       styleOverrides: {
         containedPrimary: {

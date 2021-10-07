@@ -187,7 +187,7 @@ type RadioQuestionResponse implements Response {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
-  block: RadioQuestionBlock!
+  block: RadioQuestionBlock
 }
 
 input RadioQuestionResponseCreateInput {
@@ -217,7 +217,7 @@ type SignUpResponse implements Response {
   userId: ID!
   name: String!
   email: String!
-  block: SignUpBlock!
+  block: SignUpBlock
 }
 
 input SignUpResponseCreateInput {
@@ -308,7 +308,7 @@ type VideoResponse implements Response {
   id: ID!
   userId: ID!
   state: VideoResponseStateEnum!
-  block: VideoBlock!
+  block: VideoBlock
 }
 
 input VideoResponseCreateInput {

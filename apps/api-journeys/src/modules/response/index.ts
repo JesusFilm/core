@@ -2,8 +2,7 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { ResponseModule } from './__generated__/types'
 import { AuthenticationError } from 'apollo-server-errors'
-import { get } from 'lodash'
-import { ResponseResolvers } from '../../__generated__/types'
+import { Prisma, Response } from '.prisma/api-journeys-client'
 
 const typeDefs = gql`
   input RadioQuestionResponseCreateInput {
@@ -73,11 +72,19 @@ const typeDefs = gql`
   }
 `
 
-type Resolvers = ResponseModule.Resolvers & {
-  Response: ResponseResolvers
+type TranformedResponse = Response & {
+  __typename: string
 }
 
-const resolvers: Resolvers = {
+const transform = (response: Response): TranformedResponse => {
+  return {
+    ...response,
+    ...(response.extraAttrs as Prisma.JsonObject),
+    __typename: response.type
+  }
+}
+
+const resolvers: ResponseModule.Resolvers = {
   Mutation: {
     async signUpResponseCreate(
       _parent,
@@ -86,16 +93,16 @@ const resolvers: Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      return await db.response.create({
+      const response = await db.response.create({
         data: {
           id: id as string | undefined,
           type: 'SignUpResponse',
           blockId,
           userId,
           extraAttrs: { name, email }
-        },
-        include: { block: true }
+        }
       })
+      return transform(response)
     },
     async radioQuestionResponseCreate(
       _parent,
@@ -104,16 +111,16 @@ const resolvers: Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      return await db.response.create({
+      const response = await db.response.create({
         data: {
           id: id as string | undefined,
           type: 'RadioQuestionResponse',
           blockId,
           userId,
           extraAttrs: { radioOptionBlockId }
-        },
-        include: { block: true }
+        }
       })
+      return transform(response)
     },
     async videoResponseCreate(
       _parent,
@@ -122,31 +129,17 @@ const resolvers: Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      return await db.response.create({
+      const response = await db.response.create({
         data: {
           id: id as string | undefined,
           type: 'VideoResponse',
           blockId,
           userId,
           extraAttrs: { state }
-        },
-        include: { block: true }
+        }
       })
+      return transform(response)
     }
-  },
-  Response: {
-    __resolveType: ({ type }) => type
-  },
-  RadioQuestionResponse: {
-    radioOptionBlockId: ({ extraAttrs }) =>
-      get(extraAttrs, 'radioOptionBlockId')
-  },
-  SignUpResponse: {
-    name: ({ extraAttrs }) => get(extraAttrs, 'name'),
-    email: ({ extraAttrs }) => get(extraAttrs, 'email')
-  },
-  VideoResponse: {
-    state: ({ extraAttrs }) => get(extraAttrs, 'state')
   }
 }
 
