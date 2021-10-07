@@ -10,7 +10,7 @@ import {
 } from '../../../__generated__/globalTypes'
 
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
-import { journeysConfig } from '../../libs/storybook/config'
+import { journeysConfig } from '../../libs/storybook/decorators'
 
 const IconDemo = {
   ...journeysConfig,

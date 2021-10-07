@@ -1,4 +1,4 @@
-import { journeysConfig } from '../../libs/storybook/config'
+import { journeysConfig } from '../../libs/storybook/decorators'
 import { Meta } from '@storybook/react'
 import { ReactElement } from 'react'
 import { JourneyProgress } from '.'
