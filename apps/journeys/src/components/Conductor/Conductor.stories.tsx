@@ -4,7 +4,7 @@ import { Meta } from '@storybook/react'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ReactElement } from 'react'
 import { Conductor } from '.'
-import { journeysConfig } from '../../libs/storybook/decorators'
+import { journeysConfig } from '../../libs/storybook/config'
 
 const Demo = {
   ...journeysConfig,

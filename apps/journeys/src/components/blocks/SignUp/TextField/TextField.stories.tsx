@@ -6,7 +6,7 @@ import { ThemeProvider } from '@core/shared/ui'
 
 import TextField, { TextFieldProps } from './TextField'
 import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
-import { journeysConfig } from '../../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../../libs/storybook/config'
 
 interface TextFieldStoryProps extends TextFieldProps {
   themeModes: ThemeMode[]

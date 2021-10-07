@@ -9,7 +9,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook/config'
 import { ButtonFields } from '../../../../__generated__/ButtonFields'
 import { Typography } from '@mui/material'
 

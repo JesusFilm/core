@@ -11,15 +11,24 @@ Object.defineProperty(NextImage, 'default', {
 
 module.exports = {
   parameters: {
-    chromatic: { viewports: [320] },
+    chromatic: { viewports: [640] },
     controls: { disabled: true },
     backgrounds: {
+      disable: true,
       grid: {
         disable: true
       }
-    },
-    viewport: {
-      defaultViewport: 'mobile1'
+    }
+  },
+  globalTypes: {
+    theme: {
+      name: 'Theme',
+      description: 'Global theme for components',
+      defaultValue: 'all',
+      toolbar: {
+        icon: 'mirror',
+        items: ['light', 'dark', 'all']
+      }
     }
   }
 }

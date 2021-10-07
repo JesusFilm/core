@@ -5,7 +5,7 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook/config'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '@core/shared/ui'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'

@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook/config'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
