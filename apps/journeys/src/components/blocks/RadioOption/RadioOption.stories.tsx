@@ -1,8 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import RadioOption from './RadioOption'
-import { journeysConfig } from '../../../libs/storybook'
-import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { journeysConfig, StoryCard } from '../../../libs/storybook'
+import { RadioOption, RadioOptionProps } from '.'
 
 const Demo = {
   ...journeysConfig,
@@ -10,45 +8,43 @@ const Demo = {
   title: 'Journeys/Blocks/RadioOption'
 }
 
-const DefaultTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
-  <RadioOption {...props} selected={false} disabled={false} />
+const Template: Story<RadioOptionProps> = ({ ...props }) => (
+  <StoryCard>
+    <RadioOption {...props} />
+  </StoryCard>
 )
 
-export const Default: Story<TreeBlock<RadioOptionBlock>> = DefaultTemplate.bind(
-  {}
-)
+export const Default: Story<RadioOptionProps> = Template.bind({})
 Default.args = {
   id: 'NestedOptions',
-  label: 'Chat Privately'
+  label: 'Chat Privately',
+  selected: false,
+  disabled: false
 }
 
-export const Long: Story<TreeBlock<RadioOptionBlock>> = DefaultTemplate.bind({})
+export const Long: Story<RadioOptionProps> = Template.bind({})
 Long.args = {
   id: 'NestedOptions2',
   label:
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the '
+    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the ',
+  selected: false,
+  disabled: false
 }
 
-const SelectedTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
-  <RadioOption {...props} selected={true} disabled={false} />
-)
-
-export const Selected: Story<TreeBlock<RadioOptionBlock>> =
-  SelectedTemplate.bind({})
+export const Selected: Story<RadioOptionProps> = Template.bind({})
 Selected.args = {
   id: 'NestedOptions3',
-  label: 'Watch more videos about Jesus'
+  label: 'Watch more videos about Jesus',
+  selected: true,
+  disabled: false
 }
 
-const DisabledTemplate: Story<TreeBlock<RadioOptionBlock>> = ({ ...props }) => (
-  <RadioOption {...props} selected={false} disabled={true} />
-)
-
-export const Disabled: Story<TreeBlock<RadioOptionBlock>> =
-  DisabledTemplate.bind({})
+export const Disabled: Story<RadioOptionProps> = Template.bind({})
 Disabled.args = {
   id: 'NestedOptions4',
-  label: 'Ask a question'
+  label: 'Ask a question',
+  selected: false,
+  disabled: true
 }
 
 export default Demo as Meta

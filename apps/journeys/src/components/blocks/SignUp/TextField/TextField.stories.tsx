@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik'
 import * as Yup from 'yup'
 
 import TextField, { TextFieldProps } from './TextField'
-import { journeysConfig } from '../../../../libs/storybook'
+import { journeysConfig, StoryCard } from '../../../../libs/storybook'
 
 const Demo = {
   ...journeysConfig,
@@ -12,39 +12,41 @@ const Demo = {
 }
 
 const Template: Story<TextFieldProps> = () => (
-  <Formik
-    initialValues={{
-      default: '',
-      prepopulated: 'Prepopulated',
-      errored: '',
-      disabled: ''
-    }}
-    validationSchema={Yup.object().shape({
-      errored: Yup.string()
-        .min(50, 'Must be 50 characters or more')
-        .required('Required')
-    })}
-    initialTouched={{ errored: true }}
-    validateOnMount
-    onSubmit={(values) => {
-      console.log(values)
-    }}
-  >
-    {() => (
-      <Form
-        style={{
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
-        <TextField name="default" label="Default" />
-        <TextField name="prepopulated" label="Prepopulated" />
-        <TextField name="errored" label="Errored" />
-        <TextField name="focused" label="Focused" focused />
-        <TextField name="disabled" label="Disabled" disabled />
-      </Form>
-    )}
-  </Formik>
+  <StoryCard>
+    <Formik
+      initialValues={{
+        default: '',
+        prepopulated: 'Prepopulated',
+        errored: '',
+        disabled: ''
+      }}
+      validationSchema={Yup.object().shape({
+        errored: Yup.string()
+          .min(50, 'Must be 50 characters or more')
+          .required('Required')
+      })}
+      initialTouched={{ errored: true }}
+      validateOnMount
+      onSubmit={(values) => {
+        console.log(values)
+      }}
+    >
+      {() => (
+        <Form
+          style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <TextField name="default" label="Default" />
+          <TextField name="prepopulated" label="Prepopulated" />
+          <TextField name="errored" label="Errored" />
+          <TextField name="focused" label="Focused" focused />
+          <TextField name="disabled" label="Disabled" disabled />
+        </Form>
+      )}
+    </Formik>
+  </StoryCard>
 )
 
 export const States = Template.bind({})

@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { Image } from './Image'
-import { journeysConfig } from '../../../libs/storybook'
+import { journeysConfig, StoryCard } from '../../../libs/storybook'
 
 const Demo = {
   ...journeysConfig,
@@ -11,7 +11,9 @@ const Demo = {
 }
 
 const DefaultTemplate: Story<TreeBlock<ImageBlock>> = ({ alt, ...props }) => (
-  <Image {...props} alt={alt} />
+  <StoryCard>
+    <Image {...props} alt={alt} />
+  </StoryCard>
 )
 
 export const Default: Story<TreeBlock<ImageBlock>> = DefaultTemplate.bind({})

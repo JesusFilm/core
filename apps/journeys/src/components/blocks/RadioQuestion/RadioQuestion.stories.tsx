@@ -5,7 +5,7 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
-import { journeysConfig } from '../../../libs/storybook'
+import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import { MockedProvider } from '@apollo/client/testing'
 import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
@@ -98,7 +98,9 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({
       }
     ]}
   >
-    <RadioQuestion {...props} uuid={() => 'uuid'} />
+    <StoryCard>
+      <RadioQuestion {...props} uuid={() => 'uuid'} />
+    </StoryCard>
   </MockedProvider>
 )
 
