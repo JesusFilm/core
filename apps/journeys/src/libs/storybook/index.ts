@@ -1,0 +1,1 @@
+export { journeysConfig } from './config'

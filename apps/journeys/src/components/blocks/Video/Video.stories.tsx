@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { Video } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 
 const Demo = {
