@@ -12,7 +12,9 @@ const palette = {
   0: '#FFFFFF'
 }
 
-export const baseColorsLight = (): Required<Pick<ThemeOptions, 'palette'>> => {
+export const baseColorsLight = (): Required<
+  Pick<ThemeOptions, 'palette' | 'components'>
+> => {
   const primary: Required<SimplePaletteColorOptions> = {
     light: palette[800],
     main: palette[900],
@@ -46,11 +48,33 @@ export const baseColorsLight = (): Required<Pick<ThemeOptions, 'palette'>> => {
         disabled: palette[700],
         disabledBackground: primary.dark
       }
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          containedPrimary: {
+            '&:hover': {
+              backgroundColor: palette[700]
+            }
+          }
+        }
+      },
+      MuiButtonGroup: {
+        styleOverrides: {
+          groupedContainedVertical: {
+            '&:not(:last-of-type)': {
+              borderBottom: `1px solid ${palette[700]}`
+            }
+          }
+        }
+      }
     }
   }
 }
 
-export const baseColorsDark = (): Required<Pick<ThemeOptions, 'palette'>> => {
+export const baseColorsDark = (): Required<
+  Pick<ThemeOptions, 'palette' | 'components'>
+> => {
   const primary: Required<SimplePaletteColorOptions> = {
     light: palette[100],
     main: palette[100],
@@ -83,6 +107,17 @@ export const baseColorsDark = (): Required<Pick<ThemeOptions, 'palette'>> => {
       action: {
         disabled: primary.light,
         disabledBackground: primary.dark
+      }
+    },
+    components: {
+      MuiButtonGroup: {
+        styleOverrides: {
+          groupedContainedVertical: {
+            '&:not(:last-of-type)': {
+              borderBottom: `1px solid ${primary.dark}`
+            }
+          }
+        }
       }
     }
   }
