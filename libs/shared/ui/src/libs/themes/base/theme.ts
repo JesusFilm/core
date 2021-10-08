@@ -11,6 +11,7 @@ export const baseTheme = {
   ...baseComponents
 }
 
-export const baseLight = createTheme(deepmerge(baseColorsLight, baseTheme))
+// DeepMerge no longer needed - remove or keep just in case for future?
+export const baseLight = createTheme(deepmerge(baseColorsLight(), baseTheme))
 
-export const baseDark = createTheme(deepmerge(baseColorsDark, baseTheme))
+export const baseDark = createTheme(deepmerge(baseColorsDark(), baseTheme))
