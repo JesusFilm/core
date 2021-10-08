@@ -8,7 +8,11 @@ import {
   IconSize
 } from '../../../../__generated__/globalTypes'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
-import { ButtonFields } from '../../../../__generated__/ButtonFields'
+import {
+  ButtonFields,
+  ButtonFields_startIcon as StartIcon,
+  ButtonFields_endIcon as EndIcon
+} from '../../../../__generated__/ButtonFields'
 import { Typography } from '@mui/material'
 
 const ButtonDemo = {
@@ -28,10 +32,7 @@ const Template: Story<ButtonStoryProps> = ({ ...args }) => (
 )
 
 export const Variant = Template.bind({})
-Variant.args = {
-  buttonVariant: ButtonVariant.contained,
-  label: ButtonVariant.contained
-}
+Variant.args = { label: ButtonVariant.contained }
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
@@ -48,7 +49,6 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
-  buttonVariant: ButtonVariant.contained,
   variants: [
     null,
     ButtonColor.primary,
@@ -77,32 +77,33 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Size = SizeTemplate.bind({})
 Size.args = {
-  buttonVariant: ButtonVariant.contained,
   variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
 }
 
-const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <StoryCard>
-    <Button {...args} />
-    <Button
-      {...args}
-      label="End Icon"
-      endIcon={args.startIcon}
-      startIcon={null}
-    />
-  </StoryCard>
-)
-
-export const Icon = IconTemplate.bind({})
-Icon.args = {
-  label: 'Start Icon',
-  buttonVariant: ButtonVariant.contained,
-  startIcon: {
+const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
+  const icon: StartIcon | EndIcon = {
     __typename: 'Icon',
     name: IconName.CheckCircle,
     color: null,
     size: IconSize.md
   }
+
+  return (
+    <StoryCard>
+      {args.variants.map((variant: string, i) => (
+        <Button
+          {...args}
+          key={i}
+          label={`${variant} Icon`}
+          startIcon={variant === 'Start' ? icon : null}
+          endIcon={variant === 'End' ? icon : null}
+        />
+      ))}
+    </StoryCard>
+  )
 }
+
+export const Icon = IconTemplate.bind({})
+Icon.args = { variants: ['Start', 'End'] }
 
 export default ButtonDemo as Meta
