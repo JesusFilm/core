@@ -23,7 +23,7 @@ const ThemeContainer = ({
         position: 'absolute',
         inset: mode === 'light' ? '0px 50vw 0px 0px' : '0px 0px 0px 50vw',
         width: '50vw',
-        height: '100vh',
+        maxHeight: '100vh',
         overflow: 'auto',
         padding: layout === 'padded' ? '1.5rem' : '0px',
         background: themes.base[mode as ThemeMode].palette.background.default,
