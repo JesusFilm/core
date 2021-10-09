@@ -18,11 +18,14 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      LAMBDA_GROUP_NAME: ark-journey-lambda-stage
 
     runs-on: ubuntu-latest
 
     steps:
+      - name: Build Lambda security group name
+        run: |
+          echo "LAMBDA_GROUP_NAME=ark-journey-lambda-$ENV_SUFFIX" >> $GITHUB_ENV
+
       - name: Checkout current branch
         uses: actions/checkout@v2
 
