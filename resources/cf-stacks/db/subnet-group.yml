@@ -1,6 +1,5 @@
-Type: 'AWS::RDS::DBSubnetGroup'
+Type: "AWS::RDS::DBSubnetGroup"
 Properties:
-  DBSubnetGroupDescription: !Ref 'AWS::StackName'
-  SubnetIds:
-    - subnet-5fec2a05
-    - subnet-955371f9
+  DBSubnetGroupName: core-journeys-db-${opt:env}
+  DBSubnetGroupDescription: !Ref "AWS::StackName"
+  SubnetIds: ${self:custom.aws.private-subnets}

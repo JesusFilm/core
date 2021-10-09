@@ -12,4 +12,4 @@ Properties:
   DBSubnetGroupName: !Ref DBSubnetGroup
   DBClusterParameterGroupName: default.aurora-postgresql13
   VpcSecurityGroupIds:
-    - !Ref ClusterSecurityGroup
+    - !Ref DBSecurityGroup

@@ -49,18 +49,22 @@ jobs:
           projects: infrastructure
           args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
 
-      - name: Run NX generate and build
+      - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: prismagenerate,deploy
           projects: api-journeys
+
+      - name: Get api-journeys endpoint
+        run: |
+          JOURNEY_API_ENDPOINT=$( jq '.endpoints.GET' journeys-output.json )
 
       - name: Get Github action IP
         id: ip
         uses: haythem/public-ip@v1.2
 
       - name: Allow Github Actions Access to Postgres
-        run: aws ec2 authorize-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: aws ec2 authorize-security-group-ingress --group-name ark-weave-postgres-$ENV_SUFFIX --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Prisma Migrations api-journeys
         run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
@@ -71,6 +75,7 @@ jobs:
       - name: Publish Apollo Graph
         run: rover subgraph publish ark-weave-journeys@preprod --name journeys --schema apps/api-journeys/schema.graphql --routing-url https://q2hqgdvfmk.execute-api.us-east-1.amazonaws.com/dev/journeys
 
+      # Cleanup / remove Github access to postgres.
       - name: Remove Github Actions Access to Postgres
         if: always()
-        run: aws ec2 revoke-security-group-ingress --group-id sg-09be37cc196b4b4c6 --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: aws ec2 revoke-security-group-ingress --group-name ark-weave-postgres-$ENV_SUFFIX --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32

@@ -3,8 +3,12 @@ useDotenv: true
 plugins:
   - serverless-bundle
   - serverless-offline
+  - serverless-stack-output
 
 custom:
+  output:
+    handler: ../../output.handler
+    file: ../../journeys-output.json
   stage: ${opt:serviceStage, 'dev'}
   bundle:
     linting: false
@@ -37,6 +41,12 @@ provider:
 functions:
   journeys:
     handler: src/main.handler
+    vpc:
+      securityGroupIds:
+        - sg-09be37cc196b4b4c6
+      subnetIds:
+        - subnet-955371f9
+        - subnet-5fec2a05
     events:
       - http:
           method: GET

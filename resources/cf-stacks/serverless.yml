@@ -7,13 +7,18 @@ custom:
   dbparams:
     port: 5432
     name: core_journeys_${opt:env}
-    cluster:
+    dbuser: test_user
+    dbpassword: test_password
+    clustername: core_journeys_${opt:env}
   aws:
     vpc-id: vpc-9c5371f0
     gateway-ssl-cert-arn: arn:aws:acm:us-east-1:894231352815:certificate/0ebf2bf0-bab3-4070-b042-5e3a42929b70
-    subnets:
+    private-subnets:
       - subnet-99b842c3
       - subnet-905371fc
+    public-subnets:
+      - subnet-955371f9
+      - subnet-5fec2a05
 functions: # None - this is backing infrastructure only.
 
 resources:
@@ -21,13 +26,14 @@ resources:
     ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
     ApolloGatewayLBSecurityGroup: ${file(resources/cf-stacks/security/gateway-lb-security-group.yml)}
     # ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
-    # CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
-    # CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
-    # CoreDBReplica: ${file(resources/cf-stacks/db/replica-instance.yml)}
-    # DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
-    # DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
-    # DBSecurityGroup: ${file(resources/cf-stacks/ec2/db-security-group.yml)}
-    # DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
+    # ApolloGatewayScalingPolicy: ${file(resources/cf-stacks/ec2/gateway-scaling-policy-template.yml)}
+    CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
+    CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
+    CoreDBReplica: ${file(resources/cf-stacks/db/replica-instance.yml)}
+    DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
+    DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
+    DBSecurityGroup: ${file(resources/cf-stacks/ec2/db-security-group.yml)}
+    DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
   # Outputs:
   #   ConnectionString:
   #     Description: "Connection String"
