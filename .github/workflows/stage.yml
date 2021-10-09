@@ -18,6 +18,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      LAMBDA_GROUP_NAME: ark-journey-
 
     runs-on: ubuntu-latest
 
@@ -47,7 +48,7 @@ jobs:
         with:
           targets: deploy
           projects: infrastructure
-          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
+          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME
 
       - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2

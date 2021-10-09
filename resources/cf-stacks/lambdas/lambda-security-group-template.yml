@@ -1,0 +1,12 @@
+Type: AWS::EC2::SecurityGroup
+Properties:
+  GroupName: ${self:custom.aws.lambda-security-group}
+  GroupDescription:
+  VpcId:
+  SecurityGroupIngress:
+    - Security Group Rule
+  SecurityGroupEgress:
+    - Security Group Rule
+  Tags:
+    - Key:
+      Value:

@@ -1,9 +1,15 @@
 service:
   name: ark-core-journeys
+plugins:
+  - serverless-stack-output
 provider:
   name: aws
   stage: ${opt:env}
+
 custom:
+  output:
+    handler: ../../output.handler
+    file: ../../infrastructure-output.json
   dbparams:
     port: 5432
     name: core_journeys_${opt:env}
@@ -13,6 +19,7 @@ custom:
   aws:
     vpc-id: vpc-9c5371f0
     gateway-ssl-cert-arn: arn:aws:acm:us-east-1:894231352815:certificate/0ebf2bf0-bab3-4070-b042-5e3a42929b70
+    lambda-security-group: ${opt:lambda-security-group}
     private-subnets:
       - subnet-99b842c3
       - subnet-905371fc
@@ -27,6 +34,7 @@ resources:
     ApolloGatewayLBSecurityGroup: ${file(resources/cf-stacks/security/gateway-lb-security-group.yml)}
     # ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
     # ApolloGatewayScalingPolicy: ${file(resources/cf-stacks/ec2/gateway-scaling-policy-template.yml)}
+    LambdaSecurityGroup: ${file(resources/cf-stacks/lambdas/lambda-security-group-template.yml)}
     CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
     CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
     CoreDBReplica: ${file(resources/cf-stacks/db/replica-instance.yml)}
@@ -34,19 +42,19 @@ resources:
     DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
     DBSecurityGroup: ${file(resources/cf-stacks/db/db-security-group.yml)}
     DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
-  # Outputs:
-  #   ConnectionString:
-  #     Description: "Connection String"
-  #     Value: !Join
-  #       - ""
-  #       - - "postgresql://"
-  #         - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUsername
-  #         - ":"
-  #         - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUserPassword
-  #         - "@"
-  #         - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Address
-  #         - ":"
-  #         - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Port
-  #         - "/"
-  #         - !Ref ArkWeaveCoreDBCluster.Properties.DatabaseName
-  #         - "?schema=public"
+  Outputs:
+    ConnectionString:
+      Description: "Connection String"
+      Value: !Join
+        - ""
+        - - "postgresql://"
+          - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUsername
+          - ":"
+          - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUserPassword
+          - "@"
+          - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Address
+          - ":"
+          - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Port
+          - "/"
+          - !Ref ArkWeaveCoreDBCluster.Properties.DatabaseName
+          - "?schema=public"
