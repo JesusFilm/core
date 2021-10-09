@@ -1,23 +1,12 @@
 import videojs from 'video.js'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import { Container } from '@mui/material'
-import { makeStyles, createStyles } from '@mui/styles'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 
 import 'video.js/dist/video-js.css'
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    container: {
-      position: 'relative',
-      overflow: 'hidden'
-    }
-  })
-)
-
 export function Video({ src, autoplay }: TreeBlock<VideoBlock>): ReactElement {
-  const classes = useStyles()
   const videoNode = useRef<HTMLVideoElement>(null)
   const player = useRef<videojs.Player>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
@@ -82,11 +71,7 @@ export function Video({ src, autoplay }: TreeBlock<VideoBlock>): ReactElement {
   }, [player, isReady, autoPlaySuccess, autoplay])
 
   return (
-    <Container
-      data-testid="VideoComponent"
-      className={classes.container}
-      maxWidth="md"
-    >
+    <Container data-testid="VideoComponent" maxWidth="md">
       <video ref={videoNode} className="video-js" />
     </Container>
   )
