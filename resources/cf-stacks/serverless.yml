@@ -48,13 +48,13 @@ resources:
       Value: !Join
         - ""
         - - "postgresql://"
-          - !GetAtt CoreDBCluster.Properties.MasterUsername
+          - ${self:custom.dbparams.dbuser}
           - ":"
-          - !GetAtt CoreDBCluster.Properties.MasterUserPassword
+          - ${self:custom.dbparams.dbpassword}
           - "@"
           - !GetAtt CoreDBCluster.Endpoint.Address
           - ":"
           - !GetAtt CoreDBCluster.Endpoint.Port
           - "/"
-          - !Ref CoreDBCluster.Properties.DatabaseName
+          - ${self:custom.dbparams.name}
           - "?schema=public"
