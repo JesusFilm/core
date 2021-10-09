@@ -2,4 +2,5 @@ Type: "AWS::RDS::DBSecurityGroup"
 Properties:
   GroupDescription: !Ref "AWS::StackName"
   DBSecurityGroupIngress:
-    EC2SecurityGroupName: ${self:custom.aws.lambda-group-name}
+    EC2SecurityGroupIds:
+      - !Ref LambdaSecurityGroup
