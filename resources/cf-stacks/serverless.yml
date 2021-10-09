@@ -19,7 +19,7 @@ custom:
   aws:
     vpc-id: vpc-9c5371f0
     gateway-ssl-cert-arn: arn:aws:acm:us-east-1:894231352815:certificate/0ebf2bf0-bab3-4070-b042-5e3a42929b70
-    lambda-security-group: ${opt:lambda-security-group}
+    lambda-group-name: ${opt:lambda-group-name}
     private-subnets:
       - subnet-99b842c3
       - subnet-905371fc

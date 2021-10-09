@@ -1,4 +1,4 @@
 Type: AWS::EC2::SecurityGroup
 Properties:
-  GroupName: ${self:custom.aws.lambda-security-group}
+  GroupName: ${self:custom.aws.lambda-group-name}
   GroupDescription: Ark Core Journeys security group
