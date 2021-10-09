@@ -48,13 +48,13 @@ resources:
       Value: !Join
         - ""
         - - "postgresql://"
-          - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUsername
+          - !GetAtt CoreDBCluster.Properties.MasterUsername
           - ":"
-          - !GetAtt ArkWeaveCoreDBCluster.Properties.MasterUserPassword
+          - !GetAtt CoreDBCluster.Properties.MasterUserPassword
           - "@"
-          - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Address
+          - !GetAtt CoreDBCluster.Endpoint.Address
           - ":"
-          - !GetAtt ArkWeaveCoreDBCluster.Endpoint.Port
+          - !GetAtt CoreDBCluster.Endpoint.Port
           - "/"
-          - !Ref ArkWeaveCoreDBCluster.Properties.DatabaseName
+          - !Ref CoreDBCluster.Properties.DatabaseName
           - "?schema=public"

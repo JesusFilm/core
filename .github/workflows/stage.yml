@@ -18,7 +18,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      LAMBDA_GROUP_NAME: ark-journey-
+      LAMBDA_GROUP_NAME: ark-journey-lambda-stage
 
     runs-on: ubuntu-latest
 
