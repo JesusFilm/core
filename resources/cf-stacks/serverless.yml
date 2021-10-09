@@ -32,7 +32,7 @@ resources:
     CoreDBReplica: ${file(resources/cf-stacks/db/replica-instance.yml)}
     DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
     DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
-    DBSecurityGroup: ${file(resources/cf-stacks/ec2/db-security-group.yml)}
+    DBSecurityGroup: ${file(resources/cf-stacks/db/db-security-group.yml)}
     DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
   # Outputs:
   #   ConnectionString:
