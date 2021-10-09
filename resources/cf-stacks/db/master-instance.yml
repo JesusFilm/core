@@ -1,12 +1,11 @@
 Type: AWS::RDS::DBInstance
 Properties:
-  CopyTagsToSnapshot: true  
+  CopyTagsToSnapshot: true
   DBInstanceClass: db.t3.small
-  DBClusterIdentifier: !Ref ArkWeaveCoreDBCluster  
+  DBClusterIdentifier: !Ref CoreDBCluster
   Engine: aurora-postgresql
-  
+
   DBParameterGroupName: !Ref DBInstanceParamGroup
   AutoMinorVersionUpgrade: true
   DBSubnetGroupName: !Ref DBSubnetGroup
   PubliclyAccessible: false
-  
