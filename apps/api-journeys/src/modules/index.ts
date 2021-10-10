@@ -1,4 +1,5 @@
 export { actionModule } from './action'
+export { application } from './application'
 export { blockModule } from './block'
 export { journeyModule } from './journey'
 export { responseModule } from './response'

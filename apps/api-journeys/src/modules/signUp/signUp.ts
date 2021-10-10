@@ -70,7 +70,7 @@ const resolvers: SignUpModule.Resolvers = {
 }
 
 export const signUpModule = createModule({
-  id: 'block/signUp',
+  id: 'signUp',
   dirname: __dirname,
   typeDefs: [typeDefs],
   resolvers
