@@ -8,8 +8,8 @@ provider:
 
 custom:
   output:
-    handler: ../../output.handler
-    file: ../../infrastructure-output.json
+    handler: output.handler
+    file: infrastructure-output.json
   dbparams:
     port: 5432
     name: core_journeys_${opt:env}
