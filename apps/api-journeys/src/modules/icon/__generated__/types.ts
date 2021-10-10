@@ -1,57 +1,37 @@
 /* eslint-disable */
 import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
-export namespace ActionModule {
+export namespace IconModule {
   interface DefinedFields {
-    NavigateAction: 'gtmEventName';
-    NavigateToBlockAction: 'gtmEventName' | 'blockId';
-    NavigateToJourneyAction: 'gtmEventName' | 'journeyId';
-    LinkAction: 'gtmEventName' | 'url' | 'target';
-    Action: 'gtmEventName';
+    Icon: 'name' | 'color' | 'size';
   };
   
-  export type Action = Pick<Types.Action, DefinedFields['Action']>;
-  export type NavigateAction = Pick<Types.NavigateAction, DefinedFields['NavigateAction']>;
-  export type NavigateToBlockAction = Pick<Types.NavigateToBlockAction, DefinedFields['NavigateToBlockAction']>;
-  export type NavigateToJourneyAction = Pick<Types.NavigateToJourneyAction, DefinedFields['NavigateToJourneyAction']>;
-  export type LinkAction = Pick<Types.LinkAction, DefinedFields['LinkAction']>;
+  interface DefinedEnumValues {
+    IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook';
+    IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
+    IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
+  };
   
-  export type NavigateActionResolvers = Pick<Types.NavigateActionResolvers, DefinedFields['NavigateAction'] | '__isTypeOf'>;
-  export type NavigateToBlockActionResolvers = Pick<Types.NavigateToBlockActionResolvers, DefinedFields['NavigateToBlockAction'] | '__isTypeOf'>;
-  export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction'] | '__isTypeOf'>;
-  export type LinkActionResolvers = Pick<Types.LinkActionResolvers, DefinedFields['LinkAction'] | '__isTypeOf'>;
-  export type ActionResolvers = Pick<Types.ActionResolvers, DefinedFields['Action']>;
+  export type IconName = DefinedEnumValues['IconName'];
+  export type IconColor = DefinedEnumValues['IconColor'];
+  export type IconSize = DefinedEnumValues['IconSize'];
+  export type Icon = Pick<Types.Icon, DefinedFields['Icon']>;
+  
+  export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
   
   export interface Resolvers {
-    NavigateAction?: NavigateActionResolvers;
-    NavigateToBlockAction?: NavigateToBlockActionResolvers;
-    NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
-    LinkAction?: LinkActionResolvers;
+    Icon?: IconResolvers;
   };
   
   export interface MiddlewareMap {
     '*'?: {
       '*'?: gm.Middleware[];
     };
-    NavigateAction?: {
+    Icon?: {
       '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-    };
-    NavigateToBlockAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-      blockId?: gm.Middleware[];
-    };
-    NavigateToJourneyAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-      journeyId?: gm.Middleware[];
-    };
-    LinkAction?: {
-      '*'?: gm.Middleware[];
-      gtmEventName?: gm.Middleware[];
-      url?: gm.Middleware[];
-      target?: gm.Middleware[];
+      name?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
     };
   };
 }

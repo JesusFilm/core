@@ -9,40 +9,6 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
-  type CardBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    """
-    backgroundColor should be a HEX color value e.g #FFFFFF for white.
-    """
-    backgroundColor: String
-    """
-    coverBlockId is present if a child block should be used as a cover.
-    This child block should not be rendered normally, instead it should be used
-    as a background. Blocks are often of type ImageBlock or VideoBlock.
-    """
-    coverBlockId: ID
-    """
-    themeMode can override journey themeMode. If nothing is set then use
-    themeMode from journey
-    """
-    themeMode: ThemeMode
-    """
-    themeName can override journey themeName. If nothing is set then use
-    themeName from journey
-    """
-    themeName: ThemeName
-  }
-
-  type ImageBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    src: String!
-    width: Int!
-    height: Int!
-    alt: String!
-  }
-
   type StepBlock implements Block {
     id: ID!
     """

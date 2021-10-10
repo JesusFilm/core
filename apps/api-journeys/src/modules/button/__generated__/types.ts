@@ -1,63 +1,46 @@
 /* eslint-disable */
 import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
-export namespace VideoModule {
+export namespace ButtonModule {
   interface DefinedFields {
-    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
-    VideoResponse: 'id' | 'userId' | 'state' | 'block';
-    Mutation: 'videoResponseCreate';
+    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
   };
   
   interface DefinedEnumValues {
-    VideoResponseStateEnum: 'PLAYING' | 'PAUSED' | 'FINISHED';
+    ButtonVariant: 'text' | 'contained';
+    ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
+    ButtonSize: 'small' | 'medium' | 'large';
   };
   
-  interface DefinedInputFields {
-    VideoResponseCreateInput: 'id' | 'blockId' | 'state';
-  };
-  
-  export type VideoResponseStateEnum = DefinedEnumValues['VideoResponseStateEnum'];
-  export type VideoResponseCreateInput = Pick<Types.VideoResponseCreateInput, DefinedInputFields['VideoResponseCreateInput']>;
-  export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
+  export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
+  export type ButtonColor = DefinedEnumValues['ButtonColor'];
+  export type ButtonSize = DefinedEnumValues['ButtonSize'];
+  export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
+  export type Icon = Types.Icon;
+  export type Action = Types.Action;
   export type Block = Types.Block;
-  export type VideoResponse = Pick<Types.VideoResponse, DefinedFields['VideoResponse']>;
-  export type Response = Types.Response;
-  export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
-  export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
-  export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse'] | '__isTypeOf'>;
-  export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
+  export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
   
   export interface Resolvers {
-    VideoBlock?: VideoBlockResolvers;
-    VideoResponse?: VideoResponseResolvers;
-    Mutation?: MutationResolvers;
+    ButtonBlock?: ButtonBlockResolvers;
   };
   
   export interface MiddlewareMap {
     '*'?: {
       '*'?: gm.Middleware[];
     };
-    VideoBlock?: {
+    ButtonBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
-      src?: gm.Middleware[];
-      title?: gm.Middleware[];
-      description?: gm.Middleware[];
-      volume?: gm.Middleware[];
-      autoplay?: gm.Middleware[];
-    };
-    VideoResponse?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      userId?: gm.Middleware[];
-      state?: gm.Middleware[];
-      block?: gm.Middleware[];
-    };
-    Mutation?: {
-      '*'?: gm.Middleware[];
-      videoResponseCreate?: gm.Middleware[];
+      label?: gm.Middleware[];
+      variant?: gm.Middleware[];
+      color?: gm.Middleware[];
+      size?: gm.Middleware[];
+      startIcon?: gm.Middleware[];
+      endIcon?: gm.Middleware[];
+      action?: gm.Middleware[];
     };
   };
 }
