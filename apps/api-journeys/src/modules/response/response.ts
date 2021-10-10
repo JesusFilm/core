@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { ResponseModule } from './__generated__/types'
 import { AuthenticationError } from 'apollo-server-errors'
-import { Prisma, Response } from '.prisma/api-journeys-client'
+import { transformResponse } from '.'
 
 const typeDefs = gql`
   input RadioQuestionResponseCreateInput {
@@ -12,16 +12,6 @@ const typeDefs = gql`
     id: ID
     blockId: ID!
     radioOptionBlockId: ID!
-  }
-
-  input SignUpResponseCreateInput {
-    """
-    ID should be unique Response UUID (Provided for optimistic mutation result matching)
-    """
-    id: ID
-    blockId: ID!
-    name: String!
-    email: String!
   }
 
   enum VideoResponseStateEnum {
@@ -50,13 +40,6 @@ const typeDefs = gql`
     radioOptionBlockId: ID!
   }
 
-  type SignUpResponse implements Response {
-    id: ID!
-    userId: ID!
-    name: String!
-    email: String!
-  }
-
   type VideoResponse implements Response {
     id: ID!
     userId: ID!
@@ -64,7 +47,6 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
     radioQuestionResponseCreate(
       input: RadioQuestionResponseCreateInput!
     ): RadioQuestionResponse!
@@ -72,38 +54,8 @@ const typeDefs = gql`
   }
 `
 
-type TranformedResponse = Response & {
-  __typename: string
-}
-
-const transform = (response: Response): TranformedResponse => {
-  return {
-    ...response,
-    ...(response.extraAttrs as Prisma.JsonObject),
-    __typename: response.type
-  }
-}
-
 const resolvers: ResponseModule.Resolvers = {
   Mutation: {
-    async signUpResponseCreate(
-      _parent,
-      { input: { id, blockId, name, email } },
-      { db, userId }
-    ) {
-      if (userId == null)
-        throw new AuthenticationError('No user token provided')
-      const response = await db.response.create({
-        data: {
-          id: id as string | undefined,
-          type: 'SignUpResponse',
-          blockId,
-          userId,
-          extraAttrs: { name, email }
-        }
-      })
-      return transform(response)
-    },
     async radioQuestionResponseCreate(
       _parent,
       { input: { id, blockId, radioOptionBlockId } },
@@ -120,7 +72,7 @@ const resolvers: ResponseModule.Resolvers = {
           extraAttrs: { radioOptionBlockId }
         }
       })
-      return transform(response)
+      return transformResponse(response)
     },
     async videoResponseCreate(
       _parent,
@@ -138,7 +90,7 @@ const resolvers: ResponseModule.Resolvers = {
           extraAttrs: { state }
         }
       })
-      return transform(response)
+      return transformResponse(response)
     }
   }
 }

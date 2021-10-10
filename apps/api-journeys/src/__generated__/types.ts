@@ -27,15 +27,15 @@ export type Block = {
 
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
-  action?: Maybe<Action>;
-  color?: Maybe<ButtonColor>;
-  endIcon?: Maybe<Icon>;
   id: Scalars['ID'];
-  label: Scalars['String'];
   parentBlockId?: Maybe<Scalars['ID']>;
+  label: Scalars['String'];
+  variant?: Maybe<ButtonVariant>;
+  color?: Maybe<ButtonColor>;
   size?: Maybe<ButtonSize>;
   startIcon?: Maybe<Icon>;
-  variant?: Maybe<ButtonVariant>;
+  endIcon?: Maybe<Icon>;
+  action?: Maybe<Action>;
 };
 
 export type ButtonColor =
@@ -220,10 +220,10 @@ export type QueryJourneyArgs = {
 
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
-  action?: Maybe<Action>;
   id: Scalars['ID'];
-  label: Scalars['String'];
   parentBlockId?: Maybe<Scalars['ID']>;
+  label: Scalars['String'];
+  action?: Maybe<Action>;
 };
 
 export type RadioQuestionBlock = Block & {
@@ -531,15 +531,15 @@ export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType exte
 };
 
 export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['ButtonBlock'] = ResolversParentTypes['ButtonBlock']> = {
-  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
-  color?: Resolver<Maybe<ResolversTypes['ButtonColor']>, ParentType, ContextType>;
-  endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  variant?: Resolver<Maybe<ResolversTypes['ButtonVariant']>, ParentType, ContextType>;
+  color?: Resolver<Maybe<ResolversTypes['ButtonColor']>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['ButtonSize']>, ParentType, ContextType>;
   startIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
-  variant?: Resolver<Maybe<ResolversTypes['ButtonVariant']>, ParentType, ContextType>;
+  endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -619,10 +619,10 @@ export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType exte
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
-  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

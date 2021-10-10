@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { BlockModule } from './__generated__/types'
-import { Prisma, Block } from '.prisma/api-journeys-client'
+import { transformBlock } from '.'
 
 const typeDefs = gql`
   interface Block {
@@ -126,14 +126,6 @@ const typeDefs = gql`
     description: String
   }
 
-  type SignUpBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    action: Action
-    submitIcon: Icon
-    submitLabel: String
-  }
-
   type StepBlock implements Block {
     id: ID!
     """
@@ -205,26 +197,10 @@ const typeDefs = gql`
     block: RadioQuestionBlock
   }
 
-  extend type SignUpResponse {
-    block: SignUpBlock
-  }
-
   extend type VideoResponse {
     block: VideoBlock
   }
 `
-
-type TranformedBlock = Block & {
-  __typename: string
-}
-
-const transform = (block: Block): TranformedBlock => {
-  return {
-    ...block,
-    ...(block.extraAttrs as Prisma.JsonObject),
-    __typename: block.blockType
-  }
-}
 
 const resolvers: BlockModule.Resolvers = {
   Journey: {
@@ -233,7 +209,7 @@ const resolvers: BlockModule.Resolvers = {
         where: { journeyId: journey.id },
         orderBy: [{ parentOrder: 'asc' }]
       })
-      return blocks.map(transform)
+      return blocks.map(transformBlock)
     }
   },
   RadioQuestionResponse: {
@@ -242,16 +218,7 @@ const resolvers: BlockModule.Resolvers = {
         where: { id: response.blockId }
       })
       if (block == null) return null
-      return transform(block)
-    }
-  },
-  SignUpResponse: {
-    async block(response, __, { db }) {
-      const block = await db.block.findUnique({
-        where: { id: response.blockId }
-      })
-      if (block == null) return null
-      return transform(block)
+      return transformBlock(block)
     }
   },
   VideoResponse: {
@@ -260,7 +227,7 @@ const resolvers: BlockModule.Resolvers = {
         where: { id: response.blockId }
       })
       if (block == null) return null
-      return transform(block)
+      return transformBlock(block)
     }
   }
 }

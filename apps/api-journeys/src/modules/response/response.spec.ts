@@ -3,11 +3,9 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import { responseModule } from '.'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
-import { journeyModule } from '../journey'
-import { blockModule } from '../block'
+import { journeyModule, blockModule, actionModule } from '..'
 import { Block, Response } from '.prisma/api-journeys-client'
 import { get } from 'lodash'
-import { actionModule } from '../action'
 
 describe('Response', () => {
   let app: Application
@@ -16,93 +14,6 @@ describe('Response', () => {
     app = testkit.testModule(responseModule, {
       schemaBuilder,
       modules: [journeyModule, blockModule, actionModule]
-    })
-  })
-
-  describe('signUpResponseCreate', () => {
-    it('creates a signUp block response', async () => {
-      const userId = uuidv4()
-      const block1: Block = {
-        id: uuidv4(),
-        journeyId: uuidv4(),
-        blockType: 'SignUpBlock',
-        parentBlockId: null,
-        parentOrder: 0,
-        extraAttrs: {}
-      }
-      dbMock.block.findUnique.mockResolvedValue(block1)
-      const response1: Response = {
-        id: uuidv4(),
-        type: 'SignUpResponse',
-        blockId: block1.id,
-        userId,
-        extraAttrs: {
-          name: 'Robert Smith',
-          email: 'robert.smith@jesusfilm.org'
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-      dbMock.response.create.mockResolvedValue(response1)
-      const { data } = await testkit.execute(app, {
-        document: gql`
-          mutation ($input: SignUpResponseCreateInput!) {
-            signUpResponseCreate(input: $input) {
-              id
-              userId
-              name
-              email
-              block {
-                id
-              }
-            }
-          }
-        `,
-        variableValues: {
-          input: {
-            id: response1.id,
-            blockId: response1.blockId,
-            name: 'Robert Smith',
-            email: 'robert.smith@jesusfilm.org'
-          }
-        },
-        contextValue: {
-          db: dbMock,
-          userId
-        }
-      })
-      expect(data?.signUpResponseCreate).toEqual({
-        id: response1.id,
-        userId,
-        name: 'Robert Smith',
-        email: 'robert.smith@jesusfilm.org',
-        block: {
-          id: block1.id
-        }
-      })
-    })
-
-    it('throws authentication error if no user token', async () => {
-      const { errors } = await testkit.execute(app, {
-        document: gql`
-          mutation ($input: SignUpResponseCreateInput!) {
-            signUpResponseCreate(input: $input) {
-              id
-            }
-          }
-        `,
-        variableValues: {
-          input: {
-            blockId: uuidv4(),
-            name: 'Robert Smith',
-            email: 'robert.smith@jesusfilm.org'
-          }
-        },
-        contextValue: {
-          db: dbMock
-        }
-      })
-      expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
     })
   })
 

@@ -1,9 +1,9 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
 import { blockModule } from '.'
-import { actionModule } from '../action'
+import { actionModule, journeyModule } from '..'
 import dbMock from '../../../tests/dbMock'
-import { journeyModule } from '../journey'
+
 import { v4 as uuidv4 } from 'uuid'
 import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
@@ -413,79 +413,6 @@ describe('BlockModule', () => {
         parentBlockId,
         label: 'label',
         description: 'description'
-      }
-    ])
-  })
-
-  it('returns SignUpBlock', async () => {
-    const parentBlockId = uuidv4()
-    const signUp: Block = {
-      id: uuidv4(),
-      journeyId,
-      blockType: 'SignUpBlock',
-      parentBlockId,
-      parentOrder: 2,
-      extraAttrs: {
-        action: {
-          gtmEventName: 'gtmEventName',
-          journeyId
-        },
-        submitIcon: {
-          name: 'LockOpen',
-          color: 'secondary',
-          size: 'lg'
-        },
-        submitLabel: 'Unlock Now!'
-      }
-    }
-    dbMock.block.findMany.mockResolvedValue([signUp])
-    const { data } = await query(gql`
-      query ($id: ID!) {
-        journey(id: $id) {
-          blocks {
-            id
-            __typename
-            parentBlockId
-            action {
-              __typename
-              gtmEventName
-              ... on NavigateToBlockAction {
-                blockId
-              }
-              ... on NavigateToJourneyAction {
-                journeyId
-              }
-              ... on LinkAction {
-                url
-                target
-              }
-            }
-            submitIcon {
-              name
-              color
-              size
-            }
-            submitLabel
-          }
-        }
-      }
-    `)
-    expect(data?.journey.blocks).toEqual([
-      {
-        id: signUp.id,
-        __typename: 'SignUpBlock',
-        parentBlockId,
-        action: {
-          __typename: 'NavigateToJourneyAction',
-          gtmEventName: 'gtmEventName',
-          journeyId
-        },
-        submitIcon: {
-          name: 'LockOpen',
-          color: 'secondary',
-          size: 'lg'
-        },
-        submitLabel: 'Unlock Now!'
       }
     ])
   })
