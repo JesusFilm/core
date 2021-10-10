@@ -4,7 +4,6 @@ DependsOn:
 Properties:
   CopyTagsToSnapshot: true
   DBInstanceClass: db.t3.medium
-  DBClusterIdentifier: !Ref CoreDBCluster
   Engine: aurora-postgresql
   DBParameterGroupName: !Ref DBInstanceParamGroup
   AutoMinorVersionUpgrade: true
