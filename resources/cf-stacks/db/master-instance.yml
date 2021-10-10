@@ -2,6 +2,7 @@ Type: AWS::RDS::DBInstance
 Properties:
   CopyTagsToSnapshot: true
   DBInstanceClass: db.t3.medium
+  DBInstanceIdentifier: core-journeys-master
   DBClusterIdentifier: !Ref CoreDBCluster
   Engine: aurora-postgresql
 

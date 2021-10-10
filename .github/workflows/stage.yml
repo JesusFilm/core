@@ -18,6 +18,8 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       # DATABASE_URL: ${{ secrets.DATABASE_URL }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     runs-on: ubuntu-latest
 
@@ -87,4 +89,4 @@ jobs:
       # Cleanup / remove Github access to postgres.
       - name: Remove Github Actions Access to Postgres
         if: always()
-        run: aws ec2 revoke-security-group-ingress --group-name ark-weave-postgres-$ENV_SUFFIX --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: aws ec2 revoke-security-group-ingress --group-id $LAMBDA_SECURITY_GROUP_ID --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32

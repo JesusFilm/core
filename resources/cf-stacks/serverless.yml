@@ -50,14 +50,8 @@ resources:
       Description: "Connection String"
       Value: !Join
         - ""
-        - - "postgresql://"
-          - ${self:custom.dbparams.dbuser}
-          - ":"
-          - ${self:custom.dbparams.dbpassword}
-          - "@"
+        - - "postgresql://${self:custom.dbparams.dbuser}:${self:custom.dbparams.dbpassword}@"
           - !GetAtt CoreDBCluster.Endpoint.Address
           - ":"
           - !GetAtt CoreDBCluster.Endpoint.Port
-          - "/"
-          - ${self:custom.dbparams.name}
-          - "?schema=public"
+          - "/${self:custom.dbparams.name}?schema=public"
