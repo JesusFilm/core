@@ -1,4 +1,5 @@
 Type: "AWS::RDS::DBSecurityGroup"
+DependsOn: LambdaSecurityGroup
 Properties:
   GroupDescription: !Ref "AWS::StackName"
   DBSecurityGroupIngress:
