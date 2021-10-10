@@ -1,0 +1,21 @@
+Type: AWS::EC2::Instance
+Properties:
+  ImageId: ami-0c2b8ca1dad447f8a
+  InstanceType: t4g.small
+  KeyName: jfmprod
+  SecurityGroups:
+    - !Ref ApolloGatewaySecurityGroup
+  UserData: !Base64 |
+    #!/bin/bash -ex
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    . ~/.nvm/nvm.sh
+    nvm install node
+    npm install -g npm
+    npm install -g pm2
+    mkdir -p /opt/apollo-gateway/apps/api-gateway
+    aws s3 cp s3://core-apollo-gateway/* /opt/apollo-gateway
+    mv /opt/apollo-gateway/schema.graphql /opt/apollo-gateway/apps/api-gateway
+    cd /opt/apollo-gateway
+    npm install --only=prod
+    pm2 start main.js
+    pm2 save
