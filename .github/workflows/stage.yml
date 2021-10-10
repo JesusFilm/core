@@ -56,7 +56,7 @@ jobs:
       - name: Set ENV Vars Based on Infrastructure Output
         run: |
           echo "LAMBDA_SECURITY_GROUP_ID=$( jq -r '.LambdaSecurityGroupId' infrastructure-output.json )" >> $GITHUB_ENV
-          echo "DATABASE_URL=postgres://$( jq -r '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
+          echo "DATABASE_URL=postgresql://$( jq -r '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
 
       - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2

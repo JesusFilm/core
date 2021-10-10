@@ -2,4 +2,4 @@ Type: "AWS::RDS::DBSubnetGroup"
 Properties:
   DBSubnetGroupName: core-journeys-db-${opt:env}
   DBSubnetGroupDescription: !Ref "AWS::StackName"
-  SubnetIds: ${self:custom.aws.private-subnets}
+  SubnetIds: ${self:custom.aws.public-subnets}
