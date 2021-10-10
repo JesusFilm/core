@@ -3,7 +3,7 @@ Properties:
   LoadBalancerArn: !Ref ApolloGatewayLoadBalancer
   Port: 80
   Protocol: HTTP
-  DefaultAction:
+  DefaultActions:
     - Type: redirect
       RedirectConfig:
         Protocol: "HTTPS"
