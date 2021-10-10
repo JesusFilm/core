@@ -3,7 +3,7 @@ Properties:
   LoadBalancerArn: !Ref ApolloGatewayLoadBalancer
   Port: 443
   Protocol: HTTPS
-  DefaultAction:
+  DefaultActions:
     - Type: forward
       ForwardConfig:
         TargetGroups:
