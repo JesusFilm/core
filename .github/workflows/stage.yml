@@ -43,8 +43,18 @@ jobs:
       - name: Install Rover
         run: npm install -g @apollo/rover
 
-      # - name: Deploy/Update Infrastructure
-      #   run: serverless deploy --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX
+      - name: Build Apollo API Gateway
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: build
+          projects: api-gateway
+
+      - name: Prep Apollo API Gateway assets
+        run: |
+          aws s3 cp dist/apps/api-gateway/* s3://core-apollo-gateway
+          aws s3 cp package.json s3://core-apollo-gateway
+          aws s3 cp apps/api-gateway/schema.graphql s3://core-apollo-gateway
+          aws s3 cp apps/api-gateway/.env s3://core-apollo-gateway
 
       - name: Deploy/Update Infrastructure
         uses: mansagroup/nrwl-nx-action@v2

@@ -3,3 +3,8 @@ Properties:
   GroupName: ${self:custom.aws.lambda-group-name}
   GroupDescription: Ark Core Journeys security group
   VpcId: ${self:custom.aws.vpc-id}
+  SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      CidrIp: 10.0.0.0/16

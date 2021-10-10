@@ -1,19 +1,7 @@
-Type: AWS::ElasticLoadBalancing::LoadBalancer
+Type: AWS::ElasticLoadBalancingV2::LoadBalancer
 Properties:
-  Scheme: internal
+  Name: apollo-gateway-lb-${opt:env}
+  Scheme: internet-facing
   SecurityGroups:
     - !Ref ApolloGatewayLBSecurityGroup
-  Subnets: ${self:custom.aws.subnets}
-
-  Listeners:
-    - LoadBalancerPort: "443"
-      InstancePort: "4000"
-      Protocol: HTTPS
-      InstanceProtocol: HTTP
-      SSLCertificateId: ${self:custom.aws.gateway-ssl-cert-arn}
-  HealthCheck:
-    Target: TCP:4000
-    HealthyThreshold: 2
-    Interval: 30
-    Timeout: 5
-    UnhealthyThreshold: 2
+  Subnets: ${self:custom.aws.public-subnets}
