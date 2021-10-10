@@ -19,7 +19,7 @@ export function Button({
 
   return (
     <MuiButton
-      variant={buttonVariant ?? undefined}
+      variant={buttonVariant ?? 'contained'}
       color={buttonColor ?? undefined}
       size={size ?? undefined}
       startIcon={

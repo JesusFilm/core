@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
@@ -63,12 +63,14 @@ const Template = ({ submitIcon, submitLabel }): ReactElement => (
       }
     ]}
   >
-    <SignUp
-      {...signUpProps}
-      uuid={() => 'uuid'}
-      submitIcon={submitIcon}
-      submitLabel={submitLabel}
-    />
+    <StoryCard>
+      <SignUp
+        {...signUpProps}
+        uuid={() => 'uuid'}
+        submitIcon={submitIcon}
+        submitLabel={submitLabel}
+      />
+    </StoryCard>
   </MockedProvider>
 )
 

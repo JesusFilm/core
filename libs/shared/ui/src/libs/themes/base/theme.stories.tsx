@@ -2,37 +2,29 @@ import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { Box } from '@mui/system'
 import {
-  ThemeProvider,
   useTheme,
   PaletteColor,
-  PaletteMode,
   PaletteOptions,
   Typography,
   TypographyProps
 } from '@mui/material'
 
-import { sharedUiConfig } from '../../storybook/decorators'
-import { baseDark, baseLight } from './theme'
+import { sharedUiConfig } from '../../storybook/config'
 
-const TypographyDemo = {
+const ThemeDemo = {
   ...sharedUiConfig,
   component: Typography,
   title: 'Default Theme'
 }
 
-interface ColorPaletteProps extends TypographyProps {
+interface ThemeStoryProps extends TypographyProps {
   variants: Array<keyof PaletteOptions>
-}
-
-interface TypographyStoryProps extends TypographyProps {
-  variants: Array<keyof PaletteOptions>
-  mode: PaletteMode
 }
 
 const ColorPalettes = ({
   variants,
   ...props
-}: ColorPaletteProps): ReactElement => {
+}: ThemeStoryProps): ReactElement => {
   const theme = useTheme()
 
   return (
@@ -118,17 +110,13 @@ const ColorPalettes = ({
   )
 }
 
-const ColorTemplate: Story<TypographyStoryProps> = (args) => (
-  // TODO: Update when adding Storybook theme toggle
-  <ThemeProvider theme={args.mode === 'dark' ? baseDark : baseLight}>
-    <ColorPalettes {...args} variants={args.variants} />
-  </ThemeProvider>
+const ColorTemplate: Story<ThemeStoryProps> = (args) => (
+  <ColorPalettes {...args} variants={args.variants} />
 )
 
 export const Colors = ColorTemplate.bind({})
 Colors.args = {
-  mode: 'light',
   variants: ['primary', 'secondary', 'error']
 }
 
-export default TypographyDemo as Meta
+export default ThemeDemo as Meta

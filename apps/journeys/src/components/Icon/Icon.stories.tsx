@@ -1,8 +1,7 @@
-import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { Icon } from '.'
 import { Box } from '@mui/system'
-import { Typography, useTheme } from '@mui/material'
+import { Typography } from '@mui/material'
 import {
   IconName,
   IconSize,
@@ -10,7 +9,7 @@ import {
 } from '../../../__generated__/globalTypes'
 
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
-import { journeysConfig } from '../../libs/storybook/decorators'
+import { journeysConfig, StoryCard } from '../../libs/storybook'
 
 const IconDemo = {
   ...journeysConfig,
@@ -22,50 +21,8 @@ interface IconStoryProps extends IconType {
   variants: string[]
 }
 
-// TODO: Replace with real card component
-interface CardProps {
-  children: ReactNode
-}
-
-const Card = ({ children }: CardProps): ReactElement => {
-  const theme = useTheme()
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        p: theme.spacing(3),
-        borderRadius: 4,
-        mb: theme.spacing(3)
-      }}
-    >
-      {children}
-    </Box>
-  )
-}
-
-const IconColors = ({ children }: CardProps): ReactElement => {
-  const theme = useTheme()
-  return (
-    <Box
-      sx={{
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.primary.main,
-        p: theme.spacing(3),
-        mb: theme.spacing(4),
-        borderRadius: '12px',
-        boxShadow: theme.shadows[3]
-      }}
-    >
-      {children}
-    </Box>
-  )
-}
-
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <Card>
+  <StoryCard>
     {args.variants.map((variant, i) => (
       <Box
         key={i}
@@ -79,7 +36,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
         <Icon {...args} name={variant as IconName} />
       </Box>
     ))}
-  </Card>
+  </StoryCard>
 )
 
 export const Variant = VariantTemplate.bind({})
@@ -102,7 +59,7 @@ Variant.args = {
 }
 
 const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <IconColors>
+  <StoryCard>
     {args.variants.map((variant, i) => (
       <Box
         key={i}
@@ -116,7 +73,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
         <Icon {...args} color={variant as IconColor} />
       </Box>
     ))}
-  </IconColors>
+  </StoryCard>
 )
 
 export const Color = ColorTemplate.bind({})
@@ -135,7 +92,7 @@ Color.args = {
 }
 
 const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <Card>
+  <StoryCard>
     {args.variants.map((variant, i) => (
       <Box
         key={i}
@@ -149,7 +106,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
         <Icon {...args} size={variant as IconSize} />
       </Box>
     ))}
-  </Card>
+  </StoryCard>
 )
 
 export const Size = SizeTemplate.bind({})
