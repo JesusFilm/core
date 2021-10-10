@@ -16,7 +16,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # DATABASE_URL: ${{ secrets.DATABASE_URL }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
 
     runs-on: ubuntu-latest
@@ -53,9 +53,10 @@ jobs:
           projects: infrastructure
           args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME
 
-      - name: Get Lambda Security Group Id
+      - name: Set ENV Vars Based on Infrastructure Output
         run: |
-          LAMBDA_SECURITY_GROUP_ID=$( jq '.LambdaSecurityGroupId' infrastructure-output.json )
+          echo "LAMBDA_SECURITY_GROUP_ID=$( jq '.LambdaSecurityGroupId' infrastructure-output.json )" >> $GITHUB_ENV
+          echo "DATABASE_URL=$( jq '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
 
       - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2
@@ -65,7 +66,7 @@ jobs:
 
       - name: Get api-journeys endpoint
         run: |
-          JOURNEY_API_ENDPOINT=$( jq '.ServiceEndpoint' journeys-output.json )
+          echo "JOURNEYS_API_ENDPOINT=$( jq '.ServiceEndpoint' journeys-output.json )/journeys" >> $GITHUB_ENV
 
       - name: Get Github action IP
         id: ip
@@ -81,7 +82,7 @@ jobs:
         run: npx prisma db seed --preview-feature --schema apps/api-journeys/prisma/schema.prisma
 
       - name: Publish Apollo Graph
-        run: rover subgraph publish ark-weave-journeys@preprod --name journeys --schema apps/api-journeys/schema.graphql --routing-url https://q2hqgdvfmk.execute-api.us-east-1.amazonaws.com/dev/journeys
+        run: rover subgraph publish ark-weave-journeys@preprod --name journeys --schema apps/api-journeys/schema.graphql --routing-url $JOURNEYS_API_ENDPOINT
 
       # Cleanup / remove Github access to postgres.
       - name: Remove Github Actions Access to Postgres
