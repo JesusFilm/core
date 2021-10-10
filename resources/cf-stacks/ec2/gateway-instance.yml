@@ -5,7 +5,7 @@ Properties:
   InstanceType: t4g.small
   KeyName: jfmprod
   SubnetId: subnet-99b842c3
-  SecurityGroups:
+  SecurityGroupIds:
     - !Ref ApolloGatewaySecurityGroup
   UserData: !Base64 |
     #!/bin/bash -ex
