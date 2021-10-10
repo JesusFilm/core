@@ -3,7 +3,7 @@ Properties:
   LaunchTemplateName: apollo-gateway-ec2-launch-${opt:env}
   LaunchTemplateData:
     ImageId: ami-0c2b8ca1dad447f8a
-    InstanceType: t4g.small
+    InstanceType: t2.small
     KeyName: jfmprod
     SecurityGroups:
       - !Ref ApolloGatewaySecurityGroup

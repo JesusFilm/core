@@ -2,7 +2,7 @@ Type: AWS::EC2::Instance
 DependsOn: ApolloGatewaySecurityGroup
 Properties:
   ImageId: ami-0c2b8ca1dad447f8a
-  InstanceType: t4g.small
+  InstanceType: t2.small
   KeyName: jfmprod
   SubnetId: subnet-99b842c3
   SecurityGroupIds:
