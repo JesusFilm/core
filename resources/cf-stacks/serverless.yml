@@ -33,6 +33,7 @@ resources:
     ApolloGatewaySecurityGroup: ${file(resources/cf-stacks/security/gateway-security-group.yml)}
     ApolloGatewayLBSecurityGroup: ${file(resources/cf-stacks/security/gateway-lb-security-group.yml)}
     ApolloGatewayLoadBalancer: ${file(resources/cf-stacks/ec2/gateway-lb.yml)}
+    ApolloGatewayInstance: ${file(resources/cf-stacks/ec2/gateway-instance.yml)}
     ApolloGatewayHTTPSListener: ${file(resources/cf-stacks/ec2/gateway-lb-https-listener.yml)}
     ApolloGatewayHTTPListener: ${file(resources/cf-stacks/ec2/gateway-lb-http-listener.yml)}
     ApolloGatewayTargetGroup: ${file(resources/cf-stacks/ec2/gateway-lb-target-group.yml)}
