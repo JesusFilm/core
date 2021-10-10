@@ -108,7 +108,7 @@ export const baseColorsDark = (): Required<
         disabledBackground: primary.main
       }
     },
-    components: { 
+    components: {
       MuiButton: {
         styleOverrides: {
           containedPrimary: {
