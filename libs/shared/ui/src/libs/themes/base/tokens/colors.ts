@@ -67,7 +67,7 @@ export const baseColorsDark: Required<
   palette: {
     ...baseColorsLight.palette,
     mode: 'dark',
-    background: { default: '#26262E', paper: '#26262E' },
+    background: { default: '#26262E', paper: '#30313D' },
     primary: secondary,
     secondary: primary,
     text: {

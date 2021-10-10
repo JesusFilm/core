@@ -1,2 +1,2 @@
-export { Card } from './Card'
+export { Card, CardWrapper } from './Card'
 export { CARD_FIELDS } from './cardFields'

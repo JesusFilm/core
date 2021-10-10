@@ -6,7 +6,7 @@ import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { handleAction } from '../../../libs/action'
 
-type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
+export interface RadioOptionProps extends TreeBlock<RadioOptionBlock> {
   className?: string
   selected?: boolean
   disabled?: boolean
@@ -57,5 +57,3 @@ export function RadioOption({
     </Button>
   )
 }
-
-export default RadioOption
