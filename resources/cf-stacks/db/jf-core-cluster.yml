@@ -1,5 +1,6 @@
 Type: AWS::RDS::DBCluster
 DeletionPolicy: Snapshot
+DependsOn: LambdaSecurityGroup
 UpdateReplacePolicy: Snapshot
 Properties:
   Engine: aurora-postgresql
@@ -12,4 +13,4 @@ Properties:
   DBSubnetGroupName: !Ref DBSubnetGroup
   DBClusterParameterGroupName: default.aurora-postgresql13
   VpcSecurityGroupIds:
-    - !Ref DBSecurityGroup
+    - !Ref LambdaSecurityGroup

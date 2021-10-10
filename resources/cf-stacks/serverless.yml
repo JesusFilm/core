@@ -35,12 +35,13 @@ resources:
     # ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
     # ApolloGatewayScalingPolicy: ${file(resources/cf-stacks/ec2/gateway-scaling-policy-template.yml)}
     LambdaSecurityGroup: ${file(resources/cf-stacks/lambdas/lambda-security-group-template.yml)}
+    LambdaSecurityGroupIngress: ${file(resources/cf-stacks/lambdas/lambda-security-group-ingress-template.yml)}
     CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
     CoreDBMaster: ${file(resources/cf-stacks/db/master-instance.yml)}
     CoreDBReplica: ${file(resources/cf-stacks/db/replica-instance.yml)}
     DBClusterParamGroup: ${file(resources/cf-stacks/db/param-group-cluster.yml)}
     DBInstanceParamGroup: ${file(resources/cf-stacks/db/param-group-instance.yml)}
-    DBSecurityGroup: ${file(resources/cf-stacks/db/db-security-group.yml)}
+    #DBSecurityGroup: ${file(resources/cf-stacks/db/db-security-group.yml)}
     DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
   Outputs:
     ConnectionString:

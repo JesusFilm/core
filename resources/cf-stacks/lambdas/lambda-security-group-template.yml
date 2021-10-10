@@ -2,3 +2,18 @@ Type: AWS::EC2::SecurityGroup
 Properties:
   GroupName: ${self:custom.aws.lambda-group-name}
   GroupDescription: Ark Core Journeys security group
+  VpcId: ${self:custom.aws.vpc-id}
+
+  secGroupName:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName:
+      GroupDescription:
+      VpcId:
+      SecurityGroupIngress:
+        - Security Group Rule
+      SecurityGroupEgress:
+        - Security Group Rule
+      Tags:
+        - Key:
+          Value:
