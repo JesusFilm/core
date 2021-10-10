@@ -9,9 +9,7 @@ export namespace BlockModule {
     ImageBlock: 'id' | 'parentBlockId' | 'src' | 'width' | 'height' | 'alt';
     StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
     TypographyBlock: 'id' | 'parentBlockId' | 'content' | 'variant' | 'color' | 'align';
-    VideoBlock: 'id' | 'parentBlockId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
     Journey: 'blocks';
-    VideoResponse: 'block';
     Block: 'id' | 'parentBlockId';
   };
   
@@ -46,9 +44,7 @@ export namespace BlockModule {
   export type TypographyColor = DefinedEnumValues['TypographyColor'];
   export type TypographyAlign = DefinedEnumValues['TypographyAlign'];
   export type TypographyBlock = Pick<Types.TypographyBlock, DefinedFields['TypographyBlock']>;
-  export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type Journey = Types.Journey;
-  export type VideoResponse = Types.VideoResponse;
   
   export type IconResolvers = Pick<Types.IconResolvers, DefinedFields['Icon'] | '__isTypeOf'>;
   export type ButtonBlockResolvers = Pick<Types.ButtonBlockResolvers, DefinedFields['ButtonBlock'] | '__isTypeOf'>;
@@ -56,9 +52,7 @@ export namespace BlockModule {
   export type ImageBlockResolvers = Pick<Types.ImageBlockResolvers, DefinedFields['ImageBlock'] | '__isTypeOf'>;
   export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   export type TypographyBlockResolvers = Pick<Types.TypographyBlockResolvers, DefinedFields['TypographyBlock'] | '__isTypeOf'>;
-  export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
-  export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse']>;
   export type BlockResolvers = Pick<Types.BlockResolvers, DefinedFields['Block']>;
   
   export interface Resolvers {
@@ -68,9 +62,7 @@ export namespace BlockModule {
     ImageBlock?: ImageBlockResolvers;
     StepBlock?: StepBlockResolvers;
     TypographyBlock?: TypographyBlockResolvers;
-    VideoBlock?: VideoBlockResolvers;
     Journey?: JourneyResolvers;
-    VideoResponse?: VideoResponseResolvers;
   };
   
   export interface MiddlewareMap {
@@ -129,23 +121,9 @@ export namespace BlockModule {
       color?: gm.Middleware[];
       align?: gm.Middleware[];
     };
-    VideoBlock?: {
-      '*'?: gm.Middleware[];
-      id?: gm.Middleware[];
-      parentBlockId?: gm.Middleware[];
-      src?: gm.Middleware[];
-      title?: gm.Middleware[];
-      description?: gm.Middleware[];
-      volume?: gm.Middleware[];
-      autoplay?: gm.Middleware[];
-    };
     Journey?: {
       '*'?: gm.Middleware[];
       blocks?: gm.Middleware[];
-    };
-    VideoResponse?: {
-      '*'?: gm.Middleware[];
-      block?: gm.Middleware[];
     };
   };
 }

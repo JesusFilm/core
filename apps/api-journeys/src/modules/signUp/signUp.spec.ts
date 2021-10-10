@@ -1,7 +1,12 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import { signUpModule } from '.'
-import { actionModule, journeyModule, blockModule, responseModule } from '..'
+import {
+  signUpModule,
+  actionModule,
+  journeyModule,
+  blockModule,
+  responseModule
+} from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
 import {

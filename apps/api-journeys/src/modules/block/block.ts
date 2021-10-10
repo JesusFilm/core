@@ -165,22 +165,8 @@ const typeDefs = gql`
     align: TypographyAlign
   }
 
-  type VideoBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    src: String!
-    title: String!
-    description: String
-    volume: Int
-    autoplay: Boolean
-  }
-
   extend type Journey {
     blocks: [Block!]
-  }
-
-  extend type VideoResponse {
-    block: VideoBlock
   }
 `
 
@@ -192,15 +178,6 @@ const resolvers: BlockModule.Resolvers = {
         orderBy: [{ parentOrder: 'asc' }]
       })
       return blocks.map(transformBlock)
-    }
-  },
-  VideoResponse: {
-    async block(response, __, { db }) {
-      const block = await db.block.findUnique({
-        where: { id: response.blockId }
-      })
-      if (block == null) return null
-      return transformBlock(block)
     }
   }
 }

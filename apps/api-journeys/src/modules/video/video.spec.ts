@@ -1,19 +1,93 @@
-import { testkit, gql, Application } from 'graphql-modules'
+import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import { responseModule } from '.'
+import {
+  videoModule,
+  actionModule,
+  journeyModule,
+  blockModule,
+  responseModule
+} from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
-import { journeyModule, blockModule, actionModule } from '..'
-import { Block, Response } from '.prisma/api-journeys-client'
+import {
+  Block,
+  ThemeName,
+  ThemeMode,
+  Response
+} from '.prisma/api-journeys-client'
+import { DocumentNode, ExecutionResult } from 'graphql'
 import { get } from 'lodash'
 
-describe('Response', () => {
-  let app: Application
+describe('SignUpModule', () => {
+  let app, journeyId
 
   beforeEach(() => {
-    app = testkit.testModule(responseModule, {
+    app = testkit.testModule(videoModule, {
       schemaBuilder,
-      modules: [journeyModule, blockModule, actionModule]
+      modules: [journeyModule, blockModule, responseModule, actionModule]
+    })
+    journeyId = uuidv4()
+    dbMock.journey.findUnique.mockResolvedValue({
+      id: journeyId,
+      title: 'published',
+      published: true,
+      locale: 'en-US',
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base
+    })
+  })
+
+  async function query(document: DocumentNode): Promise<ExecutionResult> {
+    return await testkit.execute(app, {
+      document,
+      variableValues: {
+        id: journeyId
+      },
+      contextValue: {
+        db: dbMock
+      }
+    })
+  }
+
+  describe('VideoBlock', () => {
+    it('returns VideoBlock', async () => {
+      const parentBlockId = uuidv4()
+      const video: Block = {
+        id: uuidv4(),
+        journeyId,
+        blockType: 'VideoBlock',
+        parentBlockId,
+        parentOrder: 1,
+        extraAttrs: {
+          src: 'src',
+          title: 'title'
+        }
+      }
+      dbMock.block.findMany.mockResolvedValue([video])
+      const { data } = await query(gql`
+        query ($id: ID!) {
+          journey(id: $id) {
+            blocks {
+              id
+              __typename
+              parentBlockId
+              ... on VideoBlock {
+                src
+                title
+              }
+            }
+          }
+        }
+      `)
+      expect(data?.journey.blocks).toEqual([
+        {
+          id: video.id,
+          __typename: 'VideoBlock',
+          parentBlockId,
+          src: 'src',
+          title: 'title'
+        }
+      ])
     })
   })
 

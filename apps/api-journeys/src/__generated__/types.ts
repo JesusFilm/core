@@ -352,10 +352,10 @@ export type VideoBlock = Block & {
 
 export type VideoResponse = Response & {
   __typename?: 'VideoResponse';
-  block?: Maybe<VideoBlock>;
   id: Scalars['ID'];
-  state: VideoResponseStateEnum;
   userId: Scalars['ID'];
+  state: VideoResponseStateEnum;
+  block?: Maybe<VideoBlock>;
 };
 
 export type VideoResponseCreateInput = {
@@ -696,10 +696,10 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 };
 
 export type VideoResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoResponse'] = ResolversParentTypes['VideoResponse']> = {
-  block?: Resolver<Maybe<ResolversTypes['VideoBlock']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
+  block?: Resolver<Maybe<ResolversTypes['VideoBlock']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
