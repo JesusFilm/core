@@ -6,17 +6,14 @@ import { ThemeDecorator } from './decorators'
 // Must set parameters at component level for shared-storybook stories to work
 export const sharedUiConfig = {
   decorators: [
-    (Story: Story, context: StoryContext) => {
-      console.log(context)
-      return (
-        <ThemeDecorator
-          mode={context.globals.theme}
-          layout={context.parameters.layout}
-        >
-          <Story />
-        </ThemeDecorator>
-      )
-    }
+    (Story: Story, context: StoryContext) => (
+      <ThemeDecorator
+        mode={context.globals.theme}
+        layout={context.parameters.layout}
+      >
+        <Story />
+      </ThemeDecorator>
+    )
   ],
   parameters: {
     ...rootParameters
