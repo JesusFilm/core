@@ -35,7 +35,7 @@ resources:
     ApolloGatewayLoadBalancer: ${file(resources/cf-stacks/ec2/gateway-lb.yml)}
     ApolloGatewayHTTPSListener: ${file(resources/cf-stacks/ec2/gateway-lb-https-listener.yml)}
     ApolloGatewayHTTPListener: ${file(resources/cf-stacks/ec2/gateway-lb-http-listener.yml)}
-    ApolloGatewayTargetGroup: ${file(resources/cf-stacs/ec2/gateway-lb-target-group.yml)}
+    ApolloGatewayTargetGroup: ${file(resources/cf-stacks/ec2/gateway-lb-target-group.yml)}
     ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
     # ApolloGatewayScalingPolicy: ${file(resources/cf-stacks/ec2/gateway-scaling-policy-template.yml)}
     LambdaSecurityGroup: ${file(resources/cf-stacks/lambdas/lambda-security-group-template.yml)}
