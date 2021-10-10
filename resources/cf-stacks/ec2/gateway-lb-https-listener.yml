@@ -7,6 +7,6 @@ Properties:
     - Type: forward
       ForwardConfig:
         TargetGroups:
-          - !Ref ApolloGatewayTargetGroup
+          - TargetGroupArn: !Ref ApolloGatewayTargetGroup
   Certificates:
     - CertificateArn: ${self:custom.aws.gateway-ssl-cert-arn}
