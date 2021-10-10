@@ -1,8 +1,10 @@
 Type: AWS::EC2::Instance
+DependsOn: ApolloGatewaySecurityGroup
 Properties:
   ImageId: ami-0c2b8ca1dad447f8a
   InstanceType: t4g.small
   KeyName: jfmprod
+  SubnetId: subnet-99b842c3
   SecurityGroups:
     - !Ref ApolloGatewaySecurityGroup
   UserData: !Base64 |
