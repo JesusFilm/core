@@ -9,75 +9,6 @@ const typeDefs = gql`
     parentBlockId: ID
   }
 
-  """
-  IconName is equivalent to the icons found in @mui/icons-material
-  """
-  enum IconName {
-    PlayArrow
-    Translate
-    CheckCircle
-    RadioButtonUnchecked
-    FormatQuote
-    LockOpen
-    ArrowForward
-    ChatBubbleOutline
-    LiveTv
-    MenuBook
-  }
-
-  enum IconColor {
-    primary
-    secondary
-    action
-    error
-    disabled
-    inherit
-  }
-
-  enum IconSize {
-    sm
-    md
-    lg
-    xl
-    inherit
-  }
-
-  type Icon {
-    name: IconName!
-    color: IconColor
-    size: IconSize
-  }
-
-  enum ButtonVariant {
-    text
-    contained
-  }
-
-  enum ButtonColor {
-    primary
-    secondary
-    error
-    inherit
-  }
-
-  enum ButtonSize {
-    small
-    medium
-    large
-  }
-
-  type ButtonBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    label: String!
-    variant: ButtonVariant
-    color: ButtonColor
-    size: ButtonSize
-    startIcon: Icon
-    endIcon: Icon
-    action: Action
-  }
-
   type CardBlock implements Block {
     id: ID!
     parentBlockId: ID
@@ -127,42 +58,6 @@ const typeDefs = gql`
     """
     locked: Boolean!
     parentBlockId: ID
-  }
-
-  enum TypographyVariant {
-    h1
-    h2
-    h3
-    h4
-    h5
-    h6
-    subtitle1
-    subtitle2
-    body1
-    body2
-    caption
-    overline
-  }
-
-  enum TypographyColor {
-    primary
-    secondary
-    error
-  }
-
-  enum TypographyAlign {
-    left
-    center
-    right
-  }
-
-  type TypographyBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    content: String!
-    variant: TypographyVariant
-    color: TypographyColor
-    align: TypographyAlign
   }
 
   extend type Journey {

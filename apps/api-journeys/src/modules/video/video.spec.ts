@@ -18,7 +18,7 @@ import {
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { get } from 'lodash'
 
-describe('SignUpModule', () => {
+describe('VideoModule', () => {
   let app, journeyId
 
   beforeEach(() => {

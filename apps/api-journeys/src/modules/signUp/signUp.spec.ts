@@ -5,7 +5,8 @@ import {
   actionModule,
   journeyModule,
   blockModule,
-  responseModule
+  responseModule,
+  iconModule
 } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
@@ -23,7 +24,13 @@ describe('SignUpModule', () => {
   beforeEach(() => {
     app = testkit.testModule(signUpModule, {
       schemaBuilder,
-      modules: [journeyModule, blockModule, responseModule, actionModule]
+      modules: [
+        journeyModule,
+        blockModule,
+        responseModule,
+        actionModule,
+        iconModule
+      ]
     })
     journeyId = uuidv4()
     dbMock.journey.findUnique.mockResolvedValue({
