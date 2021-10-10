@@ -40,13 +40,12 @@ export const baseColorsLight = (): Required<
       secondary,
       error,
       text: {
-        primary: primary.dark,
-        secondary: primary.main
+        primary: primary.main,
+        secondary: primary.light
       },
       action: {
-        // DISABLED BUTTON COLORS
         disabled: palette[700],
-        disabledBackground: primary.dark
+        disabledBackground: primary.main
       }
     },
     components: {
@@ -101,20 +100,29 @@ export const baseColorsDark = (): Required<
       secondary,
       error,
       text: {
-        primary: palette[100],
-        secondary: palette[200]
+        primary: primary.main,
+        secondary: primary.dark
       },
       action: {
-        disabled: primary.light,
-        disabledBackground: primary.dark
+        disabled: palette[300],
+        disabledBackground: primary.main
       }
     },
-    components: {
+    components: { 
+      MuiButton: {
+        styleOverrides: {
+          containedPrimary: {
+            '&:hover': {
+              backgroundColor: palette[300]
+            }
+          }
+        }
+      },
       MuiButtonGroup: {
         styleOverrides: {
           groupedContainedVertical: {
             '&:not(:last-of-type)': {
-              borderBottom: `1px solid ${primary.dark}`
+              borderBottom: `1px solid ${palette[300]}`
             }
           }
         }
