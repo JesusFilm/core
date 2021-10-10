@@ -1,8 +1,36 @@
 import { createApplication } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import { blockModule, journeyModule, responseModule } from '../modules'
+import {
+  actionModule,
+  blockModule,
+  buttonModule,
+  cardModule,
+  iconModule,
+  imageModule,
+  journeyModule,
+  radioQuestionModule,
+  responseModule,
+  signUpModule,
+  stepModule,
+  typographyModule,
+  videoModule
+} from '../modules'
 
 export const application = createApplication({
-  modules: [blockModule, journeyModule, responseModule],
+  modules: [
+    actionModule,
+    blockModule,
+    buttonModule,
+    cardModule,
+    iconModule,
+    imageModule,
+    journeyModule,
+    radioQuestionModule,
+    responseModule,
+    signUpModule,
+    stepModule,
+    typographyModule,
+    videoModule
+  ],
   schemaBuilder
 })

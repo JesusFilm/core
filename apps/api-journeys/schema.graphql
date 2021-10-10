@@ -141,8 +141,8 @@ type LinkAction implements Action {
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyPublish(id: ID!): Journey
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 

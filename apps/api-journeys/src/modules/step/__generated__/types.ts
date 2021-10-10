@@ -1,34 +1,30 @@
 /* eslint-disable */
 import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
-export namespace CardModule {
+export namespace StepModule {
   interface DefinedFields {
-    CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'themeMode' | 'themeName';
+    StepBlock: 'id' | 'nextBlockId' | 'locked' | 'parentBlockId';
   };
   
-  export type CardBlock = Pick<Types.CardBlock, DefinedFields['CardBlock']>;
-  export type ThemeMode = Types.ThemeMode;
-  export type ThemeName = Types.ThemeName;
+  export type StepBlock = Pick<Types.StepBlock, DefinedFields['StepBlock']>;
   export type Block = Types.Block;
   
-  export type CardBlockResolvers = Pick<Types.CardBlockResolvers, DefinedFields['CardBlock'] | '__isTypeOf'>;
+  export type StepBlockResolvers = Pick<Types.StepBlockResolvers, DefinedFields['StepBlock'] | '__isTypeOf'>;
   
   export interface Resolvers {
-    CardBlock?: CardBlockResolvers;
+    StepBlock?: StepBlockResolvers;
   };
   
   export interface MiddlewareMap {
     '*'?: {
       '*'?: gm.Middleware[];
     };
-    CardBlock?: {
+    StepBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
+      nextBlockId?: gm.Middleware[];
+      locked?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
-      backgroundColor?: gm.Middleware[];
-      coverBlockId?: gm.Middleware[];
-      themeMode?: gm.Middleware[];
-      themeName?: gm.Middleware[];
     };
   };
 }
