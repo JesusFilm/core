@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import RadioOption from './RadioOption'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 

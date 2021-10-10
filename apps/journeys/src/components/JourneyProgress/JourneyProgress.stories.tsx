@@ -1,4 +1,4 @@
-import { journeysConfig } from '../../libs/storybook/decorators'
+import { journeysConfig } from '../../libs/storybook'
 import { Meta } from '@storybook/react'
 import { ReactElement } from 'react'
 import { JourneyProgress } from '.'
@@ -47,7 +47,7 @@ const blocks: TreeBlock[] = [
   }
 ]
 
-export const Default = (): ReactElement => {
+export const Start = (): ReactElement => {
   const activeBlock: TreeBlock<StepBlock> = {
     __typename: 'StepBlock',
     id: 'Step1',
@@ -75,7 +75,7 @@ export const Halfway = (): ReactElement => {
   return <JourneyProgress />
 }
 
-export const Full = (): ReactElement => {
+export const End = (): ReactElement => {
   const activeBlock: TreeBlock<StepBlock> = {
     __typename: 'StepBlock',
     id: 'Step4',

@@ -9,7 +9,7 @@ import {
   TypographyColor,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook'
 
 const TypographyDemo = {
   ...journeysConfig,
