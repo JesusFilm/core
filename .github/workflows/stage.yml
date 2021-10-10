@@ -55,7 +55,7 @@ jobs:
 
       - name: Get Lambda Security Group Id
         run: |
-          LAMBDA_SECURITY_GROUP_ID=$( jq '.LambdaSecurityGroupId' journeys-output.json )
+          LAMBDA_SECURITY_GROUP_ID=$( jq '.LambdaSecurityGroupId' infrastructure-output.json )
 
       - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2
