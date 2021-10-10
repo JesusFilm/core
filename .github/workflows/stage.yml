@@ -55,8 +55,8 @@ jobs:
 
       - name: Set ENV Vars Based on Infrastructure Output
         run: |
-          echo "LAMBDA_SECURITY_GROUP_ID=$( jq '.LambdaSecurityGroupId' infrastructure-output.json )" >> $GITHUB_ENV
-          echo "DATABASE_URL=$( jq '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
+          echo "LAMBDA_SECURITY_GROUP_ID=$( jq -r '.LambdaSecurityGroupId' infrastructure-output.json )" >> $GITHUB_ENV
+          echo "DATABASE_URL=$( jq -r '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
 
       - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2
@@ -66,7 +66,7 @@ jobs:
 
       - name: Get api-journeys endpoint
         run: |
-          echo "JOURNEYS_API_ENDPOINT=$( jq '.ServiceEndpoint' journeys-output.json )/journeys" >> $GITHUB_ENV
+          echo "JOURNEYS_API_ENDPOINT=$( jq -r '.ServiceEndpoint' journeys-output.json )/journeys" >> $GITHUB_ENV
 
       - name: Get Github action IP
         id: ip
