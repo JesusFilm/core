@@ -9,5 +9,5 @@ Properties:
   DBParameterGroupName: !Ref DBInstanceParamGroup
   AutoMinorVersionUpgrade: true
   DBSubnetGroupName: !Ref DBSubnetGroup
-  SourceDbInstanceIdentifier: !Ref CoreDBMaster
-  PubliclyAccessible: false
+  SourceDBInstanceIdentifier: !Ref CoreDBMaster
+  PubliclyAccessible: true

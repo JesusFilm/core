@@ -8,4 +8,4 @@ Properties:
   DBParameterGroupName: !Ref DBInstanceParamGroup
   AutoMinorVersionUpgrade: true
   DBSubnetGroupName: !Ref DBSubnetGroup
-  PubliclyAccessible: false
+  PubliclyAccessible: true

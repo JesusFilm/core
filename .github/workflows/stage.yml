@@ -53,6 +53,10 @@ jobs:
           projects: infrastructure
           args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME
 
+      - name: Get Lambda Security Group Id
+        run: |
+          LAMBDA_SECURITY_GROUP_ID=$( jq '.LambdaSecurityGroupId' journeys-output.json )
+
       - name: Run NX generate and deploy lambdas
         uses: mansagroup/nrwl-nx-action@v2
         with:
@@ -61,14 +65,14 @@ jobs:
 
       - name: Get api-journeys endpoint
         run: |
-          JOURNEY_API_ENDPOINT=$( jq '.endpoints.GET' journeys-output.json )
+          JOURNEY_API_ENDPOINT=$( jq '.ServiceEndpoint' journeys-output.json )
 
       - name: Get Github action IP
         id: ip
         uses: haythem/public-ip@v1.2
 
       - name: Allow Github Actions Access to Postgres
-        run: aws ec2 authorize-security-group-ingress --group-name ark-weave-postgres-$ENV_SUFFIX --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        run: aws ec2 authorize-security-group-ingress --group-id $LAMBDA_SECURITY_GROUP_ID --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Prisma Migrations api-journeys
         run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
