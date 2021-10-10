@@ -1,6 +1,6 @@
 export { actionModule } from './action'
-export { application } from './application'
 export { blockModule } from './block'
 export { journeyModule } from './journey'
+export { radioQuestionModule } from './radioQuestion'
 export { responseModule } from './response'
 export { signUpModule } from './signUp'

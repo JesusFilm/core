@@ -236,10 +236,10 @@ export type RadioQuestionBlock = Block & {
 
 export type RadioQuestionResponse = Response & {
   __typename?: 'RadioQuestionResponse';
-  block?: Maybe<RadioQuestionBlock>;
   id: Scalars['ID'];
-  radioOptionBlockId: Scalars['ID'];
   userId: Scalars['ID'];
+  radioOptionBlockId: Scalars['ID'];
+  block?: Maybe<RadioQuestionBlock>;
 };
 
 export type RadioQuestionResponseCreateInput = {
@@ -256,20 +256,20 @@ export type Response = {
 
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
-  action?: Maybe<Action>;
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
+  action?: Maybe<Action>;
   submitIcon?: Maybe<Icon>;
   submitLabel?: Maybe<Scalars['String']>;
 };
 
 export type SignUpResponse = Response & {
   __typename?: 'SignUpResponse';
-  block?: Maybe<SignUpBlock>;
-  email: Scalars['String'];
   id: Scalars['ID'];
-  name: Scalars['String'];
   userId: Scalars['ID'];
+  name: Scalars['String'];
+  email: Scalars['String'];
+  block?: Maybe<SignUpBlock>;
 };
 
 export type SignUpResponseCreateInput = {
@@ -635,10 +635,10 @@ export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, Pa
 };
 
 export type RadioQuestionResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioQuestionResponse'] = ResolversParentTypes['RadioQuestionResponse']> = {
-  block?: Resolver<Maybe<ResolversTypes['RadioQuestionBlock']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  radioOptionBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  radioOptionBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  block?: Resolver<Maybe<ResolversTypes['RadioQuestionBlock']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -649,20 +649,20 @@ export type ResponseResolvers<ContextType = GraphQLModules.Context, ParentType e
 };
 
 export type SignUpBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpBlock'] = ResolversParentTypes['SignUpBlock']> = {
-  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   submitIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
   submitLabel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SignUpResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpResponse'] = ResolversParentTypes['SignUpResponse']> = {
-  block?: Resolver<Maybe<ResolversTypes['SignUpBlock']>, ParentType, ContextType>;
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  block?: Resolver<Maybe<ResolversTypes['SignUpBlock']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

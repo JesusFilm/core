@@ -112,20 +112,6 @@ const typeDefs = gql`
     alt: String!
   }
 
-  type RadioOptionBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    label: String!
-    action: Action
-  }
-
-  type RadioQuestionBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    label: String!
-    description: String
-  }
-
   type StepBlock implements Block {
     id: ID!
     """
@@ -193,10 +179,6 @@ const typeDefs = gql`
     blocks: [Block!]
   }
 
-  extend type RadioQuestionResponse {
-    block: RadioQuestionBlock
-  }
-
   extend type VideoResponse {
     block: VideoBlock
   }
@@ -210,15 +192,6 @@ const resolvers: BlockModule.Resolvers = {
         orderBy: [{ parentOrder: 'asc' }]
       })
       return blocks.map(transformBlock)
-    }
-  },
-  RadioQuestionResponse: {
-    async block(response, __, { db }) {
-      const block = await db.block.findUnique({
-        where: { id: response.blockId }
-      })
-      if (block == null) return null
-      return transformBlock(block)
     }
   },
   VideoResponse: {

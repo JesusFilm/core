@@ -5,15 +5,6 @@ import { AuthenticationError } from 'apollo-server-errors'
 import { transformResponse } from '.'
 
 const typeDefs = gql`
-  input RadioQuestionResponseCreateInput {
-    """
-    ID should be unique Response UUID (Provided for optimistic mutation result matching)
-    """
-    id: ID
-    blockId: ID!
-    radioOptionBlockId: ID!
-  }
-
   enum VideoResponseStateEnum {
     PLAYING
     PAUSED
@@ -34,12 +25,6 @@ const typeDefs = gql`
     userId: ID!
   }
 
-  type RadioQuestionResponse implements Response {
-    id: ID!
-    userId: ID!
-    radioOptionBlockId: ID!
-  }
-
   type VideoResponse implements Response {
     id: ID!
     userId: ID!
@@ -47,33 +32,12 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    radioQuestionResponseCreate(
-      input: RadioQuestionResponseCreateInput!
-    ): RadioQuestionResponse!
     videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
   }
 `
 
 const resolvers: ResponseModule.Resolvers = {
   Mutation: {
-    async radioQuestionResponseCreate(
-      _parent,
-      { input: { id, blockId, radioOptionBlockId } },
-      { db, userId }
-    ) {
-      if (userId == null)
-        throw new AuthenticationError('No user token provided')
-      const response = await db.response.create({
-        data: {
-          id: id as string | undefined,
-          type: 'RadioQuestionResponse',
-          blockId,
-          userId,
-          extraAttrs: { radioOptionBlockId }
-        }
-      })
-      return transformResponse(response)
-    },
     async videoResponseCreate(
       _parent,
       { input: { id, blockId, state } },
