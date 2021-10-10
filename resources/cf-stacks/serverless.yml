@@ -18,7 +18,7 @@ custom:
     clustername: core-journeys-${opt:env}
   aws:
     vpc-id: vpc-9c5371f0
-    gateway-ssl-cert-arn: arn:aws:acm:us-east-1:894231352815:certificate/0ebf2bf0-bab3-4070-b042-5e3a42929b70
+    gateway-ssl-cert-arn: arn:aws:acm:us-east-1:894231352815:certificate/c36d4c2b-b00c-4f48-9100-91f120d933da
     lambda-group-name: ${opt:lambdaGroupName}
     private-subnets:
       - subnet-99b842c3
