@@ -44,7 +44,9 @@ resources:
     #DBSecurityGroup: ${file(resources/cf-stacks/db/db-security-group.yml)}
     DBSubnetGroup: ${file(resources/cf-stacks/db/subnet-group.yml)}
   Outputs:
-    LambdaSecurityGroupId: !GetAtt LambdaSecurityGroup.GroupId
+    LambdaSecurityGroupId:
+      Description: "Security group Id for Lambda and RDS"
+      Value: !GetAtt LambdaSecurityGroup.GroupId
     ConnectionString:
       Description: "Connection String"
       Value: !Join
