@@ -4,4 +4,5 @@ Properties:
   Protocol: HTTP
   Port: 4000
   Targets:
-    - !Ref ApolloGatewayInstance
+    - Id: !Ref ApolloGatewayInstance
+      Port: 4000
