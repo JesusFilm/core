@@ -113,9 +113,7 @@ describe('VideoModule', () => {
         userId,
         extraAttrs: {
           state: 'PLAYING'
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
+        }
       }
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {

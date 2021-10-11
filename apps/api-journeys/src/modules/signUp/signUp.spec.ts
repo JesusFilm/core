@@ -150,9 +150,7 @@ describe('SignUpModule', () => {
         extraAttrs: {
           name: 'Robert Smith',
           email: 'robert.smith@jesusfilm.org'
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
+        }
       }
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {

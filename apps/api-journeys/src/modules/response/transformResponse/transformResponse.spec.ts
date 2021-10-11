@@ -11,9 +11,7 @@ describe('transformResponse', () => {
       blockId: uuidv4(),
       extraAttrs: {
         hello: 'world'
-      },
-      createdAt: new Date(),
-      updatedAt: new Date()
+      }
     }
     const transformedResponse = {
       ...response,
@@ -29,9 +27,7 @@ describe('transformResponse', () => {
       type: 'SignUpResponse',
       userId: uuidv4(),
       blockId: uuidv4(),
-      extraAttrs: 'hello',
-      createdAt: new Date(),
-      updatedAt: new Date()
+      extraAttrs: 'hello'
     }
     const transformedResponse = {
       ...response,

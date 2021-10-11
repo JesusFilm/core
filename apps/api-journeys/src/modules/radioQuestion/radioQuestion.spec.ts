@@ -259,9 +259,7 @@ describe('RadioQuestionModule', () => {
         userId,
         extraAttrs: {
           radioOptionBlockId: uuidv4()
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
+        }
       }
       dbMock.response.create.mockResolvedValue(response1)
       const { data } = await testkit.execute(app, {
