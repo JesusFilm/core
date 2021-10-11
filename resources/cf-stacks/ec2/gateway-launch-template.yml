@@ -5,6 +5,10 @@ Properties:
     ImageId: ami-0c2b8ca1dad447f8a
     InstanceType: t2.small
     KeyName: jfmprod
+    IamInstanceProfile: !Ref ApolloGatewayIAMProfile
+    NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        SubnetId: subnet-955371f9
     SecurityGroups:
       - !Ref ApolloGatewaySecurityGroup
     UserData: !Base64 |
