@@ -24,7 +24,7 @@ Properties:
       npm install -g npm
       npm install -g pm2
       mkdir -p /opt/apollo-gateway/apps/api-gateway
-      aws s3 cp s3://core-apollo-gateway/ /opt/apollo-gateway/ --include "*" --recursive
+      aws s3 cp s3://core-apollo-gateway-${opt:env}/ /opt/apollo-gateway/ --include "*" --recursive
       mv /opt/apollo-gateway/schema.graphql /opt/apollo-gateway/apps/api-gateway
       cd /opt/apollo-gateway
       npm install --only=prod --legacy-peer-deps

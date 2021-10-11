@@ -46,10 +46,10 @@ jobs:
 
       - name: Prep Apollo API Gateway assets
         run: |
-          aws s3 cp dist/apps/api-gateway/main.js s3://core-apollo-gateway/
-          aws s3 cp package.json s3://core-apollo-gateway/
-          aws s3 cp apps/api-gateway/schema.graphql s3://core-apollo-gateway/
-          aws s3 cp apps/api-gateway/.env s3://core-apollo-gateway/
+          aws s3 cp dist/apps/api-gateway/main.js s3://core-apollo-gateway-$ENV_SUFFIX/
+          aws s3 cp package.json s3://core-apollo-gateway-$ENV_SUFFIX/
+          aws s3 cp apps/api-gateway/schema.graphql s3://core-apollo-gateway-$ENV_SUFFIX/
+          aws s3 cp apps/api-gateway/.env s3://core-apollo-gateway-$ENV_SUFFIX/
 
       - name: Deploy/Update Infrastructure
         uses: mansagroup/nrwl-nx-action@v2
