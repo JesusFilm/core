@@ -7,7 +7,7 @@ Properties:
     InstanceType: t2.small
     KeyName: jfmprod
     IamInstanceProfile:
-      Arn: !Ref ApolloGatewayIAMProfile
+      Name: !Ref ApolloGatewayIAMProfile
     NetworkInterfaces:
       - AssociatePublicIpAddress: true
         SubnetId: subnet-955371f9
