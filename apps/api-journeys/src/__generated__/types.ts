@@ -120,6 +120,16 @@ export type ImageBlock = Block & {
   width: Scalars['Int'];
   height: Scalars['Int'];
   alt: Scalars['String'];
+  blurhash: Scalars['String'];
+};
+
+export type ImageBlockCreateInput = {
+  /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
+  id?: Maybe<Scalars['ID']>;
+  parentBlockId?: Maybe<Scalars['ID']>;
+  journeyId: Scalars['ID'];
+  src: Scalars['String'];
+  alt: Scalars['String'];
 };
 
 export type Journey = {
@@ -154,11 +164,17 @@ export type LinkAction = Action & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  imageBlockCreate: ImageBlock;
   journeyCreate: Journey;
   journeyPublish?: Maybe<Journey>;
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
   videoResponseCreate: VideoResponse;
+};
+
+
+export type MutationImageBlockCreateArgs = {
+  input: ImageBlockCreateInput;
 };
 
 
@@ -454,6 +470,7 @@ export type ResolversTypes = {
   IconSize: IconSize;
   ImageBlock: ResolverTypeWrapper<BlockType>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  ImageBlockCreateInput: ImageBlockCreateInput;
   Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   JourneyCreateInput: JourneyCreateInput;
@@ -495,6 +512,7 @@ export type ResolversParentTypes = {
   Icon: Icon;
   ImageBlock: BlockType;
   Int: Scalars['Int'];
+  ImageBlockCreateInput: ImageBlockCreateInput;
   Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
   Boolean: Scalars['Boolean'];
   JourneyCreateInput: JourneyCreateInput;
@@ -567,6 +585,7 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   alt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  blurhash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -589,6 +608,7 @@ export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType
 };
 
 export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  imageBlockCreate?: Resolver<ResolversTypes['ImageBlock'], ParentType, ContextType, RequireFields<MutationImageBlockCreateArgs, 'input'>>;
   journeyCreate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyCreateArgs, 'input'>>;
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
