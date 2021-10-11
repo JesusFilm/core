@@ -9,10 +9,9 @@ Properties:
     - !Ref ApolloGatewaySecurityGroup
   UserData: !Base64 |
     #!/bin/bash -ex
+    touch ~/.bashrc 
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-    echo 'export NVM_DIR="/root/.nvm"' >> /root/.bashrc
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> /root/.bashrc
-    . /root/.nvm/nvm.sh
+    source ~/.bashrc
     nvm install node
     npm install -g npm
     npm install -g pm2
