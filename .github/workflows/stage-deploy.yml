@@ -56,7 +56,7 @@ jobs:
         with:
           targets: deploy
           projects: infrastructure
-          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME
+          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME --region $AWS_DEFAULT_REGION
 
       - name: Set ENV Vars Based on Infrastructure Output
         run: |
