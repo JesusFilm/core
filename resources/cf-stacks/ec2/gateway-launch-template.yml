@@ -12,8 +12,8 @@ Properties:
       - AssociatePublicIpAddress: true
         SubnetId: subnet-955371f9
         DeviceIndex: 0
-        GropuSet:
-          - !Ref ApolloGatewaySecurityGroup
+    SecurityGroups:
+      - !Ref ApolloGatewaySecurityGroup
     UserData: !Base64 |
       #!/bin/bash -ex
       # version 1.12
