@@ -30,3 +30,4 @@ Properties:
       npm install --only=prod --legacy-peer-deps
       pm2 start main.js
       pm2 save
+      /opt/aws/bin/cfn-signal --exit-code 0 --resource ApolloGatewayInstance --region ${AWS::Region} --stack ${AWS::StackName}
