@@ -28,6 +28,9 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         groupedContainedVertical: {
           margin: 0
+        },
+        root: {
+          borderRadius: 8
         }
       }
     },

@@ -1,15 +1,14 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { useTheme } from '@mui/material'
-import { Box } from '@mui/system'
 
 import { Typography, TypographyProps } from './Typography'
 import {
+  ThemeMode,
   TypographyVariant,
   TypographyColor,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig, StoryCard } from '../../../libs/storybook'
 
 const TypographyDemo = {
   ...journeysConfig,
@@ -20,40 +19,6 @@ const TypographyDemo = {
 interface TypographyStoryProps extends TypographyProps {
   variants: Array<string | null>
   heading?: string
-}
-
-// TODO: Replace with real card component
-interface CardProps {
-  background?: string
-  children: ReactNode
-}
-
-const Card = ({
-  background = 'primary',
-  children
-}: CardProps): ReactElement => {
-  const theme = useTheme()
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor:
-          background === 'background'
-            ? theme.palette.background
-            : theme.palette[background].main,
-        color:
-          background === 'background'
-            ? theme.palette.text.primary
-            : theme.palette[background].contrastText,
-        p: theme.spacing(4),
-        borderRadius: 4,
-        mb: theme.spacing(4)
-      }}
-    >
-      {children}
-    </Box>
-  )
 }
 
 const TypographyColors = ({
@@ -83,7 +48,7 @@ const TypographyColors = ({
 }
 
 const VariantTemplate: Story<TypographyStoryProps> = (props) => (
-  <Card>
+  <StoryCard>
     {props.variants.map((variant) => (
       <Typography
         {...props}
@@ -92,7 +57,7 @@ const VariantTemplate: Story<TypographyStoryProps> = (props) => (
         content={variant ?? ''}
       />
     ))}
-  </Card>
+  </StoryCard>
 )
 
 export const Variants = VariantTemplate.bind({})
@@ -117,35 +82,23 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
   <div
     style={{
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      height: '580px',
+      justifyContent: 'space-between'
     }}
   >
-    <Card>
-      <TypographyColors
-        {...props}
-        variants={[null]}
-        heading={'Default on Primary'}
-      />
-    </Card>
-    <Card background={'secondary'}>
-      <TypographyColors
-        {...props}
-        variants={[null]}
-        heading={'Default on Secondary'}
-      />
-    </Card>
-    <Card background={'background'}>
-      <Typography
-        {...props}
-        variant={TypographyVariant.h6}
-        content={'Override Colors'}
-      />
+    <StoryCard themeMode={ThemeMode.light}>
+      <TypographyColors {...props} variants={[null]} heading={'Default '} />
+      <TypographyColors {...props} variants={props.variants} />
+    </StoryCard>
+    <StoryCard themeMode={ThemeMode.dark}>
+      <TypographyColors {...props} variants={[null]} heading={'Default'} />
       <TypographyColors
         {...props}
         variants={props.variants}
         heading={'Override colors'}
       />
-    </Card>
+    </StoryCard>
   </div>
 )
 
@@ -155,7 +108,7 @@ Colors.args = {
 }
 
 const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
-  <Card>
+  <StoryCard>
     {props.variants.map((variant) => (
       <Typography
         {...props}
@@ -165,7 +118,7 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
         content={variant ?? ''}
       />
     ))}
-  </Card>
+  </StoryCard>
 )
 
 export const Alignment = AlignmentTemplate.bind({})

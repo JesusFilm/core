@@ -1,6 +1,4 @@
-import { ReactElement, ReactNode } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { Box } from '@mui/system'
 import { Button } from '.'
 import {
   ButtonVariant,
@@ -9,8 +7,12 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
-import { journeysConfig } from '../../../libs/storybook/decorators'
-import { ButtonFields } from '../../../../__generated__/ButtonFields'
+import { journeysConfig, StoryCard } from '../../../libs/storybook'
+import {
+  ButtonFields,
+  ButtonFields_startIcon as StartIcon,
+  ButtonFields_endIcon as EndIcon
+} from '../../../../__generated__/ButtonFields'
 import { Typography } from '@mui/material'
 
 const ButtonDemo = {
@@ -23,38 +25,17 @@ interface ButtonStoryProps extends ButtonFields {
   variants: Array<string | null>
 }
 
-interface CardProps {
-  background?: string
-  children: ReactNode
-}
-
-const Card = ({ children }: CardProps): ReactElement => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      {children}
-    </Box>
-  )
-}
-
-const VariantTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <Card>
+const Template: Story<ButtonStoryProps> = ({ ...args }) => (
+  <StoryCard>
     <Button {...args} />
-  </Card>
+  </StoryCard>
 )
 
-export const Variant = VariantTemplate.bind({})
-Variant.args = {
-  buttonVariant: ButtonVariant.contained,
-  label: ButtonVariant.contained
-}
+export const Variant = Template.bind({})
+Variant.args = { label: ButtonVariant.contained }
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <Card>
+  <StoryCard>
     {args.variants.map((variant, i) => (
       <Button
         {...args}
@@ -63,12 +44,11 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         buttonColor={variant as ButtonColor}
       />
     ))}
-  </Card>
+  </StoryCard>
 )
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
-  buttonVariant: ButtonVariant.contained,
   variants: [
     null,
     ButtonColor.primary,
@@ -78,7 +58,7 @@ Color.args = {
 }
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <Card>
+  <StoryCard>
     {args.variants.map((variant, i) => (
       <>
         <Button
@@ -92,43 +72,38 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         </Typography>
       </>
     ))}
-  </Card>
+  </StoryCard>
 )
 
 export const Size = SizeTemplate.bind({})
 Size.args = {
-  buttonVariant: ButtonVariant.contained,
   variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
 }
 
-const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
-  <Card>
-    <Button {...args} />
-  </Card>
-)
-
-export const startIcon = IconTemplate.bind({})
-startIcon.args = {
-  label: 'Start Icon',
-  buttonVariant: ButtonVariant.contained,
-  startIcon: {
+const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
+  const icon: StartIcon | EndIcon = {
     __typename: 'Icon',
     name: IconName.CheckCircle,
     color: null,
     size: IconSize.md
   }
+
+  return (
+    <StoryCard>
+      {args.variants.map((variant: string, i) => (
+        <Button
+          {...args}
+          key={i}
+          label={`${variant} Icon`}
+          startIcon={variant === 'Start' ? icon : null}
+          endIcon={variant === 'End' ? icon : null}
+        />
+      ))}
+    </StoryCard>
+  )
 }
 
-export const endIcon = IconTemplate.bind({})
-endIcon.args = {
-  label: 'End Icon',
-  buttonVariant: ButtonVariant.contained,
-  endIcon: {
-    __typename: 'Icon',
-    name: IconName.CheckCircle,
-    color: null,
-    size: IconSize.md
-  }
-}
+export const Icon = IconTemplate.bind({})
+Icon.args = { variants: ['Start', 'End'] }
 
 export default ButtonDemo as Meta

@@ -1,28 +1,12 @@
-import { Button } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { Button, useTheme } from '@mui/material'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { ReactElement } from 'react'
-import { compact } from 'lodash'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { handleAction } from '../../../libs/action'
 
-const useStyles = makeStyles(() => ({
-  highlightIcon: {
-    color: '#54A055'
-  },
-  buttonLabels: {
-    fontSize: 16,
-    fontWeight: 700,
-    lineHeight: 1.4,
-    textAlign: 'start',
-    justifyContent: 'flex-start',
-    borderRadius: '8px'
-  }
-}))
-
-type RadioOptionProps = TreeBlock<RadioOptionBlock> & {
+export interface RadioOptionProps extends TreeBlock<RadioOptionBlock> {
   className?: string
   selected?: boolean
   disabled?: boolean
@@ -38,7 +22,7 @@ export function RadioOption({
   selected = false,
   onClick
 }: RadioOptionProps): ReactElement {
-  const classes = useStyles()
+  const theme = useTheme()
 
   const handleClick = (): void => {
     handleAction(action)
@@ -48,23 +32,28 @@ export function RadioOption({
   return (
     <Button
       variant="contained"
-      className={compact([className, classes.buttonLabels]).join(' ')}
+      className={className}
       disabled={disabled}
       onClick={handleClick}
       startIcon={
         selected ? (
-          <CheckCircleIcon
-            data-testid="RadioOptionCheckCircleIcon"
-            className={classes.highlightIcon}
-          />
+          <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
         ) : (
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
+      sx={{
+        fontFamily: theme.typography.body2.fontFamily,
+        fontSize: theme.typography.body2.fontSize,
+        fontWeight: 600,
+        lineHeight: theme.typography.body2.lineHeight,
+        textAlign: 'start',
+        justifyContent: 'flex-start',
+        borderRadius: '8px',
+        padding: '14px 10px 14px 14px'
+      }}
     >
       {label}
     </Button>
   )
 }
-
-export default RadioOption

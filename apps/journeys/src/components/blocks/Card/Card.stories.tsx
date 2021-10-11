@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { Card } from './Card'
-import { journeysConfig } from '../../../libs/storybook/decorators'
+import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
@@ -20,7 +20,7 @@ const Demo = {
   title: 'Journeys/Blocks/Card'
 }
 
-const DefaultTemplate: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
+const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
   <Card {...props} />
 )
 
@@ -66,26 +66,21 @@ const children: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
-Default.args = {
-  children
-}
-
-export const Light: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
+export const Light: Story<TreeBlock<CardBlock>> = Template.bind({})
 Light.args = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   children
 }
 
-export const Dark: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
+export const Dark: Story<TreeBlock<CardBlock>> = Template.bind({})
 Dark.args = {
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
   children
 }
 
-export const CustomColor: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind({})
+export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
 CustomColor.args = {
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
@@ -93,9 +88,7 @@ CustomColor.args = {
   children
 }
 
-export const CoverBlockId: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind(
-  {}
-)
+export const CoverBlockId: Story<TreeBlock<CardBlock>> = Template.bind({})
 CoverBlockId.args = {
   coverBlockId: 'imageBlockId1',
   children: [
@@ -113,9 +106,7 @@ CoverBlockId.args = {
   ]
 }
 
-export const ImageAndText: Story<TreeBlock<CardBlock>> = DefaultTemplate.bind(
-  {}
-)
+export const ImageAndText: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageAndText.args = {
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
