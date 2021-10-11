@@ -8,6 +8,7 @@ Properties:
   NetworkInterfaces:
     - AssociatePublicIpAddress: true
       SubnetId: subnet-955371f9
+      DeviceIndex: 0
   SecurityGroupIds:
     - !Ref ApolloGatewaySecurityGroup
   UserData: !Base64 |
