@@ -9,15 +9,16 @@ Properties:
       - !Ref ApolloGatewaySecurityGroup
     UserData: !Base64 |
       #!/bin/bash -ex
+      touch ~/.bashrc 
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-      . ~/.nvm/nvm.sh
+      source ~/.bashrc
       nvm install node
       npm install -g npm
       npm install -g pm2
       mkdir -p /opt/apollo-gateway/apps/api-gateway
-      aws s3 cp s3://core-apollo-gateway/* /opt/apollo-gateway
+      aws s3 cp s3://core-apollo-gateway/ /opt/apollo-gateway/ --include "*" --recursive
       mv /opt/apollo-gateway/schema.graphql /opt/apollo-gateway/apps/api-gateway
       cd /opt/apollo-gateway
-      npm install --only=prod
+      npm install --only=prod --legacy-peer-deps
       pm2 start main.js
       pm2 save

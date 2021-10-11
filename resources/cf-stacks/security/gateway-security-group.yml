@@ -7,6 +7,10 @@ Properties:
       FromPort: "4000"
       ToPort: "4000"
       CidrIp: "0.0.0.0/0"
+    - IpProtocol: tcp
+      FromPort: "22"
+      ToPort: "22"
+      CidrIp: 0.0.0.0/0
   Tags:
     - Key: "Name"
       Value: "apollo-gateway-instances-${opt:env}"

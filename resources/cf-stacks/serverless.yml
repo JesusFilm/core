@@ -39,7 +39,6 @@ resources:
     ApolloGatewayHTTPListener: ${file(resources/cf-stacks/ec2/gateway-lb-http-listener.yml)}
     ApolloGatewayTargetGroup: ${file(resources/cf-stacks/ec2/gateway-lb-target-group.yml)}
     ApolloGatewayLaunchTemplate: ${file(resources/cf-stacks/ec2/gateway-launch-template.yml)}
-    # ApolloGatewayScalingPolicy: ${file(resources/cf-stacks/ec2/gateway-scaling-policy-template.yml)}
     LambdaSecurityGroup: ${file(resources/cf-stacks/lambdas/lambda-security-group-template.yml)}
     LambdaSecurityGroupIngress: ${file(resources/cf-stacks/lambdas/lambda-security-group-ingress-template.yml)}
     CoreDBCluster: ${file(resources/cf-stacks/db/jf-core-cluster.yml)}
@@ -51,6 +50,9 @@ resources:
     ApolloGatewayLoadBalancer:
       Description: DNS Name for Apollo load balancer
       Value: !GetAtt ApolloGatewayLoadBalancer.DNSName
+    ApolloGatewayInstanceIp:
+      Description: IP address of Apollo Gateway instance
+      Value: !GetAtt ApolloGatewayInstance.PublicIp
     LambdaSecurityGroupId:
       Description: "Security group Id for Lambda and RDS"
       Value: !GetAtt LambdaSecurityGroup.GroupId

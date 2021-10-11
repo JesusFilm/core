@@ -5,7 +5,7 @@ Properties:
   InstanceType: t2.small
   KeyName: jfmprod
   IamInstanceProfile: !Ref ApolloGatewayIAMProfile
-  SubnetId: subnet-99b842c3
+  SubnetId: subnet-955371f9
   SecurityGroupIds:
     - !Ref ApolloGatewaySecurityGroup
   UserData: !Base64 |
@@ -17,9 +17,9 @@ Properties:
     npm install -g npm
     npm install -g pm2
     mkdir -p /opt/apollo-gateway/apps/api-gateway
-    aws s3 cp s3://core-apollo-gateway/* /opt/apollo-gateway
+    aws s3 cp s3://core-apollo-gateway/ /opt/apollo-gateway/ --include "*" --recursive
     mv /opt/apollo-gateway/schema.graphql /opt/apollo-gateway/apps/api-gateway
     cd /opt/apollo-gateway
-    npm install --only=prod
+    npm install --only=prod --legacy-peer-deps
     pm2 start main.js
     pm2 save

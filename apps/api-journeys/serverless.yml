@@ -9,7 +9,7 @@ custom:
   output:
     handler: ../../output.handler
     file: ../../journeys-output.json
-  stage: ${opt:serviceStage, 'dev'}
+  stage: ${self:serviceStage, 'dev'}
   bundle:
     linting: false
     tsConfig: "tsconfig.app.json"
