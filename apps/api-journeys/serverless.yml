@@ -1,4 +1,4 @@
-service: api-journeys-${opt:env}
+service: api-journeys
 useDotenv: true
 plugins:
   - serverless-bundle
