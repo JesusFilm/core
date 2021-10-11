@@ -13,8 +13,8 @@ custom:
   dbparams:
     port: 5432
     name: core_journeys_${opt:env}
-    dbuser: test_user
-    dbpassword: test_password
+    dbuser: ${opt:dbuser}
+    dbpassword: ${opt:dbpassword}
     clustername: core-journeys-${opt:env}
   aws:
     vpc-id: vpc-9c5371f0

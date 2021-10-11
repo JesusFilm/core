@@ -2,7 +2,7 @@ name: Prod Merge
 on:
   push:
     branches:
-      - add-ns3-serverless
+      - main
 jobs:
   build-and-deploy:
     environment: Production
@@ -13,6 +13,8 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     runs-on: ubuntu-latest
 
@@ -56,7 +58,7 @@ jobs:
         with:
           targets: deploy
           projects: infrastructure
-          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME --region $AWS_DEFAULT_REGION
+          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME --region $AWS_DEFAULT_REGION --dbuser $DB_USER --dbpassword $DB_PASSWORD
 
       - name: Set ENV Vars Based on Infrastructure Output
         run: |
