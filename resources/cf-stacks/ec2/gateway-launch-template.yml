@@ -1,4 +1,5 @@
 Type: AWS::EC2::LaunchTemplate
+DependsOn: ApolloGatewayIAMProfile
 Properties:
   LaunchTemplateName: apollo-gateway-ec2-launch-${opt:env}
   LaunchTemplateData:
