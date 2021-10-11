@@ -22,7 +22,7 @@ const ButtonDemo = {
 }
 
 interface ButtonStoryProps extends ButtonFields {
-  variants: Array<string | null>
+  variants: string[]
 }
 
 const Template: Story<ButtonStoryProps> = ({ ...args }) => (
@@ -40,7 +40,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       <Button
         {...args}
         key={i}
-        label={variant === null ? 'default' : `${variant}`}
+        label={`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
         buttonColor={variant as ButtonColor}
       />
     ))}
@@ -49,12 +49,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
-  variants: [
-    null,
-    ButtonColor.primary,
-    ButtonColor.secondary,
-    ButtonColor.error
-  ]
+  variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error]
 }
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
