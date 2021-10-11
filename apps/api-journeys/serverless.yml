@@ -1,4 +1,4 @@
-service: api-journeys
+service: api-journeys-${opt:env}
 useDotenv: true
 plugins:
   - serverless-bundle
@@ -9,7 +9,7 @@ custom:
   output:
     handler: ../../output.handler
     file: ../../journeys-output.json
-  stage: ${self:serviceStage, 'dev'}
+  stage: ${opt:env}
   bundle:
     linting: false
     tsConfig: "tsconfig.app.json"

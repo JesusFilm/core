@@ -64,11 +64,18 @@ jobs:
           echo "DATABASE_URL=postgresql://$( jq -r '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
           echo "GATEWAY_INSTANCE_IP=$( jq -r '.ApolloGatewayInstanceIp' infrastructure-output.json )" >> $GITHUB_ENV
 
-      - name: Run NX generate and deploy lambdas
+      - name: Prisma Generate api-journeys
         uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: prismagenerate,deploy
+          targets: prismagenerate
           projects: api-journeys
+
+      - name: Deploy api-journeys
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: deploy
+          projects: api-journeys
+          args: --env $ENV_SUFFIX
 
       - name: Get api-journeys endpoint
         run: |
