@@ -106,7 +106,7 @@ jobs:
         run: ssh gateway "sudo sed -i 's|http://127.0.0.1:4001/graphql|$JOURNEYS_API_ENDPOINT|g' /opt/apollo-gateway/apps/api-gateway/schema.graphql"
 
       - name: Restart Apollo Gateway
-        run: ssh gateway "sudo -- sh -c '. /.nvm/nvm.sh; \cp -r /etc/.pm2 ~; pm2 resurrect; pm2 restart 0'"
+        run: ssh gateway "sudo -- sh -c '. /.nvm/nvm.sh; \cp -r /etc/.pm2 ~; pkill -f pm2; pkill -f node; pm2 resurrect; pm2 start 0'"
 
       # Cleanup / remove Github access to postgres.
       - name: Remove Github Actions Access to Postgres
