@@ -1,0 +1,1 @@
+export { signUpModule } from './signUp'

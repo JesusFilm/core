@@ -1,0 +1,1 @@
+export { imageModule } from './image'
