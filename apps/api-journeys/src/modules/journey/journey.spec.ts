@@ -1,13 +1,13 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import module from '.'
+import { journeyModule } from '.'
 import { pick } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import dbMock from '../../../tests/dbMock'
 import { Journey, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 
 it('returns published journeys', async () => {
-  const app = testkit.testModule(module, { schemaBuilder })
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   const publishedJourney: Journey = {
     id: uuidv4(),
@@ -50,7 +50,7 @@ it('returns published journeys', async () => {
 })
 
 it('returns journey', async () => {
-  const app = testkit.testModule(module, { schemaBuilder })
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   const journey = {
     id: uuidv4(),
@@ -96,7 +96,7 @@ it('returns journey', async () => {
 })
 
 it('creates journey', async () => {
-  const app = testkit.testModule(module, { schemaBuilder })
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   const journey: Journey = {
     id: uuidv4(),
@@ -138,7 +138,7 @@ it('creates journey', async () => {
 })
 
 it('creates journey with default locale and theme', async () => {
-  const app = testkit.testModule(module, { schemaBuilder })
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   const journey: Journey = {
     id: uuidv4(),
@@ -177,7 +177,7 @@ it('creates journey with default locale and theme', async () => {
 })
 
 it('publishes journey', async () => {
-  const app = testkit.testModule(module, { schemaBuilder })
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   const journey: Journey = {
     id: uuidv4(),

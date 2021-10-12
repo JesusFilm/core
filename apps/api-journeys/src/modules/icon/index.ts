@@ -1,0 +1,1 @@
+export { iconModule } from './icon'
