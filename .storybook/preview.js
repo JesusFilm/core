@@ -9,15 +9,37 @@ Object.defineProperty(NextImage, 'default', {
     createElement(OriginalNextImage, { ...props, unoptimized: true })
 })
 
+const customViewports = {
+  mobile: {
+    name: 'Mobile',
+    styles: {
+      width: '320px',
+      height: '568px'
+    },
+    type: 'mobile'
+  },
+  tablet: {
+    name: 'Tablet',
+    styles: {
+      width: '768px',
+      height: '1024px'
+    },
+    type: 'tablet'
+  }
+}
+
 module.exports = {
   parameters: {
-    chromatic: { viewports: [640] },
-    controls: { disabled: true },
     backgrounds: {
       disable: true,
       grid: {
         disable: true
       }
+    },
+    chromatic: { viewports: [640] },
+    controls: { disabled: true },
+    viewport: {
+      viewports: customViewports
     }
   },
   globalTypes: {
