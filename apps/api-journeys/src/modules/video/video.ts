@@ -24,7 +24,8 @@ const typeDefs = gql`
   type VideoBlock implements Block {
     id: ID!
     parentBlockId: ID
-    src: String!
+    mediaComponentId: String
+    languageId: String
     title: String!
     description: String
     volume: Int

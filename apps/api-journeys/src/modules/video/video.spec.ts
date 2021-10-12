@@ -59,7 +59,8 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          src: 'src',
+          mediaComponentId: '2_0-FallingPlates',
+          languageId: '529',
           title: 'title'
         }
       }
@@ -72,7 +73,8 @@ describe('VideoModule', () => {
               __typename
               parentBlockId
               ... on VideoBlock {
-                src
+                mediaComponentId
+                languageId
                 title
               }
             }
@@ -84,7 +86,8 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          src: 'src',
+          mediaComponentId: '2_0-FallingPlates',
+          languageId: '529',
           title: 'title'
         }
       ])
@@ -101,7 +104,8 @@ describe('VideoModule', () => {
         parentBlockId: null,
         parentOrder: 0,
         extraAttrs: {
-          src: 'src',
+          mediaComponentId: '2_0-FallingPlates',
+          languageId: '529',
           title: 'title'
         }
       }
@@ -112,6 +116,8 @@ describe('VideoModule', () => {
         blockId: block1.id,
         userId,
         extraAttrs: {
+          mediaComponentId: '2_0-FallingPlates',
+          languageId: '529',
           state: 'PLAYING'
         }
       }
@@ -125,7 +131,8 @@ describe('VideoModule', () => {
               state
               block {
                 id
-                src
+                mediaComponentId
+                languageId
                 title
               }
             }
@@ -149,7 +156,8 @@ describe('VideoModule', () => {
         state: 'PLAYING',
         block: {
           id: block1.id,
-          src: 'src',
+          mediaComponentId: '2_0-FallingPlates',
+          languageId: '529',
           title: 'title'
         }
       })
