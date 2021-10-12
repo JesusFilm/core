@@ -94,6 +94,12 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum VideoResponseStateEnum {
+  FINISHED = "FINISHED",
+  PAUSED = "PAUSED",
+  PLAYING = "PLAYING",
+}
+
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;
@@ -105,6 +111,12 @@ export interface SignUpResponseCreateInput {
   email: string;
   id?: string | null;
   name: string;
+}
+
+export interface VideoResponseCreateInput {
+  blockId: string;
+  id?: string | null;
+  state: VideoResponseStateEnum;
 }
 
 //==============================================================
