@@ -1,14 +1,11 @@
 import { Parameters } from '@storybook/react'
 import { ThemeProvider } from '../../index'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import { globalTypes } from '../../../../../../.storybook/preview'
 import { ReactElement, ReactNode } from 'react'
 import { themes } from '../themes'
 
-const themeMode = globalTypes.theme.toolbar.items
-
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
-  mode: typeof themeMode[number]
+  mode: string
   children: ReactNode
 }
 

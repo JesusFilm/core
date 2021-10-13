@@ -318,7 +318,7 @@ Viewport.parameters = {
 }
 Viewport.decorators = [
   (Story: Story, context: StoryContext) => (
-    <ThemeDecorator mode={'light'} layout={context.parameters.layout}>
+    <ThemeDecorator mode={'dark'} layout={context.parameters.layout}>
       <Story />
     </ThemeDecorator>
   )
