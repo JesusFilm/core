@@ -10,11 +10,19 @@ Object.defineProperty(NextImage, 'default', {
 })
 
 const customViewports = {
-  mobile: {
-    name: 'Mobile',
+  mobileMin: {
+    name: 'Small Mobile',
     styles: {
       width: '320px',
       height: '568px'
+    },
+    type: 'mobile'
+  },
+  mobileMax: {
+    name: 'Large Mobile',
+    styles: {
+      width: '540px',
+      height: '960px'
     },
     type: 'mobile'
   },
