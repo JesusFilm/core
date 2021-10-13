@@ -259,7 +259,15 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   }, [])
 
   return (
-    <Box>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '320px'
+      }}
+    >
       {args.variants.map((variant: string) => {
         return (
           <>
@@ -304,14 +312,17 @@ Viewport.args = {
   variants: ['xs', 'sm', 'md', 'lg', 'xl']
 }
 Viewport.parameters = {
-  layout: 'centered',
+  layout: 'fullscreen',
   theme: 'dark',
   chromatic: {
     viewports: [
       breakpoints.values.sm - 1,
       breakpoints.values.sm,
+      breakpoints.values.md - 1,
       breakpoints.values.md,
+      breakpoints.values.lg - 1,
       breakpoints.values.lg,
+      breakpoints.values.xl - 1,
       breakpoints.values.xl
     ]
   }
