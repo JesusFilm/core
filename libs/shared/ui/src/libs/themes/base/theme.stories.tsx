@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactElement } from 'react'
-import { Story, StoryContext, Meta } from '@storybook/react'
+import { Story, Meta } from '@storybook/react'
 import {
   Box,
   useTheme,
@@ -10,7 +10,6 @@ import {
   TypographyProps,
   SimplePaletteColorOptions
 } from '@mui/material'
-import { ThemeDecorator } from '../../storybook/decorators'
 
 import { sharedUiConfig, themes } from '../../../index'
 
@@ -306,6 +305,7 @@ Viewport.args = {
 }
 Viewport.parameters = {
   layout: 'centered',
+  theme: 'dark',
   chromatic: {
     viewports: [
       breakpoints.values.sm - 1,
@@ -316,12 +316,5 @@ Viewport.parameters = {
     ]
   }
 }
-Viewport.decorators = [
-  (Story: Story, context: StoryContext) => (
-    <ThemeDecorator mode={'dark'} layout={context.parameters.layout}>
-      <Story />
-    </ThemeDecorator>
-  )
-]
 
 export default ThemeDemo as Meta

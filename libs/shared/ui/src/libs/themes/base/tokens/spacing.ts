@@ -9,7 +9,7 @@ export const baseSpacing: Required<
       xs: 0, // Mobile (P)
       sm: 568, // Mobile (L)
       md: 768, // Tablet (P)
-      lg: 1024, // lg (L)
+      lg: 1024, // Tablet (L)
       xl: 1200 // Laptop/Desktop
     }
   }
