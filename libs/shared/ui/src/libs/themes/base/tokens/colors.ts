@@ -1,59 +1,69 @@
-import { ThemeOptions, PaletteColorOptions } from '@mui/material/styles'
+import { ThemeOptions, SimplePaletteColorOptions } from '@mui/material/styles'
 
-const primary: PaletteColorOptions = {
-  light: '#6D6F81',
-  main: '#30313D',
-  dark: '#26262E',
-  contrastText: '#FFFFFF'
+const palette = {
+  errorLight: '#FF6B58',
+  errorDark: '#B62D1C',
+  900: '#26262E',
+  800: '#30313D',
+  700: '#6D6F81',
+  300: '#AAACBB',
+  200: '#DCDDE5',
+  100: '#FEFEFE',
+  0: '#FFFFFF'
 }
 
-const secondary: PaletteColorOptions = {
-  light: '#FEFEFE',
-  main: '#BDBFCF',
-  dark: '#AAACBB',
-  contrastText: '#26262E'
-}
-
-export const baseColorsLight: Required<
+export const baseColorsLight = (): Required<
   Pick<ThemeOptions, 'palette' | 'components'>
-> = {
-  palette: {
-    mode: 'light',
-    background: { default: '#FEFEFE', paper: '#FEFEFE' },
-    primary,
-    secondary,
-    error: {
-      light: '#FC624E',
-      main: '#EE4C37',
-      dark: '#C52713',
-      contrastText: '#FFFFFF'
-    },
-    text: {
-      primary: primary.dark,
-      secondary: primary.main
-    },
-    action: {
-      // DISABLED BUTTON COLORS
-      disabled: primary.light,
-      disabledBackground: primary.dark
-    }
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        containedPrimary: {
-          backgroundColor: primary.dark,
-          '&:hover': {
-            backgroundColor: primary.main
-          }
-        }
+> => {
+  const primary: Required<SimplePaletteColorOptions> = {
+    light: palette[800],
+    main: palette[900],
+    dark: palette[900],
+    contrastText: palette[0]
+  }
+
+  const secondary: SimplePaletteColorOptions = {
+    main: palette[800],
+    contrastText: palette[0]
+  }
+
+  const error: SimplePaletteColorOptions = {
+    main: palette.errorDark,
+    contrastText: palette[0]
+  }
+
+  return {
+    palette: {
+      mode: 'light',
+      background: { default: palette[0], paper: palette[100] },
+      primary,
+      secondary,
+      error,
+      text: {
+        primary: primary.main,
+        secondary: primary.light
+      },
+      action: {
+        disabled: palette[700],
+        disabledBackground: primary.main
       }
     },
-    MuiButtonGroup: {
-      styleOverrides: {
-        groupedContainedVertical: {
-          '&:not(:last-of-type), &:disabled': {
-            borderBottom: `1px solid ${secondary.main}`
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          containedPrimary: {
+            '&:hover': {
+              backgroundColor: palette[700]
+            }
+          }
+        }
+      },
+      MuiButtonGroup: {
+        styleOverrides: {
+          groupedContainedVertical: {
+            '&:not(:last-of-type)': {
+              borderBottom: `1px solid ${palette[700]}`
+            }
           }
         }
       }
@@ -61,33 +71,59 @@ export const baseColorsLight: Required<
   }
 }
 
-export const baseColorsDark: Required<
+export const baseColorsDark = (): Required<
   Pick<ThemeOptions, 'palette' | 'components'>
-> = {
-  palette: {
-    ...baseColorsLight.palette,
-    mode: 'dark',
-    background: { default: '#26262E', paper: '#30313D' },
-    primary: secondary,
-    secondary: primary,
-    text: {
-      primary: secondary.light,
-      secondary: secondary.main
+> => {
+  const primary: Required<SimplePaletteColorOptions> = {
+    light: palette[100],
+    main: palette[100],
+    dark: palette[200],
+    contrastText: palette[900]
+  }
+
+  const secondary: SimplePaletteColorOptions = {
+    main: palette[200],
+    contrastText: palette[900]
+  }
+
+  const error: SimplePaletteColorOptions = {
+    main: palette.errorLight,
+    contrastText: palette[900]
+  }
+
+  return {
+    palette: {
+      ...baseColorsLight().palette,
+      mode: 'dark',
+      background: { default: palette[900], paper: palette[800] },
+      primary,
+      secondary,
+      error,
+      text: {
+        primary: primary.main,
+        secondary: primary.dark
+      },
+      action: {
+        disabled: palette[300],
+        disabledBackground: primary.main
+      }
     },
-    action: {
-      // DISABLED BUTTON COLORS
-      disabled: secondary.light,
-      disabledBackground: secondary.dark
-    }
-  },
-  components: {
-    ...baseColorsLight.components,
-    MuiButton: {
-      styleOverrides: {
-        containedPrimary: {
-          backgroundColor: secondary.light,
-          '&:hover': {
-            backgroundColor: secondary.main
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          containedPrimary: {
+            '&:hover': {
+              backgroundColor: palette[300]
+            }
+          }
+        }
+      },
+      MuiButtonGroup: {
+        styleOverrides: {
+          groupedContainedVertical: {
+            '&:not(:last-of-type)': {
+              borderBottom: `1px solid ${palette[300]}`
+            }
           }
         }
       }
