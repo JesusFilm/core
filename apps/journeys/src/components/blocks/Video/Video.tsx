@@ -11,24 +11,24 @@ import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 
 import 'video.js/dist/video-js.css'
 
-export const VIDEO_RESPONSE_CREATE = gql`
-  mutation VideoResponseCreate(
-    $input: VideoResponseCreateInput!
-  ) {
-    videoResponseCreate(input: $input) {
-      id,
-      state
-    }
-  }
-`
+// export const VIDEO_RESPONSE_CREATE = gql`
+//   mutation VideoResponseCreate(
+//     $input: VideoResponseCreateInput!
+//   ) {
+//     videoResponseCreate(input: $input) {
+//       id,
+//       state
+//     }
+//   }
+// `
 
 interface VideoProps extends TreeBlock<VideoBlock> {
   uuid?: () => string
 }
 
-export function Video({ src, autoplay, uuid = uuidv4 }: VideoProps): ReactElement {
+export function Video({ mediaComponentId, languageId, autoplay, uuid = uuidv4 }: VideoProps): ReactElement {
   const videoNode = useRef<HTMLVideoElement>(null)
-  const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
+  // const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
 
   const player = useRef<videojs.Player>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
@@ -83,7 +83,7 @@ export function Video({ src, autoplay, uuid = uuidv4 }: VideoProps): ReactElemen
       },
       sources: [
         {
-          src: src
+          src: `https://arc.gt/hls/${mediaComponentId}/${languageId}`
         }
       ],
       fluid: true,
@@ -103,7 +103,7 @@ export function Video({ src, autoplay, uuid = uuidv4 }: VideoProps): ReactElemen
       })
       player.current.on('autoplay-success', () => setAutoplaySuccess(true))
     }
-  }, [videoNode, src, autoplay])
+  }, [videoNode, autoplay, mediaComponentId, languageId])
 
   useEffect(() => {
     if (

@@ -23,7 +23,8 @@ Default.args = {
   parentBlockId: '',
   volume: 1,
   autoplay: true,
-  src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+  mediaComponentId: '2_0-FallingPlates',
+  languageId: '529',
   parent: {
     id: 'Step1'
   }

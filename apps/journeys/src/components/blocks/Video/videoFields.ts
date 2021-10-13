@@ -4,7 +4,8 @@ export const VIDEO_FIELDS = gql`
   fragment VideoFields on VideoBlock {
     id
     parentBlockId
-    src
+    mediaComponentId
+    languageId
     title
     volume
     autoplay
