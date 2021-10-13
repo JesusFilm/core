@@ -95,6 +95,11 @@ export interface GetJourney_journey_blocks_ImageBlock {
   alt: string;
   width: number;
   height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {

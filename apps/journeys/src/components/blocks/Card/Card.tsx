@@ -1,9 +1,13 @@
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { ReactElement, ReactNode } from 'react'
+import { forwardRef, ReactElement, ReactNode, useEffect, useRef } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
-import { ThemeProvider } from '@core/shared/ui'
-import { Paper } from '@mui/material'
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock
+} from '../../../../__generated__/GetJourney'
+import { ThemeProvider, themes } from '@core/shared/ui'
+import { Paper, useTheme } from '@mui/material'
+import { decode } from 'blurhash'
 import { Image } from '..'
 
 export function Card({
@@ -14,9 +18,43 @@ export function Card({
   themeMode,
   themeName
 }: TreeBlock<CardBlock>): ReactElement {
+  const ref = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
   const coverBlock = children.find(
     (block) => block.id === coverBlockId && block.__typename === 'ImageBlock'
-  )
+  ) as TreeBlock<ImageBlock> | undefined
+
+  useEffect(() => {
+    if (coverBlock != null && ref.current != null) {
+      const pixels = decode(
+        coverBlock.blurhash,
+        coverBlock.width,
+        coverBlock.height,
+        5
+      )
+
+      const canvas = document.createElement('canvas')
+      canvas.setAttribute('width', `${coverBlock.width}px`)
+      canvas.setAttribute('height', `${coverBlock.height}px`)
+      const context = canvas.getContext('2d')
+      if (context != null) {
+        const imageData = context.createImageData(
+          coverBlock.width,
+          coverBlock.height
+        )
+        imageData.data.set(pixels)
+        context.putImageData(imageData, 0, 0)
+        if (themeMode != null && themeName != null) {
+          context.fillStyle = `${themes[themeName][themeMode].palette.background.paper}88`
+        } else {
+          context.fillStyle = `${theme.palette.background.paper}88`
+        }
+        context.fillRect(0, 0, coverBlock.width, coverBlock.height)
+        const dataURL = canvas.toDataURL('image/webp')
+        ref.current.style.backgroundImage = `url(${dataURL})`
+      }
+    }
+  }, [coverBlock, ref, theme, themeMode, themeName])
 
   return (
     <CardWrapper
@@ -24,8 +62,9 @@ export function Card({
       backgroundColor={backgroundColor}
       themeMode={themeMode}
       themeName={themeName}
+      ref={ref}
     >
-      {coverBlock != null && coverBlock.__typename === 'ImageBlock' && (
+      {coverBlock != null && (
         <Image
           {...coverBlock}
           alt={coverBlock.alt}
@@ -55,37 +94,37 @@ interface CardWrapperProps
   children: ReactNode
 }
 
-export function CardWrapper({
-  id,
-  backgroundColor,
-  themeMode,
-  themeName,
-  children
-}: CardWrapperProps): ReactElement {
-  const Card = (
-    <Paper
-      data-testid={id}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        p: 7,
-        borderRadius: (theme) => theme.spacing(3),
-        backgroundColor,
-        backgroundImage: 'none'
-      }}
-      elevation={3}
-    >
-      {children}
-    </Paper>
-  )
-
-  if (themeMode != null && themeName != null) {
-    return (
-      <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
-        {Card}
-      </ThemeProvider>
+export const CardWrapper = forwardRef<HTMLDivElement, CardWrapperProps>(
+  function CardWrapper(
+    { id, backgroundColor, themeMode, themeName, children },
+    ref
+  ): ReactElement {
+    const Card = (
+      <Paper
+        data-testid={id}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          p: 7,
+          borderRadius: (theme) => theme.spacing(3),
+          backgroundColor,
+          backgroundSize: 'cover'
+        }}
+        elevation={3}
+        ref={ref}
+      >
+        {children}
+      </Paper>
     )
-  } else {
-    return Card
+
+    if (themeMode != null && themeName != null) {
+      return (
+        <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
+          {Card}
+        </ThemeProvider>
+      )
+    } else {
+      return Card
+    }
   }
-}
+)
