@@ -104,6 +104,14 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
       player.current.on('ended', () => {
         void handleVideoState(VideoResponseStateEnum.FINISHED)
       })
+      player.current.on('timeupdate', () => {
+        // This is a simple test on capturing response with time
+        // TODO: Figure out what states do we want to cover?
+        if (player.current?.currentTime() >= 5) {
+          void handleVideoState(VideoResponseStateEnum.SECONDSWATCHED)
+          player.current?.pause()
+        }
+      })
       player.current.on('autoplay-success', () => setAutoplaySuccess(true))
     }
   }, [videoNode, autoplay, mediaComponentId, languageId, handleVideoState])

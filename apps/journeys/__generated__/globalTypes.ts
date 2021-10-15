@@ -98,6 +98,7 @@ export enum VideoResponseStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
+  SECONDSWATCHED = "SECONDSWATCHED",
 }
 
 export interface RadioQuestionResponseCreateInput {
