@@ -305,6 +305,14 @@ export type ThemeMode =
 export type ThemeName =
   | 'base';
 
+export type TriggerBlock = Block & {
+  __typename?: 'TriggerBlock';
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  triggerStart: Scalars['Int'];
+  action: Action;
+};
+
 export type TypographyAlign =
   | 'left'
   | 'center'
@@ -476,6 +484,7 @@ export type ResolversTypes = {
   StepBlock: ResolverTypeWrapper<BlockType>;
   ThemeMode: ThemeMode;
   ThemeName: ThemeName;
+  TriggerBlock: ResolverTypeWrapper<BlockType>;
   TypographyAlign: TypographyAlign;
   TypographyBlock: ResolverTypeWrapper<BlockType>;
   TypographyColor: TypographyColor;
@@ -515,6 +524,7 @@ export type ResolversParentTypes = {
   SignUpResponse: ResponseType;
   SignUpResponseCreateInput: SignUpResponseCreateInput;
   StepBlock: BlockType;
+  TriggerBlock: BlockType;
   TypographyBlock: BlockType;
   VideoBlock: BlockType;
   VideoResponse: ResponseType;
@@ -527,7 +537,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TriggerBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -676,6 +686,14 @@ export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TriggerBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['TriggerBlock'] = ResolversParentTypes['TriggerBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  triggerStart?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  action?: Resolver<ResolversTypes['Action'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['TypographyBlock'] = ResolversParentTypes['TypographyBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
@@ -727,6 +745,7 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   SignUpBlock?: SignUpBlockResolvers<ContextType>;
   SignUpResponse?: SignUpResponseResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
+  TriggerBlock?: TriggerBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;
   VideoResponse?: VideoResponseResolvers<ContextType>;

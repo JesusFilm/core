@@ -286,6 +286,13 @@ enum ThemeName {
   base
 }
 
+type TriggerBlock implements Block {
+  action: Action!
+  id: ID!
+  parentBlockId: ID
+  triggerStart: Int!
+}
+
 enum TypographyAlign {
   center
   left
