@@ -300,7 +300,26 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
           </>
         )
       })}
-      <Typography variant="body2">{`Current width: ${width}px`}</Typography>
+      <Typography
+        variant="body2"
+        gutterBottom
+      >{`Current width: ${width}px`}</Typography>
+      <Typography
+        variant="overline"
+        align="center"
+        sx={{
+          height: '30px',
+          color: '#FC624E',
+          [theme.breakpoints.up('md')]: {
+            color: '#7fe0aa'
+          },
+          [theme.breakpoints.up('xl')]: {
+            color: '#4ec4fc'
+          }
+        }}
+      >
+        Mobile - red | Tablet - green | Desktop - blue
+      </Typography>
     </Box>
   )
 }
@@ -309,6 +328,7 @@ const breakpoints = themes.base.light.breakpoints
 
 export const Viewport = ViewportTemplate.bind({})
 Viewport.args = {
+  // sm breakpoint won't show when resizing default viewport due to orientation
   variants: ['xs', 'sm', 'md', 'lg', 'xl']
 }
 Viewport.parameters = {
