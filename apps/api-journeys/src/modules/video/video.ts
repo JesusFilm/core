@@ -10,6 +10,7 @@ const typeDefs = gql`
     PLAYING
     PAUSED
     FINISHED
+    SECONDSWATCHED
   }
 
   input VideoResponseCreateInput {

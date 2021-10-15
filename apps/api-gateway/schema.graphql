@@ -354,4 +354,5 @@ enum VideoResponseStateEnum {
   FINISHED
   PAUSED
   PLAYING
+  SECONDSWATCHED
 }

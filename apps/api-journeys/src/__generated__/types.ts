@@ -369,7 +369,8 @@ export type VideoResponseCreateInput = {
 export type VideoResponseStateEnum =
   | 'PLAYING'
   | 'PAUSED'
-  | 'FINISHED';
+  | 'FINISHED'
+  | 'SECONDSWATCHED';
 
 
 
