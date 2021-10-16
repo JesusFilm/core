@@ -25,9 +25,10 @@ if (require.main === module) {
 } else {
   const lambdaserver = new ApolloServerLambda({
     schema,
-    context: {
-      db
-    }
+    context: ({ event }) => ({
+      db,
+      userId: event.headers['user-id']
+    })
   })
   exports.handler = lambdaserver.createHandler()
 }

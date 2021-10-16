@@ -69,7 +69,7 @@ jobs:
       - name: Prisma Generate api-journeys
         uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: prismagenerate
+          targets: generate-prisma
           projects: api-journeys
 
       - name: Deploy api-journeys

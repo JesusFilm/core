@@ -1,4 +1,4 @@
-import { PrismaClient } from '.prisma/api-journeys-1-client'
+import { PrismaClient } from '.prisma/api-journeys-client'
 
 declare global {
   namespace GraphQLModules {

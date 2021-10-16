@@ -151,7 +151,7 @@
             "passWithNoTests": true
           }
         },
-        "prismagenerate": {
+        "generate-prisma": {
           "executor": "@nx-tools/nx-prisma:generate",
           "options": {
             "schema": "apps/api-journeys/prisma/schema.prisma"
