@@ -1,0 +1,1 @@
+export { cardModule } from './card'

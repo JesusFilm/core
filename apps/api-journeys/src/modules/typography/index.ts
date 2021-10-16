@@ -1,0 +1,1 @@
+export { typographyModule } from './typography'

@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server'
 import { ApolloServer as ApolloServerLambda } from 'apollo-server-lambda'
-import application from './modules/application'
+import { application } from './application'
 import db from './lib/db'
 
 const schema = application.createSchemaForApollo()

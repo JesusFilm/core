@@ -1,0 +1,1 @@
+export { application } from './application'
