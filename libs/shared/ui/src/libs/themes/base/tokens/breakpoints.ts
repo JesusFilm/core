@@ -1,0 +1,77 @@
+import { Breakpoints, Breakpoint, ThemeOptions } from '@mui/material'
+import { createBreakpoints } from '@mui/system'
+
+const minWidths: { [key in Breakpoint]: number } = {
+  xs: 0, // Mobile (P)
+  sm: 568, // Mobile (L)
+  md: 768, // Tablet (P)
+  lg: 1024, // Tablet (L)
+  xl: 1200 // Laptop/Desktop
+}
+
+const minHeights: { [key in Breakpoint]: number } = {
+  xs: 0,
+  sm: 0,
+  md: 600,
+  lg: 600,
+  xl: 600
+}
+
+const maxWidths: { [key in Breakpoint]: number } = {
+  xs: minWidths.sm - 1,
+  sm: minWidths.md - 1,
+  md: minWidths.lg - 1,
+  lg: minWidths.xl - 1,
+  xl: 9999
+}
+
+const breakpointKeys = Object.keys(minWidths) as Breakpoint[]
+
+// mui .up() only checks min-width.
+// Use minHeight so large(960x540) Mobile (L) don't have Tablet (P) styling
+const up = (key: Breakpoint | number): string => {
+  const minWidth = typeof key === 'number' ? key : minWidths[key]
+  const minHeight =
+    typeof key === 'number'
+      ? key < minWidths.md
+        ? minHeights.sm
+        : minHeights.md
+      : minHeights[key]
+
+  return `@media (min-width:${minWidth}px) and (min-height:${minHeight}px)`
+}
+
+// mui .only() only checks min-width and max-width
+// Use minHeight so large(960x540) Mobile (L) don't have Tablet (P) styling
+// Use maxHeight so small(768x1024) Tablet (P) don't have Mobile (L) styling
+const only = (key: Breakpoint): string => {
+  const minWidth = minWidths[key]
+  const maxWidth = maxWidths[key]
+  const minHeight = minHeights[key]
+
+  const defaultBreakpointCheck = `(min-width: ${minWidth}px) and (max-width: ${maxWidth}px) and (min-height:${minHeight}px)`
+
+  // Enable larger mobiles(960x540) to keep SM breakpoint
+  // Use max-height over orientation for storybook / chromatic checks
+  const overlappingMobileCheck =
+    key === 'sm'
+      ? `(min-width: ${minWidths.md}px) and (max-width: 961px) and (max-height: ${minHeights.md}px), `
+      : ''
+
+  return `@media ${overlappingMobileCheck}${defaultBreakpointCheck}`
+}
+
+const breakpoints: Breakpoints = createBreakpoints({
+  values: minWidths,
+  keys: breakpointKeys,
+  unit: 'px',
+  up,
+  only,
+  // Redundant when we have up & only
+  down: undefined,
+  between: undefined
+})
+
+export const baseBreakpoints: Required<Pick<ThemeOptions, 'breakpoints'>> = {
+  breakpoints
+}
