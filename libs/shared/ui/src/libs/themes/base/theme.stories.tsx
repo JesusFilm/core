@@ -277,7 +277,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '320px'
+        height: window.innerWidth === 960 ? '320px' : '600px'
       }}
     >
       {args.variants.map((variant: string) => {
@@ -348,6 +348,8 @@ Viewport.parameters = {
     viewports: [
       breakpoints.values.sm - 1,
       breakpoints.values.sm,
+      // Change to 960px when Chromatic can configure height
+      breakpoints.values.md - 1,
       breakpoints.values.md,
       breakpoints.values.lg - 1,
       breakpoints.values.lg,
