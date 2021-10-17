@@ -243,7 +243,7 @@ FullPalette.args = {
 const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   const theme = useTheme()
   const [width, setWidth] = useState(window.innerWidth)
-  const [height, setHeight] = useState(window.innerWidth)
+  const [height, setHeight] = useState(window.innerHeight)
 
   const maxBreakpointValue = (breakpoint: Breakpoint): string => {
     switch (breakpoint) {
