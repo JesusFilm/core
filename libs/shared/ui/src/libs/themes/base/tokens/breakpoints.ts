@@ -44,25 +44,21 @@ const up = (key: Breakpoint | number): string => {
 // mui .only() only checks min-width and max-width
 // Use minHeight so large(960x540) Mobile (L) don't have Tablet (P) styling
 // Use maxHeight so small(768x1024) Tablet (P) don't have Mobile (L) styling
-const only = (key: Breakpoint | number): string => {
-  const minChecks = up(key)
+const only = (key: Breakpoint): string => {
+  const minWidth = minWidths[key]
+  const maxWidth = maxWidths[key]
+  const minHeight = minHeights[key]
 
-  const maxWidth =
-    typeof key === 'number'
-      ? key + 1
-      : // override for large Mobile (L) - now width overlaps Tablet (P)
-      key === 'sm'
-      ? 960
-      : maxWidths[key]
+  const defaultBreakpointCheck = `(min-width: ${minWidth}px) and (max-width: ${maxWidth}px) and (min-height:${minHeight}px)`
 
-  // Constrain height to distinguish between overlapping Mobile (L) & Tablet (P)
-  // Could use orientation, but won't work for vertical desktops (edge case)
-  const maxHeight =
-    key === 'sm' || (key >= minWidths.sm && key < minWidths.md)
-      ? maxWidths.xs
-      : 9999
+  // Enable larger mobiles(960x540) to keep SM breakpoint
+  // Use max-height over orientation for storybook / chromatic checks
+  const overlappingMobileCheck =
+    key === 'sm'
+      ? `(min-width: ${minWidths.md}px) and (max-width: 961px) and (max-height: ${minHeights.md}px), `
+      : ''
 
-  return `${minChecks} and (max-width: ${maxWidth}px) and (max-height: ${maxHeight}px)`
+  return `@media ${overlappingMobileCheck}${defaultBreakpointCheck}`
 }
 
 const breakpoints: Breakpoints = createBreakpoints({

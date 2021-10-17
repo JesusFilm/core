@@ -243,15 +243,27 @@ FullPalette.args = {
 const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   const theme = useTheme()
   const [width, setWidth] = useState(window.innerWidth)
+  const [height, setHeight] = useState(window.innerWidth)
 
-  const maxBreakpointValue = (breakpoint: Breakpoint): number =>
-    theme.breakpoints.values[
-      theme.breakpoints.keys[theme.breakpoints.keys.indexOf(breakpoint) + 1]
-    ] - 1
+  const maxBreakpointValue = (breakpoint: Breakpoint): string => {
+    switch (breakpoint) {
+      case 'xl':
+        return '+'
+      default:
+        return `${
+          theme.breakpoints.values[
+            theme.breakpoints.keys[
+              theme.breakpoints.keys.indexOf(breakpoint) + 1
+            ]
+          ] - 1
+        }`
+    }
+  }
 
   useEffect(() => {
     const updateWidth = (): void => {
       setWidth(window.innerWidth)
+      setHeight(window.innerHeight)
     }
 
     window.addEventListener('resize', updateWidth)
@@ -291,11 +303,9 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
                 display: 'none'
               }}
             >
-              {`Range: ${theme.breakpoints.values[variant as Breakpoint]}${
-                variant === 'xl'
-                  ? '+'
-                  : `-${maxBreakpointValue(variant as Breakpoint)}`
-              }`}
+              {`Range: ${
+                theme.breakpoints.values[variant as Breakpoint]
+              }-${maxBreakpointValue(variant as Breakpoint)}`}
             </Typography>
           </>
         )
@@ -303,7 +313,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
       <Typography
         variant="body2"
         gutterBottom
-      >{`Current width: ${width}px`}</Typography>
+      >{`Current width: ${width}px | Current height: ${height}px`}</Typography>
       <Typography
         variant="overline"
         align="center"
@@ -328,7 +338,7 @@ const breakpoints = themes.base.light.breakpoints
 
 export const Viewport = ViewportTemplate.bind({})
 Viewport.args = {
-  // sm breakpoint won't show when resizing default viewport due to orientation
+  // Height of viewport will alter breakpoints display.
   variants: ['xs', 'sm', 'md', 'lg', 'xl']
 }
 Viewport.parameters = {
@@ -338,7 +348,6 @@ Viewport.parameters = {
     viewports: [
       breakpoints.values.sm - 1,
       breakpoints.values.sm,
-      breakpoints.values.md - 1,
       breakpoints.values.md,
       breakpoints.values.lg - 1,
       breakpoints.values.lg,
