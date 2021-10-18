@@ -71,7 +71,14 @@ export function CardWrapper({
         p: 7,
         borderRadius: (theme) => theme.spacing(3),
         backgroundColor,
-        backgroundImage: 'none'
+        backgroundImage: 'none',
+        minWidth: (theme) => theme.spacing(48)
+        // [theme.breakpoints.up('sm')]: {
+        //   minWidth: '568px'
+        // },
+        // [theme.breakpoints.up('md')]: {
+        //   minWidth: '786px'
+        // }
       }}
       elevation={3}
     >

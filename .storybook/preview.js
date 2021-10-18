@@ -44,7 +44,8 @@ module.exports = {
         disable: true
       }
     },
-    chromatic: { viewports: [640] },
+    // 2x viewport breakpoints (XS, SM, MD, LG, XL)
+    chromatic: { viewports: [640, 1136, 1536, 2048, 2400] },
     controls: { disabled: true },
     viewport: {
       viewports: customViewports

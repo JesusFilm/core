@@ -41,7 +41,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   return (
     <Container disableGutters>
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
-        <Box sx={{ width: 'calc(100% - 20px - 20px)' }}>
+        <Box
+          sx={{
+            width: (theme) =>
+              `calc(100% - ${theme.spacing(8)}px - ${theme.spacing(8)}px)`
+          }}
+        >
           <JourneyProgress />
         </Box>
       </Box>
@@ -56,9 +61,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           <SwiperSlide
             key={block.id}
             style={{
-              width: 'calc(100% - 24px - 24px)',
               paddingTop: '4px',
-              paddingBottom: '4px'
+              paddingBottom: '4px',
+              // Uses theme.spacing(9)
+              width: 'calc(100% - 36px - 36px)'
             }}
           >
             <BlockRenderer {...block} />
@@ -71,11 +77,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             top: 0,
             bottom: 0,
             zIndex: 2,
-            width: 20,
+
             left: 0,
             background: (theme) => ({
               md: `linear-gradient(90deg, ${theme.palette.background.default}FF 0%, ${theme.palette.background.default}00 100%)`
-            })
+            }),
+            width: (theme) => theme.spacing(8)
           }}
         />
         <Box
@@ -84,11 +91,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             top: 0,
             bottom: 0,
             zIndex: 2,
-            width: 20,
             right: 0,
             background: (theme) => theme.palette.background.default,
             transition: 'opacity 0.5s ease-out',
-            opacity: activeBlock?.nextBlockId != null ? 0 : 1
+            opacity: activeBlock?.nextBlockId != null ? 0 : 1,
+            width: (theme) => theme.spacing(8)
           }}
         />
         <Box
@@ -104,11 +111,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             top: 0,
             bottom: 0,
             zIndex: 2,
-            width: 20,
             right: 0,
             background: (theme) => ({
               md: `linear-gradient(90deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 100%)`
-            })
+            }),
+            width: (theme) => theme.spacing(8)
           }}
         />
       </Swiper>
