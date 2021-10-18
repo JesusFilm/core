@@ -277,7 +277,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: window.innerWidth === 960 ? '320px' : '600px'
+        height: '600px'
       }}
     >
       {args.variants.map((variant: string) => {
