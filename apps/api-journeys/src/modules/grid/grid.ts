@@ -9,18 +9,18 @@ const typeDefs = gql`
   }
 
   enum ColumnSize {
-   _1
-   _2
-   _3
-   _4
-   _5
-   _6
-   _7
-   _8
-   _9
-   _10
-   _11
-   _12
+    _1
+    _2
+    _3
+    _4
+    _5
+    _6
+    _7
+    _8
+    _9
+    _10
+    _11
+    _12
   }
 
   type GridBlock implements Block {
@@ -29,7 +29,7 @@ const typeDefs = gql`
     md: ColumnSize
     type: GridType
   }
-`;
+`
 
 export const gridModule = createModule({
   id: 'grid',

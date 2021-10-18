@@ -12,7 +12,7 @@ import {
   IconSize,
   GridType,
   ColumnSize
-} from "../../../../__generated__/globalTypes";
+} from '../../../../__generated__/globalTypes'
 
 const Demo = {
   ...journeysConfig,
@@ -28,101 +28,101 @@ const DefaultTemplate: Story<TreeBlock<GridBlock>> = ({ ...props }) => (
 
 const childrenOne: TreeBlock[] = [
   {
-    id: "typographyBlockId",
-    __typename: "TypographyBlock",
-    parentBlockId: "GridItemLeft",
+    id: 'typographyBlockId',
+    __typename: 'TypographyBlock',
+    parentBlockId: 'GridItemLeft',
     align: null,
     color: null,
     content: "What's the purpose, and how did we get here?",
     variant: TypographyVariant.h3,
-    children: [],
+    children: []
   },
   {
-    id: "typographyBlockId1",
-    __typename: "TypographyBlock",
-    parentBlockId: "GridItemLeft",
+    id: 'typographyBlockId1',
+    __typename: 'TypographyBlock',
+    parentBlockId: 'GridItemLeft',
     align: null,
     color: null,
     content:
-      "Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ",
+      'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
     variant: null,
-    children: [],
+    children: []
   },
   {
-    __typename: "ButtonBlock",
-    id: "button",
-    parentBlockId: "GridItemLeft",
-    label: "Watch Now",
+    __typename: 'ButtonBlock',
+    id: 'button',
+    parentBlockId: 'GridItemLeft',
+    label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
     startIcon: {
-      __typename: "Icon",
+      __typename: 'Icon',
       name: IconName.PlayArrow,
       color: null,
-      size: IconSize.md,
+      size: IconSize.md
     },
     endIcon: null,
     action: null,
-    children: [],
-  },
-];
+    children: []
+  }
+]
 
 const childrenTwo: TreeBlock[] = [
   {
-    id: "imageBlockId1",
-    __typename: "ImageBlock",
-    src: "https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1365&q=80",
+    id: 'imageBlockId1',
+    __typename: 'ImageBlock',
+    src: 'https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1365&q=80',
     width: 1600,
     height: 1067,
-    alt: "random image from unsplash",
-    parentBlockId: "GridItemRight",
-    children: [],
+    alt: 'random image from unsplash',
+    parentBlockId: 'GridItemRight',
+    children: []
   },
   {
-    id: "typographyBlockId2",
-    __typename: "TypographyBlock",
+    id: 'typographyBlockId2',
+    __typename: 'TypographyBlock',
     parentBlockId: null,
     align: null,
     color: null,
-    content: "Regular Image Example",
+    content: 'Regular Image Example',
     variant: TypographyVariant.overline,
-    children: [],
+    children: []
   },
   {
-    id: "typographyBlockId3",
-    __typename: "TypographyBlock",
+    id: 'typographyBlockId3',
+    __typename: 'TypographyBlock',
     parentBlockId: null,
     align: null,
     color: null,
-    content: "The only impossible journey is the one you never begin.",
+    content: 'The only impossible journey is the one you never begin.',
     variant: TypographyVariant.h3,
-    children: [],
-  },
-];
+    children: []
+  }
+]
 
 export const Default: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({})
 Default.args = {
-  id: "GridContainer",
+  id: 'GridContainer',
   type: GridType.container,
   children: [
     {
-      id: "GridItemLeft",
-      __typename: "GridBlock",
+      id: 'GridItemLeft',
+      __typename: 'GridBlock',
       md: ColumnSize._8,
       type: GridType.item,
-      parentBlockId: "GridContainer",
-      children: childrenOne,
+      parentBlockId: 'GridContainer',
+      children: childrenOne
     },
     {
-      id: "GridItemRight",
+      id: 'GridItemRight',
       md: ColumnSize._4,
-      __typename: "GridBlock",
+      __typename: 'GridBlock',
       type: GridType.item,
-      parentBlockId: "GridContainer",
-      children: childrenTwo,
-    },
-  ],
-};
+      parentBlockId: 'GridContainer',
+      children: childrenTwo
+    }
+  ]
+}
 
 export default Demo as Meta

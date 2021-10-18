@@ -2,7 +2,7 @@ export { actionModule } from './action'
 export { blockModule } from './block'
 export { buttonModule } from './button'
 export { cardModule } from './card'
-export { gridModule } from "./grid";
+export { gridModule } from './grid'
 export { iconModule } from './icon'
 export { imageModule } from './image'
 export { journeyModule } from './journey'
