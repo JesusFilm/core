@@ -1,21 +1,25 @@
 import { render } from "../../../../test/testingLibrary";
 import { Grid } from ".";
 import { TreeBlock } from "../../../libs/transformer/transformer";
+import {
+  GridType,
+  ColumnSize,
+} from "../../../../__generated__/globalTypes";
 
 describe("GridBlock", () => {
   const block: TreeBlock = {
     __typename: "GridBlock",
     id: "grid",
     parentBlockId: null,
-    md: "_12",
-    type: "container",
+    md: ColumnSize._12,
+    type: GridType.container,
     children: [
       {
         __typename: "GridBlock",
         id: "griditem",
         parentBlockId: "grid",
-        md: "_6",
-        type: "item",
+        md: ColumnSize._6,
+        type: GridType.item,
         children: [
           {
             id: "typographyBlockId",

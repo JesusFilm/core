@@ -10,6 +10,8 @@ import {
   ButtonSize,
   IconName,
   IconSize,
+  GridType,
+  ColumnSize
 } from "../../../../__generated__/globalTypes";
 
 const Demo = {
@@ -102,20 +104,22 @@ const childrenTwo: TreeBlock[] = [
 export const Default: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: "GridContainer",
-  type: "container",
+  type: GridType.container,
   children: [
     {
       id: "GridItemLeft",
       __typename: "GridBlock",
-      md: "_8",
-      type: "item",
+      md: ColumnSize._8,
+      type: GridType.item,
+      parentBlockId: "GridContainer",
       children: childrenOne,
     },
     {
       id: "GridItemRight",
-      md: "_4",
+      md: ColumnSize._4,
       __typename: "GridBlock",
-      type: "item",
+      type: GridType.item,
+      parentBlockId: "GridContainer",
       children: childrenTwo,
     },
   ],
