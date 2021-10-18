@@ -64,6 +64,34 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
+enum ColumnSize {
+  _1
+  _2
+  _3
+  _4
+  _5
+  _6
+  _7
+  _8
+  _9
+  _10
+  _11
+  _12
+}
+
+type GridBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  md: ColumnSize
+  type: GridType
+}
+
+enum GridType {
+  container
+  item
+  containerItem
+}
+
 type Icon {
   name: IconName!
   color: IconColor

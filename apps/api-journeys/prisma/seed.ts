@@ -35,11 +35,34 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  const gridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: "GridBlock",
+      parentBlockId: step.id,
+      extraAttrs: {
+        type: "container",
+      },
+      parentOrder: 1,
+    },
+  });
+  const gridItem = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: "GridBlock",
+      parentBlockId: gridContainer.id,
+      extraAttrs: {
+        md: "_6",
+        type: "item",
+      },
+      parentOrder: 1,
+    },
+  });
   const card = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step.id,
+      parentBlockId: gridItem.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base
@@ -268,18 +291,6 @@ async function main(): Promise<void> {
         alt: 'random image from unsplash',
         width: 1920,
         height: 1080
-      },
-      parentOrder: 1
-    }
-  })
-  await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'GridBlock',
-      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
-      extraAttrs: {
-        md: "_12",
-        type: 'container'
       },
       parentOrder: 1
     }

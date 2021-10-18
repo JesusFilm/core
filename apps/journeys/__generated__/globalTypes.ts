@@ -25,6 +25,27 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ColumnSize {
+  _1 = "_1",
+  _10 = "_10",
+  _11 = "_11",
+  _12 = "_12",
+  _2 = "_2",
+  _3 = "_3",
+  _4 = "_4",
+  _5 = "_5",
+  _6 = "_6",
+  _7 = "_7",
+  _8 = "_8",
+  _9 = "_9",
+}
+
+export enum GridType {
+  container = "container",
+  containerItem = "containerItem",
+  item = "item",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
