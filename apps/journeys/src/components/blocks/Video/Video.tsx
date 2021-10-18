@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
+import { Trigger } from '../Trigger'
 
 import 'video.js/dist/video-js.css'
 
@@ -25,7 +26,7 @@ interface VideoProps extends TreeBlock<VideoBlock> {
   uuid?: () => string
 }
 
-export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uuid = uuidv4 }: VideoProps): ReactElement {
+export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uuid = uuidv4, children }: VideoProps): ReactElement {
   const videoNode = useRef<HTMLVideoElement>(null)
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
   const player = useRef<videojs.Player>()
@@ -140,7 +141,9 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
 
   return (
     <Container data-testid="VideoComponent" maxWidth="md">
-      <video ref={videoNode} className="video-js" />
+      <video ref={videoNode} className="video-js">
+        {/* Implement trigger functionality */}
+      </video>
     </Container>
   )
 }

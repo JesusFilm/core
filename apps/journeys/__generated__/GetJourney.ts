@@ -197,6 +197,39 @@ export interface GetJourney_journey_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface GetJourney_journey_blocks_TriggerBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_TriggerBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_TriggerBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journeyId: string;
+}
+
+export interface GetJourney_journey_blocks_TriggerBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_TriggerBlock_action = GetJourney_journey_blocks_TriggerBlock_action_NavigateAction | GetJourney_journey_blocks_TriggerBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_TriggerBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_TriggerBlock_action_LinkAction;
+
+export interface GetJourney_journey_blocks_TriggerBlock {
+  __typename: "TriggerBlock";
+  id: string;
+  parentBlockId: string | null;
+  triggerStart: number;
+  action: GetJourney_journey_blocks_TriggerBlock_action;
+}
+
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -218,7 +251,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   autoplay: boolean | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TriggerBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

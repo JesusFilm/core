@@ -18,6 +18,7 @@ import {
   STEP_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,
+  TRIGGER_FIELDS,
   VIDEO_FIELDS
 } from '../src/components/blocks'
 
@@ -47,6 +48,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       ${RADIO_QUESTION_FIELDS}
       ${SIGN_UP_FIELDS}
       ${STEP_FIELDS}
+      ${TRIGGER_FIELDS}
       ${TYPOGRAPHY_FIELDS}
       ${VIDEO_FIELDS}
       query GetJourney($id: ID!) {
@@ -77,6 +79,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             }
             ... on StepBlock {
               ...StepFields
+            }
+            ... on TriggerBlock {
+              ...TriggerFields
             }
             ... on TypographyBlock {
               ...TypographyFields
