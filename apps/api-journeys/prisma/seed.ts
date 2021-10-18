@@ -58,8 +58,7 @@ async function main(): Promise<void> {
         title: 'Watch #FallingPlates',
         description:
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
-      },
-      parentOrder: 2
+      }
     }
   })
   const onTrigger = await prisma.block.create({
@@ -68,8 +67,7 @@ async function main(): Promise<void> {
       blockType: 'StepBlock',
       extraAttrs: {
         locked: false
-      },
-      parentOrder: 1
+      }
     }
   })
   await prisma.block.create({
@@ -83,8 +81,7 @@ async function main(): Promise<void> {
           gtmEventName: 'TimeRange',
           blockId: onTrigger.id
         }
-      },
-      parentOrder: 0
+      }
     }
   })
   const question = await prisma.block.create({

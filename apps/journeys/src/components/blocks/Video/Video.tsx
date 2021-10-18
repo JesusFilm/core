@@ -28,10 +28,10 @@ interface VideoProps extends TreeBlock<VideoBlock> {
 export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uuid = uuidv4 }: VideoProps): ReactElement {
   const videoNode = useRef<HTMLVideoElement>(null)
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
-  const url = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
-  const [videoUrl, setVideoUrl] = useState<string | undefined>()
-
   const player = useRef<videojs.Player>()
+  const url = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
+
+  const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
