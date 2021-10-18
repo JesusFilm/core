@@ -41,12 +41,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   return (
     <Container disableGutters>
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
-        <Box
-          sx={{
-            width: (theme) =>
-              `calc(100% - ${theme.spacing(8)}px - ${theme.spacing(8)}px)`
-          }}
-        >
+        <Box sx={{ width: 'calc(100% - 32px - 32px)' }}>
           <JourneyProgress />
         </Box>
       </Box>
@@ -77,7 +72,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             top: 0,
             bottom: 0,
             zIndex: 2,
-
             left: 0,
             background: (theme) => ({
               md: `linear-gradient(90deg, ${theme.palette.background.default}FF 0%, ${theme.palette.background.default}00 100%)`
