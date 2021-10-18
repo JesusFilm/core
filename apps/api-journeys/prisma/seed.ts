@@ -272,6 +272,18 @@ async function main(): Promise<void> {
       parentOrder: 1
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridBlock',
+      parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
+      extraAttrs: {
+        md: "_12",
+        type: 'container'
+      },
+      parentOrder: 1
+    }
+  })
   const stepSignUp = await prisma.block.create({
     data: {
       journeyId: journey.id,
