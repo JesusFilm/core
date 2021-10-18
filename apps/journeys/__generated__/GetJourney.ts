@@ -197,37 +197,37 @@ export interface GetJourney_journey_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
-export interface GetJourney_journey_blocks_TriggerBlock_action_NavigateAction {
+export interface GetJourney_journey_blocks_TriggerBlock_triggerAction_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
 }
 
-export interface GetJourney_journey_blocks_TriggerBlock_action_NavigateToBlockAction {
+export interface GetJourney_journey_blocks_TriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_TriggerBlock_action_NavigateToJourneyAction {
+export interface GetJourney_journey_blocks_TriggerBlock_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
   journeyId: string;
 }
 
-export interface GetJourney_journey_blocks_TriggerBlock_action_LinkAction {
+export interface GetJourney_journey_blocks_TriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
 }
 
-export type GetJourney_journey_blocks_TriggerBlock_action = GetJourney_journey_blocks_TriggerBlock_action_NavigateAction | GetJourney_journey_blocks_TriggerBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_TriggerBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_TriggerBlock_action_LinkAction;
+export type GetJourney_journey_blocks_TriggerBlock_triggerAction = GetJourney_journey_blocks_TriggerBlock_triggerAction_NavigateAction | GetJourney_journey_blocks_TriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_TriggerBlock_triggerAction_NavigateToJourneyAction | GetJourney_journey_blocks_TriggerBlock_triggerAction_LinkAction;
 
 export interface GetJourney_journey_blocks_TriggerBlock {
   __typename: "TriggerBlock";
   id: string;
   parentBlockId: string | null;
   triggerStart: number;
-  action: GetJourney_journey_blocks_TriggerBlock_action;
+  triggerAction: GetJourney_journey_blocks_TriggerBlock_triggerAction;
 }
 
 export interface GetJourney_journey_blocks_TypographyBlock {

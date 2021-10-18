@@ -7,7 +7,7 @@ export const TRIGGER_FIELDS = gql`
     id
     parentBlockId
     triggerStart
-    action {
+    triggerAction: action {
       ...ActionFields
     }
   }

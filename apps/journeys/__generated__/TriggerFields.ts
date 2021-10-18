@@ -7,35 +7,35 @@
 // GraphQL fragment: TriggerFields
 // ====================================================
 
-export interface TriggerFields_action_NavigateAction {
+export interface TriggerFields_triggerAction_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
 }
 
-export interface TriggerFields_action_NavigateToBlockAction {
+export interface TriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface TriggerFields_action_NavigateToJourneyAction {
+export interface TriggerFields_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
   journeyId: string;
 }
 
-export interface TriggerFields_action_LinkAction {
+export interface TriggerFields_triggerAction_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
 }
 
-export type TriggerFields_action = TriggerFields_action_NavigateAction | TriggerFields_action_NavigateToBlockAction | TriggerFields_action_NavigateToJourneyAction | TriggerFields_action_LinkAction;
+export type TriggerFields_triggerAction = TriggerFields_triggerAction_NavigateAction | TriggerFields_triggerAction_NavigateToBlockAction | TriggerFields_triggerAction_NavigateToJourneyAction | TriggerFields_triggerAction_LinkAction;
 
 export interface TriggerFields {
   __typename: "TriggerBlock";
   id: string;
   parentBlockId: string | null;
   triggerStart: number;
-  action: TriggerFields_action;
+  triggerAction: TriggerFields_triggerAction;
 }

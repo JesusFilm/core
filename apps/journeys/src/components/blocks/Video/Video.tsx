@@ -36,7 +36,7 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
   const [isReady, setIsReady] = useState<boolean | undefined>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
-  const handleVideoState = useCallback(async (videoState: VideoResponseStateEnum): Promise<void> => {
+  const handleVideoResponse = useCallback(async (videoState: VideoResponseStateEnum): Promise<void> => {
     const id = uuid()
     await videoResponseCreate({
       variables: {
@@ -105,26 +105,21 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
           setIsReady(true)
         })
         player.current.on('playing', () => {
-          void handleVideoState(VideoResponseStateEnum.PLAYING)
+          void handleVideoResponse(VideoResponseStateEnum.PLAYING)
         })
         player.current.on('pause', () => {
-          void handleVideoState(VideoResponseStateEnum.PAUSED)
+          void handleVideoResponse(VideoResponseStateEnum.PAUSED)
         })
         player.current.on('ended', () => {
-          void handleVideoState(VideoResponseStateEnum.FINISHED)
+          void handleVideoResponse(VideoResponseStateEnum.FINISHED)
         })
         player.current.on('timeupdate', () => {
-          // This is a simple test on capturing response with time
-          // TODO: Figure out what states do we want to cover?
-          if (player.current?.currentTime() >= 5) {
-            void handleVideoState(VideoResponseStateEnum.SECONDSWATCHED)
-            player.current?.pause()
-          }
+          // TODO: figure out how we want to record video response
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
     }
-  }, [videoNode, autoplay, mediaComponentId, languageId, handleVideoState, videoUrl, url])
+  }, [videoNode, autoplay, children, mediaComponentId, languageId, handleVideoResponse, videoUrl, url])
 
   useEffect(() => {
     if (
@@ -140,9 +135,11 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
   }, [player, isReady, autoPlaySuccess, autoplay])
 
   return (
-    <Container data-testid="VideoComponent" maxWidth="md">
-      <video ref={videoNode} className="video-js">
-        {/* Implement trigger functionality */}
+    <Container maxWidth="md">
+      <video ref={videoNode} className="video-js" data-testid="VideoComponent">
+        {children?.map((option) => option.__typename === 'TriggerBlock' && (
+          <Trigger player={player.current} {...option} />
+        ))}
       </video>
     </Container>
   )
