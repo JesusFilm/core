@@ -4,8 +4,8 @@ import { createBreakpoints } from '@mui/system'
 const minWidths: { [key in Breakpoint]: number } = {
   xs: 0, // Mobile (P)
   sm: 568, // Mobile (L)
-  md: 768, // Tablet (P)
-  lg: 1024, // Tablet (L)
+  md: 600, // Tablet (P)
+  lg: 961, // Tablet (L)
   xl: 1200 // Laptop/Desktop
 }
 
