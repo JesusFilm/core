@@ -30,6 +30,7 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
   const videoNode = useRef<HTMLVideoElement>(null)
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
   const player = useRef<videojs.Player>()
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const url = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
