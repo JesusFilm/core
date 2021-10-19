@@ -76,7 +76,7 @@ async function main(): Promise<void> {
       blockType: 'TriggerBlock',
       parentBlockId: video.id,
       extraAttrs: {
-        triggerStart: 5,
+        triggerStart: 15,
         action: {
           gtmEventName: 'TimeRange',
           blockId: onTrigger.id
