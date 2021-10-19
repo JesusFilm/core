@@ -30,6 +30,7 @@ describe('BlockRenderer', () => {
       coverBlockId: null,
       themeMode: null,
       themeName: null,
+      fullscreen: false,
       children: [
         {
           __typename: 'RadioQuestionBlock',
@@ -54,6 +55,7 @@ describe('BlockRenderer', () => {
       width: 1920,
       height: 1080,
       parentBlockId: null,
+      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       children: []
     }
     const { getByRole } = renderWithApolloClient(<BlockRenderer {...block} />)

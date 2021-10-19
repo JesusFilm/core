@@ -32,6 +32,7 @@ export const Default = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'radioQuestion1.id',
@@ -97,6 +98,7 @@ export const Default = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'radioQuestion1.id',
@@ -162,6 +164,7 @@ export const Default = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'radioQuestion1.id',
@@ -227,6 +230,7 @@ export const Default = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'radioQuestion1.id',

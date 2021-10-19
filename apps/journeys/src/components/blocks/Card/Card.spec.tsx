@@ -13,6 +13,7 @@ describe('CardBlock', () => {
     coverBlockId: null,
     themeMode: null,
     themeName: null,
+    fullscreen: false,
     children: [
       {
         id: 'typographyBlockId',
