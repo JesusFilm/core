@@ -88,8 +88,8 @@ CustomColor.args = {
   children
 }
 
-export const CoverBlockId: Story<TreeBlock<CardBlock>> = Template.bind({})
-CoverBlockId.args = {
+export const WithCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+WithCover.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     ...children,
@@ -105,6 +105,14 @@ CoverBlockId.args = {
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
     }
   ]
+}
+
+export const WithFullscreenCover: Story<TreeBlock<CardBlock>> = Template.bind(
+  {}
+)
+WithFullscreenCover.args = {
+  ...WithCover.args,
+  fullscreen: true
 }
 
 export const ImageAndText: Story<TreeBlock<CardBlock>> = Template.bind({})

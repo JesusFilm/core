@@ -33,4 +33,10 @@ export interface CardFields {
    * themeName from journey
    */
   themeName: ThemeName | null;
+  /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: boolean | null;
 }

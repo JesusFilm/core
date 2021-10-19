@@ -16,7 +16,8 @@ export function Card({
   backgroundColor,
   coverBlockId,
   themeMode,
-  themeName
+  themeName,
+  fullscreen
 }: TreeBlock<CardBlock>): ReactElement {
   const coverBlock = children.find(
     (block) => block.id === coverBlockId && block.__typename === 'ImageBlock'
@@ -32,9 +33,15 @@ export function Card({
       backgroundColor={backgroundColor}
       themeMode={themeMode}
       themeName={themeName}
-      sx={{ p: 0 }}
+      sx={{
+        p: 0,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundImage:
+          coverBlock != null ? `url(${coverBlock.src})` : undefined
+      }}
     >
-      {coverBlock != null ? (
+      {coverBlock != null && fullscreen == null ? (
         <CardWithCover
           coverBlock={coverBlock}
           themeMode={themeMode}
@@ -48,11 +55,17 @@ export function Card({
             flexGrow: 1,
             overflow: 'auto',
             display: 'flex',
+            backdropFilter: coverBlock != null ? 'blur(54px)' : undefined,
+            backgroundColor: (theme) =>
+              coverBlock != null
+                ? `${theme.palette.background.paper}88`
+                : undefined,
             padding: (theme) => ({
               xs: theme.spacing(7),
               sm: theme.spacing(7, 10),
               md: theme.spacing(7, 0)
-            })
+            }),
+            borderRadius: (theme) => theme.spacing(4)
           }}
         >
           <Box sx={{ margin: 'auto', maxWidth: { md: 500 } }}>
