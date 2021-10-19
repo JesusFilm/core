@@ -65,11 +65,12 @@ describe('CardBlock', () => {
             {
               id: 'imageBlockId1',
               __typename: 'ImageBlock',
-              src: 'https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=1080&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2lyY2xlfHx8fHx8MTYzMzA2MjI4MQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1920',
+              src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+              alt: 'random image from unsplash',
               width: 1600,
               height: 1067,
-              alt: 'random image from unsplash',
-              parentBlockId: 'Image1',
+              blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+              parentBlockId: 'card',
               children: []
             }
           ]

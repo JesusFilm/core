@@ -25,7 +25,7 @@ export const StoryCard = ({
       themeName={ThemeName.base}
       themeMode={themeMode ?? (theme.palette.mode as ThemeMode)}
     >
-      {children}
+      <div style={{ flexGrow: 1, overflow: 'auto' }}>{children}</div>
     </CardWrapper>
   )
 }
