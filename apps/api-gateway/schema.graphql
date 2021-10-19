@@ -65,6 +65,13 @@ type CardBlock implements Block {
   as a background. Blocks are often of type ImageBlock or VideoBlock.
   """
   coverBlockId: ID
+
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean
   id: ID!
   parentBlockId: ID
 
