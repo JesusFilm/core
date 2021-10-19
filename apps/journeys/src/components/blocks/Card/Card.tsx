@@ -43,8 +43,21 @@ export function Card({
           {renderedChildren}
         </CardWithCover>
       ) : (
-        <Box p={7} sx={{ flexGrow: 1, overflow: 'auto' }}>
-          {renderedChildren}
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+            display: 'flex',
+            padding: (theme) => ({
+              xs: theme.spacing(7),
+              sm: theme.spacing(7, 10),
+              md: theme.spacing(7, 0)
+            })
+          }}
+        >
+          <Box sx={{ margin: 'auto', maxWidth: { md: 500 } }}>
+            {renderedChildren}
+          </Box>
         </Box>
       )}
     </CardWrapper>

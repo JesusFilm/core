@@ -18,11 +18,12 @@ export function WithCover({
   children,
   coverBlock
 }: WithCoverProps): ReactElement {
-  const ref = useRef<HTMLDivElement>(null)
+  const xsRef = useRef<HTMLDivElement>(null)
+  const lgRef = useRef<HTMLDivElement>(null)
   const theme = useTheme()
 
   useEffect(() => {
-    if (ref.current != null) {
+    if (xsRef.current != null && lgRef.current != null) {
       const divisor = gcd(coverBlock.width, coverBlock.height)
       const width = coverBlock.width / divisor
       const height = coverBlock.height / divisor
@@ -39,14 +40,16 @@ export function WithCover({
         context.fillStyle = `${theme.palette.background.paper}88`
         context.fillRect(0, 0, width, height)
         const dataURL = canvas.toDataURL('image/webp')
-        ref.current.style.backgroundImage = `url(${dataURL})`
+        xsRef.current.style.backgroundImage = `url(${dataURL})`
+        lgRef.current.style.backgroundImage = `url(${dataURL})`
       }
     }
-  }, [coverBlock, ref, theme])
+  }, [coverBlock, xsRef, lgRef, theme])
 
   return (
     <>
       <Box
+        data-testid="CardWithCoverImage"
         sx={{
           flexGrow: 1,
           backgroundSize: 'cover',
@@ -55,12 +58,14 @@ export function WithCover({
         }}
       />
       <Box
-        ref={ref}
+        ref={xsRef}
         sx={{
-          display: 'flex',
+          display: { xs: 'flex', lg: 'none' },
           flexDirection: 'column',
-          justifyContent: 'center',
-          p: 7,
+          p: {
+            xs: theme.spacing(7),
+            sm: theme.spacing(9, 11)
+          },
           backgroundSize: 'cover',
           backgroundPosition: 'center bottom',
           clipPath: {
@@ -77,10 +82,56 @@ export function WithCover({
             xs: theme.spacing(7),
             sm: `calc(6vh + ${theme.spacing(7)})`
           },
-          width: { xs: 'auto', sm: '50%' }
+          width: { xs: 'auto', sm: '50%' },
+          overflow: 'auto'
         }}
       >
         <Box sx={{ margin: 'auto' }}>{children}</Box>
+      </Box>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          display: { xs: 'none', lg: 'flex' },
+          flexDirection: 'column',
+          width: 300
+        }}
+      >
+        <Box
+          sx={{
+            margin: 'auto',
+            overflow: 'auto',
+            pr: 9,
+            py: 7
+          }}
+        >
+          <Box
+            sx={{
+              margin: 'auto',
+              borderRadius: theme.spacing(4),
+              overflow: 'hidden'
+            }}
+            className="box"
+          >
+            <Box
+              sx={{
+                backgroundSize: 'cover',
+                position: 'relative',
+                marginTop: '-40px',
+                marginBottom: '40px',
+                borderRadius: theme.spacing(4),
+                paddingTop: `calc(40px + ${theme.spacing(7)})`,
+                paddingBottom: `calc(20px + ${theme.spacing(7)})`,
+                transform: 'skewY(-10deg)'
+              }}
+              ref={lgRef}
+            >
+              <Box sx={{ transform: 'skewY(10deg)', px: 7 }}>{children}</Box>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </>
   )
