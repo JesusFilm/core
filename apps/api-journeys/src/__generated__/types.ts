@@ -66,6 +66,12 @@ export type CardBlock = Block & {
    */
   coverBlockId?: Maybe<Scalars['ID']>;
   /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen?: Maybe<Scalars['Boolean']>;
+  /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
    */
@@ -468,6 +474,7 @@ export type ResolversTypes = {
   ButtonSize: ButtonSize;
   ButtonVariant: ButtonVariant;
   CardBlock: ResolverTypeWrapper<BlockType>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
   IconName: IconName;
@@ -476,7 +483,6 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   ImageBlockCreateInput: ImageBlockCreateInput;
   Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   JourneyCreateInput: JourneyCreateInput;
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -513,12 +519,12 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   ButtonBlock: BlockType;
   CardBlock: BlockType;
+  Boolean: Scalars['Boolean'];
   Icon: Icon;
   ImageBlock: BlockType;
   Int: Scalars['Int'];
   ImageBlockCreateInput: ImageBlockCreateInput;
   Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
-  Boolean: Scalars['Boolean'];
   JourneyCreateInput: JourneyCreateInput;
   LinkAction: LinkAction;
   Mutation: {};
@@ -570,6 +576,7 @@ export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   backgroundColor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coverBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  fullscreen?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   themeMode?: Resolver<Maybe<ResolversTypes['ThemeMode']>, ParentType, ContextType>;
   themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

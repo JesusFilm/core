@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace CardModule {
   interface DefinedFields {
-    CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'themeMode' | 'themeName';
+    CardBlock: 'id' | 'parentBlockId' | 'backgroundColor' | 'coverBlockId' | 'fullscreen' | 'themeMode' | 'themeName';
   };
   
   export type CardBlock = Pick<Types.CardBlock, DefinedFields['CardBlock']>;
@@ -27,6 +27,7 @@ export namespace CardModule {
       parentBlockId?: gm.Middleware[];
       backgroundColor?: gm.Middleware[];
       coverBlockId?: gm.Middleware[];
+      fullscreen?: gm.Middleware[];
       themeMode?: gm.Middleware[];
       themeName?: gm.Middleware[];
     };

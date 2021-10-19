@@ -16,6 +16,12 @@ const typeDefs = gql`
     """
     coverBlockId: ID
     """
+    fullscreen should control how the coverBlock is displayed. When fullscreen
+    is set to true the coverBlock Image should be displayed as a blur in the
+    background.
+    """
+    fullscreen: Boolean
+    """
     themeMode can override journey themeMode. If nothing is set then use
     themeMode from journey
     """

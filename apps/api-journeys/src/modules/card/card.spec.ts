@@ -51,7 +51,8 @@ describe('CardModule', () => {
           backgroundColor: '#FFF',
           coverBlockId,
           themeMode: ThemeMode.light,
-          themeName: ThemeName.base
+          themeName: ThemeName.base,
+          fullscreen: true
         }
       }
       dbMock.block.findMany.mockResolvedValue([card])
@@ -67,6 +68,7 @@ describe('CardModule', () => {
                 coverBlockId
                 themeMode
                 themeName
+                fullscreen
               }
             }
           }
@@ -80,7 +82,8 @@ describe('CardModule', () => {
           backgroundColor: '#FFF',
           coverBlockId,
           themeMode: ThemeMode.light,
-          themeName: ThemeName.base
+          themeName: ThemeName.base,
+          fullscreen: true
         }
       ])
     })
