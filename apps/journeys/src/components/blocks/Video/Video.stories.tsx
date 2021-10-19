@@ -1,9 +1,10 @@
 import { Story, Meta } from '@storybook/react'
-import { Video } from '.'
-import { ApolloProvider } from '@apollo/client'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
+import { MockedProvider } from '@apollo/client/testing'
+import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 
 const Demo = {
   ...journeysConfig,
@@ -13,11 +14,30 @@ const Demo = {
 
 
 const Template: Story<TreeBlock<VideoBlock>> = ({ ...props }) => (
-  <ApolloProvider client={'client'}>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: VIDEO_RESPONSE_CREATE,
+          variables: {
+            id: 'uuid',
+            blockId: 'Video1',
+            state: VideoResponseStateEnum.PLAYING
+          }
+        },
+        result: {
+          data: {
+            id: 'uuid',
+            state: VideoResponseStateEnum.PLAYING
+          }
+        }
+      }
+    ]}
+  >
     <StoryCard>
       <Video {...props} />
     </StoryCard>
-  </ApolloProvider>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
