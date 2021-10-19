@@ -41,7 +41,7 @@ export function Card({
           coverBlock != null ? `url(${coverBlock.src})` : undefined
       }}
     >
-      {coverBlock != null && fullscreen == null ? (
+      {coverBlock != null && (fullscreen == null || !fullscreen) ? (
         <CardWithCover
           coverBlock={coverBlock}
           themeMode={themeMode}
@@ -68,7 +68,7 @@ export function Card({
             borderRadius: (theme) => theme.spacing(4)
           }}
         >
-          <Box sx={{ margin: 'auto', maxWidth: { md: 500 } }}>
+          <Box sx={{ margin: 'auto', width: '100%', maxWidth: { md: 500 } }}>
             {renderedChildren}
           </Box>
         </Box>

@@ -57,6 +57,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             key={block.id}
             style={{
               width: 'calc(100% - 24px - 24px)',
+              height: 'calc(100vh - 80px)',
               paddingTop: '4px',
               paddingBottom: '4px'
             }}
