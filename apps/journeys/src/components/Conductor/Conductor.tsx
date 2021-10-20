@@ -39,9 +39,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    <Container disableGutters>
+    <Container disableGutters sx={{ maxWidth: { md: 888 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
-        <Box sx={{ width: 'calc(100% - 20px - 20px)' }}>
+        <Box sx={{ width: 'calc(100% - 20px - 20px - 10px)' }}>
           <JourneyProgress />
         </Box>
       </Box>
