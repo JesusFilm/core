@@ -26,7 +26,7 @@ interface VideoProps extends TreeBlock<VideoBlock> {
   uuid?: () => string
 }
 
-export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uuid = uuidv4, children }: VideoProps): ReactElement {
+export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, autoplay, uuid = uuidv4, children }: VideoProps): ReactElement {
   const videoNode = useRef<HTMLVideoElement>(null)
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
   const player = useRef<videojs.Player>()
@@ -57,12 +57,16 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
     })
   }, [blockId, uuid, videoResponseCreate])
 
-  const validate = async (url: string): Promise<void> => {
-    return await fetch(url).then((response) => setVideoUrl(response.url))
-  }
+  const validate = useCallback(async (url: string, src: string | null): Promise<void> => {
+    if (mediaComponentId === undefined || languageId === undefined) {
+      src !== null && setVideoUrl(src)
+    } else {
+      return await fetch(url).then((response) => setVideoUrl(response.url))
+    }
+  }, [languageId, mediaComponentId])
 
   useEffect(() => {
-    void validate(url)
+    void validate(url, videoSrc)
 
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
@@ -120,7 +124,7 @@ export function Video({ id: blockId, mediaComponentId, languageId, autoplay, uui
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
     }
-  }, [videoNode, autoplay, children, mediaComponentId, languageId, handleVideoResponse, videoUrl, url])
+  }, [videoNode, autoplay, children, mediaComponentId, languageId, videoSrc, validate, handleVideoResponse, videoUrl, url])
 
   useEffect(() => {
     if (

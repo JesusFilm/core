@@ -51,4 +51,14 @@ Default.args = {
   languageId: '529'
 }
 
+export const Src = Template.bind({})
+Src.args = {
+  __typename: 'VideoBlock',
+  id: 'Video1',
+  parentBlockId: '',
+  volume: 1,
+  autoplay: true,
+  videoSrc: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+}
+
 export default Demo as Meta
