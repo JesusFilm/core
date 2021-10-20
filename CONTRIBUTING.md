@@ -81,7 +81,6 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 ## Starting the gateway, back-end and front-end projects
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
-journeys and gateway
 
 1. Navigate to `apps/journeys`
 2. Make a copy of `.env` name it `.env.local` and follw the instructions inside
