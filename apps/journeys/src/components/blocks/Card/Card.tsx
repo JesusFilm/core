@@ -106,6 +106,9 @@ export const CardWrapper = ({
         p: 7,
         overflow: 'hidden',
         position: 'relative',
+        maxHeight: 439,
+        maxWidth: 840,
+        margin: '0 auto',
         ...sx
       }}
       elevation={3}

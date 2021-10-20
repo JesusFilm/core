@@ -60,7 +60,7 @@ export function WithCover({
       <Box
         ref={xsRef}
         sx={{
-          display: { xs: 'flex', lg: 'none' },
+          display: { xs: 'flex', md: 'none' },
           flexDirection: 'column',
           backgroundSize: 'cover',
           backgroundPosition: 'center bottom',
@@ -93,7 +93,7 @@ export function WithCover({
           top: 0,
           right: 0,
           bottom: 0,
-          display: { xs: 'none', lg: 'flex' },
+          display: { xs: 'none', md: 'flex' },
           flexDirection: 'column',
           width: 300
         }}
