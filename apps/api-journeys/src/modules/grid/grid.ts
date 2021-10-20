@@ -64,7 +64,7 @@ const typeDefs = gql`
     item: Item
     container: Container
   }
-`;
+`
 
 export const gridModule = createModule({
   id: 'grid',

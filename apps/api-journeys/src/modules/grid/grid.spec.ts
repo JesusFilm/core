@@ -43,15 +43,15 @@ describe('GridModule', () => {
       const grid: Block = {
         id: uuidv4(),
         journeyId,
-        blockType: "GridBlock",
+        blockType: 'GridBlock',
         parentBlockId,
         parentOrder: 2,
         extraAttrs: {
           container: {
-            spacing: "_3",
-          },
-        },
-      };
+            spacing: '_3'
+          }
+        }
+      }
       dbMock.block.findMany.mockResolvedValue([grid])
       const { data } = await query(gql`
         query ($id: ID!) {
@@ -68,7 +68,7 @@ describe('GridModule', () => {
             }
           }
         }
-      `);
+      `)
       expect(data?.journey.blocks).toEqual([
         {
           id: grid.id,

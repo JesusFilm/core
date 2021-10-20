@@ -7,23 +7,17 @@ import { BlockRenderer } from '../../BlockRenderer'
 export function Grid({
   container,
   item,
-  children,
+  children
 }: TreeBlock<GridBlock>): ReactElement {
   const isContainer = container !== null && container !== undefined
   const isItem = item !== null && item !== undefined
-  const lg =
-    isItem
-      ? (item?.lg.replace("_", "") as GridSize)
-      : undefined;
 
   return (
     <MaterialGrid
       container={isContainer}
       item={isItem}
-      lg={lg}
-      spacing={
-        isContainer ? container?.spacing.replace("_", "") : undefined
-      }
+      lg={item?.lg.replace("_", "") as GridSize}
+      spacing={isContainer ? container?.spacing.replace("_", "") : undefined}
       direction={container?.direction.replace("_", "-") as GridDirection}
       alignItems={container?.alignItems.replace("_", "-")}
       justifyContent={container?.justifyContent.replace("_", "-")}
