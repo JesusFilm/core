@@ -6,6 +6,7 @@ export const VIDEO_FIELDS = gql`
     parentBlockId
     mediaComponentId
     languageId
+    src
     title
     volume
     autoplay

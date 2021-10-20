@@ -50,7 +50,7 @@ describe('VideoModule', () => {
   }
 
   describe('VideoBlock', () => {
-    it('returns VideoBlock', async () => {
+    it('returns VideoBlock with mediaComponentId and languageId', async () => {
       const parentBlockId = uuidv4()
       const video: Block = {
         id: uuidv4(),
@@ -88,6 +88,46 @@ describe('VideoModule', () => {
           parentBlockId,
           mediaComponentId: '2_0-FallingPlates',
           languageId: '529',
+          title: 'title'
+        }
+      ])
+    })
+
+    it('returns VideoBlock with src', async () => {
+      const parentBlockId = uuidv4()
+      const video: Block = {
+        id: uuidv4(),
+        journeyId,
+        blockType: 'VideoBlock',
+        parentBlockId,
+        parentOrder: 1,
+        extraAttrs: {
+          src: 'src',
+          title: 'title'
+        }
+      }
+      dbMock.block.findMany.mockResolvedValue([video])
+      const { data } = await query(gql`
+        query ($id: ID!) {
+          journey(id: $id) {
+            blocks {
+              id
+              __typename
+              parentBlockId
+              ... on VideoBlock {
+                src
+                title
+              }
+            }
+          }
+        }
+      `)
+      expect(data?.journey.blocks).toEqual([
+        {
+          id: video.id,
+          __typename: 'VideoBlock',
+          parentBlockId,
+          src: 'src',
           title: 'title'
         }
       ])

@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace VideoModule {
   interface DefinedFields {
-    VideoBlock: 'id' | 'parentBlockId' | 'mediaComponentId' | 'languageId' | 'title' | 'description' | 'volume' | 'autoplay';
+    VideoBlock: 'id' | 'parentBlockId' | 'mediaComponentId' | 'languageId' | 'src' | 'title' | 'description' | 'volume' | 'autoplay';
     VideoResponse: 'id' | 'userId' | 'state' | 'block';
     Mutation: 'videoResponseCreate';
   };
@@ -44,6 +44,7 @@ export namespace VideoModule {
       parentBlockId?: gm.Middleware[];
       mediaComponentId?: gm.Middleware[];
       languageId?: gm.Middleware[];
+      src?: gm.Middleware[];
       title?: gm.Middleware[];
       description?: gm.Middleware[];
       volume?: gm.Middleware[];

@@ -246,6 +246,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   parentBlockId: string | null;
   mediaComponentId: string | null;
   languageId: string | null;
+  src: string | null;
   title: string;
   volume: number | null;
   autoplay: boolean | null;

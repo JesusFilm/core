@@ -27,6 +27,7 @@ const typeDefs = gql`
     parentBlockId: ID
     mediaComponentId: String
     languageId: String
+    src: String
     title: String!
     description: String
     volume: Int

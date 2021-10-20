@@ -353,6 +353,7 @@ export type VideoBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']>;
   mediaComponentId?: Maybe<Scalars['String']>;
   languageId?: Maybe<Scalars['String']>;
+  src?: Maybe<Scalars['String']>;
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   volume?: Maybe<Scalars['Int']>;
@@ -709,6 +710,7 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   mediaComponentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   languageId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  src?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   volume?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
