@@ -43,7 +43,10 @@ async function main(): Promise<void> {
       parentBlockId: step.id,
       extraAttrs: {
         container: {
-          spacing: '_3'
+          spacing: '_3',
+          direction: 'row',
+          justifyContent: 'flex_start',
+          alignItems: 'center'
         }
       },
       parentOrder: 1

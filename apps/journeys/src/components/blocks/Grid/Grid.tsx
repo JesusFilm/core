@@ -16,15 +16,15 @@ export function Grid({
     <MaterialGrid
       container={isContainer}
       item={isItem}
-      lg={item?.lg.replace("_", "") as GridSize}
-      spacing={isContainer ? container?.spacing.replace("_", "") : undefined}
-      direction={container?.direction.replace("_", "-") as GridDirection}
-      alignItems={container?.alignItems.replace("_", "-")}
-      justifyContent={container?.justifyContent.replace("_", "-")}
+      lg={item?.lg.replace('_', '') as GridSize}
+      spacing={isContainer ? container?.spacing.replace('_', '') : undefined}
+      direction={container?.direction.replace('_', '-') as GridDirection}
+      alignItems={container?.alignItems.replace('_', '-')}
+      justifyContent={container?.justifyContent.replace('_', '-')}
     >
       {children?.map((block) => (
         <BlockRenderer {...block} key={block.id} />
       ))}
     </MaterialGrid>
-  );
+  )
 }

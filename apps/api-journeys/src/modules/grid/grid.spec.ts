@@ -48,7 +48,10 @@ describe('GridModule', () => {
         parentOrder: 2,
         extraAttrs: {
           container: {
-            spacing: '_3'
+            spacing: '_3',
+            direction: 'row',
+            justifyContent: 'flex_start',
+            alignItems: 'center'
           }
         }
       }
@@ -61,8 +64,11 @@ describe('GridModule', () => {
               __typename
               parentBlockId
               ... on GridBlock {
-                container: {
-                  spacing: '_3'
+                container {
+                  spacing
+                  direction
+                  justifyContent
+                  alignItems
                 }
               }
             }
@@ -73,7 +79,13 @@ describe('GridModule', () => {
         {
           id: grid.id,
           __typename: 'GridBlock',
-          parentBlockId
+          parentBlockId,
+          container: {
+            alignItems: 'center',
+            direction: 'row',
+            justifyContent: 'flex_start',
+            spacing: '_3'
+          }
         }
       ])
     })
