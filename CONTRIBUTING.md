@@ -70,9 +70,8 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install [Docker Desktop](https://www.docker.com/get-started)
-3. Start Docker Desktop
-TODO: add instructions mac user only
-4. add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
+3. Start Docker Desktop 
+4. **Mac users only**: add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
 5. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
 6. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
 7. Pick GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`, finally choose the `main` branch to clone.
@@ -82,10 +81,13 @@ TODO: add instructions mac user only
 ## Starting the gateway, back-end and front-end projects
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
+journeys and gateway
 
-TODO: 1 .env.local - then follow the instructions.... for both journeys and gateway
-1. run `nx run api-journeys:migrations`
-2. run `nx run api-journeys:seed`
-3. run `nx run api-gateway:serve-all`
-4. in another terminal run `nx run journeys:serve`
-5. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
+1. Navigate to `apps/journeys`
+2. Make a copy of `.env` name it `.env.local` and follw the instructions inside
+3. Repeat step 2 inside `apps/api-gateway`
+4. run `nx run api-journeys:migrations`
+5. run `nx run api-journeys:seed`
+6. run `nx run api-gateway:serve-all`
+7. in another terminal run `nx run journeys:serve`
+8. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
