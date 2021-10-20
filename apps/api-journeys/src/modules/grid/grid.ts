@@ -2,13 +2,17 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 
 const typeDefs = gql`
-  enum GridType {
-    container
-    item
-    containerItem
+  enum GridSpacing {
+    _1
+    _2
+    _3
+    _4
+    _5
+    _6
   }
 
-  enum ColumnSize {
+  enum GridSize {
+    auto
     _1
     _2
     _3
@@ -23,13 +27,44 @@ const typeDefs = gql`
     _12
   }
 
+  enum GridDirection {
+    column_reverse
+    column
+    row
+    row_reverse
+  }
+
+  enum GridJustifyContent {
+    flex_start
+    flex_end
+    center
+  }
+
+  enum GridAlignItems {
+    baseline
+    flex_start
+    flex_end
+    center
+  }
+
+  type Item {
+    lg: GridSize!
+  }
+
+  type Container {
+    spacing: GridSpacing!
+    direction: GridDirection!
+    justifyContent: GridJustifyContent!
+    alignItems: GridAlignItems!
+  }
+
   type GridBlock implements Block {
     id: ID!
     parentBlockId: ID
-    md: ColumnSize
-    type: GridType
+    item: Item
+    container: Container
   }
-`
+`;
 
 export const gridModule = createModule({
   id: 'grid',

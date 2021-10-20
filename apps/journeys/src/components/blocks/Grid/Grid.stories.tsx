@@ -1,5 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { GetJourney_journey_blocks_GridBlock as GridBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_GridBlock as GridBlock
+} from "../../../../__generated__/GetJourney";
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { Grid } from './Grid'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
@@ -10,9 +12,12 @@ import {
   ButtonSize,
   IconName,
   IconSize,
-  GridType,
-  ColumnSize
-} from '../../../../__generated__/globalTypes'
+  GridSpacing,
+  GridSize,
+  GridAlignItems,
+  GridDirection,
+  GridJustifyContent,
+} from "../../../../__generated__/globalTypes";
 
 const Demo = {
   ...journeysConfig,
@@ -60,7 +65,7 @@ const childrenOne: TreeBlock[] = [
       __typename: 'Icon',
       name: IconName.PlayArrow,
       color: null,
-      size: IconSize.md
+      size: IconSize.lg
     },
     endIcon: null,
     action: null,
@@ -103,26 +108,108 @@ const childrenTwo: TreeBlock[] = [
 
 export const Default: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({})
 Default.args = {
-  id: 'GridContainer',
-  type: GridType.container,
+  id: "GridContainer",
+  container: {
+    __typename: "Container",
+    spacing: GridSpacing._6,
+    direction: GridDirection.row,
+    justifyContent: GridJustifyContent.flex_start,
+    alignItems: GridAlignItems.center,
+  },
   children: [
     {
-      id: 'GridItemLeft',
-      __typename: 'GridBlock',
-      md: ColumnSize._8,
-      type: GridType.item,
-      parentBlockId: 'GridContainer',
-      children: childrenOne
+      id: "GridItemLeft",
+      __typename: "GridBlock",
+      item: {
+        __typename: "Item",
+        lg: GridSize._6,
+      },
+      parentBlockId: "GridContainer",
+      container: null,
+      children: childrenOne,
     },
     {
-      id: 'GridItemRight',
-      md: ColumnSize._4,
-      __typename: 'GridBlock',
-      type: GridType.item,
-      parentBlockId: 'GridContainer',
-      children: childrenTwo
-    }
-  ]
-}
+      id: "GridItemRight",
+      item: {
+        __typename: "Item",
+        lg: GridSize._6,
+      },
+      __typename: "GridBlock",
+      container: null,
+      parentBlockId: "GridContainer",
+      children: childrenTwo,
+    },
+  ],
+};
 
+
+export const OffsetRight: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({});
+OffsetRight.args = {
+  id: "GridContainer",
+  container: {
+    __typename: "Container",
+    spacing: GridSpacing._6,
+    direction: GridDirection.row,
+    justifyContent: GridJustifyContent.flex_end,
+    alignItems: GridAlignItems.baseline,
+  },
+  children: [
+    {
+      id: "GridItemRight",
+      item: {
+        __typename: "Item",
+        lg: GridSize._6,
+      },
+      __typename: "GridBlock",
+      container: null,
+      parentBlockId: "GridContainer",
+      children: childrenTwo,
+    },
+  ],
+};
+
+export const Center: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({});
+Center.args = {
+  id: "GridContainer",
+  container: {
+    __typename: "Container",
+    spacing: GridSpacing._6,
+    direction: GridDirection.row,
+    justifyContent: GridJustifyContent.center,
+    alignItems: GridAlignItems.center,
+  },
+  children: [
+    {
+      id: "GridItemLeft",
+      item: {
+        __typename: "Item",
+        lg: GridSize._6,
+      },
+      __typename: "GridBlock",
+      container: null,
+      parentBlockId: "GridContainer",
+      children: childrenOne,
+    },
+    {
+      id: "GridItemRight",
+      item: {
+        __typename: "Item",
+        lg: GridSize._6,
+      },
+      __typename: "GridBlock",
+      container: null,
+      parentBlockId: "GridContainer",
+      children: [{
+        id: "typographyBlockId77",
+        __typename: "TypographyBlock",
+        parentBlockId: null,
+        align: null,
+        color: null,
+        content: "The only impossible journey is the one you never begin.",
+        variant: TypographyVariant.h3,
+        children: [],
+      }],
+    },
+  ],
+};
 export default Demo as Meta

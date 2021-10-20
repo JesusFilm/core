@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ColumnSize, GridType, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, GridSpacing, GridDirection, GridJustifyContent, GridAlignItems, GridSize, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -87,12 +87,25 @@ export interface GetJourney_journey_blocks_CardBlock {
   themeName: ThemeName | null;
 }
 
+export interface GetJourney_journey_blocks_GridBlock_container {
+  __typename: "Container";
+  spacing: GridSpacing;
+  direction: GridDirection;
+  justifyContent: GridJustifyContent;
+  alignItems: GridAlignItems;
+}
+
+export interface GetJourney_journey_blocks_GridBlock_item {
+  __typename: "Item";
+  lg: GridSize;
+}
+
 export interface GetJourney_journey_blocks_GridBlock {
   __typename: "GridBlock";
   id: string;
   parentBlockId: string | null;
-  md: ColumnSize | null;
-  type: GridType | null;
+  container: GetJourney_journey_blocks_GridBlock_container | null;
+  item: GetJourney_journey_blocks_GridBlock_item | null;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {

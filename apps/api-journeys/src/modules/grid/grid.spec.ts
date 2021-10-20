@@ -43,16 +43,15 @@ describe('GridModule', () => {
       const grid: Block = {
         id: uuidv4(),
         journeyId,
-        blockType: 'GridBlock',
+        blockType: "GridBlock",
         parentBlockId,
         parentOrder: 2,
         extraAttrs: {
-          src: 'https://source.unsplash.com/random/1920x1080',
-          alt: 'random grid from unsplash',
-          width: 1920,
-          height: 1080
-        }
-      }
+          container: {
+            spacing: "_3",
+          },
+        },
+      };
       dbMock.block.findMany.mockResolvedValue([grid])
       const { data } = await query(gql`
         query ($id: ID!) {
@@ -62,24 +61,19 @@ describe('GridModule', () => {
               __typename
               parentBlockId
               ... on GridBlock {
-                src
-                alt
-                width
-                height
+                container: {
+                  spacing: '_3'
+                }
               }
             }
           }
         }
-      `)
+      `);
       expect(data?.journey.blocks).toEqual([
         {
           id: grid.id,
           __typename: 'GridBlock',
-          parentBlockId,
-          src: 'https://source.unsplash.com/random/1920x1080',
-          alt: 'random grid from unsplash',
-          width: 1920,
-          height: 1080
+          parentBlockId
         }
       ])
     })

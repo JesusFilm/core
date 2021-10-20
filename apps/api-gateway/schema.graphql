@@ -81,7 +81,41 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-enum ColumnSize {
+type Container {
+  alignItems: GridAlignItems!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  spacing: GridSpacing!
+}
+
+enum GridAlignItems {
+  baseline
+  center
+  flex_end
+  flex_start
+}
+
+type GridBlock implements Block {
+  container: Container
+  id: ID!
+  item: Item
+  parentBlockId: ID
+}
+
+enum GridDirection {
+  column
+  column_reverse
+  row
+  row_reverse
+}
+
+enum GridJustifyContent {
+  center
+  flex_end
+  flex_start
+}
+
+enum GridSize {
   _1
   _2
   _3
@@ -94,19 +128,16 @@ enum ColumnSize {
   _10
   _11
   _12
+  auto
 }
 
-type GridBlock implements Block {
-  id: ID!
-  md: ColumnSize
-  parentBlockId: ID
-  type: GridType
-}
-
-enum GridType {
-  container
-  containerItem
-  item
+enum GridSpacing {
+  _1
+  _2
+  _3
+  _4
+  _5
+  _6
 }
 
 type Icon {
@@ -153,6 +184,10 @@ type ImageBlock implements Block {
   parentBlockId: ID
   src: String!
   width: Int!
+}
+
+type Item {
+  lg: GridSize!
 }
 
 scalar join__FieldSet

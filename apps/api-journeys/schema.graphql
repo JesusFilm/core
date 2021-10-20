@@ -64,7 +64,42 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-enum ColumnSize {
+type Container {
+  spacing: GridSpacing!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
+}
+
+enum GridAlignItems {
+  baseline
+  flex_start
+  flex_end
+  center
+}
+
+type GridBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  item: Item
+  container: Container
+}
+
+enum GridDirection {
+  column_reverse
+  column
+  row
+  row_reverse
+}
+
+enum GridJustifyContent {
+  flex_start
+  flex_end
+  center
+}
+
+enum GridSize {
+  auto
   _1
   _2
   _3
@@ -79,17 +114,13 @@ enum ColumnSize {
   _12
 }
 
-type GridBlock implements Block {
-  id: ID!
-  parentBlockId: ID
-  md: ColumnSize
-  type: GridType
-}
-
-enum GridType {
-  container
-  item
-  containerItem
+enum GridSpacing {
+  _1
+  _2
+  _3
+  _4
+  _5
+  _6
 }
 
 type Icon {
@@ -136,6 +167,10 @@ type ImageBlock implements Block {
   width: Int!
   height: Int!
   alt: String!
+}
+
+type Item {
+  lg: GridSize!
 }
 
 type Journey @key(fields: "id") {
