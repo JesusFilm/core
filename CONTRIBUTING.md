@@ -71,6 +71,7 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install [Docker Desktop](https://www.docker.com/get-started)
 3. Start Docker Desktop
+TODO: add instructions mac user only
 4. add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
 5. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
 6. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
@@ -82,6 +83,7 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
 
+TODO: 1 .env.local - then follow the instructions.... for both journeys and gateway
 1. run `nx run api-journeys:migrations`
 2. run `nx run api-journeys:seed`
 3. run `nx run api-gateway:serve-all`
