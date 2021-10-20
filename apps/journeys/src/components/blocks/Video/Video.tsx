@@ -31,7 +31,7 @@ export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, aut
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
   const player = useRef<videojs.Player>()
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  const url = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
+  const arclightURL = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
@@ -61,12 +61,12 @@ export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, aut
     if (mediaComponentId === undefined || languageId === undefined) {
       src !== null && setVideoUrl(src)
     } else {
-      return await fetch(url).then((response) => setVideoUrl(response.url))
+      await fetch(url).then((response) => setVideoUrl(response.url))
     }
   }, [languageId, mediaComponentId])
 
   useEffect(() => {
-    void validate(url, videoSrc)
+    void validate(arclightURL, videoSrc)
 
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
@@ -124,7 +124,7 @@ export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, aut
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
     }
-  }, [videoNode, autoplay, children, mediaComponentId, languageId, videoSrc, validate, handleVideoResponse, videoUrl, url])
+  }, [videoNode, autoplay, children, videoSrc, validate, handleVideoResponse, videoUrl, arclightURL])
 
   useEffect(() => {
     if (

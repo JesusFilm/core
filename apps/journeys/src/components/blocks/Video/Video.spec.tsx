@@ -13,6 +13,7 @@ describe('VideoComponent', () => {
     volume: 1,
     autoplay: false,
     mediaComponentId: '2_0-FallingPlates',
+    videoSrc: null,
     languageId: '529',
     title: 'Video',
     children: []
