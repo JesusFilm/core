@@ -70,7 +70,7 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install [Docker Desktop](https://www.docker.com/get-started)
-3. Start Docker Desktop 
+3. Start Docker Desktop
 4. **Mac users only**: add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
 5. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
 6. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
