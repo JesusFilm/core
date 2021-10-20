@@ -62,25 +62,24 @@ export function WithCover({
         sx={{
           display: { xs: 'flex', lg: 'none' },
           flexDirection: 'column',
-          p: {
-            xs: theme.spacing(7),
-            sm: theme.spacing(9, 11)
-          },
           backgroundSize: 'cover',
           backgroundPosition: 'center bottom',
           clipPath: {
             xs: 'polygon(0 6vw, 100% 0, 100% 100%, 0 100%)',
             sm: 'polygon(6vh 0, 100% 0, 100% 100%, 0 100%)'
           },
+          p: {
+            xs: 7,
+            sm: theme.spacing(7, 10)
+          },
           marginTop: { xs: '-6vw', sm: 0 },
           paddingTop: {
-            xs: `calc(6vw + ${theme.spacing(7)})`,
+            xs: `calc(6vw + ${theme.spacing(4)})`,
             sm: theme.spacing(7)
           },
           marginLeft: { xs: 0, sm: '-6vh' },
           paddingLeft: {
-            xs: theme.spacing(7),
-            sm: `calc(6vh + ${theme.spacing(7)})`
+            sm: `calc(6vh + ${theme.spacing(4)})`
           },
           width: { xs: 'auto', sm: '50%' },
           overflow: 'auto'
@@ -123,7 +122,7 @@ export function WithCover({
                 marginBottom: '40px',
                 borderRadius: theme.spacing(4),
                 paddingTop: `calc(40px + ${theme.spacing(7)})`,
-                paddingBottom: `calc(20px + ${theme.spacing(7)})`,
+                paddingBottom: `calc(20px + ${theme.spacing(4)})`,
                 transform: 'skewY(-10deg)'
               }}
               ref={lgRef}
