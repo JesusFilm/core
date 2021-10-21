@@ -12,7 +12,6 @@ const Demo = {
   title: 'Journeys/Blocks/Video'
 }
 
-
 const Template: Story<TreeBlock<VideoBlock>> = ({ ...props }) => (
   <MockedProvider
     mocks={[
@@ -58,7 +57,8 @@ Src.args = {
   parentBlockId: '',
   volume: 1,
   autoplay: true,
-  videoSrc: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+  videoSrc:
+    'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
 }
 
 export default Demo as Meta

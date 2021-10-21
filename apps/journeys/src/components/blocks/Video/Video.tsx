@@ -1,5 +1,11 @@
 import videojs from 'video.js'
-import React, { ReactElement, useEffect, useRef, useState, useCallback } from 'react'
+import React, {
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+  useCallback
+} from 'react'
 import { Container } from '@mui/material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -12,11 +18,9 @@ import { Trigger } from '../Trigger'
 import 'video.js/dist/video-js.css'
 
 export const VIDEO_RESPONSE_CREATE = gql`
-  mutation VideoResponseCreate(
-    $input: VideoResponseCreateInput!
-  ) {
+  mutation VideoResponseCreate($input: VideoResponseCreateInput!) {
     videoResponseCreate(input: $input) {
-      id,
+      id
       state
     }
   }
@@ -26,9 +30,19 @@ interface VideoProps extends TreeBlock<VideoBlock> {
   uuid?: () => string
 }
 
-export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, autoplay, uuid = uuidv4, children }: VideoProps): ReactElement {
+export function Video({
+  id: blockId,
+  mediaComponentId,
+  languageId,
+  videoSrc,
+  autoplay,
+  uuid = uuidv4,
+  children
+}: VideoProps): ReactElement {
   const videoNode = useRef<HTMLVideoElement>(null)
-  const [videoResponseCreate] = useMutation<VideoResponseCreate>(VIDEO_RESPONSE_CREATE)
+  const [videoResponseCreate] = useMutation<VideoResponseCreate>(
+    VIDEO_RESPONSE_CREATE
+  )
   const player = useRef<videojs.Player>()
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const arclightURL = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
@@ -37,33 +51,39 @@ export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, aut
   const [isReady, setIsReady] = useState<boolean | undefined>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
-  const handleVideoResponse = useCallback(async (videoState: VideoResponseStateEnum): Promise<void> => {
-    const id = uuid()
-    await videoResponseCreate({
-      variables: {
-        input: {
-          id,
-          blockId,
-          state: videoState
+  const handleVideoResponse = useCallback(
+    async (videoState: VideoResponseStateEnum): Promise<void> => {
+      const id = uuid()
+      await videoResponseCreate({
+        variables: {
+          input: {
+            id,
+            blockId,
+            state: videoState
+          }
+        },
+        optimisticResponse: {
+          videoResponseCreate: {
+            id,
+            __typename: 'VideoResponse',
+            state: videoState
+          }
         }
-      },
-      optimisticResponse: {
-        videoResponseCreate: {
-          id,
-          __typename: 'VideoResponse',
-          state: videoState
-        }
-      }
-    })
-  }, [blockId, uuid, videoResponseCreate])
+      })
+    },
+    [blockId, uuid, videoResponseCreate]
+  )
 
-  const validate = useCallback(async (url: string, src: string | null): Promise<void> => {
-    if (mediaComponentId === undefined || languageId === undefined) {
-      src !== null && setVideoUrl(src)
-    } else {
-      await fetch(url).then((response) => setVideoUrl(response.url))
-    }
-  }, [languageId, mediaComponentId])
+  const validate = useCallback(
+    async (url: string, src: string | null): Promise<void> => {
+      if (mediaComponentId === undefined || languageId === undefined) {
+        src !== null && setVideoUrl(src)
+      } else {
+        await fetch(url).then((response) => setVideoUrl(response.url))
+      }
+    },
+    [languageId, mediaComponentId]
+  )
 
   useEffect(() => {
     void validate(arclightURL, videoSrc)
@@ -124,7 +144,16 @@ export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, aut
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
     }
-  }, [videoNode, autoplay, children, videoSrc, validate, handleVideoResponse, videoUrl, arclightURL])
+  }, [
+    videoNode,
+    autoplay,
+    children,
+    videoSrc,
+    validate,
+    handleVideoResponse,
+    videoUrl,
+    arclightURL
+  ])
 
   useEffect(() => {
     if (
@@ -142,9 +171,12 @@ export function Video({ id: blockId, mediaComponentId, languageId, videoSrc, aut
   return (
     <Container maxWidth="md">
       <video ref={videoNode} className="video-js" data-testid="VideoComponent">
-        {children?.map((option) => option.__typename === 'TriggerBlock' && (
-          <Trigger player={player.current} {...option} />
-        ))}
+        {children?.map(
+          (option) =>
+            option.__typename === 'TriggerBlock' && (
+              <Trigger player={player.current} {...option} />
+            )
+        )}
       </video>
     </Container>
   )
