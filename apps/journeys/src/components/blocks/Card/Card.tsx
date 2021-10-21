@@ -63,7 +63,7 @@ export function Card({
             padding: (theme) => ({
               xs: theme.spacing(7),
               sm: theme.spacing(7, 10),
-              md: theme.spacing(7, 0)
+              md: theme.spacing(10, 0)
             }),
             borderRadius: (theme) => theme.spacing(4)
           }}
@@ -106,8 +106,15 @@ export const CardWrapper = ({
         p: 7,
         overflow: 'hidden',
         position: 'relative',
-        maxHeight: 439,
-        maxWidth: 840,
+        maxWidth: {
+          sm: 660,
+          md: 854
+        },
+        maxHeight: {
+          xs: 670,
+          sm: 280,
+          md: 480
+        },
         margin: '0 auto',
         ...sx
       }}

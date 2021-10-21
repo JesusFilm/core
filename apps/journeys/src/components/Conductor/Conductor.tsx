@@ -39,7 +39,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   return (
-    <Container disableGutters sx={{ maxWidth: { md: 888 } }}>
+    // maxWidth set by: cardMaxWidth + navigationWidth x 2 + swiperSpaceBetween
+    <Container disableGutters sx={{ maxWidth: { sm: 710, md: 904 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 6 }}>
         <Box sx={{ width: 'calc(100% - 20px - 20px - 10px)' }}>
           <JourneyProgress />
@@ -75,7 +76,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             width: 20,
             left: 0,
             background: (theme) => ({
-              md: `linear-gradient(90deg, ${theme.palette.background.default}FF 0%, ${theme.palette.background.default}00 100%)`
+              sm: `linear-gradient(90deg, ${theme.palette.background.default}FF 0%, ${theme.palette.background.default}00 100%)`
             })
           }}
         />
@@ -108,7 +109,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             width: 20,
             right: 0,
             background: (theme) => ({
-              md: `linear-gradient(90deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 100%)`
+              sm: `linear-gradient(90deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 100%)`
             })
           }}
         />
