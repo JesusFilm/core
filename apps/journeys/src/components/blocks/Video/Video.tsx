@@ -14,6 +14,7 @@ import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from '../Trigger'
+import { useBlocks } from '../../../libs/client/cache/blocks'
 
 import 'video.js/dist/video-js.css'
 
@@ -46,6 +47,7 @@ export function Video({
   const player = useRef<videojs.Player>()
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const arclightURL = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
+  const { activeBlock } = useBlocks()
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
@@ -85,13 +87,21 @@ export function Video({
     [languageId, mediaComponentId]
   )
 
+  // have a logic here saying if it's not the active block don't auto play
+  // so something like if active setAutoplay true else setAutoplay false
+  if (activeBlock != null) {
+    console.log(blockId + ' I am active')
+  } else {
+    console.log('I am not active')
+  }
+
   useEffect(() => {
     void validate(arclightURL, videoSrc)
 
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
         // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        autoplay: autoplay ? 'muted' : false,
+        autoplay: activeBlock != null && autoplay ? 'muted' : false,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -122,12 +132,15 @@ export function Video({
         playbackRates: [0.5, 1, 1.5, 2]
       }
 
+      console.log('autoplay state: ', autoplay)
+
       if (videoNode.current != null) {
         player.current = videojs(videoNode.current, {
           ...initialOptions
         })
         player.current.on('ready', () => {
           setIsReady(true)
+          player.current?.isFullscreen()
         })
         player.current.on('playing', () => {
           void handleVideoResponse(VideoResponseStateEnum.PLAYING)
