@@ -15,7 +15,10 @@ async function main(): Promise<void> {
         published: true,
         locale: 'id-ID',
         themeMode: ThemeMode.light,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        description: 'the plates are falling',
+        primaryImageBlockId: '101'
+
       }
     })
   }

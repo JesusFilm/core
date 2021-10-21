@@ -19,8 +19,8 @@ const typeDefs = gql`
     locale: String!
     themeMode: ThemeMode!
     themeName: ThemeName!
-    description: String """Change here"""
-    primaryImageBlockId: ID! """Change here"""
+    description: String
+    primaryImageBlockId: ID!
   }
 
   extend type Query {
@@ -38,8 +38,8 @@ const typeDefs = gql`
     locale: String
     themeMode: ThemeMode
     themeName: ThemeName
-    description: String """Change here"""
-    primaryImageBlockId: ID """Change here"""
+    description: String
+    primaryImageBlockId: ID
   }
 
   extend type Mutation {

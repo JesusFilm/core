@@ -50,22 +50,26 @@ type CardBlock implements Block {
   as a background. Blocks are often of type ImageBlock or VideoBlock.
   """
   coverBlockId: ID
+
   """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
   """
   themeMode: ThemeMode
+
   """
   themeName can override journey themeName. If nothing is set then use
   themeName from journey
   """
   themeName: ThemeName
 }
+
 type Icon {
   name: IconName!
   color: IconColor
   size: IconSize
 }
+
 enum IconColor {
   primary
   secondary
@@ -74,6 +78,7 @@ enum IconColor {
   disabled
   inherit
 }
+
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
   PlayArrow
@@ -87,6 +92,7 @@ enum IconName {
   LiveTv
   MenuBook
 }
+
 enum IconSize {
   sm
   md
@@ -94,6 +100,7 @@ enum IconSize {
   xl
   inherit
 }
+
 type ImageBlock implements Block {
   id: ID!
   parentBlockId: ID
@@ -102,6 +109,7 @@ type ImageBlock implements Block {
   height: Int!
   alt: String!
 }
+
 type Journey @key(fields: "id") {
   id: ID!
   published: Boolean!
@@ -109,8 +117,11 @@ type Journey @key(fields: "id") {
   locale: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
+  description: String
+  primaryImageBlockId: ID!
   blocks: [Block!]
 }
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -122,11 +133,13 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
 }
+
 type LinkAction implements Action {
   gtmEventName: String
   url: String!
   target: String
 }
+
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyPublish(id: ID!): Journey
@@ -134,6 +147,7 @@ extend type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
+
 """
 NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
@@ -141,36 +155,43 @@ closest ancestor StepBlock.
 type NavigateAction implements Action {
   gtmEventName: String
 }
+
 type NavigateToBlockAction implements Action {
   gtmEventName: String
   blockId: String!
 }
+
 type NavigateToJourneyAction implements Action {
   gtmEventName: String
   journeyId: String!
 }
+
 extend type Query {
   journeys: [Journey!]!
   journey(id: ID!): Journey
 }
+
 type RadioOptionBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
   action: Action
 }
+
 type RadioQuestionBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
   description: String
 }
+
 type RadioQuestionResponse implements Response {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }
+
 input RadioQuestionResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)

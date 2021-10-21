@@ -138,8 +138,10 @@ type Journey
   @join__type(graph: JOURNEYS, key: "id")
 {
   blocks: [Block!] @join__field(graph: JOURNEYS)
+  description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
+  primaryImageBlockId: ID! @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)

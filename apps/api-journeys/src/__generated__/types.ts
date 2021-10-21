@@ -125,8 +125,10 @@ export type ImageBlock = Block & {
 export type Journey = {
   __typename?: 'Journey';
   blocks?: Maybe<Array<Block>>;
+  description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   locale: Scalars['String'];
+  primaryImageBlockId: Scalars['ID'];
   published: Scalars['Boolean'];
   themeMode: ThemeMode;
   themeName: ThemeName;
@@ -143,6 +145,8 @@ export type JourneyCreateInput = {
   locale?: Maybe<Scalars['String']>;
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
+  description?: Maybe<Scalars['String']>;
+  primaryImageBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type LinkAction = Action & {
@@ -572,8 +576,10 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  primaryImageBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
