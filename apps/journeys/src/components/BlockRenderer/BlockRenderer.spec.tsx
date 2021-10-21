@@ -150,7 +150,9 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      src: 'https://www.youtube.com',
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529',
+      videoSrc: null,
       title: 'title',
       volume: 0,
       autoplay: false,
