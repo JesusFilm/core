@@ -29,7 +29,7 @@ model Journey {
   themeMode ThemeMode  @default(light)
   themeName ThemeName  @default(base)
   description String
-  primaryImageBlockID String
+  primaryImageBlockId String @default(uuid())
 }
 
 enum BlockType {

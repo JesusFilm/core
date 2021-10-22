@@ -145,8 +145,6 @@ export type JourneyCreateInput = {
   locale?: Maybe<Scalars['String']>;
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
-  description?: Maybe<Scalars['String']>;
-  primaryImageBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type LinkAction = Action & {

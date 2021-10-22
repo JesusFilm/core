@@ -64,7 +64,7 @@ const resolvers: JourneyModule.Resolvers = {
   Mutation: {
     async journeyCreate(
       _parent,
-      { input: { id, title, locale, themeMode, themeName } },
+      { input: { id, title, locale, themeMode, themeName, description, primaryImageBlockId } },
       { db }
     ) {
       return await db.journey.create({
@@ -73,7 +73,9 @@ const resolvers: JourneyModule.Resolvers = {
           title,
           locale: locale ?? undefined,
           themeMode: themeMode ?? undefined,
-          themeName: themeName ?? undefined
+          themeName: themeName ?? undefined,
+          description: description ?? undefined,
+          primaryImageBlockId: primaryImageBlockId ?? undefined 
         }
       })
     },
