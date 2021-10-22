@@ -74,8 +74,8 @@ const resolvers: JourneyModule.Resolvers = {
           locale: locale ?? undefined,
           themeMode: themeMode ?? undefined,
           themeName: themeName ?? undefined,
-          description: description ?? undefined,
-          primaryImageBlockId: primaryImageBlockId ?? undefined 
+          description: description as string,
+          primaryImageBlockId: primaryImageBlockId as string | undefined 
         }
       })
     },

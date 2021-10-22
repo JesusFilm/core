@@ -33,7 +33,9 @@ describe('RadioQuestionModule', () => {
       published: true,
       locale: 'en-US',
       themeMode: ThemeMode.light,
-      themeName: ThemeName.base
+      themeName: ThemeName.base,
+      description: 'test description',
+      primaryImageBlockId: '111'
     })
   })
 

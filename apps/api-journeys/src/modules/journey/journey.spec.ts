@@ -15,7 +15,9 @@ it('returns published journeys', async () => {
     published: true,
     locale: 'id-ID',
     themeName: ThemeName.base,
-    themeMode: ThemeMode.light
+    themeMode: ThemeMode.light,
+    description: 'test description',
+    primaryImageBlockId: '111'
   }
   dbMock.journey.findMany.mockResolvedValue([publishedJourney])
 
@@ -29,6 +31,8 @@ it('returns published journeys', async () => {
           locale
           themeName
           themeMode
+          description
+          primaryImageBlockId
         }
       }
     `,
@@ -36,7 +40,6 @@ it('returns published journeys', async () => {
       db: dbMock
     }
   })
-
   expect(data?.journeys).toEqual([
     pick(publishedJourney, [
       'id',
@@ -44,7 +47,9 @@ it('returns published journeys', async () => {
       'published',
       'locale',
       'themeName',
-      'themeMode'
+      'themeMode',
+      'description',
+      'primaryImageBlockId'
     ])
   ])
 })
@@ -58,7 +63,9 @@ it('returns journey', async () => {
     published: true,
     locale: 'hi-IN',
     themeName: ThemeName.base,
-    themeMode: ThemeMode.light
+    themeMode: ThemeMode.light,
+    description: 'test description',
+    primaryImageBlockId: '111'
   }
   dbMock.journey.findUnique.mockResolvedValue(journey)
 
@@ -72,6 +79,8 @@ it('returns journey', async () => {
           locale
           themeName
           themeMode
+          description
+          primaryImageBlockId
         }
       }
     `,
@@ -90,7 +99,9 @@ it('returns journey', async () => {
       'published',
       'locale',
       'themeName',
-      'themeMode'
+      'themeMode',
+      'description',
+      'primaryImageBlockId'
     ])
   )
 })
@@ -104,7 +115,9 @@ it('creates journey', async () => {
     published: false,
     locale: 'hi-IN',
     themeName: ThemeName.base,
-    themeMode: ThemeMode.light
+    themeMode: ThemeMode.light,
+    description: 'test description',
+    primaryImageBlockId: '111'
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
@@ -117,7 +130,9 @@ it('creates journey', async () => {
           published
           locale
           themeName
-          themeMode
+          themeMode,
+          description,
+          primaryImageBlockId
         }
       }
     `,
@@ -126,7 +141,9 @@ it('creates journey', async () => {
         title: 'my journey',
         locale: 'hi-IN',
         themeName: ThemeName.base,
-        themeMode: ThemeMode.light
+        themeMode: ThemeMode.light,
+        description: 'test description',
+        primaryImageBlockId: '111'
       }
     },
     contextValue: {
@@ -146,7 +163,9 @@ it('creates journey with default locale and theme', async () => {
     published: false,
     locale: 'en-US',
     themeName: ThemeName.base,
-    themeMode: ThemeMode.light
+    themeMode: ThemeMode.light,
+    description: 'test description',
+    primaryImageBlockId: '111'
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
@@ -160,6 +179,8 @@ it('creates journey with default locale and theme', async () => {
           locale
           themeName
           themeMode
+          description
+          primaryImageBlockId
         }
       }
     `,
@@ -185,7 +206,9 @@ it('publishes journey', async () => {
     published: true,
     locale: 'id-ID',
     themeName: ThemeName.base,
-    themeMode: ThemeMode.light
+    themeMode: ThemeMode.light,
+    description: 'test description',
+    primaryImageBlockId: '111'
   }
   dbMock.journey.update.mockResolvedValue(journey)
 
@@ -199,6 +222,8 @@ it('publishes journey', async () => {
           locale
           themeName
           themeMode
+          description
+          primaryImageBlockId
         }
       }
     `,

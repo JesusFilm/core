@@ -132,6 +132,8 @@ input JourneyCreateInput {
   locale: String
   themeMode: ThemeMode
   themeName: ThemeName
+  description: String
+  primaryImageBlockId: ID
 }
 
 type LinkAction implements Action {

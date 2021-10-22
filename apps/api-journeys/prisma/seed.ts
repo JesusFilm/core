@@ -16,8 +16,8 @@ async function main(): Promise<void> {
         locale: 'id-ID',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
-        description: 'the plates are falling',
-        primaryImageBlockId: '101'
+        description: 'Start your journey here!',
+        primaryImageBlockId: '101' // What should this ID be??????
 
       }
     })

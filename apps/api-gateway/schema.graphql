@@ -149,12 +149,15 @@ type Journey
 }
 
 input JourneyCreateInput {
+  description: String
+
   """
   ID should be unique Response UUID
   (Provided for optimistic mutation result matching)
   """
   id: ID
   locale: String
+  primaryImageBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
