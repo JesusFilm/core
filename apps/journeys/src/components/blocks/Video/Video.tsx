@@ -153,6 +153,8 @@ export function Video({
         })
         player.current.on('timeupdate', () => {
           // TODO: figure out how we want to record video response
+          if (player.current !== undefined)
+            player.current.paused() && handleVideoResponse(VideoResponseStateEnum.SECONDSWATCHED)
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
@@ -160,6 +162,7 @@ export function Video({
   }, [
     videoNode,
     autoplay,
+    activeBlock,
     children,
     videoSrc,
     validate,

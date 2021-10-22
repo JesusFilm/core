@@ -8,8 +8,6 @@ export interface TriggerProps extends TreeBlock<TriggerBlock> {
   player?: videojs.Player
 }
 
-// Is this supposed to be a ReactElement or just a function
-// just getting this confused as its a triggerBlock
 export function Trigger({
   player,
   triggerAction,
