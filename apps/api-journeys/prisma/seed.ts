@@ -35,6 +35,17 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  const step2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 0
+    }
+  })
   const card = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -190,7 +201,7 @@ async function main(): Promise<void> {
         label: 'I want to start',
         action: {
           gtmEventName: 'click',
-          blockId: stepWhenIWantToStart.id
+          blockId: step2.id
         }
       },
       parentOrder: 4
@@ -294,6 +305,32 @@ async function main(): Promise<void> {
         }
       },
       parentOrder: 0
+    }
+  })
+  const card2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: step2.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: card2.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        alt: 'first nua journey',
+        width: 1920,
+        height: 1080
+      },
+      parentOrder: 1
     }
   })
 }
