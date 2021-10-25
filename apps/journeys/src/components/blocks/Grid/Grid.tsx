@@ -16,7 +16,11 @@ export function Grid({
     <MaterialGrid
       container={isContainer}
       item={isItem}
-      lg={item?.lg.replace('_', '') as GridSize}
+      xl={isItem && (item?.lg.replace('_', '') as GridSize)}
+      lg={isItem && (item?.lg.replace('_', '') as GridSize)}
+      md={isItem && 12}
+      sm={isItem && (item?.lg.replace('_', '') as GridSize)}
+      xs={isItem && 12}
       spacing={isContainer ? container?.spacing.replace('_', '') : undefined}
       direction={container?.direction.replace('_', '-') as GridDirection}
       alignItems={container?.alignItems.replace('_', '-')}
