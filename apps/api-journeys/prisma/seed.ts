@@ -16,7 +16,7 @@ async function main(): Promise<void> {
         locale: 'id-ID',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
-        description: 'Start your journey here!',
+        description: 'Start your journey here!', // and why is this not changing??
         primaryImageBlockId: '101' // What should this ID be??????
 
       }

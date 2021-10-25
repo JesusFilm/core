@@ -20,6 +20,7 @@ import {
   RADIO_QUESTION_FIELDS,
   VIDEO_FIELDS
 } from '../src/components/blocks'
+import Head from 'next/head'
 
 interface JourneyPageProps {
   journey: Journey
@@ -27,11 +28,19 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
-    <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-      {journey.blocks != null && (
-        <Conductor blocks={transformer(journey.blocks)} />
+    <>
+      <Head>
+        <title>{'journey.title'}</title>
+        <meta name='description' content={'journey.description'} />
+        <meta property='og:title' content={'journey.title'} />
+        {/* <meta property='og:image' content={journey.primaryImageBlockId} change this into the url */}
+      </Head>
+      <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
+        {journey.blocks != null && (
+          <Conductor blocks={transformer(journey.blocks)} />
       )}
-    </ThemeProvider>
+      </ThemeProvider>
+    </>
   )
 }
 
@@ -54,6 +63,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           id
           themeName
           themeMode
+          title
+          description
+          primaryImageBlockId
           blocks {
             id
             parentBlockId

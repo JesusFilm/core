@@ -28,8 +28,8 @@ model Journey {
   locale    String     @default("en-US")
   themeMode ThemeMode  @default(light)
   themeName ThemeName  @default(base)
-  description String
-  primaryImageBlockId String @default(uuid())
+  description String?
+  primaryImageBlockId String  //refer to line 52 for linking block id
 }
 
 enum BlockType {

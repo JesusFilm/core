@@ -20,7 +20,7 @@ const typeDefs = gql`
     themeMode: ThemeMode!
     themeName: ThemeName!
     description: String
-    primaryImageBlockId: ID!
+    primaryImageBlockId: ID
   }
 
   extend type Query {
