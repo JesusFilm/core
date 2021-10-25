@@ -29,7 +29,8 @@ model Journey {
   themeMode ThemeMode  @default(light)
   themeName ThemeName  @default(base)
   description String?
-  primaryImageBlockId String  //refer to line 52 for linking block id
+  primaryImageBlockId String?  //refer to line 52 for linking block id
+  // primaryImageBlock Block?    @relation("BlockChildren", fields: [primaryImageBlockId], references: [id])
 }
 
 enum BlockType {

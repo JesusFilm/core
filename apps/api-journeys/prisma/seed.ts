@@ -27,6 +27,18 @@ async function main(): Promise<void> {
   })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
+  const primaryImage = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock', 
+      extraAttrs: {
+        src: 'image url goes here',
+        description: 'journey description goes here',
+        title: 'title goes here'
+      },
+      parentOrder: 0
+    }
+  })
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
