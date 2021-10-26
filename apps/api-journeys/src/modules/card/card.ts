@@ -1,5 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
+import { get } from 'lodash'
+import { CardModule } from './__generated__/types'
 
 const typeDefs = gql`
   type CardBlock implements Block {
@@ -20,7 +22,7 @@ const typeDefs = gql`
     is set to true the coverBlock Image should be displayed as a blur in the
     background.
     """
-    fullscreen: Boolean
+    fullscreen: Boolean!
     """
     themeMode can override journey themeMode. If nothing is set then use
     themeMode from journey
@@ -34,8 +36,15 @@ const typeDefs = gql`
   }
 `
 
+const resolvers: CardModule.Resolvers = {
+  CardBlock: {
+    fullscreen: (block) => get(block.extraAttrs, 'fullscreen') ?? false
+  }
+}
+
 export const cardModule = createModule({
   id: 'card',
   dirname: __dirname,
-  typeDefs: [typeDefs]
+  typeDefs: [typeDefs],
+  resolvers
 })

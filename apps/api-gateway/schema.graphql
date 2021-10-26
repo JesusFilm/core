@@ -71,7 +71,7 @@ type CardBlock implements Block {
   is set to true the coverBlock Image should be displayed as a blur in the
   background.
   """
-  fullscreen: Boolean
+  fullscreen: Boolean!
   id: ID!
   parentBlockId: ID
 

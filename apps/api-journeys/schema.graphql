@@ -56,7 +56,7 @@ type CardBlock implements Block {
   is set to true the coverBlock Image should be displayed as a blur in the
   background.
   """
-  fullscreen: Boolean
+  fullscreen: Boolean!
 
   """
   themeMode can override journey themeMode. If nothing is set then use

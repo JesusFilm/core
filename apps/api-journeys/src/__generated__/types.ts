@@ -70,7 +70,7 @@ export type CardBlock = Block & {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen?: Maybe<Scalars['Boolean']>;
+  fullscreen: Scalars['Boolean'];
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -576,7 +576,7 @@ export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   backgroundColor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coverBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  fullscreen?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  fullscreen?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   themeMode?: Resolver<Maybe<ResolversTypes['ThemeMode']>, ParentType, ContextType>;
   themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
