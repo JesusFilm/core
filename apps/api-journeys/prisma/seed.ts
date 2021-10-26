@@ -208,6 +208,20 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: card2.id,
+      extraAttrs: {
+        content: 'A QUICK QUESTION...',
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
+    }
+  })
   const question2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -215,7 +229,8 @@ async function main(): Promise<void> {
       parentBlockId: card2.id,
       extraAttrs: {
         label: 'Can we trust the story of Jesus?'
-      }
+      },
+      parentOrder: 2
     }
   })
   const step3 = await prisma.block.create({
@@ -350,11 +365,12 @@ async function main(): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content: 'A QUICK QUESTION...',
+        content: 'SOME FACTS...',
         variant: 'h6',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 1
     }
   })
   await prisma.block.create({
@@ -367,7 +383,8 @@ async function main(): Promise<void> {
         variant: 'h2',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 2
     }
   })
   await prisma.block.create({
@@ -381,7 +398,8 @@ async function main(): Promise<void> {
         variant: 'body1',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 3
     }
   })
   const step5 = await prisma.block.create({
@@ -414,7 +432,7 @@ async function main(): Promise<void> {
           blockId: step5.id
         }
       },
-      parentOrder: 0
+      parentOrder: 4
     }
   })
   const card5 = await prisma.block.create({
@@ -443,15 +461,29 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: card5.id,
+      extraAttrs: {
+        content: "IF IT'S TRUE...",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
+    }
+  })
   const question4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
       parentBlockId: card5.id,
       extraAttrs: {
-        label: 'Can we trust the story of Jesus?'
+        label: 'Who was this Jesus?'
       },
-      parentOrder: 1
+      parentOrder: 2
     }
   })
   await prisma.block.create({
