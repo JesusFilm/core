@@ -156,6 +156,7 @@ describe('BlockRenderer', () => {
       title: 'title',
       volume: 0,
       autoplay: false,
+      startAt: null,
       parentBlockId: null,
       children: []
     }
