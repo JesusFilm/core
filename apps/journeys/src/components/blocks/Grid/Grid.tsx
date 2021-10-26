@@ -1,7 +1,12 @@
 import { ReactElement } from 'react'
 import { GetJourney_journey_blocks_GridBlock as GridBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { Grid as MaterialGrid, GridSize, GridDirection, GridSpacing } from '@mui/material'
+import {
+  Grid as MaterialGrid,
+  GridSize,
+  GridDirection,
+  GridSpacing
+} from '@mui/material'
 import { BlockRenderer } from '../../BlockRenderer'
 
 export function Grid({
@@ -24,9 +29,7 @@ export function Grid({
       sm={isItem && (item?.sm.replace('_', '') as GridSize)}
       xs={isItem && 12}
       spacing={
-        isContainer
-          ? (parseInt(containerSpacing) as GridSpacing)
-          : undefined
+        isContainer ? (parseInt(containerSpacing) as GridSpacing) : undefined
       }
       direction={container?.direction.replace('_', '-') as GridDirection}
       alignItems={container?.alignItems.replace('_', '-')}
