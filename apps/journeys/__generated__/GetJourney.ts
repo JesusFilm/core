@@ -224,6 +224,9 @@ export interface GetJourney_journey {
   id: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  title: string;
+  description: string | null;
+  primaryImageBlockId: string | null;
   blocks: GetJourney_journey_blocks[] | null;
 }
 

@@ -27,20 +27,22 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+  const primaryImageBlock = journey.blocks?.find(block => block.id === journey.primaryImageBlockId)
   return (
-    <>
-      <Head>
-        <title>{'journey.title'}</title>
-        <meta name='description' content={'journey.description'} />
-        <meta property='og:title' content={'journey.title'} />
-        <meta property='og:image' content={'journey.primaryImageBlockId'} />
-      </Head>
-      <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-        {journey.blocks != null && (
-          <Conductor blocks={transformer(journey.blocks)} />
+    <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
+      {journey.description !== null && journey.primaryImageBlockId !== null && (
+        <Head>
+          <title>{journey.title}</title>
+          <meta name='description' content={journey.description} />
+          <meta property='og:title' content={journey.title} />
+          <meta property='og:image' content={primaryImageBlock?.src} /> {/* how to fix this error? */}
+        </Head>
       )}
-      </ThemeProvider>
-    </>
+
+      {journey.blocks != null && (
+      <Conductor blocks={transformer(journey.blocks)} />
+      )}
+    </ThemeProvider>
   )
 }
 
