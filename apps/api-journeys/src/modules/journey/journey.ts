@@ -77,8 +77,10 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyCreate(
       _parent,
       { input: { id, title, locale, themeMode, themeName, description } },
-      { db }
+      { db, userId }
     ) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
       return await db.journey.create({
         data: {
           id: id as string | undefined,
@@ -107,7 +109,9 @@ const resolvers: JourneyModule.Resolvers = {
       })
     },
     
-    async journeyPublish(_parent, { id }, { db }) {
+    async journeyPublish(_parent, { id }, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
       return await db.journey.update({
         where: { id },
         data: {

@@ -33,7 +33,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         <title>{'journey.title'}</title>
         <meta name='description' content={'journey.description'} />
         <meta property='og:title' content={'journey.title'} />
-        {/* <meta property='og:image' content={journey.primaryImageBlockId} change this into the url */}
+        <meta property='og:image' content={'journey.primaryImageBlockId'} />
       </Head>
       <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
         {journey.blocks != null && (

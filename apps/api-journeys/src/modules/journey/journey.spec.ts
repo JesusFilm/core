@@ -35,7 +35,8 @@ it('returns published journeys', async () => {
       }
     `,
     contextValue: {
-      db: dbMock
+      db: dbMock,
+      userId: 'userId'
     }
   })
   expect(data?.journeys).toEqual([
@@ -82,7 +83,8 @@ it('returns journey', async () => {
       id: journey.id
     },
     contextValue: {
-      db: dbMock
+      db: dbMock,
+      userId: 'userId'
     }
   })
 
@@ -138,7 +140,8 @@ it('creates journey', async () => {
       }
     },
     contextValue: {
-      db: dbMock
+      db: dbMock,
+      userId: 'userId'
     }
   })
 
@@ -181,7 +184,8 @@ it('creates journey with default locale and theme', async () => {
       }
     },
     contextValue: {
-      db: dbMock
+      db: dbMock,
+      userId: 'userId'
     }
   })
 
@@ -267,13 +271,81 @@ it('publishes journey', async () => {
       id: journey.id
     },
     contextValue: {
-      db: dbMock
+      db: dbMock,
+      userId: 'userId'
     }
   })
 
   expect(data?.journeyPublish).toEqual(journey)
 })
 
-// create authenticaion for publish and create
-// write failing tests when not authenticated (publish, create, update)
-// note: contextValue, userId, sets user id for mocking
+it('throws an error on create without authentication', async () => {
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
+
+  const { errors } = await testkit.execute(app, {
+    document: gql`
+      mutation ($input: JourneyCreateInput!) {
+        journeyCreate(input: $input) {
+          id
+        }
+      }
+    `,
+    variableValues: {
+      input: {
+        title: 'my journey'
+      }
+    },
+    contextValue: {
+      db: dbMock,
+    }
+  })
+
+  expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+})
+
+it('throws an error on update without authentication', async () => {
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
+
+  const { errors } = await testkit.execute(app, {
+    document: gql`
+      mutation ($input: JourneyUpdateInput!) {
+        journeyUpdate(input: $input) {
+          id
+        }
+      }
+    `,
+    variableValues: {
+      input: {
+        title: 'my journey',
+        id: journeyModule.id
+      }
+    },
+    contextValue: {
+      db: dbMock,
+    }
+  })
+
+  expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+})
+
+it('throws an error on publish without authentication', async () => {
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
+
+  const { errors } = await testkit.execute(app, {
+    document: gql`
+      mutation ($id: ID!) {
+        journeyPublish(id: $id) {
+          id
+        }
+      }
+    `,
+    variableValues: {
+      id: journeyModule.id
+    },
+    contextValue: {
+      db: dbMock,
+    }
+  })
+  
+  expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+})

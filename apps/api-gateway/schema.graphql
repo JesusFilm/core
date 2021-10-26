@@ -157,10 +157,19 @@ input JourneyCreateInput {
   """
   id: ID
   locale: String
-  primaryImageBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
+}
+
+input JourneyUpdateInput {
+  description: String
+  id: ID!
+  locale: String
+  primaryImageBlockId: ID
+  themeMode: ThemeMode
+  themeName: ThemeName
+  title: String
 }
 
 type LinkAction implements Action {
@@ -172,6 +181,7 @@ type LinkAction implements Action {
 type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)

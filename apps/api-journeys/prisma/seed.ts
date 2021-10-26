@@ -42,7 +42,7 @@ async function main(): Promise<void> {
       id: journey.id
     },
     data:{
-      primaryImageBlockId: primaryImage.journeyId,
+      primaryImageBlockId: primaryImage.id,
       description: 'Start your journey here!'
     }
   })
