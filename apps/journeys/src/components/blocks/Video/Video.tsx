@@ -15,6 +15,7 @@ import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCrea
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from '../Trigger'
 import { useBlocks } from '../../../libs/client/cache/blocks'
+import { findIndex } from 'lodash'
 
 import 'video.js/dist/video-js.css'
 
@@ -48,10 +49,11 @@ export function Video({
   const player = useRef<videojs.Player>()
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const arclightURL = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
-  const { activeBlock } = useBlocks()
+  const { treeBlocks, activeBlock } = useBlocks()
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
+  const [isAutoplay, setAutoplay] = useState<boolean | undefined>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
@@ -78,31 +80,43 @@ export function Video({
   )
 
   const validate = useCallback(
-    async (url: string, src: string | null): Promise<void> => {
+    async (
+      url: string,
+      src: string | null,
+      autoplay: boolean | null
+    ): Promise<void> => {
       if (mediaComponentId === undefined || languageId === undefined) {
         src !== null && setVideoUrl(src)
       } else {
         await fetch(url).then((response) => setVideoUrl(response.url))
       }
+
+      const index = findIndex(
+        treeBlocks,
+        (treeBlock) => treeBlock.id === activeBlock?.id
+      )
+
+      // have a logic here saying if it's not the active block don't auto play
+      // so something like if active setAutoplay true else setAutoplay false
+      if (activeBlock?.id === treeBlocks[index].id) {
+        console.log('active ' + activeBlock?.id)
+        if (autoplay !== null) {
+          setAutoplay(autoplay)
+        }
+      } else {
+        console.log('I am not active')
+      }
     },
-    [languageId, mediaComponentId]
+    [languageId, mediaComponentId, activeBlock, treeBlocks]
   )
 
-  // have a logic here saying if it's not the active block don't auto play
-  // so something like if active setAutoplay true else setAutoplay false
-  if (activeBlock != null) {
-    console.log(blockId + ' I am active')
-  } else {
-    console.log('I am not active')
-  }
-
   useEffect(() => {
-    void validate(arclightURL, videoSrc)
+    void validate(arclightURL, videoSrc, autoplay)
 
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
         // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        autoplay: autoplay ? 'muted' : false,
+        autoplay: isAutoplay,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -133,6 +147,8 @@ export function Video({
         playbackRates: [0.5, 1, 1.5, 2]
       }
 
+      // console.log(`${activeBlock.id} wahaha ${isAutoplay}`)
+
       if (videoNode.current != null) {
         player.current = videojs(videoNode.current, {
           ...initialOptions
@@ -161,6 +177,7 @@ export function Video({
     }
   }, [
     videoNode,
+    isAutoplay,
     autoplay,
     activeBlock,
     children,
