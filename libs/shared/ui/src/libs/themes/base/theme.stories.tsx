@@ -1,16 +1,17 @@
-import { ReactElement } from 'react'
+import { useState, useEffect, ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
-import { Box } from '@mui/system'
 import {
+  Box,
   useTheme,
   PaletteColor,
   PaletteOptions,
+  Breakpoint,
   Typography,
   TypographyProps,
   SimplePaletteColorOptions
 } from '@mui/material'
 
-import { sharedUiConfig } from '../../storybook/config'
+import { sharedUiConfig, themes } from '../../../index'
 
 const ThemeDemo = {
   ...sharedUiConfig,
@@ -187,14 +188,14 @@ const palette: Record<string, string> = {
   0: '#FFFFFF'
 }
 
-interface PaletteStoryProps extends TypographyProps {
+interface ThemeStoryProps extends TypographyProps {
   variants: string[]
 }
 
 const PaletteTokens = ({
   variants,
   ...props
-}: PaletteStoryProps): ReactElement => {
+}: ThemeStoryProps): ReactElement => {
   return (
     <div
       style={{
@@ -230,13 +231,132 @@ const PaletteTokens = ({
   )
 }
 
-const PaletteTemplate: Story<PaletteStoryProps> = (args) => (
+const PaletteTemplate: Story<ThemeStoryProps> = (args) => (
   <PaletteTokens {...args} variants={args.variants} />
 )
 
 export const FullPalette = PaletteTemplate.bind({})
 FullPalette.args = {
   variants: [...Object.keys(palette)]
+}
+
+const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
+  const theme = useTheme()
+  const [width, setWidth] = useState(window.innerWidth)
+  const [height, setHeight] = useState(window.innerHeight)
+
+  const maxBreakpointValue = (breakpoint: Breakpoint): string => {
+    switch (breakpoint) {
+      case 'xl':
+        return '+'
+      default:
+        return `${
+          theme.breakpoints.values[
+            theme.breakpoints.keys[
+              theme.breakpoints.keys.indexOf(breakpoint) + 1
+            ]
+          ] - 1
+        }`
+    }
+  }
+
+  useEffect(() => {
+    const updateWidth = (): void => {
+      setWidth(window.innerWidth)
+      setHeight(window.innerHeight)
+    }
+
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '600px'
+      }}
+    >
+      {args.variants.map((variant: string) => {
+        return (
+          <>
+            <Typography
+              variant="h6"
+              sx={{
+                [theme.breakpoints.only(variant as Breakpoint)]: {
+                  display: 'flex'
+                },
+                display: 'none'
+              }}
+            >
+              {`Breakpoint: ${variant}`}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                [theme.breakpoints.only(variant as Breakpoint)]: {
+                  display: 'flex'
+                },
+                display: 'none'
+              }}
+            >
+              {`Range: ${
+                theme.breakpoints.values[variant as Breakpoint]
+              }-${maxBreakpointValue(variant as Breakpoint)}`}
+            </Typography>
+          </>
+        )
+      })}
+      <Typography
+        variant="body2"
+        gutterBottom
+      >{`Current width: ${width}px | Current height: ${height}px`}</Typography>
+      <Typography
+        variant="overline"
+        align="center"
+        sx={{
+          height: '30px',
+          color: '#FC624E',
+          [theme.breakpoints.up('md')]: {
+            color: '#7fe0aa'
+          },
+          [theme.breakpoints.up('xl')]: {
+            color: '#4ec4fc'
+          }
+        }}
+      >
+        Mobile - red | Tablet - green | Desktop - blue
+      </Typography>
+    </Box>
+  )
+}
+
+const breakpoints = themes.base.light.breakpoints
+
+export const Viewport = ViewportTemplate.bind({})
+Viewport.args = {
+  // Height of viewport will alter breakpoints display.
+  variants: ['xs', 'sm', 'md', 'lg', 'xl']
+}
+Viewport.parameters = {
+  layout: 'fullscreen',
+  theme: 'dark',
+  chromatic: {
+    viewports: [
+      breakpoints.values.sm - 1,
+      breakpoints.values.sm,
+      // Change to 960px when Chromatic can configure height
+      breakpoints.values.md - 1,
+      breakpoints.values.md,
+      breakpoints.values.lg - 1,
+      breakpoints.values.lg,
+      breakpoints.values.xl - 1,
+      breakpoints.values.xl
+    ]
+  }
 }
 
 export default ThemeDemo as Meta

@@ -10,11 +10,19 @@ Object.defineProperty(NextImage, 'default', {
 })
 
 const customViewports = {
-  mobile: {
-    name: 'Mobile',
+  mobileMin: {
+    name: 'Small Mobile',
     styles: {
       width: '320px',
       height: '568px'
+    },
+    type: 'mobile'
+  },
+  mobileMax: {
+    name: 'Large Mobile',
+    styles: {
+      width: '540px',
+      height: '960px'
     },
     type: 'mobile'
   },
@@ -36,7 +44,9 @@ module.exports = {
         disable: true
       }
     },
-    chromatic: { viewports: [640] },
+    // 2x viewport breakpoints (XS, SM, MD) Largest out of bounds for Chromatic.
+    // TODO: Split out light / dark mode tests during Cooldown
+    chromatic: { viewports: [640, 1136, 1200] },
     controls: { disabled: true },
     viewport: {
       viewports: customViewports
