@@ -1,6 +1,6 @@
 import { Button, useTheme } from '@mui/material'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import radioButtonUncheckedIcon from '@mui/icons-material/radioButtonUnchecked'
+import checkCircleIcon from '@mui/icons-material/checkCircle'
 import { ReactElement } from 'react'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -37,9 +37,9 @@ export function RadioOption({
       onClick={handleClick}
       startIcon={
         selected ? (
-          <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
+          <checkCircleIcon data-testid="RadioOptioncheckCircleIcon" />
         ) : (
-          <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
+          <radioButtonUncheckedIcon data-testid="RadioOptionradioButtonUncheckedIcon" />
         )
       }
       sx={{

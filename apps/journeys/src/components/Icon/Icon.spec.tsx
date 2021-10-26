@@ -9,7 +9,7 @@ import { ButtonFields_startIcon as IconType } from '../../../__generated__/Butto
 
 const block: IconType = {
   __typename: 'Icon',
-  name: IconName.CheckCircle,
+  name: IconName.checkCircle,
   color: IconColor.error,
   size: IconSize.md
 }

@@ -58,12 +58,12 @@ describe('ButtonModule', () => {
           color: 'primary',
           size: 'large',
           startIcon: {
-            name: 'ArrowForward',
+            name: 'arrowForward',
             color: 'secondary',
             size: 'lg'
           },
           endIcon: {
-            name: 'LockOpen',
+            name: 'lockOpen',
             color: 'action',
             size: 'xl'
           },
@@ -126,12 +126,12 @@ describe('ButtonModule', () => {
           color: 'primary',
           size: 'large',
           startIcon: {
-            name: 'ArrowForward',
+            name: 'arrowForward',
             color: 'secondary',
             size: 'lg'
           },
           endIcon: {
-            name: 'LockOpen',
+            name: 'lockOpen',
             color: 'action',
             size: 'xl'
           },

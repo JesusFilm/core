@@ -38,16 +38,16 @@ export enum IconColor {
  * IconName is equivalent to the icons found in @mui/icons-material
  */
 export enum IconName {
-  ArrowForward = "ArrowForward",
-  ChatBubbleOutline = "ChatBubbleOutline",
-  CheckCircle = "CheckCircle",
-  FormatQuote = "FormatQuote",
-  LiveTv = "LiveTv",
-  LockOpen = "LockOpen",
-  MenuBook = "MenuBook",
-  PlayArrow = "PlayArrow",
-  RadioButtonUnchecked = "RadioButtonUnchecked",
-  Translate = "Translate",
+  arrowForward = "arrowForward",
+  chatBubbleOutline = "chatBubbleOutline",
+  checkCircle = "checkCircle",
+  formatQuote = "formatQuote",
+  liveTv = "liveTv",
+  lockOpen = "lockOpen",
+  menuBook = "menuBook",
+  playArrow = "playArrow",
+  radioButtonUnchecked = "radioButtonUnchecked",
+  translate = "translate",
 }
 
 export enum IconSize {

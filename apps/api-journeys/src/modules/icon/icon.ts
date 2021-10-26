@@ -6,16 +6,16 @@ const typeDefs = gql`
   IconName is equivalent to the icons found in @mui/icons-material
   """
   enum IconName {
-    PlayArrow
-    Translate
-    CheckCircle
-    RadioButtonUnchecked
-    FormatQuote
-    LockOpen
-    ArrowForward
-    ChatBubbleOutline
-    LiveTv
-    MenuBook
+    playArrow
+    translate
+    checkCircle
+    radioButtonUnchecked
+    formatQuote
+    lockOpen
+    arrowForward
+    chatBubbleOutline
+    liveTv
+    menuBook
   }
 
   enum IconColor {

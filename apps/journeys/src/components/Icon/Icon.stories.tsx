@@ -45,16 +45,16 @@ Variant.args = {
   color: null,
   size: IconSize.lg,
   variants: [
-    IconName.ArrowForward,
-    IconName.ChatBubbleOutline,
-    IconName.CheckCircle,
-    IconName.FormatQuote,
-    IconName.LiveTv,
-    IconName.LockOpen,
-    IconName.MenuBook,
-    IconName.PlayArrow,
-    IconName.RadioButtonUnchecked,
-    IconName.Translate
+    IconName.arrowForward,
+    IconName.chatBubbleOutline,
+    IconName.checkCircle,
+    IconName.formatQuote,
+    IconName.liveTv,
+    IconName.lockOpen,
+    IconName.menuBook,
+    IconName.playArrow,
+    IconName.radioButtonUnchecked,
+    IconName.translate
   ]
 }
 
@@ -79,7 +79,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
 export const Color = ColorTemplate.bind({})
 Color.args = {
   __typename: 'Icon',
-  name: IconName.CheckCircle,
+  name: IconName.checkCircle,
   size: IconSize.lg,
   variants: [
     IconColor.inherit,
@@ -112,7 +112,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
 export const Size = SizeTemplate.bind({})
 Size.args = {
   __typename: 'Icon',
-  name: IconName.CheckCircle,
+  name: IconName.checkCircle,
   color: null,
   variants: [
     IconSize.inherit,

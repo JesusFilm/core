@@ -112,7 +112,7 @@ describe('VideoModule', () => {
         blockId: block1.id,
         userId,
         extraAttrs: {
-          state: 'PLAYING'
+          state: 'playing'
         }
       }
       dbMock.response.create.mockResolvedValue(response1)
@@ -146,7 +146,7 @@ describe('VideoModule', () => {
       expect(data?.videoResponseCreate).toEqual({
         id: response1.id,
         userId,
-        state: 'PLAYING',
+        state: 'playing',
         block: {
           id: block1.id,
           src: 'src',
@@ -167,7 +167,7 @@ describe('VideoModule', () => {
         variableValues: {
           input: {
             blockId: uuidv4(),
-            state: 'PLAYING'
+            state: 'playing'
           }
         },
         contextValue: {

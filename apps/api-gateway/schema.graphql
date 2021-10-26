@@ -98,16 +98,16 @@ enum IconColor {
 
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
-  ArrowForward
-  ChatBubbleOutline
-  CheckCircle
-  FormatQuote
-  LiveTv
-  LockOpen
-  MenuBook
-  PlayArrow
-  RadioButtonUnchecked
-  Translate
+  arrowForward
+  chatBubbleOutline
+  checkCircle
+  formatQuote
+  liveTv
+  lockOpen
+  menuBook
+  playArrow
+  radioButtonUnchecked
+  translate
 }
 
 enum IconSize {
@@ -350,7 +350,7 @@ input VideoResponseCreateInput {
 }
 
 enum VideoResponseStateEnum {
-  FINISHED
-  PAUSED
-  PLAYING
+  finished
+  paused
+  playing
 }

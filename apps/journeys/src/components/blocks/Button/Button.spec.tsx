@@ -65,7 +65,7 @@ describe('Button', () => {
         {...block}
         startIcon={{
           __typename: 'Icon',
-          name: IconName.CheckCircle,
+          name: IconName.checkCircle,
           color: IconColor.primary,
           size: IconSize.md
         }}
@@ -82,7 +82,7 @@ describe('Button', () => {
         {...block}
         endIcon={{
           __typename: 'Icon',
-          name: IconName.CheckCircle,
+          name: IconName.checkCircle,
           color: IconColor.primary,
           size: IconSize.md
         }}

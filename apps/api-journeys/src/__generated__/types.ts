@@ -94,16 +94,16 @@ export type IconColor =
 
 /** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
-  | 'PlayArrow'
-  | 'Translate'
-  | 'CheckCircle'
-  | 'RadioButtonUnchecked'
-  | 'FormatQuote'
-  | 'LockOpen'
-  | 'ArrowForward'
-  | 'ChatBubbleOutline'
-  | 'LiveTv'
-  | 'MenuBook';
+  | 'playArrow'
+  | 'translate'
+  | 'checkCircle'
+  | 'radioButtonUnchecked'
+  | 'formatQuote'
+  | 'lockOpen'
+  | 'arrowForward'
+  | 'chatBubbleOutline'
+  | 'liveTv'
+  | 'menuBook';
 
 export type IconSize =
   | 'sm'
@@ -366,9 +366,9 @@ export type VideoResponseCreateInput = {
 };
 
 export type VideoResponseStateEnum =
-  | 'PLAYING'
-  | 'PAUSED'
-  | 'FINISHED';
+  | 'playing'
+  | 'paused'
+  | 'finished';
 
 
 

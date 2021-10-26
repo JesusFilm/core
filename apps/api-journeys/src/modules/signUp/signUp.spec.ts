@@ -70,7 +70,7 @@ describe('SignUpModule', () => {
             journeyId
           },
           submitIcon: {
-            name: 'LockOpen',
+            name: 'lockOpen',
             color: 'secondary',
             size: 'lg'
           },
@@ -120,7 +120,7 @@ describe('SignUpModule', () => {
             journeyId
           },
           submitIcon: {
-            name: 'LockOpen',
+            name: 'lockOpen',
             color: 'secondary',
             size: 'lg'
           },

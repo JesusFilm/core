@@ -16,7 +16,7 @@ const Demo = {
 
 const icon: IconType = {
   __typename: 'Icon',
-  name: IconName.LockOpen,
+  name: IconName.lockOpen,
   size: null,
   color: null
 }

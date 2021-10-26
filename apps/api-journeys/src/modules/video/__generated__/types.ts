@@ -9,7 +9,7 @@ export namespace VideoModule {
   };
   
   interface DefinedEnumValues {
-    VideoResponseStateEnum: 'PLAYING' | 'PAUSED' | 'FINISHED';
+    VideoResponseStateEnum: 'playing' | 'paused' | 'finished';
   };
   
   interface DefinedInputFields {

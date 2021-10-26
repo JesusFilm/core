@@ -7,9 +7,9 @@ import { VideoModule } from './__generated__/types'
 
 const typeDefs = gql`
   enum VideoResponseStateEnum {
-    PLAYING
-    PAUSED
-    FINISHED
+    playing
+    paused
+    finished
   }
 
   input VideoResponseCreateInput {
