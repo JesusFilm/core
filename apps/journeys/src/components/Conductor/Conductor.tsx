@@ -17,6 +17,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
+  const [windowHeight, setWindowHeight] = useState('100vh')
+  
+  useEffect(() => {
+    const handleResize = (): void => setWindowHeight(`${window.innerHeight}px`)
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     setTreeBlocks(blocks)
@@ -58,7 +66,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             key={block.id}
             style={{
               width: 'calc(100% - 24px - 24px)',
-              height: 'calc(100vh - 80px)',
+              height: `calc(${windowHeight} - 80px)`,
               paddingTop: '4px',
               paddingBottom: '4px'
             }}
