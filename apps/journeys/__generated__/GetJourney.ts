@@ -90,7 +90,7 @@ export interface GetJourney_journey_blocks_CardBlock {
    * is set to true the coverBlock Image should be displayed as a blur in the
    * background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
