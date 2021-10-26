@@ -88,4 +88,47 @@ describe('CardModule', () => {
       ])
     })
   })
+
+  it('returns defaults', async () => {
+    const parentBlockId = uuidv4()
+    const card: Block = {
+      id: uuidv4(),
+      journeyId,
+      blockType: 'CardBlock',
+      parentBlockId,
+      parentOrder: 0,
+      extraAttrs: {}
+    }
+    dbMock.block.findMany.mockResolvedValue([card])
+    const { data } = await query(gql`
+      query ($id: ID!) {
+        journey(id: $id) {
+          blocks {
+            id
+            __typename
+            parentBlockId
+            ... on CardBlock {
+              backgroundColor
+              coverBlockId
+              themeMode
+              themeName
+              fullscreen
+            }
+          }
+        }
+      }
+    `)
+    expect(data?.journey.blocks).toEqual([
+      {
+        id: card.id,
+        __typename: 'CardBlock',
+        parentBlockId,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false
+      }
+    ])
+  })
 })
