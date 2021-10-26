@@ -132,6 +132,43 @@ describe('VideoModule', () => {
         }
       ])
     })
+
+    it('returns VideoBlock with a starting time', async () => {
+      const parentBlockId = uuidv4()
+      const video: Block = {
+        id: uuidv4(),
+        journeyId,
+        blockType: 'VideoBlock',
+        parentBlockId,
+        parentOrder: 1,
+        extraAttrs: {
+          startAt: 10
+        }
+      }
+      dbMock.block.findMany.mockResolvedValue([video])
+      const { data } = await query(gql`
+        query ($id: ID!) {
+          journey(id: $id) {
+            blocks {
+              id
+              __typename
+              parentBlockId
+              ... on VideoBlock {
+                startAt
+              }
+            }
+          }
+        }
+      `)
+      expect(data?.journey.blocks).toEqual([
+        {
+          id: video.id,
+          __typename: 'VideoBlock',
+          parentBlockId,
+          startAt: 10
+        }
+      ])
+    })
   })
 
   describe('videoResponseCreate', () => {

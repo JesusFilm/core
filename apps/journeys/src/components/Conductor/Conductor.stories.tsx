@@ -312,6 +312,7 @@ export const VideoJourney = (): ReactElement => (
                   mediaComponentId: '2_0-FallingPlates',
                   languageId: '529',
                   videoSrc: null,
+                  startAt: null,
                   children: [
                     {
                       id: 'trigger.id',
@@ -410,6 +411,7 @@ export const VideoJourney = (): ReactElement => (
                   mediaComponentId: '1_jf-0-0',
                   languageId: '529',
                   videoSrc: null,
+                  startAt: 20,
                   children: []
                 }
               ]

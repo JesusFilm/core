@@ -250,6 +250,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   title: string;
   volume: number | null;
   autoplay: boolean | null;
+  startAt: number | null;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TriggerBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;

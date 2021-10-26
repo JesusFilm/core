@@ -308,6 +308,7 @@ type VideoBlock implements Block {
   languageId: String
   src: String
   title: String!
+  startAt: Int
   description: String
   volume: Int
   autoplay: Boolean

@@ -29,6 +29,7 @@ const typeDefs = gql`
     languageId: String
     src: String
     title: String!
+    startAt: Int
     description: String
     volume: Int
     autoplay: Boolean

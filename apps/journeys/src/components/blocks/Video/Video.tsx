@@ -37,6 +37,7 @@ export function Video({
   languageId,
   videoSrc,
   autoplay,
+  startAt,
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
@@ -101,7 +102,7 @@ export function Video({
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
         // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        autoplay: activeBlock != null && autoplay ? 'muted' : false,
+        autoplay: autoplay ? 'muted' : false,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -132,15 +133,13 @@ export function Video({
         playbackRates: [0.5, 1, 1.5, 2]
       }
 
-      console.log('autoplay state: ', autoplay)
-
       if (videoNode.current != null) {
         player.current = videojs(videoNode.current, {
           ...initialOptions
         })
         player.current.on('ready', () => {
           setIsReady(true)
-          player.current?.isFullscreen()
+          startAt !== null && player.current?.currentTime(startAt)
         })
         player.current.on('playing', () => {
           void handleVideoResponse(VideoResponseStateEnum.PLAYING)
@@ -154,7 +153,8 @@ export function Video({
         player.current.on('timeupdate', () => {
           // TODO: figure out how we want to record video response
           if (player.current !== undefined)
-            player.current.paused() && handleVideoResponse(VideoResponseStateEnum.SECONDSWATCHED)
+            player.current.paused() &&
+              handleVideoResponse(VideoResponseStateEnum.SECONDSWATCHED)
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
@@ -168,7 +168,8 @@ export function Video({
     validate,
     handleVideoResponse,
     videoUrl,
-    arclightURL
+    arclightURL,
+    startAt
   ])
 
   useEffect(() => {

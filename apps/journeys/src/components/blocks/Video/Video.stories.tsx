@@ -61,4 +61,16 @@ Src.args = {
     'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
 }
 
+export const StartAt = Template.bind({})
+StartAt.args = {
+  __typename: 'VideoBlock',
+  id: 'Video1',
+  parentBlockId: '',
+  volume: 1,
+  autoplay: true,
+  mediaComponentId: '5_0-NUA0201-0-0',
+  languageId: '529',
+  startAt: 30
+}
+
 export default Demo as Meta

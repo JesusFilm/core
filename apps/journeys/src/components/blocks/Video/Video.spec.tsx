@@ -12,14 +12,15 @@ describe('VideoComponent', () => {
     parentBlockId: '',
     volume: 1,
     autoplay: false,
-    mediaComponentId: '2_0-FallingPlates',
-    languageId: '529',
+    mediaComponentId: null,
+    languageId: null,
     videoSrc: null,
     title: 'Video',
+    startAt: 10,
     children: []
   }
 
-  it('should render the video successfully', () => {
+  it('should render the video through mediaComponentId and languageId successfully', () => {
     const { getByTestId } = renderWithApolloClient(
       <MockedProvider
         mocks={[
@@ -52,7 +53,7 @@ describe('VideoComponent', () => {
     expect(getByTestId('VideoComponent')).toHaveClass('video-js')
   })
 
-  it('should render the video successfully', () => {
+  it('should render the video through src successfully', () => {
     const { getByTestId } = renderWithApolloClient(
       <MockedProvider
         mocks={[

@@ -17,4 +17,5 @@ export interface VideoFields {
   title: string;
   volume: number | null;
   autoplay: boolean | null;
+  startAt: number | null;
 }

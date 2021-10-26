@@ -337,6 +337,7 @@ type VideoBlock implements Block {
   mediaComponentId: String
   parentBlockId: ID
   src: String
+  startAt: Int
   title: String!
   volume: Int
 }

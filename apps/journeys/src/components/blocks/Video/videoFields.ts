@@ -10,5 +10,6 @@ export const VIDEO_FIELDS = gql`
     title
     volume
     autoplay
+    startAt
   }
 `
