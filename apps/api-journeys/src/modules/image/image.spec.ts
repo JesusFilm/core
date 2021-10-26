@@ -22,8 +22,8 @@ describe('ImageModule', () => {
       locale: 'en-US',
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
-      description: 'test description',
-      primaryImageBlockId: '111'
+      description: null,
+      primaryImageBlockId: null
     })
   })
 

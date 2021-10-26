@@ -128,7 +128,7 @@ export type Journey = {
   description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   locale: Scalars['String'];
-  primaryImageBlockId: Scalars['ID'];
+  primaryImageBlockId?: Maybe<Scalars['ID']>;
   published: Scalars['Boolean'];
   themeMode: ThemeMode;
   themeName: ThemeName;
@@ -142,6 +142,15 @@ export type JourneyCreateInput = {
    */
   id?: Maybe<Scalars['ID']>;
   title: Scalars['String'];
+  locale?: Maybe<Scalars['String']>;
+  themeMode?: Maybe<ThemeMode>;
+  themeName?: Maybe<ThemeName>;
+  description?: Maybe<Scalars['String']>;
+};
+
+export type JourneyUpdateInput = {
+  id: Scalars['ID'];
+  title?: Maybe<Scalars['String']>;
   locale?: Maybe<Scalars['String']>;
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
@@ -160,6 +169,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   journeyCreate: Journey;
   journeyPublish?: Maybe<Journey>;
+  journeyUpdate: Journey;
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
   videoResponseCreate: VideoResponse;
@@ -173,6 +183,11 @@ export type MutationJourneyCreateArgs = {
 
 export type MutationJourneyPublishArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationJourneyUpdateArgs = {
+  input: JourneyUpdateInput;
 };
 
 
@@ -461,6 +476,7 @@ export type ResolversTypes = {
   Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   JourneyCreateInput: JourneyCreateInput;
+  JourneyUpdateInput: JourneyUpdateInput;
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
   NavigateAction: ResolverTypeWrapper<NavigateAction>;
@@ -502,6 +518,7 @@ export type ResolversParentTypes = {
   Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
   Boolean: Scalars['Boolean'];
   JourneyCreateInput: JourneyCreateInput;
+  JourneyUpdateInput: JourneyUpdateInput;
   LinkAction: LinkAction;
   Mutation: {};
   NavigateAction: NavigateAction;
@@ -579,7 +596,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  primaryImageBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  primaryImageBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
@@ -597,6 +614,7 @@ export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType
 export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   journeyCreate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyCreateArgs, 'input'>>;
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
+  journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;

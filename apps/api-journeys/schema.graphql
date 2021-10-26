@@ -118,7 +118,7 @@ type Journey @key(fields: "id") {
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
-  primaryImageBlockId: ID!
+  primaryImageBlockId: ID
   blocks: [Block!]
 }
 

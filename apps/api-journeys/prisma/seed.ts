@@ -15,10 +15,7 @@ async function main(): Promise<void> {
         published: true,
         locale: 'id-ID',
         themeMode: ThemeMode.light,
-        themeName: ThemeName.base,
-        description: 'Start your journey here!', // and why is this not changing??
-        primaryImageBlockId: '101' // What should this ID be??????
-
+        themeName: ThemeName.base
       }
     })
   }
@@ -32,11 +29,21 @@ async function main(): Promise<void> {
       journeyId: journey.id,
       blockType: 'ImageBlock', 
       extraAttrs: {
-        src: 'image url goes here',
-        description: 'journey description goes here',
-        title: 'title goes here'
+        src: 'https://source.unsplash.com/random/1920x1080',
+        alt: 'random image from unsplash',
+        width: 1920,
+        height: 1080
       },
       parentOrder: 0
+    }
+  })
+  await prisma.journey.update({
+    where: {
+      id: journey.id
+    },
+    data:{
+      primaryImageBlockId: primaryImage.journeyId,
+      description: 'Start your journey here!'
     }
   })
   const step = await prisma.block.create({

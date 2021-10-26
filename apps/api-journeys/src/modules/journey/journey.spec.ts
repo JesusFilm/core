@@ -16,8 +16,8 @@ it('returns published journeys', async () => {
     locale: 'id-ID',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    description: 'test description',
-    primaryImageBlockId: '111'
+    description: null,
+    primaryImageBlockId: null
   }
   dbMock.journey.findMany.mockResolvedValue([publishedJourney])
 
@@ -31,8 +31,6 @@ it('returns published journeys', async () => {
           locale
           themeName
           themeMode
-          description
-          primaryImageBlockId
         }
       }
     `,
@@ -47,9 +45,7 @@ it('returns published journeys', async () => {
       'published',
       'locale',
       'themeName',
-      'themeMode',
-      'description',
-      'primaryImageBlockId'
+      'themeMode'
     ])
   ])
 })
@@ -64,8 +60,8 @@ it('returns journey', async () => {
     locale: 'hi-IN',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    description: 'test description',
-    primaryImageBlockId: '111'
+    description: null,
+    primaryImageBlockId: null
   }
   dbMock.journey.findUnique.mockResolvedValue(journey)
 
@@ -79,8 +75,6 @@ it('returns journey', async () => {
           locale
           themeName
           themeMode
-          description
-          primaryImageBlockId
         }
       }
     `,
@@ -99,9 +93,7 @@ it('returns journey', async () => {
       'published',
       'locale',
       'themeName',
-      'themeMode',
-      'description',
-      'primaryImageBlockId'
+      'themeMode'
     ])
   )
 })
@@ -117,7 +109,7 @@ it('creates journey', async () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     description: 'test description',
-    primaryImageBlockId: '111'
+    primaryImageBlockId: null
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
@@ -130,8 +122,8 @@ it('creates journey', async () => {
           published
           locale
           themeName
-          themeMode,
-          description,
+          themeMode
+          description
           primaryImageBlockId
         }
       }
@@ -142,8 +134,7 @@ it('creates journey', async () => {
         locale: 'hi-IN',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
-        description: 'test description',
-        primaryImageBlockId: '111'
+        description: 'test description'
       }
     },
     contextValue: {
@@ -164,8 +155,8 @@ it('creates journey with default locale and theme', async () => {
     locale: 'en-US',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    description: 'test description',
-    primaryImageBlockId: '111'
+    description: null,
+    primaryImageBlockId: null
   }
   dbMock.journey.create.mockResolvedValue(journey)
 
@@ -197,6 +188,51 @@ it('creates journey with default locale and theme', async () => {
   expect(data?.journeyCreate).toEqual(journey)
 })
 
+it('updates journey', async () => {
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
+
+  const journey: Journey = {
+    id: uuidv4(),
+    title: 'my journey',
+    published: false,
+    locale: 'en-US',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: null,
+    primaryImageBlockId: '1'
+  }
+  dbMock.journey.update.mockResolvedValue(journey)
+
+  const { data } = await testkit.execute(app, {
+    document: gql`
+      mutation ($input: JourneyUpdateInput!) {
+        journeyUpdate(input: $input) {
+          id
+          title
+          published
+          locale
+          themeName
+          themeMode
+          description
+          primaryImageBlockId
+        }
+      }
+    `,
+    variableValues: {
+      input: {
+        id: journey.id,
+        primaryImageBlockId: '1'
+      }
+    },
+    contextValue: {
+      db: dbMock,
+      userId: 'userId'
+    }
+  })
+
+  expect(data?.journeyUpdate).toEqual(journey)
+})
+
 it('publishes journey', async () => {
   const app = testkit.testModule(journeyModule, { schemaBuilder })
 
@@ -207,8 +243,8 @@ it('publishes journey', async () => {
     locale: 'id-ID',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    description: 'test description',
-    primaryImageBlockId: '111'
+    description: null,
+    primaryImageBlockId: null
   }
   dbMock.journey.update.mockResolvedValue(journey)
 
@@ -237,3 +273,7 @@ it('publishes journey', async () => {
 
   expect(data?.journeyPublish).toEqual(journey)
 })
+
+// create authenticaion for publish and create
+// write failing tests when not authenticated (publish, create, update)
+// note: contextValue, userId, sets user id for mocking
