@@ -59,7 +59,9 @@ async function main(): Promise<void> {
       parentBlockId: gridContainer.id,
       extraAttrs: {
         item: {
-          lg: '_6'
+          xs: '_6',
+          lg: '_6',
+          sm: '_6'
         }
       },
       parentOrder: 1

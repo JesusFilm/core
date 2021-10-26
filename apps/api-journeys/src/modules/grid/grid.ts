@@ -48,7 +48,9 @@ const typeDefs = gql`
   }
 
   type Item {
+    xl: GridSize!
     lg: GridSize!
+    sm: GridSize!
   }
 
   type Container {

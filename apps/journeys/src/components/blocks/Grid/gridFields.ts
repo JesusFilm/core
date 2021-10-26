@@ -11,7 +11,9 @@ export const GRID_FIELDS = gql`
       alignItems
     }
     item {
+      xl
       lg
+      sm
     }
   }
 `

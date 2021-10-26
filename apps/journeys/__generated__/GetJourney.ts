@@ -97,7 +97,9 @@ export interface GetJourney_journey_blocks_GridBlock_container {
 
 export interface GetJourney_journey_blocks_GridBlock_item {
   __typename: "Item";
+  xl: GridSize;
   lg: GridSize;
+  sm: GridSize;
 }
 
 export interface GetJourney_journey_blocks_GridBlock {

@@ -170,7 +170,9 @@ type ImageBlock implements Block {
 }
 
 type Item {
+  xl: GridSize!
   lg: GridSize!
+  sm: GridSize!
 }
 
 type Journey @key(fields: "id") {

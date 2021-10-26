@@ -29,7 +29,9 @@ describe('GridBlock', () => {
         parentBlockId: 'grid',
         item: {
           __typename: 'Item',
-          lg: GridSize._6
+          xl: GridSize._6,
+          lg: GridSize._6,
+          sm: GridSize._6
         },
         container: null,
         children: [

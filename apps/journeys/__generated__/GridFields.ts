@@ -19,7 +19,9 @@ export interface GridFields_container {
 
 export interface GridFields_item {
   __typename: "Item";
+  xl: GridSize;
   lg: GridSize;
+  sm: GridSize;
 }
 
 export interface GridFields {

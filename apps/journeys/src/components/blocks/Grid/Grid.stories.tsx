@@ -120,7 +120,9 @@ Default.args = {
       __typename: 'GridBlock',
       item: {
         __typename: 'Item',
-        lg: GridSize._6
+        xl: GridSize._6,
+        lg: GridSize._6,
+        sm: GridSize._6
       },
       parentBlockId: 'GridContainer',
       container: null,
@@ -130,7 +132,9 @@ Default.args = {
       id: 'GridItemRight',
       item: {
         __typename: 'Item',
-        lg: GridSize._6
+        xl: GridSize._6,
+        lg: GridSize._6,
+        sm: GridSize._6
       },
       __typename: 'GridBlock',
       container: null,
@@ -155,7 +159,9 @@ OffsetRight.args = {
       id: 'GridItemRight',
       item: {
         __typename: 'Item',
-        lg: GridSize._6
+        xl: GridSize._6,
+        lg: GridSize._6,
+        sm: GridSize._6
       },
       __typename: 'GridBlock',
       container: null,
@@ -180,7 +186,9 @@ Center.args = {
       id: 'GridItemLeft',
       item: {
         __typename: 'Item',
-        lg: GridSize._6
+        xl: GridSize._6,
+        lg: GridSize._6,
+        sm: GridSize._6
       },
       __typename: 'GridBlock',
       container: null,
@@ -191,7 +199,9 @@ Center.args = {
       id: 'GridItemRight',
       item: {
         __typename: 'Item',
-        lg: GridSize._6
+        xl: GridSize._6,
+        lg: GridSize._6,
+        sm: GridSize._6
       },
       __typename: 'GridBlock',
       container: null,
