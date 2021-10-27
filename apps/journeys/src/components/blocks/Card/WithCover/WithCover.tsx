@@ -68,25 +68,23 @@ export function WithCover({
             xs: 'polygon(0 6vw, 100% 0, 100% 100%, 0 100%)',
             sm: 'polygon(6vh 0, 100% 0, 100% 100%, 0 100%)'
           },
-          p: {
-            xs: 7,
-            sm: theme.spacing(7, 10)
-          },
           marginTop: { xs: '-6vw', sm: 0 },
-          paddingTop: {
-            xs: `calc(6vw + ${theme.spacing(4)})`,
-            sm: theme.spacing(7)
-          },
           marginLeft: { xs: 0, sm: '-6vh' },
           paddingLeft: {
-            sm: `calc(6vh + ${theme.spacing(4)})`
+            sm: `6vh`
           },
           width: { xs: 'auto', sm: '50%' },
-          overflow: 'auto',
+          overflow: 'hidden',
           position: 'relative'
         }}
       >
-        <Box sx={{ margin: 'auto' }}>{children}</Box>
+        <Box sx={{ margin: 'auto', 
+          p: {
+            xs: `calc(6vw + ${theme.spacing(4)}) ${theme.spacing(7)} ${theme.spacing(7)}`,
+            sm: theme.spacing(7, 8, 7 , 4)
+          }, 
+          overflow: 'auto',
+          }}>{children}</Box>
         <Box
           ref={xsRef}
           sx={{
