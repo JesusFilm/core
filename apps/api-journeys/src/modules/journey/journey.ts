@@ -104,7 +104,7 @@ const resolvers: JourneyModule.Resolvers = {
           id: input.id
         },
         data: {
-          ...omitBy(input, isNil) // does not update if null or undefined
+          ...omitBy(input, isNil)
         }
       })
     },
