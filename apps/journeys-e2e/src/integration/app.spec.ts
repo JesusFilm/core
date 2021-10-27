@@ -1,9 +1,8 @@
-import { getGreeting } from '../support/app.po'
 
 describe('journeys', () => {
-  beforeEach(() => cy.visit('/'))
+  beforeEach(() => cy.visit('http://localhost:4100/'))
 
-  it('should display welcome message', () => {
-    getGreeting().contains('Block renderer and conductor samples')
+  it('should display link to #FallingPlates', () => {
+    cy.get('a').contains('#FallingPlates').should('exist')
   })
 })
