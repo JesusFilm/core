@@ -366,6 +366,7 @@ export type VideoResponse = Response & {
   id: Scalars['ID'];
   userId: Scalars['ID'];
   state: VideoResponseStateEnum;
+  position?: Maybe<Scalars['Float']>;
   block?: Maybe<VideoBlock>;
 };
 
@@ -374,13 +375,13 @@ export type VideoResponseCreateInput = {
   id?: Maybe<Scalars['ID']>;
   blockId: Scalars['ID'];
   state: VideoResponseStateEnum;
+  position?: Maybe<Scalars['Float']>;
 };
 
 export type VideoResponseStateEnum =
   | 'PLAYING'
   | 'PAUSED'
-  | 'FINISHED'
-  | 'SECONDSWATCHED';
+  | 'FINISHED';
 
 
 
@@ -493,6 +494,7 @@ export type ResolversTypes = {
   TypographyVariant: TypographyVariant;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   VideoResponse: ResolverTypeWrapper<ResponseType>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoResponseStateEnum: VideoResponseStateEnum;
 };
@@ -530,6 +532,7 @@ export type ResolversParentTypes = {
   TypographyBlock: BlockType;
   VideoBlock: BlockType;
   VideoResponse: ResponseType;
+  Float: Scalars['Float'];
   VideoResponseCreateInput: VideoResponseCreateInput;
 };
 
@@ -724,6 +727,7 @@ export type VideoResponseResolvers<ContextType = GraphQLModules.Context, ParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
+  position?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   block?: Resolver<Maybe<ResolversTypes['VideoBlock']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

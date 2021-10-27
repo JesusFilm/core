@@ -318,6 +318,7 @@ type VideoResponse implements Response {
   id: ID!
   userId: ID!
   state: VideoResponseStateEnum!
+  position: Float
   block: VideoBlock
 }
 
@@ -328,11 +329,11 @@ input VideoResponseCreateInput {
   id: ID
   blockId: ID!
   state: VideoResponseStateEnum!
+  position: Float
 }
 
 enum VideoResponseStateEnum {
   PLAYING
   PAUSED
   FINISHED
-  SECONDSWATCHED
 }

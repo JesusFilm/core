@@ -23,6 +23,7 @@ export const VIDEO_RESPONSE_CREATE = gql`
     videoResponseCreate(input: $input) {
       id
       state
+      position
     }
   }
 `
@@ -52,11 +53,14 @@ export function Video({
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
-  const [isAutoplay, setAutoplay] = useState<boolean>(false)
+  // const [isAutoplay, setAutoplay] = useState<boolean>(false)
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
-    async (videoState: VideoResponseStateEnum): Promise<void> => {
+    async (
+      videoState: VideoResponseStateEnum,
+      videoPosition: number | null
+    ): Promise<void> => {
       const id = uuid()
       await videoResponseCreate({
         variables: {
@@ -64,14 +68,15 @@ export function Video({
             id,
             blockId,
             state: videoState,
-            // position - add it to the back end
+            position: videoPosition
           }
         },
         optimisticResponse: {
           videoResponseCreate: {
             id,
             __typename: 'VideoResponse',
-            state: videoState
+            state: videoState,
+            position: videoPosition
           }
         }
       })
@@ -106,7 +111,7 @@ export function Video({
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
         // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        autoplay: isAutoplay,
+        autoplay: autoplay ? 'muted' : false,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -146,20 +151,27 @@ export function Video({
           startAt !== null && player.current?.currentTime(startAt)
         })
         player.current.on('playing', () => {
-          void handleVideoResponse(VideoResponseStateEnum.PLAYING)
+          void handleVideoResponse(VideoResponseStateEnum.PLAYING, null)
         })
         player.current.on('pause', () => {
-          void handleVideoResponse(VideoResponseStateEnum.PAUSED)
+          player.current !== undefined &&
+            handleVideoResponse(
+              VideoResponseStateEnum.PAUSED,
+              player.current.currentTime()
+            )
         })
         player.current.on('ended', () => {
-          void handleVideoResponse(VideoResponseStateEnum.FINISHED)
+          player.current !== undefined &&
+            handleVideoResponse(
+              VideoResponseStateEnum.FINISHED,
+              player.current?.currentTime()
+            )
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
     }
   }, [
     videoNode,
-    isAutoplay,
     autoplay,
     activeBlock,
     children,

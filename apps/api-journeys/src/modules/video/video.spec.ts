@@ -195,7 +195,8 @@ describe('VideoModule', () => {
         extraAttrs: {
           mediaComponentId: '2_0-FallingPlates',
           languageId: '529',
-          state: 'PLAYING'
+          state: 'PLAYING',
+          position: 0.3
         }
       }
       dbMock.response.create.mockResolvedValue(response1)
@@ -206,6 +207,7 @@ describe('VideoModule', () => {
               id
               userId
               state
+              position
               block {
                 id
                 mediaComponentId
@@ -219,7 +221,8 @@ describe('VideoModule', () => {
           input: {
             id: response1.id,
             blockId: response1.blockId,
-            state: get(response1.extraAttrs, 'state')
+            state: get(response1.extraAttrs, 'state'),
+            position: get(response1.extraAttrs, 'position')
           }
         },
         contextValue: {
@@ -231,6 +234,7 @@ describe('VideoModule', () => {
         id: response1.id,
         userId,
         state: 'PLAYING',
+        position: 0.3,
         block: {
           id: block1.id,
           mediaComponentId: '2_0-FallingPlates',

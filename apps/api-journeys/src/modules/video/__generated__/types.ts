@@ -4,16 +4,16 @@ import * as gm from "graphql-modules";
 export namespace VideoModule {
   interface DefinedFields {
     VideoBlock: 'id' | 'parentBlockId' | 'mediaComponentId' | 'languageId' | 'src' | 'title' | 'startAt' | 'description' | 'volume' | 'autoplay';
-    VideoResponse: 'id' | 'userId' | 'state' | 'block';
+    VideoResponse: 'id' | 'userId' | 'state' | 'position' | 'block';
     Mutation: 'videoResponseCreate';
   };
   
   interface DefinedEnumValues {
-    VideoResponseStateEnum: 'PLAYING' | 'PAUSED' | 'FINISHED' | 'SECONDSWATCHED';
+    VideoResponseStateEnum: 'PLAYING' | 'PAUSED' | 'FINISHED';
   };
   
   interface DefinedInputFields {
-    VideoResponseCreateInput: 'id' | 'blockId' | 'state';
+    VideoResponseCreateInput: 'id' | 'blockId' | 'state' | 'position';
   };
   
   export type VideoResponseStateEnum = DefinedEnumValues['VideoResponseStateEnum'];
@@ -56,6 +56,7 @@ export namespace VideoModule {
       id?: gm.Middleware[];
       userId?: gm.Middleware[];
       state?: gm.Middleware[];
+      position?: gm.Middleware[];
       block?: gm.Middleware[];
     };
     Mutation?: {

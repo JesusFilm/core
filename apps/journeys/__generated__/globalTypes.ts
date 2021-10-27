@@ -98,7 +98,6 @@ export enum VideoResponseStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
-  SECONDSWATCHED = "SECONDSWATCHED",
 }
 
 export interface RadioQuestionResponseCreateInput {
@@ -117,6 +116,7 @@ export interface SignUpResponseCreateInput {
 export interface VideoResponseCreateInput {
   blockId: string;
   id?: string | null;
+  position?: number | null;
   state: VideoResponseStateEnum;
 }
 

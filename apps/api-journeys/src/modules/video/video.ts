@@ -10,7 +10,6 @@ const typeDefs = gql`
     PLAYING
     PAUSED
     FINISHED
-    SECONDSWATCHED
   }
 
   input VideoResponseCreateInput {
@@ -20,6 +19,7 @@ const typeDefs = gql`
     id: ID
     blockId: ID!
     state: VideoResponseStateEnum!
+    position: Float
   }
 
   type VideoBlock implements Block {
@@ -39,6 +39,7 @@ const typeDefs = gql`
     id: ID!
     userId: ID!
     state: VideoResponseStateEnum!
+    position: Float
     block: VideoBlock
   }
 
@@ -60,7 +61,7 @@ const resolvers: VideoModule.Resolvers = {
   Mutation: {
     async videoResponseCreate(
       _parent,
-      { input: { id, blockId, state } },
+      { input: { id, blockId, state, position } },
       { db, userId }
     ) {
       if (userId == null)
@@ -71,7 +72,7 @@ const resolvers: VideoModule.Resolvers = {
           type: 'VideoResponse',
           blockId,
           userId,
-          extraAttrs: { state }
+          extraAttrs: { state, position }
         }
       })
       return transformResponse(response)

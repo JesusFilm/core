@@ -345,6 +345,7 @@ type VideoBlock implements Block {
 type VideoResponse implements Response {
   block: VideoBlock
   id: ID!
+  position: Float
   state: VideoResponseStateEnum!
   userId: ID!
 }
@@ -356,6 +357,7 @@ input VideoResponseCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  position: Float
   state: VideoResponseStateEnum!
 }
 
@@ -363,5 +365,4 @@ enum VideoResponseStateEnum {
   FINISHED
   PAUSED
   PLAYING
-  SECONDSWATCHED
 }

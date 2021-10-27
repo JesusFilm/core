@@ -30,13 +30,15 @@ describe('VideoComponent', () => {
               variables: {
                 id: 'uuid',
                 blockId: 'Video1',
-                state: VideoResponseStateEnum.PLAYING
+                state: VideoResponseStateEnum.PLAYING,
+                position: 0.3
               }
             },
             result: {
               data: {
                 id: 'uuid',
-                state: VideoResponseStateEnum.PLAYING
+                state: VideoResponseStateEnum.PLAYING,
+                position: 0.3
               }
             }
           }
