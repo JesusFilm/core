@@ -29,10 +29,10 @@ async function main(): Promise<void> {
       journeyId: journey.id,
       blockType: 'ImageBlock', 
       extraAttrs: {
-        src: 'https://source.unsplash.com/random/1920x1080',
-        alt: 'random image from unsplash',
-        width: 1920,
-        height: 1080
+        src: 'https://i4.ytimg.com/vi/KGlx11BxF24/maxresdefault.jpg',
+        alt: '#FallingPlates',
+        width: 1280,
+        height: 720
       },
       parentOrder: 0
     }
