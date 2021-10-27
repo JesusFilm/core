@@ -94,8 +94,7 @@ export function WithCover({
           right: 0,
           bottom: 0,
           display: { xs: 'none', md: 'flex' },
-          flexDirection: 'column',
-          width: 300
+          flexDirection: 'column'
         }}
       >
         <Box
@@ -103,7 +102,8 @@ export function WithCover({
             margin: 'auto',
             overflow: 'auto',
             pr: 9,
-            py: 7
+            py: 7,
+            width: 300
           }}
         >
           <Box
