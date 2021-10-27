@@ -27,7 +27,7 @@ export function WithCover({
       const divisor = gcd(coverBlock.width, coverBlock.height)
       const width = coverBlock.width / divisor
       const height = coverBlock.height / divisor
-      const pixels = decode(coverBlock.blurhash, width, height, 5)
+      const pixels = decode(coverBlock.blurhash, width, height, 1)
 
       const canvas = document.createElement('canvas')
       canvas.setAttribute('width', `${width}px`)
