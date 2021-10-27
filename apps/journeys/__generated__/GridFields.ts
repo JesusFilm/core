@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { GridSpacing, GridDirection, GridJustifyContent, GridAlignItems, GridSize } from "./globalTypes";
+import { GridDirection, GridJustifyContent, GridAlignItems } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: GridFields
@@ -11,7 +11,7 @@ import { GridSpacing, GridDirection, GridJustifyContent, GridAlignItems, GridSiz
 
 export interface GridFields_container {
   __typename: "Container";
-  spacing: GridSpacing;
+  spacing: number;
   direction: GridDirection;
   justifyContent: GridJustifyContent;
   alignItems: GridAlignItems;
@@ -19,9 +19,9 @@ export interface GridFields_container {
 
 export interface GridFields_item {
   __typename: "Item";
-  xl: GridSize;
-  lg: GridSize;
-  sm: GridSize;
+  xl: number;
+  lg: number;
+  sm: number;
 }
 
 export interface GridFields {

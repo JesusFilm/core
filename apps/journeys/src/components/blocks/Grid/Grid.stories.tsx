@@ -10,8 +10,6 @@ import {
   ButtonSize,
   IconName,
   IconSize,
-  GridSpacing,
-  GridSize,
   GridAlignItems,
   GridDirection,
   GridJustifyContent
@@ -109,10 +107,10 @@ Default.args = {
   id: 'GridContainer',
   container: {
     __typename: 'Container',
-    spacing: GridSpacing._6,
+    spacing: 6,
     direction: GridDirection.row,
-    justifyContent: GridJustifyContent.flex_start,
-    alignItems: GridAlignItems.center
+    justifyContent: GridJustifyContent.flexEnd,
+    alignItems: GridAlignItems.flexEnd
   },
   children: [
     {
@@ -120,9 +118,9 @@ Default.args = {
       __typename: 'GridBlock',
       item: {
         __typename: 'Item',
-        xl: GridSize._6,
-        lg: GridSize._6,
-        sm: GridSize._6
+        xl: 6,
+        lg: 6,
+        sm: 6
       },
       parentBlockId: 'GridContainer',
       container: null,
@@ -132,9 +130,9 @@ Default.args = {
       id: 'GridItemRight',
       item: {
         __typename: 'Item',
-        xl: GridSize._6,
-        lg: GridSize._6,
-        sm: GridSize._6
+        xl: 6,
+        lg: 6,
+        sm: 6
       },
       __typename: 'GridBlock',
       container: null,
@@ -149,9 +147,9 @@ OffsetRight.args = {
   id: 'GridContainer',
   container: {
     __typename: 'Container',
-    spacing: GridSpacing._6,
+    spacing: 6,
     direction: GridDirection.row,
-    justifyContent: GridJustifyContent.flex_end,
+    justifyContent: GridJustifyContent.flexEnd,
     alignItems: GridAlignItems.baseline
   },
   children: [
@@ -159,9 +157,9 @@ OffsetRight.args = {
       id: 'GridItemRight',
       item: {
         __typename: 'Item',
-        xl: GridSize._6,
-        lg: GridSize._6,
-        sm: GridSize._6
+        xl: 6,
+        lg: 6,
+        sm: 6
       },
       __typename: 'GridBlock',
       container: null,
@@ -176,7 +174,7 @@ Center.args = {
   id: 'GridContainer',
   container: {
     __typename: 'Container',
-    spacing: GridSpacing._6,
+    spacing: 6,
     direction: GridDirection.row,
     justifyContent: GridJustifyContent.center,
     alignItems: GridAlignItems.center
@@ -186,9 +184,9 @@ Center.args = {
       id: 'GridItemLeft',
       item: {
         __typename: 'Item',
-        xl: GridSize._6,
-        lg: GridSize._6,
-        sm: GridSize._6
+        xl: 6,
+        lg: 6,
+        sm: 6
       },
       __typename: 'GridBlock',
       container: null,
@@ -199,9 +197,9 @@ Center.args = {
       id: 'GridItemRight',
       item: {
         __typename: 'Item',
-        xl: GridSize._6,
-        lg: GridSize._6,
-        sm: GridSize._6
+        xl: 6,
+        lg: 6,
+        sm: 6
       },
       __typename: 'GridBlock',
       container: null,

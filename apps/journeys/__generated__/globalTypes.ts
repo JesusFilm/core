@@ -28,46 +28,21 @@ export enum ButtonVariant {
 export enum GridAlignItems {
   baseline = "baseline",
   center = "center",
-  flex_end = "flex_end",
-  flex_start = "flex_start",
+  flexEnd = "flexEnd",
+  flexStart = "flexStart",
 }
 
 export enum GridDirection {
   column = "column",
-  column_reverse = "column_reverse",
+  columnReverse = "columnReverse",
   row = "row",
-  row_reverse = "row_reverse",
+  rowReverse = "rowReverse",
 }
 
 export enum GridJustifyContent {
   center = "center",
-  flex_end = "flex_end",
-  flex_start = "flex_start",
-}
-
-export enum GridSize {
-  _1 = "_1",
-  _10 = "_10",
-  _11 = "_11",
-  _12 = "_12",
-  _2 = "_2",
-  _3 = "_3",
-  _4 = "_4",
-  _5 = "_5",
-  _6 = "_6",
-  _7 = "_7",
-  _8 = "_8",
-  _9 = "_9",
-  auto = "auto",
-}
-
-export enum GridSpacing {
-  _1 = "_1",
-  _2 = "_2",
-  _3 = "_3",
-  _4 = "_4",
-  _5 = "_5",
-  _6 = "_6",
+  flexEnd = "flexEnd",
+  flexStart = "flexStart",
 }
 
 export enum IconColor {

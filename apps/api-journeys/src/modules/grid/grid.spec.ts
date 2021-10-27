@@ -48,9 +48,9 @@ describe('GridModule', () => {
         parentOrder: 2,
         extraAttrs: {
           container: {
-            spacing: '_3',
+            spacing: 3,
             direction: 'row',
-            justifyContent: 'flex_start',
+            justifyContent: 'flexStart',
             alignItems: 'center'
           }
         }
@@ -83,8 +83,8 @@ describe('GridModule', () => {
           container: {
             alignItems: 'center',
             direction: 'row',
-            justifyContent: 'flex_start',
-            spacing: '_3'
+            justifyContent: 'flexStart',
+            spacing: 3
           }
         }
       ])

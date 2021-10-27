@@ -43,7 +43,7 @@ async function main(): Promise<void> {
       parentBlockId: step.id,
       extraAttrs: {
         container: {
-          spacing: '_3',
+          spacing: 3,
           direction: 'row',
           justifyContent: 'flex_start',
           alignItems: 'center'
@@ -59,9 +59,9 @@ async function main(): Promise<void> {
       parentBlockId: gridContainer.id,
       extraAttrs: {
         item: {
-          xs: '_6',
-          lg: '_6',
-          sm: '_6'
+          xs: 6,
+          lg: 6,
+          sm: 6
         }
       },
       parentOrder: 1

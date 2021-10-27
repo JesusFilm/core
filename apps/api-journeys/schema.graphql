@@ -65,7 +65,7 @@ type CardBlock implements Block {
 }
 
 type Container {
-  spacing: GridSpacing!
+  spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
   alignItems: GridAlignItems!
@@ -73,8 +73,8 @@ type Container {
 
 enum GridAlignItems {
   baseline
-  flex_start
-  flex_end
+  flexStart
+  flexEnd
   center
 }
 
@@ -86,41 +86,16 @@ type GridBlock implements Block {
 }
 
 enum GridDirection {
-  column_reverse
+  columnReverse
   column
   row
-  row_reverse
+  rowReverse
 }
 
 enum GridJustifyContent {
-  flex_start
-  flex_end
+  flexStart
+  flexEnd
   center
-}
-
-enum GridSize {
-  auto
-  _1
-  _2
-  _3
-  _4
-  _5
-  _6
-  _7
-  _8
-  _9
-  _10
-  _11
-  _12
-}
-
-enum GridSpacing {
-  _1
-  _2
-  _3
-  _4
-  _5
-  _6
 }
 
 type Icon {
@@ -170,9 +145,9 @@ type ImageBlock implements Block {
 }
 
 type Item {
-  xl: GridSize!
-  lg: GridSize!
-  sm: GridSize!
+  xl: Int!
+  lg: Int!
+  sm: Int!
 }
 
 type Journey @key(fields: "id") {

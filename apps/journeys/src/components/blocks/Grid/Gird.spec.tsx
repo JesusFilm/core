@@ -4,9 +4,7 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
   GridDirection,
   GridJustifyContent,
-  GridAlignItems,
-  GridSize,
-  GridSpacing
+  GridAlignItems
 } from '../../../../__generated__/globalTypes'
 
 describe('GridBlock', () => {
@@ -17,7 +15,7 @@ describe('GridBlock', () => {
     parentBlockId: null,
     container: {
       __typename: 'Container',
-      spacing: GridSpacing._6,
+      spacing: 6,
       direction: GridDirection.row,
       justifyContent: GridJustifyContent.center,
       alignItems: GridAlignItems.center
@@ -29,9 +27,9 @@ describe('GridBlock', () => {
         parentBlockId: 'grid',
         item: {
           __typename: 'Item',
-          xl: GridSize._6,
-          lg: GridSize._6,
-          sm: GridSize._6
+          xl: 6,
+          lg: 6,
+          sm: 6
         },
         container: null,
         children: [

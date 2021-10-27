@@ -85,14 +85,14 @@ type Container {
   alignItems: GridAlignItems!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
-  spacing: GridSpacing!
+  spacing: Int!
 }
 
 enum GridAlignItems {
   baseline
   center
-  flex_end
-  flex_start
+  flexEnd
+  flexStart
 }
 
 type GridBlock implements Block {
@@ -104,40 +104,15 @@ type GridBlock implements Block {
 
 enum GridDirection {
   column
-  column_reverse
+  columnReverse
   row
-  row_reverse
+  rowReverse
 }
 
 enum GridJustifyContent {
   center
-  flex_end
-  flex_start
-}
-
-enum GridSize {
-  _1
-  _2
-  _3
-  _4
-  _5
-  _6
-  _7
-  _8
-  _9
-  _10
-  _11
-  _12
-  auto
-}
-
-enum GridSpacing {
-  _1
-  _2
-  _3
-  _4
-  _5
-  _6
+  flexEnd
+  flexStart
 }
 
 type Icon {
@@ -187,9 +162,9 @@ type ImageBlock implements Block {
 }
 
 type Item {
-  lg: GridSize!
-  sm: GridSize!
-  xl: GridSize!
+  lg: Int!
+  sm: Int!
+  xl: Int!
 }
 
 scalar join__FieldSet
