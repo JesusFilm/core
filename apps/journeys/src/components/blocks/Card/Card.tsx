@@ -72,13 +72,8 @@ export function CardWrapper({
         borderRadius: (theme) => theme.spacing(3),
         backgroundColor,
         backgroundImage: 'none',
-        minWidth: (theme) => theme.spacing(48)
-        // [theme.breakpoints.up('sm')]: {
-        //   minWidth: '568px'
-        // },
-        // [theme.breakpoints.up('md')]: {
-        //   minWidth: '786px'
-        // }
+        width: '100%',
+        overflow: 'scroll'
       }}
       elevation={3}
     >
