@@ -6,7 +6,8 @@ import client from '../src/libs/client'
 import { gql } from '@apollo/client'
 import {
   GetJourney,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
 import {
@@ -27,22 +28,22 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
-  const primaryImageBlock = journey.blocks?.find(block => block.id === journey.primaryImageBlockId)
+  const primaryImageBlock = journey.blocks?.find(block => block.id === journey.primaryImageBlockId && block.__typename === 'ImageBlock') as ImageBlock | undefined
+  const blocks = journey.blocks?.filter(block => block.id !== journey.primaryImageBlockId)
   return (
-    <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-      {journey.description !== null && journey.primaryImageBlockId !== null && (
-        <Head>
-          <title>{journey.title}</title>
-          <meta name='description' content={journey.description} />
-          <meta property='og:title' content={journey.title} />
-          <meta property='og:image' content={primaryImageBlock?.src} /> {/* how to fix this error? */}
-        </Head>
+    <>
+      <Head>
+        <title>{journey.title}</title>
+        <meta property='og:title' content={journey.title} />
+        {journey.description != null && <meta name='description' content={journey.description} />}
+        {primaryImageBlock != null && <meta property='og:image' content={primaryImageBlock?.src} /> }
+      </Head>
+      <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
+        {blocks != null && (
+        <Conductor blocks={transformer(blocks)} />
       )}
-
-      {journey.blocks != null && (
-      <Conductor blocks={transformer(journey.blocks)} />
-      )}
-    </ThemeProvider>
+      </ThemeProvider>
+    </>
   )
 }
 
