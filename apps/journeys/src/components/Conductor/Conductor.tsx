@@ -18,7 +18,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [windowHeight, setWindowHeight] = useState('100vh')
-  
+
   useEffect(() => {
     const handleResize = (): void => setWindowHeight(`${window.innerHeight}px`)
     window.addEventListener('resize', handleResize)
