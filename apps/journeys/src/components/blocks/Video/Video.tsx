@@ -15,7 +15,6 @@ import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCrea
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from '../Trigger'
 import { useBlocks } from '../../../libs/client/cache/blocks'
-import { findIndex } from 'lodash'
 
 import 'video.js/dist/video-js.css'
 
@@ -49,11 +48,11 @@ export function Video({
   const player = useRef<videojs.Player>()
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const arclightURL = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
-  const { treeBlocks, activeBlock } = useBlocks()
+  const { activeBlock } = useBlocks()
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
-  const [isAutoplay, setAutoplay] = useState<boolean | undefined>()
+  const [isAutoplay, setAutoplay] = useState<boolean>(false)
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
@@ -64,7 +63,8 @@ export function Video({
           input: {
             id,
             blockId,
-            state: videoState
+            state: videoState,
+            // position - add it to the back end
           }
         },
         optimisticResponse: {
@@ -91,23 +91,13 @@ export function Video({
         await fetch(url).then((response) => setVideoUrl(response.url))
       }
 
-      const index = findIndex(
-        treeBlocks,
-        (treeBlock) => treeBlock.id === activeBlock?.id
-      )
-
-      // have a logic here saying if it's not the active block don't auto play
-      // so something like if active setAutoplay true else setAutoplay false
-      if (activeBlock?.id === treeBlocks[index].id) {
-        console.log('active ' + activeBlock?.id)
-        if (autoplay !== null) {
-          setAutoplay(autoplay)
-        }
-      } else {
-        console.log('I am not active')
+      if (autoplay !== null && autoplay) {
+        // get all descendants of active block
+        // check to see if descendants includes video block
+        // set it to play
       }
     },
-    [languageId, mediaComponentId, activeBlock, treeBlocks]
+    [languageId, mediaComponentId]
   )
 
   useEffect(() => {
@@ -147,8 +137,6 @@ export function Video({
         playbackRates: [0.5, 1, 1.5, 2]
       }
 
-      // console.log(`${activeBlock.id} wahaha ${isAutoplay}`)
-
       if (videoNode.current != null) {
         player.current = videojs(videoNode.current, {
           ...initialOptions
@@ -165,12 +153,6 @@ export function Video({
         })
         player.current.on('ended', () => {
           void handleVideoResponse(VideoResponseStateEnum.FINISHED)
-        })
-        player.current.on('timeupdate', () => {
-          // TODO: figure out how we want to record video response
-          if (player.current !== undefined)
-            player.current.paused() &&
-              handleVideoResponse(VideoResponseStateEnum.SECONDSWATCHED)
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
