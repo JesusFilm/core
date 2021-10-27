@@ -40,8 +40,9 @@ export function WithCover({
         context.fillStyle = `${theme.palette.background.paper}88`
         context.fillRect(0, 0, width, height)
         const dataURL = canvas.toDataURL('image/webp')
-        xsRef.current.style.backgroundImage = `url(${dataURL})`
-        lgRef.current.style.backgroundImage = `url(${dataURL})`
+        // We need double image to get better image blending results.
+        xsRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+        lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
       }
     }
   }, [coverBlock, xsRef, lgRef, theme])
@@ -58,7 +59,6 @@ export function WithCover({
         }}
       />
       <Box
-        ref={xsRef}
         sx={{
           display: { xs: 'flex', md: 'none' },
           flexDirection: 'column',
@@ -82,10 +82,27 @@ export function WithCover({
             sm: `calc(6vh + ${theme.spacing(4)})`
           },
           width: { xs: 'auto', sm: '50%' },
-          overflow: 'auto'
+          overflow: 'auto',
+          position: 'relative'
         }}
       >
         <Box sx={{ margin: 'auto' }}>{children}</Box>
+        <Box
+          ref={xsRef}
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            height: '110%',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '100% 100%',
+            backgroundPosition: '0% 0%',
+            left: 0,
+            top: '-10%',
+            zIndex: -1,
+            transform: 'scaleY(-1)',
+            backgroundBlendMode: 'hard-light'
+          }}
+        />
       </Box>
       <Box
         sx={{
@@ -123,11 +140,28 @@ export function WithCover({
                 borderRadius: theme.spacing(4),
                 paddingTop: `calc(40px + ${theme.spacing(7)})`,
                 paddingBottom: `calc(20px + ${theme.spacing(4)})`,
-                transform: 'skewY(-10deg)'
+                transform: 'skewY(-10deg)',
+                overflow: 'hidden'
               }}
-              ref={lgRef}
             >
               <Box sx={{ transform: 'skewY(10deg)', px: 7 }}>{children}</Box>
+              <Box
+                ref={lgRef}
+                sx={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '110%',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '100% 100%',
+                  backgroundPosition: '0% 0%',
+                  left: 0,
+                  top: '-10%',
+                  zIndex: -1,
+                  transform: 'scaleY(-1)',
+                  backgroundBlendMode: 'hard-light',
+                  opacity: 0.9
+                }}
+              />
             </Box>
           </Box>
         </Box>
