@@ -43,7 +43,7 @@ async function main(): Promise<void> {
     },
     data:{
       primaryImageBlockId: primaryImage.id,
-      description: 'Start your journey here!'
+      description: 'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
     }
   })
   const step = await prisma.block.create({
