@@ -126,7 +126,6 @@ it('creates journey', async () => {
           themeName
           themeMode
           description
-          primaryImageBlockId
         }
       }
     `,
@@ -145,7 +144,14 @@ it('creates journey', async () => {
     }
   })
 
-  expect(data?.journeyCreate).toEqual(journey)
+  expect(data?.journeyCreate).toEqual({ 
+    id: journey.id,
+    title: 'my journey',
+    published: false,
+    locale: 'hi-IN',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: 'test description'})
 })
 
 it('creates journey with default locale and theme', async () => {
@@ -174,7 +180,6 @@ it('creates journey with default locale and theme', async () => {
           themeName
           themeMode
           description
-          primaryImageBlockId
         }
       }
     `,
@@ -189,7 +194,15 @@ it('creates journey with default locale and theme', async () => {
     }
   })
 
-  expect(data?.journeyCreate).toEqual(journey)
+  expect(data?.journeyCreate).toEqual({
+    id: journey.id,
+    title: 'my journey',
+    published: false,
+    locale: 'en-US',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: null
+  })
 })
 
 it('updates journey', async () => {
@@ -203,7 +216,7 @@ it('updates journey', async () => {
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
     description: null,
-    primaryImageBlockId: '1'
+    primaryImageBlockId: null
   }
   dbMock.journey.update.mockResolvedValue(journey)
 
@@ -225,6 +238,7 @@ it('updates journey', async () => {
     variableValues: {
       input: {
         id: journey.id,
+        title: 'my journey',
         primaryImageBlockId: '1'
       }
     },
@@ -234,7 +248,16 @@ it('updates journey', async () => {
     }
   })
 
-  expect(data?.journeyUpdate).toEqual(journey)
+  expect(data?.journeyUpdate).toEqual({
+    id: journey.id,
+    title: 'my journey',
+    published: false,
+    locale: 'en-US',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: null,
+    // primaryImageBlockId: '1'
+  })
 })
 
 it('publishes journey', async () => {
@@ -276,7 +299,15 @@ it('publishes journey', async () => {
     }
   })
 
-  expect(data?.journeyPublish).toEqual(journey)
+  expect(data?.journeyPublish).toEqual({
+    id: journey.id,
+    title: 'my journey',
+    published: true,
+    locale: 'id-ID',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: null
+  })
 })
 
 it('throws an error on create without authentication', async () => {

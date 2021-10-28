@@ -6,8 +6,7 @@ import client from '../src/libs/client'
 import { gql } from '@apollo/client'
 import {
   GetJourney,
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
 import {
@@ -28,19 +27,17 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
-  const primaryImageBlock = journey.blocks?.find(block => block.id === journey.primaryImageBlockId && block.__typename === 'ImageBlock') as ImageBlock | undefined
-  const blocks = journey.blocks?.filter(block => block.id !== journey.primaryImageBlockId)
   return (
     <>
       <Head>
         <title>{journey.title}</title>
         <meta property='og:title' content={journey.title} />
         {journey.description != null && <meta name='description' content={journey.description} />}
-        {primaryImageBlock != null && <meta property='og:image' content={primaryImageBlock?.src} /> }
+        {journey.primaryImageBlock != null && <meta property='og:image' content={journey.primaryImageBlock.src} /> }
       </Head>
       <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-        {blocks != null && (
-        <Conductor blocks={transformer(blocks)} />
+        {journey.blocks != null && (
+        <Conductor blocks={transformer(journey.blocks)} />
       )}
       </ThemeProvider>
     </>
@@ -68,7 +65,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           themeMode
           title
           description
-          primaryImageBlockId
+          primaryImageBlock {
+            src
+          }
           blocks {
             id
             parentBlockId

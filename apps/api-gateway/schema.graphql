@@ -141,7 +141,7 @@ type Journey
   description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
-  primaryImageBlockId: ID @join__field(graph: JOURNEYS)
+  primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)

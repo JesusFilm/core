@@ -118,8 +118,8 @@ type Journey @key(fields: "id") {
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
-  primaryImageBlockId: ID
   blocks: [Block!]
+  primaryImageBlock: ImageBlock
 }
 
 input JourneyCreateInput {

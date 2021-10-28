@@ -1,11 +1,10 @@
 /* eslint-disable */
 import { GraphQLResolveInfo } from 'graphql';
-import { Block as BlockType, Response as ResponseType } from '.prisma/api-journeys-client';
+import { Block as BlockType, Journey as JourneyType, Response as ResponseType } from '.prisma/api-journeys-client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -128,7 +127,7 @@ export type Journey = {
   description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   locale: Scalars['String'];
-  primaryImageBlockId?: Maybe<Scalars['ID']>;
+  primaryImageBlock?: Maybe<ImageBlock>;
   published: Scalars['Boolean'];
   themeMode: ThemeMode;
   themeName: ThemeName;
@@ -473,7 +472,7 @@ export type ResolversTypes = {
   IconSize: IconSize;
   ImageBlock: ResolverTypeWrapper<BlockType>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
+  Journey: ResolverTypeWrapper<JourneyType>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   JourneyCreateInput: JourneyCreateInput;
   JourneyUpdateInput: JourneyUpdateInput;
@@ -515,7 +514,7 @@ export type ResolversParentTypes = {
   Icon: Icon;
   ImageBlock: BlockType;
   Int: Scalars['Int'];
-  Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
+  Journey: JourneyType;
   Boolean: Scalars['Boolean'];
   JourneyCreateInput: JourneyCreateInput;
   JourneyUpdateInput: JourneyUpdateInput;
@@ -596,7 +595,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  primaryImageBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;

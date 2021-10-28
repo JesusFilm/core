@@ -9,6 +9,11 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName,
 // GraphQL query operation: GetJourney
 // ====================================================
 
+export interface GetJourney_journey_primaryImageBlock {
+  __typename: "ImageBlock";
+  src: string;
+}
+
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
   __typename: "Icon";
   name: IconName;
@@ -226,7 +231,7 @@ export interface GetJourney_journey {
   themeMode: ThemeMode;
   title: string;
   description: string | null;
-  primaryImageBlockId: string | null;
+  primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   blocks: GetJourney_journey_blocks[] | null;
 }
 
