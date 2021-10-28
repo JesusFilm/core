@@ -4,8 +4,8 @@ import * as gm from "graphql-modules";
 export namespace ImageModule {
   interface DefinedFields {
     ImageBlock: 'id' | 'parentBlockId' | 'src' | 'width' | 'height' | 'alt' | 'blurhash';
-    Journey: 'primaryImageBlock';
     Mutation: 'imageBlockCreate';
+    Journey: 'primaryImageBlock';
   };
   
   interface DefinedInputFields {
@@ -15,14 +15,12 @@ export namespace ImageModule {
   export type ImageBlockCreateInput = Pick<Types.ImageBlockCreateInput, DefinedInputFields['ImageBlockCreateInput']>;
   export type ImageBlock = Pick<Types.ImageBlock, DefinedFields['ImageBlock']>;
   export type Block = Types.Block;
+  export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   export type Journey = Types.Journey;
   
   export type ImageBlockResolvers = Pick<Types.ImageBlockResolvers, DefinedFields['ImageBlock'] | '__isTypeOf'>;
-  export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
-  
-  export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
-  
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
+  export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
   
   export interface Resolvers {
     ImageBlock?: ImageBlockResolvers;
