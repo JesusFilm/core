@@ -28,29 +28,24 @@
       }
     ]
   },
-  "projects": {
-    "api-gateway": {
-      "tags": []
-    },
-    "api-journeys": {
-      "tags": []
-    },
-    "journeys": {
-      "tags": []
-    },
-    "journeys-e2e": {
-      "tags": [],
-      "implicitDependencies": ["journeys"]
-    },
-    "shared-storybook": {
-      "tags": [],
-      "implicitDependencies": ["shared-ui", "journeys"]
-    },
-    "shared-ui": {
-      "tags": []
-    },
-    "shared-util-graphql": {
-      "tags": []
+  "cli": {
+    "defaultCollection": "@nrwl/express"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint"
+      }
     }
-  }
+  },
+  "defaultProject": "api-journeys"
 }
