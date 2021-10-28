@@ -65,6 +65,12 @@ export type CardBlock = Block & {
    */
   coverBlockId?: Maybe<Scalars['ID']>;
   /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: Scalars['Boolean'];
+  /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
    */
@@ -119,6 +125,20 @@ export type ImageBlock = Block & {
   width: Scalars['Int'];
   height: Scalars['Int'];
   alt: Scalars['String'];
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https://github.com/woltapp/blurhash
+   */
+  blurhash: Scalars['String'];
+};
+
+export type ImageBlockCreateInput = {
+  /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
+  id?: Maybe<Scalars['ID']>;
+  parentBlockId?: Maybe<Scalars['ID']>;
+  journeyId: Scalars['ID'];
+  src: Scalars['String'];
+  alt: Scalars['String'];
 };
 
 export type Journey = {
@@ -166,12 +186,18 @@ export type LinkAction = Action & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  imageBlockCreate: ImageBlock;
   journeyCreate: Journey;
   journeyPublish?: Maybe<Journey>;
   journeyUpdate: Journey;
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
   videoResponseCreate: VideoResponse;
+};
+
+
+export type MutationImageBlockCreateArgs = {
+  input: ImageBlockCreateInput;
 };
 
 
@@ -466,14 +492,20 @@ export type ResolversTypes = {
   ButtonSize: ButtonSize;
   ButtonVariant: ButtonVariant;
   CardBlock: ResolverTypeWrapper<BlockType>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
   IconName: IconName;
   IconSize: IconSize;
   ImageBlock: ResolverTypeWrapper<BlockType>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+<<<<<<< HEAD
   Journey: ResolverTypeWrapper<JourneyType>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+=======
+  ImageBlockCreateInput: ImageBlockCreateInput;
+  Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
+>>>>>>> d3d60561fcd83e6466f1eb6f74c817f53618605f
   JourneyCreateInput: JourneyCreateInput;
   JourneyUpdateInput: JourneyUpdateInput;
   LinkAction: ResolverTypeWrapper<LinkAction>;
@@ -511,11 +543,17 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   ButtonBlock: BlockType;
   CardBlock: BlockType;
+  Boolean: Scalars['Boolean'];
   Icon: Icon;
   ImageBlock: BlockType;
   Int: Scalars['Int'];
+<<<<<<< HEAD
   Journey: JourneyType;
   Boolean: Scalars['Boolean'];
+=======
+  ImageBlockCreateInput: ImageBlockCreateInput;
+  Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
+>>>>>>> d3d60561fcd83e6466f1eb6f74c817f53618605f
   JourneyCreateInput: JourneyCreateInput;
   JourneyUpdateInput: JourneyUpdateInput;
   LinkAction: LinkAction;
@@ -568,6 +606,7 @@ export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   backgroundColor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coverBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  fullscreen?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   themeMode?: Resolver<Maybe<ResolversTypes['ThemeMode']>, ParentType, ContextType>;
   themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -587,6 +626,7 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   alt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  blurhash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -611,6 +651,7 @@ export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType
 };
 
 export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  imageBlockCreate?: Resolver<ResolversTypes['ImageBlock'], ParentType, ContextType, RequireFields<MutationImageBlockCreateArgs, 'input'>>;
   journeyCreate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyCreateArgs, 'input'>>;
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
   journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;

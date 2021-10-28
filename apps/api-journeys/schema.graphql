@@ -52,6 +52,13 @@ type CardBlock implements Block {
   coverBlockId: ID
 
   """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean!
+
+  """
   themeMode can override journey themeMode. If nothing is set then use
   themeMode from journey
   """
@@ -108,6 +115,23 @@ type ImageBlock implements Block {
   width: Int!
   height: Int!
   alt: String!
+
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+  """
+  blurhash: String!
+}
+
+input ImageBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String!
+  alt: String!
 }
 
 type Journey @key(fields: "id") {
@@ -152,6 +176,7 @@ type LinkAction implements Action {
 }
 
 extend type Mutation {
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
