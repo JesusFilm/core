@@ -73,7 +73,6 @@ export function CardWrapper({
         backgroundColor,
         backgroundImage: 'none',
         width: '100%'
-        // overflow: 'scroll'
       }}
       elevation={3}
     >
