@@ -1,0 +1,57 @@
+{
+  "root": "libs/shared/ui",
+  "sourceRoot": "libs/shared/ui/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/shared/ui/**/*.{ts,tsx,js,jsx}"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b libs/shared/ui/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/ui"],
+      "options": {
+        "jestConfig": "libs/shared/ui/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "demo": {
+      "executor": "@nrwl/storybook:storybook",
+      "options": {
+        "uiFramework": "@storybook/react",
+        "port": 4400,
+        "config": {
+          "configFolder": ".storybook"
+        }
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript  --globalTypesFile=libs/shared/ui/__generated__/globalTypes.ts"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

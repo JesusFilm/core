@@ -8,5 +8,6 @@ export const IMAGE_FIELDS = gql`
     alt
     width
     height
+    blurhash
   }
 `
