@@ -32,6 +32,20 @@ interface VideoProps extends TreeBlock<VideoBlock> {
   uuid?: () => string
 }
 
+function flatten(node: TreeBlock, parent?: TreeBlock) {
+  const nodes = [{ id: node.id, parent: parent?.id }]
+
+  if (Array.isArray(node.children)) {
+    for (const child of node.children) {
+      nodes.push(...flatten(child, node))
+    }
+  } else if (typeof node.children === 'object') {
+    nodes.push(...flatten(node.children, node))
+  }
+
+  return nodes
+}
+
 export function Video({
   id: blockId,
   mediaComponentId,
@@ -53,7 +67,7 @@ export function Video({
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
-  // const [isAutoplay, setAutoplay] = useState<boolean>(false)
+  const [isAutoplay, setAutoplay] = useState<boolean>(false)
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
@@ -96,13 +110,14 @@ export function Video({
         await fetch(url).then((response) => setVideoUrl(response.url))
       }
 
-      if (autoplay !== null && autoplay) {
-        // get all descendants of active block
-        // check to see if descendants includes video block
-        // set it to play
+      if (autoplay !== null && autoplay && activeBlock != null) {
+        const descendants = flatten(activeBlock)
+        const videoBlock = descendants.find((block) => block.id === 'video1.id')
+        if (videoBlock != null)
+          setAutoplay(true)
       }
     },
-    [languageId, mediaComponentId]
+    [languageId, mediaComponentId, activeBlock]
   )
 
   useEffect(() => {
@@ -110,8 +125,7 @@ export function Video({
 
     if (videoUrl !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        autoplay: autoplay ? 'muted' : false,
+        autoplay: isAutoplay,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -127,7 +141,6 @@ export function Video({
             seekBar: true
           },
           fullscreenToggle: true,
-          playbackRateMenuButton: true,
           volumePanel: {
             inline: true
           }
@@ -139,7 +152,6 @@ export function Video({
         ],
         fluid: true,
         responsive: true,
-        playbackRates: [0.5, 1, 1.5, 2]
       }
 
       if (videoNode.current != null) {
@@ -151,7 +163,7 @@ export function Video({
           startAt !== null && player.current?.currentTime(startAt)
         })
         player.current.on('playing', () => {
-          void handleVideoResponse(VideoResponseStateEnum.PLAYING, null)
+          player.current !== undefined && handleVideoResponse(VideoResponseStateEnum.PLAYING, player.current.currentTime())
         })
         player.current.on('pause', () => {
           player.current !== undefined &&
@@ -172,6 +184,7 @@ export function Video({
     }
   }, [
     videoNode,
+    isAutoplay,
     autoplay,
     activeBlock,
     children,
