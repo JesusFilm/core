@@ -1,4 +1,3 @@
-
 describe('journeys', () => {
   beforeEach(() => cy.visit('http://localhost:4100/'))
 
