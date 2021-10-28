@@ -86,7 +86,6 @@ As an example we are going to run through the steps to get the Next Steps Journe
 
 1. Make a copy of `apps/api-gateway/.env` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
 1. Make a copy of `apps/api-journey/.env` with the file name `apps/api-journey/.env.local`. Open the file and set up your own environment variables.
-1. Repeat step 2 for `apps/api-gateway`
 1. run `nx run api-journeys:migrations`
 1. run `nx run api-journeys:seed`
 1. run `nx run api-gateway:serve-all`
