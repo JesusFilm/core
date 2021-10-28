@@ -72,8 +72,8 @@ export function CardWrapper({
         borderRadius: (theme) => theme.spacing(3),
         backgroundColor,
         backgroundImage: 'none',
-        width: '100%',
-        overflow: 'scroll'
+        width: '100%'
+        // overflow: 'scroll'
       }}
       elevation={3}
     >

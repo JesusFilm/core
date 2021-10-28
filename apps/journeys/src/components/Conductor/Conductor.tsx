@@ -19,8 +19,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [windowWidth, setWidth] = useState(window.innerWidth)
-  const theme = useTheme()
   const breakpoints = useBreakpoints()
+  const theme = useTheme()
 
   useEffect(() => {
     setTreeBlocks(blocks)
@@ -42,9 +42,26 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
+  const previewSlideWidth = 16
+  const maxSlideWidth = breakpoints.sm ? 660 : 854
+  const minGapBetween = breakpoints.md ? 44 : 16
+  const responsiveGapBetween =
+    (windowWidth - maxSlideWidth - previewSlideWidth * 2) / 2
+
+  const [gapBetweenSlides, setGapBetween] = useState(
+    Math.max(minGapBetween, responsiveGapBetween)
+  )
+
   useEffect(() => {
     const updateWidth = (): void => {
       setWidth(window.innerWidth)
+      setGapBetween(
+        Math.max(
+          minGapBetween,
+          (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
+        )
+      )
+      console.log('updatedWidth')
     }
 
     window.addEventListener('resize', updateWidth)
@@ -81,56 +98,50 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       </Box>
       <Box sx={{ display: 'flex', height: 'auto', flexGrow: 1 }}>
         <Swiper
-          spaceBetween={16}
-          slidesPerView="auto"
+          // spaceBetween={16}
+          slidesPerView={'auto'}
           centeredSlides={true}
+          centeredSlidesBounds={true}
+          // slidesOffsetBefore={24}
+          // slidesOffsetAfter={32}
           onSwiper={(swiper) => setSwiper(swiper)}
+          // onOrientationchange={(swiper) => {
+          //   updateWidth()
+          // }}
           allowTouchMove={false}
-          // autoHeight={true}
-          breakpoints={{
-            // variable spaceBetween on landscape
-            '@1.25': {
-              spaceBetween:
-                (windowWidth - Math.min(660, windowWidth - 64) - 32) / 2
-            },
-            600: {
-              spaceBetween: 44
-            },
-            961: {
-              spaceBetween: (windowWidth - 854 - 32) / 2
-            }
+          updateOnWindowResize={true}
+          watchOverflow={true}
+          style={{
+            paddingLeft: `${16 + gapBetweenSlides / 2}px`,
+            paddingRight: `${16 + gapBetweenSlides / 2}px`
           }}
         >
           {treeBlocks.map((block) => (
             <SwiperSlide
               key={block.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                paddingTop: '4px',
-                paddingBottom: '4px',
-                width: `calc(100% - ${breakpoints.md ? 60 : 32}px - ${
-                  breakpoints.md ? 60 : 32
-                }px)`,
-                maxWidth: breakpoints.sm
-                  ? '660px'
-                  : breakpoints.lg || breakpoints.xl
-                  ? '854px'
-                  : undefined,
-                minWidth: breakpoints.sm
-                  ? '504px'
-                  : breakpoints.lg || breakpoints.xl
-                  ? '854px'
-                  : undefined,
-                height: 'auto',
-                maxHeight: breakpoints.sm
-                  ? '280px'
-                  : breakpoints.lg || breakpoints.xl
-                  ? '480px'
-                  : 'calc(100% - 32px)'
-              }}
+              style={{ marginRight: `${gapBetweenSlides / 2}px` }}
             >
-              <BlockRenderer {...block} />
+              <Box
+                sx={{
+                  display: 'flex',
+                  // justifyContent: 'center',
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                  px: `${gapBetweenSlides / 2}px`,
+                  maxHeight: 'calc(100vh - 32px)',
+                  [theme.breakpoints.only('sm')]: {
+                    maxWidth: '660px',
+                    maxHeight: '280px'
+                  },
+                  [theme.breakpoints.up('lg')]: {
+                    minWidth: '854px',
+                    maxWidth: '854px',
+                    maxHeight: '480px'
+                  }
+                }}
+              >
+                <BlockRenderer {...block} />
+              </Box>
             </SwiperSlide>
           ))}
           <Box
