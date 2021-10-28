@@ -65,6 +65,13 @@ type CardBlock implements Block {
   as a background. Blocks are often of type ImageBlock or VideoBlock.
   """
   coverBlockId: ID
+
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean!
   id: ID!
   parentBlockId: ID
 
@@ -154,11 +161,29 @@ enum IconSize {
 
 type ImageBlock implements Block {
   alt: String!
+
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+  """
+  blurhash: String!
   height: Int!
   id: ID!
   parentBlockId: ID
   src: String!
   width: Int!
+}
+
+input ImageBlockCreateInput {
+  alt: String!
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  src: String!
 }
 
 type Item {
@@ -205,6 +230,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
