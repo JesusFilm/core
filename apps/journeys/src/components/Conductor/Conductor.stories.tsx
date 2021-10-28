@@ -656,7 +656,7 @@ export const WithContent = (): ReactElement => (
                   align: null,
                   color: null,
                   content: 'a quote',
-                  variant: TypographyVariant.h6,
+                  variant: TypographyVariant.overline,
                   children: []
                 },
                 {
@@ -667,7 +667,7 @@ export const WithContent = (): ReactElement => (
                   color: null,
                   content:
                     '“God sent his Son into the world not to judge the world, but to save the world through him.”',
-                  variant: TypographyVariant.h5,
+                  variant: TypographyVariant.subtitle1,
                   children: []
                 },
                 {

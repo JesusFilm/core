@@ -37,8 +37,11 @@ export function Card({
         p: 0,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
-        backgroundImage:
-          coverBlock != null ? `url(${coverBlock.src})` : undefined
+        backgroundImage: (theme) => ({
+          // We don't want the background image to peek though
+          // while card is loading on the smaller sizes.
+            md: coverBlock != null ? `url(${coverBlock.src})` : undefined
+        }),
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
