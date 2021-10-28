@@ -78,13 +78,20 @@ export function WithCover({
           position: 'relative'
         }}
       >
-        <Box sx={{ margin: 'auto', 
-          p: {
-            xs: `calc(6vw + ${theme.spacing(4)}) ${theme.spacing(7)} ${theme.spacing(7)}`,
-            sm: theme.spacing(7, 8, 7 , 4)
-          }, 
-          overflow: 'auto',
-          }}>{children}</Box>
+        <Box
+          sx={{
+            margin: 'auto',
+            p: {
+              xs: `calc(6vw + ${theme.spacing(4)}) ${theme.spacing(
+                7
+              )} ${theme.spacing(7)}`,
+              sm: theme.spacing(7, 8, 7, 4)
+            },
+            overflow: 'auto'
+          }}
+        >
+          {children}
+        </Box>
         <Box
           ref={xsRef}
           sx={{
