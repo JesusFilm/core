@@ -331,7 +331,7 @@ export const WithContent = (): ReactElement => (
                   parentBlockId: 'card0.id',
                   align: null,
                   color: null,
-                  content: "What's the purpose, and how did we get here?",
+                  content: "What's our purpose, and how did we get here?",
                   variant: TypographyVariant.h3,
                   children: []
                 },
@@ -572,7 +572,7 @@ export const WithContent = (): ReactElement => (
                   parentBlockId: 'card0.id',
                   align: null,
                   color: null,
-                  content: 'HOW DO YOU THINK?',
+                  content: 'What do you think?',
                   variant: TypographyVariant.h6,
                   children: []
                 },

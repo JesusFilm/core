@@ -32,7 +32,7 @@ const children: TreeBlock[] = [
     parentBlockId: null,
     align: null,
     color: null,
-    content: "What's the purpose, and how did we get here?",
+    content: "What's our purpose, and how did we get here?",
     variant: TypographyVariant.h3,
     children: []
   },

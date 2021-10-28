@@ -7,7 +7,8 @@ import {
 import { useTheme, Box } from '@mui/material'
 import { decode } from 'blurhash'
 
-const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
+const greatestCommonDivisor = (a: number, b: number): number =>
+  b === 0 ? a : greatestCommonDivisor(b, a % b)
 
 interface WithCoverProps extends Pick<CardBlock, 'themeMode' | 'themeName'> {
   children: ReactNode
@@ -24,7 +25,7 @@ export function WithCover({
 
   useEffect(() => {
     if (xsRef.current != null && lgRef.current != null) {
-      const divisor = gcd(coverBlock.width, coverBlock.height)
+      const divisor = greatestCommonDivisor(coverBlock.width, coverBlock.height)
       const width = coverBlock.width / divisor
       const height = coverBlock.height / divisor
       const pixels = decode(coverBlock.blurhash, width, height, 1)
