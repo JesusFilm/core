@@ -33,7 +33,7 @@ interface VideoProps extends TreeBlock<VideoBlock> {
 }
 
 function flatten(node: TreeBlock, parent?: TreeBlock) {
-  const nodes = [{ id: node.id, parent: parent?.id }]
+  const nodes = [{ id: node.id, parent: parent?.id, __typename: node.__typename }]
 
   if (Array.isArray(node.children)) {
     for (const child of node.children) {
@@ -67,7 +67,7 @@ export function Video({
 
   const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
-  const [isAutoplay, setAutoplay] = useState<boolean>(false)
+  const [isAutoplay, setAutoplay] = useState<boolean | string>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
@@ -102,7 +102,7 @@ export function Video({
     async (
       url: string,
       src: string | null,
-      autoplay: boolean | null
+      // autoplay: boolean | null
     ): Promise<void> => {
       if (mediaComponentId === undefined || languageId === undefined) {
         src !== null && setVideoUrl(src)
@@ -110,20 +110,23 @@ export function Video({
         await fetch(url).then((response) => setVideoUrl(response.url))
       }
 
-      if (autoplay !== null && autoplay && activeBlock != null) {
+      if (activeBlock != null) {
         const descendants = flatten(activeBlock)
-        const videoBlock = descendants.find((block) => block.id === 'video1.id')
+        const videoBlock = descendants.find((block) => block.__typename === 'VideoBlock')
+        // This still affects all the video
         if (videoBlock != null)
-          setAutoplay(true)
+          setAutoplay('muted')
       }
     },
     [languageId, mediaComponentId, activeBlock]
   )
 
   useEffect(() => {
-    void validate(arclightURL, videoSrc, autoplay)
+    void validate(arclightURL, videoSrc)
 
-    if (videoUrl !== undefined) {
+    console.log(isAutoplay)
+
+    if (videoUrl !== undefined && isAutoplay !== undefined) {
       const initialOptions: videojs.PlayerOptions = {
         autoplay: isAutoplay,
         controls: true,
@@ -185,7 +188,6 @@ export function Video({
   }, [
     videoNode,
     isAutoplay,
-    autoplay,
     activeBlock,
     children,
     videoSrc,
