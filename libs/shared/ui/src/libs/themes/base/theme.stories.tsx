@@ -11,7 +11,7 @@ import {
   SimplePaletteColorOptions
 } from '@mui/material'
 
-import { sharedUiConfig, themes } from '../../../index'
+import { sharedUiConfig, themes, useBreakpoints } from '../../../index'
 
 const ThemeDemo = {
   ...sharedUiConfig,
@@ -244,6 +244,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   const theme = useTheme()
   const [width, setWidth] = useState(window.innerWidth)
   const [height, setHeight] = useState(window.innerHeight)
+  const breakpoints = useBreakpoints()
 
   const maxBreakpointValue = (breakpoint: Breakpoint): string => {
     switch (breakpoint) {
@@ -284,7 +285,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
         return (
           <>
             <Typography
-              variant="h6"
+              variant="h4"
               sx={{
                 [theme.breakpoints.only(variant as Breakpoint)]: {
                   display: 'flex'
@@ -292,10 +293,19 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
                 display: 'none'
               }}
             >
-              {`Breakpoint: ${variant}`}
+              {`sx: theme.breakpoint: ${variant}`}
             </Typography>
             <Typography
-              variant="body2"
+              variant="h4"
+              align="center"
+              style={{
+                display: breakpoints[variant as Breakpoint] ? 'flex' : 'none'
+              }}
+            >
+              {`style: useBreakpoint: ${variant}`}
+            </Typography>
+            <Typography
+              variant="body1"
               sx={{
                 [theme.breakpoints.only(variant as Breakpoint)]: {
                   display: 'flex'
@@ -311,7 +321,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
         )
       })}
       <Typography
-        variant="body2"
+        variant="body1"
         gutterBottom
       >{`Current width: ${width}px | Current height: ${height}px`}</Typography>
       <Typography
