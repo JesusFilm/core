@@ -4,12 +4,16 @@ export const VIDEO_FIELDS = gql`
   fragment VideoFields on VideoBlock {
     id
     parentBlockId
-    mediaComponentId
-    languageId
-    videoSrc: src
     title
     volume
     autoplay
     startAt
+    video {
+      src
+      ... on VideoArclight {
+        mediaComponentId
+        languageId
+      }
+    }
   }
 `

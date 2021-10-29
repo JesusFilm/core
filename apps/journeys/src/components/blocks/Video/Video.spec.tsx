@@ -12,11 +12,14 @@ describe('VideoComponent', () => {
     parentBlockId: '',
     volume: 1,
     autoplay: false,
-    mediaComponentId: null,
-    languageId: null,
-    videoSrc: null,
     title: 'Video',
     startAt: 10,
+    video: {
+      __typename: 'VideoArclight',
+      mediaComponentId: '5_0-NUA0201-0-0',
+      languageId: '529',
+      src: null
+    },
     children: []
   }
 
@@ -46,8 +49,6 @@ describe('VideoComponent', () => {
       >
         <Video
           {...block}
-          mediaComponentId="2_0-FallingPlates"
-          languageId="529"
         />
       </MockedProvider>
     )
@@ -55,35 +56,5 @@ describe('VideoComponent', () => {
     expect(getByTestId('VideoComponent')).toHaveClass('video-js')
   })
 
-  it('should render the video through src successfully', () => {
-    const { getByTestId } = renderWithApolloClient(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_RESPONSE_CREATE,
-              variables: {
-                id: 'uuid',
-                blockId: 'Video1',
-                state: VideoResponseStateEnum.PLAYING
-              }
-            },
-            result: {
-              data: {
-                id: 'uuid',
-                state: VideoResponseStateEnum.PLAYING
-              }
-            }
-          }
-        ]}
-      >
-        <Video
-          {...block}
-          videoSrc="https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8"
-        />
-      </MockedProvider>
-    )
-
-    expect(getByTestId('VideoComponent')).toHaveClass('video-js')
-  })
+  // TODO: rewrite test for generic url
 })

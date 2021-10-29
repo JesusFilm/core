@@ -240,17 +240,29 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface GetJourney_journey_blocks_VideoBlock_video_VideoGeneric {
+  __typename: "VideoGeneric";
+  src: string;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_video_VideoArclight {
+  __typename: "VideoArclight";
+  src: string;
+  mediaComponentId: string;
+  languageId: string;
+}
+
+export type GetJourney_journey_blocks_VideoBlock_video = GetJourney_journey_blocks_VideoBlock_video_VideoGeneric | GetJourney_journey_blocks_VideoBlock_video_VideoArclight;
+
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
-  mediaComponentId: string | null;
-  languageId: string | null;
-  videoSrc: string | null;
   title: string;
   volume: number | null;
   autoplay: boolean | null;
   startAt: number | null;
+  video: GetJourney_journey_blocks_VideoBlock_video | null;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TriggerBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;

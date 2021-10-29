@@ -48,8 +48,10 @@ Default.args = {
   parentBlockId: '',
   volume: 1,
   autoplay: true,
-  mediaComponentId: '2_0-FallingPlates',
-  languageId: '529'
+  video: {
+    mediaComponentId: '5_0-NUA0201-0-0',
+    languageId: '529',
+  }
 }
 
 export const Src = Template.bind({})
@@ -70,8 +72,9 @@ StartAt.args = {
   parentBlockId: '',
   volume: 1,
   autoplay: true,
-  mediaComponentId: '5_0-NUA0201-0-0',
-  languageId: '529',
+  video: {
+    src: 'https://arc.gt/hls/5_0-NUA0201-0-0/529'
+  },
   startAt: 30
 }
 

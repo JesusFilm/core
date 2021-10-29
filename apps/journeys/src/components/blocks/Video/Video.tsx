@@ -32,25 +32,9 @@ interface VideoProps extends TreeBlock<VideoBlock> {
   uuid?: () => string
 }
 
-function flatten(node: TreeBlock, parent?: TreeBlock) {
-  const nodes = [{ id: node.id, parent: parent?.id, __typename: node.__typename }]
-
-  if (Array.isArray(node.children)) {
-    for (const child of node.children) {
-      nodes.push(...flatten(child, node))
-    }
-  } else if (typeof node.children === 'object') {
-    nodes.push(...flatten(node.children, node))
-  }
-
-  return nodes
-}
-
 export function Video({
   id: blockId,
-  mediaComponentId,
-  languageId,
-  videoSrc,
+  video,
   autoplay,
   startAt,
   uuid = uuidv4,
@@ -61,13 +45,10 @@ export function Video({
     VIDEO_RESPONSE_CREATE
   )
   const player = useRef<videojs.Player>()
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  const arclightURL = `https://arc.gt/hls/${mediaComponentId}/${languageId}`
   const { activeBlock } = useBlocks()
 
-  const [videoUrl, setVideoUrl] = useState<string | undefined>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
-  const [isAutoplay, setAutoplay] = useState<boolean | string>()
+  // const [isAutoplay, setAutoplay] = useState<boolean | string>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
@@ -98,37 +79,10 @@ export function Video({
     [blockId, uuid, videoResponseCreate]
   )
 
-  const validate = useCallback(
-    async (
-      url: string,
-      src: string | null,
-      // autoplay: boolean | null
-    ): Promise<void> => {
-      if (mediaComponentId === undefined || languageId === undefined) {
-        src !== null && setVideoUrl(src)
-      } else {
-        await fetch(url).then((response) => setVideoUrl(response.url))
-      }
-
-      if (activeBlock != null) {
-        const descendants = flatten(activeBlock)
-        const videoBlock = descendants.find((block) => block.__typename === 'VideoBlock')
-        // This still affects all the video
-        if (videoBlock != null)
-          setAutoplay('muted')
-      }
-    },
-    [languageId, mediaComponentId, activeBlock]
-  )
-
   useEffect(() => {
-    void validate(arclightURL, videoSrc)
-
-    console.log(isAutoplay)
-
-    if (videoUrl !== undefined && isAutoplay !== undefined) {
+    if (video != null) {
       const initialOptions: videojs.PlayerOptions = {
-        autoplay: isAutoplay,
+        autoplay: autoplay === true ? 'muted' : false,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -150,11 +104,11 @@ export function Video({
         },
         sources: [
           {
-            src: videoUrl
+            src: video.src
           }
         ],
         fluid: true,
-        responsive: true,
+        responsive: true
       }
 
       if (videoNode.current != null) {
@@ -166,7 +120,11 @@ export function Video({
           startAt !== null && player.current?.currentTime(startAt)
         })
         player.current.on('playing', () => {
-          player.current !== undefined && handleVideoResponse(VideoResponseStateEnum.PLAYING, player.current.currentTime())
+          player.current !== undefined &&
+            handleVideoResponse(
+              VideoResponseStateEnum.PLAYING,
+              player.current.currentTime()
+            )
         })
         player.current.on('pause', () => {
           player.current !== undefined &&
@@ -187,14 +145,11 @@ export function Video({
     }
   }, [
     videoNode,
-    isAutoplay,
     activeBlock,
     children,
-    videoSrc,
-    validate,
+    autoplay,
+    video,
     handleVideoResponse,
-    videoUrl,
-    arclightURL,
     startAt
   ])
 

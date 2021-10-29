@@ -355,17 +355,29 @@ enum TypographyVariant {
   subtitle2
 }
 
+interface Video {
+  src: String!
+}
+
+type VideoArclight implements Video {
+  languageId: String!
+  mediaComponentId: String!
+  src: String!
+}
+
 type VideoBlock implements Block {
   autoplay: Boolean
   description: String
   id: ID!
-  languageId: String
-  mediaComponentId: String
   parentBlockId: ID
-  src: String
   startAt: Int
   title: String!
+  video: Video
   volume: Int
+}
+
+type VideoGeneric implements Video {
+  src: String!
 }
 
 type VideoResponse implements Response {
