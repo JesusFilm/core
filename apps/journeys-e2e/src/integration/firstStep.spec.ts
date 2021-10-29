@@ -1,11 +1,15 @@
 describe('journeys', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:4100/')
+    cy.visit('/')
     cy.get('a').contains('#FallingPlates').click()
   })
 
   it('Should have correct metadata', () => {
-    cy.title().should('eq', '#FallingPlates')
+    cy.get('head meta[property="og:image"]').should(
+      'have.attr',
+      'content',
+      'https://i4.ytimg.com/vi/KGlx11BxF24/maxresdefault.jpg'
+    )
     cy.get('head meta[name="description"]').should(
       'have.attr',
       'content',
@@ -16,10 +20,6 @@ describe('journeys', () => {
       'content',
       '#FallingPlates'
     )
-    cy.get('head meta[property="og:image"]').should(
-      'have.attr',
-      'content',
-      'https://i4.ytimg.com/vi/KGlx11BxF24/maxresdefault.jpg'
-    )
+    cy.title().should('eq', '#FallingPlates')
   })
 })

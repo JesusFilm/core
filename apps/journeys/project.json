@@ -43,8 +43,7 @@
             "command": "nx serve journeys"
           }
         ],
-        "parallel": true,
-        "readyWhen": "http://0.0.0.0:4100"
+        "parallel": true
       }
     },
     "export": {
