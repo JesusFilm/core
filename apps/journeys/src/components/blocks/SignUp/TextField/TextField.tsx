@@ -17,12 +17,10 @@ const TextField = ({
   ...muiFieldProps
 }: TextFieldProps): ReactElement => {
   const [formikFieldProps, meta] = useField(name)
-
-  const Field = MuiTextField.default
   const hasError = meta.error !== undefined && meta.touched
 
   return (
-    <Field
+    <MuiTextField
       {...muiFieldProps}
       {...formikFieldProps}
       sx={{
