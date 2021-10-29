@@ -6,9 +6,9 @@ import type SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import { JourneyProgress } from '../JourneyProgress'
-import { Box, Container, useTheme } from '@mui/material'
-import 'swiper/swiper.min.css'
+import { Box, useTheme } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
+import 'swiper/swiper.min.css'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -43,24 +43,34 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   const previewSlideWidth = 16
-  const maxSlideWidth = breakpoints.sm ? 660 : 854
   const minGapBetween = breakpoints.md ? 44 : 16
-  const responsiveGapBetween =
-    (windowWidth - maxSlideWidth - previewSlideWidth * 2) / 2
+  const maxSlideWidth = breakpoints.sm ? 660 : 854
+
+  const responsiveGapBetween = (
+    minGapBetween: number,
+    maxSlideWidth: number
+  ): number => {
+    console.log(
+      breakpoints,
+      Math.max(
+        minGapBetween,
+        (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
+      )
+    )
+    return Math.max(
+      minGapBetween,
+      (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
+    )
+  }
 
   const [gapBetweenSlides, setGapBetween] = useState(
-    Math.max(minGapBetween, responsiveGapBetween)
+    responsiveGapBetween(minGapBetween, maxSlideWidth)
   )
 
   useEffect(() => {
     const updateWidth = (): void => {
       setWidth(window.innerWidth)
-      setGapBetween(
-        Math.max(
-          minGapBetween,
-          (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
-        )
-      )
+      setGapBetween(responsiveGapBetween(minGapBetween, maxSlideWidth))
       console.log('updatedWidth')
     }
 
@@ -69,17 +79,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }, [])
 
   return (
-    <Container
-      disableGutters
+    <Box
       sx={{
         display: 'flex',
         // Fit to screen
         height: '80vh',
-        m: 0,
         flexDirection: 'column',
-        [theme.breakpoints.up('xs')]: {
-          maxWidth: '100vw'
-        },
         [theme.breakpoints.up('lg')]: {
           flexDirection: 'column-reverse',
           height: 'auto'
@@ -91,7 +96,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           display: 'flex',
           alignSelf: 'center',
           my: 6,
-          width: 'calc(100% - 20px - 20px)'
+          width: '100%',
+          paddingLeft: `${16 + gapBetweenSlides}px`,
+          paddingRight: `${16 + gapBetweenSlides}px`
         }}
       >
         <JourneyProgress />
@@ -119,7 +126,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           {treeBlocks.map((block) => (
             <SwiperSlide
               key={block.id}
-              style={{ marginRight: `${gapBetweenSlides / 2}px` }}
+              style={{
+                marginRight: '0px'
+              }}
             >
               <Box
                 sx={{
@@ -127,11 +136,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   // justifyContent: 'center',
                   paddingTop: '4px',
                   paddingBottom: '4px',
-                  px: `${gapBetweenSlides / 2}px`,
+                  px: `${responsiveGapBetween(16, 854) / 2}px`,
                   maxHeight: 'calc(100vh - 32px)',
                   [theme.breakpoints.only('sm')]: {
+                    px: `${responsiveGapBetween(16, 660) / 2}px`,
                     maxWidth: '660px',
                     maxHeight: '280px'
+                  },
+                  [theme.breakpoints.only('md')]: {
+                    px: `${responsiveGapBetween(44, 854) / 2}px`
                   },
                   [theme.breakpoints.up('lg')]: {
                     minWidth: '854px',
@@ -193,7 +206,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           />
         </Swiper>
       </Box>
-    </Container>
+    </Box>
   )
 }
 

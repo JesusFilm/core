@@ -72,7 +72,8 @@ export function CardWrapper({
         borderRadius: (theme) => theme.spacing(3),
         backgroundColor,
         backgroundImage: 'none',
-        width: '100%'
+        width: '100%',
+        height: '100%'
       }}
       elevation={3}
     >
