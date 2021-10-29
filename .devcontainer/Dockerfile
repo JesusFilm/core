@@ -14,7 +14,7 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg -
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends postgresql-client-13 gnupg2
+    && apt-get -y install --no-install-recommends postgresql-client-13 gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10

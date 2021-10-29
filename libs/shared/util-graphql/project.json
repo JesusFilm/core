@@ -1,0 +1,29 @@
+{
+  "root": "libs/shared/util-graphql",
+  "sourceRoot": "libs/shared/util-graphql/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/shared/util-graphql/**/*.ts"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b libs/shared/util-graphql/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/shared/util-graphql"],
+      "options": {
+        "jestConfig": "libs/shared/util-graphql/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
