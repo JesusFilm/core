@@ -1,9 +1,11 @@
 describe('journeys', () => {
-  beforeEach(() => cy.visit('/a9b15d41-df33-4048-8055-81b6466dfbb8'))
-  // beforeEach(() => cy.visit(`/${Journey.id}`))
+  beforeEach(() => {
+    cy.visit('http://localhost:4100/')
+    cy.get('a').contains('#FallingPlates').click()
+  })
 
   it('Should have correct metadata', () => {
-    cy.document().its('title').should('eq', '#FallingPlates')
+    cy.title().should('eq', '#FallingPlates')
     cy.get('head meta[name="description"]').should(
       'have.attr',
       'content',
