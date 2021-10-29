@@ -1,8 +1,10 @@
 import { ReactElement } from 'react'
 import { useField } from 'formik'
 
-import * as MuiTextField from '@mui/material/TextField'
-import { OutlinedTextFieldProps as MuiTextFieldProps } from '@mui/material'
+import {
+  TextField as MuiTextField,
+  OutlinedTextFieldProps as MuiTextFieldProps
+} from '@mui/material'
 
 export interface TextFieldProps
   extends Pick<

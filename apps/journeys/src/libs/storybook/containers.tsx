@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { CardWrapper } from '../../components/blocks/Card'

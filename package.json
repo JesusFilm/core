@@ -111,6 +111,7 @@
     "apollo": "^2.33.6",
     "babel-jest": "27.2.3",
     "babel-loader": "8.1.0",
+    "babel-plugin-import": "^1.13.3",
     "chromatic": "^5.9.2",
     "copy-webpack-plugin": "^9.0.1",
     "cypress": "^7.3.0",
