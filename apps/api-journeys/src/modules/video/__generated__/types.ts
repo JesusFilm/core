@@ -3,9 +3,12 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace VideoModule {
   interface DefinedFields {
-    VideoBlock: 'id' | 'parentBlockId' | 'mediaComponentId' | 'languageId' | 'src' | 'title' | 'startAt' | 'description' | 'volume' | 'autoplay';
+    VideoArclight: 'mediaComponentId' | 'languageId' | 'src';
+    VideoGeneric: 'src';
+    VideoBlock: 'id' | 'parentBlockId' | 'title' | 'startAt' | 'description' | 'volume' | 'autoplay' | 'video';
     VideoResponse: 'id' | 'userId' | 'state' | 'position' | 'block';
     Mutation: 'videoResponseCreate';
+    Video: 'src';
   };
   
   interface DefinedEnumValues {
@@ -18,17 +21,25 @@ export namespace VideoModule {
   
   export type VideoResponseStateEnum = DefinedEnumValues['VideoResponseStateEnum'];
   export type VideoResponseCreateInput = Pick<Types.VideoResponseCreateInput, DefinedInputFields['VideoResponseCreateInput']>;
+  export type Video = Pick<Types.Video, DefinedFields['Video']>;
+  export type VideoArclight = Pick<Types.VideoArclight, DefinedFields['VideoArclight']>;
+  export type VideoGeneric = Pick<Types.VideoGeneric, DefinedFields['VideoGeneric']>;
   export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
   export type Block = Types.Block;
   export type VideoResponse = Pick<Types.VideoResponse, DefinedFields['VideoResponse']>;
   export type Response = Types.Response;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
+  export type VideoArclightResolvers = Pick<Types.VideoArclightResolvers, DefinedFields['VideoArclight'] | '__isTypeOf'>;
+  export type VideoGenericResolvers = Pick<Types.VideoGenericResolvers, DefinedFields['VideoGeneric'] | '__isTypeOf'>;
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
   export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse'] | '__isTypeOf'>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
+  export type VideoResolvers = Pick<Types.VideoResolvers, DefinedFields['Video']>;
   
   export interface Resolvers {
+    VideoArclight?: VideoArclightResolvers;
+    VideoGeneric?: VideoGenericResolvers;
     VideoBlock?: VideoBlockResolvers;
     VideoResponse?: VideoResponseResolvers;
     Mutation?: MutationResolvers;
@@ -38,18 +49,26 @@ export namespace VideoModule {
     '*'?: {
       '*'?: gm.Middleware[];
     };
+    VideoArclight?: {
+      '*'?: gm.Middleware[];
+      mediaComponentId?: gm.Middleware[];
+      languageId?: gm.Middleware[];
+      src?: gm.Middleware[];
+    };
+    VideoGeneric?: {
+      '*'?: gm.Middleware[];
+      src?: gm.Middleware[];
+    };
     VideoBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
-      mediaComponentId?: gm.Middleware[];
-      languageId?: gm.Middleware[];
-      src?: gm.Middleware[];
       title?: gm.Middleware[];
       startAt?: gm.Middleware[];
       description?: gm.Middleware[];
       volume?: gm.Middleware[];
       autoplay?: gm.Middleware[];
+      video?: gm.Middleware[];
     };
     VideoResponse?: {
       '*'?: gm.Middleware[];

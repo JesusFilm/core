@@ -4,6 +4,8 @@ import { AuthenticationError } from 'apollo-server-errors'
 import { transformBlock } from '../block'
 import { transformResponse } from '../response'
 import { VideoModule } from './__generated__/types'
+import fetch from 'node-fetch'
+import { VideoResolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   enum VideoResponseStateEnum {
@@ -22,17 +24,29 @@ const typeDefs = gql`
     position: Float
   }
 
+  interface Video {
+    src: String!
+  }
+
+  type VideoArclight implements Video {
+    mediaComponentId: String!
+    languageId: String!
+    src: String!
+  }
+
+  type VideoGeneric implements Video {
+    src: String!
+  }
+
   type VideoBlock implements Block {
     id: ID!
     parentBlockId: ID
-    mediaComponentId: String
-    languageId: String
-    src: String
     title: String!
     startAt: Int
     description: String
     volume: Int
     autoplay: Boolean
+    video: Video
   }
 
   type VideoResponse implements Response {
@@ -48,7 +62,26 @@ const typeDefs = gql`
   }
 `
 
-const resolvers: VideoModule.Resolvers = {
+const resolvers: VideoModule.Resolvers & { Video: VideoResolvers } = {
+  Video: {
+    __resolveType(video) {
+      if (
+        (video as VideoModule.VideoArclight).mediaComponentId != null &&
+        (video as VideoModule.VideoArclight).languageId != null
+      ) {
+        return 'VideoArclight'
+      }
+      return 'VideoGeneric'
+    }
+  },
+  VideoArclight: {
+    src: async ({ mediaComponentId, languageId }) => {
+      const response = await fetch(
+        `https://arc.gt/hls/${mediaComponentId}/${languageId}`
+      )
+      return response.url
+    }
+  },
   VideoResponse: {
     async block(response, __, { db }) {
       const block = await db.block.findUnique({
