@@ -27,36 +27,34 @@ export type Block = {
 
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
-  id: Scalars['ID'];
-  parentBlockId?: Maybe<Scalars['ID']>;
-  label: Scalars['String'];
-  variant?: Maybe<ButtonVariant>;
+  action?: Maybe<Action>;
   color?: Maybe<ButtonColor>;
+  endIcon?: Maybe<Icon>;
+  id: Scalars['ID'];
+  label: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
   size?: Maybe<ButtonSize>;
   startIcon?: Maybe<Icon>;
-  endIcon?: Maybe<Icon>;
-  action?: Maybe<Action>;
+  variant?: Maybe<ButtonVariant>;
 };
 
 export type ButtonColor =
-  | 'primary'
-  | 'secondary'
   | 'error'
-  | 'inherit';
+  | 'inherit'
+  | 'primary'
+  | 'secondary';
 
 export type ButtonSize =
-  | 'small'
+  | 'large'
   | 'medium'
-  | 'large';
+  | 'small';
 
 export type ButtonVariant =
-  | 'text'
-  | 'contained';
+  | 'contained'
+  | 'text';
 
 export type CardBlock = Block & {
   __typename?: 'CardBlock';
-  id: Scalars['ID'];
-  parentBlockId?: Maybe<Scalars['ID']>;
   /** backgroundColor should be a HEX color value e.g #FFFFFF for white. */
   backgroundColor?: Maybe<Scalars['String']>;
   /**
@@ -71,6 +69,8 @@ export type CardBlock = Block & {
    * background.
    */
   fullscreen: Scalars['Boolean'];
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
    * themeMode from journey
@@ -83,63 +83,99 @@ export type CardBlock = Block & {
   themeName?: Maybe<ThemeName>;
 };
 
+export type GridAlignItems =
+  | 'baseline'
+  | 'center'
+  | 'flexEnd'
+  | 'flexStart';
+
+export type GridContainerBlock = Block & {
+  __typename?: 'GridContainerBlock';
+  alignItems: GridAlignItems;
+  direction: GridDirection;
+  id: Scalars['ID'];
+  justifyContent: GridJustifyContent;
+  parentBlockId?: Maybe<Scalars['ID']>;
+  spacing: Scalars['Int'];
+};
+
+export type GridDirection =
+  | 'column'
+  | 'columnReverse'
+  | 'row'
+  | 'rowReverse';
+
+export type GridItemBlock = Block & {
+  __typename?: 'GridItemBlock';
+  id: Scalars['ID'];
+  lg: Scalars['Int'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  sm: Scalars['Int'];
+  xl: Scalars['Int'];
+};
+
+export type GridJustifyContent =
+  | 'center'
+  | 'flexEnd'
+  | 'flexStart';
+
 export type Icon = {
   __typename?: 'Icon';
-  name: IconName;
   color?: Maybe<IconColor>;
+  name: IconName;
   size?: Maybe<IconSize>;
 };
 
 export type IconColor =
-  | 'primary'
-  | 'secondary'
   | 'action'
-  | 'error'
   | 'disabled'
-  | 'inherit';
+  | 'error'
+  | 'inherit'
+  | 'primary'
+  | 'secondary';
 
 /** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
-  | 'PlayArrow'
-  | 'Translate'
-  | 'CheckCircle'
-  | 'RadioButtonUnchecked'
-  | 'FormatQuote'
-  | 'LockOpen'
   | 'ArrowForward'
   | 'ChatBubbleOutline'
+  | 'CheckCircle'
+  | 'FormatQuote'
   | 'LiveTv'
-  | 'MenuBook';
+  | 'LockOpen'
+  | 'MenuBook'
+  | 'PlayArrow'
+  | 'RadioButtonUnchecked'
+  | 'Translate';
 
 export type IconSize =
-  | 'sm'
-  | 'md'
+  | 'inherit'
   | 'lg'
-  | 'xl'
-  | 'inherit';
+  | 'md'
+  | 'sm'
+  | 'xl';
 
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
-  id: Scalars['ID'];
-  parentBlockId?: Maybe<Scalars['ID']>;
-  src: Scalars['String'];
-  width: Scalars['Int'];
-  height: Scalars['Int'];
   alt: Scalars['String'];
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String'];
+  height: Scalars['Int'];
+  id: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  src: Scalars['String'];
+  width: Scalars['Int'];
 };
 
 export type ImageBlockCreateInput = {
+  alt: Scalars['String'];
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: Maybe<Scalars['ID']>;
-  parentBlockId?: Maybe<Scalars['ID']>;
   journeyId: Scalars['ID'];
+  parentBlockId?: Maybe<Scalars['ID']>;
   src: Scalars['String'];
-  alt: Scalars['String'];
 };
 
 export type Journey = {
@@ -159,17 +195,17 @@ export type JourneyCreateInput = {
    * (Provided for optimistic mutation result matching)
    */
   id?: Maybe<Scalars['ID']>;
-  title: Scalars['String'];
   locale?: Maybe<Scalars['String']>;
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
+  title: Scalars['String'];
 };
 
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
   gtmEventName?: Maybe<Scalars['String']>;
-  url: Scalars['String'];
   target?: Maybe<Scalars['String']>;
+  url: Scalars['String'];
 };
 
 export type Mutation = {
@@ -223,8 +259,8 @@ export type NavigateAction = Action & {
 
 export type NavigateToBlockAction = Action & {
   __typename?: 'NavigateToBlockAction';
-  gtmEventName?: Maybe<Scalars['String']>;
   blockId: Scalars['String'];
+  gtmEventName?: Maybe<Scalars['String']>;
 };
 
 export type NavigateToJourneyAction = Action & {
@@ -235,8 +271,8 @@ export type NavigateToJourneyAction = Action & {
 
 export type Query = {
   __typename?: 'Query';
-  journeys: Array<Journey>;
   journey?: Maybe<Journey>;
+  journeys: Array<Journey>;
 };
 
 
@@ -246,32 +282,32 @@ export type QueryJourneyArgs = {
 
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
-  id: Scalars['ID'];
-  parentBlockId?: Maybe<Scalars['ID']>;
-  label: Scalars['String'];
   action?: Maybe<Action>;
+  id: Scalars['ID'];
+  label: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type RadioQuestionBlock = Block & {
   __typename?: 'RadioQuestionBlock';
-  id: Scalars['ID'];
-  parentBlockId?: Maybe<Scalars['ID']>;
-  label: Scalars['String'];
   description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  label: Scalars['String'];
+  parentBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type RadioQuestionResponse = Response & {
   __typename?: 'RadioQuestionResponse';
-  id: Scalars['ID'];
-  userId: Scalars['ID'];
-  radioOptionBlockId: Scalars['ID'];
   block?: Maybe<RadioQuestionBlock>;
+  id: Scalars['ID'];
+  radioOptionBlockId: Scalars['ID'];
+  userId: Scalars['ID'];
 };
 
 export type RadioQuestionResponseCreateInput = {
+  blockId: Scalars['ID'];
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: Maybe<Scalars['ID']>;
-  blockId: Scalars['ID'];
   radioOptionBlockId: Scalars['ID'];
 };
 
@@ -282,33 +318,38 @@ export type Response = {
 
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
+  action?: Maybe<Action>;
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
-  action?: Maybe<Action>;
   submitIcon?: Maybe<Icon>;
   submitLabel?: Maybe<Scalars['String']>;
 };
 
 export type SignUpResponse = Response & {
   __typename?: 'SignUpResponse';
-  id: Scalars['ID'];
-  userId: Scalars['ID'];
-  name: Scalars['String'];
-  email: Scalars['String'];
   block?: Maybe<SignUpBlock>;
+  email: Scalars['String'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  userId: Scalars['ID'];
 };
 
 export type SignUpResponseCreateInput = {
+  blockId: Scalars['ID'];
+  email: Scalars['String'];
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: Maybe<Scalars['ID']>;
-  blockId: Scalars['ID'];
   name: Scalars['String'];
-  email: Scalars['String'];
 };
 
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID'];
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: Scalars['Boolean'];
   /**
    * nextBlockId contains the preferred block to navigate to when a
    * NavigateAction occurs or if the user manually tries to advance to the next
@@ -316,85 +357,80 @@ export type StepBlock = Block & {
    * the end of the current journey.
    */
   nextBlockId?: Maybe<Scalars['ID']>;
-  /**
-   * locked will be set to true if the user should not be able to manually
-   * advance to the next step.
-   */
-  locked: Scalars['Boolean'];
   parentBlockId?: Maybe<Scalars['ID']>;
 };
 
 export type ThemeMode =
-  | 'light'
-  | 'dark';
+  | 'dark'
+  | 'light';
 
 export type ThemeName =
   | 'base';
 
 export type TypographyAlign =
-  | 'left'
   | 'center'
+  | 'left'
   | 'right';
 
 export type TypographyBlock = Block & {
   __typename?: 'TypographyBlock';
+  align?: Maybe<TypographyAlign>;
+  color?: Maybe<TypographyColor>;
+  content: Scalars['String'];
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
-  content: Scalars['String'];
   variant?: Maybe<TypographyVariant>;
-  color?: Maybe<TypographyColor>;
-  align?: Maybe<TypographyAlign>;
 };
 
 export type TypographyColor =
+  | 'error'
   | 'primary'
-  | 'secondary'
-  | 'error';
+  | 'secondary';
 
 export type TypographyVariant =
+  | 'body1'
+  | 'body2'
+  | 'caption'
   | 'h1'
   | 'h2'
   | 'h3'
   | 'h4'
   | 'h5'
   | 'h6'
+  | 'overline'
   | 'subtitle1'
-  | 'subtitle2'
-  | 'body1'
-  | 'body2'
-  | 'caption'
-  | 'overline';
+  | 'subtitle2';
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
+  autoplay?: Maybe<Scalars['Boolean']>;
+  description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   parentBlockId?: Maybe<Scalars['ID']>;
   src: Scalars['String'];
   title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
   volume?: Maybe<Scalars['Int']>;
-  autoplay?: Maybe<Scalars['Boolean']>;
 };
 
 export type VideoResponse = Response & {
   __typename?: 'VideoResponse';
-  id: Scalars['ID'];
-  userId: Scalars['ID'];
-  state: VideoResponseStateEnum;
   block?: Maybe<VideoBlock>;
+  id: Scalars['ID'];
+  state: VideoResponseStateEnum;
+  userId: Scalars['ID'];
 };
 
 export type VideoResponseCreateInput = {
+  blockId: Scalars['ID'];
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: Maybe<Scalars['ID']>;
-  blockId: Scalars['ID'];
   state: VideoResponseStateEnum;
 };
 
 export type VideoResponseStateEnum =
-  | 'PLAYING'
+  | 'FINISHED'
   | 'PAUSED'
-  | 'FINISHED';
+  | 'PLAYING';
 
 
 
@@ -466,22 +502,26 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Action: ResolversTypes['LinkAction'] | ResolversTypes['NavigateAction'] | ResolversTypes['NavigateToBlockAction'] | ResolversTypes['NavigateToJourneyAction'];
-  String: ResolverTypeWrapper<Scalars['String']>;
   Block: ResolverTypeWrapper<BlockType>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ButtonBlock: ResolverTypeWrapper<BlockType>;
   ButtonColor: ButtonColor;
   ButtonSize: ButtonSize;
   ButtonVariant: ButtonVariant;
   CardBlock: ResolverTypeWrapper<BlockType>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  GridAlignItems: GridAlignItems;
+  GridContainerBlock: ResolverTypeWrapper<BlockType>;
+  GridDirection: GridDirection;
+  GridItemBlock: ResolverTypeWrapper<BlockType>;
+  GridJustifyContent: GridJustifyContent;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
   IconName: IconName;
   IconSize: IconSize;
   ImageBlock: ResolverTypeWrapper<BlockType>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   ImageBlockCreateInput: ImageBlockCreateInput;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Journey: ResolverTypeWrapper<Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversTypes['Block']>> }>;
   JourneyCreateInput: JourneyCreateInput;
   LinkAction: ResolverTypeWrapper<LinkAction>;
@@ -499,6 +539,7 @@ export type ResolversTypes = {
   SignUpResponse: ResolverTypeWrapper<ResponseType>;
   SignUpResponseCreateInput: SignUpResponseCreateInput;
   StepBlock: ResolverTypeWrapper<BlockType>;
+  String: ResolverTypeWrapper<Scalars['String']>;
   ThemeMode: ThemeMode;
   ThemeName: ThemeName;
   TypographyAlign: TypographyAlign;
@@ -514,16 +555,17 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Action: ResolversParentTypes['LinkAction'] | ResolversParentTypes['NavigateAction'] | ResolversParentTypes['NavigateToBlockAction'] | ResolversParentTypes['NavigateToJourneyAction'];
-  String: Scalars['String'];
   Block: BlockType;
-  ID: Scalars['ID'];
+  Boolean: Scalars['Boolean'];
   ButtonBlock: BlockType;
   CardBlock: BlockType;
-  Boolean: Scalars['Boolean'];
+  GridContainerBlock: BlockType;
+  GridItemBlock: BlockType;
+  ID: Scalars['ID'];
   Icon: Icon;
   ImageBlock: BlockType;
-  Int: Scalars['Int'];
   ImageBlockCreateInput: ImageBlockCreateInput;
+  Int: Scalars['Int'];
   Journey: Omit<Journey, 'blocks'> & { blocks?: Maybe<Array<ResolversParentTypes['Block']>> };
   JourneyCreateInput: JourneyCreateInput;
   LinkAction: LinkAction;
@@ -541,6 +583,7 @@ export type ResolversParentTypes = {
   SignUpResponse: ResponseType;
   SignUpResponseCreateInput: SignUpResponseCreateInput;
   StepBlock: BlockType;
+  String: Scalars['String'];
   TypographyBlock: BlockType;
   VideoBlock: BlockType;
   VideoResponse: ResponseType;
@@ -553,50 +596,69 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'GridContainerBlock' | 'GridItemBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
 
 export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['ButtonBlock'] = ResolversParentTypes['ButtonBlock']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  variant?: Resolver<Maybe<ResolversTypes['ButtonVariant']>, ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['ButtonColor']>, ParentType, ContextType>;
+  endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['ButtonSize']>, ParentType, ContextType>;
   startIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
-  endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
-  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  variant?: Resolver<Maybe<ResolversTypes['ButtonVariant']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['CardBlock'] = ResolversParentTypes['CardBlock']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   backgroundColor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coverBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   fullscreen?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   themeMode?: Resolver<Maybe<ResolversTypes['ThemeMode']>, ParentType, ContextType>;
   themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type GridContainerBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['GridContainerBlock'] = ResolversParentTypes['GridContainerBlock']> = {
+  alignItems?: Resolver<ResolversTypes['GridAlignItems'], ParentType, ContextType>;
+  direction?: Resolver<ResolversTypes['GridDirection'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  justifyContent?: Resolver<ResolversTypes['GridJustifyContent'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  spacing?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GridItemBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['GridItemBlock'] = ResolversParentTypes['GridItemBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lg?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  sm?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  xl?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type IconResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Icon'] = ResolversParentTypes['Icon']> = {
-  name?: Resolver<ResolversTypes['IconName'], ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['IconColor']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['IconName'], ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes['IconSize']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['ImageBlock'] = ResolversParentTypes['ImageBlock']> = {
+  alt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  blurhash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  alt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  blurhash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -613,8 +675,8 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
 
 export type LinkActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['LinkAction'] = ResolversParentTypes['LinkAction']> = {
   gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -633,8 +695,8 @@ export type NavigateActionResolvers<ContextType = GraphQLModules.Context, Parent
 };
 
 export type NavigateToBlockActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateToBlockAction'] = ResolversParentTypes['NavigateToBlockAction']> = {
-  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   blockId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -645,31 +707,31 @@ export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Contex
 };
 
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
+  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type RadioQuestionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioQuestionBlock'] = ResolversParentTypes['RadioQuestionBlock']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type RadioQuestionResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioQuestionResponse'] = ResolversParentTypes['RadioQuestionResponse']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  radioOptionBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   block?: Resolver<Maybe<ResolversTypes['RadioQuestionBlock']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  radioOptionBlockId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -680,57 +742,57 @@ export type ResponseResolvers<ContextType = GraphQLModules.Context, ParentType e
 };
 
 export type SignUpBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpBlock'] = ResolversParentTypes['SignUpBlock']> = {
+  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   submitIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
   submitLabel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SignUpResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['SignUpResponse'] = ResolversParentTypes['SignUpResponse']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   block?: Resolver<Maybe<ResolversTypes['SignUpBlock']>, ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type StepBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['StepBlock'] = ResolversParentTypes['StepBlock']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  nextBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   locked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  nextBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['TypographyBlock'] = ResolversParentTypes['TypographyBlock']> = {
+  align?: Resolver<Maybe<ResolversTypes['TypographyAlign']>, ParentType, ContextType>;
+  color?: Resolver<Maybe<ResolversTypes['TypographyColor']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   variant?: Resolver<Maybe<ResolversTypes['TypographyVariant']>, ParentType, ContextType>;
-  color?: Resolver<Maybe<ResolversTypes['TypographyColor']>, ParentType, ContextType>;
-  align?: Resolver<Maybe<ResolversTypes['TypographyAlign']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoBlock'] = ResolversParentTypes['VideoBlock']> = {
+  autoplay?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   volume?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  autoplay?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type VideoResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoResponse'] = ResolversParentTypes['VideoResponse']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
   block?: Resolver<Maybe<ResolversTypes['VideoBlock']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -739,6 +801,8 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   Block?: BlockResolvers<ContextType>;
   ButtonBlock?: ButtonBlockResolvers<ContextType>;
   CardBlock?: CardBlockResolvers<ContextType>;
+  GridContainerBlock?: GridContainerBlockResolvers<ContextType>;
+  GridItemBlock?: GridItemBlockResolvers<ContextType>;
   Icon?: IconResolvers<ContextType>;
   ImageBlock?: ImageBlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;

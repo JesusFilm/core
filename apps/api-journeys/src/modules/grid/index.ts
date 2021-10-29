@@ -1,1 +1,0 @@
-export { gridModule } from './grid'

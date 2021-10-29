@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { GetJourney_journey_blocks_GridBlock as GridBlock } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_GridContainerBlock as GridContainerBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { Grid } from './Grid'
+import { GridContainer } from './GridContainer'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import {
   TypographyVariant,
@@ -17,13 +17,13 @@ import {
 
 const Demo = {
   ...journeysConfig,
-  component: Grid,
-  title: 'Journeys/Blocks/Grid'
+  component: GridContainer,
+  title: 'Journeys/Blocks/GridContainer'
 }
 
-const DefaultTemplate: Story<TreeBlock<GridBlock>> = ({ ...props }) => (
+const DefaultTemplate: Story<TreeBlock<GridContainerBlock>> = ({ ...props }) => (
   <StoryCard>
-    <Grid {...props} />
+    <GridContainer {...props} />
   </StoryCard>
 )
 
@@ -102,107 +102,81 @@ const childrenTwo: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'GridContainer',
-  container: {
-    __typename: 'Container',
-    spacing: 6,
-    direction: GridDirection.row,
-    justifyContent: GridJustifyContent.flexEnd,
-    alignItems: GridAlignItems.flexEnd
-  },
+  __typename: 'GridContainerBlock',
+  spacing: 6,
+  direction: GridDirection.row,
+  justifyContent: GridJustifyContent.flexEnd,
+  alignItems: GridAlignItems.flexEnd,
   children: [
     {
       id: 'GridItemLeft',
-      __typename: 'GridBlock',
-      item: {
-        __typename: 'Item',
-        xl: 6,
-        lg: 6,
-        sm: 6
-      },
+      __typename: 'GridItemBlock',
+      xl: 6,
+      lg: 6,
+      sm: 6,
       parentBlockId: 'GridContainer',
-      container: null,
       children: childrenOne
     },
     {
       id: 'GridItemRight',
-      item: {
-        __typename: 'Item',
-        xl: 6,
-        lg: 6,
-        sm: 6
-      },
-      __typename: 'GridBlock',
-      container: null,
+      __typename: 'GridItemBlock',
+      xl: 6,
+      lg: 6,
+      sm: 6,
       parentBlockId: 'GridContainer',
-      children: childrenTwo
+      children: childrenOne
     }
   ]
 }
 
-export const OffsetRight: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({})
+export const OffsetRight: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
 OffsetRight.args = {
   id: 'GridContainer',
-  container: {
-    __typename: 'Container',
-    spacing: 6,
-    direction: GridDirection.row,
-    justifyContent: GridJustifyContent.flexEnd,
-    alignItems: GridAlignItems.baseline
-  },
+  __typename: 'GridContainerBlock',
+  spacing: 6,
+  direction: GridDirection.row,
+  justifyContent: GridJustifyContent.flexEnd,
+  alignItems: GridAlignItems.baseline,
   children: [
     {
       id: 'GridItemRight',
-      item: {
-        __typename: 'Item',
-        xl: 6,
-        lg: 6,
-        sm: 6
-      },
-      __typename: 'GridBlock',
-      container: null,
+      xl: 6,
+      lg: 6,
+      sm: 6,
+      __typename: 'GridItemBlock',
       parentBlockId: 'GridContainer',
       children: childrenTwo
     }
   ]
 }
 
-export const Center: Story<TreeBlock<GridBlock>> = DefaultTemplate.bind({})
+export const Center: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
 Center.args = {
   id: 'GridContainer',
-  container: {
-    __typename: 'Container',
-    spacing: 6,
-    direction: GridDirection.row,
-    justifyContent: GridJustifyContent.center,
-    alignItems: GridAlignItems.center
-  },
+  __typename: 'GridContainerBlock',
+  spacing: 6,
+  direction: GridDirection.row,
+  justifyContent: GridJustifyContent.center,
+  alignItems: GridAlignItems.center,
   children: [
     {
       id: 'GridItemLeft',
-      item: {
-        __typename: 'Item',
-        xl: 6,
-        lg: 6,
-        sm: 6
-      },
-      __typename: 'GridBlock',
-      container: null,
+      xl: 6,
+      lg: 6,
+      sm: 6,
+      __typename: 'GridItemBlock',
       parentBlockId: 'GridContainer',
       children: childrenOne
     },
     {
       id: 'GridItemRight',
-      item: {
-        __typename: 'Item',
-        xl: 6,
-        lg: 6,
-        sm: 6
-      },
-      __typename: 'GridBlock',
-      container: null,
+      xl: 6,
+      lg: 6,
+      sm: 6,
+      __typename: 'GridItemBlock',
       parentBlockId: 'GridContainer',
       children: [
         {

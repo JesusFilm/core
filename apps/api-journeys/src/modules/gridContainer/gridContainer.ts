@@ -22,29 +22,18 @@ const typeDefs = gql`
     center
   }
 
-  type Item {
-    xl: Int!
-    lg: Int!
-    sm: Int!
-  }
-
-  type Container {
+  type GridContainerBlock implements Block {
+    id: ID!
+    parentBlockId: ID
     spacing: Int!
     direction: GridDirection!
     justifyContent: GridJustifyContent!
     alignItems: GridAlignItems!
   }
-
-  type GridBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    item: Item
-    container: Container
-  }
 `
 
-export const gridModule = createModule({
-  id: 'grid',
+export const gridContainerModule = createModule({
+  id: 'gridContainer',
   dirname: __dirname,
   typeDefs: [typeDefs]
 })

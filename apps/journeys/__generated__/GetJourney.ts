@@ -87,27 +87,23 @@ export interface GetJourney_journey_blocks_CardBlock {
   themeName: ThemeName | null;
 }
 
-export interface GetJourney_journey_blocks_GridBlock_container {
-  __typename: "Container";
+export interface GetJourney_journey_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock";
+  id: string;
+  parentBlockId: string | null;
   spacing: number;
   direction: GridDirection;
   justifyContent: GridJustifyContent;
   alignItems: GridAlignItems;
 }
 
-export interface GetJourney_journey_blocks_GridBlock_item {
-  __typename: "Item";
+export interface GetJourney_journey_blocks_GridItemBlock {
+  __typename: "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
   xl: number;
   lg: number;
   sm: number;
-}
-
-export interface GetJourney_journey_blocks_GridBlock {
-  __typename: "GridBlock";
-  id: string;
-  parentBlockId: string | null;
-  container: GetJourney_journey_blocks_GridBlock_container | null;
-  item: GetJourney_journey_blocks_GridBlock_item | null;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
@@ -240,7 +236,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   autoplay: boolean | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

@@ -6,4 +6,4 @@
 -- the enum.
 
 
-ALTER TYPE "BlockType" ADD VALUE 'GridBlock';
+ALTER TYPE "BlockType" ADD VALUE 'GridItemBlock';

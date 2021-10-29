@@ -6,28 +6,15 @@
 import { GridDirection, GridJustifyContent, GridAlignItems } from "./globalTypes";
 
 // ====================================================
-// GraphQL fragment: GridFields
+// GraphQL fragment: GridContainerFields
 // ====================================================
 
-export interface GridFields_container {
-  __typename: "Container";
+export interface GridContainerFields {
+  __typename: "GridContainerBlock";
+  id: string;
+  parentBlockId: string | null;
   spacing: number;
   direction: GridDirection;
   justifyContent: GridJustifyContent;
   alignItems: GridAlignItems;
-}
-
-export interface GridFields_item {
-  __typename: "Item";
-  xl: number;
-  lg: number;
-  sm: number;
-}
-
-export interface GridFields {
-  __typename: "GridItemBlock";
-  id: string;
-  parentBlockId: string | null;
-  container: GridFields_container | null;
-  item: GridFields_item | null;
 }

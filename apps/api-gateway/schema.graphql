@@ -88,13 +88,6 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-type Container {
-  alignItems: GridAlignItems!
-  direction: GridDirection!
-  justifyContent: GridJustifyContent!
-  spacing: Int!
-}
-
 enum GridAlignItems {
   baseline
   center
@@ -102,11 +95,13 @@ enum GridAlignItems {
   flexStart
 }
 
-type GridBlock implements Block {
-  container: Container
+type GridContainerBlock implements Block {
+  alignItems: GridAlignItems!
+  direction: GridDirection!
   id: ID!
-  item: Item
+  justifyContent: GridJustifyContent!
   parentBlockId: ID
+  spacing: Int!
 }
 
 enum GridDirection {
@@ -114,6 +109,14 @@ enum GridDirection {
   columnReverse
   row
   rowReverse
+}
+
+type GridItemBlock implements Block {
+  id: ID!
+  lg: Int!
+  parentBlockId: ID
+  sm: Int!
+  xl: Int!
 }
 
 enum GridJustifyContent {
@@ -184,12 +187,6 @@ input ImageBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID
   src: String!
-}
-
-type Item {
-  lg: Int!
-  sm: Int!
-  xl: Int!
 }
 
 scalar join__FieldSet

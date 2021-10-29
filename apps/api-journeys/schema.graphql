@@ -71,13 +71,6 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-type Container {
-  spacing: Int!
-  direction: GridDirection!
-  justifyContent: GridJustifyContent!
-  alignItems: GridAlignItems!
-}
-
 enum GridAlignItems {
   baseline
   flexStart
@@ -85,11 +78,13 @@ enum GridAlignItems {
   center
 }
 
-type GridBlock implements Block {
+type GridContainerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  item: Item
-  container: Container
+  spacing: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
 }
 
 enum GridDirection {
@@ -97,6 +92,14 @@ enum GridDirection {
   column
   row
   rowReverse
+}
+
+type GridItemBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  xl: Int!
+  lg: Int!
+  sm: Int!
 }
 
 enum GridJustifyContent {
@@ -166,12 +169,6 @@ input ImageBlockCreateInput {
   journeyId: ID!
   src: String!
   alt: String!
-}
-
-type Item {
-  xl: Int!
-  lg: Int!
-  sm: Int!
 }
 
 type Journey @key(fields: "id") {

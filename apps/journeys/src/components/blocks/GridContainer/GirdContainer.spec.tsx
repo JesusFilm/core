@@ -1,5 +1,5 @@
 import { render } from '../../../../test/testingLibrary'
-import { Grid } from '.'
+import { GridContainer } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
   GridDirection,
@@ -7,31 +7,23 @@ import {
   GridAlignItems
 } from '../../../../__generated__/globalTypes'
 
-describe('GridBlock', () => {
+describe('GridContainer', () => {
   const block: TreeBlock = {
-    __typename: 'GridBlock',
-    id: 'grid',
-    item: null,
+    __typename: 'GridContainerBlock',
+    id: 'gridContainer',
     parentBlockId: null,
-    container: {
-      __typename: 'Container',
-      spacing: 6,
-      direction: GridDirection.row,
-      justifyContent: GridJustifyContent.center,
-      alignItems: GridAlignItems.center
-    },
+    spacing: 6,
+    direction: GridDirection.row,
+    justifyContent: GridJustifyContent.center,
+    alignItems: GridAlignItems.center,
     children: [
       {
-        __typename: 'GridBlock',
+        __typename: 'GridItemBlock',
         id: 'griditem',
-        parentBlockId: 'grid',
-        item: {
-          __typename: 'Item',
-          xl: 6,
-          lg: 6,
-          sm: 6
-        },
-        container: null,
+        parentBlockId: 'gridContainer',
+        xl: 6,
+        lg: 6,
+        sm: 6,
         children: [
           {
             id: 'typographyBlockId',
@@ -49,7 +41,7 @@ describe('GridBlock', () => {
   }
 
   it('should render children', () => {
-    const { getByText } = render(<Grid {...block} />)
+    const { getByText } = render(<GridContainer {...block} />)
     expect(getByText('How did we get here?')).toBeInTheDocument()
   })
 })
