@@ -8,7 +8,7 @@ import {
 import { ThemeProvider } from '@core/shared/ui'
 import { Paper, Box } from '@mui/material'
 import { SxProps } from '@mui/system'
-import { CardWithCover } from '.'
+import { CardImageCover } from '.'
 
 export function Card({
   id,
@@ -45,9 +45,9 @@ export function Card({
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
-        <CardWithCover coverBlock={coverBlock}>
+        <CardImageCover coverBlock={coverBlock}>
           {renderedChildren}
-        </CardWithCover>
+        </CardImageCover>
       ) : (
         <Box
           sx={{

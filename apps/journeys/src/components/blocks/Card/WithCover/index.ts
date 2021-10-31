@@ -1,1 +1,0 @@
-export { WithCover } from './WithCover'

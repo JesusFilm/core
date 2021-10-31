@@ -1,24 +1,21 @@
 import { TreeBlock } from '../../../../libs/transformer/transformer'
 import { ReactElement, ReactNode, useEffect, useRef } from 'react'
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
-} from '../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
 import { useTheme, Box } from '@mui/material'
 import { decode } from 'blurhash'
 
 const greatestCommonDivisor = (a: number, b: number): number =>
   b === 0 ? a : greatestCommonDivisor(b, a % b)
 
-interface WithCoverProps {
+interface ImageCoverProps {
   children: ReactNode
   coverBlock: TreeBlock<ImageBlock>
 }
 
-export function WithCover({
+export function ImageCover({
   children,
   coverBlock
-}: WithCoverProps): ReactElement {
+}: ImageCoverProps): ReactElement {
   const xsRef = useRef<HTMLDivElement>(null)
   const lgRef = useRef<HTMLDivElement>(null)
   const theme = useTheme()
@@ -51,7 +48,7 @@ export function WithCover({
   return (
     <>
       <Box
-        data-testid="CardWithCoverImage"
+        data-testid="CardImageCover"
         sx={{
           flexGrow: 1,
           backgroundSize: 'cover',
