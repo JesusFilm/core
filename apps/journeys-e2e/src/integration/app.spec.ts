@@ -1,5 +1,5 @@
 describe('journeys', () => {
-  beforeEach(() => cy.visit('http://localhost:4100/'))
+  beforeEach(() => cy.visit('/'))
 
   it('should display link to #FallingPlates', () => {
     cy.get('a').contains('#FallingPlates').should('exist')
