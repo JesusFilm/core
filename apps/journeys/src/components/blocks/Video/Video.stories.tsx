@@ -49,8 +49,8 @@ Default.args = {
   volume: 1,
   autoplay: true,
   video: {
-    mediaComponentId: '5_0-NUA0201-0-0',
-    languageId: '529',
+    __typename: 'VideoArclight',
+    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE3ZjY0N2ZfYzc4NTZjYTMzMzU1OTNiZTI3ODhlOGM4NjllZjZhYjNhMjk0ZjdmZmQzMDZmMWJkYzJlMGNiMzczNTNlODI5NA%3D%3D'
   }
 }
 
@@ -61,8 +61,10 @@ Src.args = {
   parentBlockId: '',
   volume: 1,
   autoplay: true,
-  videoSrc:
-    'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+  video: {
+    __typename: 'VideoGeneric',
+    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+  }
 }
 
 export const StartAt = Template.bind({})
@@ -73,7 +75,7 @@ StartAt.args = {
   volume: 1,
   autoplay: true,
   video: {
-    src: 'https://arc.gt/hls/5_0-NUA0201-0-0/529'
+    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE3ZjY0N2ZfYzc4NTZjYTMzMzU1OTNiZTI3ODhlOGM4NjllZjZhYjNhMjk0ZjdmZmQzMDZmMWJkYzJlMGNiMzczNTNlODI5NA%3D%3D'
   },
   startAt: 30
 }

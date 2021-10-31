@@ -48,7 +48,6 @@ export function Video({
   const { activeBlock } = useBlocks()
 
   const [isReady, setIsReady] = useState<boolean | undefined>()
-  // const [isAutoplay, setAutoplay] = useState<boolean | string>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(

@@ -10,10 +10,6 @@ export const VIDEO_FIELDS = gql`
     startAt
     video {
       src
-      ... on VideoArclight {
-        mediaComponentId
-        languageId
-      }
     }
   }
 `

@@ -240,19 +240,10 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_VideoGeneric {
-  __typename: "VideoGeneric";
+export interface GetJourney_journey_blocks_VideoBlock_video {
+  __typename: "VideoArclight" | "VideoGeneric";
   src: string;
 }
-
-export interface GetJourney_journey_blocks_VideoBlock_video_VideoArclight {
-  __typename: "VideoArclight";
-  src: string;
-  mediaComponentId: string;
-  languageId: string;
-}
-
-export type GetJourney_journey_blocks_VideoBlock_video = GetJourney_journey_blocks_VideoBlock_video_VideoGeneric | GetJourney_journey_blocks_VideoBlock_video_VideoArclight;
 
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
