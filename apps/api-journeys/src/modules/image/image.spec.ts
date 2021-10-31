@@ -131,11 +131,11 @@ describe('ImageModule', () => {
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
-        primaryImageBlockId: '1'
+        primaryImageBlockId: 'primaryImageBlockId'
       }
 
       const primaryImage: Block = {
-        id: '1',
+        id: 'primaryImageBlockId',
         journeyId,
         blockType: 'ImageBlock',
         parentBlockId: uuidv4(),
@@ -182,11 +182,11 @@ describe('ImageModule', () => {
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
-        primaryImageBlockId: '1'
+        primaryImageBlockId: 'primaryImageBlockId'
       }
 
       const primaryImage: Block = {
-        id: '1',
+        id: 'primaryImageBlockId',
         journeyId,
         blockType: 'ImageBlock',
         parentBlockId: uuidv4(),
