@@ -27,7 +27,7 @@ async function main(): Promise<void> {
   const primaryImage = await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'ImageBlock', 
+      blockType: 'ImageBlock',
       extraAttrs: {
         src: 'https://i4.ytimg.com/vi/KGlx11BxF24/maxresdefault.jpg',
         alt: '#FallingPlates',
@@ -41,9 +41,10 @@ async function main(): Promise<void> {
     where: {
       id: journey.id
     },
-    data:{
+    data: {
       primaryImageBlockId: primaryImage.id,
-      description: 'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+      description:
+        'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
     }
   })
   const step = await prisma.block.create({

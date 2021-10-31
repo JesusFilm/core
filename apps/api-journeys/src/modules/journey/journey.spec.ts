@@ -144,14 +144,15 @@ it('creates journey', async () => {
     }
   })
 
-  expect(data?.journeyCreate).toEqual({ 
+  expect(data?.journeyCreate).toEqual({
     id: journey.id,
     title: 'my journey',
     published: false,
     locale: 'hi-IN',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    description: 'test description'})
+    description: 'test description'
+  })
 })
 
 it('creates journey with default locale and theme', async () => {
@@ -255,7 +256,7 @@ it('updates journey', async () => {
     locale: 'en-US',
     themeName: ThemeName.base,
     themeMode: ThemeMode.light,
-    description: null,
+    description: null
     // primaryImageBlockId: '1'
   })
 })
@@ -327,7 +328,7 @@ it('throws an error on create without authentication', async () => {
       }
     },
     contextValue: {
-      db: dbMock,
+      db: dbMock
     }
   })
 
@@ -352,7 +353,7 @@ it('throws an error on update without authentication', async () => {
       }
     },
     contextValue: {
-      db: dbMock,
+      db: dbMock
     }
   })
 
@@ -374,9 +375,9 @@ it('throws an error on publish without authentication', async () => {
       id: journeyModule.id
     },
     contextValue: {
-      db: dbMock,
+      db: dbMock
     }
   })
-  
+
   expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
 })

@@ -31,14 +31,21 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
     <>
       <Head>
         <title>{journey.title}</title>
-        <meta property='og:title' content={journey.title} />
-        {journey.description != null && <meta name='description' content={journey.description} />}
-        {journey.primaryImageBlock != null && <meta property='og:image' content={journey.primaryImageBlock.src} /> }
+        <meta property="og:title" content={journey.title} />
+        {journey.description != null && (
+          <meta name="description" content={journey.description} />
+        )}
+        {journey.primaryImageBlock != null && (
+          <meta property="og:image" content={journey.primaryImageBlock.src} />
+        )}
       </Head>
-      <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
+      <ThemeProvider
+        themeName={journey.themeName}
+        themeMode={journey.themeMode}
+      >
         {journey.blocks != null && (
-        <Conductor blocks={transformer(journey.blocks)} />
-      )}
+          <Conductor blocks={transformer(journey.blocks)} />
+        )}
       </ThemeProvider>
     </>
   )

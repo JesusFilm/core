@@ -18,9 +18,12 @@ const resolvers: BlockModule.Resolvers = {
   Journey: {
     async blocks(journey, __, { db }) {
       const blocks = await db.block.findMany({
-        where: { 
+        where: {
           journeyId: journey.id,
-          NOT: journey.primaryImageBlockId != null ? { id: journey.primaryImageBlockId } : {}
+          NOT:
+            journey.primaryImageBlockId != null
+              ? { id: journey.primaryImageBlockId }
+              : {}
         },
         orderBy: [{ parentOrder: 'asc' }]
       })

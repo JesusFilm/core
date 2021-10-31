@@ -3,7 +3,12 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import { imageModule, journeyModule, blockModule } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
-import { Journey, Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
+import {
+  Journey,
+  Block,
+  ThemeName,
+  ThemeMode
+} from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { ImageBlockCreateInput } from '../../__generated__/types'
 import { readFileSync } from 'fs'
@@ -116,9 +121,8 @@ describe('ImageModule', () => {
         }
       ])
     })
-    
-    it('returns src from a journey with primaryImageBlock', async () => {
 
+    it('returns src from a journey with primaryImageBlock', async () => {
       const journey: Journey = {
         id: 'journeyId',
         title: 'published',
@@ -165,10 +169,11 @@ describe('ImageModule', () => {
           userId: 'userId'
         }
       })
-      expect(data?.journey.primaryImageBlock.src).toEqual('https://source.unsplash.com/random/1920x1080')
+      expect(data?.journey.primaryImageBlock.src).toEqual(
+        'https://source.unsplash.com/random/1920x1080'
+      )
     })
     it('returns null when primaryImageBlock does not have src', async () => {
-
       const journey: Journey = {
         id: 'journeyId',
         title: 'published',
