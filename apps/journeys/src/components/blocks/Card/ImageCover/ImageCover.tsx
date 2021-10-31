@@ -73,7 +73,9 @@ export function ImageCover({
           },
           width: { xs: 'auto', sm: '50%' },
           overflow: 'hidden',
-          position: 'relative'
+          position: 'relative',
+          borderTopRightRadius: { sm: theme.spacing(4) },
+          borderBottomRightRadius: { sm: theme.spacing(4) }
         }}
       >
         <Box
