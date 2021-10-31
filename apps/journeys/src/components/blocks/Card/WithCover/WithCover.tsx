@@ -10,7 +10,7 @@ import { decode } from 'blurhash'
 const greatestCommonDivisor = (a: number, b: number): number =>
   b === 0 ? a : greatestCommonDivisor(b, a % b)
 
-interface WithCoverProps extends Pick<CardBlock, 'themeMode' | 'themeName'> {
+interface WithCoverProps {
   children: ReactNode
   coverBlock: TreeBlock<ImageBlock>
 }

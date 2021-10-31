@@ -45,11 +45,7 @@ export function Card({
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
-        <CardWithCover
-          coverBlock={coverBlock}
-          themeMode={themeMode}
-          themeName={themeName}
-        >
+        <CardWithCover coverBlock={coverBlock}>
           {renderedChildren}
         </CardWithCover>
       ) : (
