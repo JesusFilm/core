@@ -24,6 +24,29 @@ async function main(): Promise<void> {
   })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
+  const primaryImage = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      extraAttrs: {
+        src: 'https://i4.ytimg.com/vi/KGlx11BxF24/maxresdefault.jpg',
+        alt: '#FallingPlates',
+        width: 1280,
+        height: 720
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.journey.update({
+    where: {
+      id: journey.id
+    },
+    data: {
+      primaryImageBlockId: primaryImage.id,
+      description:
+        'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+    }
+  })
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,

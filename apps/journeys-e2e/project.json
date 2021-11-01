@@ -4,16 +4,21 @@
   "projectType": "application",
   "targets": {
     "e2e": {
+      "builder": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "start-server-and-test \"nx serve journeys:serve-all\" 4100 \"nx _e2e journeys-e2e\""
+          }
+        ]
+      }
+    },
+    "_e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
         "cypressConfig": "apps/journeys-e2e/cypress.json",
         "tsConfig": "apps/journeys-e2e/tsconfig.e2e.json",
-        "devServerTarget": "journeys:serve"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "journeys:serve:production"
-        }
+        "baseUrl": "http://localhost:4100"
       }
     },
     "lint": {
