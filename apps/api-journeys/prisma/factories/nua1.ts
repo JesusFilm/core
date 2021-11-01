@@ -1,14 +1,18 @@
 import { PrismaClient, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
 
-export async function ressurection(prisma: PrismaClient): Promise<void> {
+export async function nua1(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
+    where: { title: 'Fact or Fiction' }
+  })
+  // Still need to implement NavigateToJourney action for this to work
+  const ressurection = await prisma.journey.findFirst({
     where: { title: 'What About The Ressurection?' }
   })
   if (journey == null) {
     journey = await prisma.journey.create({
       data: {
-        title: 'What About The Ressurection?',
+        title: 'Fact or Fiction',
         published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
@@ -21,8 +25,6 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
   })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
-
-  //   first step
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -52,12 +54,11 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        content: 'The Ressurection',
+        content: 'JESUS CHRIST:',
         variant: 'h6',
         color: 'primary',
         align: 'left'
-      },
-      parentOrder: 0
+      }
     }
   })
   await prisma.block.create({
@@ -66,12 +67,11 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        content: 'What About It?',
-        variant: 'h3',
+        content: 'Fact or Fiction',
+        variant: 'h2',
         color: 'primary',
         align: 'left'
-      },
-      parentOrder: 1
+      }
     }
   })
   await prisma.block.create({
@@ -81,16 +81,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       parentBlockId: card.id,
       extraAttrs: {
         content:
-          "Jesus' was found empty three days after his death-what could have happened to the body?",
+          'In this 5-minute video, explore the arguments for and against the Gospel accounts.',
         variant: 'body1',
         color: 'primary',
         align: 'left'
-      },
-      parentOrder: 2
+      }
     }
   })
-
-  //   second step
   const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -108,7 +105,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        label: 'Find Out',
+        label: 'One question remains',
         variant: 'contained',
         color: 'primary',
         size: 'large',
@@ -122,7 +119,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
           blockId: step1.id
         }
       },
-      parentOrder: 3
+      parentOrder: 0
     }
   })
   const card1 = await prisma.block.create({
@@ -143,8 +140,11 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card1.id,
       extraAttrs: {
+        // put in comments the mediaComponentId and languageId
+        // mediaComponentId: '',
+        // languageId: '',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch What About The Ressurection?',
+        title: 'Watch #FallingPlates',
         description:
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
       }
@@ -161,8 +161,6 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
-
-  //   third step
   const step2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -209,11 +207,11 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'ImageBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        src: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-        alt: 'Where did his body go?',
+        src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Can we trust the story of Jesus?',
         width: 1920,
         height: 1080,
-        blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-'
+        blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG'
       },
       parentOrder: 0
     }
@@ -224,7 +222,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        content: 'HOW DO YOU THINK?',
+        content: 'A QUICK QUESTION...',
         variant: 'h6',
         color: 'primary',
         align: 'left'
@@ -238,13 +236,11 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioQuestionBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        label: 'Where did his body go?'
+        label: 'Can we trust the story of Jesus?'
       },
       parentOrder: 2
     }
   })
-
-  //   fourth step
   const step3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -262,7 +258,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question2.id,
       extraAttrs: {
-        label: 'Someone stole it from the tomb',
+        label: 'Yes, it’s a true story 👍',
         action: {
           gtmEventName: 'click',
           blockId: step3.id
@@ -277,28 +273,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question2.id,
       extraAttrs: {
-        label: "He didn't really die",
+        label: 'No, it’s a fake fabrication 👎',
         action: {
           gtmEventName: 'click',
           blockId: step3.id
         }
       },
       parentOrder: 2
-    }
-  })
-  await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question2.id,
-      extraAttrs: {
-        label: 'He actually rose from the dead',
-        action: {
-          gtmEventName: 'click',
-          blockId: step3.id
-        }
-      },
-      parentOrder: 3
     }
   })
   const card3 = await prisma.block.create({
@@ -337,8 +318,6 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       }
     }
   })
-
-  //   fifth step
   const step4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -385,7 +364,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content: 'A QUOTE',
+        content: 'SOME FACTS...',
         variant: 'h6',
         color: 'primary',
         align: 'left'
@@ -399,9 +378,8 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content:
-          "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
-        variant: 'subtitle1',
+        content: 'Jesus in History',
+        variant: 'h2',
         color: 'primary',
         align: 'left'
       },
@@ -414,8 +392,9 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content: '- The Bible, John 19:34',
-        variant: 'caption',
+        content:
+          'We have more accurate historical accounts for the story of Jesus than for Alexander the Great or Julius Caesar.',
+        variant: 'body1',
         color: 'primary',
         align: 'left'
       },
@@ -429,17 +408,15 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'ImageBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
-        alt: 'quote',
+        src: 'https://images.unsplash.com/photo-1447023029226-ef8f6b52e3ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
+        alt: 'Jesus In History',
         width: 1920,
         height: 1080,
-        blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU'
+        blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW'
       },
       parentOrder: 0
     }
   })
-
-  //   fifth step is now a video
   const step5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -456,7 +433,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        label: 'What does it mean?',
+        label: 'One question remains',
         variant: 'contained',
         color: 'primary',
         size: 'large',
@@ -473,6 +450,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       parentOrder: 4
     }
   })
+  const image3Id = uuidv4()
   const card5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -481,71 +459,8 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
-        coverBlockId: image1.id
-      },
-      parentOrder: 0
-    }
-  })
-  await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'VideoBlock',
-      parentBlockId: card5.id,
-      extraAttrs: {
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch #FallingPlates',
-        description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
-      }
-    }
-  })
-  const question4 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: step5.id,
-      extraAttrs: {
-        label: 'Go to next step'
-      },
-      parentOrder: 1
-    }
-  })
-
-  // sixth step
-  const step6 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'StepBlock',
-      extraAttrs: {
-        locked: false
-      },
-      parentOrder: 6
-    }
-  })
-  await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question4.id,
-      extraAttrs: {
-        label: 'Next step',
-        action: {
-          gtmEventName: 'click',
-          blockId: step6.id
-        }
-      }
-    }
-  })
-  const image3Id = uuidv4()
-  const card6 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'CardBlock',
-      parentBlockId: step6.id,
-      extraAttrs: {
-        themeMode: ThemeMode.dark,
-        themeName: ThemeName.base,
-        coverBlockId: image3Id
+        coverBlockId: image3Id,
+        fullscreen: true
       },
       parentOrder: 0
     }
@@ -555,13 +470,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       id: image3Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card5.id,
       extraAttrs: {
-        src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80',
+        src: 'https://images.unsplash.com/photo-1447023029226-ef8f6b52e3ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
         alt: 'Who was this Jesus?',
         width: 1920,
         height: 1080,
-        blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@'
+        blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW'
       },
       parentOrder: 1
     }
@@ -570,7 +485,7 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content: "IF IT'S TRUE...",
         variant: 'h6',
@@ -580,13 +495,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
-  const question5 = await prisma.block.create({
+  const question4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card5.id,
       extraAttrs: {
-        label: 'What is Christianity to you?'
+        label: 'Who was this Jesus?'
       },
       parentOrder: 2
     }
@@ -595,9 +510,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question5.id,
+      parentBlockId: question4.id,
       extraAttrs: {
-        label: 'One of many ways to God'
+        label: 'A great influencer',
+        action: {
+          gtmEventName: 'click',
+          journeyId: ressurection?.id
+        }
       },
       parentOrder: 0
     }
@@ -606,9 +525,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question5.id,
+      parentBlockId: question4.id,
       extraAttrs: {
-        label: 'One great lie...'
+        label: 'A popular prophet',
+        action: {
+          gtmEventName: 'click',
+          journeyId: ressurection?.id
+        }
       },
       parentOrder: 2
     }
@@ -617,9 +540,13 @@ export async function ressurection(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question5.id,
+      parentBlockId: question4.id,
       extraAttrs: {
-        label: 'One true way to God'
+        label: 'A fake historical figure',
+        action: {
+          gtmEventName: 'click',
+          journeyId: ressurection?.id
+        }
       },
       parentOrder: 3
     }

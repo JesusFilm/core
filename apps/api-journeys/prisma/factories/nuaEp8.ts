@@ -1,18 +1,14 @@
 import { PrismaClient, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
 
-export async function factOrFiction(prisma: PrismaClient): Promise<void> {
+export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
-    where: { title: 'Fact or Fiction' }
-  })
-  // Still need to implement NavigateToJourney action for this to work
-  const ressurection = await prisma.journey.findFirst({
-    where: { title: 'What About The Ressurection?' }
+    where: { title: "What's Jesus Got to Do With Me?" }
   })
   if (journey == null) {
     journey = await prisma.journey.create({
       data: {
-        title: 'Fact or Fiction',
+        title: "What's Jesus Got to Do With Me?",
         published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
@@ -25,6 +21,8 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
   })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
+
+  //   first step
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -54,11 +52,12 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        content: 'JESUS CHRIST:',
+        content: "JESUS' DEATH AND RESURRECTION",
         variant: 'h6',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 0
     }
   })
   await prisma.block.create({
@@ -67,11 +66,12 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        content: 'Fact or Fiction',
-        variant: 'h2',
+        content: 'Does It Matter?',
+        variant: 'h3',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 1
     }
   })
   await prisma.block.create({
@@ -81,13 +81,16 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       parentBlockId: card.id,
       extraAttrs: {
         content:
-          'In this 5-minute video, explore the arguments for and against the Gospel accounts.',
+          'Why did Jesus have to die, and does it affect my life at all?',
         variant: 'body1',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 2
     }
   })
+
+  //   second step
   const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -105,7 +108,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        label: 'One question remains',
+        label: 'Explore Now',
         variant: 'contained',
         color: 'primary',
         size: 'large',
@@ -119,7 +122,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
           blockId: step1.id
         }
       },
-      parentOrder: 0
+      parentOrder: 3
     }
   })
   const card1 = await prisma.block.create({
@@ -140,10 +143,11 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card1.id,
       extraAttrs: {
+        // put in comments the mediaComponentId and languageId
+        // mediaComponentId: '',
+        // languageId: '',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch #FallingPlates',
-        description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+        title: "What's Jesus Got to Do With Me?"
       }
     }
   })
@@ -158,6 +162,8 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
+
+  //   third step
   const step2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -204,11 +210,11 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'ImageBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-        alt: 'Can we trust the story of Jesus?',
+        src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
+        alt: "What's Jesus Got to Do With Me?",
         width: 1920,
         height: 1080,
-        blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG'
+        blurhash: 'L3B|d2_N%$9F-B?b00NG4nIV00IA'
       },
       parentOrder: 0
     }
@@ -219,7 +225,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        content: 'A QUICK QUESTION...',
+        content: 'WHAT DO YOU THINK?',
         variant: 'h6',
         color: 'primary',
         align: 'left'
@@ -233,11 +239,13 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioQuestionBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        label: 'Can we trust the story of Jesus?'
+        label: 'Do you need to change to be good enough for God?'
       },
       parentOrder: 2
     }
   })
+
+  //   fourth step
   const step3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -255,7 +263,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question2.id,
       extraAttrs: {
-        label: 'Yes, it’s a true story 👍',
+        label: 'Yes, God likes good people',
         action: {
           gtmEventName: 'click',
           blockId: step3.id
@@ -270,7 +278,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question2.id,
       extraAttrs: {
-        label: 'No, it’s a fake fabrication 👎',
+        label: 'No, He will accept me as I am',
         action: {
           gtmEventName: 'click',
           blockId: step3.id
@@ -298,10 +306,11 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card3.id,
       extraAttrs: {
+        // put in comments the mediaComponentId and languageId
+        // mediaComponentId: '',
+        // languageId: '',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch #FallingPlates',
-        description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+        title: "What's Jesus Got to Do With Me?"
       }
     }
   })
@@ -315,6 +324,8 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       }
     }
   })
+
+  //   fifth step
   const step4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -361,7 +372,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content: 'SOME FACTS...',
+        content: 'A QUOTE',
         variant: 'h6',
         color: 'primary',
         align: 'left'
@@ -375,8 +386,9 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content: 'Jesus in History',
-        variant: 'h2',
+        content:
+          '"God sent his Son into the world not to judge the world, but to save the world through him."',
+        variant: 'subtitle1',
         color: 'primary',
         align: 'left'
       },
@@ -389,9 +401,8 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        content:
-          'We have more accurate historical accounts for the story of Jesus than for Alexander the Great or Julius Caesar.',
-        variant: 'body1',
+        content: '- The Bible, John 3:17',
+        variant: 'caption',
         color: 'primary',
         align: 'left'
       },
@@ -405,15 +416,18 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'ImageBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        src: 'https://images.unsplash.com/photo-1447023029226-ef8f6b52e3ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
-        alt: 'Jesus In History',
+        // replace image with right url when Vlad replies back
+        src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
+        alt: 'quote',
         width: 1920,
         height: 1080,
-        blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW'
+        blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU'
       },
       parentOrder: 0
     }
   })
+
+  //   sixth step
   const step5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -430,7 +444,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        label: 'One question remains',
+        label: 'What does it mean?',
         variant: 'contained',
         color: 'primary',
         size: 'large',
@@ -447,12 +461,75 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       parentOrder: 4
     }
   })
-  const image3Id = uuidv4()
   const card5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
       parentBlockId: step5.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: image1.id
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'VideoBlock',
+      parentBlockId: card5.id,
+      extraAttrs: {
+        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+        title: 'Watch #FallingPlates',
+        description:
+          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+      }
+    }
+  })
+  const question4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioQuestionBlock',
+      parentBlockId: step5.id,
+      extraAttrs: {
+        label: 'Go to next step'
+      },
+      parentOrder: 1
+    }
+  })
+
+  // seventh step
+  const step6 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
+      parentOrder: 6
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: question4.id,
+      extraAttrs: {
+        label: 'Next step',
+        action: {
+          gtmEventName: 'click',
+          blockId: step6.id
+        }
+      }
+    }
+  })
+  const image3Id = uuidv4()
+  const card6 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: step6.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -467,13 +544,13 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       id: image3Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card5.id,
+      parentBlockId: card6.id,
       extraAttrs: {
-        src: 'https://images.unsplash.com/photo-1447023029226-ef8f6b52e3ea?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
+        src: 'https://images.unsplash.com/photo-1552676382-77b33d7639fa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'Who was this Jesus?',
         width: 1920,
         height: 1080,
-        blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW'
+        blurhash: 'L5AwUX~5080QHwNdD.%I0%E5%b$~'
       },
       parentOrder: 1
     }
@@ -482,7 +559,7 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card5.id,
+      parentBlockId: card6.id,
       extraAttrs: {
         content: "IF IT'S TRUE...",
         variant: 'h6',
@@ -492,13 +569,13 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
-  const question4 = await prisma.block.create({
+  const question5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: card5.id,
+      parentBlockId: card6.id,
       extraAttrs: {
-        label: 'Who was this Jesus?'
+        label: 'What does Jesus have to do with me?'
       },
       parentOrder: 2
     }
@@ -507,13 +584,9 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlockId: question5.id,
       extraAttrs: {
-        label: 'A great influencer',
-        action: {
-          gtmEventName: 'click',
-          blockId: ressurection?.id
-        }
+        label: 'He loves me'
       },
       parentOrder: 0
     }
@@ -522,13 +595,9 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlockId: question5.id,
       extraAttrs: {
-        label: 'A popular prophet',
-        action: {
-          gtmEventName: 'click',
-          blockId: ressurection?.id
-        }
+        label: 'He came to free me from sin'
       },
       parentOrder: 2
     }
@@ -537,13 +606,20 @@ export async function factOrFiction(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      parentBlockId: question5.id,
       extraAttrs: {
-        label: 'A fake historical figure',
-        action: {
-          gtmEventName: 'click',
-          blockId: ressurection?.id
-        }
+        label: "He doesn't care about me"
+      },
+      parentOrder: 3
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: question5.id,
+      extraAttrs: {
+        label: "I'm not sure"
       },
       parentOrder: 3
     }

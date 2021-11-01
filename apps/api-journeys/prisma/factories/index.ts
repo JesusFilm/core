@@ -1,3 +1,4 @@
 export { fallingPlates } from './fallingPlates'
-export { factOrFiction } from './factOrFiction'
-export { ressurection } from './ressurection'
+export { nua1 } from './nua1'
+export { nua2 } from './nua2'
+export { nuaEp8 } from './nuaEp8'
