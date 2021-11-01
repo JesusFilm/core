@@ -144,8 +144,8 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       parentBlockId: card1.id,
       extraAttrs: {
         // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '',
-        // languageId: '',
+        // mediaComponentId: '5_0-NUA0800-0-0',
+        // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: "What's Jesus Got to Do With Me?"
       }
@@ -307,8 +307,8 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       parentBlockId: card3.id,
       extraAttrs: {
         // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '',
-        // languageId: '',
+        // mediaComponentId: '5_0-NUA0800-0-0',
+        // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: "What's Jesus Got to Do With Me?"
       }
@@ -480,6 +480,9 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card5.id,
       extraAttrs: {
+        // put in comments the mediaComponentId and languageId
+        // mediaComponentId: '5_0-NUA0800-0-0',
+        // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
         description:

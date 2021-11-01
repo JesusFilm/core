@@ -144,8 +144,8 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       parentBlockId: card1.id,
       extraAttrs: {
         // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '',
-        // languageId: '',
+        // mediaComponentId: '5_0-NUA0301-0-0',
+        // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch What About The Ressurection?',
         description:
@@ -323,6 +323,9 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card3.id,
       extraAttrs: {
+        // put in comments the mediaComponentId and languageId
+        // mediaComponentId: '5_0-NUA0301-0-0',
+        // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
         description:
@@ -495,6 +498,9 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card5.id,
       extraAttrs: {
+        // put in comments the mediaComponentId and languageId
+        // mediaComponentId: '5_0-NUA0301-0-0',
+        // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: 'Watch #FallingPlates',
         description:
