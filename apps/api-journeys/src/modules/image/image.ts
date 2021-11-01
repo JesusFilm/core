@@ -34,6 +34,10 @@ const typeDefs = gql`
   extend type Mutation {
     imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   }
+
+  extend type Journey {
+    primaryImageBlock: ImageBlock
+  }
 `
 
 const getImageData = (image: Image): ImageData => {
@@ -49,6 +53,16 @@ const encodeImageToBlurhash = (image: Image): string => {
 }
 
 const resolvers: ImageModule.Resolvers = {
+  Journey: {
+    async primaryImageBlock(journey, __, { db }) {
+      if (journey.primaryImageBlockId == null) return null
+
+      const block = await db.block.findUnique({
+        where: { id: journey.primaryImageBlockId }
+      })
+      return block != null ? transformBlock(block) : null
+    }
+  },
   Mutation: {
     async imageBlockCreate(
       _parent,

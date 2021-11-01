@@ -28,6 +28,9 @@ model Journey {
   locale    String     @default("en-US")
   themeMode ThemeMode  @default(light)
   themeName ThemeName  @default(base)
+  description String?
+  primaryImageBlockId String?
+  primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
 }
 
 enum BlockType {
@@ -50,6 +53,7 @@ model Block {
   parentBlock   Block?    @relation("BlockChildren", fields: [parentBlockId], references: [id])
   parentBlockId String?
   childBlocks   Block[]   @relation("BlockChildren")
+  primaryImageJourney   Journey?   @relation("PrimaryImageJourney")
   extraAttrs    Json?
   parentOrder   Int       @default(0)
   responses     Response[]

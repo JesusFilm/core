@@ -37,6 +37,22 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
   }
 }
 
+function flatten(children: TreeBlock[]): TreeBlock[] {
+  return children.reduce(
+    (result, item) => [...result, item, ...flatten(item.children)],
+    []
+  )
+}
+
+export function isActiveBlockOrDescendant(blockId: string): boolean {
+  const activeBlock = activeBlockVar()
+  if (activeBlock == null) return false
+  if (activeBlock.id === blockId) return true
+
+  const descendants = flatten(activeBlock.children)
+  return descendants.some(({ id }) => id === blockId)
+}
+
 export function useBlocks(): UseBlocksHook {
   const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
