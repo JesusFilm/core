@@ -116,10 +116,13 @@ export type IconSize =
   | 'md'
   | 'sm'
   | 'xl';
+<<<<<<< HEAD
 
 export type IdType =
   | 'databaseId'
   | 'slug';
+=======
+>>>>>>> c3f956fd920481f84fc3a4c2119225f065f64f08
 
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
