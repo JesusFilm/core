@@ -19,7 +19,7 @@ export function Image({
   return (
     <Box
       sx={{
-        borderRadius: (theme) => theme.spacing(3),
+        borderRadius: (theme) => theme.spacing(4),
         overflow: 'hidden',
         mb: 4,
         ...sx,

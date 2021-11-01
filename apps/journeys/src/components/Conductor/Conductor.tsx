@@ -59,11 +59,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       sx={{
         display: 'flex',
         // Fit to screen
-        height: '80vh',
+        height: '100%',
         flexDirection: 'column',
+        justifyContent: 'center',
         [theme.breakpoints.up('lg')]: {
-          flexDirection: 'column-reverse',
-          height: 'auto'
+          flexDirection: 'column-reverse'
         }
       }}
     >
@@ -78,7 +78,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       >
         <JourneyProgress />
       </Box>
-      <Box sx={{ display: 'flex', height: 'auto', flexGrow: 1 }}>
+      <Box sx={{ display: 'flex' }}>
         <Swiper
           slidesPerView={'auto'}
           centeredSlides={true}
@@ -86,10 +86,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           onSwiper={(swiper) => setSwiper(swiper)}
           onBeforeResize={() => setGapBetween(getResponsiveGap())}
           onBeforeTransitionStart={() => setGapBetween(getResponsiveGap())}
-          watchOverflow={true}
           allowTouchMove={false}
-          navigation
           style={{
+            width: '100%',
             paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
             paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
           }}
@@ -107,7 +106,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   paddingTop: '4px',
                   paddingBottom: '4px',
                   px: `${gapBetweenSlides / 2}px`,
-                  maxHeight: 'calc(100vh - 32px)',
+                  height: '100vh',
+                  maxHeight: 'calc(100vh - 80px)',
                   [theme.breakpoints.only('sm')]: {
                     maxWidth: '660px',
                     maxHeight: '280px'
