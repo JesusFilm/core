@@ -4,6 +4,7 @@ import { Story, Meta } from '@storybook/react'
 import { Typography, TypographyProps } from './Typography'
 import {
   ThemeMode,
+  ThemeName,
   TypographyVariant,
   TypographyColor,
   TypographyAlign
@@ -87,11 +88,11 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
       justifyContent: 'space-between'
     }}
   >
-    <StoryCard themeMode={ThemeMode.light}>
+    <StoryCard themeMode={ThemeMode.light} themeName={ThemeName.base}>
       <TypographyColors {...props} variants={[null]} heading={'Default '} />
       <TypographyColors {...props} variants={props.variants} />
     </StoryCard>
-    <StoryCard themeMode={ThemeMode.dark}>
+    <StoryCard themeMode={ThemeMode.dark} themeName={ThemeName.base}>
       <TypographyColors {...props} variants={[null]} heading={'Default'} />
       <TypographyColors
         {...props}
