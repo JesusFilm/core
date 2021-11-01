@@ -45,7 +45,7 @@ export const Default = Template.bind({})
 Default.args = {
   __typename: 'VideoBlock',
   id: 'Video1',
-  parentBlockId: '',
+  parentBlockId: 'step1.id',
   volume: 1,
   autoplay: true,
   video: {
@@ -57,8 +57,8 @@ Default.args = {
 export const Src = Template.bind({})
 Src.args = {
   __typename: 'VideoBlock',
-  id: 'Video1',
-  parentBlockId: '',
+  id: 'video1.id',
+  parentBlockId: 'step1.id',
   volume: 1,
   autoplay: true,
   video: {
@@ -70,8 +70,8 @@ Src.args = {
 export const StartAt = Template.bind({})
 StartAt.args = {
   __typename: 'VideoBlock',
-  id: 'Video1',
-  parentBlockId: '',
+  id: 'video1.id',
+  parentBlockId: 'step1.id',
   volume: 1,
   autoplay: true,
   video: {

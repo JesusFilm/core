@@ -14,7 +14,7 @@ import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from '../Trigger'
-import { useBlocks } from '../../../libs/client/cache/blocks'
+import { isActiveBlockOrDescendant, useBlocks } from '../../../libs/client/cache/blocks'
 
 import 'video.js/dist/video-js.css'
 
@@ -47,6 +47,7 @@ export function Video({
   const player = useRef<videojs.Player>()
   const { activeBlock } = useBlocks()
 
+  const [isPlaying, setIsPlaying] = useState<boolean | string>()
   const [isReady, setIsReady] = useState<boolean | undefined>()
   const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
@@ -78,10 +79,23 @@ export function Video({
     [blockId, uuid, videoResponseCreate]
   )
 
+  const validatePlaying = useCallback(() => {
+    if (autoplay != null && activeBlock != null) {
+      // I need to somehow check that I am in the first step ever
+      if (isActiveBlockOrDescendant(blockId) && activeBlock.id === 'step1.id') {
+        setIsPlaying('muted')
+      } else if (isActiveBlockOrDescendant(blockId)) {
+        setIsPlaying(autoplay)
+      }
+    }
+  }, [blockId, autoplay, activeBlock])
+
   useEffect(() => {
-    if (video != null) {
+    validatePlaying()
+
+    if (isPlaying !== undefined && video != null) {
       const initialOptions: videojs.PlayerOptions = {
-        autoplay: autoplay === true ? 'muted' : false,
+        autoplay: isPlaying,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -90,7 +104,6 @@ export function Video({
         controlBar: {
           playToggle: true,
           captionsButton: true,
-          chaptersButton: true,
           subtitlesButton: true,
           remainingTimeDisplay: true,
           progressControl: {
@@ -148,6 +161,8 @@ export function Video({
     children,
     autoplay,
     video,
+    isPlaying,
+    validatePlaying,
     handleVideoResponse,
     startAt
   ])

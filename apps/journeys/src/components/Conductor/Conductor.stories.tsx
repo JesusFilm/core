@@ -319,7 +319,7 @@ export const VideoJourney = (): ReactElement => (
                       id: 'trigger.id',
                       __typename: 'TriggerBlock',
                       parentBlockId: 'video1.id',
-                      triggerStart: 10,
+                      triggerStart: 20,
                       triggerAction: {
                         __typename: 'NavigateToBlockAction',
                         gtmEventName: 'gtmEventName',
@@ -413,7 +413,7 @@ export const VideoJourney = (): ReactElement => (
                     __typename: 'VideoArclight',
                     src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE3ZjY0N2ZfYzc4NTZjYTMzMzU1OTNiZTI3ODhlOGM4NjllZjZhYjNhMjk0ZjdmZmQzMDZmMWJkYzJlMGNiMzczNTNlODI5NA%3D%3D'
                   },
-                  startAt: 20,
+                  startAt: 21,
                   children: []
                 }
               ]
