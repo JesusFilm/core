@@ -44,7 +44,7 @@ async function main(): Promise<void> {
       extraAttrs: {
         spacing: 3,
         direction: 'row',
-        justifyContent: 'flex_start',
+        justifyContent: 'flexStart',
         alignItems: 'center'
       },
       parentOrder: 1
@@ -56,7 +56,7 @@ async function main(): Promise<void> {
       blockType: 'GridItemBlock',
       parentBlockId: gridContainer.id,
       extraAttrs: {
-        xs: 6,
+        xl: 6,
         lg: 6,
         sm: 6
       },
