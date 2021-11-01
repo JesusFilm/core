@@ -22,8 +22,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const breakpoints = useBreakpoints()
   const theme = useTheme()
 
-  console.log(theme)
-
   useEffect(() => {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
@@ -45,7 +43,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   const edgeSlideWidth = 16
-  const responsiveGapBetween = (
+  const getResponsiveGap = (
     minGapBetween = breakpoints.md ? 44 : 16,
     maxSlideWidth = breakpoints.sm ? 660 : 854
   ): number =>
@@ -54,7 +52,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       (window.innerWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
 
-  const [gapBetweenSlides, setGapBetween] = useState(responsiveGapBetween())
+  const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
   return (
     <Box
@@ -86,9 +84,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           centeredSlides={true}
           centeredSlidesBounds={true}
           onSwiper={(swiper) => setSwiper(swiper)}
-          onResize={() => setGapBetween(responsiveGapBetween())}
-          updateOnWindowResize={true}
-          autoHeight={true}
+          onBeforeResize={() => setGapBetween(getResponsiveGap())}
+          onBeforeTransitionStart={() => setGapBetween(getResponsiveGap())}
           watchOverflow={true}
           allowTouchMove={false}
           navigation
