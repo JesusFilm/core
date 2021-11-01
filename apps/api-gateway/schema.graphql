@@ -200,8 +200,10 @@ type Journey
   @join__type(graph: JOURNEYS, key: "id")
 {
   blocks: [Block!] @join__field(graph: JOURNEYS)
+  description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
+  primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
@@ -209,6 +211,8 @@ type Journey
 }
 
 input JourneyCreateInput {
+  description: String
+
   """
   ID should be unique Response UUID
   (Provided for optimistic mutation result matching)
@@ -218,6 +222,16 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
+}
+
+input JourneyUpdateInput {
+  description: String
+  id: ID!
+  locale: String
+  primaryImageBlockId: ID
+  themeMode: ThemeMode
+  themeName: ThemeName
+  title: String
 }
 
 type LinkAction implements Action {
@@ -230,6 +244,7 @@ type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)

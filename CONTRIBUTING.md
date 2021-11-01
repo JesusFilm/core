@@ -71,7 +71,9 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install [Docker Desktop](https://www.docker.com/get-started)
 3. Start Docker Desktop
-4. add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
+4. Docker set up:
+   - **Mac users**: add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
+   - **PC users**: Windows limits resources to WSL 2 (Memory/CPU), this limit can be configured in your [.wslconfig file](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig).
 5. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
 6. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
 7. Pick GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`, finally choose the `main` branch to clone.
@@ -82,8 +84,10 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
 
+1. Make a copy of `apps/api-gateway/.env` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
+1. Make a copy of `apps/api-journey/.env` with the file name `apps/api-journey/.env.local`. Open the file and set up your own environment variables.
 1. run `nx run api-journeys:migrations`
-2. run `nx run api-journeys:seed`
-3. run `nx run api-gateway:serve-all`
-4. in another terminal run `nx run journeys:serve`
-5. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
+1. run `nx run api-journeys:seed`
+1. run `nx run api-gateway:serve-all`
+1. in another terminal run `nx run journeys:serve`
+1. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
