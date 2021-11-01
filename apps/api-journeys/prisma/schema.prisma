@@ -36,6 +36,7 @@ model Journey {
   // 1. add a slug column with type string to journey with a unique index
   // 2. generate slug for all existing journeys
   // 3. make field not nullable
+  slug      String    @unique
 }
 
 enum BlockType {
