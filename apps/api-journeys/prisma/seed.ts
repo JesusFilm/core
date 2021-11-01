@@ -24,6 +24,29 @@ async function main(): Promise<void> {
   })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
+  const primaryImage = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      extraAttrs: {
+        src: 'https://i4.ytimg.com/vi/KGlx11BxF24/maxresdefault.jpg',
+        alt: '#FallingPlates',
+        width: 1280,
+        height: 720
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.journey.update({
+    where: {
+      id: journey.id
+    },
+    data: {
+      primaryImageBlockId: primaryImage.id,
+      description:
+        'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+    }
+  })
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -264,10 +287,11 @@ async function main(): Promise<void> {
       blockType: 'ImageBlock',
       parentBlockId: stepWhenIAmAlreadyFollowingYou.id,
       extraAttrs: {
-        src: 'https://source.unsplash.com/random/1920x1080',
-        alt: 'random image from unsplash',
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'chester-wade',
         width: 1920,
-        height: 1080
+        height: 1080,
+        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
       parentOrder: 1
     }

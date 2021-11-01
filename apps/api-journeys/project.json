@@ -1,0 +1,112 @@
+{
+  "root": "apps/api-journeys",
+  "sourceRoot": "apps/api-journeys/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-journeys",
+        "main": "apps/api-journeys/src/main.ts",
+        "tsConfig": "apps/api-journeys/tsconfig.app.json"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-journeys/src/environments/environment.ts",
+              "with": "apps/api-journeys/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "api-journeys:build"
+      }
+    },
+    "deploy": {
+      "executor": "@ns3/nx-serverless:deploy",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "apps/api-journeys/.serverless"
+      }
+    },
+    "remove": {
+      "executor": "@ns3/nx-serverless:remove"
+    },
+
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
+      }
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-journeys"],
+      "options": {
+        "jestConfig": "apps/api-journeys/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "generate-prisma": {
+      "executor": "@nx-tools/nx-prisma:generate",
+      "options": {
+        "schema": "apps/api-journeys/prisma/schema.prisma"
+      }
+    },
+    "migrations": {
+      "executor": "@nx-tools/nx-prisma:migrations",
+      "options": {
+        "schema": "apps/api-journeys/prisma/schema.prisma"
+      }
+    },
+    "rollback": {
+      "executor": "@nx-tools/nx-prisma:rollback",
+      "options": {
+        "schema": "apps/api-journeys/prisma/schema.prisma"
+      }
+    },
+    "seed": {
+      "executor": "@nx-tools/nx-prisma:seed",
+      "options": {
+        "script": "apps/api-journeys/prisma/seed.ts",
+        "tsConfig": "apps/api-journeys/tsconfig.app.json"
+      }
+    },
+    "codegen": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
+          }
+        ]
+      }
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

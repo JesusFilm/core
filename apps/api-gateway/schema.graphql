@@ -65,6 +65,13 @@ type CardBlock implements Block {
   as a background. Blocks are often of type ImageBlock or VideoBlock.
   """
   coverBlockId: ID
+
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean!
   id: ID!
   parentBlockId: ID
 
@@ -120,11 +127,29 @@ enum IconSize {
 
 type ImageBlock implements Block {
   alt: String!
+
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+  """
+  blurhash: String!
   height: Int!
   id: ID!
   parentBlockId: ID
   src: String!
   width: Int!
+}
+
+input ImageBlockCreateInput {
+  alt: String!
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  src: String!
 }
 
 scalar join__FieldSet
@@ -138,8 +163,10 @@ type Journey
   @join__type(graph: JOURNEYS, key: "id")
 {
   blocks: [Block!] @join__field(graph: JOURNEYS)
+  description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
+  primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
@@ -147,6 +174,8 @@ type Journey
 }
 
 input JourneyCreateInput {
+  description: String
+
   """
   ID should be unique Response UUID
   (Provided for optimistic mutation result matching)
@@ -158,6 +187,16 @@ input JourneyCreateInput {
   title: String!
 }
 
+input JourneyUpdateInput {
+  description: String
+  id: ID!
+  locale: String
+  primaryImageBlockId: ID
+  themeMode: ThemeMode
+  themeName: ThemeName
+  title: String
+}
+
 type LinkAction implements Action {
   gtmEventName: String
   target: String
@@ -165,8 +204,10 @@ type LinkAction implements Action {
 }
 
 type Mutation {
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
