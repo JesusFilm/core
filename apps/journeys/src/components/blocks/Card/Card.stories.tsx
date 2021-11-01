@@ -81,14 +81,25 @@ Dark.args = {
   children
 }
 
-export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
-CustomColor.args = {
+export const CustomColorLight: Story<TreeBlock<CardBlock>> = Template.bind({})
+CustomColorLight.args = {
   backgroundColor: '#F1A025',
   children
 }
+CustomColorLight.parameters = {
+  theme: 'light'
+}
 
-export const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageCover.args = {
+export const CustomColorDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+CustomColorDark.args = {
+  ...CustomColorLight.args
+}
+CustomColorDark.parameters = {
+  theme: 'dark'
+}
+
+export const ImageCoverLight: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCoverLight.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     {
@@ -135,9 +146,20 @@ ImageCover.args = {
     }
   ]
 }
+ImageCoverLight.parameters = {
+  theme: 'light'
+}
 
-export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageBlur.args = {
+export const ImageCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCoverDark.args = {
+  ...ImageCoverLight.args
+}
+ImageCoverDark.parameters = {
+  theme: 'dark'
+}
+
+export const ImageBlurLight: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlurLight.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     {
@@ -184,6 +206,17 @@ ImageBlur.args = {
     }
   ],
   fullscreen: true
+}
+ImageBlurLight.parameters = {
+  theme: 'light'
+}
+
+export const ImageBlurDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlurDark.args = {
+  ...ImageBlurLight.args
+}
+ImageBlurDark.parameters = {
+  theme: 'dark'
 }
 
 export default Demo as Meta
