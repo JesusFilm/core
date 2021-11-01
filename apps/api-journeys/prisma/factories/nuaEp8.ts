@@ -416,12 +416,11 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       blockType: 'ImageBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        // replace image with right url when Vlad replies back
-        src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
+        src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'quote',
         width: 1920,
         height: 1080,
-        blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU'
+        blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
       },
       parentOrder: 0
     }
