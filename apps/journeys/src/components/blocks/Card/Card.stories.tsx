@@ -15,10 +15,22 @@ import {
   IconSize
 } from '../../../../__generated__/globalTypes'
 
-const Demo = {
+const Demo: Meta = {
   ...journeysConfig,
   component: Card,
-  title: 'Journeys/Blocks/Card'
+  title: 'Journeys/Blocks/Card',
+  parameters: {
+    theme: 'light',
+    chromatic: {
+      viewports: [
+        360, // Mobile (P)
+        568, // Mobile (L)
+        600, // Tablet (P)
+        961, // Tablet (L)
+        1200 // Laptop/Desktop
+      ]
+    }
+  }
 }
 
 const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
@@ -67,8 +79,8 @@ const children: TreeBlock[] = [
   }
 ]
 
-export const Light: Story<TreeBlock<CardBlock>> = Template.bind({})
-Light.args = {
+export const Default: Story<TreeBlock<CardBlock>> = Template.bind({})
+Default.args = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   children
@@ -76,30 +88,26 @@ Light.args = {
 
 export const Dark: Story<TreeBlock<CardBlock>> = Template.bind({})
 Dark.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
-  children
+  ...Default.args,
+  themeMode: ThemeMode.dark
 }
 
-export const CustomColorLight: Story<TreeBlock<CardBlock>> = Template.bind({})
-CustomColorLight.args = {
+export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
+CustomColor.args = {
   backgroundColor: '#F1A025',
   children
-}
-CustomColorLight.parameters = {
-  theme: 'light'
 }
 
 export const CustomColorDark: Story<TreeBlock<CardBlock>> = Template.bind({})
 CustomColorDark.args = {
-  ...CustomColorLight.args
+  ...CustomColor.args
 }
 CustomColorDark.parameters = {
   theme: 'dark'
 }
 
-export const ImageCoverLight: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageCoverLight.args = {
+export const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCover.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     {
@@ -146,20 +154,17 @@ ImageCoverLight.args = {
     }
   ]
 }
-ImageCoverLight.parameters = {
-  theme: 'light'
-}
 
 export const ImageCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageCoverDark.args = {
-  ...ImageCoverLight.args
+  ...ImageCover.args
 }
 ImageCoverDark.parameters = {
   theme: 'dark'
 }
 
-export const ImageBlurLight: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageBlurLight.args = {
+export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlur.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     {
@@ -207,16 +212,13 @@ ImageBlurLight.args = {
   ],
   fullscreen: true
 }
-ImageBlurLight.parameters = {
-  theme: 'light'
-}
 
 export const ImageBlurDark: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageBlurDark.args = {
-  ...ImageBlurLight.args
+  ...ImageBlur.args
 }
 ImageBlurDark.parameters = {
   theme: 'dark'
 }
 
-export default Demo as Meta
+export default Demo
