@@ -81,12 +81,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           alignSelf: 'center',
           my: 6,
           width: '100%',
-          px: `${responsiveGapBetween(16, 854) / 2}px`,
+          px: `${16 + responsiveGapBetween(16, 854)}px`,
           [theme.breakpoints.only('sm')]: {
-            px: `${responsiveGapBetween(16, 660) / 2}px`
+            px: `${16 + responsiveGapBetween(16, 660)}px`
           },
           [theme.breakpoints.only('md')]: {
-            px: `${responsiveGapBetween(44, 854) / 2}px`
+            px: `${16 + responsiveGapBetween(44, 854)}px`
           }
         }}
       >
