@@ -21,7 +21,9 @@ const Demo = {
   title: 'Journeys/Blocks/GridContainer'
 }
 
-const DefaultTemplate: Story<TreeBlock<GridContainerBlock>> = ({ ...props }) => (
+const DefaultTemplate: Story<TreeBlock<GridContainerBlock>> = ({
+  ...props
+}) => (
   <StoryCard>
     <GridContainer {...props} />
   </StoryCard>
@@ -102,7 +104,8 @@ const childrenTwo: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<GridContainerBlock>> =
+  DefaultTemplate.bind({})
 Default.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -132,7 +135,8 @@ Default.args = {
   ]
 }
 
-export const OffsetRight: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
+export const OffsetRight: Story<TreeBlock<GridContainerBlock>> =
+  DefaultTemplate.bind({})
 OffsetRight.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -153,7 +157,8 @@ OffsetRight.args = {
   ]
 }
 
-export const Center: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
+export const Center: Story<TreeBlock<GridContainerBlock>> =
+  DefaultTemplate.bind({})
 Center.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',

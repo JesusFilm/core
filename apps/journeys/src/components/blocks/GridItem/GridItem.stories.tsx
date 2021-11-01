@@ -9,7 +9,7 @@ import {
   ButtonColor,
   ButtonSize,
   IconName,
-  IconSize,
+  IconSize
 } from '../../../../__generated__/globalTypes'
 
 const Demo = {

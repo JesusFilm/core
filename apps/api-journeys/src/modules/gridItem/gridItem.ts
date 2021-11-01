@@ -7,7 +7,7 @@ const typeDefs = gql`
     parentBlockId: ID
     xl: Int!
     lg: Int!
-    sm: Int!  
+    sm: Int!
   }
 `
 

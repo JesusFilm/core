@@ -49,7 +49,7 @@ describe('GridItemModule', () => {
         extraAttrs: {
           xl: 6,
           lg: 6,
-          sm: 6,
+          sm: 6
         }
       }
       dbMock.block.findMany.mockResolvedValue([grid])
@@ -76,7 +76,7 @@ describe('GridItemModule', () => {
           parentBlockId,
           xl: 6,
           lg: 6,
-          sm: 6,
+          sm: 6
         }
       ])
     })

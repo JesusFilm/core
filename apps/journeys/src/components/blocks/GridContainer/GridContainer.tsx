@@ -11,9 +11,8 @@ export function GridContainer({
   alignItems,
   children
 }: TreeBlock<GridContainerBlock>): ReactElement {
-
   return (
-    <MaterialGrid 
+    <MaterialGrid
       container
       spacing={spacing}
       direction={hyphenate(direction) as GridDirection}
@@ -27,7 +26,5 @@ export function GridContainer({
   )
 }
 
-const hyphenate = (value): string => value.replace(
-      /([A-Z])/g,
-      (g: string[]): string => `-${g[0].toLowerCase()}`
-    )
+const hyphenate = (value): string =>
+  value.replace(/([A-Z])/g, (g: string[]): string => `-${g[0].toLowerCase()}`)

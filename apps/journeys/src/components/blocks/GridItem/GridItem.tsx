@@ -10,9 +10,8 @@ export function GridItem({
   sm,
   children
 }: TreeBlock<GridItemBlock>): ReactElement {
-
   return (
-    <MaterialGrid 
+    <MaterialGrid
       item
       xl={xl as GridSize}
       lg={lg as GridSize}
