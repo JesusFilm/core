@@ -44,13 +44,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const edgeSlideWidth = 16
   const getResponsiveGap = (
-    minGapBetween = breakpoints.md ? 44 : 16,
-    maxSlideWidth = breakpoints.sm ? 660 : 854
-  ): number =>
-    Math.max(
+    minGapBetween = breakpoints.xs ? 16 : 44,
+    maxSlideWidth = 854
+  ): number => {
+    console.log(minGapBetween)
+    return Math.max(
       minGapBetween,
       (window.innerWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
+  }
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
@@ -59,10 +61,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       sx={{
         display: 'flex',
         // Fit to screen
-        height: '100%',
         flexDirection: 'column',
         justifyContent: 'center',
         [theme.breakpoints.up('lg')]: {
+          height: '100%',
           flexDirection: 'column-reverse'
         }
       }}
@@ -71,7 +73,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           display: 'flex',
           alignSelf: 'center',
-          my: 6,
+          py: 6,
           width: '100%',
           px: `${edgeSlideWidth + gapBetweenSlides}px`
         }}
@@ -108,10 +110,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   px: `${gapBetweenSlides / 2}px`,
                   height: '100vh',
                   maxHeight: 'calc(100vh - 80px)',
-                  [theme.breakpoints.only('sm')]: {
-                    maxWidth: '660px',
-                    maxHeight: '280px'
-                  },
                   [theme.breakpoints.up('lg')]: {
                     maxWidth: '854px',
                     maxHeight: '480px'
