@@ -18,7 +18,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [windowWidth, setWidth] = useState(window.innerWidth)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
 
@@ -43,35 +42,20 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }
 
   const previewSlideWidth = 16
-  const minGapBetween = breakpoints.md ? 44 : 16
-  const maxSlideWidth = breakpoints.sm ? 660 : 854
-
   const responsiveGapBetween = (
-    minGapBetween: number,
-    maxSlideWidth: number
-  ): number => {
-    console.log(
-      breakpoints,
-      Math.max(
-        minGapBetween,
-        (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
-      )
-    )
-    return Math.max(
+    minGapBetween = breakpoints.md ? 44 : 16,
+    maxSlideWidth = breakpoints.sm ? 660 : 854
+  ): number =>
+    Math.max(
       minGapBetween,
       (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
     )
-  }
 
-  const [gapBetweenSlides, setGapBetween] = useState(
-    responsiveGapBetween(minGapBetween, maxSlideWidth)
-  )
+  const [gapBetweenSlides, setGapBetween] = useState(responsiveGapBetween())
 
   useEffect(() => {
     const updateWidth = (): void => {
-      setWidth(window.innerWidth)
-      setGapBetween(responsiveGapBetween(minGapBetween, maxSlideWidth))
-      console.log('updatedWidth')
+      setGapBetween(responsiveGapBetween())
     }
 
     window.addEventListener('resize', updateWidth)
@@ -97,8 +81,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           alignSelf: 'center',
           my: 6,
           width: '100%',
-          paddingLeft: `${16 + gapBetweenSlides}px`,
-          paddingRight: `${16 + gapBetweenSlides}px`
+          px: `${responsiveGapBetween(16, 854) / 2}px`,
+          [theme.breakpoints.only('sm')]: {
+            px: `${responsiveGapBetween(16, 660) / 2}px`
+          },
+          [theme.breakpoints.only('md')]: {
+            px: `${responsiveGapBetween(44, 854) / 2}px`
+          }
         }}
       >
         <JourneyProgress />
@@ -109,6 +98,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           slidesPerView={'auto'}
           centeredSlides={true}
           centeredSlidesBounds={true}
+          autoHeight={true}
           // slidesOffsetBefore={24}
           // slidesOffsetAfter={32}
           onSwiper={(swiper) => setSwiper(swiper)}
@@ -119,8 +109,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           updateOnWindowResize={true}
           watchOverflow={true}
           style={{
-            paddingLeft: `${16 + gapBetweenSlides / 2}px`,
-            paddingRight: `${16 + gapBetweenSlides / 2}px`
+            paddingLeft: `${16 + responsiveGapBetween() / 2}px`,
+            paddingRight: `${16 + responsiveGapBetween() / 2}px`
           }}
         >
           {treeBlocks.map((block) => (
@@ -147,7 +137,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                     px: `${responsiveGapBetween(44, 854) / 2}px`
                   },
                   [theme.breakpoints.up('lg')]: {
-                    minWidth: '854px',
                     maxWidth: '854px',
                     maxHeight: '480px'
                   }
