@@ -40,7 +40,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   function handleNext(): void {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
-
   const previewSlideWidth = 16
   const responsiveGapBetween = (
     minGapBetween = breakpoints.md ? 44 : 16,
@@ -52,15 +51,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     )
 
   const [gapBetweenSlides, setGapBetween] = useState(responsiveGapBetween())
-
-  useEffect(() => {
-    const updateWidth = (): void => {
-      setGapBetween(responsiveGapBetween())
-    }
-
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
-  }, [])
 
   return (
     <Box
@@ -81,36 +71,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           alignSelf: 'center',
           my: 6,
           width: '100%',
-          px: `${16 + responsiveGapBetween(16, 854)}px`,
-          [theme.breakpoints.only('sm')]: {
-            px: `${16 + responsiveGapBetween(16, 660)}px`
-          },
-          [theme.breakpoints.only('md')]: {
-            px: `${16 + responsiveGapBetween(44, 854)}px`
-          }
+          px: `${16 + gapBetweenSlides}px`
         }}
       >
         <JourneyProgress />
       </Box>
       <Box sx={{ display: 'flex', height: 'auto', flexGrow: 1 }}>
         <Swiper
-          // spaceBetween={16}
           slidesPerView={'auto'}
           centeredSlides={true}
           centeredSlidesBounds={true}
-          autoHeight={true}
-          // slidesOffsetBefore={24}
-          // slidesOffsetAfter={32}
           onSwiper={(swiper) => setSwiper(swiper)}
-          // onOrientationchange={(swiper) => {
-          //   updateWidth()
-          // }}
-          allowTouchMove={false}
+          onResize={() => setGapBetween(responsiveGapBetween())}
           updateOnWindowResize={true}
+          allowTouchMove={false}
+          autoHeight={true}
           watchOverflow={true}
           style={{
-            paddingLeft: `${16 + responsiveGapBetween() / 2}px`,
-            paddingRight: `${16 + responsiveGapBetween() / 2}px`
+            paddingLeft: `${16 + gapBetweenSlides / 2}px`,
+            paddingRight: `${16 + gapBetweenSlides / 2}px`
           }}
         >
           {treeBlocks.map((block) => (
@@ -126,15 +105,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   // justifyContent: 'center',
                   paddingTop: '4px',
                   paddingBottom: '4px',
-                  px: `${responsiveGapBetween(16, 854) / 2}px`,
+                  px: `${gapBetweenSlides / 2}px`,
                   maxHeight: 'calc(100vh - 32px)',
                   [theme.breakpoints.only('sm')]: {
-                    px: `${responsiveGapBetween(16, 660) / 2}px`,
                     maxWidth: '660px',
                     maxHeight: '280px'
-                  },
-                  [theme.breakpoints.only('md')]: {
-                    px: `${responsiveGapBetween(44, 854) / 2}px`
                   },
                   [theme.breakpoints.up('lg')]: {
                     maxWidth: '854px',
