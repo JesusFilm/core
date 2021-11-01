@@ -2,13 +2,14 @@ import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect, useState } from 'react'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { useBlocks } from '../../libs/client/cache/blocks'
-import type SwiperCore from 'swiper'
+import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import { JourneyProgress } from '../JourneyProgress'
-import { Box, useTheme } from '@mui/material'
+import { Box, IconButton, useTheme } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
+import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 
 interface ConductorProps {
   blocks: TreeBlock[]
@@ -20,6 +21,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const breakpoints = useBreakpoints()
   const theme = useTheme()
+
+  console.log(theme)
 
   useEffect(() => {
     setTreeBlocks(blocks)
@@ -40,14 +43,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   function handleNext(): void {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
-  const previewSlideWidth = 16
+
+  const edgeSlideWidth = 16
   const responsiveGapBetween = (
     minGapBetween = breakpoints.md ? 44 : 16,
     maxSlideWidth = breakpoints.sm ? 660 : 854
   ): number =>
     Math.max(
       minGapBetween,
-      (window.innerWidth - maxSlideWidth - previewSlideWidth * 2) / 2
+      (window.innerWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
 
   const [gapBetweenSlides, setGapBetween] = useState(responsiveGapBetween())
@@ -71,7 +75,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           alignSelf: 'center',
           my: 6,
           width: '100%',
-          px: `${16 + gapBetweenSlides}px`
+          px: `${edgeSlideWidth + gapBetweenSlides}px`
         }}
       >
         <JourneyProgress />
@@ -84,12 +88,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           onSwiper={(swiper) => setSwiper(swiper)}
           onResize={() => setGapBetween(responsiveGapBetween())}
           updateOnWindowResize={true}
-          allowTouchMove={false}
           autoHeight={true}
           watchOverflow={true}
+          allowTouchMove={false}
+          navigation
           style={{
-            paddingLeft: `${16 + gapBetweenSlides / 2}px`,
-            paddingRight: `${16 + gapBetweenSlides / 2}px`
+            paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
+            paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
           }}
         >
           {treeBlocks.map((block) => (
@@ -102,7 +107,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               <Box
                 sx={{
                   display: 'flex',
-                  // justifyContent: 'center',
                   paddingTop: '4px',
                   paddingBottom: '4px',
                   px: `${gapBetweenSlides / 2}px`,
@@ -121,20 +125,32 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               </Box>
             </SwiperSlide>
           ))}
-          <Box
+          <IconButton
             data-testid="conductorPrevButton"
+            onClick={handleNext}
+            disabled={true}
+            disableRipple
             sx={{
               position: 'absolute',
               top: 0,
               bottom: 0,
               zIndex: 2,
               left: 0,
-              background: (theme) => ({
-                md: `linear-gradient(90deg, ${theme.palette.background.default}FF 0%, ${theme.palette.background.default}00 100%)`
-              }),
-              width: (theme) => theme.spacing(4)
+              width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+              pl: ` ${gapBetweenSlides - 100}px`,
+              color: (theme) => theme.palette.text.primary
             }}
-          />
+          >
+            <ChevronLeft
+              fontSize={'large'}
+              sx={{
+                display: 'none',
+                [theme.breakpoints.only('xl')]: {
+                  display: 'block'
+                }
+              }}
+            />
+          </IconButton>
           <Box
             sx={{
               position: 'absolute',
@@ -148,26 +164,34 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               width: (theme) => theme.spacing(4)
             }}
           />
-          <Box
+          <IconButton
             data-testid="conductorNextButton"
             onClick={handleNext}
+            disabled={
+              activeBlock?.locked === true || activeBlock?.nextBlockId == null
+            }
+            disableRipple
             sx={{
-              cursor:
-                activeBlock?.locked === true || activeBlock?.nextBlockId == null
-                  ? 'auto'
-                  : 'pointer',
-              display: 'block',
               position: 'absolute',
               top: 0,
               bottom: 0,
               zIndex: 2,
               right: 0,
-              background: (theme) => ({
-                md: `linear-gradient(90deg, ${theme.palette.background.default}00 0%, ${theme.palette.background.default}FF 100%)`
-              }),
-              width: (theme) => theme.spacing(4)
+              width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+              pr: ` ${gapBetweenSlides - 100}px`,
+              color: (theme) => theme.palette.text.primary
             }}
-          />
+          >
+            <ChevronRight
+              fontSize={'large'}
+              sx={{
+                display: 'none',
+                [theme.breakpoints.only('xl')]: {
+                  display: 'block'
+                }
+              }}
+            />
+          </IconButton>
         </Swiper>
       </Box>
     </Box>
