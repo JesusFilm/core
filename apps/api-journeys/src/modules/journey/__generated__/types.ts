@@ -11,6 +11,7 @@ export namespace JourneyModule {
   interface DefinedEnumValues {
     ThemeMode: 'light' | 'dark';
     ThemeName: 'base';
+    IdType: 'databaseId' | 'slug';
   };
   
   interface DefinedInputFields {
@@ -21,6 +22,7 @@ export namespace JourneyModule {
   export type ThemeMode = DefinedEnumValues['ThemeMode'];
   export type ThemeName = DefinedEnumValues['ThemeName'];
   export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
+  export type IdType = DefinedEnumValues['IdType'];
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
   export type JourneyUpdateInput = Pick<Types.JourneyUpdateInput, DefinedInputFields['JourneyUpdateInput']>;

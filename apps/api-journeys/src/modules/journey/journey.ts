@@ -24,9 +24,14 @@ const typeDefs = gql`
     description: String
   }
 
+  enum IdType {
+    databaseId
+    slug
+  }
+
   extend type Query {
     journeys: [Journey!]!
-    journey(id: ID!): Journey
+    journey(id: ID!, idType: IdType): Journey
   }
 
   input JourneyCreateInput {
@@ -66,10 +71,16 @@ const resolvers: JourneyModule.Resolvers = {
         where: { published: true }
       })
     },
-    async journey(_parent, { id }, { db }) {
-      return await db.journey.findUnique({
-        where: { id }
-      })
+    async journey(_parent, { id, idType }, { db }) {
+      if (idType == null || idType === 'databaseId') {
+        return await db.journey.findUnique({
+          where: { id }
+        })
+      } else if (idType === 'slug') {
+        return await db.journey.findUnique({
+          where: { slug: id }
+        })
+      }
     }
   },
   Mutation: {

@@ -117,6 +117,10 @@ export type IconSize =
   | 'sm'
   | 'xl';
 
+export type IdType =
+  | 'databaseId'
+  | 'slug';
+
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
   alt: Scalars['String'];
@@ -260,6 +264,7 @@ export type Query = {
 
 export type QueryJourneyArgs = {
   id: Scalars['ID'];
+  idType?: Maybe<IdType>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -496,6 +501,7 @@ export type ResolversTypes = {
   IconColor: IconColor;
   IconName: IconName;
   IconSize: IconSize;
+  IdType: IdType;
   ImageBlock: ResolverTypeWrapper<BlockType>;
   ImageBlockCreateInput: ImageBlockCreateInput;
   Int: ResolverTypeWrapper<Scalars['Int']>;
