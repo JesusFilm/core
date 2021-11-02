@@ -58,11 +58,39 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+
+  const gridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: step.id,
+      extraAttrs: {
+        spacing: 3,
+        direction: 'row',
+        justifyContent: 'flexStart',
+        alignItems: 'center'
+      },
+      parentOrder: 1
+    }
+  })
+  const gridItem = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: gridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
   const card = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step.id,
+      parentBlockId: gridItem.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base

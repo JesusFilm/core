@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -90,6 +90,31 @@ export interface GetJourney_journey_blocks_CardBlock {
    * themeName from journey
    */
   themeName: ThemeName | null;
+  /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: boolean;
+}
+
+export interface GetJourney_journey_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock";
+  id: string;
+  parentBlockId: string | null;
+  spacing: number;
+  direction: GridDirection;
+  justifyContent: GridJustifyContent;
+  alignItems: GridAlignItems;
+}
+
+export interface GetJourney_journey_blocks_GridItemBlock {
+  __typename: "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  xl: number;
+  lg: number;
+  sm: number;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
@@ -100,6 +125,11 @@ export interface GetJourney_journey_blocks_ImageBlock {
   alt: string;
   width: number;
   height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
@@ -222,7 +252,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   autoplay: boolean | null;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";

@@ -66,6 +66,19 @@ export const baseColorsLight = (): Required<
             }
           }
         }
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            ':hover': {
+              color: primary.main,
+              backgroundColor: `rgba(0, 0, 0 ,0)`
+            },
+            ':disabled': {
+              color: palette[300]
+            }
+          }
+        }
       }
     }
   }
@@ -123,6 +136,19 @@ export const baseColorsDark = (): Required<
           groupedContainedVertical: {
             '&:not(:last-of-type)': {
               borderBottom: `1px solid ${palette[300]}`
+            }
+          }
+        }
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            ':hover': {
+              color: primary.main,
+              backgroundColor: `rgba(0, 0, 0 ,0)`
+            },
+            ':disabled': {
+              color: palette[700]
             }
           }
         }
