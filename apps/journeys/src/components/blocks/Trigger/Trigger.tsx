@@ -1,7 +1,7 @@
 import videojs from 'video.js'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { ReactElement } from 'react'
-import { GetJourney_journey_blocks_TriggerBlock as TriggerBlock } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_VideoTriggerBlock as TriggerBlock } from '../../../../__generated__/GetJourney'
 import { handleAction } from '../../../libs/action'
 
 export interface TriggerProps extends TreeBlock<TriggerBlock> {
