@@ -11,11 +11,11 @@ import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 
-interface ConductorProps {
+export interface ConductorProps {
   blocks: TreeBlock[]
 }
 
-export function Conductor({ blocks }: ConductorProps): ReactElement {
+const Conductor = ({ blocks }: ConductorProps): ReactElement => {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
