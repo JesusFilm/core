@@ -40,7 +40,6 @@ export function Card({
         backgroundImage:
           coverBlock != null ? `url(${coverBlock.src})` : undefined
       }}
-      fixedSize
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
         <CardImageCover coverBlock={coverBlock}>
@@ -60,7 +59,7 @@ export function Card({
             padding: (theme) => ({
               xs: theme.spacing(7),
               sm: theme.spacing(7, 10),
-              md: theme.spacing(10, 0)
+              md: theme.spacing(10)
             }),
             borderRadius: (theme) => theme.spacing(4)
           }}
@@ -81,7 +80,6 @@ interface CardWrapperProps
   > {
   children: ReactNode
   sx?: SxProps
-  fixedSize?: boolean
 }
 
 export const CardWrapper = ({
@@ -90,8 +88,7 @@ export const CardWrapper = ({
   themeMode,
   themeName,
   children,
-  sx,
-  fixedSize
+  sx
 }: CardWrapperProps): ReactElement => {
   const Card = (
     <Paper
@@ -101,26 +98,11 @@ export const CardWrapper = ({
         flexDirection: { xs: 'column', sm: 'row' },
         borderRadius: (theme) => theme.spacing(4),
         backgroundColor,
-        height: fixedSize === true ? '100%' : null,
-        p: 7,
+        backgroundImage: 'none',
+        width: '100%',
+        height: '100%',
         overflow: 'hidden',
         position: 'relative',
-        maxWidth:
-          fixedSize === true
-            ? {
-                sm: 660,
-                md: 854
-              }
-            : null,
-        maxHeight:
-          fixedSize === true
-            ? {
-                xs: 670,
-                sm: 280,
-                md: 480
-              }
-            : null,
-        margin: '0 auto',
         ...sx
       }}
       elevation={3}

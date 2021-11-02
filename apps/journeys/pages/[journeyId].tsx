@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Conductor } from '../src/components/Conductor'
+import Conductor from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
@@ -13,6 +13,8 @@ import {
   TYPOGRAPHY_FIELDS,
   BUTTON_FIELDS,
   IMAGE_FIELDS,
+  GRID_CONTAINER_FIELDS,
+  GRID_ITEM_FIELDS,
   CARD_FIELDS,
   SIGN_UP_FIELDS,
   STEP_FIELDS,
@@ -60,6 +62,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       ${BUTTON_FIELDS}
       ${CARD_FIELDS}
       ${IMAGE_FIELDS}
+      ${GRID_CONTAINER_FIELDS}
+      ${GRID_ITEM_FIELDS}
       ${RADIO_OPTION_FIELDS}
       ${RADIO_QUESTION_FIELDS}
       ${SIGN_UP_FIELDS}
@@ -85,6 +89,12 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             }
             ... on CardBlock {
               ...CardFields
+            }
+            ... on GridContainerBlock {
+              ...GridContainerFields
+            }
+            ... on GridItemBlock {
+              ...GridItemFields
             }
             ... on ImageBlock {
               ...ImageFields

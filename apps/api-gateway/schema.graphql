@@ -88,6 +88,43 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
+enum GridAlignItems {
+  baseline
+  center
+  flexEnd
+  flexStart
+}
+
+type GridContainerBlock implements Block {
+  alignItems: GridAlignItems!
+  direction: GridDirection!
+  id: ID!
+  justifyContent: GridJustifyContent!
+  parentBlockId: ID
+  spacing: Int!
+}
+
+enum GridDirection {
+  column
+  columnReverse
+  row
+  rowReverse
+}
+
+type GridItemBlock implements Block {
+  id: ID!
+  lg: Int!
+  parentBlockId: ID
+  sm: Int!
+  xl: Int!
+}
+
+enum GridJustifyContent {
+  center
+  flexEnd
+  flexStart
+}
+
 type Icon {
   color: IconColor
   name: IconName!

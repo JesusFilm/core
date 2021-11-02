@@ -14,6 +14,8 @@ generates:
         ButtonBlock: .prisma/api-journeys-client#Block as BlockType
         CardBlock: .prisma/api-journeys-client#Block as BlockType
         ImageBlock: .prisma/api-journeys-client#Block as BlockType
+        GridContainerBlock: .prisma/api-journeys-client#Block as BlockType
+        GridItemBlock: .prisma/api-journeys-client#Block as BlockType
         Journey: .prisma/api-journeys-client#Journey as JourneyType
         RadioQuestionBlock: .prisma/api-journeys-client#Block as BlockType
         RadioOptionBlock: .prisma/api-journeys-client#Block as BlockType
