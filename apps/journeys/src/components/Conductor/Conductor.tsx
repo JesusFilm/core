@@ -108,9 +108,9 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
                   paddingTop: '4px',
                   paddingBottom: '4px',
                   px: `${gapBetweenSlides / 2}px`,
-                  height: '100vh',
+                  height: 'calc(100vh - 80px)',
                   maxHeight: 'calc(100vh - 80px)',
-                  [theme.breakpoints.up('sm')]: {
+                  [theme.breakpoints.only('sm')]: {
                     maxHeight: '460px'
                   },
                   [theme.breakpoints.up('lg')]: {
