@@ -90,6 +90,9 @@ const resolvers: JourneyModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+      if ((await db.journey.findFirst({ where: { slug: slug } })) != null) {
+        throw new Error('Slug already exists')
+      }
       return await db.journey.create({
         data: {
           id: id as string | undefined,
@@ -105,6 +108,12 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyUpdate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+      if (
+        (input.slug != null &&
+          (await db.journey.findFirst({ where: { slug: input.slug } }))) != null
+      ) {
+        throw new Error('Slug already exists')
+      }
       return await db.journey.update({
         where: {
           id: input.id
