@@ -53,7 +53,10 @@ Default.args = {
   muted: true,
   videoContent: {
     __typename: 'VideoArclight',
-    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
+    // This is the redirected URL from this link
+    // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
+    // Meaning that it's expected for it's tokens key and this link to expire
+    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MWZmYmJfZjhhMGNkMGJhNGQyM2QwNjFjMGMxNzE0ZmY1NGUyMGYyZTkzYTc5YjlmMTZkNzgyODJlMDY2YmJjNWYzZmZjNg%3D%3D'
   }
 }
 
@@ -78,7 +81,10 @@ StartAt.args = {
   volume: 1,
   autoplay: true,
   videoContent: {
-    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
+    // This is the redirected URL from this link
+    // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
+    // Meaning that it's expected for it's tokens key to expire
+    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MWZmYmJfZjhhMGNkMGJhNGQyM2QwNjFjMGMxNzE0ZmY1NGUyMGYyZTkzYTc5YjlmMTZkNzgyODJlMDY2YmJjNWYzZmZjNg%3D%3D'
   },
   startAt: 30
 }

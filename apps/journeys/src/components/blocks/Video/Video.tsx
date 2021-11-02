@@ -85,7 +85,6 @@ export function Video({
 
   const validatePlaying = useCallback(() => {
     if (autoplay != null && muted != null) {
-      // I need to somehow check that I am in the first step ever
       if (isActiveBlockOrDescendant(blockId) && muted) {
         setIsPlaying('muted')
       } else if (isActiveBlockOrDescendant(blockId)) {
@@ -126,6 +125,9 @@ export function Video({
         fluid: true,
         responsive: true
       }
+
+      // get the redirected URL link
+      console.log(videoContent.src)
 
       if (videoNode.current != null) {
         player.current = videojs(videoNode.current, {
