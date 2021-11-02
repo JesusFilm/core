@@ -42,6 +42,11 @@ DefaultOnDark.parameters = {
   theme: 'dark'
 }
 
+export const WithContent: Story<ConductorProps> = Template.bind({})
+WithContent.args = {
+  blocks: imageBlocks
+}
+
 export const WithContentOnDark: Story<ConductorProps> = Template.bind({})
 WithContentOnDark.args = {
   blocks: imageBlocks
