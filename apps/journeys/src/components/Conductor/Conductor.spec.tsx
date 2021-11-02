@@ -1,5 +1,5 @@
 import { useBreakpoints } from '@core/shared/ui'
-import { Conductor } from '.'
+import Conductor from '.'
 import { fireEvent, renderWithApolloClient } from '../../../test/testingLibrary'
 import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
 import { TreeBlock } from '../../libs/transformer/transformer'
