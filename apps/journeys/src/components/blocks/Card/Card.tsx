@@ -59,7 +59,7 @@ export function Card({
             padding: (theme) => ({
               xs: theme.spacing(7),
               sm: theme.spacing(7, 10),
-              md: theme.spacing(10, 0)
+              md: theme.spacing(10)
             }),
             borderRadius: (theme) => theme.spacing(4)
           }}
