@@ -46,13 +46,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const getResponsiveGap = (
     minGapBetween = breakpoints.xs ? 16 : 44,
     maxSlideWidth = 854
-  ): number => {
-    console.log(minGapBetween)
-    return Math.max(
+  ): number =>
+    Math.max(
       minGapBetween,
       (window.innerWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
-  }
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
@@ -60,7 +58,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     <Box
       sx={{
         display: 'flex',
-        // Fit to screen
         flexDirection: 'column',
         justifyContent: 'center',
         [theme.breakpoints.up('lg')]: {
