@@ -16,7 +16,7 @@ export namespace JourneyModule {
   
   interface DefinedInputFields {
     JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description';
-    JourneyUpdateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'primaryImageBlockId';
+    JourneyUpdateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'primaryImageBlockId' | 'slug';
   };
   
   export type ThemeMode = DefinedEnumValues['ThemeMode'];

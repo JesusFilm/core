@@ -176,6 +176,7 @@ export type JourneyUpdateInput = {
   id: Scalars['ID'];
   locale?: Maybe<Scalars['String']>;
   primaryImageBlockId?: Maybe<Scalars['ID']>;
+  slug?: Maybe<IdType>;
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
   title?: Maybe<Scalars['String']>;

@@ -172,6 +172,7 @@ input JourneyUpdateInput {
   themeName: ThemeName
   description: String
   primaryImageBlockId: ID
+  slug: IdType
 }
 
 type LinkAction implements Action {

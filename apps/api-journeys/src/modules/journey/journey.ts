@@ -55,6 +55,7 @@ const typeDefs = gql`
     themeName: ThemeName
     description: String
     primaryImageBlockId: ID
+    slug: IdType
   }
 
   extend type Mutation {
@@ -72,14 +73,10 @@ const resolvers: JourneyModule.Resolvers = {
       })
     },
     async journey(_parent, { id, idType }, { db }) {
-      if (idType == null || idType === 'databaseId') {
-        return await db.journey.findUnique({
-          where: { id }
-        })
-      } else if (idType === 'slug') {
-        return await db.journey.findUnique({
-          where: { slug: id }
-        })
+      if (idType === 'slug') {
+        return await db.journey.findUnique({ where: { slug: id } })
+      } else {
+        return await db.journey.findUnique({ where: { id } })
       }
     }
   },
