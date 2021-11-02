@@ -19,6 +19,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
+  const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
 
@@ -85,6 +86,8 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
           onSwiper={(swiper) => setSwiper(swiper)}
           onBeforeResize={() => setGapBetween(getResponsiveGap())}
           onBeforeTransitionStart={() => setGapBetween(getResponsiveGap())}
+          onSlideChangeTransitionStart={() => setShowNavArrow(false)}
+          onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
           allowTouchMove={false}
           style={{
             width: '100%',
@@ -123,6 +126,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
             disabled={true}
             disableRipple
             sx={{
+              display: showNavArrows ? 'flex' : 'none',
               position: 'absolute',
               top: 0,
               bottom: 0,
@@ -164,6 +168,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
             }
             disableRipple
             sx={{
+              display: showNavArrows ? 'flex' : 'none',
               position: 'absolute',
               top: 0,
               bottom: 0,
