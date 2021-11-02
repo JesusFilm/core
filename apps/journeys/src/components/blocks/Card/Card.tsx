@@ -8,7 +8,7 @@ import {
 import { ThemeProvider } from '@core/shared/ui'
 import { Paper, Box } from '@mui/material'
 import { SxProps } from '@mui/system'
-import { CardWithCover } from '.'
+import { CardImageCover } from '.'
 
 export function Card({
   id,
@@ -37,21 +37,14 @@ export function Card({
         p: 0,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
-        backgroundImage: {
-          // We don't want the background image to peek though
-          // while card is loading on the smaller sizes.
-          md: coverBlock != null ? `url(${coverBlock.src})` : undefined
-        }
+        backgroundImage:
+          coverBlock != null ? `url(${coverBlock.src})` : undefined
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
-        <CardWithCover
-          coverBlock={coverBlock}
-          themeMode={themeMode}
-          themeName={themeName}
-        >
+        <CardImageCover coverBlock={coverBlock}>
           {renderedChildren}
-        </CardWithCover>
+        </CardImageCover>
       ) : (
         <Box
           sx={{
@@ -66,7 +59,7 @@ export function Card({
             padding: (theme) => ({
               xs: theme.spacing(7),
               sm: theme.spacing(7, 10),
-              md: theme.spacing(10, 0)
+              md: theme.spacing(10)
             }),
             borderRadius: (theme) => theme.spacing(4)
           }}
@@ -82,8 +75,8 @@ export function Card({
 
 interface CardWrapperProps
   extends Pick<
-    CardBlock,
-    'id' | 'backgroundColor' | 'themeMode' | 'themeName'
+  CardBlock,
+  'id' | 'backgroundColor' | 'themeMode' | 'themeName'
   > {
   children: ReactNode
   sx?: SxProps
@@ -105,20 +98,11 @@ export const CardWrapper = ({
         flexDirection: { xs: 'column', sm: 'row' },
         borderRadius: (theme) => theme.spacing(4),
         backgroundColor,
+        backgroundImage: 'none',
+        width: '100%',
         height: '100%',
-        p: 7,
         overflow: 'hidden',
         position: 'relative',
-        maxWidth: {
-          sm: 660,
-          md: 854
-        },
-        maxHeight: {
-          xs: 670,
-          sm: 280,
-          md: 480
-        },
-        margin: '0 auto',
         ...sx
       }}
       elevation={3}

@@ -14,16 +14,46 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
+import { useTheme, Box } from '@mui/material'
 
-const Demo = {
+const Demo: Meta = {
   ...journeysConfig,
   component: Card,
-  title: 'Journeys/Blocks/Card'
+  title: 'Journeys/Blocks/Card',
+  parameters: {
+    theme: 'light',
+    chromatic: {
+      viewports: [
+        360, // Mobile (P)
+        568, // Mobile (L)
+        600, // Tablet (P)
+        961, // Tablet (L)
+        1200 // Laptop/Desktop
+      ]
+    }
+  }
 }
 
-const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
-  <Card {...props} />
-)
+const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => {
+  const theme = useTheme()
+  return (
+    <Box
+      sx={{
+        height: 'calc(100vh - 80px)',
+        maxHeight: 'calc(100vh - 80px)',
+        [theme.breakpoints.up('sm')]: {
+          maxHeight: '460px'
+        },
+        [theme.breakpoints.up('lg')]: {
+          maxWidth: '854px',
+          maxHeight: '480px'
+        }
+      }}
+    >
+      <Card {...props} />
+    </Box>
+  )
+}
 
 const children: TreeBlock[] = [
   {
@@ -32,7 +62,7 @@ const children: TreeBlock[] = [
     parentBlockId: null,
     align: null,
     color: null,
-    content: "What's the purpose, and how did we get here?",
+    content: "What's our purpose, and how did we get here?",
     variant: TypographyVariant.h3,
     children: []
   },
@@ -67,8 +97,8 @@ const children: TreeBlock[] = [
   }
 ]
 
-export const Light: Story<TreeBlock<CardBlock>> = Template.bind({})
-Light.args = {
+export const Default: Story<TreeBlock<CardBlock>> = Template.bind({})
+Default.args = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   children
@@ -76,144 +106,26 @@ Light.args = {
 
 export const Dark: Story<TreeBlock<CardBlock>> = Template.bind({})
 Dark.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
-  children
+  ...Default.args,
+  themeMode: ThemeMode.dark
 }
 
 export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
 CustomColor.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
   backgroundColor: '#F1A025',
   children
 }
 
-export const WithCover1: Story<TreeBlock<CardBlock>> = Template.bind({})
-WithCover1.args = {
-  coverBlockId: 'imageBlockId1',
-  children: [
-    {
-      id: 'typographyBlockId1',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: TypographyColor.secondary,
-      content: 'Free Video Course',
-      variant: TypographyVariant.overline,
-      children: []
-    },
-    {
-      id: 'typographyBlockId2',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: null,
-      content: 'Why Do I Like Jesus, But Struggle With Christians?',
-      variant: TypographyVariant.h4,
-      children: []
-    },
-    {
-      __typename: 'ButtonBlock',
-      id: 'button',
-      parentBlockId: 'question',
-      label: 'Watch Now',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.large,
-      startIcon: {
-        __typename: 'Icon',
-        name: IconName.PlayArrow,
-        color: null,
-        size: IconSize.md
-      },
-      endIcon: null,
-      action: null,
-      children: []
-    },
-    {
-      id: 'imageBlockId1',
-      __typename: 'ImageBlock',
-      src: 'https://imgur.com/pfNv5Ob.jpg',
-      width: 840,
-      height: 439,
-      alt: 'random image from unsplash',
-      parentBlockId: 'Image1',
-      children: [],
-      blurhash: 'L26a*Sml0KPB_2%2NH57-:ayRjxZ'
-    }
-  ]
+export const CustomColorDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+CustomColorDark.args = {
+  ...CustomColor.args
+}
+CustomColorDark.parameters = {
+  theme: 'dark'
 }
 
-export const WithCover2: Story<TreeBlock<CardBlock>> = Template.bind({})
-WithCover2.args = {
-  coverBlockId: 'imageBlockId1',
-  children: [
-    {
-      id: 'typographyBlockId1',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: TypographyColor.secondary,
-      content: 'Jesus Christ:',
-      variant: TypographyVariant.overline,
-      children: []
-    },
-    {
-      id: 'typographyBlockId2',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: null,
-      content: 'Fact or Fiction?',
-      variant: TypographyVariant.h2,
-      children: []
-    },
-    {
-      id: 'typographyBlockId3',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: null,
-      content:
-        'Consider the arguments for and against the idea that the disciples of Jesus fabricated the story.',
-      variant: TypographyVariant.body2,
-      children: []
-    },
-    {
-      __typename: 'ButtonBlock',
-      id: 'button',
-      parentBlockId: 'question',
-      label: 'Watch Now',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.large,
-      startIcon: {
-        __typename: 'Icon',
-        name: IconName.PlayArrow,
-        color: null,
-        size: IconSize.md
-      },
-      endIcon: null,
-      action: null,
-      children: []
-    },
-    {
-      id: 'imageBlockId1',
-      __typename: 'ImageBlock',
-      src: 'https://i.imgur.com/auH44Se.jpg',
-      width: 840,
-      height: 439,
-      alt: 'random image from unsplash',
-      parentBlockId: 'Image1',
-      children: [],
-      blurhash: 'LSGR*ftnngt7~pogM{Rk^*R,V@Rk'
-    }
-  ]
-}
-
-export const WithCover3: Story<TreeBlock<CardBlock>> = Template.bind({})
-WithCover3.args = {
+export const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCover.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     {
@@ -261,10 +173,16 @@ WithCover3.args = {
   ]
 }
 
-export const WithFullscreenCover: Story<TreeBlock<CardBlock>> = Template.bind(
-  {}
-)
-WithFullscreenCover.args = {
+export const ImageCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCoverDark.args = {
+  ...ImageCover.args
+}
+ImageCoverDark.parameters = {
+  theme: 'dark'
+}
+
+export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlur.args = {
   coverBlockId: 'imageBlockId1',
   children: [
     {
@@ -313,44 +231,12 @@ WithFullscreenCover.args = {
   fullscreen: true
 }
 
-export const ImageAndText: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageAndText.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
-  backgroundColor: '#3C4543',
-  children: [
-    {
-      id: 'imageBlockId1',
-      __typename: 'ImageBlock',
-      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-      width: 1920,
-      height: 1080,
-      alt: 'random image from unsplash',
-      parentBlockId: 'Image1',
-      children: [],
-      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
-    },
-    {
-      id: 'typographyBlockId1',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: null,
-      content: 'Regular Image Example',
-      variant: TypographyVariant.overline,
-      children: []
-    },
-    {
-      id: 'typographyBlockId2',
-      __typename: 'TypographyBlock',
-      parentBlockId: null,
-      align: null,
-      color: null,
-      content: 'The only impossible journey is the one you never begin.',
-      variant: TypographyVariant.h3,
-      children: []
-    }
-  ]
+export const ImageBlurDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlurDark.args = {
+  ...ImageBlur.args
+}
+ImageBlurDark.parameters = {
+  theme: 'dark'
 }
 
-export default Demo as Meta
+export default Demo
