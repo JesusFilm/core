@@ -39,7 +39,7 @@ const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => {
   return (
     <Box
       sx={{
-        height: '100%',
+        height: 'calc(100vh - 80px)',
         maxHeight: 'calc(100vh - 80px)',
         [theme.breakpoints.up('sm')]: {
           maxHeight: '460px'
