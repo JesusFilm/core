@@ -46,7 +46,7 @@ const typeDefs = gql`
     themeMode: ThemeMode
     themeName: ThemeName
     description: String
-    slug: String
+    slug: String!
   }
 
   input JourneyUpdateInput {
@@ -85,7 +85,7 @@ const resolvers: JourneyModule.Resolvers = {
   Mutation: {
     async journeyCreate(
       _parent,
-      { input: { id, title, locale, themeMode, themeName, description } },
+      { input: { id, title, locale, themeMode, themeName, description, slug } },
       { db, userId }
     ) {
       if (userId == null)
@@ -97,7 +97,8 @@ const resolvers: JourneyModule.Resolvers = {
           locale: locale ?? undefined,
           themeMode: themeMode ?? undefined,
           themeName: themeName ?? undefined,
-          description
+          description,
+          slug
         }
       })
     },

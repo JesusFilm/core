@@ -147,6 +147,7 @@ type Journey @key(fields: "id") {
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  slug: String!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
@@ -162,6 +163,7 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  slug: String
 }
 
 input JourneyUpdateInput {
@@ -172,7 +174,7 @@ input JourneyUpdateInput {
   themeName: ThemeName
   description: String
   primaryImageBlockId: ID
-  slug: IdType
+  slug: String
 }
 
 type LinkAction implements Action {

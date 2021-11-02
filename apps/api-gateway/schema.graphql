@@ -173,6 +173,7 @@ type Journey
   locale: String! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
+  slug: String! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -187,6 +188,7 @@ input JourneyCreateInput {
   """
   id: ID
   locale: String
+  slug: String
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
@@ -197,7 +199,7 @@ input JourneyUpdateInput {
   id: ID!
   locale: String
   primaryImageBlockId: ID
-  slug: IdType
+  slug: String
   themeMode: ThemeMode
   themeName: ThemeName
   title: String
