@@ -80,6 +80,7 @@ const childrenTwo: TreeBlock[] = [
     height: 1067,
     alt: 'random image from unsplash',
     parentBlockId: 'GridItemRight',
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     children: []
   },
   {
