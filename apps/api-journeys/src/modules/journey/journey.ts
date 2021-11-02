@@ -22,6 +22,7 @@ const typeDefs = gql`
     themeMode: ThemeMode!
     themeName: ThemeName!
     description: String
+    slug: String!
   }
 
   enum IdType {
@@ -45,6 +46,7 @@ const typeDefs = gql`
     themeMode: ThemeMode
     themeName: ThemeName
     description: String
+    slug: String
   }
 
   input JourneyUpdateInput {
@@ -55,7 +57,7 @@ const typeDefs = gql`
     themeName: ThemeName
     description: String
     primaryImageBlockId: ID
-    slug: IdType
+    slug: String
   }
 
   extend type Mutation {
