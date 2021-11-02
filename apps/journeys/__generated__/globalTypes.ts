@@ -25,6 +25,26 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum GridAlignItems {
+  baseline = "baseline",
+  center = "center",
+  flexEnd = "flexEnd",
+  flexStart = "flexStart",
+}
+
+export enum GridDirection {
+  column = "column",
+  columnReverse = "columnReverse",
+  row = "row",
+  rowReverse = "rowReverse",
+}
+
+export enum GridJustifyContent {
+  center = "center",
+  flexEnd = "flexEnd",
+  flexStart = "flexStart",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
