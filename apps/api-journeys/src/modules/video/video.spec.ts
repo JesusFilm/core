@@ -59,8 +59,10 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          mediaComponentId: '2_0-FallingPlates',
-          languageId: '529',
+          content: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
           title: 'title'
         }
       }
@@ -73,8 +75,10 @@ describe('VideoModule', () => {
               __typename
               parentBlockId
               ... on VideoBlock {
-                mediaComponentId
-                languageId
+                content {
+                  mediaComponentId
+                  languageId
+                }
                 title
               }
             }
@@ -86,8 +90,10 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          mediaComponentId: '2_0-FallingPlates',
-          languageId: '529',
+          content: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
           title: 'title'
         }
       ])
@@ -102,7 +108,9 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          src: 'src',
+          content: {
+            src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+          },
           title: 'title'
         }
       }
@@ -115,7 +123,9 @@ describe('VideoModule', () => {
               __typename
               parentBlockId
               ... on VideoBlock {
-                src
+                content {
+                  src
+                }
                 title
               }
             }
@@ -127,7 +137,9 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          src: 'src',
+          content: {
+            src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+          },
           title: 'title'
         }
       ])
@@ -181,8 +193,10 @@ describe('VideoModule', () => {
         parentBlockId: null,
         parentOrder: 0,
         extraAttrs: {
-          mediaComponentId: '2_0-FallingPlates',
-          languageId: '529',
+          content: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
           title: 'title'
         }
       }
@@ -193,10 +207,8 @@ describe('VideoModule', () => {
         blockId: block1.id,
         userId,
         extraAttrs: {
-          mediaComponentId: '2_0-FallingPlates',
-          languageId: '529',
           state: 'PLAYING',
-          position: 0.3
+          position: 30
         }
       }
       dbMock.response.create.mockResolvedValue(response1)
@@ -210,8 +222,10 @@ describe('VideoModule', () => {
               position
               block {
                 id
-                mediaComponentId
-                languageId
+                content {
+                  mediaComponentId
+                  languageId
+                }
                 title
               }
             }
@@ -234,11 +248,13 @@ describe('VideoModule', () => {
         id: response1.id,
         userId,
         state: 'PLAYING',
-        position: 0.3,
+        position: 30,
         block: {
           id: block1.id,
-          mediaComponentId: '2_0-FallingPlates',
-          languageId: '529',
+          content: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
           title: 'title'
         }
       })

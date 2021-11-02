@@ -43,10 +43,11 @@ const typeDefs = gql`
     parentBlockId: ID
     title: String!
     startAt: Int
+    endAt: Int
     description: String
-    volume: Int
+    muted: Boolean
     autoplay: Boolean
-    video: Video
+    content: Video
   }
 
   type VideoResponse implements Response {

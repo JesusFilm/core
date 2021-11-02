@@ -1,1 +1,1 @@
-export { triggerModule } from './trigger'
+export { videoTriggerModule } from './trigger'

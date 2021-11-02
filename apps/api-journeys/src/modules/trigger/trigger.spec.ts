@@ -1,6 +1,11 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import { triggerModule, journeyModule, blockModule, actionModule } from '..'
+import {
+  videoTriggerModule,
+  journeyModule,
+  blockModule,
+  actionModule
+} from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
 import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
@@ -10,7 +15,7 @@ describe('TriggerModule', () => {
   let app, journeyId
 
   beforeEach(() => {
-    app = testkit.testModule(triggerModule, {
+    app = testkit.testModule(videoTriggerModule, {
       schemaBuilder,
       modules: [journeyModule, blockModule, actionModule]
     })
@@ -37,13 +42,13 @@ describe('TriggerModule', () => {
     })
   }
 
-  describe('TriggerBlock', () => {
-    it('return TriggerBlock', async () => {
+  describe('VideoTriggerBlock', () => {
+    it('return VideoTriggerBlock', async () => {
       const parentBlockId = uuidv4()
       const trigger: Block = {
         id: uuidv4(),
         journeyId,
-        blockType: 'TriggerBlock',
+        blockType: 'VideoTriggerBlock',
         parentBlockId,
         parentOrder: 0,
         extraAttrs: {
@@ -62,7 +67,7 @@ describe('TriggerModule', () => {
               id
               __typename
               parentBlockId
-              ... on TriggerBlock {
+              ... on VideoTriggerBlock {
                 action
                 id
                 parentBlockId
@@ -89,7 +94,7 @@ describe('TriggerModule', () => {
       expect(data?.journey.blocks).toEqual([
         {
           id: trigger.id,
-          __typename: 'TriggerBlock',
+          __typename: 'VideoTriggerBlock',
           parentBlockId,
           triggerStart: 5,
           action: {

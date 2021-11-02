@@ -38,9 +38,9 @@ enum BlockType {
   RadioQuestionBlock
   SignUpBlock
   StepBlock
-  TriggerBlock
   TypographyBlock
   VideoBlock
+  VideoTriggerBlock
 }
 
 model Block {

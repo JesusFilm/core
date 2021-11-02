@@ -3,24 +3,24 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace TriggerModule {
   interface DefinedFields {
-    TriggerBlock: 'id' | 'parentBlockId' | 'triggerStart' | 'action';
+    VideoTriggerBlock: 'id' | 'parentBlockId' | 'triggerStart' | 'action';
   };
   
-  export type TriggerBlock = Pick<Types.TriggerBlock, DefinedFields['TriggerBlock']>;
+  export type VideoTriggerBlock = Pick<Types.VideoTriggerBlock, DefinedFields['VideoTriggerBlock']>;
   export type Action = Types.Action;
   export type Block = Types.Block;
   
-  export type TriggerBlockResolvers = Pick<Types.TriggerBlockResolvers, DefinedFields['TriggerBlock'] | '__isTypeOf'>;
+  export type VideoTriggerBlockResolvers = Pick<Types.VideoTriggerBlockResolvers, DefinedFields['VideoTriggerBlock'] | '__isTypeOf'>;
   
   export interface Resolvers {
-    TriggerBlock?: TriggerBlockResolvers;
+    VideoTriggerBlock?: VideoTriggerBlockResolvers;
   };
   
   export interface MiddlewareMap {
     '*'?: {
       '*'?: gm.Middleware[];
     };
-    TriggerBlock?: {
+    VideoTriggerBlock?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];

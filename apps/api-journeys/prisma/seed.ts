@@ -53,7 +53,7 @@ async function main(): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        video: {
+        content: {
           mediaComponentId: '2_0-FallingPlates',
           languageId: '529'
         },
@@ -75,7 +75,7 @@ async function main(): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'TriggerBlock',
+      blockType: 'VideoTriggerBlock',
       parentBlockId: video.id,
       extraAttrs: {
         triggerStart: 15,

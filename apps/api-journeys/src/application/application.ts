@@ -12,9 +12,9 @@ import {
   responseModule,
   signUpModule,
   stepModule,
-  triggerModule,
   typographyModule,
-  videoModule
+  videoModule,
+  videoTriggerModule
 } from '../modules'
 
 export const application = createApplication({
@@ -30,9 +30,9 @@ export const application = createApplication({
     responseModule,
     signUpModule,
     stepModule,
-    triggerModule,
     typographyModule,
-    videoModule
+    videoModule,
+    videoTriggerModule
   ],
   schemaBuilder
 })

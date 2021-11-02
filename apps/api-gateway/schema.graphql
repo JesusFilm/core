@@ -312,13 +312,6 @@ enum ThemeName {
   base
 }
 
-type TriggerBlock implements Block {
-  action: Action!
-  id: ID!
-  parentBlockId: ID
-  triggerStart: Int!
-}
-
 enum TypographyAlign {
   center
   left
@@ -367,13 +360,14 @@ type VideoArclight implements Video {
 
 type VideoBlock implements Block {
   autoplay: Boolean
+  content: Video
   description: String
+  endAt: Int
   id: ID!
+  muted: Boolean
   parentBlockId: ID
   startAt: Int
   title: String!
-  video: Video
-  volume: Int
 }
 
 type VideoGeneric implements Video {
@@ -403,4 +397,20 @@ enum VideoResponseStateEnum {
   FINISHED
   PAUSED
   PLAYING
+}
+
+"""
+VideoTriggerBlock is a block that indicates the video to navigate
+to the next block at the designated time.
+"""
+type VideoTriggerBlock implements Block {
+  action: Action!
+  id: ID!
+  parentBlockId: ID
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int!
 }
