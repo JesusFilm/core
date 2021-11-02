@@ -14,6 +14,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
+import { useTheme, Box } from '@mui/material'
 
 const Demo: Meta = {
   ...journeysConfig,
@@ -33,9 +34,26 @@ const Demo: Meta = {
   }
 }
 
-const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
-  <Card {...props} />
-)
+const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => {
+  const theme = useTheme()
+  return (
+    <Box
+      sx={{
+        height: 'calc(100vh - 80px)',
+        maxHeight: 'calc(100vh - 80px)',
+        [theme.breakpoints.up('sm')]: {
+          maxHeight: '460px'
+        },
+        [theme.breakpoints.up('lg')]: {
+          maxWidth: '854px',
+          maxHeight: '480px'
+        }
+      }}
+    >
+      <Card {...props} />
+    </Box>
+  )
+}
 
 const children: TreeBlock[] = [
   {
