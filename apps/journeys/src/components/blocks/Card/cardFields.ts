@@ -8,5 +8,6 @@ export const CARD_FIELDS = gql`
     coverBlockId
     themeMode
     themeName
+    fullscreen
   }
 `

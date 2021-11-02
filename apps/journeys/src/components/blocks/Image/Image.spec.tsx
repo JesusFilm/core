@@ -12,6 +12,7 @@ describe('Image', () => {
     height: 1067,
     alt: 'random image from unsplash',
     parentBlockId: 'Image1',
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     children: []
   }
 

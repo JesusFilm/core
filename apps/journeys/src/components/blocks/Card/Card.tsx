@@ -1,10 +1,14 @@
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { ReactElement, ReactNode } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock
+} from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { Paper } from '@mui/material'
-import { Image } from '..'
+import { Paper, Box } from '@mui/material'
+import { SxProps } from '@mui/system'
+import { CardImageCover } from '.'
 
 export function Card({
   id,
@@ -12,11 +16,16 @@ export function Card({
   backgroundColor,
   coverBlockId,
   themeMode,
-  themeName
+  themeName,
+  fullscreen
 }: TreeBlock<CardBlock>): ReactElement {
   const coverBlock = children.find(
     (block) => block.id === coverBlockId && block.__typename === 'ImageBlock'
-  )
+  ) as TreeBlock<ImageBlock> | undefined
+
+  const renderedChildren = children
+    .filter(({ id }) => id !== coverBlockId)
+    .map((block) => <BlockRenderer {...block} key={block.id} />)
 
   return (
     <CardWrapper
@@ -24,25 +33,43 @@ export function Card({
       backgroundColor={backgroundColor}
       themeMode={themeMode}
       themeName={themeName}
+      sx={{
+        p: 0,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundImage:
+          coverBlock != null ? `url(${coverBlock.src})` : undefined
+      }}
+      fixedSize
     >
-      {coverBlock != null && coverBlock.__typename === 'ImageBlock' && (
-        <Image
-          {...coverBlock}
-          alt={coverBlock.alt}
+      {coverBlock != null && (fullscreen == null || !fullscreen) ? (
+        <CardImageCover coverBlock={coverBlock}>
+          {renderedChildren}
+        </CardImageCover>
+      ) : (
+        <Box
           sx={{
-            mx: -7,
-            mt: -7,
-            mb: 7,
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0
+            flexGrow: 1,
+            overflow: 'auto',
+            display: 'flex',
+            backdropFilter: coverBlock != null ? 'blur(54px)' : undefined,
+            backgroundColor: (theme) =>
+              coverBlock != null
+                ? `${theme.palette.background.paper}88`
+                : undefined,
+            padding: (theme) => ({
+              xs: theme.spacing(7),
+              sm: theme.spacing(7, 10),
+              md: theme.spacing(10, 0)
+            }),
+            borderRadius: (theme) => theme.spacing(4)
           }}
-        />
+        >
+          <Box sx={{ margin: 'auto', width: '100%', maxWidth: 500 }}>
+            {renderedChildren}
+          </Box>
+        </Box>
       )}
-      {children
-        .filter(({ id }) => id !== coverBlockId)
-        .map((block) => (
-          <BlockRenderer {...block} key={block.id} />
-        ))}
     </CardWrapper>
   )
 }
@@ -53,25 +80,48 @@ interface CardWrapperProps
     'id' | 'backgroundColor' | 'themeMode' | 'themeName'
   > {
   children: ReactNode
+  sx?: SxProps
+  fixedSize?: boolean
 }
 
-export function CardWrapper({
+export const CardWrapper = ({
   id,
   backgroundColor,
   themeMode,
   themeName,
-  children
-}: CardWrapperProps): ReactElement {
+  children,
+  sx,
+  fixedSize
+}: CardWrapperProps): ReactElement => {
   const Card = (
     <Paper
       data-testid={id}
       sx={{
         display: 'flex',
-        flexDirection: 'column',
-        p: 7,
-        borderRadius: (theme) => theme.spacing(3),
+        flexDirection: { xs: 'column', sm: 'row' },
+        borderRadius: (theme) => theme.spacing(4),
         backgroundColor,
-        backgroundImage: 'none'
+        height: fixedSize === true ? '100%' : null,
+        p: 7,
+        overflow: 'hidden',
+        position: 'relative',
+        maxWidth:
+          fixedSize === true
+            ? {
+                sm: 660,
+                md: 854
+              }
+            : null,
+        maxHeight:
+          fixedSize === true
+            ? {
+                xs: 670,
+                sm: 280,
+                md: 480
+              }
+            : null,
+        margin: '0 auto',
+        ...sx
       }}
       elevation={3}
     >
