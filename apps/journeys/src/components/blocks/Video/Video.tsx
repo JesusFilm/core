@@ -34,9 +34,10 @@ interface VideoProps extends TreeBlock<VideoBlock> {
 
 export function Video({
   id: blockId,
-  video,
+  videoContent,
   autoplay,
   startAt,
+  muted,
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
@@ -80,20 +81,20 @@ export function Video({
   )
 
   const validatePlaying = useCallback(() => {
-    if (autoplay != null && activeBlock != null) {
+    if (autoplay != null && muted != null) {
       // I need to somehow check that I am in the first step ever
-      if (isActiveBlockOrDescendant(blockId) && activeBlock.id === 'step1.id') {
+      if (isActiveBlockOrDescendant(blockId) && muted) {
         setIsPlaying('muted')
       } else if (isActiveBlockOrDescendant(blockId)) {
         setIsPlaying(autoplay)
       }
     }
-  }, [blockId, autoplay, activeBlock])
+  }, [blockId, autoplay, muted])
 
   useEffect(() => {
     validatePlaying()
 
-    if (isPlaying !== undefined && video != null) {
+    if (isPlaying !== undefined && videoContent != null) {
       const initialOptions: videojs.PlayerOptions = {
         autoplay: isPlaying,
         controls: true,
@@ -116,7 +117,7 @@ export function Video({
         },
         sources: [
           {
-            src: video.src
+            src: videoContent.src
           }
         ],
         fluid: true,
@@ -160,7 +161,7 @@ export function Video({
     activeBlock,
     children,
     autoplay,
-    video,
+    videoContent,
     isPlaying,
     validatePlaying,
     handleVideoResponse,
@@ -185,7 +186,7 @@ export function Video({
       <video ref={videoNode} className="video-js" data-testid="VideoComponent">
         {children?.map(
           (option) =>
-            option.__typename === 'TriggerBlock' && (
+            option.__typename === 'VideoTriggerBlock' && (
               <Trigger player={player.current} {...option} />
             )
         )}

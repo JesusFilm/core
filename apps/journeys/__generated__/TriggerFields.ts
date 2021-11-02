@@ -33,9 +33,13 @@ export interface TriggerFields_triggerAction_LinkAction {
 export type TriggerFields_triggerAction = TriggerFields_triggerAction_NavigateAction | TriggerFields_triggerAction_NavigateToBlockAction | TriggerFields_triggerAction_NavigateToJourneyAction | TriggerFields_triggerAction_LinkAction;
 
 export interface TriggerFields {
-  __typename: "TriggerBlock";
+  __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
+  /**
+   * triggerStart sets the time as to when a video navigates to the next block,
+   * this is the number of seconds since the start of the video
+   */
   triggerStart: number;
   triggerAction: TriggerFields_triggerAction;
 }

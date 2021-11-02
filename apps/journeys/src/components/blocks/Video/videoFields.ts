@@ -5,10 +5,11 @@ export const VIDEO_FIELDS = gql`
     id
     parentBlockId
     title
-    volume
+    muted
     autoplay
     startAt
-    video {
+    endAt
+    videoContent: content {
       src
     }
   }

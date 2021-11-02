@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on StepBlock {
               ...StepFields
             }
-            ... on TriggerBlock {
+            ... on VideoTriggerBlock {
               ...TriggerFields
             }
             ... on TypographyBlock {

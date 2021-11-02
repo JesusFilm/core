@@ -307,17 +307,18 @@ export const VideoJourney = (): ReactElement => (
                   __typename: 'VideoBlock',
                   parentBlockId: 'card1.id',
                   title: '',
-                  volume: 1,
                   autoplay: true,
-                  video: {
+                  muted: true,
+                  videoContent: {
                     __typename: 'VideoArclight',
                     src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
                   },
+                  endAt: null,
                   startAt: null,
                   children: [
                     {
                       id: 'trigger.id',
-                      __typename: 'TriggerBlock',
+                      __typename: 'VideoTriggerBlock',
                       parentBlockId: 'video1.id',
                       triggerStart: 20,
                       triggerAction: {
@@ -407,12 +408,13 @@ export const VideoJourney = (): ReactElement => (
                   __typename: 'VideoBlock',
                   parentBlockId: 'card3.id',
                   title: '',
-                  volume: 1,
                   autoplay: true,
-                  video: {
+                  muted: false,
+                  videoContent: {
                     __typename: 'VideoArclight',
                     src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
                   },
+                  endAt: null,
                   startAt: 21,
                   children: []
                 }

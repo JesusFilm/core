@@ -10,11 +10,12 @@ describe('VideoComponent', () => {
     __typename: 'VideoBlock',
     id: 'Video1',
     parentBlockId: '',
-    volume: 1,
     autoplay: false,
     title: 'Video',
     startAt: 10,
-    video: {
+    endAt: null,
+    muted: null,
+    videoContent: {
       __typename: 'VideoArclight',
       src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
     },
@@ -78,7 +79,7 @@ describe('VideoComponent', () => {
       >
         <Video
           {...block}
-          video={{
+          videoContent={{
             __typename: 'VideoGeneric',
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           }} />

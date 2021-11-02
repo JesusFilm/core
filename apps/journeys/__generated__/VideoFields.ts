@@ -7,7 +7,7 @@
 // GraphQL fragment: VideoFields
 // ====================================================
 
-export interface VideoFields_video {
+export interface VideoFields_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
   src: string;
 }
@@ -17,8 +17,9 @@ export interface VideoFields {
   id: string;
   parentBlockId: string | null;
   title: string;
-  volume: number | null;
+  muted: boolean | null;
   autoplay: boolean | null;
   startAt: number | null;
-  video: VideoFields_video | null;
+  endAt: number | null;
+  videoContent: VideoFields_videoContent | null;
 }
