@@ -19,10 +19,11 @@ const DefaultTemplate: Story<TreeBlock<ImageBlock>> = ({ alt, ...props }) => (
 export const Default: Story<TreeBlock<ImageBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'Image',
-  src: 'https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1365&q=80',
+  src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
   alt: 'random image from unsplash',
   width: 1600,
-  height: 1067
+  height: 1067,
+  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
 }
 
 export default Demo as Meta

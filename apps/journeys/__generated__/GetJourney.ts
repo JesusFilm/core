@@ -9,6 +9,11 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName,
 // GraphQL query operation: GetJourney
 // ====================================================
 
+export interface GetJourney_journey_primaryImageBlock {
+  __typename: "ImageBlock";
+  src: string;
+}
+
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
   __typename: "Icon";
   name: IconName;
@@ -85,6 +90,12 @@ export interface GetJourney_journey_blocks_CardBlock {
    * themeName from journey
    */
   themeName: ThemeName | null;
+  /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: boolean;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
@@ -95,6 +106,11 @@ export interface GetJourney_journey_blocks_ImageBlock {
   alt: string;
   width: number;
   height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
@@ -268,6 +284,9 @@ export interface GetJourney_journey {
   id: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  title: string;
+  description: string | null;
+  primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   blocks: GetJourney_journey_blocks[] | null;
 }
 

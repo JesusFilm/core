@@ -21,6 +21,7 @@ import {
   TRIGGER_FIELDS,
   VIDEO_FIELDS
 } from '../src/components/blocks'
+import Head from 'next/head'
 
 interface JourneyPageProps {
   journey: Journey
@@ -28,11 +29,26 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
-    <ThemeProvider themeName={journey.themeName} themeMode={journey.themeMode}>
-      {journey.blocks != null && (
-        <Conductor blocks={transformer(journey.blocks)} />
-      )}
-    </ThemeProvider>
+    <>
+      <Head>
+        <title>{journey.title}</title>
+        <meta property="og:title" content={journey.title} />
+        {journey.description != null && (
+          <meta name="description" content={journey.description} />
+        )}
+        {journey.primaryImageBlock != null && (
+          <meta property="og:image" content={journey.primaryImageBlock.src} />
+        )}
+      </Head>
+      <ThemeProvider
+        themeName={journey.themeName}
+        themeMode={journey.themeMode}
+      >
+        {journey.blocks != null && (
+          <Conductor blocks={transformer(journey.blocks)} />
+        )}
+      </ThemeProvider>
+    </>
   )
 }
 
@@ -56,6 +72,11 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           id
           themeName
           themeMode
+          title
+          description
+          primaryImageBlock {
+            src
+          }
           blocks {
             id
             parentBlockId

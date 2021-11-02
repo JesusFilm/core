@@ -39,7 +39,9 @@ describe('SignUpModule', () => {
       published: true,
       locale: 'en-US',
       themeMode: ThemeMode.light,
-      themeName: ThemeName.base
+      themeName: ThemeName.base,
+      description: null,
+      primaryImageBlockId: null
     })
   })
 

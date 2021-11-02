@@ -141,7 +141,9 @@ type Journey @key(fields: "id") {
   locale: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
+  description: String
   blocks: [Block!]
+  primaryImageBlock: ImageBlock
 }
 
 input JourneyCreateInput {
@@ -154,6 +156,17 @@ input JourneyCreateInput {
   locale: String
   themeMode: ThemeMode
   themeName: ThemeName
+  description: String
+}
+
+input JourneyUpdateInput {
+  id: ID!
+  title: String
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  primaryImageBlockId: ID
 }
 
 type LinkAction implements Action {
@@ -165,6 +178,7 @@ type LinkAction implements Action {
 extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyUpdate(input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!

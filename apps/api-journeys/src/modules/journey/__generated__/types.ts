@@ -3,9 +3,9 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName';
+    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description';
     Query: 'journeys' | 'journey';
-    Mutation: 'journeyCreate' | 'journeyPublish';
+    Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
   };
   
   interface DefinedEnumValues {
@@ -14,7 +14,8 @@ export namespace JourneyModule {
   };
   
   interface DefinedInputFields {
-    JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName';
+    JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description';
+    JourneyUpdateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'primaryImageBlockId';
   };
   
   export type ThemeMode = DefinedEnumValues['ThemeMode'];
@@ -22,6 +23,7 @@ export namespace JourneyModule {
   export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
+  export type JourneyUpdateInput = Pick<Types.JourneyUpdateInput, DefinedInputFields['JourneyUpdateInput']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey'] | '__isTypeOf'>;
@@ -46,6 +48,7 @@ export namespace JourneyModule {
       locale?: gm.Middleware[];
       themeMode?: gm.Middleware[];
       themeName?: gm.Middleware[];
+      description?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];
@@ -55,6 +58,7 @@ export namespace JourneyModule {
     Mutation?: {
       '*'?: gm.Middleware[];
       journeyCreate?: gm.Middleware[];
+      journeyUpdate?: gm.Middleware[];
       journeyPublish?: gm.Middleware[];
     };
   };

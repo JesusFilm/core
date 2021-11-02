@@ -6,6 +6,7 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
   ThemeMode,
   ThemeName,
+  TypographyColor,
   TypographyVariant,
   ButtonVariant,
   ButtonColor,
@@ -14,10 +15,22 @@ import {
   IconSize
 } from '../../../../__generated__/globalTypes'
 
-const Demo = {
+const Demo: Meta = {
   ...journeysConfig,
   component: Card,
-  title: 'Journeys/Blocks/Card'
+  title: 'Journeys/Blocks/Card',
+  parameters: {
+    theme: 'light',
+    chromatic: {
+      viewports: [
+        360, // Mobile (P)
+        568, // Mobile (L)
+        600, // Tablet (P)
+        961, // Tablet (L)
+        1200 // Laptop/Desktop
+      ]
+    }
+  }
 }
 
 const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => (
@@ -31,7 +44,7 @@ const children: TreeBlock[] = [
     parentBlockId: null,
     align: null,
     color: null,
-    content: "What's the purpose, and how did we get here?",
+    content: "What's our purpose, and how did we get here?",
     variant: TypographyVariant.h3,
     children: []
   },
@@ -66,8 +79,8 @@ const children: TreeBlock[] = [
   }
 ]
 
-export const Light: Story<TreeBlock<CardBlock>> = Template.bind({})
-Light.args = {
+export const Default: Story<TreeBlock<CardBlock>> = Template.bind({})
+Default.args = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   children
@@ -75,60 +88,35 @@ Light.args = {
 
 export const Dark: Story<TreeBlock<CardBlock>> = Template.bind({})
 Dark.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
-  children
+  ...Default.args,
+  themeMode: ThemeMode.dark
 }
 
 export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
 CustomColor.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
   backgroundColor: '#F1A025',
   children
 }
 
-export const CoverBlockId: Story<TreeBlock<CardBlock>> = Template.bind({})
-CoverBlockId.args = {
-  coverBlockId: 'imageBlockId1',
-  children: [
-    ...children,
-    {
-      id: 'imageBlockId1',
-      __typename: 'ImageBlock',
-      src: 'https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1365&q=80',
-      width: 1600,
-      height: 1067,
-      alt: 'random image from unsplash',
-      parentBlockId: 'Image1',
-      children: []
-    }
-  ]
+export const CustomColorDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+CustomColorDark.args = {
+  ...CustomColor.args
+}
+CustomColorDark.parameters = {
+  theme: 'dark'
 }
 
-export const ImageAndText: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageAndText.args = {
-  themeMode: ThemeMode.dark,
-  themeName: ThemeName.base,
-  backgroundColor: '#3C4543',
+export const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCover.args = {
+  coverBlockId: 'imageBlockId1',
   children: [
-    {
-      id: 'imageBlockId1',
-      __typename: 'ImageBlock',
-      src: 'https://images.unsplash.com/photo-1521904764098-e4e0a87e3ce0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1365&q=80',
-      width: 1600,
-      height: 1067,
-      alt: 'random image from unsplash',
-      parentBlockId: 'Image1',
-      children: []
-    },
     {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
       parentBlockId: null,
       align: null,
-      color: null,
-      content: 'Regular Image Example',
+      color: TypographyColor.secondary,
+      content: 'It s Ok To Get Angry',
       variant: TypographyVariant.overline,
       children: []
     },
@@ -138,11 +126,99 @@ ImageAndText.args = {
       parentBlockId: null,
       align: null,
       color: null,
-      content: 'The only impossible journey is the one you never begin.',
-      variant: TypographyVariant.h3,
+      content:
+        'Christianity isn’t about looking nice and religious; it’s diving into the deep end, a life fully immersed in following after Jesus.',
+      variant: TypographyVariant.subtitle1,
       children: []
+    },
+    {
+      id: 'typographyBlockId3',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'Bible, 1 Corinthians 15:3-4',
+      variant: TypographyVariant.body2,
+      children: []
+    },
+    {
+      id: 'imageBlockId1',
+      __typename: 'ImageBlock',
+      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+      width: 1920,
+      height: 1080,
+      alt: 'random image from unsplash',
+      parentBlockId: 'Image1',
+      children: [],
+      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
     }
   ]
 }
 
-export default Demo as Meta
+export const ImageCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageCoverDark.args = {
+  ...ImageCover.args
+}
+ImageCoverDark.parameters = {
+  theme: 'dark'
+}
+
+export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlur.args = {
+  coverBlockId: 'imageBlockId1',
+  children: [
+    {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'Bible Quote',
+      variant: TypographyVariant.overline,
+      children: []
+    },
+    {
+      id: 'typographyBlockId2',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content:
+        'For what I received I passed on to you as of first importance: that Christ died for our sins according to the Scriptures, that he was buried, that he was raised on the third day...',
+      variant: TypographyVariant.subtitle1,
+      children: []
+    },
+    {
+      id: 'typographyBlockId3',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'Bible, 1 Corinthians 15:3-4',
+      variant: TypographyVariant.body2,
+      children: []
+    },
+    {
+      id: 'imageBlockId1',
+      __typename: 'ImageBlock',
+      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+      width: 1920,
+      height: 1080,
+      alt: 'random image from unsplash',
+      parentBlockId: 'Image1',
+      children: [],
+      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+    }
+  ],
+  fullscreen: true
+}
+
+export const ImageBlurDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+ImageBlurDark.args = {
+  ...ImageBlur.args
+}
+ImageBlurDark.parameters = {
+  theme: 'dark'
+}
+
+export default Demo

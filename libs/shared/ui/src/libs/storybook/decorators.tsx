@@ -60,12 +60,18 @@ export const ThemeDecorator = ({
       )
     default:
       return (
-        <ThemeProvider
-          themeName={ThemeName.base}
-          themeMode={ThemeMode[mode as ThemeMode]}
+        <div
+          style={{
+            height: 'calc(100vh - 2rem)'
+          }}
         >
-          {children}
-        </ThemeProvider>
+          <ThemeProvider
+            themeName={ThemeName.base}
+            themeMode={ThemeMode[mode as ThemeMode]}
+          >
+            {children}
+          </ThemeProvider>
+        </div>
       )
   }
 }
