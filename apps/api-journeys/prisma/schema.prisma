@@ -37,6 +37,8 @@ enum BlockType {
   ButtonBlock
   CardBlock
   ImageBlock
+  GridItemBlock
+  GridContainerBlock
   RadioOptionBlock
   RadioQuestionBlock
   SignUpBlock

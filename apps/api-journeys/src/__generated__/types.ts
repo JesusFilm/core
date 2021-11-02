@@ -82,6 +82,42 @@ export type CardBlock = Block & {
   themeName?: Maybe<ThemeName>;
 };
 
+export type GridAlignItems =
+  | 'baseline'
+  | 'center'
+  | 'flexEnd'
+  | 'flexStart';
+
+export type GridContainerBlock = Block & {
+  __typename?: 'GridContainerBlock';
+  alignItems: GridAlignItems;
+  direction: GridDirection;
+  id: Scalars['ID'];
+  justifyContent: GridJustifyContent;
+  parentBlockId?: Maybe<Scalars['ID']>;
+  spacing: Scalars['Int'];
+};
+
+export type GridDirection =
+  | 'column'
+  | 'columnReverse'
+  | 'row'
+  | 'rowReverse';
+
+export type GridItemBlock = Block & {
+  __typename?: 'GridItemBlock';
+  id: Scalars['ID'];
+  lg: Scalars['Int'];
+  parentBlockId?: Maybe<Scalars['ID']>;
+  sm: Scalars['Int'];
+  xl: Scalars['Int'];
+};
+
+export type GridJustifyContent =
+  | 'center'
+  | 'flexEnd'
+  | 'flexStart';
+
 export type Icon = {
   __typename?: 'Icon';
   color?: Maybe<IconColor>;
@@ -491,6 +527,11 @@ export type ResolversTypes = {
   ButtonSize: ButtonSize;
   ButtonVariant: ButtonVariant;
   CardBlock: ResolverTypeWrapper<BlockType>;
+  GridAlignItems: GridAlignItems;
+  GridContainerBlock: ResolverTypeWrapper<BlockType>;
+  GridDirection: GridDirection;
+  GridItemBlock: ResolverTypeWrapper<BlockType>;
+  GridJustifyContent: GridJustifyContent;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Icon: ResolverTypeWrapper<Icon>;
   IconColor: IconColor;
@@ -537,6 +578,8 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   ButtonBlock: BlockType;
   CardBlock: BlockType;
+  GridContainerBlock: BlockType;
+  GridItemBlock: BlockType;
   ID: Scalars['ID'];
   Icon: Icon;
   ImageBlock: BlockType;
@@ -573,7 +616,7 @@ export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType ext
 };
 
 export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Block'] = ResolversParentTypes['Block']> = {
-  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ButtonBlock' | 'CardBlock' | 'GridContainerBlock' | 'GridItemBlock' | 'ImageBlock' | 'RadioOptionBlock' | 'RadioQuestionBlock' | 'SignUpBlock' | 'StepBlock' | 'TypographyBlock' | 'VideoBlock', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
 };
@@ -599,6 +642,25 @@ export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   themeMode?: Resolver<Maybe<ResolversTypes['ThemeMode']>, ParentType, ContextType>;
   themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GridContainerBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['GridContainerBlock'] = ResolversParentTypes['GridContainerBlock']> = {
+  alignItems?: Resolver<ResolversTypes['GridAlignItems'], ParentType, ContextType>;
+  direction?: Resolver<ResolversTypes['GridDirection'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  justifyContent?: Resolver<ResolversTypes['GridJustifyContent'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  spacing?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GridItemBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['GridItemBlock'] = ResolversParentTypes['GridItemBlock']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lg?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  sm?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  xl?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -762,6 +824,8 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   Block?: BlockResolvers<ContextType>;
   ButtonBlock?: ButtonBlockResolvers<ContextType>;
   CardBlock?: CardBlockResolvers<ContextType>;
+  GridContainerBlock?: GridContainerBlockResolvers<ContextType>;
+  GridItemBlock?: GridItemBlockResolvers<ContextType>;
   Icon?: IconResolvers<ContextType>;
   ImageBlock?: ImageBlockResolvers<ContextType>;
   Journey?: JourneyResolvers<ContextType>;

@@ -2,6 +2,8 @@ import {
   Button,
   Card,
   Image,
+  GridItem,
+  GridContainer,
   RadioOption,
   RadioQuestion,
   SignUp,
@@ -18,6 +20,10 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <Button {...block} />
     case 'CardBlock':
       return <Card {...block} />
+    case 'GridItemBlock':
+      return <GridItem {...block} />
+    case 'GridContainerBlock':
+      return <GridContainer {...block} />
     case 'ImageBlock':
       return <Image {...block} alt={block.alt} />
     case 'RadioOptionBlock':
