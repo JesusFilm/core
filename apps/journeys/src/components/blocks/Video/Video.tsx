@@ -14,7 +14,10 @@ import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from '../Trigger'
-import { isActiveBlockOrDescendant, useBlocks } from '../../../libs/client/cache/blocks'
+import {
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../../libs/client/cache/blocks'
 
 import 'video.js/dist/video-js.css'
 

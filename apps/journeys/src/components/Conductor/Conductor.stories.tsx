@@ -741,6 +741,7 @@ export const VideoJourney = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'video1.id',
@@ -789,6 +790,7 @@ export const VideoJourney = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'radioQuestion1.id',
@@ -842,6 +844,7 @@ export const VideoJourney = (): ReactElement => (
               coverBlockId: null,
               themeMode: null,
               themeName: null,
+              fullscreen: false,
               children: [
                 {
                   id: 'video2.id',

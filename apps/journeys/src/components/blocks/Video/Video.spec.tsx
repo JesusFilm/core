@@ -82,7 +82,8 @@ describe('VideoComponent', () => {
           videoContent={{
             __typename: 'VideoGeneric',
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
-          }} />
+          }}
+        />
       </MockedProvider>
     )
 
