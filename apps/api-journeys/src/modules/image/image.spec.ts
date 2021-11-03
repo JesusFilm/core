@@ -51,7 +51,8 @@ describe('ImageModule', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
-      primaryImageBlockId: null
+      primaryImageBlockId: null,
+      slug: 'published-slug'
     })
   })
 
@@ -131,7 +132,8 @@ describe('ImageModule', () => {
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
-        primaryImageBlockId: 'primaryImageBlockId'
+        primaryImageBlockId: 'primaryImageBlockId',
+        slug: 'published-slug'
       }
 
       const primaryImage: Block = {
@@ -182,7 +184,8 @@ describe('ImageModule', () => {
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
-        primaryImageBlockId: 'primaryImageBlockId'
+        primaryImageBlockId: 'primaryImageBlockId',
+        slug: 'published-slug'
       }
 
       const primaryImage: Block = {
