@@ -20,6 +20,14 @@ jest.mock('../../../libs/action', () => {
   }
 })
 
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      push: () => null
+    }
+  }
+}))
+
 describe('Button', () => {
   const block: ButtonFields = {
     __typename: 'ButtonBlock',
@@ -106,10 +114,15 @@ describe('Button', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(handleAction).toBeCalledWith({
-      __typename: 'NavigateToBlockAction',
-      gtmEventName: 'gtmEventName',
-      blockId: 'def'
-    })
+    expect(handleAction).toBeCalledWith(
+      expect.objectContaining({
+        push: expect.any(Function)
+      }),
+      {
+        __typename: 'NavigateToBlockAction',
+        gtmEventName: 'gtmEventName',
+        blockId: 'def'
+      }
+    )
   })
 })

@@ -5,10 +5,24 @@ import {
 } from '../../../../test/testingLibrary'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import {
-  activeBlockVar,
-  treeBlocksVar
-} from '../../../libs/client/cache/blocks'
+import { handleAction } from '../../../libs/action'
+
+jest.mock('../../../libs/action', () => {
+  const originalModule = jest.requireActual('../../../libs/action')
+  return {
+    __esModule: true,
+    ...originalModule,
+    handleAction: jest.fn()
+  }
+})
+
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      push: () => null
+    }
+  }
+}))
 
 describe('RadioOption', () => {
   const block: TreeBlock<RadioOptionBlock> = {
@@ -33,27 +47,18 @@ describe('RadioOption', () => {
     expect(handleClick).toBeCalledWith(block.id)
   })
 
-  it('should set activeBlockId to action blockId', () => {
-    const blockAbc: TreeBlock = {
-      id: 'abc',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      nextBlockId: null,
-      locked: false,
-      children: []
-    }
-    const blockDef: TreeBlock = {
-      id: 'def',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      nextBlockId: null,
-      locked: false,
-      children: []
-    }
-    treeBlocksVar([blockAbc, blockDef])
-    activeBlockVar(blockAbc)
+  it('should call actionHandler on click', () => {
     const { getByRole } = renderWithApolloClient(<RadioOption {...block} />)
     fireEvent.click(getByRole('button'))
-    expect(activeBlockVar()).toEqual(blockDef)
+    expect(handleAction).toBeCalledWith(
+      expect.objectContaining({
+        push: expect.any(Function)
+      }),
+      {
+        __typename: 'NavigateToBlockAction',
+        gtmEventName: 'gtmEventName',
+        blockId: 'def'
+      }
+    )
   })
 })
