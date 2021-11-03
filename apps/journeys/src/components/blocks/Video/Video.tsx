@@ -93,6 +93,10 @@ export function Video({
     }
   }, [blockId, autoplay, muted])
 
+  // get the redirected URL link to use for stories (storybook)
+  // take the comment out on console log to use
+  // console.log(videoContent?.src)
+
   useEffect(() => {
     validatePlaying()
 
@@ -126,9 +130,6 @@ export function Video({
         responsive: true
       }
 
-      // get the redirected URL link
-      console.log(videoContent.src)
-
       if (videoNode.current != null) {
         player.current = videojs(videoNode.current, {
           ...initialOptions
@@ -152,11 +153,16 @@ export function Video({
             )
         })
         player.current.on('ended', () => {
-          player.current !== undefined &&
-            handleVideoResponse(
+          if (player.current !== undefined) {
+            void handleVideoResponse(
               VideoResponseStateEnum.FINISHED,
               player.current?.currentTime()
             )
+
+            if (player.current.isFullscreen()) {
+              player.current.exitFullscreen()
+            }
+          }
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))
       }
