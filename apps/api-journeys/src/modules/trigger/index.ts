@@ -1,1 +1,0 @@
-export { videoTriggerModule } from './trigger'

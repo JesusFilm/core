@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
-export namespace TriggerModule {
+export namespace VideoTriggerModule {
   interface DefinedFields {
     VideoTriggerBlock: 'id' | 'parentBlockId' | 'triggerStart' | 'action';
   };

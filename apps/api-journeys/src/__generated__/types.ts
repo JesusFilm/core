@@ -419,11 +419,7 @@ export type TypographyVariant =
   | 'subtitle1'
   | 'subtitle2';
 
-export type Video = {
-  src: Scalars['String'];
-};
-
-export type VideoArclight = Video & {
+export type VideoArclight = VideoContent & {
   __typename?: 'VideoArclight';
   languageId: Scalars['String'];
   mediaComponentId: Scalars['String'];
@@ -433,17 +429,23 @@ export type VideoArclight = Video & {
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   autoplay?: Maybe<Scalars['Boolean']>;
-  content?: Maybe<Video>;
+  content: VideoContent;
   description?: Maybe<Scalars['String']>;
+  /** endAt dictates at which point of time the video should end */
   endAt?: Maybe<Scalars['Int']>;
   id: Scalars['ID'];
   muted?: Maybe<Scalars['Boolean']>;
   parentBlockId?: Maybe<Scalars['ID']>;
+  /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']>;
   title: Scalars['String'];
 };
 
-export type VideoGeneric = Video & {
+export type VideoContent = {
+  src: Scalars['String'];
+};
+
+export type VideoGeneric = VideoContent & {
   __typename?: 'VideoGeneric';
   src: Scalars['String'];
 };
@@ -452,7 +454,7 @@ export type VideoResponse = Response & {
   __typename?: 'VideoResponse';
   block?: Maybe<VideoBlock>;
   id: Scalars['ID'];
-  position?: Maybe<Scalars['Float']>;
+  position?: Maybe<Scalars['Int']>;
   state: VideoResponseStateEnum;
   userId: Scalars['ID'];
 };
@@ -602,14 +604,14 @@ export type ResolversTypes = {
   TypographyBlock: ResolverTypeWrapper<BlockType>;
   TypographyColor: TypographyColor;
   TypographyVariant: TypographyVariant;
-  Video: ResolversTypes['VideoArclight'] | ResolversTypes['VideoGeneric'];
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
+  VideoContent: ResolversTypes['VideoArclight'] | ResolversTypes['VideoGeneric'];
   VideoGeneric: ResolverTypeWrapper<VideoGeneric>;
   VideoResponse: ResolverTypeWrapper<ResponseType>;
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoResponseStateEnum: VideoResponseStateEnum;
-  VideoTriggerBlock: ResolverTypeWrapper<VideoTriggerBlock>;
+  VideoTriggerBlock: ResolverTypeWrapper<BlockType>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -647,13 +649,13 @@ export type ResolversParentTypes = {
   StepBlock: BlockType;
   String: Scalars['String'];
   TypographyBlock: BlockType;
-  Video: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
+  VideoContent: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
   VideoGeneric: VideoGeneric;
   VideoResponse: ResponseType;
   VideoResponseCreateInput: VideoResponseCreateInput;
-  VideoTriggerBlock: VideoTriggerBlock;
+  VideoTriggerBlock: BlockType;
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
@@ -846,11 +848,6 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type VideoResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Video'] = ResolversParentTypes['Video']> = {
-  __resolveType: TypeResolveFn<'VideoArclight' | 'VideoGeneric', ParentType, ContextType>;
-  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-};
-
 export type VideoArclightResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoArclight'] = ResolversParentTypes['VideoArclight']> = {
   languageId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   mediaComponentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -860,7 +857,7 @@ export type VideoArclightResolvers<ContextType = GraphQLModules.Context, ParentT
 
 export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoBlock'] = ResolversParentTypes['VideoBlock']> = {
   autoplay?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  content?: Resolver<Maybe<ResolversTypes['Video']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['VideoContent'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   endAt?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -871,6 +868,11 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type VideoContentResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoContent'] = ResolversParentTypes['VideoContent']> = {
+  __resolveType: TypeResolveFn<'VideoArclight' | 'VideoGeneric', ParentType, ContextType>;
+  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
 export type VideoGenericResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoGeneric'] = ResolversParentTypes['VideoGeneric']> = {
   src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -879,7 +881,7 @@ export type VideoGenericResolvers<ContextType = GraphQLModules.Context, ParentTy
 export type VideoResponseResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoResponse'] = ResolversParentTypes['VideoResponse']> = {
   block?: Resolver<Maybe<ResolversTypes['VideoBlock']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  position?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  position?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   state?: Resolver<ResolversTypes['VideoResponseStateEnum'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -917,9 +919,9 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   SignUpResponse?: SignUpResponseResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
-  Video?: VideoResolvers<ContextType>;
   VideoArclight?: VideoArclightResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;
+  VideoContent?: VideoContentResolvers<ContextType>;
   VideoGeneric?: VideoGenericResolvers<ContextType>;
   VideoResponse?: VideoResponseResolvers<ContextType>;
   VideoTriggerBlock?: VideoTriggerBlockResolvers<ContextType>;

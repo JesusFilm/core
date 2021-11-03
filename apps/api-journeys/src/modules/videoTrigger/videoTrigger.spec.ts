@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 
-describe('TriggerModule', () => {
+describe('VideoTriggerModule', () => {
   let app, journeyId
 
   beforeEach(() => {

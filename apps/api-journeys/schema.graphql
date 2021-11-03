@@ -370,11 +370,7 @@ enum TypographyVariant {
   overline
 }
 
-interface Video {
-  src: String!
-}
-
-type VideoArclight implements Video {
+type VideoArclight implements VideoContent {
   mediaComponentId: String!
   languageId: String!
   src: String!
@@ -384,15 +380,23 @@ type VideoBlock implements Block {
   id: ID!
   parentBlockId: ID
   title: String!
+
+  """startAt dictates at which point of time the video should start playing"""
   startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
   endAt: Int
   description: String
   muted: Boolean
   autoplay: Boolean
-  content: Video
+  content: VideoContent!
 }
 
-type VideoGeneric implements Video {
+interface VideoContent {
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
   src: String!
 }
 
@@ -400,7 +404,7 @@ type VideoResponse implements Response {
   id: ID!
   userId: ID!
   state: VideoResponseStateEnum!
-  position: Float
+  position: Int
   block: VideoBlock
 }
 

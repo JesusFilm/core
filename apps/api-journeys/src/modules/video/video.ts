@@ -5,7 +5,7 @@ import { transformBlock } from '../block'
 import { transformResponse } from '../response'
 import { VideoModule } from './__generated__/types'
 import fetch from 'node-fetch'
-import { VideoResolvers } from '../../__generated__/types'
+import { VideoContentResolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
   enum VideoResponseStateEnum {
@@ -24,17 +24,17 @@ const typeDefs = gql`
     position: Float
   }
 
-  interface Video {
+  interface VideoContent {
     src: String!
   }
 
-  type VideoArclight implements Video {
+  type VideoArclight implements VideoContent {
     mediaComponentId: String!
     languageId: String!
     src: String!
   }
 
-  type VideoGeneric implements Video {
+  type VideoGeneric implements VideoContent {
     src: String!
   }
 
@@ -42,19 +42,25 @@ const typeDefs = gql`
     id: ID!
     parentBlockId: ID
     title: String!
+    """
+    startAt dictates at which point of time the video should start playing
+    """
     startAt: Int
+    """
+    endAt dictates at which point of time the video should end
+    """
     endAt: Int
     description: String
     muted: Boolean
     autoplay: Boolean
-    content: Video
+    content: VideoContent!
   }
 
   type VideoResponse implements Response {
     id: ID!
     userId: ID!
     state: VideoResponseStateEnum!
-    position: Float
+    position: Int
     block: VideoBlock
   }
 
@@ -63,8 +69,10 @@ const typeDefs = gql`
   }
 `
 
-const resolvers: VideoModule.Resolvers & { Video: VideoResolvers } = {
-  Video: {
+const resolvers: VideoModule.Resolvers & {
+  VideoContent: VideoContentResolvers
+} = {
+  VideoContent: {
     __resolveType(video) {
       if (
         (video as VideoModule.VideoArclight).mediaComponentId != null &&

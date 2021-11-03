@@ -8,7 +8,7 @@ export namespace VideoModule {
     VideoBlock: 'id' | 'parentBlockId' | 'title' | 'startAt' | 'endAt' | 'description' | 'muted' | 'autoplay' | 'content';
     VideoResponse: 'id' | 'userId' | 'state' | 'position' | 'block';
     Mutation: 'videoResponseCreate';
-    Video: 'src';
+    VideoContent: 'src';
   };
   
   interface DefinedEnumValues {
@@ -21,7 +21,7 @@ export namespace VideoModule {
   
   export type VideoResponseStateEnum = DefinedEnumValues['VideoResponseStateEnum'];
   export type VideoResponseCreateInput = Pick<Types.VideoResponseCreateInput, DefinedInputFields['VideoResponseCreateInput']>;
-  export type Video = Pick<Types.Video, DefinedFields['Video']>;
+  export type VideoContent = Pick<Types.VideoContent, DefinedFields['VideoContent']>;
   export type VideoArclight = Pick<Types.VideoArclight, DefinedFields['VideoArclight']>;
   export type VideoGeneric = Pick<Types.VideoGeneric, DefinedFields['VideoGeneric']>;
   export type VideoBlock = Pick<Types.VideoBlock, DefinedFields['VideoBlock']>;
@@ -35,7 +35,7 @@ export namespace VideoModule {
   export type VideoBlockResolvers = Pick<Types.VideoBlockResolvers, DefinedFields['VideoBlock'] | '__isTypeOf'>;
   export type VideoResponseResolvers = Pick<Types.VideoResponseResolvers, DefinedFields['VideoResponse'] | '__isTypeOf'>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
-  export type VideoResolvers = Pick<Types.VideoResolvers, DefinedFields['Video']>;
+  export type VideoContentResolvers = Pick<Types.VideoContentResolvers, DefinedFields['VideoContent']>;
   
   export interface Resolvers {
     VideoArclight?: VideoArclightResolvers;
