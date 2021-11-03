@@ -105,7 +105,7 @@ const resolvers: JourneyModule.Resolvers = {
             themeMode: themeMode ?? undefined,
             themeName: themeName ?? undefined,
             description,
-            slug: slugify(slug ?? title, { remove: /[*+~.()'"!:@]#/g })
+            slug: slugify(slug ?? title, { remove: /[*+~.()'"!:@#]/g })
           }
         })
       } catch (e) {
