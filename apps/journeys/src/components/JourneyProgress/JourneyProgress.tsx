@@ -7,7 +7,8 @@ import { useBlocks } from '../../libs/client/cache/blocks'
 const BorderLinearProgress = withStyles(() => ({
   root: {
     height: 6,
-    borderRadius: 3
+    borderRadius: 3,
+    width: '100%'
   },
   bar: {
     borderRadius: 3,
@@ -39,7 +40,7 @@ export function JourneyProgress(): ReactElement {
   }, [activeBlock, treeBlocks])
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ display: 'flex', width: '100%' }}>
       <BorderLinearProgress
         variant="determinate"
         value={percentage}
@@ -53,13 +54,12 @@ export function JourneyProgress(): ReactElement {
       />
       <Box
         sx={{
-          position: 'absolute',
+          marginLeft: '-6px',
           height: 6,
           width: 6,
           backgroundColor: '#6D6E80',
           borderRadius: 3,
-          top: 0,
-          right: 0,
+          zIndex: 2,
           transition: 'opacity ease-out 0.5s',
           opacity: percentage === 0 ? 0 : 1
         }}

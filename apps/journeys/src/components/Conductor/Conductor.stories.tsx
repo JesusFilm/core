@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta } from '@storybook/react'
-import { ReactElement } from 'react'
-import { Conductor } from '.'
+import { Story, Meta } from '@storybook/react'
+import Conductor, { ConductorProps } from '.'
+import { basic, imageBlocks } from './data'
 import { journeysConfig } from '../../libs/storybook'
 
 const Demo = {
@@ -9,277 +9,50 @@ const Demo = {
   component: Conductor,
   title: 'Journeys/Conductor',
   parameters: {
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    theme: 'light',
+    chromatic: {
+      viewports: [
+        360, // Mobile (P)
+        568, // Mobile (L)
+        600, // Tablet (P)
+        961, // Tablet (L)
+        1200 // Laptop/Desktop
+      ]
+    }
   }
 }
 
-export const Default = (): ReactElement => (
+const Template: Story<ConductorProps> = ({ ...props }) => (
   <MockedProvider>
-    <Conductor
-      blocks={[
-        {
-          id: 'step1.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          locked: false,
-          nextBlockId: 'step2.id',
-          children: [
-            {
-              id: 'card1.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step1.id',
-              backgroundColor: null,
-              coverBlockId: null,
-              themeMode: null,
-              themeName: null,
-              children: [
-                {
-                  id: 'radioQuestion1.id',
-                  __typename: 'RadioQuestionBlock',
-                  parentBlockId: 'card1.id',
-                  label: 'Step 1',
-                  description: 'Start',
-                  children: [
-                    {
-                      id: 'radioOption2.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 2 (Locked)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step2.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption3.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 3 (No nextBlockId)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step3.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption4.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 4 (End)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step4.id'
-                      },
-                      children: []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'step2.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          locked: true,
-          nextBlockId: 'step3.id',
-          children: [
-            {
-              id: 'card2.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step2.id',
-              backgroundColor: null,
-              coverBlockId: null,
-              themeMode: null,
-              themeName: null,
-              children: [
-                {
-                  id: 'radioQuestion1.id',
-                  __typename: 'RadioQuestionBlock',
-                  parentBlockId: 'step2.id',
-                  label: 'Step 2',
-                  description: 'Locked',
-                  children: [
-                    {
-                      id: 'radioOption1.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 1 (Start)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step1.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption3.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 3 (No nextBlockId)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step3.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption4.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 4 (End)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step4.id'
-                      },
-                      children: []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'step3.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          locked: false,
-          nextBlockId: null,
-          children: [
-            {
-              id: 'card3.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step3.id',
-              backgroundColor: null,
-              coverBlockId: null,
-              themeMode: null,
-              themeName: null,
-              children: [
-                {
-                  id: 'radioQuestion1.id',
-                  __typename: 'RadioQuestionBlock',
-                  parentBlockId: 'card3.id',
-                  label: 'Step 3',
-                  description: 'No nextBlockId',
-                  children: [
-                    {
-                      id: 'radioOption1.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 1 (Start)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step1.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption2.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 2 (Locked)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step2.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption4.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 4 (End)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step4.id'
-                      },
-                      children: []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'step4.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          locked: false,
-          nextBlockId: null,
-          children: [
-            {
-              id: 'card4.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step4.id',
-              backgroundColor: null,
-              coverBlockId: null,
-              themeMode: null,
-              themeName: null,
-              children: [
-                {
-                  id: 'radioQuestion1.id',
-                  __typename: 'RadioQuestionBlock',
-                  parentBlockId: 'step4.id',
-                  label: 'Step 4',
-                  description: 'End',
-                  children: [
-                    {
-                      id: 'radioOption1.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 1 (Start)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step1.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption2.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 2 (Locked)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step2.id'
-                      },
-                      children: []
-                    },
-                    {
-                      id: 'radioOption3.id',
-                      __typename: 'RadioOptionBlock',
-                      parentBlockId: 'radioQuestion1.id',
-                      label: 'Step 3 (No nextBlockId)',
-                      action: {
-                        __typename: 'NavigateToBlockAction',
-                        gtmEventName: 'gtmEventName',
-                        blockId: 'step3.id'
-                      },
-                      children: []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]}
-    />
+    <Conductor {...props} />
   </MockedProvider>
 )
+
+export const Default: Story<ConductorProps> = Template.bind({})
+Default.args = {
+  blocks: basic
+}
+
+export const DefaultOnDark: Story<ConductorProps> = Template.bind({})
+DefaultOnDark.args = {
+  blocks: basic
+}
+DefaultOnDark.parameters = {
+  theme: 'dark'
+}
+
+export const WithContent: Story<ConductorProps> = Template.bind({})
+WithContent.args = {
+  blocks: imageBlocks
+}
+
+export const WithContentOnDark: Story<ConductorProps> = Template.bind({})
+WithContentOnDark.args = {
+  blocks: imageBlocks
+}
+WithContentOnDark.parameters = {
+  theme: 'dark'
+}
 
 export default Demo as Meta
