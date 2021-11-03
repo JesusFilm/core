@@ -3,6 +3,7 @@ import { Button as MuiButton } from '@mui/material'
 import { Icon } from '../../Icon'
 import { ButtonFields } from '../../../../__generated__/ButtonFields'
 import { handleAction } from '../../../libs/action'
+import { useRouter } from 'next/router'
 
 export function Button({
   buttonVariant,
@@ -13,8 +14,9 @@ export function Button({
   endIcon,
   action
 }: ButtonFields): ReactElement {
+  const router = useRouter()
   const handleClick = (): void => {
-    handleAction(action)
+    handleAction(router, action)
   }
 
   return (
