@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { handleAction } from '../../../libs/action'
+import { useRouter } from 'next/dist/client/router'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionBlock> {
   className?: string
@@ -23,9 +24,10 @@ export function RadioOption({
   onClick
 }: RadioOptionProps): ReactElement {
   const theme = useTheme()
+  const router = useRouter()
 
   const handleClick = (): void => {
-    handleAction(action)
+    handleAction(router, action)
     onClick?.(id)
   }
 
