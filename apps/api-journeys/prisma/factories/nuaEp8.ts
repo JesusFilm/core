@@ -5,6 +5,9 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
     where: { title: "What's Jesus Got to Do With Me?" }
   })
+  const decision = await prisma.journey.findFirst({
+    where: { title: 'Decision' }
+  })
   if (journey == null) {
     journey = await prisma.journey.create({
       data: {
@@ -158,7 +161,8 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 2
     }
@@ -317,7 +321,8 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 4
     }
@@ -426,7 +431,8 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 5
     }
@@ -632,7 +638,11 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: 'He loves me'
+        label: 'He loves me',
+        action: {
+          gtmEventName: 'click',
+          journeyId: decision?.id
+        }
       },
       parentOrder: 0
     }
@@ -643,7 +653,11 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: 'He came to free me from sin'
+        label: 'He came to free me from sin',
+        action: {
+          gtmEventName: 'click',
+          journeyId: decision?.id
+        }
       },
       parentOrder: 2
     }
@@ -654,7 +668,11 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: "He doesn't care about me"
+        label: "He doesn't care about me",
+        action: {
+          gtmEventName: 'click',
+          journeyId: decision?.id
+        }
       },
       parentOrder: 3
     }
@@ -665,7 +683,11 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: "I'm not sure"
+        label: "I'm not sure",
+        action: {
+          gtmEventName: 'click',
+          journeyId: decision?.id
+        }
       },
       parentOrder: 3
     }

@@ -5,6 +5,9 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
     where: { title: 'What About The Ressurection?' }
   })
+  const nuaEp8 = await prisma.journey.findFirst({
+    where: { title: "What's Jesus Got to Do With Me?" }
+  })
   if (journey == null) {
     journey = await prisma.journey.create({
       data: {
@@ -160,7 +163,8 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 2
     }
@@ -336,7 +340,8 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 4
     }
@@ -439,13 +444,14 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     }
   })
 
-  //   fifth step is now a video
+  //   sixth step is now a video
   const step5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 5
     }
@@ -502,7 +508,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     }
   })
 
-  // sixth step
+  // seventh step
   const step6 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -587,7 +593,11 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioQuestionBlock',
       parentBlockId: card6.id,
       extraAttrs: {
-        label: 'What is Christianity to you?'
+        label: 'What is Christianity to you?',
+        action: {
+          gtmEventName: 'click',
+          journeyId: nuaEp8?.id
+        }
       },
       parentOrder: 2
     }
@@ -598,7 +608,11 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: 'One of many ways to God'
+        label: 'One of many ways to God',
+        action: {
+          gtmEventName: 'click',
+          journeyId: nuaEp8?.id
+        }
       },
       parentOrder: 0
     }
@@ -609,7 +623,11 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: 'One great lie...'
+        label: 'One great lie...',
+        action: {
+          gtmEventName: 'click',
+          journeyId: nuaEp8?.id
+        }
       },
       parentOrder: 2
     }
@@ -620,7 +638,11 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question5.id,
       extraAttrs: {
-        label: 'One true way to God'
+        label: 'One true way to God',
+        action: {
+          gtmEventName: 'click',
+          journeyId: nuaEp8?.id
+        }
       },
       parentOrder: 3
     }

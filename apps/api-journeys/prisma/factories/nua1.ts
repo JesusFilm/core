@@ -5,7 +5,6 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
     where: { title: 'Fact or Fiction' }
   })
-  // Still need to implement NavigateToJourney action for this to work
   const ressurection = await prisma.journey.findFirst({
     where: { title: 'What About The Ressurection?' }
   })
@@ -163,7 +162,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 2
     }
@@ -325,7 +325,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 4
     }

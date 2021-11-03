@@ -487,8 +487,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false,
-        nextBlockId
+        locked: false
       },
       parentOrder: 5
     }
@@ -604,8 +603,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false,
-        nextBlockId
+        locked: false
       },
       parentOrder: 6
     }
