@@ -383,7 +383,7 @@ it('throws an error on update without authentication', async () => {
       db: dbMock
     }
   })
-
+  console.log(errors)
   expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
 })
 
@@ -409,7 +409,7 @@ it('throws an error on publish without authentication', async () => {
   expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
 })
 
-it.skip('throws an error if attempting to create a slug that already exists', async () => {
+it('throws an error if attempting to create a slug that already exists', async () => {
   const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   dbMock.journey.create.mockImplementation(() => {
@@ -441,6 +441,40 @@ it.skip('throws an error if attempting to create a slug that already exists', as
       userId: 'userId'
     }
   })
+  expect(errors?.[0].message).toEqual('slug already exists')
+})
+it('throws an error if attempting to update a slug that already exists', async () => {
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
 
-  expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
+  dbMock.journey.update.mockImplementation(() => {
+    throw new Prisma.PrismaClientKnownRequestError(
+      'slug already exists',
+      'P2002',
+      '1.0',
+      { target: ['slug'] }
+    )
+  })
+
+  const { errors } = await testkit.execute(app, {
+    document: gql`
+      mutation ($input: JourneyUpdateInput!) {
+        journeyUpdate(input: $input) {
+          id
+          slug
+        }
+      }
+    `,
+    variableValues: {
+      input: {
+        title: 'my journey',
+        slug: 'my-journey',
+        id: journeyModule.id
+      }
+    },
+    contextValue: {
+      db: dbMock,
+      userId: 'userId'
+    }
+  })
+  expect(errors?.[0].message).toEqual('slug already exists')
 })
