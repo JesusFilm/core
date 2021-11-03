@@ -19,6 +19,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
@@ -50,10 +51,19 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
   ): number =>
     Math.max(
       minGapBetween,
-      (window.innerWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
+      (windowWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
+
+  useEffect(() => {
+    const updateWidth = (): void => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
 
   return (
     <Box
