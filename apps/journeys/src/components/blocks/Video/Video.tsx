@@ -95,7 +95,8 @@ export function Video({
 
   // get the redirected URL link to use for stories (storybook)
   // take the comment out on console log to use
-  // console.log(videoContent?.src)
+  console.log(videoContent?.src)
+  console.log(activeBlock)
 
   useEffect(() => {
     validatePlaying()
@@ -153,13 +154,16 @@ export function Video({
             )
         })
         player.current.on('ended', () => {
-          if (player.current !== undefined) {
+          if (player.current !== undefined && activeBlock != null) {
             void handleVideoResponse(
               VideoResponseStateEnum.FINISHED,
-              player.current?.currentTime()
+              player.current.currentTime()
             )
 
-            if (player.current.isFullscreen()) {
+            if (
+              player.current.isFullscreen() &&
+              activeBlock.nextBlockId == null
+            ) {
               player.current.exitFullscreen()
             }
           }

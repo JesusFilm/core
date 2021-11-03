@@ -728,7 +728,7 @@ export const videoBlock: TreeBlock[] = [
               // This is the redirected URL from this link
               // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
               // Meaning that it's expected for it's tokens key to expire
-              src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MjRjZjNfYWE5NzMwN2VlNGMzNTVjMjY1ODNmMWZiZjk3N2Y3YWU2ZDhkN2U2NzVkZWRiZGUxNjY0YjUyZWQzZDY0NTQyNg%3D%3D'
+              src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MzM0ODRfMDYxY2IzMzdmOWE0ODQ5MmI1ZDc0NDg0YWJmNjU3NWRlNTRmYmMwNjM1Y2NjNmM4YTU4Zjk4M2RhYmQxYjM2MQ%3D%3D'
             },
             endAt: null,
             startAt: null,
@@ -810,7 +810,7 @@ export const videoBlock: TreeBlock[] = [
     __typename: 'StepBlock',
     parentBlockId: null,
     locked: false,
-    nextBlockId: 'step4.id',
+    nextBlockId: null,
     children: [
       {
         id: 'card3.id',
@@ -834,7 +834,7 @@ export const videoBlock: TreeBlock[] = [
               // This is the redirected URL from this link
               // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
               // Meaning that it's expected for it's tokens key to expire
-              src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MjRjZjNfYWE5NzMwN2VlNGMzNTVjMjY1ODNmMWZiZjk3N2Y3YWU2ZDhkN2U2NzVkZWRiZGUxNjY0YjUyZWQzZDY0NTQyNg%3D%3D'
+              src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MzM0ODRfMDYxY2IzMzdmOWE0ODQ5MmI1ZDc0NDg0YWJmNjU3NWRlNTRmYmMwNjM1Y2NjNmM4YTU4Zjk4M2RhYmQxYjM2MQ%3D%3D'
             },
             endAt: null,
             startAt: 21,

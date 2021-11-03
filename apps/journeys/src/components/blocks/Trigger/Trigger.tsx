@@ -14,7 +14,6 @@ export function Trigger({
   triggerStart
 }: TriggerProps): ReactElement {
   const handleTrigger = (player: videojs.Player): void => {
-    // wirte code that checks if its fullscreen or not
     player.on('timeupdate', () => {
       if (player.currentTime() >= triggerStart) {
         if (player.isFullscreen()) {
