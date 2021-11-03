@@ -29,23 +29,11 @@ RETURNS TEXT AS $$
   SELECT "value" FROM "trimmed";
 $$ LANGUAGE SQL STRICT IMMUTABLE;
 
-DROP FUNCTION IF EXISTS set_slug_from_title;
-CREATE FUNCTION public.set_slug_from_title() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW.slug := slugify(NEW.title); --add something here to make slugs unique
-  RETURN NEW;
-END
-$$;
-
 BEGIN;
 ALTER TABLE "Journey" ADD COLUMN "slug" TEXT NULL;
-
-CREATE TRIGGER "journeys_slug_insert" BEFORE INSERT ON "Journey" FOR EACH ROW WHEN (NEW."title" IS NOT NULL AND NEW."slug" IS NULL)
-EXECUTE PROCEDURE set_slug_from_title();
-
 UPDATE "Journey" SET "slug" = slugify("title");
-
 CREATE UNIQUE INDEX "Journey.slug_unique" ON "Journey"("slug");
+ALTER TABLE "Journey" ALTER COLUMN "slug" SET NOT NULL;
 COMMIT;
+
+DROP FUNCTION IF EXISTS slugify;

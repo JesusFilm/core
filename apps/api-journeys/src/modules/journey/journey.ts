@@ -1,8 +1,10 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
-import { isNil, omitBy } from 'lodash'
-import { AuthenticationError } from 'apollo-server-errors'
+import { isNil, omitBy, get } from 'lodash'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { Prisma } from '.prisma/api-journeys-client'
+import slugify from 'slugify'
 
 const typeDefs = gql`
   enum ThemeMode {
@@ -46,6 +48,10 @@ const typeDefs = gql`
     themeMode: ThemeMode
     themeName: ThemeName
     description: String
+    """
+    Slug should be unique amongst all journeys
+    (server will throw BAD_USER_INPUT error if not)
+    """
     slug: String!
   }
 
@@ -90,38 +96,59 @@ const resolvers: JourneyModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      if ((await db.journey.findFirst({ where: { slug: slug } })) != null) {
-        throw new Error('Slug already exists')
-      }
-      return await db.journey.create({
-        data: {
-          id: id as string | undefined,
-          title,
-          locale: locale ?? undefined,
-          themeMode: themeMode ?? undefined,
-          themeName: themeName ?? undefined,
-          description,
-          slug
+      try {
+        return await db.journey.create({
+          data: {
+            id: id as string | undefined,
+            title,
+            locale: locale ?? undefined,
+            themeMode: themeMode ?? undefined,
+            themeName: themeName ?? undefined,
+            description,
+            slug: slugify(slug ?? title, { remove: /[*+~.()'"!:@]#/g })
+          }
+        })
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002' &&
+          get(e.meta, 'target') === ['slug']
+        ) {
+          throw new UserInputError(e.message, {
+            argumentName: 'slug'
+          })
         }
-      })
+        throw e
+      }
     },
     async journeyUpdate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      if (
-        (input.slug != null &&
-          (await db.journey.findFirst({ where: { slug: input.slug } }))) != null
-      ) {
-        throw new Error('Slug already exists')
-      }
-      return await db.journey.update({
-        where: {
-          id: input.id
-        },
-        data: {
-          ...omitBy(input, isNil)
+      try {
+        if (input.slug != null) {
+          input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
         }
-      })
+
+        return await db.journey.update({
+          where: {
+            id: input.id
+          },
+          data: {
+            ...omitBy(input, isNil)
+          }
+        })
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002' &&
+          get(e.meta, 'target') === ['slug']
+        ) {
+          throw new UserInputError(e.message, {
+            argumentName: 'slug'
+          })
+        }
+        throw e
+      }
     },
 
     async journeyPublish(_parent, { id }, { db, userId }) {

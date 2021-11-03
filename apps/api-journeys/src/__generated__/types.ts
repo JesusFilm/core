@@ -167,6 +167,10 @@ export type JourneyCreateInput = {
    */
   id?: Maybe<Scalars['ID']>;
   locale?: Maybe<Scalars['String']>;
+  /**
+   * Slug should be unique amongst all journeys
+   * (server will throw BAD_USER_INPUT error if not)
+   */
   slug: Scalars['String'];
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;

@@ -31,7 +31,7 @@ model Journey {
   description String?
   primaryImageBlockId String?
   primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
-  slug      String?    @unique
+  slug      String    @unique
 }
 
 enum BlockType {

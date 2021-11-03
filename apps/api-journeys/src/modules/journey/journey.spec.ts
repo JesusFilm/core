@@ -4,7 +4,12 @@ import { journeyModule } from '.'
 import { pick } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import dbMock from '../../../tests/dbMock'
-import { Journey, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
+import {
+  Journey,
+  ThemeName,
+  ThemeMode,
+  Prisma
+} from '.prisma/api-journeys-client'
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(journeyModule, { schemaBuilder })
@@ -402,4 +407,40 @@ it('throws an error on publish without authentication', async () => {
   })
 
   expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+})
+
+it.skip('throws an error if attempting to create a slug that already exists', async () => {
+  const app = testkit.testModule(journeyModule, { schemaBuilder })
+
+  dbMock.journey.create.mockImplementation(() => {
+    throw new Prisma.PrismaClientKnownRequestError(
+      'slug already exists',
+      'P2002',
+      '1.0',
+      { target: ['slug'] }
+    )
+  })
+
+  const { errors } = await testkit.execute(app, {
+    document: gql`
+      mutation ($input: JourneyCreateInput!) {
+        journeyCreate(input: $input) {
+          id
+          slug
+        }
+      }
+    `,
+    variableValues: {
+      input: {
+        title: 'my journey',
+        slug: 'my-journey'
+      }
+    },
+    contextValue: {
+      db: dbMock,
+      userId: 'userId'
+    }
+  })
+
+  expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
 })
