@@ -148,18 +148,19 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
         title: "What's Jesus Got to Do With Me?"
-      }
+      },
+      parentOrder: 0
     }
   })
 
-  //   Yes, I would step/option
-  //   First part of the prayer
-  const stepPrayer1 = await prisma.block.create({
+  // question step!
+  const questionStep = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 2
     }
@@ -170,7 +171,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card1.id,
       extraAttrs: {
-        label: 'Next',
+        label: 'next step',
         variant: 'contained',
         color: 'primary',
         size: 'large',
@@ -181,10 +182,148 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         },
         action: {
           gtmEventName: 'click',
+          blockId: questionStep.id
+        }
+      },
+      parentOrder: 1
+    }
+  })
+  const image1Id = uuidv4()
+  const card5 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: questionStep.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: image1Id,
+        fullscreen: true
+      },
+      parentOrder: 0
+    }
+  })
+  const gridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: card5.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+  })
+  const gridItemLeft = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: gridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
+  const gridItemRight = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: gridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: image1Id,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: card5.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1433324168539-154874446945?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Who was this Jesus?',
+        width: 1920,
+        height: 1080,
+        blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE'
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: gridItemLeft.id,
+      extraAttrs: {
+        content: "IF IT'S TRUE...",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: gridItemLeft.id,
+      extraAttrs: {
+        content: 'Who was this Jesus?',
+        variant: 'h2',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
+    }
+  })
+  const question1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioQuestionBlock',
+      parentBlockId: gridItemRight.id,
+      extraAttrs: {
+        label: ''
+      },
+      parentOrder: 2
+    }
+  })
+
+  //   Yes, I would step/option
+  //   First part of the prayer
+  const stepPrayer1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 3
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: question1.id,
+      extraAttrs: {
+        label: 'Yes I would',
+        action: {
+          gtmEventName: 'click',
           blockId: stepPrayer1.id
         }
       },
-      parentOrder: 3
+      parentOrder: 0
     }
   })
   const prayerImageId1 = uuidv4()
@@ -253,9 +392,10 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
-      parentOrder: 3
+      parentOrder: 4
     }
   })
   await prisma.block.create({
@@ -286,7 +426,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: stepPrayer1.id,
+      parentBlockId: stepPrayer2.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -347,9 +487,10 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
-      parentOrder: 4
+      parentOrder: 5
     }
   })
   await prisma.block.create({
@@ -394,7 +535,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       id: prayerImageId3,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: prayerCard1.id,
+      parentBlockId: prayerCard3.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1519373344801-14c1f9539c9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
         alt: 'Decision',
@@ -438,7 +579,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: prayerCard2.id,
+      parentBlockId: prayerCard3.id,
       extraAttrs: {
         label: 'Amen',
         variant: 'contained',
@@ -448,6 +589,9 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
           name: 'PlayArrow',
           color: 'primary',
           size: 'xl'
+        },
+        action: {
+          gtmEventName: 'click'
         }
       },
       parentOrder: 3
@@ -463,17 +607,34 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         locked: false,
         nextBlockId
       },
-      parentOrder: 3
+      parentOrder: 6
     }
   })
-  const card3 = await prisma.block.create({
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: question1.id,
+      extraAttrs: {
+        label: 'I already have',
+        action: {
+          gtmEventName: 'click',
+          blockId: stepIAlreadyHave.id
+        }
+      },
+      parentOrder: 2
+    }
+  })
+  const image2Id = uuidv4()
+  const card2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
       parentBlockId: stepIAlreadyHave.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        coverBlockId: image2Id
       },
       parentOrder: 0
     }
@@ -481,324 +642,161 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'VideoBlock',
-      parentBlockId: card3.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: card2.id,
       extraAttrs: {
-        // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '5_0-NUA1001-0-0',
-        // languageId: '529',
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: "What's Jesus Got to Do With Me?"
-      }
+        content: "THAT'S GREAT!",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
     }
   })
-  const question3 = await prisma.block.create({
+  await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: stepIAlreadyHave.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: card2.id,
       extraAttrs: {
-        label: 'Go to next step'
-      }
+        content: 'Ever though about telling a friend what this mean to you?',
+        variant: 'h5',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 2
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: card2.id,
+      extraAttrs: {
+        content: 'Sharing your story helps you grow with God and others',
+        variant: 'body1',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 3
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: image2Id,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: card2.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1527819569483-f188a16975af?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Jesus In History',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LRHUFAIp5qnN~UX8IUoI00xaZ$of'
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: card2.id,
+      extraAttrs: {
+        label: 'Share Now',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'primary',
+          size: 'xl'
+        },
+        action: {
+          gtmEvenName: 'click'
+        }
+      },
+      parentOrder: 4
     }
   })
 
   //   No thanks step/option
-  // const step4 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'StepBlock',
-  //     extraAttrs: {
-  //       locked: false
-  //     },
-  //     parentOrder: 4
-  //   }
-  // })
+  const stepNoThanks = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 6
+    }
+  })
   await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'RadioOptionBlock',
-      parentBlockId: question3.id,
+      parentBlockId: question1.id,
       extraAttrs: {
-        label: 'Next step',
+        label: 'No thanks',
         action: {
-          gtmEventName: 'click'
+          gtmEventName: 'click',
+          blockId: stepNoThanks.id
         }
       },
-      parentOrder: 5
+      parentOrder: 3
     }
   })
-  // const image2Id = uuidv4()
-  // const card4 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'CardBlock',
-  //     parentBlockId: step4.id,
-  //     extraAttrs: {
-  //       themeMode: ThemeMode.dark,
-  //       themeName: ThemeName.base,
-  //       coverBlockId: image2Id
-  //     },
-  //     parentOrder: 0
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'TypographyBlock',
-  //     parentBlockId: card4.id,
-  //     extraAttrs: {
-  //       content: 'A QUOTE',
-  //       variant: 'h6',
-  //       color: 'primary',
-  //       align: 'left'
-  //     },
-  //     parentOrder: 1
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'TypographyBlock',
-  //     parentBlockId: card4.id,
-  //     extraAttrs: {
-  //       content:
-  //         '"God sent his Son into the world not to judge the world, but to save the world through him."',
-  //       variant: 'subtitle1',
-  //       color: 'primary',
-  //       align: 'left'
-  //     },
-  //     parentOrder: 2
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'TypographyBlock',
-  //     parentBlockId: card4.id,
-  //     extraAttrs: {
-  //       content: '- The Bible, John 3:17',
-  //       variant: 'caption',
-  //       color: 'primary',
-  //       align: 'left'
-  //     },
-  //     parentOrder: 3
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     id: image2Id,
-  //     journeyId: journey.id,
-  //     blockType: 'ImageBlock',
-  //     parentBlockId: card4.id,
-  //     extraAttrs: {
-  //       src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-  //       alt: 'quote',
-  //       width: 1920,
-  //       height: 1080,
-  //       blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
-  //     },
-  //     parentOrder: 0
-  //   }
-  // })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: stepNoThanks.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base
+      },
+      parentOrder: 0
+    }
+  })
 
-  // //   I'm not sure step/option
-  // const step5 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'StepBlock',
-  //     extraAttrs: {
-  //       locked: false
-  //     },
-  //     parentOrder: 5
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'ButtonBlock',
-  //     parentBlockId: card4.id,
-  //     extraAttrs: {
-  //       label: 'What does it mean?',
-  //       variant: 'contained',
-  //       color: 'primary',
-  //       size: 'large',
-  //       startIcon: {
-  //         name: 'PlayArrow',
-  //         color: 'primary',
-  //         size: 'xl'
-  //       },
-  //       action: {
-  //         gtmEventName: 'click',
-  //         blockId: step5.id
-  //       }
-  //     },
-  //     parentOrder: 4
-  //   }
-  // })
-  // const card5 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'CardBlock',
-  //     parentBlockId: step5.id,
-  //     extraAttrs: {
-  //       themeMode: ThemeMode.dark,
-  //       themeName: ThemeName.base
-  //     },
-  //     parentOrder: 0
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'VideoBlock',
-  //     parentBlockId: card5.id,
-  //     extraAttrs: {
-  //       // put in comments the mediaComponentId and languageId
-  //       // mediaComponentId: '5_0-NUA1001-0-0',
-  //       // languageId: '529',
-  //       src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-  //       title: 'Watch #FallingPlates',
-  //       description:
-  //         'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
-  //     }
-  //   }
-  // })
-  // const question4 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioQuestionBlock',
-  //     parentBlockId: step5.id,
-  //     extraAttrs: {
-  //       label: 'Go to next step'
-  //     },
-  //     parentOrder: 1
-  //   }
-  // })
-
-  // // seventh step
-  // const step6 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'StepBlock',
-  //     extraAttrs: {
-  //       locked: false
-  //     },
-  //     parentOrder: 6
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioOptionBlock',
-  //     parentBlockId: question4.id,
-  //     extraAttrs: {
-  //       label: 'Next step',
-  //       action: {
-  //         gtmEventName: 'click',
-  //         blockId: step6.id
-  //       }
-  //     }
-  //   }
-  // })
-  // const image3Id = uuidv4()
-  // const card6 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'CardBlock',
-  //     parentBlockId: step6.id,
-  //     extraAttrs: {
-  //       themeMode: ThemeMode.dark,
-  //       themeName: ThemeName.base,
-  //       coverBlockId: image3Id,
-  //       fullscreen: true
-  //     },
-  //     parentOrder: 0
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     id: image3Id,
-  //     journeyId: journey.id,
-  //     blockType: 'ImageBlock',
-  //     parentBlockId: card6.id,
-  //     extraAttrs: {
-  //       src: 'https://images.unsplash.com/photo-1552676382-77b33d7639fa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-  //       alt: 'Who was this Jesus?',
-  //       width: 1920,
-  //       height: 1080,
-  //       blurhash: 'L5AwUX~5080QHwNdD.%I0%E5%b$~'
-  //     },
-  //     parentOrder: 1
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'TypographyBlock',
-  //     parentBlockId: card6.id,
-  //     extraAttrs: {
-  //       content: "IF IT'S TRUE...",
-  //       variant: 'h6',
-  //       color: 'primary',
-  //       align: 'left'
-  //     },
-  //     parentOrder: 1
-  //   }
-  // })
-  // const question5 = await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioQuestionBlock',
-  //     parentBlockId: card6.id,
-  //     extraAttrs: {
-  //       label: 'What does Jesus have to do with me?'
-  //     },
-  //     parentOrder: 2
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioOptionBlock',
-  //     parentBlockId: question5.id,
-  //     extraAttrs: {
-  //       label: 'He loves me'
-  //     },
-  //     parentOrder: 0
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioOptionBlock',
-  //     parentBlockId: question5.id,
-  //     extraAttrs: {
-  //       label: 'He came to free me from sin'
-  //     },
-  //     parentOrder: 2
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioOptionBlock',
-  //     parentBlockId: question5.id,
-  //     extraAttrs: {
-  //       label: "He doesn't care about me"
-  //     },
-  //     parentOrder: 3
-  //   }
-  // })
-  // await prisma.block.create({
-  //   data: {
-  //     journeyId: journey.id,
-  //     blockType: 'RadioOptionBlock',
-  //     parentBlockId: question5.id,
-  //     extraAttrs: {
-  //       label: "I'm not sure"
-  //     },
-  //     parentOrder: 3
-  //   }
-  // })
+  //   I'm not sure step/option
+  const stepImNotSure = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 6
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: question1.id,
+      extraAttrs: {
+        label: "I'm not sure",
+        action: {
+          gtmEventName: 'click',
+          blockId: stepImNotSure.id
+        }
+      },
+      parentOrder: 4
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: stepImNotSure.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base
+      },
+      parentOrder: 0
+    }
+  })
 }
