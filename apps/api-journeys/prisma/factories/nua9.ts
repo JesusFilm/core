@@ -264,21 +264,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: gridItemLeft.id,
       extraAttrs: {
-        content: "IF IT'S TRUE...",
-        variant: 'h6',
-        color: 'primary',
-        align: 'left'
-      },
-      parentOrder: 1
-    }
-  })
-  await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'TypographyBlock',
-      parentBlockId: gridItemLeft.id,
-      extraAttrs: {
-        content: 'Who was this Jesus?',
+        content: 'Would you like to follow Jesus Christ?',
         variant: 'h2',
         color: 'primary',
         align: 'left'
