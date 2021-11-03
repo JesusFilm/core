@@ -19,7 +19,6 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
@@ -44,6 +43,20 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
+  const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
+
+  useEffect(() => {
+    const updateWidth = (): void => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    // Set initial windowWidth
+    setWindowWidth(window.innerWidth)
+
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
   const edgeSlideWidth = 16
   const getResponsiveGap = (
     minGapBetween = breakpoints.xs ? 16 : 44,
@@ -55,15 +68,6 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     )
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
-
-  useEffect(() => {
-    const updateWidth = (): void => {
-      setWindowWidth(window.innerWidth)
-    }
-
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
-  }, [])
 
   return (
     <Box
