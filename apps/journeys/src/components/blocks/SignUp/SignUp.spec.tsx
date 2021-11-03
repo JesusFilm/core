@@ -15,6 +15,14 @@ jest.mock('../../../libs/action', () => {
   }
 })
 
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      push: () => null
+    }
+  }
+}))
+
 const props: TreeBlock<SignUpBlock> = {
   __typename: 'SignUpBlock',
   id: 'SignUp1',
@@ -139,11 +147,16 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(handleAction).toBeCalledWith({
-        __typename: 'LinkAction',
-        gtmEventName: 'signUp',
-        url: '#'
-      })
+      expect(handleAction).toBeCalledWith(
+        {
+          push: expect.any(Function)
+        },
+        {
+          __typename: 'LinkAction',
+          gtmEventName: 'signUp',
+          url: '#'
+        }
+      )
     })
   })
 
