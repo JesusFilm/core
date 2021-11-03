@@ -116,9 +116,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -178,9 +176,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -338,9 +334,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -446,11 +440,9 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: 'What does it mean?',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'medium',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -511,9 +503,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',

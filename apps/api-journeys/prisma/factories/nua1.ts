@@ -110,14 +110,12 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        label: 'One question remains',
+        label: 'Explore Now',
         variant: 'contained',
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -179,9 +177,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -342,9 +338,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -446,14 +440,12 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       blockType: 'ButtonBlock',
       parentBlockId: card4.id,
       extraAttrs: {
-        label: 'One question remains',
+        label: 'One question remains...',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'medium',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',

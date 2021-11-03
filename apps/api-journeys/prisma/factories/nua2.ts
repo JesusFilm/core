@@ -55,7 +55,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        content: 'The Ressurection',
+        content: 'The Resurection',
         variant: 'h6',
         color: 'primary',
         align: 'left'
@@ -116,9 +116,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -180,9 +178,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -357,9 +353,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -465,11 +459,9 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'What does it mean?',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'medium',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -530,9 +522,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',

@@ -113,9 +113,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -176,9 +174,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -393,11 +389,9 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         label: 'Next',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'small',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -487,11 +481,9 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         label: 'Next',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'small',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click',
@@ -569,11 +561,9 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         label: 'Amen',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'small',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEventName: 'click'
@@ -692,9 +682,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow',
-          color: 'primary',
-          size: 'xl'
+          name: 'PlayArrow'
         },
         action: {
           gtmEvenName: 'click'
