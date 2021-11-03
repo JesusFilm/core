@@ -22,4 +22,9 @@ describe('journeysPage', () => {
     )
     cy.title().should('eq', '#FallingPlates')
   })
+
+  it('Should vist correct page via slug', () => {
+    cy.visit('/falling-plates')
+    cy.title().should('eq', '#FallingPlates')
+  })
 })
