@@ -46,7 +46,7 @@ module.exports = {
     },
     // 2x viewport breakpoints (XS, SM, MD) Largest out of bounds for Chromatic.
     // TODO: Split out light / dark mode tests during Cooldown
-    chromatic: { viewports: [640, 1136, 1200], disableSnapshot: true },
+    chromatic: { viewports: [640, 1136, 1200] },
     controls: { disabled: true },
     viewport: {
       viewports: customViewports
