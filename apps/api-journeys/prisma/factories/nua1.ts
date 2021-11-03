@@ -25,6 +25,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   })
   await prisma.block.deleteMany({ where: { journeyId: journey.id } })
   const nextBlockId = uuidv4()
+  // first step
   const step = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -58,7 +59,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         variant: 'h6',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 0
     }
   })
   await prisma.block.create({
@@ -71,7 +73,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         variant: 'h2',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 1
     }
   })
   await prisma.block.create({
@@ -85,9 +88,12 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         variant: 'body1',
         color: 'primary',
         align: 'left'
-      }
+      },
+      parentOrder: 2
     }
   })
+
+  // second step
   const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -119,7 +125,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
           blockId: step1.id
         }
       },
-      parentOrder: 0
+      parentOrder: 3
     }
   })
   const card1 = await prisma.block.create({
@@ -150,17 +156,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       }
     }
   })
-  const question = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: step1.id,
-      extraAttrs: {
-        label: 'Go to next step'
-      },
-      parentOrder: 1
-    }
-  })
+
+  // third step
   const step2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -174,10 +171,18 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: card1.id,
       extraAttrs: {
-        label: 'Next step',
+        label: 'next step',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'primary',
+          size: 'xl'
+        },
         action: {
           gtmEventName: 'click',
           blockId: step2.id
@@ -241,6 +246,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 2
     }
   })
+
+  // fourth step
   const step3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -311,16 +318,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       }
     }
   })
-  const question3 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: step3.id,
-      extraAttrs: {
-        label: 'Go to next step'
-      }
-    }
-  })
+
+  // fifth step
   const step4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -334,16 +333,24 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question3.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: card3.id,
       extraAttrs: {
-        label: 'Next step',
+        label: 'next step',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'primary',
+          size: 'xl'
+        },
         action: {
           gtmEventName: 'click',
           blockId: step4.id
         }
       },
-      parentOrder: 5
+      parentOrder: 3
     }
   })
   const image2Id = uuidv4()
@@ -420,6 +427,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
+
+  // sixth step
   const step5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -468,6 +477,45 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
+  const gridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: card5.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+  })
+  const gridItemLeft = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: gridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
+  const gridItemRight = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: gridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
   await prisma.block.create({
     data: {
       id: image3Id,
@@ -488,10 +536,24 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card5.id,
+      parentBlockId: gridItemLeft.id,
       extraAttrs: {
         content: "IF IT'S TRUE...",
         variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: gridItemLeft.id,
+      extraAttrs: {
+        content: 'Who was this Jesus?',
+        variant: 'h2',
         color: 'primary',
         align: 'left'
       },
@@ -502,9 +564,9 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: card5.id,
+      parentBlockId: gridItemRight.id,
       extraAttrs: {
-        label: 'Who was this Jesus?'
+        label: ''
       },
       parentOrder: 2
     }
@@ -530,13 +592,28 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       blockType: 'RadioOptionBlock',
       parentBlockId: question4.id,
       extraAttrs: {
-        label: 'A popular prophet',
+        label: 'The Son of God',
         action: {
           gtmEventName: 'click',
           journeyId: ressurection?.id
         }
       },
       parentOrder: 2
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'RadioOptionBlock',
+      parentBlockId: question4.id,
+      extraAttrs: {
+        label: 'A popular prophet',
+        action: {
+          gtmEventName: 'click',
+          journeyId: ressurection?.id
+        }
+      },
+      parentOrder: 3
     }
   })
   await prisma.block.create({

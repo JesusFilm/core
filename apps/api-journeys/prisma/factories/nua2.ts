@@ -153,17 +153,6 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       }
     }
   })
-  const question = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: step1.id,
-      extraAttrs: {
-        label: 'Go to next step'
-      },
-      parentOrder: 1
-    }
-  })
 
   //   third step
   const step2 = await prisma.block.create({
@@ -179,10 +168,18 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: card1.id,
       extraAttrs: {
-        label: 'Next step',
+        label: 'next step',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'primary',
+          size: 'xl'
+        },
         action: {
           gtmEventName: 'click',
           blockId: step2.id
@@ -333,16 +330,6 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       }
     }
   })
-  const question3 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: step3.id,
-      extraAttrs: {
-        label: 'Go to next step'
-      }
-    }
-  })
 
   //   fifth step
   const step4 = await prisma.block.create({
@@ -358,16 +345,24 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question3.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: card3.id,
       extraAttrs: {
-        label: 'Next step',
+        label: 'next step',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'primary',
+          size: 'xl'
+        },
         action: {
           gtmEventName: 'click',
           blockId: step4.id
         }
       },
-      parentOrder: 5
+      parentOrder: 3
     }
   })
   const image2Id = uuidv4()
@@ -508,17 +503,6 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       }
     }
   })
-  const question4 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'RadioQuestionBlock',
-      parentBlockId: step5.id,
-      extraAttrs: {
-        label: 'Go to next step'
-      },
-      parentOrder: 1
-    }
-  })
 
   // sixth step
   const step6 = await prisma.block.create({
@@ -534,15 +518,24 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'RadioOptionBlock',
-      parentBlockId: question4.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: card5.id,
       extraAttrs: {
-        label: 'Next step',
+        label: 'next step',
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow',
+          color: 'primary',
+          size: 'xl'
+        },
         action: {
           gtmEventName: 'click',
           blockId: step6.id
         }
-      }
+      },
+      parentOrder: 3
     }
   })
   const image3Id = uuidv4()
@@ -555,7 +548,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         coverBlockId: image3Id,
-        fullscreen: true
+        fullscreen: false
       },
       parentOrder: 0
     }

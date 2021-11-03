@@ -75,8 +75,8 @@ export function Card({
 
 interface CardWrapperProps
   extends Pick<
-  CardBlock,
-  'id' | 'backgroundColor' | 'themeMode' | 'themeName'
+    CardBlock,
+    'id' | 'backgroundColor' | 'themeMode' | 'themeName'
   > {
   children: ReactNode
   sx?: SxProps
