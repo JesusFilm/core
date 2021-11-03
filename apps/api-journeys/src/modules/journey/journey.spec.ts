@@ -383,7 +383,6 @@ it('throws an error on update without authentication', async () => {
       db: dbMock
     }
   })
-  console.log(errors)
   expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
 })
 
