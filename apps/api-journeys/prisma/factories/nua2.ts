@@ -202,7 +202,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
-  const image1 = await prisma.block.create({
+  await prisma.block.create({
     data: {
       id: image1Id,
       journeyId: journey.id,
@@ -308,8 +308,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       parentBlockId: step3.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
-        themeName: ThemeName.base,
-        coverBlockId: image1.id
+        themeName: ThemeName.base
       },
       parentOrder: 0
     }
@@ -481,8 +480,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       parentBlockId: step5.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
-        themeName: ThemeName.base,
-        coverBlockId: image1.id
+        themeName: ThemeName.base
       },
       parentOrder: 0
     }
