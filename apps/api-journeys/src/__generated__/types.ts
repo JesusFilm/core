@@ -153,6 +153,10 @@ export type IconSize =
   | 'sm'
   | 'xl';
 
+export type IdType =
+  | 'databaseId'
+  | 'slug';
+
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
   alt: Scalars['String'];
@@ -185,6 +189,7 @@ export type Journey = {
   locale: Scalars['String'];
   primaryImageBlock?: Maybe<ImageBlock>;
   published: Scalars['Boolean'];
+  slug: Scalars['String'];
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
@@ -198,6 +203,11 @@ export type JourneyCreateInput = {
    */
   id?: Maybe<Scalars['ID']>;
   locale?: Maybe<Scalars['String']>;
+  /**
+   * Slug should be unique amongst all journeys
+   * (server will throw BAD_USER_INPUT error if not)
+   */
+  slug: Scalars['String'];
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
   title: Scalars['String'];
@@ -208,6 +218,7 @@ export type JourneyUpdateInput = {
   id: Scalars['ID'];
   locale?: Maybe<Scalars['String']>;
   primaryImageBlockId?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
   themeMode?: Maybe<ThemeMode>;
   themeName?: Maybe<ThemeName>;
   title?: Maybe<Scalars['String']>;
@@ -296,6 +307,7 @@ export type Query = {
 
 export type QueryJourneyArgs = {
   id: Scalars['ID'];
+  idType?: Maybe<IdType>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -537,6 +549,7 @@ export type ResolversTypes = {
   IconColor: IconColor;
   IconName: IconName;
   IconSize: IconSize;
+  IdType: IdType;
   ImageBlock: ResolverTypeWrapper<BlockType>;
   ImageBlockCreateInput: ImageBlockCreateInput;
   Int: ResolverTypeWrapper<Scalars['Int']>;
@@ -689,6 +702,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

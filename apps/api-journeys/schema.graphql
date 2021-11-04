@@ -145,6 +145,11 @@ enum IconSize {
   inherit
 }
 
+enum IdType {
+  databaseId
+  slug
+}
+
 type ImageBlock implements Block {
   id: ID!
   parentBlockId: ID
@@ -179,6 +184,7 @@ type Journey @key(fields: "id") {
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
+  slug: String!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
@@ -194,6 +200,7 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
+  slug: String
 }
 
 input JourneyUpdateInput {
@@ -204,6 +211,7 @@ input JourneyUpdateInput {
   themeName: ThemeName
   description: String
   primaryImageBlockId: ID
+  slug: String
 }
 
 type LinkAction implements Action {
@@ -242,7 +250,7 @@ type NavigateToJourneyAction implements Action {
 
 extend type Query {
   journeys: [Journey!]!
-  journey(id: ID!): Journey
+  journey(id: ID!, idType: IdType): Journey
 }
 
 type RadioOptionBlock implements Block {
