@@ -15,7 +15,8 @@ import {
   signUpModule,
   stepModule,
   typographyModule,
-  videoModule
+  videoModule,
+  videoTriggerModule
 } from '../modules'
 
 export const application = createApplication({
@@ -34,7 +35,8 @@ export const application = createApplication({
     signUpModule,
     stepModule,
     typographyModule,
-    videoModule
+    videoModule,
+    videoTriggerModule
   ],
   schemaBuilder
 })

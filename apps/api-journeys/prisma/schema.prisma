@@ -46,6 +46,7 @@ enum BlockType {
   StepBlock
   TypographyBlock
   VideoBlock
+  VideoTriggerBlock
 }
 
 model Block {
