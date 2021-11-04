@@ -5,8 +5,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
     where: { title: 'Fact or Fiction' }
   })
-  const ressurection = await prisma.journey.findFirst({
-    where: { title: 'What About The Ressurection?' }
+  const resurrection = await prisma.journey.findFirst({
+    where: { title: 'What About The Resurrection?' }
   })
   if (journey == null) {
     journey = await prisma.journey.create({
@@ -574,7 +574,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'A great influencer',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.slug
+          journeyId: resurrection?.id
         }
       },
       parentOrder: 0
@@ -589,7 +589,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'The Son of God',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.slug
+          journeyId: resurrection?.id
         }
       },
       parentOrder: 2
@@ -604,7 +604,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'A popular prophet',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.slug
+          journeyId: resurrection?.id
         }
       },
       parentOrder: 3
@@ -619,7 +619,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'A fake historical figure',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.slug
+          journeyId: resurrection?.id
         }
       },
       parentOrder: 3

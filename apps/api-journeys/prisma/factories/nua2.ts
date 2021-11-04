@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 export async function nua2(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({
-    where: { title: 'What About The Ressurection?' }
+    where: { title: 'What About The Resurrection?' }
   })
   const nuaEp8 = await prisma.journey.findFirst({
     where: { title: "What's Jesus Got to Do With Me?" }
@@ -11,12 +11,12 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   if (journey == null) {
     journey = await prisma.journey.create({
       data: {
-        title: 'What About The Ressurection?',
+        title: 'What About The Resurrection?',
         published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
-        slug: 'what-about-the-ressurection'
+        slug: 'what-about-the-resurrection'
       }
     })
   }
@@ -149,7 +149,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         // mediaComponentId: '5_0-NUA0301-0-0',
         // languageId: '529',
         src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch What About The Ressurection?',
+        title: 'Watch What About The Resurrection?',
         description:
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
       }
@@ -587,7 +587,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'What is Christianity to you?',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.slug
+          journeyId: nuaEp8?.id
         }
       },
       parentOrder: 2
@@ -602,7 +602,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'One of many ways to God',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.slug
+          journeyId: nuaEp8?.id
         }
       },
       parentOrder: 0
@@ -617,7 +617,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'One great lie...',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.slug
+          journeyId: nuaEp8?.id
         }
       },
       parentOrder: 2
@@ -632,7 +632,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'One true way to God',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.slug
+          journeyId: nuaEp8?.id
         }
       },
       parentOrder: 3

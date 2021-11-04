@@ -632,7 +632,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: 'He loves me',
         action: {
           gtmEventName: 'click',
-          journeyId: decision?.slug
+          journeyId: decision?.id
         }
       },
       parentOrder: 0
@@ -647,7 +647,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: 'He came to free me from sin',
         action: {
           gtmEventName: 'click',
-          journeyId: decision?.slug
+          journeyId: decision?.id
         }
       },
       parentOrder: 2
@@ -662,7 +662,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: "He doesn't care about me",
         action: {
           gtmEventName: 'click',
-          journeyId: decision?.slug
+          journeyId: decision?.id
         }
       },
       parentOrder: 3
@@ -677,7 +677,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: "I'm not sure",
         action: {
           gtmEventName: 'click',
-          journeyId: decision?.slug
+          journeyId: decision?.id
         }
       },
       parentOrder: 3
