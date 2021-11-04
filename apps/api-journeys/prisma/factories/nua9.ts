@@ -468,7 +468,8 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 5
     }
@@ -686,24 +687,6 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
-  await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'SignUpBlock',
-      parentBlockId: prayerGridItemRight.id,
-      extraAttrs: {
-        submitLabel: 'Submit',
-        submitIcon: {
-          name: 'PlayArrow'
-        },
-        action: {
-          gtmEventName: 'click'
-          // change to the final card
-          // blockId: stepPrayer4
-        }
-      }
-    }
-  })
 
   //   I already have step/option
   const stepIAlreadyHave = await prisma.block.create({
@@ -711,7 +694,8 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
       parentOrder: 7
     }
@@ -803,6 +787,19 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
+
+  // I already have final card
+  const stepIAlreadyHave2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 8
+    }
+  })
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -817,10 +814,109 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
           name: 'PlayArrow'
         },
         action: {
-          gtmEvenName: 'click'
+          gtmEvenName: 'click',
+          blockId: stepIAlreadyHave2.id
         }
       },
       parentOrder: 4
+    }
+  })
+  const alreadyImageId = uuidv4()
+  const alreadyCard4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: stepIAlreadyHave2.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: alreadyImageId,
+        fullscreen: true
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: alreadyImageId,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: alreadyCard4.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1519373344801-14c1f9539c9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Decision',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
+      },
+      parentOrder: 0
+    }
+  })
+  const alreadyGridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: alreadyCard4.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+  })
+  const alreadyGridItemLeft = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: alreadyGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
+  const alreadyGridItemRight = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: alreadyGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: alreadyGridItemLeft.id,
+      extraAttrs: {
+        content: "WHAT'S NEXT?",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: alreadyGridItemLeft.id,
+      extraAttrs: {
+        content: 'Get a few tips by email on how to share your faith',
+        variant: 'h4',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
     }
   })
 
@@ -830,9 +926,10 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
-      parentOrder: 8
+      parentOrder: 9
     }
   })
   await prisma.block.create({
@@ -850,8 +947,8 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 3
     }
   })
-  const image3Id = uuidv4()
-  const card3 = await prisma.block.create({
+  const noThanksImageId = uuidv4()
+  const noThanksCard = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
@@ -859,7 +956,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
-        coverBlockId: image3Id
+        coverBlockId: noThanksImageId
       },
       parentOrder: 0
     }
@@ -868,7 +965,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card3.id,
+      parentBlockId: noThanksCard.id,
       extraAttrs: {
         content: 'ALRIGHT!',
         variant: 'h6',
@@ -882,7 +979,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card3.id,
+      parentBlockId: noThanksCard.id,
       extraAttrs: {
         content: "It's awesome that you've looked into another perspective.",
         variant: 'h5',
@@ -896,7 +993,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card3.id,
+      parentBlockId: noThanksCard.id,
       extraAttrs: {
         content: "Don't stop here. Keep exploring an dasking questions.",
         variant: 'body1',
@@ -908,10 +1005,10 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
   })
   await prisma.block.create({
     data: {
-      id: image3Id,
+      id: noThanksImageId,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card3.id,
+      parentBlockId: noThanksCard.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1532200624530-cc3d3d0d636c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'No Thanks',
@@ -922,11 +1019,24 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
+
+  // No thanks final card
+  const stepNoThanks2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 10
+    }
+  })
   await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card3.id,
+      parentBlockId: noThanksCard.id,
       extraAttrs: {
         label: "What's Next?",
         variant: 'contained',
@@ -936,22 +1046,122 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
           name: 'PlayArrow'
         },
         action: {
-          gtmEvenName: 'click'
+          gtmEvenName: 'click',
+          blockId: stepNoThanks2.id
         }
       },
       parentOrder: 4
     }
   })
+  const noThanksImageId2 = uuidv4()
+  const noThanksCard2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: stepNoThanks2.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: noThanksImageId2,
+        fullscreen: true
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: noThanksImageId2,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: noThanksCard2.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1532200624530-cc3d3d0d636c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Decision',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
+      },
+      parentOrder: 0
+    }
+  })
+  const noThanksGridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: noThanksCard2.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+  })
+  const noThanksGridItemLeft = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: noThanksGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
+  const noThanksGridItemRight = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: noThanksGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: noThanksGridItemLeft.id,
+      extraAttrs: {
+        content: "WHAT'S NEXT?",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: noThanksGridItemLeft.id,
+      extraAttrs: {
+        content: 'Get new released videos by email',
+        variant: 'h4',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
 
   //   I'm not sure step/option
-  const stepImNotSure = await prisma.block.create({
+  const stepNotSure = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
       extraAttrs: {
-        locked: false
+        locked: false,
+        nextBlockId
       },
-      parentOrder: 9
+      parentOrder: 11
     }
   })
   await prisma.block.create({
@@ -963,22 +1173,22 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         label: "I'm not sure",
         action: {
           gtmEventName: 'click',
-          blockId: stepImNotSure.id
+          blockId: stepNotSure.id
         }
       },
       parentOrder: 4
     }
   })
-  const image4Id = uuidv4()
-  const card4 = await prisma.block.create({
+  const notSureImageId = uuidv4()
+  const notSureCard = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: stepImNotSure.id,
+      parentBlockId: stepNotSure.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
-        coverBlockId: image4Id
+        coverBlockId: notSureImageId
       },
       parentOrder: 0
     }
@@ -987,7 +1197,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: notSureCard.id,
       extraAttrs: {
         content: 'NOT SURE?',
         variant: 'h6',
@@ -1001,7 +1211,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: notSureCard.id,
       extraAttrs: {
         content: 'Making this commitment is a big deal, for sure.',
         variant: 'h5',
@@ -1015,7 +1225,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: notSureCard.id,
       extraAttrs: {
         content: 'God can answer your questions and help overcome worries',
         variant: 'body1',
@@ -1027,10 +1237,280 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
   })
   await prisma.block.create({
     data: {
-      id: image4Id,
+      id: notSureImageId,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card4.id,
+      parentBlockId: notSureCard.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1585011070837-1bf8e294a858?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Not sure',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
+      },
+      parentOrder: 0
+    }
+  })
+
+  // step I'm not sure final card
+  const stepNotSure2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 12
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'ButtonBlock',
+      parentBlockId: notSureCard.id,
+      extraAttrs: {
+        label: "What's Next?",
+        variant: 'contained',
+        color: 'primary',
+        size: 'large',
+        startIcon: {
+          name: 'PlayArrow'
+        },
+        action: {
+          gtmEvenName: 'click',
+          blockId: stepNotSure2.id
+        }
+      },
+      parentOrder: 4
+    }
+  })
+  const notSureImageId2 = uuidv4()
+  const notSureCard2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: stepNotSure2.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: notSureImageId2,
+        fullscreen: true
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: notSureImageId2,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: notSureCard2.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1585011070837-1bf8e294a858?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Decision',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
+      },
+      parentOrder: 0
+    }
+  })
+  const notSureGridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: notSureCard2.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+  })
+  const notSureGridItemLeft = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: notSureGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
+  const notSureGridItemRight = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: notSureGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: notSureGridItemLeft.id,
+      extraAttrs: {
+        content: "WHAT'S NEXT?",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: notSureGridItemLeft.id,
+      extraAttrs: {
+        content: 'Get new released videos and ideas to explore your faith',
+        variant: 'h4',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+
+  // Very last card
+  const lastStep = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      },
+      parentOrder: 13
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: prayerGridItemRight.id,
+      extraAttrs: {
+        submitLabel: 'Submit',
+        submitIcon: {
+          name: 'PlayArrow'
+        },
+        action: {
+          gtmEventName: 'click',
+          blockId: lastStep.id
+        }
+      }
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: noThanksGridItemRight.id,
+      extraAttrs: {
+        submitLabel: 'Submit',
+        submitIcon: {
+          name: 'PlayArrow'
+        },
+        action: {
+          gtmEventName: 'click',
+          blockId: lastStep.id
+        }
+      }
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: alreadyGridItemRight.id,
+      extraAttrs: {
+        submitLabel: 'Submit',
+        submitIcon: {
+          name: 'PlayArrow'
+        },
+        action: {
+          gtmEventName: 'click',
+          blockId: lastStep.id
+        }
+      }
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: notSureGridItemRight.id,
+      extraAttrs: {
+        submitLabel: 'Submit',
+        submitIcon: {
+          name: 'PlayArrow'
+        },
+        action: {
+          gtmEventName: 'click',
+          blockId: lastStep.id
+        }
+      }
+    }
+  })
+  const lastImageId = uuidv4()
+  const lastCard = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: lastStep.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: lastImageId
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: lastCard.id,
+      extraAttrs: {
+        content: 'THANK YOU!',
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: lastCard.id,
+      extraAttrs: {
+        content: 'Check your email for requested materials and keep exploring.',
+        variant: 'subtitle1',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 2
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: lastImageId,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: lastCard.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1585011070837-1bf8e294a858?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
         alt: 'Not sure',
@@ -1045,20 +1525,21 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card4.id,
+      parentBlockId: lastCard.id,
       extraAttrs: {
-        label: "What's Next?",
+        label: 'Watch Other Videos',
         variant: 'contained',
         color: 'primary',
-        size: 'large',
+        size: 'medium',
         startIcon: {
           name: 'PlayArrow'
         },
         action: {
-          gtmEvenName: 'click'
+          gtmEvenName: 'click',
+          blockId: stepNoThanks2.id
         }
       },
-      parentOrder: 4
+      parentOrder: 3
     }
   })
 }
