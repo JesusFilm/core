@@ -4,12 +4,8 @@ import { journeyModule } from '.'
 import { pick } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import dbMock from '../../../tests/dbMock'
-import {
-  Journey,
-  ThemeName,
-  ThemeMode,
-  Prisma
-} from '.prisma/api-journeys-client'
+import { UserInputError } from 'apollo-server-errors'
+import { Journey, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 
 it('returns published journeys', async () => {
   const app = testkit.testModule(journeyModule, { schemaBuilder })
@@ -412,12 +408,7 @@ it('throws an error if attempting to create a slug that already exists', async (
   const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   dbMock.journey.create.mockImplementation(() => {
-    throw new Prisma.PrismaClientKnownRequestError(
-      'slug already exists',
-      'P2002',
-      '1.0',
-      { target: ['slug'] }
-    )
+    throw new UserInputError('slug already exists', { argumentName: 'slug' })
   })
 
   const { errors } = await testkit.execute(app, {
@@ -440,18 +431,14 @@ it('throws an error if attempting to create a slug that already exists', async (
       userId: 'userId'
     }
   })
+  expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
   expect(errors?.[0].message).toEqual('slug already exists')
 })
 it('throws an error if attempting to update a slug that already exists', async () => {
   const app = testkit.testModule(journeyModule, { schemaBuilder })
 
   dbMock.journey.update.mockImplementation(() => {
-    throw new Prisma.PrismaClientKnownRequestError(
-      'slug already exists',
-      'P2002',
-      '1.0',
-      { target: ['slug'] }
-    )
+    throw new UserInputError('slug already exists', { argumentName: 'slug' })
   })
 
   const { errors } = await testkit.execute(app, {
@@ -475,5 +462,6 @@ it('throws an error if attempting to update a slug that already exists', async (
       userId: 'userId'
     }
   })
+  expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
   expect(errors?.[0].message).toEqual('slug already exists')
 })
