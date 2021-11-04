@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback
 } from 'react'
-import { Box } from '@mui/material'
+import { Box, useTheme } from '@mui/material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { v4 as uuidv4 } from 'uuid'
@@ -44,6 +44,7 @@ export function Video({
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
+  const theme = useTheme()
   const videoNode = useRef<HTMLVideoElement>(null)
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
@@ -204,7 +205,8 @@ export function Video({
         height: '100%',
         backgroundColor: '#000000',
         borderRadius: 4,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        [theme.breakpoints.only('sm')]: { minWidth: '328px' }
       }}
     >
       <video
