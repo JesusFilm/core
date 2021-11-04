@@ -34,10 +34,16 @@ export interface ButtonFields_action_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface ButtonFields_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface ButtonFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: ButtonFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface ButtonFields_action_LinkAction {

@@ -278,6 +278,7 @@ type NavigateToBlockAction implements Action {
 
 type NavigateToJourneyAction implements Action {
   gtmEventName: String
+  journey: Journey
   journeyId: String!
 }
 

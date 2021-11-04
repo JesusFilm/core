@@ -39,10 +39,16 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAct
   blockId: string;
 }
 
+export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
@@ -143,10 +149,16 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlo
   blockId: string;
 }
 
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
@@ -184,10 +196,16 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAct
   blockId: string;
 }
 
+export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {

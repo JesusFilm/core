@@ -251,6 +251,7 @@ type NavigateToBlockAction implements Action {
 type NavigateToJourneyAction implements Action {
   gtmEventName: String
   journeyId: String!
+  journey: Journey
 }
 
 extend type Query {
