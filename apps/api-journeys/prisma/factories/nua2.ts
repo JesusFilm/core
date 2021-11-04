@@ -15,7 +15,8 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        slug: 'what-about-the-ressurection'
       }
     })
   }
@@ -586,7 +587,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'What is Christianity to you?',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.id
+          journeyId: nuaEp8?.slug
         }
       },
       parentOrder: 2
@@ -601,7 +602,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'One of many ways to God',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.id
+          journeyId: nuaEp8?.slug
         }
       },
       parentOrder: 0
@@ -616,7 +617,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'One great lie...',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.id
+          journeyId: nuaEp8?.slug
         }
       },
       parentOrder: 2
@@ -631,7 +632,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'One true way to God',
         action: {
           gtmEventName: 'click',
-          journeyId: nuaEp8?.id
+          journeyId: nuaEp8?.slug
         }
       },
       parentOrder: 3

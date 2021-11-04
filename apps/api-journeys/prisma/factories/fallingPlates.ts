@@ -12,7 +12,8 @@ export async function fallingPlates(prisma: PrismaClient): Promise<void> {
         published: true,
         locale: 'id-ID',
         themeMode: ThemeMode.light,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        slug: 'falling-plates'
       }
     })
   }

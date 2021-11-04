@@ -15,7 +15,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        slug: 'fact-or-fiction'
       }
     })
   }
@@ -573,7 +574,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'A great influencer',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.id
+          journeyId: ressurection?.slug
         }
       },
       parentOrder: 0
@@ -588,7 +589,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'The Son of God',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.id
+          journeyId: ressurection?.slug
         }
       },
       parentOrder: 2
@@ -603,7 +604,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'A popular prophet',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.id
+          journeyId: ressurection?.slug
         }
       },
       parentOrder: 3
@@ -618,7 +619,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         label: 'A fake historical figure',
         action: {
           gtmEventName: 'click',
-          journeyId: ressurection?.id
+          journeyId: ressurection?.slug
         }
       },
       parentOrder: 3

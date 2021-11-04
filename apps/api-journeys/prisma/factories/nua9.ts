@@ -12,7 +12,8 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        slug: 'decision'
       }
     })
   }
