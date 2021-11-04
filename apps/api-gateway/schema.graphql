@@ -414,19 +414,40 @@ enum TypographyVariant {
   subtitle2
 }
 
+type VideoArclight implements VideoContent {
+  languageId: String!
+  mediaComponentId: String!
+  src: String!
+}
+
 type VideoBlock implements Block {
   autoplay: Boolean
   description: String
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
   id: ID!
+  muted: Boolean
   parentBlockId: ID
-  src: String!
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
   title: String!
-  volume: Int
+  videoContent: VideoContent!
+}
+
+interface VideoContent {
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
+  src: String!
 }
 
 type VideoResponse implements Response {
   block: VideoBlock
   id: ID!
+  position: Int
   state: VideoResponseStateEnum!
   userId: ID!
 }
@@ -438,6 +459,7 @@ input VideoResponseCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  position: Float
   state: VideoResponseStateEnum!
 }
 
@@ -445,4 +467,20 @@ enum VideoResponseStateEnum {
   FINISHED
   PAUSED
   PLAYING
+}
+
+"""
+VideoTriggerBlock is a block that indicates the video to navigate
+to the next block at the designated time.
+"""
+type VideoTriggerBlock implements Block {
+  action: Action!
+  id: ID!
+  parentBlockId: ID
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int!
 }

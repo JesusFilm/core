@@ -99,16 +99,43 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
-  await prisma.block.create({
+  const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+        videoContent: {
+          mediaComponentId: '2_0-FallingPlates',
+          languageId: '529'
+        },
+        autoplay: true,
         title: 'Watch #FallingPlates',
         description:
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+      }
+    }
+  })
+  const onTrigger = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false
+      }
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'VideoTriggerBlock',
+      parentBlockId: video.id,
+      extraAttrs: {
+        triggerStart: 15,
+        action: {
+          gtmEventName: 'TimeRange',
+          blockId: onTrigger.id
+        }
       }
     }
   })
