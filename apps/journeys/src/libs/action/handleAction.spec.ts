@@ -42,6 +42,16 @@ describe('handleAction', () => {
     expect(router.push).toHaveBeenCalledWith('/journey-slug')
   })
 
+  it('should handle NavigateToJourneyAction when journey is null', () => {
+    expect(() =>
+      handleAction(router, {
+        __typename: 'NavigateToJourneyAction',
+        journey: null,
+        gtmEventName: null
+      })
+    ).not.toThrowError()
+  })
+
   it('should handle NavigateAction', () => {
     handleAction(router, {
       __typename: 'NavigateAction',

@@ -13,7 +13,7 @@ export function handleAction(
       break
     case 'NavigateToJourneyAction':
       if (action.journey?.slug != null) {
-        void router.push(`/${action.journey?.slug}`)
+        void router.push(`/${action.journey.slug}`)
       }
       break
     case 'NavigateAction':
