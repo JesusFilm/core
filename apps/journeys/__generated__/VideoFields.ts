@@ -19,7 +19,13 @@ export interface VideoFields {
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;
+  /**
+   * startAt dictates at which point of time the video should start playing
+   */
   startAt: number | null;
+  /**
+   * endAt dictates at which point of time the video should end
+   */
   endAt: number | null;
-  videoContent: VideoFields_videoContent | null;
+  videoContent: VideoFields_videoContent;
 }

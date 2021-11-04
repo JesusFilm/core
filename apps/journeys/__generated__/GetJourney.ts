@@ -291,9 +291,15 @@ export interface GetJourney_journey_blocks_VideoBlock {
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;
+  /**
+   * startAt dictates at which point of time the video should start playing
+   */
   startAt: number | null;
+  /**
+   * endAt dictates at which point of time the video should end
+   */
   endAt: number | null;
-  videoContent: GetJourney_journey_blocks_VideoBlock_videoContent | null;
+  videoContent: GetJourney_journey_blocks_VideoBlock_videoContent;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_VideoTriggerBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock;

@@ -20,7 +20,7 @@ import {
   STEP_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,
-  TRIGGER_FIELDS,
+  VIDEO_TRIGGER_FIELDS,
   VIDEO_FIELDS
 } from '../src/components/blocks'
 import Head from 'next/head'
@@ -68,9 +68,9 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       ${RADIO_QUESTION_FIELDS}
       ${SIGN_UP_FIELDS}
       ${STEP_FIELDS}
-      ${TRIGGER_FIELDS}
       ${TYPOGRAPHY_FIELDS}
       ${VIDEO_FIELDS}
+      ${VIDEO_TRIGGER_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id) {
           id
@@ -112,7 +112,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
               ...StepFields
             }
             ... on VideoTriggerBlock {
-              ...TriggerFields
+              ...VideoTriggerFields
             }
             ... on TypographyBlock {
               ...TypographyFields

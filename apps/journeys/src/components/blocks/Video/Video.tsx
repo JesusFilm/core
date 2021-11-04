@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
-import { Trigger } from '../Trigger'
+import { Trigger } from './Trigger'
 import {
   isActiveBlockOrDescendant,
   useBlocks
@@ -95,8 +95,7 @@ export function Video({
 
   // get the redirected URL link to use for stories (storybook)
   // take the comment out on console log to use
-  console.log(videoContent?.src)
-  console.log(activeBlock)
+  // console.log(videoContent?.src)
 
   useEffect(() => {
     validatePlaying()
@@ -163,9 +162,8 @@ export function Video({
             if (
               player.current.isFullscreen() &&
               activeBlock.nextBlockId == null
-            ) {
+            )
               player.current.exitFullscreen()
-            }
           }
         })
         player.current.on('autoplay-success', () => setAutoplaySuccess(true))

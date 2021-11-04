@@ -4,35 +4,35 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: TriggerFields
+// GraphQL fragment: VideoTriggerFields
 // ====================================================
 
-export interface TriggerFields_triggerAction_NavigateAction {
+export interface VideoTriggerFields_triggerAction_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
 }
 
-export interface TriggerFields_triggerAction_NavigateToBlockAction {
+export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface TriggerFields_triggerAction_NavigateToJourneyAction {
+export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
   journeyId: string;
 }
 
-export interface TriggerFields_triggerAction_LinkAction {
+export interface VideoTriggerFields_triggerAction_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
 }
 
-export type TriggerFields_triggerAction = TriggerFields_triggerAction_NavigateAction | TriggerFields_triggerAction_NavigateToBlockAction | TriggerFields_triggerAction_NavigateToJourneyAction | TriggerFields_triggerAction_LinkAction;
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_NavigateToJourneyAction | VideoTriggerFields_triggerAction_LinkAction;
 
-export interface TriggerFields {
+export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -41,5 +41,5 @@ export interface TriggerFields {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: TriggerFields_triggerAction;
+  triggerAction: VideoTriggerFields_triggerAction;
 }

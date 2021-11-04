@@ -33,14 +33,14 @@ describe('VideoComponent', () => {
                 id: 'uuid',
                 blockId: 'Video1',
                 state: VideoResponseStateEnum.PLAYING,
-                position: 0.3
+                position: 30
               }
             },
             result: {
               data: {
                 id: 'uuid',
                 state: VideoResponseStateEnum.PLAYING,
-                position: 0.3
+                position: 30
               }
             }
           }
@@ -64,14 +64,14 @@ describe('VideoComponent', () => {
                 id: 'uuid',
                 blockId: 'Video1',
                 state: VideoResponseStateEnum.PLAYING,
-                position: 0.3
+                position: 30
               }
             },
             result: {
               data: {
                 id: 'uuid',
                 state: VideoResponseStateEnum.PLAYING,
-                position: 0.3
+                position: 30
               }
             }
           }
