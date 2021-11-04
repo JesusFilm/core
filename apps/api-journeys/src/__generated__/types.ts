@@ -449,6 +449,12 @@ export type VideoBlock = Block & {
   id: Scalars['ID'];
   muted?: Maybe<Scalars['Boolean']>;
   parentBlockId?: Maybe<Scalars['ID']>;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
+  posterBlockId?: Maybe<Scalars['ID']>;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']>;
   title: Scalars['String'];
@@ -879,6 +885,7 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   muted?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  posterBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   startAt?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   videoContent?: Resolver<ResolversTypes['VideoContent'], ParentType, ContextType>;

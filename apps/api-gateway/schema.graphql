@@ -430,6 +430,13 @@ type VideoBlock implements Block {
   muted: Boolean
   parentBlockId: ID
 
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
   title: String!
