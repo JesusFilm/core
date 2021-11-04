@@ -32,10 +32,14 @@ describe('handleAction', () => {
   it('should handle NavigateToJourneyAction', () => {
     handleAction(router, {
       __typename: 'NavigateToJourneyAction',
-      journeyId: 'journey-id',
+      journey: {
+        __typename: 'Journey',
+        id: 'journey-id',
+        slug: 'journey-slug'
+      },
       gtmEventName: null
     })
-    expect(router.push).toHaveBeenCalledWith('/journey-id')
+    expect(router.push).toHaveBeenCalledWith('/journey-slug')
   })
 
   it('should handle NavigateAction', () => {
