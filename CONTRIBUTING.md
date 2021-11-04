@@ -52,9 +52,9 @@ When implementing back-end projects we encourage you to leverage a design princi
 It's important that once you've started on a schema extension that you to regenerate the schema. We leverage the generated schema to create types for front-end apps so they're super important! You can even extend the schema and generate types before you even write the related resolvers.
 
 1. Start the server for the back-end project e.g `nx serve api-journeys`
-2. In another terminal run the schema generator against the backend project e.g `nx generate-graphql api-journeys`
-3. Run the gateway schema `nx generate-graphql api-gateway`
-4. Commit the changed schema.graphql files
+1. In another terminal run the schema generator against the backend project e.g `nx generate-graphql api-journeys`
+1. Run the gateway schema `nx generate-graphql api-gateway`
+1. Commit the changed schema.graphql files
 
 ### Front-end Architecture
 
@@ -69,16 +69,16 @@ We are building out our component library to support the growing needs of our pr
 We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension which lets you use a [Docker container](https://docker.com/) as a full-featured development environment. A devcontainer.json file in Core tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. To get started try the following:
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
-2. Install [Docker Desktop](https://www.docker.com/get-started)
-3. Start Docker Desktop
-4. Docker set up:
+1. Install [Docker Desktop](https://www.docker.com/get-started)
+1. Start Docker Desktop
+1. Docker set up:
    - **Mac users**: add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
    - **PC users**: Windows limits resources to WSL 2 (Memory/CPU), this limit can be configured in your [.wslconfig file](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig).
-5. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
-6. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
-7. Pick GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`, finally choose the `main` branch to clone.
-8. The VS Code window (instance) will reload, clone the source code, and start building the dev container. A progress notification provides status updates.
-9. After the build completes, VS Code will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
+1. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
+1. run `Remote-Containers: Clone Repository in Container Volume...` from the Command Palette (F1).
+1. Pick GitHub (You'll need to authenticate with GitHub), then enter `JesusFilm/core`, finally choose the `main` branch to clone.
+1. The VS Code window (instance) will reload, clone the source code, and start building the dev container. A progress notification provides status updates.
+1. After the build completes, VS Code will automatically connect to the container. You can now work with the repository source code in this independent environment as you would if you had cloned the code locally.
 
 ## Starting the gateway, back-end and front-end projects
 
@@ -88,6 +88,5 @@ As an example we are going to run through the steps to get the Next Steps Journe
 1. Make a copy of `apps/journeys/.env` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
 1. run `nx run api-journeys:migrations`
 1. run `nx run api-journeys:seed`
-1. run `nx run api-gateway:serve-all`
-1. in another terminal run `nx run journeys:serve`
+1. in another terminal run `nx run journeys:serve-all`
 1. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
