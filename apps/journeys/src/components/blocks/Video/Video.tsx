@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback
 } from 'react'
-import { Container } from '@mui/material'
+import { Box } from '@mui/material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { v4 as uuidv4 } from 'uuid'
@@ -196,8 +196,22 @@ export function Video({
   }, [player, isReady, autoPlaySuccess, autoplay])
 
   return (
-    <Container maxWidth="md">
-      <video ref={videoNode} className="video-js" data-testid="VideoComponent">
+    <Box
+      data-testid="VideoComponent"
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000000',
+        borderRadius: 4,
+        overflow: 'hidden'
+      }}
+    >
+      <video
+        ref={videoNode}
+        className="video-js"
+        style={{ display: 'flex', alignSelf: 'center' }}
+      >
         {children?.map(
           (option) =>
             option.__typename === 'VideoTriggerBlock' && (
@@ -205,6 +219,6 @@ export function Video({
             )
         )}
       </video>
-    </Container>
+    </Box>
   )
 }
