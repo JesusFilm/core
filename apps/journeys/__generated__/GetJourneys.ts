@@ -11,6 +11,7 @@ export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
+  slug: string;
 }
 
 export interface GetJourneys {

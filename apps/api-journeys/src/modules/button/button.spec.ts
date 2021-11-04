@@ -29,7 +29,8 @@ describe('ButtonModule', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
-      primaryImageBlockId: null
+      primaryImageBlockId: null,
+      slug: 'published-slug'
     })
   })
 

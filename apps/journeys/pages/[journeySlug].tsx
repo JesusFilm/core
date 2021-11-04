@@ -72,7 +72,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       ${VIDEO_FIELDS}
       ${VIDEO_TRIGGER_FIELDS}
       query GetJourney($id: ID!) {
-        journey(id: $id) {
+        # slug might have to be string
+        journey(id: $id, idType: slug) {
           id
           themeName
           themeMode
@@ -125,7 +126,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       }
     `,
     variables: {
-      id: context.query.journeyId
+      id: context.query.journeySlug
     }
   })
 

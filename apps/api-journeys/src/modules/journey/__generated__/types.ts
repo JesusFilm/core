@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description';
+    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
   };
@@ -11,16 +11,18 @@ export namespace JourneyModule {
   interface DefinedEnumValues {
     ThemeMode: 'light' | 'dark';
     ThemeName: 'base';
+    IdType: 'databaseId' | 'slug';
   };
   
   interface DefinedInputFields {
-    JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description';
-    JourneyUpdateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'primaryImageBlockId';
+    JourneyCreateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug';
+    JourneyUpdateInput: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'primaryImageBlockId' | 'slug';
   };
   
   export type ThemeMode = DefinedEnumValues['ThemeMode'];
   export type ThemeName = DefinedEnumValues['ThemeName'];
   export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
+  export type IdType = DefinedEnumValues['IdType'];
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
   export type JourneyUpdateInput = Pick<Types.JourneyUpdateInput, DefinedInputFields['JourneyUpdateInput']>;
@@ -49,6 +51,7 @@ export namespace JourneyModule {
       themeMode?: gm.Middleware[];
       themeName?: gm.Middleware[];
       description?: gm.Middleware[];
+      slug?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];
