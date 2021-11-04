@@ -43,6 +43,20 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
+  const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
+
+  useEffect(() => {
+    const updateWidth = (): void => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    // Set initial windowWidth
+    setWindowWidth(window.innerWidth)
+
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
   const edgeSlideWidth = 16
   const getResponsiveGap = (
     minGapBetween = breakpoints.xs ? 16 : 44,
@@ -50,7 +64,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
   ): number =>
     Math.max(
       minGapBetween,
-      (window.innerWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
+      (windowWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
