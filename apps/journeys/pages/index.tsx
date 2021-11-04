@@ -19,9 +19,9 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       <Container>
-        {journeys.map(({ id, title }) => (
+        {journeys.map(({ id, title, slug }) => (
           <Box key={id} my={2}>
-            <Link href={`/${id}`} passHref>
+            <Link href={`/${slug}`} passHref>
               <Button variant="contained" color="primary" fullWidth>
                 {title}
               </Button>
@@ -41,6 +41,7 @@ export const getServerSideProps: GetServerSideProps<JourneysPageProps> =
           journeys {
             id
             title
+            slug
           }
         }
       `
