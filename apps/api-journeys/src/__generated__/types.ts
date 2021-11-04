@@ -5,6 +5,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -295,6 +296,7 @@ export type NavigateToBlockAction = Action & {
 export type NavigateToJourneyAction = Action & {
   __typename?: 'NavigateToJourneyAction';
   gtmEventName?: Maybe<Scalars['String']>;
+  journey?: Maybe<Journey>;
   journeyId: Scalars['String'];
 };
 
@@ -560,7 +562,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   NavigateAction: ResolverTypeWrapper<NavigateAction>;
   NavigateToBlockAction: ResolverTypeWrapper<NavigateToBlockAction>;
-  NavigateToJourneyAction: ResolverTypeWrapper<NavigateToJourneyAction>;
+  NavigateToJourneyAction: ResolverTypeWrapper<Omit<NavigateToJourneyAction, 'journey'> & { journey?: Maybe<ResolversTypes['Journey']> }>;
   Query: ResolverTypeWrapper<{}>;
   RadioOptionBlock: ResolverTypeWrapper<BlockType>;
   RadioQuestionBlock: ResolverTypeWrapper<BlockType>;
@@ -605,7 +607,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   NavigateAction: NavigateAction;
   NavigateToBlockAction: NavigateToBlockAction;
-  NavigateToJourneyAction: NavigateToJourneyAction;
+  NavigateToJourneyAction: Omit<NavigateToJourneyAction, 'journey'> & { journey?: Maybe<ResolversParentTypes['Journey']> };
   Query: {};
   RadioOptionBlock: BlockType;
   RadioQuestionBlock: BlockType;
@@ -739,6 +741,7 @@ export type NavigateToBlockActionResolvers<ContextType = GraphQLModules.Context,
 
 export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['NavigateToJourneyAction'] = ResolversParentTypes['NavigateToJourneyAction']> = {
   gtmEventName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType>;
   journeyId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
