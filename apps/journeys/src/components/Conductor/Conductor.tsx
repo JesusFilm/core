@@ -84,8 +84,8 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
           centeredSlides={true}
           centeredSlidesBounds={true}
           onSwiper={(swiper) => setSwiper(swiper)}
+          resizeObserver
           onBeforeResize={() => setGapBetween(getResponsiveGap())}
-          onBeforeTransitionStart={() => setGapBetween(getResponsiveGap())}
           onSlideChangeTransitionStart={() => setShowNavArrow(false)}
           onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
           allowTouchMove={false}
