@@ -105,7 +105,7 @@ async function main(): Promise<void> {
       blockType: 'VideoBlock',
       parentBlockId: card.id,
       extraAttrs: {
-        content: {
+        videoContent: {
           mediaComponentId: '2_0-FallingPlates',
           languageId: '529'
         },

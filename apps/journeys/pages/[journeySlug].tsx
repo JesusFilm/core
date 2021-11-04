@@ -20,8 +20,8 @@ import {
   STEP_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,
-  VIDEO_TRIGGER_FIELDS,
-  VIDEO_FIELDS
+  VIDEO_FIELDS,
+  VIDEO_TRIGGER_FIELDS
 } from '../src/components/blocks'
 import Head from 'next/head'
 
@@ -112,14 +112,14 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
             ... on StepBlock {
               ...StepFields
             }
-            ... on VideoTriggerBlock {
-              ...VideoTriggerFields
-            }
             ... on TypographyBlock {
               ...TypographyFields
             }
             ... on VideoBlock {
               ...VideoFields
+            }
+            ... on VideoTriggerBlock {
+              ...VideoTriggerFields
             }
           }
         }

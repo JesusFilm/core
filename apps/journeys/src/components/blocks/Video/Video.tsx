@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
-import { Trigger } from './Trigger'
+import { Trigger } from './VideoTrigger'
 import {
   isActiveBlockOrDescendant,
   useBlocks
@@ -58,16 +58,17 @@ export function Video({
   const handleVideoResponse = useCallback(
     async (
       videoState: VideoResponseStateEnum,
-      videoPosition: number | null
+      videoPosition: number
     ): Promise<void> => {
       const id = uuid()
+      const timestamp = Math.floor(videoPosition)
       await videoResponseCreate({
         variables: {
           input: {
             id,
             blockId,
             state: videoState,
-            position: videoPosition
+            position: timestamp
           }
         },
         optimisticResponse: {
@@ -75,7 +76,7 @@ export function Video({
             id,
             __typename: 'VideoResponse',
             state: videoState,
-            position: videoPosition
+            position: timestamp
           }
         }
       })
@@ -154,6 +155,7 @@ export function Video({
         })
         player.current.on('ended', () => {
           if (player.current !== undefined && activeBlock != null) {
+
             void handleVideoResponse(
               VideoResponseStateEnum.FINISHED,
               player.current.currentTime()
