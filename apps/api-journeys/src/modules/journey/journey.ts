@@ -116,7 +116,7 @@ const resolvers: JourneyModule.Resolvers = {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
           e.code === 'P2002' &&
-          get(e.meta, 'target') === ['slug']
+          (get(e.meta, 'target') as string[]).includes('slug')
         ) {
           throw new UserInputError(e.message, {
             argumentName: 'slug'
@@ -145,7 +145,7 @@ const resolvers: JourneyModule.Resolvers = {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
           e.code === 'P2002' &&
-          get(e.meta, 'target') === ['slug']
+          (get(e.meta, 'target') as string[]).includes('slug')
         ) {
           throw new UserInputError(e.message, {
             argumentName: 'slug'
