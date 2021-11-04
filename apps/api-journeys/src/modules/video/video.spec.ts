@@ -62,7 +62,7 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          content: {
+          videoContent: {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },
@@ -78,7 +78,7 @@ describe('VideoModule', () => {
               __typename
               parentBlockId
               ... on VideoBlock {
-                content {
+                videoContent {
                   mediaComponentId
                   languageId
                 }
@@ -93,7 +93,7 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          content: {
+          videoContent: {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },
@@ -111,7 +111,7 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          content: {
+          videoContent: {
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           },
           title: 'title'
@@ -126,7 +126,7 @@ describe('VideoModule', () => {
               __typename
               parentBlockId
               ... on VideoBlock {
-                content {
+                videoContent {
                   src
                 }
                 title
@@ -140,7 +140,7 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          content: {
+          videoContent: {
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           },
           title: 'title'
@@ -196,7 +196,7 @@ describe('VideoModule', () => {
         parentBlockId: null,
         parentOrder: 0,
         extraAttrs: {
-          content: {
+          videoContent: {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },
@@ -225,7 +225,7 @@ describe('VideoModule', () => {
               position
               block {
                 id
-                content {
+                videoContent {
                   mediaComponentId
                   languageId
                 }
@@ -254,7 +254,7 @@ describe('VideoModule', () => {
         position: 30,
         block: {
           id: block1.id,
-          content: {
+          videoContent: {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },

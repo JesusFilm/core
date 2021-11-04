@@ -441,7 +441,6 @@ export type VideoArclight = VideoContent & {
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   autoplay?: Maybe<Scalars['Boolean']>;
-  content: VideoContent;
   description?: Maybe<Scalars['String']>;
   /** endAt dictates at which point of time the video should end */
   endAt?: Maybe<Scalars['Int']>;
@@ -451,6 +450,7 @@ export type VideoBlock = Block & {
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']>;
   title: Scalars['String'];
+  videoContent: VideoContent;
 };
 
 export type VideoContent = {
@@ -871,7 +871,6 @@ export type VideoArclightResolvers<ContextType = GraphQLModules.Context, ParentT
 
 export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoBlock'] = ResolversParentTypes['VideoBlock']> = {
   autoplay?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  content?: Resolver<ResolversTypes['VideoContent'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   endAt?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -879,6 +878,7 @@ export type VideoBlockResolvers<ContextType = GraphQLModules.Context, ParentType
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   startAt?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  videoContent?: Resolver<ResolversTypes['VideoContent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

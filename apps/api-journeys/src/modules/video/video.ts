@@ -53,7 +53,7 @@ const typeDefs = gql`
     description: String
     muted: Boolean
     autoplay: Boolean
-    content: VideoContent!
+    videoContent: VideoContent!
   }
 
   type VideoResponse implements Response {

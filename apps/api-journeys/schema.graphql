@@ -200,7 +200,12 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
-  slug: String
+
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String!
 }
 
 input JourneyUpdateInput {
@@ -397,7 +402,7 @@ type VideoBlock implements Block {
   description: String
   muted: Boolean
   autoplay: Boolean
-  content: VideoContent!
+  videoContent: VideoContent!
 }
 
 interface VideoContent {

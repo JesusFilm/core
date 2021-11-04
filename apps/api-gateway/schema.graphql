@@ -225,7 +225,12 @@ input JourneyCreateInput {
   """
   id: ID
   locale: String
-  slug: String
+
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String!
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
@@ -416,7 +421,6 @@ type VideoArclight implements VideoContent {
 
 type VideoBlock implements Block {
   autoplay: Boolean
-  content: VideoContent!
   description: String
 
   """endAt dictates at which point of time the video should end"""
@@ -428,6 +432,7 @@ type VideoBlock implements Block {
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
   title: String!
+  videoContent: VideoContent!
 }
 
 interface VideoContent {

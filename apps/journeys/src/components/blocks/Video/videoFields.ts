@@ -9,7 +9,7 @@ export const VIDEO_FIELDS = gql`
     autoplay
     startAt
     endAt
-    videoContent: content {
+    videoContent {
       src
     }
   }
