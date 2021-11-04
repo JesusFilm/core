@@ -553,6 +553,19 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
+
+  // final part of the prayer
+  const stepPrayer4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'StepBlock',
+      extraAttrs: {
+        locked: false,
+        nextBlockId
+      },
+      parentOrder: 6
+    }
+  })
   await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -567,10 +580,128 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
           name: 'PlayArrow'
         },
         action: {
-          gtmEventName: 'click'
+          gtmEventName: 'click',
+          blockId: stepPrayer4.id
         }
       },
       parentOrder: 3
+    }
+  })
+  const prayerImageId4 = uuidv4()
+  const prayerCard4 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'CardBlock',
+      parentBlockId: stepPrayer4.id,
+      extraAttrs: {
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        coverBlockId: prayerImageId4,
+        fullscreen: true
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: prayerImageId4,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: prayerCard4.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1519373344801-14c1f9539c9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Decision',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
+      },
+      parentOrder: 0
+    }
+  })
+  const prayerGridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: prayerCard4.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }
+    }
+  })
+  const prayerGridItemLeft = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: prayerGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
+  const prayerGridItemRight = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: prayerGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 1
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: prayerGridItemLeft.id,
+      extraAttrs: {
+        content: "WHAT'S NEXT?",
+        variant: 'h6',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'TypographyBlock',
+      parentBlockId: prayerGridItemLeft.id,
+      extraAttrs: {
+        content:
+          'Get printable card with three most important Bible verses every new Christian should know. ',
+        variant: 'h5',
+        color: 'primary',
+        align: 'left'
+      },
+      parentOrder: 0
+    }
+  })
+  await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'SignUpBlock',
+      parentBlockId: prayerGridItemRight.id,
+      extraAttrs: {
+        submitLabel: 'Submit',
+        submitIcon: {
+          name: 'PlayArrow'
+        },
+        action: {
+          gtmEventName: 'click'
+          // change to the final card
+          // blockId: stepPrayer4
+        }
+      }
     }
   })
 
@@ -582,7 +713,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       extraAttrs: {
         locked: false
       },
-      parentOrder: 6
+      parentOrder: 7
     }
   })
   await prisma.block.create({
@@ -701,7 +832,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       extraAttrs: {
         locked: false
       },
-      parentOrder: 7
+      parentOrder: 8
     }
   })
   await prisma.block.create({
@@ -820,7 +951,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       extraAttrs: {
         locked: false
       },
-      parentOrder: 8
+      parentOrder: 9
     }
   })
   await prisma.block.create({
