@@ -155,7 +155,6 @@ export function Video({
         })
         player.current.on('ended', () => {
           if (player.current !== undefined && activeBlock != null) {
-
             void handleVideoResponse(
               VideoResponseStateEnum.FINISHED,
               player.current.currentTime()
