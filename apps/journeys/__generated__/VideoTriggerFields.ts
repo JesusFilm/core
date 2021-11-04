@@ -18,10 +18,16 @@ export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
 export interface VideoTriggerFields_triggerAction_LinkAction {
