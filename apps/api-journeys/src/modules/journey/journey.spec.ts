@@ -288,7 +288,7 @@ describe('JourneyModule', () => {
             userId: 'userId'
           }
         )
-        expect(errors?.[0].message).toEqual('slug already exists')
+        expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
       })
     })
 
@@ -396,7 +396,7 @@ describe('JourneyModule', () => {
             userId: 'userId'
           }
         )
-        expect(errors?.[0].message).toEqual('slug already exists')
+        expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
       })
     })
 
