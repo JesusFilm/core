@@ -181,6 +181,54 @@ ImageCoverDark.parameters = {
   theme: 'dark'
 }
 
+export const VideoCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+VideoCover.args = {
+  coverBlockId: 'videoBlockId1',
+  children: [
+    {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: TypographyColor.secondary,
+      content: 'It s Ok To Get Angry',
+      variant: TypographyVariant.overline,
+      children: []
+    },
+    {
+      id: 'typographyBlockId2',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content:
+        'Christianity isn’t about looking nice and religious; it’s diving into the deep end, a life fully immersed in following after Jesus.',
+      variant: TypographyVariant.subtitle1,
+      children: []
+    },
+    {
+      id: 'typographyBlockId3',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'Bible, 1 Corinthians 15:3-4',
+      variant: TypographyVariant.body2,
+      children: []
+    },
+    {
+      __typename: 'VideoBlock',
+      id: 'videoBlockId1',
+      parentBlockId: '',
+      volume: 1,
+      autoplay: true,
+      title: 'video',
+      src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
+      children: []
+    }
+  ]
+}
+
 export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageBlur.args = {
   coverBlockId: 'imageBlockId1',
