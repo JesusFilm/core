@@ -1,4 +1,4 @@
-describe('journeysPage', () => {
+describe.skip('journeysPage', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.get('a').contains('#FallingPlates').click()
