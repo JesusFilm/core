@@ -1,12 +1,6 @@
 import videojs from 'video.js'
-import React, {
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-  useCallback
-} from 'react'
-import { Box, useTheme } from '@mui/material'
+import React, { ReactElement, useEffect, useRef, useCallback } from 'react'
+import { Box } from '@mui/material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { v4 as uuidv4 } from 'uuid'
@@ -44,32 +38,25 @@ export function Video({
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
-  const theme = useTheme()
-  const videoNode = useRef<HTMLVideoElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<videojs.Player>()
+  const { activeBlock } = useBlocks()
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
   )
-  const player = useRef<videojs.Player>()
-  const { activeBlock } = useBlocks()
-
-  const [isPlaying, setIsPlaying] = useState<boolean | string>()
-  const [isReady, setIsReady] = useState<boolean | undefined>()
-  const [autoPlaySuccess, setAutoplaySuccess] = useState<boolean>(false)
 
   const handleVideoResponse = useCallback(
-    async (
-      videoState: VideoResponseStateEnum,
-      videoPosition: number
-    ): Promise<void> => {
+    (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
       const id = uuid()
-      const timestamp = Math.floor(videoPosition)
-      await videoResponseCreate({
+      const position = videoPosition != null ? Math.floor(videoPosition) : 0
+
+      void videoResponseCreate({
         variables: {
           input: {
             id,
             blockId,
             state: videoState,
-            position: timestamp
+            position
           }
         },
         optimisticResponse: {
@@ -77,7 +64,7 @@ export function Video({
             id,
             __typename: 'VideoResponse',
             state: videoState,
-            position: timestamp
+            position
           }
         }
       })
@@ -85,26 +72,10 @@ export function Video({
     [blockId, uuid, videoResponseCreate]
   )
 
-  const validatePlaying = useCallback(() => {
-    if (autoplay != null && muted != null) {
-      if (isActiveBlockOrDescendant(blockId) && muted) {
-        setIsPlaying('muted')
-      } else if (isActiveBlockOrDescendant(blockId)) {
-        setIsPlaying(autoplay)
-      }
-    }
-  }, [blockId, autoplay, muted])
-
-  // get the redirected URL link to use for stories (storybook)
-  // take the comment out on console log to use
-  // console.log(videoContent?.src)
-
   useEffect(() => {
-    validatePlaying()
-
-    if (isPlaying !== undefined && videoContent != null) {
-      const initialOptions: videojs.PlayerOptions = {
-        autoplay: isPlaying,
+    if (videoRef.current != null) {
+      playerRef.current = videojs(videoRef.current, {
+        autoplay: false,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -123,78 +94,47 @@ export function Video({
             inline: true
           }
         },
-        sources: [
-          {
-            src: videoContent.src
-          }
-        ],
         fluid: true,
-        responsive: true
-      }
-
-      if (videoNode.current != null) {
-        player.current = videojs(videoNode.current, {
-          ...initialOptions
-        })
-        player.current.on('ready', () => {
-          setIsReady(true)
-          startAt !== null && player.current?.currentTime(startAt)
-        })
-        player.current.on('playing', () => {
-          player.current !== undefined &&
-            handleVideoResponse(
-              VideoResponseStateEnum.PLAYING,
-              player.current.currentTime()
-            )
-        })
-        player.current.on('pause', () => {
-          player.current !== undefined &&
-            handleVideoResponse(
-              VideoResponseStateEnum.PAUSED,
-              player.current.currentTime()
-            )
-        })
-        player.current.on('ended', () => {
-          if (player.current !== undefined && activeBlock != null) {
-            void handleVideoResponse(
-              VideoResponseStateEnum.FINISHED,
-              player.current.currentTime()
-            )
-
-            if (
-              player.current.isFullscreen() &&
-              activeBlock.nextBlockId == null
-            )
-              player.current.exitFullscreen()
-          }
-        })
-        player.current.on('autoplay-success', () => setAutoplaySuccess(true))
-      }
+        responsive: true,
+        muted: muted === true
+      })
+      playerRef.current.on('ready', () => {
+        playerRef.current?.currentTime(startAt ?? 0)
+        if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
+          void playerRef.current?.play()
+        }
+      })
+      playerRef.current.on('playing', () => {
+        handleVideoResponse(
+          VideoResponseStateEnum.PLAYING,
+          playerRef.current?.currentTime()
+        )
+      })
+      playerRef.current.on('pause', () => {
+        handleVideoResponse(
+          VideoResponseStateEnum.PAUSED,
+          playerRef.current?.currentTime()
+        )
+      })
+      playerRef.current.on('ended', () => {
+        playerRef.current?.exitFullscreen()
+        handleVideoResponse(
+          VideoResponseStateEnum.FINISHED,
+          playerRef.current?.currentTime()
+        )
+      })
     }
-  }, [
-    videoNode,
-    activeBlock,
-    children,
-    autoplay,
-    videoContent,
-    isPlaying,
-    validatePlaying,
-    handleVideoResponse,
-    startAt
-  ])
+  }, [handleVideoResponse, startAt, muted, autoplay, blockId])
 
   useEffect(() => {
     if (
-      isReady === true &&
+      playerRef.current != null &&
       autoplay === true &&
-      !autoPlaySuccess &&
-      navigator.userAgent.match(/Firefox/i) != null
+      isActiveBlockOrDescendant(blockId)
     ) {
-      player.current?.defaultMuted(true)
-      player.current?.setAttribute('autoplay', '')
-      player.current?.play()
+      void playerRef.current.play()
     }
-  }, [player, isReady, autoPlaySuccess, autoplay])
+  }, [autoplay, blockId, activeBlock])
 
   return (
     <Box
@@ -206,21 +146,22 @@ export function Video({
         backgroundColor: '#000000',
         borderRadius: 4,
         overflow: 'hidden',
-        [theme.breakpoints.only('sm')]: { minWidth: '328px' }
+        minWidth: { sm: 328, md: '100%' }
       }}
     >
       <video
-        ref={videoNode}
+        ref={videoRef}
         className="video-js"
-        style={{ display: 'flex', alignSelf: 'center' }}
+        style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
       >
-        {children?.map(
-          (option) =>
-            option.__typename === 'VideoTriggerBlock' && (
-              <Trigger player={player.current} {...option} />
-            )
-        )}
+        <source src={videoContent.src} />
       </video>
+      {children?.map(
+        (option) =>
+          option.__typename === 'VideoTriggerBlock' && (
+            <Trigger player={playerRef.current} {...option} />
+          )
+      )}
     </Box>
   )
 }
