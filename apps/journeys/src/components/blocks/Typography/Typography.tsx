@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Typography as MuiTypography } from '@mui/material'
 import { TypographyFields } from '../../../../__generated__/TypographyFields'
 
-export interface TypographyProps extends TypographyFields {}
+export interface TypographyProps extends TypographyFields { }
 
 export function Typography({
   variant,
@@ -17,7 +17,6 @@ export function Typography({
       variant={variant ?? undefined}
       align={align ?? undefined}
       color={color ?? undefined}
-      paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
     >
       {content}
