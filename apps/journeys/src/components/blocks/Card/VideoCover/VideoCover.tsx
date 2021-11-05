@@ -13,20 +13,20 @@ export function VideoCover({
   children,
   coverBlock
 }: ImageCoverProps): ReactElement {
-  const videoNode = useRef<HTMLVideoElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const theme = useTheme()
 
   useEffect(() => {
-    if (videoNode.current != null) {
-      videojs(videoNode.current)
+    if (videoRef.current != null) {
+      videojs(videoRef.current)
     }
-  }, [videoNode])
+  }, [])
 
   return (
     <>
       <Box sx={{ width: '100%' }}>
-        <video ref={videoNode} autoPlay muted loop>
-          <source src={coverBlock.src} type="application/x-mpegURL" />
+        <video ref={videoRef} autoPlay muted loop>
+          <source src={coverBlock.videoContent.src} />
         </video>
       </Box>
       <Box
