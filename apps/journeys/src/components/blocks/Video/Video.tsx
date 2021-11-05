@@ -125,7 +125,8 @@ export function Video({
         )
       })
       playerRef.current.on('ended', () => {
-        playerRef.current?.exitFullscreen()
+        if (playerRef?.current?.isFullscreen() === true)
+          playerRef.current?.exitFullscreen()
         handleVideoResponse(
           VideoResponseStateEnum.FINISHED,
           playerRef.current?.currentTime()
