@@ -126,29 +126,18 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 3
     }
   })
-  const card1 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'CardBlock',
-      parentBlockId: step1.id,
-      extraAttrs: {
-        themeMode: ThemeMode.dark,
-        themeName: ThemeName.base
-      },
-      parentOrder: 0
-    }
-  })
-  await prisma.block.create({
+  const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: card1.id,
+      parentBlockId: step1.id,
       extraAttrs: {
-        // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '5_0-NUA0201-0-0',
-        // languageId: '529',
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch #FallingPlates',
+        videoContent: {
+          mediaComponentId: '5_0-NUA0201-0-0',
+          languageId: '529'
+        },
+        autoplay: true,
+        title: 'Fact or fiction',
         description:
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
       }
@@ -170,22 +159,15 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'ButtonBlock',
-      parentBlockId: card1.id,
+      blockType: 'VideoTriggerBlock',
+      parentBlockId: video.id,
       extraAttrs: {
-        label: 'next step',
-        variant: 'contained',
-        color: 'primary',
-        size: 'large',
-        startIcon: {
-          name: 'PlayArrow'
-        },
+        triggerStart: 133,
         action: {
-          gtmEventName: 'click',
+          gtmEventName: 'trigger',
           blockId: step2.id
         }
-      },
-      parentOrder: 3
+      }
     }
   })
   const image1Id = uuidv4()
@@ -202,7 +184,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
-  const image1 = await prisma.block.create({
+  await prisma.block.create({
     data: {
       id: image1Id,
       journeyId: journey.id,
@@ -286,32 +268,19 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 2
     }
   })
-  const card3 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'CardBlock',
-      parentBlockId: step3.id,
-      extraAttrs: {
-        themeMode: ThemeMode.dark,
-        themeName: ThemeName.base,
-        coverBlockId: image1.id
-      },
-      parentOrder: 0
-    }
-  })
-  await prisma.block.create({
+  const video1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: card3.id,
+      parentBlockId: step3.id,
       extraAttrs: {
-        // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '5_0-NUA0201-0-0',
-        // languageId: '529',
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: 'Watch #FallingPlates',
-        description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+        videoContent: {
+          mediaComponentId: '5_0-NUA0201-0-0',
+          languageId: '529'
+        },
+        autoplay: true,
+        title: 'Fact or fiction',
+        startAt: 134
       }
     }
   })
@@ -331,22 +300,15 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'ButtonBlock',
-      parentBlockId: card3.id,
+      blockType: 'VideoTriggerBlock',
+      parentBlockId: video1.id,
       extraAttrs: {
-        label: 'next step',
-        variant: 'contained',
-        color: 'primary',
-        size: 'large',
-        startIcon: {
-          name: 'PlayArrow'
-        },
+        triggerStart: 306,
         action: {
-          gtmEventName: 'click',
+          gtmEventName: 'trigger',
           blockId: step4.id
         }
-      },
-      parentOrder: 3
+      }
     }
   })
   const image2Id = uuidv4()

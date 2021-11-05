@@ -124,29 +124,18 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 3
     }
   })
-  const card1 = await prisma.block.create({
-    data: {
-      journeyId: journey.id,
-      blockType: 'CardBlock',
-      parentBlockId: step1.id,
-      extraAttrs: {
-        themeMode: ThemeMode.dark,
-        themeName: ThemeName.base
-      },
-      parentOrder: 0
-    }
-  })
-  await prisma.block.create({
+  const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: card1.id,
+      parentBlockId: step1.id,
       extraAttrs: {
-        // put in comments the mediaComponentId and languageId
-        // mediaComponentId: '5_0-NUA1001-0-0',
-        // languageId: '529',
-        src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8',
-        title: "What's Jesus Got to Do With Me?"
+        videoContent: {
+          mediaComponentId: '5_0-NUA1001-0-0',
+          languageId: '529'
+        },
+        autoplay: true,
+        title: "What' Jesus Got to Do With Me?"
       },
       parentOrder: 0
     }
@@ -167,22 +156,15 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
   await prisma.block.create({
     data: {
       journeyId: journey.id,
-      blockType: 'ButtonBlock',
-      parentBlockId: card1.id,
+      blockType: 'VideoTriggerBlock',
+      parentBlockId: video.id,
       extraAttrs: {
-        label: 'next step',
-        variant: 'contained',
-        color: 'primary',
-        size: 'large',
-        startIcon: {
-          name: 'PlayArrow'
-        },
+        triggerStart: 166,
         action: {
-          gtmEventName: 'click',
+          gtmEventName: 'trigger',
           blockId: questionStep.id
         }
-      },
-      parentOrder: 1
+      }
     }
   })
   const image1Id = uuidv4()
