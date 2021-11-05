@@ -50,16 +50,18 @@ export function Video({
   const handleVideoResponse = useCallback(
     async (
       videoState: VideoResponseStateEnum,
-      position: number
+      videoPosition?: number
     ): Promise<void> => {
       const id = uuid()
+      const position = videoPosition != null ? Math.floor(videoPosition) : 0
+
       await videoResponseCreate({
         variables: {
           input: {
             id,
             blockId,
             state: videoState,
-            position: Math.floor(position)
+            position
           }
         },
         optimisticResponse: {
@@ -67,7 +69,7 @@ export function Video({
             id,
             __typename: 'VideoResponse',
             state: videoState,
-            position: Math.floor(position)
+            position
           }
         }
       })
@@ -107,20 +109,20 @@ export function Video({
       playerRef.current.on('playing', () => {
         void handleVideoResponse(
           VideoResponseStateEnum.PLAYING,
-          playerRef.current?.currentTime() ?? 0
+          playerRef.current?.currentTime()
         )
       })
       playerRef.current.on('pause', () => {
         void handleVideoResponse(
           VideoResponseStateEnum.PAUSED,
-          playerRef.current?.currentTime() ?? 0
+          playerRef.current?.currentTime()
         )
       })
       playerRef.current.on('ended', () => {
         playerRef.current?.exitFullscreen()
         void handleVideoResponse(
           VideoResponseStateEnum.FINISHED,
-          playerRef.current?.currentTime() ?? 0
+          playerRef.current?.currentTime()
         )
       })
     }
