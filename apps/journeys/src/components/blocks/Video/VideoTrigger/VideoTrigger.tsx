@@ -20,9 +20,16 @@ export function Trigger({
     if (player != null) {
       player.on('timeupdate', () => {
         if (player.currentTime() >= triggerStart) {
-          if (player.isFullscreen()) player.exitFullscreen()
           player.pause()
-          handleAction(router, triggerAction)
+
+          if (player.isFullscreen()) {
+            player.exitFullscreen()
+            setTimeout(() => {
+              handleAction(router, triggerAction)
+            }, 1000)
+          } else {
+            handleAction(router, triggerAction)
+          }
         }
       })
     }

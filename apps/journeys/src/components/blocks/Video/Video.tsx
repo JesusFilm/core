@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback
 } from 'react'
-import { Container } from '@mui/material'
+import { Box, useTheme } from '@mui/material'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -48,6 +48,7 @@ export function Video({
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
+  const theme = useTheme()
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageBlock> | undefined
@@ -205,8 +206,23 @@ export function Video({
   }, [player, isReady, autoPlaySuccess, autoplay])
 
   return (
-    <Container maxWidth="md">
-      <video ref={videoNode} className="video-js" data-testid="VideoComponent">
+    <Box
+      data-testid="VideoComponent"
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000000',
+        borderRadius: 4,
+        overflow: 'hidden',
+        [theme.breakpoints.only('sm')]: { minWidth: '328px' }
+      }}
+    >
+      <video
+        ref={videoNode}
+        className="video-js"
+        style={{ display: 'flex', alignSelf: 'center' }}
+      >
         {children?.map(
           (option) =>
             option.__typename === 'VideoTriggerBlock' && (
@@ -214,6 +230,6 @@ export function Video({
             )
         )}
       </video>
-    </Container>
+    </Box>
   )
 }

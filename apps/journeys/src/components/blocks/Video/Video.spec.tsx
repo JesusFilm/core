@@ -99,6 +99,43 @@ describe('VideoComponent', () => {
         />
       </MockedProvider>
     )
+
+    expect(getByTestId('VideoComponent')).toBeInTheDocument()
+  })
+
+  it('should render the video through a generic source successfully', () => {
+    const { getByTestId } = renderWithApolloClient(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_RESPONSE_CREATE,
+              variables: {
+                id: 'uuid',
+                blockId: 'Video1',
+                state: VideoResponseStateEnum.PLAYING,
+                position: 30
+              }
+            },
+            result: {
+              data: {
+                id: 'uuid',
+                state: VideoResponseStateEnum.PLAYING,
+                position: 30
+              }
+            }
+          }
+        ]}
+      >
+        <Video
+          {...block}
+          videoContent={{
+            __typename: 'VideoGeneric',
+            src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+          }}
+        />
+      </MockedProvider>
+    )
     expect(getByTestId('VideoComponent').getAttribute('poster')).toEqual(
       'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
     )

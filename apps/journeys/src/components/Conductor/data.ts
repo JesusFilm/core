@@ -707,45 +707,33 @@ export const videoBlock: TreeBlock[] = [
     nextBlockId: 'step2.id',
     children: [
       {
-        id: 'card1.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'step1.id',
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
+        id: 'video1.id',
+        __typename: 'VideoBlock',
+        parentBlockId: 'card1.id',
+        title: '',
+        autoplay: true,
+        muted: true,
+        videoContent: {
+          __typename: 'VideoArclight',
+          // This is the redirected URL from this link
+          // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
+          // Meaning that it's expected for it's tokens key to expire
+          src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4NDlhNDNfYjQ2OGVjZjMxZGQ5MmQ5ZDMwODg1Y2U0YjBjMzIzOGY5YmNiYTEyY2UzZWM2ODBhM2EzZWQzYmU5NzQ1NGJiMA%3D%3D'
+        },
+        endAt: null,
+        startAt: null,
         children: [
           {
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            title: '',
-            autoplay: true,
-            muted: true,
-            videoContent: {
-              __typename: 'VideoArclight',
-              // This is the redirected URL from this link
-              // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
-              // Meaning that it's expected for it's tokens key to expire
-              src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MzM0ODRfMDYxY2IzMzdmOWE0ODQ5MmI1ZDc0NDg0YWJmNjU3NWRlNTRmYmMwNjM1Y2NjNmM4YTU4Zjk4M2RhYmQxYjM2MQ%3D%3D'
+            id: 'trigger.id',
+            __typename: 'VideoTriggerBlock',
+            parentBlockId: 'video1.id',
+            triggerStart: 20,
+            triggerAction: {
+              __typename: 'NavigateToBlockAction',
+              gtmEventName: 'gtmEventName',
+              blockId: 'step2.id'
             },
-            endAt: null,
-            startAt: null,
-            children: [
-              {
-                id: 'trigger.id',
-                __typename: 'VideoTriggerBlock',
-                parentBlockId: 'video1.id',
-                triggerStart: 20,
-                triggerAction: {
-                  __typename: 'NavigateToBlockAction',
-                  gtmEventName: 'gtmEventName',
-                  blockId: 'step2.id'
-                },
-                children: []
-              }
-            ]
+            children: []
           }
         ]
       }
@@ -813,34 +801,22 @@ export const videoBlock: TreeBlock[] = [
     nextBlockId: null,
     children: [
       {
-        id: 'card3.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'step3.id',
-        backgroundColor: null,
-        coverBlockId: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [
-          {
-            id: 'video2.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card3.id',
-            title: '',
-            autoplay: true,
-            muted: false,
-            videoContent: {
-              __typename: 'VideoArclight',
-              // This is the redirected URL from this link
-              // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
-              // Meaning that it's expected for it's tokens key to expire
-              src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4MzM0ODRfMDYxY2IzMzdmOWE0ODQ5MmI1ZDc0NDg0YWJmNjU3NWRlNTRmYmMwNjM1Y2NjNmM4YTU4Zjk4M2RhYmQxYjM2MQ%3D%3D'
-            },
-            endAt: null,
-            startAt: 21,
-            children: []
-          }
-        ]
+        id: 'video2.id',
+        __typename: 'VideoBlock',
+        parentBlockId: 'card3.id',
+        title: '',
+        autoplay: true,
+        muted: false,
+        videoContent: {
+          __typename: 'VideoArclight',
+          // This is the redirected URL from this link
+          // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
+          // Meaning that it's expected for it's tokens key to expire
+          src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4NDlhNDNfYjQ2OGVjZjMxZGQ5MmQ5ZDMwODg1Y2U0YjBjMzIzOGY5YmNiYTEyY2UzZWM2ODBhM2EzZWQzYmU5NzQ1NGJiMA%3D%3DD'
+        },
+        endAt: null,
+        startAt: 21,
+        children: []
       }
     ]
   }
