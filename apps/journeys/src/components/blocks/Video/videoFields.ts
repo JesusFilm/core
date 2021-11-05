@@ -9,6 +9,7 @@ export const VIDEO_FIELDS = gql`
     autoplay
     startAt
     endAt
+    posterBlockId
     videoContent {
       src
     }

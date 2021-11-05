@@ -99,6 +99,7 @@ async function main(): Promise<void> {
       parentOrder: 0
     }
   })
+  const posterBlockId = uuidv4()
   const video = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -112,8 +113,25 @@ async function main(): Promise<void> {
         autoplay: true,
         title: 'Watch #FallingPlates',
         description:
-          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
+        posterBlockId
       }
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: posterBlockId,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: video.id,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'chester-wade',
+        width: 1920,
+        height: 1080,
+        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+      },
+      parentOrder: 0
     }
   })
   const onTrigger = await prisma.block.create({

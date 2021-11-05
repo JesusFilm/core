@@ -7,7 +7,10 @@ import React, {
   useCallback
 } from 'react'
 import { Container } from '@mui/material'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
@@ -41,9 +44,13 @@ export function Video({
   autoplay,
   startAt,
   muted,
+  posterBlockId,
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
+  const posterBlock = children.find(
+    (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
+  ) as TreeBlock<ImageBlock> | undefined
   const videoNode = useRef<HTMLVideoElement>(null)
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
@@ -128,7 +135,8 @@ export function Video({
           }
         ],
         fluid: true,
-        responsive: true
+        responsive: true,
+        poster: posterBlock?.src
       }
 
       if (videoNode.current != null) {
@@ -179,7 +187,8 @@ export function Video({
     isPlaying,
     validatePlaying,
     handleVideoResponse,
-    startAt
+    startAt,
+    posterBlock
   ])
 
   useEffect(() => {
