@@ -1063,7 +1063,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         height: 1080,
         blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
       },
-      parentOrder: 0
+      parentOrder: 1
     }
   })
   const noThanksGridContainer = await prisma.block.create({
@@ -1130,7 +1130,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         align: 'left'
       },
-      parentOrder: 0
+      parentOrder: 1
     }
   })
 
@@ -1362,7 +1362,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         align: 'left'
       },
-      parentOrder: 0
+      parentOrder: 1
     }
   })
 
