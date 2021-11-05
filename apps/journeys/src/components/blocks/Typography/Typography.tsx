@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Typography as MuiTypography } from '@mui/material'
 import { TypographyFields } from '../../../../__generated__/TypographyFields'
 
-export interface TypographyProps extends TypographyFields { }
+export interface TypographyProps extends TypographyFields {}
 
 export function Typography({
   variant,

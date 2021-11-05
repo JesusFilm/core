@@ -1,11 +1,10 @@
 import { PrismaClient } from '.prisma/api-journeys-client'
 import { noop } from 'lodash'
-import { fallingPlates, nua1, nua2, nuaEp8, nua9 } from './factories/'
+import { nua1, nua2, nuaEp8, nua9 } from './factories/'
 
 const prisma = new PrismaClient()
 
 async function main(): Promise<void> {
-  await fallingPlates(prisma)
   await nua1(prisma)
   await nua2(prisma)
   await nuaEp8(prisma)
