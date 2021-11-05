@@ -718,7 +718,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentBlockId: card2.id,
       extraAttrs: {
         content: "THAT'S GREAT!",
-        variant: 'h6',
+        variant: 'overline',
         color: 'primary',
         align: 'left'
       },
@@ -950,7 +950,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentBlockId: noThanksCard.id,
       extraAttrs: {
         content: 'ALRIGHT!',
-        variant: 'h6',
+        variant: 'overline',
         color: 'primary',
         align: 'left'
       },
@@ -1182,7 +1182,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentBlockId: notSureCard.id,
       extraAttrs: {
         content: 'NOT SURE?',
-        variant: 'h6',
+        variant: 'overline',
         color: 'primary',
         align: 'left'
       },
@@ -1466,7 +1466,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentBlockId: lastCard.id,
       extraAttrs: {
         content: 'THANK YOU!',
-        variant: 'h6',
+        variant: 'overline',
         color: 'primary',
         align: 'left'
       },
