@@ -162,6 +162,7 @@ describe('BlockRenderer', () => {
       endAt: null,
       startAt: null,
       parentBlockId: null,
+      posterBlockId: null,
       children: []
     }
     const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)
