@@ -66,7 +66,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         posterBlockId,
         muted: true,
         autoplay: true,
-        startAt: 10,
+        startAt: 11,
         title: 'Fact or fiction',
         description:
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'

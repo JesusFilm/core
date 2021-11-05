@@ -64,7 +64,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         posterBlockId,
         muted: true,
         autoplay: true,
-        startAt: 10,
+        startAt: 11,
         title: 'Decision'
       }
     }

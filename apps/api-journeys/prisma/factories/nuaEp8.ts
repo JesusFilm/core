@@ -67,7 +67,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         posterBlockId,
         muted: true,
         autoplay: true,
-        startAt: 10,
+        startAt: 11,
         title: 'Decision'
       }
     }
