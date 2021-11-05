@@ -98,7 +98,7 @@ export function Video({
         responsive: true,
         muted: muted === true
       })
-      playerRef.current.on('ready', async () => {
+      playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
         if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
           void playerRef.current?.play()
