@@ -154,7 +154,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       videoContent: {
         __typename: 'VideoArclight',
-        src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
+        src: 'https://arc.gt/hls/2_0-FallingPlates/529'
       },
       title: 'title',
       autoplay: false,
@@ -162,6 +162,7 @@ describe('BlockRenderer', () => {
       endAt: null,
       startAt: null,
       parentBlockId: null,
+      posterBlockId: null,
       children: []
     }
     const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)

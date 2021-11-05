@@ -1,7 +1,10 @@
 import videojs from 'video.js'
 import React, { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { Box } from '@mui/material'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
@@ -35,12 +38,16 @@ export function Video({
   autoplay,
   startAt,
   muted,
+  posterBlockId,
   uuid = uuidv4,
   children
 }: VideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const { activeBlock } = useBlocks()
+  const posterBlock = children.find(
+    (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
+  ) as TreeBlock<ImageBlock> | undefined
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
   )
@@ -96,7 +103,8 @@ export function Video({
         },
         fluid: true,
         responsive: true,
-        muted: muted === true
+        muted: muted === true,
+        poster: posterBlock?.src
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
@@ -124,7 +132,7 @@ export function Video({
         )
       })
     }
-  }, [handleVideoResponse, startAt, muted, autoplay, blockId])
+  }, [handleVideoResponse, startAt, muted, autoplay, blockId, posterBlock])
 
   useEffect(() => {
     if (
@@ -154,7 +162,14 @@ export function Video({
         className="video-js"
         style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
       >
-        <source src={videoContent.src} />
+        <source
+          src={videoContent.src}
+          type={
+            videoContent.__typename === 'VideoArclight'
+              ? 'application/x-mpegURL'
+              : undefined
+          }
+        />
       </video>
       {children?.map(
         (option) =>

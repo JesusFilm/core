@@ -84,4 +84,53 @@ describe('CardBlock', () => {
     )
     expect(getAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
+
+  it('should render card with cover video', () => {
+    const { getByTestId, getAllByText } = render(
+      <Card
+        {...{
+          ...block,
+          children: [
+            ...block.children,
+            {
+              __typename: 'VideoBlock',
+              id: 'videoBlockId1',
+              parentBlockId: null,
+              muted: true,
+              autoplay: true,
+              title: 'video',
+              startAt: null,
+              endAt: null,
+              posterBlockId: 'posterBlockId',
+              videoContent: {
+                __typename: 'VideoArclight',
+                src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              },
+              children: [
+                {
+                  id: 'posterBlockId',
+                  __typename: 'ImageBlock',
+                  src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                  alt: 'random image from unsplash',
+                  width: 1600,
+                  height: 1067,
+                  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                  parentBlockId: 'videoBlockId',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }}
+        coverBlockId="videoBlockId1"
+      />
+    )
+    const sourceTag =
+      getByTestId('CardVideoCover').querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toEqual(
+      'https://arc.gt/hls/2_0-FallingPlates/529'
+    )
+    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(getAllByText('How did we get here?')[0]).toBeInTheDocument()
+  })
 })

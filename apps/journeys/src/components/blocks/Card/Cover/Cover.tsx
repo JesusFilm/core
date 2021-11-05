@@ -1,31 +1,39 @@
 import { TreeBlock } from '../../../../libs/transformer/transformer'
 import { ReactElement, ReactNode, useEffect, useRef } from 'react'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../__generated__/GetJourney'
 import { useTheme, Box } from '@mui/material'
 import { decode } from 'blurhash'
+import videojs from 'video.js'
+import 'video.js/dist/video-js.css'
 
 const greatestCommonDivisor = (a: number, b: number): number =>
   b === 0 ? a : greatestCommonDivisor(b, a % b)
 
-interface ImageCoverProps {
+interface CoverProps {
   children: ReactNode
-  coverBlock: TreeBlock<ImageBlock>
+  imageBlock: TreeBlock<ImageBlock>
+  videoBlock?: TreeBlock<VideoBlock>
 }
 
-export function ImageCover({
+export function Cover({
   children,
-  coverBlock
-}: ImageCoverProps): ReactElement {
+  imageBlock,
+  videoBlock
+}: CoverProps): ReactElement {
   const xsRef = useRef<HTMLDivElement>(null)
   const lgRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const theme = useTheme()
 
   useEffect(() => {
     if (xsRef.current != null && lgRef.current != null) {
-      const divisor = greatestCommonDivisor(coverBlock.width, coverBlock.height)
-      const width = coverBlock.width / divisor
-      const height = coverBlock.height / divisor
-      const pixels = decode(coverBlock.blurhash, width, height, 1)
+      const divisor = greatestCommonDivisor(imageBlock.width, imageBlock.height)
+      const width = imageBlock.width / divisor
+      const height = imageBlock.height / divisor
+      const pixels = decode(imageBlock.blurhash, width, height, 1)
 
       const canvas = document.createElement('canvas')
       canvas.setAttribute('width', `${width}px`)
@@ -43,19 +51,58 @@ export function ImageCover({
         lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
       }
     }
-  }, [coverBlock, xsRef, lgRef, theme])
+    if (videoRef.current != null) {
+      videojs(videoRef.current, {
+        autoplay: 'muted',
+        controls: false,
+        userActions: {
+          hotkeys: false,
+          doubleClick: false
+        },
+        muted: true,
+        loop: true
+      })
+    }
+  }, [imageBlock, xsRef, lgRef, theme])
 
   return (
     <>
-      <Box
-        data-testid="CardImageCover"
-        sx={{
-          flexGrow: 1,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundImage: `url(${coverBlock.src})`
-        }}
-      />
+      {videoBlock != null ? (
+        <Box
+          sx={{
+            flexGrow: 1,
+            '> .video-js': {
+              width: '100%',
+              height: '100%',
+              '> .vjs-tech': {
+                objectFit: 'cover'
+              }
+            }
+          }}
+          data-testid="CardVideoCover"
+        >
+          <video ref={videoRef} className="video-js">
+            <source
+              src={videoBlock.videoContent.src}
+              type={
+                videoBlock.videoContent.__typename === 'VideoArclight'
+                  ? 'application/x-mpegURL'
+                  : undefined
+              }
+            />
+          </video>
+        </Box>
+      ) : (
+        <Box
+          data-testid="CardImageCover"
+          sx={{
+            flexGrow: 1,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundImage: `url(${imageBlock.src})`
+          }}
+        />
+      )}
       <Box
         sx={{
           display: { xs: 'flex', md: 'none' },

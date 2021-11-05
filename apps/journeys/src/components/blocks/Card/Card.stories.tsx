@@ -181,6 +181,80 @@ ImageCoverDark.parameters = {
   theme: 'dark'
 }
 
+export const VideoCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+VideoCover.args = {
+  coverBlockId: 'videoBlockId1',
+  children: [
+    {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: TypographyColor.secondary,
+      content: 'It s Ok To Get Angry',
+      variant: TypographyVariant.overline,
+      children: []
+    },
+    {
+      id: 'typographyBlockId2',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content:
+        'Christianity isn’t about looking nice and religious; it’s diving into the deep end, a life fully immersed in following after Jesus.',
+      variant: TypographyVariant.subtitle1,
+      children: []
+    },
+    {
+      id: 'typographyBlockId3',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'Bible, 1 Corinthians 15:3-4',
+      variant: TypographyVariant.body2,
+      children: []
+    },
+    {
+      __typename: 'VideoBlock',
+      id: 'videoBlockId1',
+      parentBlockId: null,
+      muted: true,
+      autoplay: true,
+      title: 'video',
+      startAt: null,
+      endAt: null,
+      posterBlockId: 'posterBlockId',
+      videoContent: {
+        __typename: 'VideoArclight',
+        src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      },
+      children: [
+        {
+          id: 'posterBlockId',
+          __typename: 'ImageBlock',
+          src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+          alt: 'random image from unsplash',
+          width: 1600,
+          height: 1067,
+          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+          parentBlockId: 'videoBlockId',
+          children: []
+        }
+      ]
+    }
+  ]
+}
+
+export const VideoCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
+VideoCoverDark.args = {
+  ...VideoCover.args
+}
+VideoCoverDark.parameters = {
+  theme: 'dark'
+}
+
 export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageBlur.args = {
   coverBlockId: 'imageBlockId1',

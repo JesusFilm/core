@@ -66,7 +66,8 @@ describe('VideoModule', () => {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -81,8 +82,10 @@ describe('VideoModule', () => {
                 videoContent {
                   mediaComponentId
                   languageId
+                  src
                 }
                 title
+                posterBlockId
               }
             }
           }
@@ -95,9 +98,11 @@ describe('VideoModule', () => {
           parentBlockId,
           videoContent: {
             mediaComponentId: '2_0-FallingPlates',
-            languageId: '529'
+            languageId: '529',
+            src: 'https://arc.gt/hls/2_0-FallingPlates/529'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       ])
     })
@@ -114,7 +119,8 @@ describe('VideoModule', () => {
           videoContent: {
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -130,6 +136,7 @@ describe('VideoModule', () => {
                   src
                 }
                 title
+                posterBlockId
               }
             }
           }
@@ -143,7 +150,8 @@ describe('VideoModule', () => {
           videoContent: {
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       ])
     })
@@ -157,7 +165,8 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          startAt: 10
+          startAt: 10,
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -170,6 +179,7 @@ describe('VideoModule', () => {
               parentBlockId
               ... on VideoBlock {
                 startAt
+                posterBlockId
               }
             }
           }
@@ -180,7 +190,8 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          startAt: 10
+          startAt: 10,
+          posterBlockId: 'posterBlockId'
         }
       ])
     })

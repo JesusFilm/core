@@ -5,7 +5,7 @@ export namespace VideoModule {
   interface DefinedFields {
     VideoArclight: 'mediaComponentId' | 'languageId' | 'src';
     VideoGeneric: 'src';
-    VideoBlock: 'id' | 'parentBlockId' | 'title' | 'startAt' | 'endAt' | 'description' | 'muted' | 'autoplay' | 'videoContent';
+    VideoBlock: 'id' | 'parentBlockId' | 'title' | 'startAt' | 'endAt' | 'description' | 'muted' | 'autoplay' | 'videoContent' | 'posterBlockId';
     VideoResponse: 'id' | 'userId' | 'state' | 'position' | 'block';
     Mutation: 'videoResponseCreate';
     VideoContent: 'src';
@@ -70,6 +70,7 @@ export namespace VideoModule {
       muted?: gm.Middleware[];
       autoplay?: gm.Middleware[];
       videoContent?: gm.Middleware[];
+      posterBlockId?: gm.Middleware[];
     };
     VideoResponse?: {
       '*'?: gm.Middleware[];

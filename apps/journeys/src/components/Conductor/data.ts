@@ -715,13 +715,11 @@ export const videoBlock: TreeBlock[] = [
         muted: true,
         videoContent: {
           __typename: 'VideoArclight',
-          // This is the redirected URL from this link
-          // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
-          // Meaning that it's expected for it's tokens key to expire
-          src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4NDlhNDNfYjQ2OGVjZjMxZGQ5MmQ5ZDMwODg1Y2U0YjBjMzIzOGY5YmNiYTEyY2UzZWM2ODBhM2EzZWQzYmU5NzQ1NGJiMA%3D%3D'
+          src: 'https://arc.gt/hls/2_0-FallingPlates/529'
         },
         endAt: null,
         startAt: null,
+        posterBlockId: null,
         children: [
           {
             id: 'trigger.id',
@@ -767,7 +765,7 @@ export const videoBlock: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'NextVideo',
+                label: 'Video with Poster',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
@@ -779,11 +777,11 @@ export const videoBlock: TreeBlock[] = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'Step 3 (No nextBlockId)',
+                label: 'Video With Autoplay',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
-                  blockId: ''
+                  blockId: 'step4.id'
                 },
                 children: []
               }
@@ -805,17 +803,52 @@ export const videoBlock: TreeBlock[] = [
         __typename: 'VideoBlock',
         parentBlockId: 'card3.id',
         title: '',
-        autoplay: true,
+        autoplay: false,
         muted: false,
+        posterBlockId: 'posterBlockId',
         videoContent: {
           __typename: 'VideoArclight',
-          // This is the redirected URL from this link
-          // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
-          // Meaning that it's expected for it's tokens key to expire
-          src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4NDlhNDNfYjQ2OGVjZjMxZGQ5MmQ5ZDMwODg1Y2U0YjBjMzIzOGY5YmNiYTEyY2UzZWM2ODBhM2EzZWQzYmU5NzQ1NGJiMA%3D%3DD'
+          src: 'https://arc.gt/hls/2_0-FallingPlates/529'
         },
         endAt: null,
-        startAt: 21,
+        startAt: null,
+        children: [
+          {
+            id: 'posterBlockId',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+            alt: 'random image from unsplash',
+            width: 1600,
+            height: 1067,
+            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+            parentBlockId: 'videoBlockId',
+            children: []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step4.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    locked: false,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'video3.id',
+        __typename: 'VideoBlock',
+        parentBlockId: 'card3.id',
+        title: '',
+        autoplay: true,
+        muted: false,
+        posterBlockId: null,
+        videoContent: {
+          __typename: 'VideoArclight',
+          src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+        },
+        endAt: null,
+        startAt: 10,
         children: []
       }
     ]

@@ -280,6 +280,12 @@ export interface GetJourney_journey_blocks_VideoBlock {
    * endAt dictates at which point of time the video should end
    */
   endAt: number | null;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
+  posterBlockId: string | null;
   videoContent: GetJourney_journey_blocks_VideoBlock_videoContent;
 }
 

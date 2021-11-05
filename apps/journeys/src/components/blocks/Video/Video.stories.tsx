@@ -22,13 +22,11 @@ const videoBlock: TreeBlock<VideoBlock> = {
   title: 'video1',
   videoContent: {
     __typename: 'VideoArclight',
-    // This is the redirected URL from this link which is handled at the backend.
-    // https://arc.gt/hls/${mediaComponentId}/${languageId} => https://arc.gt/hls/2_0-FallingPlates/529
-    // Meaning that it's expected for it's tokens key and this link to expire
-    src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/f31e0685-c9e6-4afb-9ed5-987b4c0ccde9/10s/master.m3u8?fastly_token=NjE4NDlhNDNfYjQ2OGVjZjMxZGQ5MmQ5ZDMwODg1Y2U0YjBjMzIzOGY5YmNiYTEyY2UzZWM2ODBhM2EzZWQzYmU5NzQ1NGJiMA%3D%3D'
+    src: 'https://arc.gt/hls/2_0-FallingPlates/529'
   },
   startAt: null,
   endAt: null,
+  posterBlockId: null,
   children: []
 }
 
