@@ -166,7 +166,7 @@ export function Video({
           src={videoContent.src}
           type={
             videoContent.__typename === 'VideoArclight'
-              ? "'application/x-mpegURL'"
+              ? 'application/x-mpegURL'
               : undefined
           }
         />
