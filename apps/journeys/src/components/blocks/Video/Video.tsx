@@ -162,7 +162,14 @@ export function Video({
         className="video-js"
         style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
       >
-        <source src={videoContent.src} />
+        <source
+          src={videoContent.src}
+          type={
+            videoContent.__typename === 'VideoArclight'
+              ? "'application/x-mpegURL'"
+              : undefined
+          }
+        />
       </video>
       {children?.map(
         (option) =>

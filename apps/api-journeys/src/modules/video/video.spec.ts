@@ -82,6 +82,7 @@ describe('VideoModule', () => {
                 videoContent {
                   mediaComponentId
                   languageId
+                  src
                 }
                 title
                 posterBlockId
@@ -97,7 +98,8 @@ describe('VideoModule', () => {
           parentBlockId,
           videoContent: {
             mediaComponentId: '2_0-FallingPlates',
-            languageId: '529'
+            languageId: '529',
+            src: 'https://arc.gt/hls/2_0-FallingPlates/529'
           },
           title: 'title',
           posterBlockId: 'posterBlockId'
