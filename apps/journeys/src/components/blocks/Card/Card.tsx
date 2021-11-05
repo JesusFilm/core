@@ -3,12 +3,13 @@ import { ReactElement, ReactNode } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
 import { Paper, Box } from '@mui/material'
 import { SxProps } from '@mui/system'
-import { CardImageCover } from '.'
+import { CardCover } from '.'
 
 export function Card({
   id,
@@ -19,9 +20,9 @@ export function Card({
   themeName,
   fullscreen
 }: TreeBlock<CardBlock>): ReactElement {
-  const coverBlock = children.find(
-    (block) => block.id === coverBlockId && block.__typename === 'ImageBlock'
-  ) as TreeBlock<ImageBlock> | undefined
+  const coverBlock = children.find((block) => block.id === coverBlockId) as
+    | TreeBlock<ImageBlock | VideoBlock>
+    | undefined
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -38,13 +39,31 @@ export function Card({
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundImage:
-          coverBlock != null ? `url(${coverBlock.src})` : undefined
+          coverBlock != null && coverBlock.__typename === 'ImageBlock'
+            ? `url(${coverBlock.src})`
+            : undefined
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
-        <CardImageCover coverBlock={coverBlock}>
-          {renderedChildren}
-        </CardImageCover>
+        <>
+          {coverBlock.__typename === 'ImageBlock' && (
+            <CardCover imageBlock={coverBlock}>{renderedChildren}</CardCover>
+          )}
+          {coverBlock.__typename === 'VideoBlock' && (
+            <CardCover
+              videoBlock={coverBlock}
+              imageBlock={
+                coverBlock.children.find(
+                  (block) =>
+                    block.id === coverBlock.posterBlockId &&
+                    block.__typename === 'ImageBlock'
+                ) as TreeBlock<ImageBlock>
+              }
+            >
+              {renderedChildren}
+            </CardCover>
+          )}
+        </>
       ) : (
         <Box
           sx={{

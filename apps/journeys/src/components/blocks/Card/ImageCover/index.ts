@@ -1,1 +1,0 @@
-export { ImageCover } from './ImageCover'
