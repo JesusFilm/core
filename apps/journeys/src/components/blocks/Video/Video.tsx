@@ -46,14 +46,11 @@ export function Video({
   )
 
   const handleVideoResponse = useCallback(
-    async (
-      videoState: VideoResponseStateEnum,
-      videoPosition?: number
-    ): Promise<void> => {
+    (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
       const id = uuid()
       const position = videoPosition != null ? Math.floor(videoPosition) : 0
 
-      await videoResponseCreate({
+      void videoResponseCreate({
         variables: {
           input: {
             id,
@@ -101,27 +98,27 @@ export function Video({
         responsive: true,
         muted: muted === true
       })
-      if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
-        void playerRef.current.play()
-      }
-      playerRef.current.on('ready', () => {
+      playerRef.current.on('ready', async () => {
         playerRef.current?.currentTime(startAt ?? 0)
+        if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
+          void playerRef.current?.play()
+        }
       })
       playerRef.current.on('playing', () => {
-        void handleVideoResponse(
+        handleVideoResponse(
           VideoResponseStateEnum.PLAYING,
           playerRef.current?.currentTime()
         )
       })
       playerRef.current.on('pause', () => {
-        void handleVideoResponse(
+        handleVideoResponse(
           VideoResponseStateEnum.PAUSED,
           playerRef.current?.currentTime()
         )
       })
       playerRef.current.on('ended', () => {
         playerRef.current?.exitFullscreen()
-        void handleVideoResponse(
+        handleVideoResponse(
           VideoResponseStateEnum.FINISHED,
           playerRef.current?.currentTime()
         )
@@ -135,7 +132,7 @@ export function Video({
       autoplay === true &&
       isActiveBlockOrDescendant(blockId)
     ) {
-      playerRef.current?.play()
+      void playerRef.current.play()
     }
   }, [autoplay, blockId, activeBlock])
 
@@ -148,7 +145,8 @@ export function Video({
         height: '100%',
         backgroundColor: '#000000',
         borderRadius: 4,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        minWidth: { sm: 328, md: '100%' }
       }}
     >
       <video
