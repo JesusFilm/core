@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback
 } from 'react'
-import { Box, useTheme } from '@mui/material'
+import { Box } from '@mui/material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { v4 as uuidv4 } from 'uuid'
@@ -14,10 +14,7 @@ import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from './VideoTrigger'
-import {
-  isActiveBlockOrDescendant,
-  useBlocks
-} from '../../../libs/client/cache/blocks'
+import { isActiveBlockOrDescendant } from '../../../libs/client/cache/blocks'
 
 import 'video.js/dist/video-js.css'
 
@@ -53,17 +50,16 @@ export function Video({
   const handleVideoResponse = useCallback(
     async (
       videoState: VideoResponseStateEnum,
-      videoPosition: number
+      position: number
     ): Promise<void> => {
       const id = uuid()
-      const timestamp = Math.floor(videoPosition)
       await videoResponseCreate({
         variables: {
           input: {
             id,
             blockId,
             state: videoState,
-            position: timestamp
+            position: Math.floor(position)
           }
         },
         optimisticResponse: {
@@ -71,7 +67,7 @@ export function Video({
             id,
             __typename: 'VideoResponse',
             state: videoState,
-            position: timestamp
+            position: Math.floor(position)
           }
         }
       })
@@ -134,7 +130,7 @@ export function Video({
     if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
       playerRef.current?.play()
     }
-  }, [autoplay, blockId])
+  }, [autoplay, blockId, playerRef])
 
   return (
     <Box
