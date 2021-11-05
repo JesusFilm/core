@@ -18,7 +18,7 @@ describe('VideoComponent', () => {
     posterBlockId: 'posterBlockId',
     videoContent: {
       __typename: 'VideoArclight',
-      src: 'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/clear/1226740748001/23f84185-80ff-49bd-8dbb-75c53022daef/10s/master.m3u8?fastly_token=NjE4MGJkMzlfMDQ1OGE5MTNjNzAxODg4NGRiZjFlZGEyOTQwMzkxYjk0NjM4NDIzMjIxNDc0M2I5OGNjNzBlYWY3MzM2OTBlNw%3D%3D'
+      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     children: [
       {
@@ -62,8 +62,12 @@ describe('VideoComponent', () => {
         <Video {...block} />
       </MockedProvider>
     )
-
-    expect(getByTestId('VideoComponent')).toBeInTheDocument()
+    const sourceTag =
+      getByTestId('VideoComponent').querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toEqual(
+      'https://arc.gt/hls/2_0-FallingPlates/529'
+    )
+    expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
   })
 
   it('should render the video through a generic source successfully', () => {
@@ -99,8 +103,12 @@ describe('VideoComponent', () => {
         />
       </MockedProvider>
     )
-
-    expect(getByTestId('VideoComponent')).toBeInTheDocument()
+    const sourceTag =
+      getByTestId('VideoComponent').querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toEqual(
+      'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+    )
+    expect(sourceTag?.getAttribute('type')).toEqual(null)
   })
 
   it('should render the video through a generic source successfully', () => {

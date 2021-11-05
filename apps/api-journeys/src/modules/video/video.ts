@@ -4,7 +4,6 @@ import { AuthenticationError } from 'apollo-server-errors'
 import { transformBlock } from '../block'
 import { transformResponse } from '../response'
 import { VideoModule } from './__generated__/types'
-import fetch from 'node-fetch'
 import { VideoContentResolvers } from '../../__generated__/types'
 
 const typeDefs = gql`
@@ -90,12 +89,8 @@ const resolvers: VideoModule.Resolvers & {
     }
   },
   VideoArclight: {
-    src: async ({ mediaComponentId, languageId }) => {
-      const response = await fetch(
-        `https://arc.gt/hls/${mediaComponentId}/${languageId}`
-      )
-      return response.url
-    }
+    src: async ({ mediaComponentId, languageId }) =>
+      `https://arc.gt/hls/${mediaComponentId}/${languageId}`
   },
   VideoResponse: {
     async block(response, __, { db }) {
