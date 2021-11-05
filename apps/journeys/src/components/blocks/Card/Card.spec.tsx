@@ -79,7 +79,7 @@ describe('CardBlock', () => {
         coverBlockId="imageBlockId1"
       />
     )
-    expect(getByTestId('CardImageCover')).toHaveStyle(
+    expect(getByTestId('CardCover')).toHaveStyle(
       'background-image: url(https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920)'
     )
     expect(getAllByText('How did we get here?')[0]).toBeInTheDocument()

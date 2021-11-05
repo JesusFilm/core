@@ -1,1 +1,0 @@
-export { VideoCover } from './VideoCover'

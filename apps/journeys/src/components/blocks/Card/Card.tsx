@@ -9,7 +9,7 @@ import {
 import { ThemeProvider } from '@core/shared/ui'
 import { Paper, Box } from '@mui/material'
 import { SxProps } from '@mui/system'
-import { CardImageCover, CardVideoCover } from '.'
+import { CardCover } from '.'
 
 export function Card({
   id,
@@ -47,14 +47,21 @@ export function Card({
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
         <>
           {coverBlock.__typename === 'ImageBlock' && (
-            <CardImageCover coverBlock={coverBlock}>
-              {renderedChildren}
-            </CardImageCover>
+            <CardCover imageBlock={coverBlock}>{renderedChildren}</CardCover>
           )}
           {coverBlock.__typename === 'VideoBlock' && (
-            <CardVideoCover coverBlock={coverBlock}>
+            <CardCover
+              videoBlock={coverBlock}
+              imageBlock={
+                coverBlock.children.find(
+                  (block) =>
+                    block.id === coverBlock.posterBlockId &&
+                    block.__typename === 'ImageBlock'
+                ) as TreeBlock<ImageBlock>
+              }
+            >
               {renderedChildren}
-            </CardVideoCover>
+            </CardCover>
           )}
         </>
       ) : (
