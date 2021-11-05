@@ -26,6 +26,7 @@ export function Cover({
   const xsRef = useRef<HTMLDivElement>(null)
   const lgRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<videojs.Player>()
   const theme = useTheme()
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function Cover({
       }
     }
     if (videoRef.current != null) {
-      videojs(videoRef.current, {
+      playerRef.current = videojs(videoRef.current, {
         autoplay: 'muted',
         controls: false,
         userActions: {
@@ -62,8 +63,11 @@ export function Cover({
         muted: true,
         loop: true
       })
+      playerRef.current.on('ready', () => {
+        playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
+      })
     }
-  }, [imageBlock, xsRef, lgRef, theme])
+  }, [imageBlock, theme, videoBlock])
 
   return (
     <>
