@@ -66,7 +66,8 @@ describe('VideoModule', () => {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -83,6 +84,7 @@ describe('VideoModule', () => {
                   languageId
                 }
                 title
+                posterBlockId
               }
             }
           }
@@ -97,7 +99,8 @@ describe('VideoModule', () => {
             mediaComponentId: '2_0-FallingPlates',
             languageId: '529'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       ])
     })
@@ -114,7 +117,8 @@ describe('VideoModule', () => {
           videoContent: {
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -130,6 +134,7 @@ describe('VideoModule', () => {
                   src
                 }
                 title
+                posterBlockId
               }
             }
           }
@@ -143,7 +148,8 @@ describe('VideoModule', () => {
           videoContent: {
             src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
           },
-          title: 'title'
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       ])
     })
@@ -157,7 +163,8 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          startAt: 10
+          startAt: 10,
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -170,6 +177,7 @@ describe('VideoModule', () => {
               parentBlockId
               ... on VideoBlock {
                 startAt
+                posterBlockId
               }
             }
           }
@@ -180,7 +188,8 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          startAt: 10
+          startAt: 10,
+          posterBlockId: 'posterBlockId'
         }
       ])
     })

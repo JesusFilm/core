@@ -29,6 +29,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
   },
   startAt: null,
   endAt: null,
+  posterBlockId: null,
   children: []
 }
 
