@@ -4,9 +4,14 @@ export const VIDEO_FIELDS = gql`
   fragment VideoFields on VideoBlock {
     id
     parentBlockId
-    src
     title
-    volume
+    muted
     autoplay
+    startAt
+    endAt
+    posterBlockId
+    videoContent {
+      src
+    }
   }
 `

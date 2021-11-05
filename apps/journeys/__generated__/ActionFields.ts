@@ -18,10 +18,16 @@ export interface ActionFields_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface ActionFields_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface ActionFields_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: ActionFields_NavigateToJourneyAction_journey | null;
 }
 
 export interface ActionFields_LinkAction {

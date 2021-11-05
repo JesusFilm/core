@@ -18,10 +18,16 @@ export interface RadioOptionFields_action_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface RadioOptionFields_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface RadioOptionFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: RadioOptionFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface RadioOptionFields_action_LinkAction {

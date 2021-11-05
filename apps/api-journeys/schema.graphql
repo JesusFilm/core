@@ -200,7 +200,12 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
-  slug: String
+
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String!
 }
 
 input JourneyUpdateInput {
@@ -246,6 +251,7 @@ type NavigateToBlockAction implements Action {
 type NavigateToJourneyAction implements Action {
   gtmEventName: String
   journeyId: String!
+  journey: Journey
 }
 
 extend type Query {
@@ -378,20 +384,48 @@ enum TypographyVariant {
   overline
 }
 
+type VideoArclight implements VideoContent {
+  mediaComponentId: String!
+  languageId: String!
+  src: String!
+}
+
 type VideoBlock implements Block {
   id: ID!
   parentBlockId: ID
-  src: String!
   title: String!
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
   description: String
-  volume: Int
+  muted: Boolean
   autoplay: Boolean
+  videoContent: VideoContent!
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
+interface VideoContent {
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
+  src: String!
 }
 
 type VideoResponse implements Response {
   id: ID!
   userId: ID!
   state: VideoResponseStateEnum!
+  position: Int
   block: VideoBlock
 }
 
@@ -402,10 +436,27 @@ input VideoResponseCreateInput {
   id: ID
   blockId: ID!
   state: VideoResponseStateEnum!
+  position: Float
 }
 
 enum VideoResponseStateEnum {
   PLAYING
   PAUSED
   FINISHED
+}
+
+"""
+VideoTriggerBlock is a block that indicates the video to navigate
+to the next block at the designated time.
+"""
+type VideoTriggerBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int!
+  action: Action!
 }

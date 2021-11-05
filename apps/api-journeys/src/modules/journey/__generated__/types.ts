@@ -6,6 +6,7 @@ export namespace JourneyModule {
     Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
+    NavigateToJourneyAction: 'journey';
   };
   
   interface DefinedEnumValues {
@@ -27,15 +28,18 @@ export namespace JourneyModule {
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
   export type JourneyUpdateInput = Pick<Types.JourneyUpdateInput, DefinedInputFields['JourneyUpdateInput']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
+  export type NavigateToJourneyAction = Types.NavigateToJourneyAction;
   
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey'] | '__isTypeOf'>;
   export type QueryResolvers = Pick<Types.QueryResolvers, DefinedFields['Query']>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
+  export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction']>;
   
   export interface Resolvers {
     Journey?: JourneyResolvers;
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
+    NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
   };
   
   export interface MiddlewareMap {
@@ -63,6 +67,10 @@ export namespace JourneyModule {
       journeyCreate?: gm.Middleware[];
       journeyUpdate?: gm.Middleware[];
       journeyPublish?: gm.Middleware[];
+    };
+    NavigateToJourneyAction?: {
+      '*'?: gm.Middleware[];
+      journey?: gm.Middleware[];
     };
   };
 }

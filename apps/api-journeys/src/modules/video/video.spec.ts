@@ -53,7 +53,7 @@ describe('VideoModule', () => {
   }
 
   describe('VideoBlock', () => {
-    it('returns VideoBlock', async () => {
+    it('returns VideoBlock with mediaComponentId and languageId', async () => {
       const parentBlockId = uuidv4()
       const video: Block = {
         id: uuidv4(),
@@ -62,8 +62,12 @@ describe('VideoModule', () => {
         parentBlockId,
         parentOrder: 1,
         extraAttrs: {
-          src: 'src',
-          title: 'title'
+          videoContent: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
+          title: 'title',
+          posterBlockId: 'posterBlockId'
         }
       }
       dbMock.block.findMany.mockResolvedValue([video])
@@ -75,8 +79,12 @@ describe('VideoModule', () => {
               __typename
               parentBlockId
               ... on VideoBlock {
-                src
+                videoContent {
+                  mediaComponentId
+                  languageId
+                }
                 title
+                posterBlockId
               }
             }
           }
@@ -87,8 +95,101 @@ describe('VideoModule', () => {
           id: video.id,
           __typename: 'VideoBlock',
           parentBlockId,
-          src: 'src',
-          title: 'title'
+          videoContent: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
+          title: 'title',
+          posterBlockId: 'posterBlockId'
+        }
+      ])
+    })
+
+    it('returns VideoBlock with src', async () => {
+      const parentBlockId = uuidv4()
+      const video: Block = {
+        id: uuidv4(),
+        journeyId,
+        blockType: 'VideoBlock',
+        parentBlockId,
+        parentOrder: 1,
+        extraAttrs: {
+          videoContent: {
+            src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+          },
+          title: 'title',
+          posterBlockId: 'posterBlockId'
+        }
+      }
+      dbMock.block.findMany.mockResolvedValue([video])
+      const { data } = await query(gql`
+        query ($id: ID!) {
+          journey(id: $id) {
+            blocks {
+              id
+              __typename
+              parentBlockId
+              ... on VideoBlock {
+                videoContent {
+                  src
+                }
+                title
+                posterBlockId
+              }
+            }
+          }
+        }
+      `)
+      expect(data?.journey.blocks).toEqual([
+        {
+          id: video.id,
+          __typename: 'VideoBlock',
+          parentBlockId,
+          videoContent: {
+            src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
+          },
+          title: 'title',
+          posterBlockId: 'posterBlockId'
+        }
+      ])
+    })
+
+    it('returns VideoBlock with a starting time', async () => {
+      const parentBlockId = uuidv4()
+      const video: Block = {
+        id: uuidv4(),
+        journeyId,
+        blockType: 'VideoBlock',
+        parentBlockId,
+        parentOrder: 1,
+        extraAttrs: {
+          startAt: 10,
+          posterBlockId: 'posterBlockId'
+        }
+      }
+      dbMock.block.findMany.mockResolvedValue([video])
+      const { data } = await query(gql`
+        query ($id: ID!) {
+          journey(id: $id) {
+            blocks {
+              id
+              __typename
+              parentBlockId
+              ... on VideoBlock {
+                startAt
+                posterBlockId
+              }
+            }
+          }
+        }
+      `)
+      expect(data?.journey.blocks).toEqual([
+        {
+          id: video.id,
+          __typename: 'VideoBlock',
+          parentBlockId,
+          startAt: 10,
+          posterBlockId: 'posterBlockId'
         }
       ])
     })
@@ -104,7 +205,10 @@ describe('VideoModule', () => {
         parentBlockId: null,
         parentOrder: 0,
         extraAttrs: {
-          src: 'src',
+          videoContent: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
           title: 'title'
         }
       }
@@ -115,7 +219,8 @@ describe('VideoModule', () => {
         blockId: block1.id,
         userId,
         extraAttrs: {
-          state: 'PLAYING'
+          state: 'PLAYING',
+          position: 30
         }
       }
       dbMock.response.create.mockResolvedValue(response1)
@@ -126,9 +231,13 @@ describe('VideoModule', () => {
               id
               userId
               state
+              position
               block {
                 id
-                src
+                videoContent {
+                  mediaComponentId
+                  languageId
+                }
                 title
               }
             }
@@ -138,7 +247,8 @@ describe('VideoModule', () => {
           input: {
             id: response1.id,
             blockId: response1.blockId,
-            state: get(response1.extraAttrs, 'state')
+            state: get(response1.extraAttrs, 'state'),
+            position: get(response1.extraAttrs, 'position')
           }
         },
         contextValue: {
@@ -150,9 +260,13 @@ describe('VideoModule', () => {
         id: response1.id,
         userId,
         state: 'PLAYING',
+        position: 30,
         block: {
           id: block1.id,
-          src: 'src',
+          videoContent: {
+            mediaComponentId: '2_0-FallingPlates',
+            languageId: '529'
+          },
           title: 'title'
         }
       })

@@ -71,6 +71,10 @@ const typeDefs = gql`
     journeyUpdate(input: JourneyUpdateInput!): Journey!
     journeyPublish(id: ID!): Journey
   }
+
+  extend type NavigateToJourneyAction {
+    journey: Journey
+  }
 `
 
 const resolvers: JourneyModule.Resolvers = {
@@ -112,7 +116,7 @@ const resolvers: JourneyModule.Resolvers = {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
           e.code === 'P2002' &&
-          get(e.meta, 'target') === ['slug']
+          (get(e.meta, 'target') as string[]).includes('slug')
         ) {
           throw new UserInputError(e.message, {
             argumentName: 'slug'
@@ -141,7 +145,7 @@ const resolvers: JourneyModule.Resolvers = {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
           e.code === 'P2002' &&
-          get(e.meta, 'target') === ['slug']
+          (get(e.meta, 'target') as string[]).includes('slug')
         ) {
           throw new UserInputError(e.message, {
             argumentName: 'slug'
@@ -160,6 +164,11 @@ const resolvers: JourneyModule.Resolvers = {
           published: true
         }
       })
+    }
+  },
+  NavigateToJourneyAction: {
+    journey: async ({ journeyId }, _, { db }) => {
+      return await db.journey.findUnique({ where: { id: journeyId } })
     }
   }
 }

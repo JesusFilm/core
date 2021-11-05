@@ -20,10 +20,16 @@ export interface SignUpFields_action_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface SignUpFields_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface SignUpFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journeyId: string;
+  journey: SignUpFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface SignUpFields_action_LinkAction {

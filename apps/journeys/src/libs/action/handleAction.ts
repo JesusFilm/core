@@ -12,7 +12,9 @@ export function handleAction(
       nextActiveBlock({ id: action.blockId })
       break
     case 'NavigateToJourneyAction':
-      void router.push(`/${action.journeyId}`)
+      if (action.journey?.slug != null) {
+        void router.push(`/${action.journey.slug}`)
+      }
       break
     case 'NavigateAction':
       nextActiveBlock()
