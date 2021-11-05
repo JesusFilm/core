@@ -152,7 +152,7 @@ export function Video({
       <video
         ref={videoRef}
         className="video-js"
-        style={{ display: 'flex', alignSelf: 'center' }}
+        style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
       >
         <source src={videoContent.src} />
       </video>
