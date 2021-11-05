@@ -17,6 +17,7 @@ export function Typography({
       variant={variant ?? undefined}
       align={align ?? undefined}
       color={color ?? undefined}
+      paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
     >
       {content}
