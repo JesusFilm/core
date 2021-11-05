@@ -33,7 +33,7 @@ const typeDefs = gql`
   }
 `
 
-const resolvers: ActionModule.Resolvers & { Action: ActionResolvers } = {
+const resolvers: { Action: ActionResolvers } = {
   Action: {
     __resolveType(action) {
       if ((action as ActionModule.NavigateToBlockAction).blockId != null) {

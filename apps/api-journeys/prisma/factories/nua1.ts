@@ -206,7 +206,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        content: 'A QUICK QUESTION...',
+        content: 'What do you think?',
         variant: 'h6',
         color: 'primary',
         align: 'left'
@@ -499,7 +499,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         align: 'left'
       },
-      parentOrder: 1
+      parentOrder: 0
     }
   })
   await prisma.block.create({
@@ -584,7 +584,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
           journeyId: resurrection?.id
         }
       },
-      parentOrder: 3
+      parentOrder: 4
     }
   })
 }

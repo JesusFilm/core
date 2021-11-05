@@ -731,7 +731,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        content: 'Ever though about telling a friend what this mean to you?',
+        content: 'Ever thought about telling a friend what this means to you?',
         variant: 'h5',
         color: 'primary',
         align: 'left'
@@ -745,7 +745,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: card2.id,
       extraAttrs: {
-        content: 'Sharing your story helps you grow with God and others',
+        content: 'Sharing your story helps you grow with God and others.',
         variant: 'body1',
         color: 'primary',
         align: 'left'
@@ -898,7 +898,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         align: 'left'
       },
-      parentOrder: 0
+      parentOrder: 1
     }
   })
 
@@ -977,7 +977,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: noThanksCard.id,
       extraAttrs: {
-        content: "Don't stop here. Keep exploring an dasking questions.",
+        content: "Don't stop here. Keep exploring and asking questions.",
         variant: 'body1',
         color: 'primary',
         align: 'left'
@@ -1125,7 +1125,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: noThanksGridItemLeft.id,
       extraAttrs: {
-        content: 'Get new released videos by email',
+        content: 'Get new released videos by email.',
         variant: 'h4',
         color: 'primary',
         align: 'left'
@@ -1209,7 +1209,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       blockType: 'TypographyBlock',
       parentBlockId: notSureCard.id,
       extraAttrs: {
-        content: 'God can answer your questions and help overcome worries',
+        content: 'God can answer your questions and help overcome worries.',
         variant: 'body1',
         color: 'primary',
         align: 'left'

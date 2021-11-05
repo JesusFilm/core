@@ -85,7 +85,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       parentBlockId: card.id,
       extraAttrs: {
         content:
-          "Jesus' was found empty three days after his death-what could have happened to the body?",
+          'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
         variant: 'body1',
         color: 'primary',
         align: 'left'
