@@ -37,6 +37,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
+  const coverBlockId = uuidv4()
   const card = await prisma.block.create({
     data: {
       journeyId: journey.id,
@@ -44,7 +45,46 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentBlockId: step.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        coverBlockId
+      },
+      parentOrder: 0
+    }
+  })
+  const posterBlockId = uuidv4()
+  await prisma.block.create({
+    data: {
+      id: coverBlockId,
+      journeyId: journey.id,
+      blockType: 'VideoBlock',
+      parentBlockId: card.id,
+      extraAttrs: {
+        videoContent: {
+          mediaComponentId: '5_0-NUA0201-0-0',
+          languageId: '529'
+        },
+        posterBlockId,
+        muted: true,
+        autoplay: true,
+        startAt: 10,
+        title: 'Fact or fiction',
+        description:
+          'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+      }
+    }
+  })
+  await prisma.block.create({
+    data: {
+      id: posterBlockId,
+      journeyId: journey.id,
+      blockType: 'ImageBlock',
+      parentBlockId: coverBlockId,
+      extraAttrs: {
+        src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        alt: 'Can we trust the story of Jesus?',
+        width: 1920,
+        height: 1080,
+        blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG'
       },
       parentOrder: 0
     }
