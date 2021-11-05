@@ -1,11 +1,5 @@
 import videojs from 'video.js'
-import React, {
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-  useCallback
-} from 'react'
+import React, { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { Box } from '@mui/material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -14,7 +8,10 @@ import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from './VideoTrigger'
-import { isActiveBlockOrDescendant } from '../../../libs/client/cache/blocks'
+import {
+  isActiveBlockOrDescendant,
+  useBlocks
+} from '../../../libs/client/cache/blocks'
 
 import 'video.js/dist/video-js.css'
 
@@ -43,6 +40,7 @@ export function Video({
 }: VideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
+  const { activeBlock } = useBlocks()
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
   )
@@ -103,6 +101,9 @@ export function Video({
         responsive: true,
         muted: muted === true
       })
+      if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
+        void playerRef.current.play()
+      }
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
       })
@@ -126,13 +127,17 @@ export function Video({
         )
       })
     }
-  }, [handleVideoResponse, startAt, muted])
+  }, [handleVideoResponse, startAt, muted, autoplay, blockId])
 
   useEffect(() => {
-    if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
+    if (
+      playerRef.current != null &&
+      autoplay === true &&
+      isActiveBlockOrDescendant(blockId)
+    ) {
       playerRef.current?.play()
     }
-  }, [autoplay, blockId, playerRef])
+  }, [autoplay, blockId, activeBlock])
 
   return (
     <Box
