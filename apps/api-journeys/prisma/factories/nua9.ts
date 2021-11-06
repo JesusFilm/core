@@ -24,7 +24,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
   const nextBlockId = uuidv4()
 
   //   first step
-  const step = await prisma.block.create({
+  const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -36,11 +36,11 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     }
   })
   const coverBlockId = uuidv4()
-  const card = await prisma.block.create({
+  const card1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step.id,
+      parentBlockId: step1.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -55,7 +55,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       id: coverBlockId,
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA1001-0-0',
@@ -89,7 +89,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content: 'TRUSTING JESUS',
         variant: 'h6',
@@ -103,7 +103,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content: 'Can I Know Him?',
         variant: 'h3',
@@ -117,7 +117,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content:
           'Jesus Christ loves you and wants to have a relationship with you. But how does it begin?',
@@ -130,7 +130,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
   })
 
   //   video step
-  const step1 = await prisma.block.create({
+  const step2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -145,7 +145,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         label: 'Explore Now',
         variant: 'contained',
@@ -156,7 +156,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         },
         action: {
           gtmEventName: 'click',
-          blockId: step1.id
+          blockId: step2.id
         }
       },
       parentOrder: 3
@@ -166,7 +166,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step1.id,
+      parentBlockId: step2.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA1001-0-0',
@@ -206,7 +206,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     }
   })
   const image1Id = uuidv4()
-  const card5 = await prisma.block.create({
+  const card2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
@@ -224,7 +224,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'GridContainerBlock',
-      parentBlockId: card5.id,
+      parentBlockId: card2.id,
       extraAttrs: {
         spacing: 6,
         direction: 'row',
@@ -264,7 +264,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       id: image1Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card5.id,
+      parentBlockId: card2.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1433324168539-154874446945?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'Who was this Jesus?',
@@ -736,7 +736,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     }
   })
   const image2Id = uuidv4()
-  const card2 = await prisma.block.create({
+  const card3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
@@ -753,7 +753,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         content: "THAT'S GREAT!",
         variant: 'overline',
@@ -767,7 +767,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         content: 'Ever thought about telling a friend what this means to you?',
         variant: 'h5',
@@ -781,7 +781,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         content: 'Sharing your story helps you grow with God and others.',
         variant: 'body1',
@@ -796,7 +796,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       id: image2Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1527819569483-f188a16975af?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
         alt: 'Jesus In History',
@@ -824,7 +824,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         label: 'Share Now',
         variant: 'contained',

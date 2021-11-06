@@ -27,7 +27,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   const nextBlockId = uuidv4()
 
   //   first step
-  const step = await prisma.block.create({
+  const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -39,11 +39,11 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     }
   })
   const coverBlockId = uuidv4()
-  const card = await prisma.block.create({
+  const card1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step.id,
+      parentBlockId: step1.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -58,7 +58,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       id: coverBlockId,
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0301-0-0',
@@ -92,7 +92,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content: 'The Resurection',
         variant: 'h6',
@@ -106,7 +106,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content: 'What About It?',
         variant: 'h3',
@@ -120,7 +120,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content:
           'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
@@ -133,7 +133,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   })
 
   //   second step
-  const step1 = await prisma.block.create({
+  const step2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -148,7 +148,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         label: 'Find Out',
         variant: 'contained',
@@ -159,7 +159,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         },
         action: {
           gtmEventName: 'click',
-          blockId: step1.id
+          blockId: step2.id
         }
       },
       parentOrder: 3
@@ -169,7 +169,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step1.id,
+      parentBlockId: step2.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0301-0-0',
@@ -182,7 +182,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   })
 
   //   third step
-  const step2 = await prisma.block.create({
+  const step3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -202,17 +202,17 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         triggerStart: 108,
         action: {
           gtmEventName: 'trigger',
-          blockId: step2.id
+          blockId: step3.id
         }
       }
     }
   })
   const image1Id = uuidv4()
-  const card2 = await prisma.block.create({
+  const card3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step2.id,
+      parentBlockId: step3.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -226,7 +226,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       id: image1Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'Where did his body go?',
@@ -241,7 +241,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         content: 'HOW DO YOU THINK?',
         variant: 'h6',
@@ -255,7 +255,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         label: 'Where did his body go?'
       },
@@ -264,7 +264,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   })
 
   //   fourth step
-  const step3 = await prisma.block.create({
+  const step4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -284,7 +284,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'Someone stole it from the tomb',
         action: {
           gtmEventName: 'click',
-          blockId: step3.id
+          blockId: step4.id
         }
       },
       parentOrder: 1
@@ -299,7 +299,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: "He didn't really die",
         action: {
           gtmEventName: 'click',
-          blockId: step3.id
+          blockId: step4.id
         }
       },
       parentOrder: 2
@@ -314,7 +314,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         label: 'He actually rose from the dead',
         action: {
           gtmEventName: 'click',
-          blockId: step3.id
+          blockId: step4.id
         }
       },
       parentOrder: 3
@@ -324,7 +324,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step3.id,
+      parentBlockId: step4.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0301-0-0',
@@ -338,7 +338,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   })
 
   //   fifth step
-  const step4 = await prisma.block.create({
+  const step5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -358,17 +358,17 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         triggerStart: 272,
         action: {
           gtmEventName: 'trigger',
-          blockId: step4.id
+          blockId: step5.id
         }
       }
     }
   })
   const image2Id = uuidv4()
-  const card4 = await prisma.block.create({
+  const card5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step4.id,
+      parentBlockId: step5.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -382,7 +382,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content: 'A QUOTE',
         variant: 'h6',
@@ -396,7 +396,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content:
           "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
@@ -411,7 +411,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content: '- The Bible, John 19:34',
         variant: 'caption',
@@ -426,7 +426,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       id: image2Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
         alt: 'quote',
@@ -439,7 +439,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   })
 
   //   sixth step is now a video
-  const step5 = await prisma.block.create({
+  const step6 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -454,7 +454,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         label: 'What does it mean?',
         variant: 'contained',
@@ -465,7 +465,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         },
         action: {
           gtmEventName: 'click',
-          blockId: step5.id
+          blockId: step6.id
         }
       },
       parentOrder: 4
@@ -475,7 +475,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step5.id,
+      parentBlockId: step6.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0301-0-0',
@@ -489,7 +489,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
   })
 
   // seventh step
-  const step6 = await prisma.block.create({
+  const step7 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -508,17 +508,17 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         triggerStart: 348,
         action: {
           gtmEventName: 'trigger',
-          blockId: step6.id
+          blockId: step7.id
         }
       }
     }
   })
   const image3Id = uuidv4()
-  const card6 = await prisma.block.create({
+  const card7 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step6.id,
+      parentBlockId: step7.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -533,7 +533,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       id: image3Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card7.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80',
         alt: 'Who was this Jesus?',
@@ -548,7 +548,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card7.id,
       extraAttrs: {
         content: "IF IT'S TRUE...",
         variant: 'h6',
@@ -562,7 +562,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card7.id,
       extraAttrs: {
         label: 'What is Christianity to you?',
         action: {
