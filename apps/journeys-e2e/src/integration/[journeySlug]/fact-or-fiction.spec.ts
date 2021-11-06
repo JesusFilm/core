@@ -1,26 +1,27 @@
 describe('fact-or-fiction joruney', () => {
   before(() => {
     cy.visit('/')
+    cy.on('uncaught:exception', (err, runnable) => {
+      return false
+    })
   })
 
   it('should display the correct text for the first step', () => {
     cy.get('a').contains('Fact or Fiction').click()
     // this uncaught error will fail the test, catching it for now
-    cy.on('uncaught:exception', (err, runnable) => {
-      return false
-    })
     cy.get('h2').contains('Fact or Fiction').should('exist')
     cy.get('button').contains('Explore Now').should('exist')
   })
 
-  it('clicking on the button should trigger the video', () => {
+  it('clicking on the button should trigger the video to start', () => {
     cy.get('button').contains('Explore Now').click({force: true}) // button has error, parent class has 'disaply: none' -- remove {force: true} to check
-    cy.get('video').should('have.prop', 'paused', false).and('have.prop', 'ended', false).then(($video) => {
+    cy.get('video').should('have.prop', 'paused', false).and('have.prop', 'ended', false)
+    .then(($video) => {
       $video[0].playbackRate = 10
     })
   })
 
-  it('video should trigger the next step after 2:14', () => {
+  it('video should trigger the next step', () => {
     cy.get('h3').contains('Can we trust the story of Jesus?').should('exist')
     cy.get('button').contains('Yes').should('exist')
     cy.get('button').contains('No').should('exist')
@@ -31,7 +32,7 @@ describe('fact-or-fiction joruney', () => {
     cy.get('video').should('have.prop', 'paused', false).and('have.prop', 'ended', false)
   })
   
-  it('video should trigger the next step after 2:53', () => {
+  it('video should trigger the next step', () => {
     cy.get('h2').contains('Jesus in History').should('exist')
     cy.get('button').contains('One question remains').should('exist')
   })
