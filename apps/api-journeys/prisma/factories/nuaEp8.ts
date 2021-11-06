@@ -27,7 +27,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   const nextBlockId = uuidv4()
 
   //   first step
-  const step = await prisma.block.create({
+  const step1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -39,11 +39,11 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     }
   })
   const coverBlockId = uuidv4()
-  const card = await prisma.block.create({
+  const card1 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step.id,
+      parentBlockId: step1.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -58,7 +58,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       id: coverBlockId,
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0803-0-0',
@@ -92,7 +92,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content: "JESUS' DEATH AND RESURRECTION",
         variant: 'h6',
@@ -106,7 +106,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content: 'Does It Matter?',
         variant: 'h3',
@@ -120,7 +120,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         content:
           'Why did Jesus have to die, and does it affect my life at all?',
@@ -133,7 +133,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   })
 
   //   second step
-  const step1 = await prisma.block.create({
+  const step2 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -148,7 +148,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card.id,
+      parentBlockId: card1.id,
       extraAttrs: {
         label: 'Explore Now',
         variant: 'contained',
@@ -159,7 +159,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         },
         action: {
           gtmEventName: 'click',
-          blockId: step1.id
+          blockId: step2.id
         }
       },
       parentOrder: 3
@@ -169,7 +169,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step1.id,
+      parentBlockId: step2.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0803-0-0',
@@ -182,7 +182,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   })
 
   //   third step
-  const step2 = await prisma.block.create({
+  const step3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -202,17 +202,17 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         triggerStart: 161,
         action: {
           gtmEventName: 'trigger',
-          blockId: step2.id
+          blockId: step3.id
         }
       }
     }
   })
   const image1Id = uuidv4()
-  const card2 = await prisma.block.create({
+  const card3 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step2.id,
+      parentBlockId: step3.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -226,7 +226,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       id: image1Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
         alt: "What's Jesus Got to Do With Me?",
@@ -241,7 +241,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         content: 'WHAT DO YOU THINK?',
         variant: 'h6',
@@ -255,7 +255,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'RadioQuestionBlock',
-      parentBlockId: card2.id,
+      parentBlockId: card3.id,
       extraAttrs: {
         label: 'Do you need to change to be good enough for God?'
       },
@@ -264,7 +264,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   })
 
   //   fourth step
-  const step3 = await prisma.block.create({
+  const step4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -284,7 +284,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: 'Yes, God likes good people',
         action: {
           gtmEventName: 'click',
-          blockId: step3.id
+          blockId: step4.id
         }
       },
       parentOrder: 1
@@ -299,7 +299,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         label: 'No, He will accept me as I am',
         action: {
           gtmEventName: 'click',
-          blockId: step3.id
+          blockId: step4.id
         }
       },
       parentOrder: 2
@@ -309,7 +309,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step3.id,
+      parentBlockId: step4.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0803-0-0',
@@ -323,7 +323,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   })
 
   //   fifth step
-  const step4 = await prisma.block.create({
+  const step5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -343,17 +343,17 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         triggerStart: 221,
         action: {
           gtmEventName: 'trigger',
-          blockId: step4.id
+          blockId: step5.id
         }
       }
     }
   })
   const image2Id = uuidv4()
-  const card4 = await prisma.block.create({
+  const card5 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step4.id,
+      parentBlockId: step5.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -367,7 +367,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content: 'A QUOTE',
         variant: 'h6',
@@ -381,7 +381,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content:
           '"God sent his Son into the world not to judge the world, but to save the world through him."',
@@ -396,7 +396,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'TypographyBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         content: '- The Bible, John 3:17',
         variant: 'caption',
@@ -411,7 +411,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       id: image2Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'quote',
@@ -424,7 +424,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   })
 
   //   sixth step
-  const step5 = await prisma.block.create({
+  const step6 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -439,7 +439,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: card4.id,
+      parentBlockId: card5.id,
       extraAttrs: {
         label: 'What does it mean?',
         variant: 'contained',
@@ -450,7 +450,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         },
         action: {
           gtmEventName: 'click',
-          blockId: step5.id
+          blockId: step6.id
         }
       },
       parentOrder: 4
@@ -460,7 +460,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'VideoBlock',
-      parentBlockId: step5.id,
+      parentBlockId: step6.id,
       extraAttrs: {
         videoContent: {
           mediaComponentId: '5_0-NUA0803-0-0',
@@ -474,7 +474,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   })
 
   // seventh step
-  const step6 = await prisma.block.create({
+  const step7 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'StepBlock',
@@ -493,17 +493,17 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
         triggerStart: 382,
         action: {
           gtmEventName: 'trigger',
-          blockId: step6.id
+          blockId: step7.id
         }
       }
     }
   })
   const image3Id = uuidv4()
-  const card6 = await prisma.block.create({
+  const card7 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'CardBlock',
-      parentBlockId: step6.id,
+      parentBlockId: step7.id,
       extraAttrs: {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
@@ -517,7 +517,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'GridContainerBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card7.id,
       extraAttrs: {
         spacing: 6,
         direction: 'row',
@@ -557,7 +557,7 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       id: image3Id,
       journeyId: journey.id,
       blockType: 'ImageBlock',
-      parentBlockId: card6.id,
+      parentBlockId: card7.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1552676382-77b33d7639fa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
         alt: 'Who was this Jesus?',
