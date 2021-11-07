@@ -17,7 +17,7 @@ const typeDefs = gql`
     LiveTv
     MenuBook
     ChevronRight
-    BeenHereRounded
+    BeenhereRounded
     SendRounded
     SubscriptionsRounded
     ContactSupport

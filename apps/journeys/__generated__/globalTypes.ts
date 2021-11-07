@@ -59,14 +59,19 @@ export enum IconColor {
  */
 export enum IconName {
   ArrowForward = "ArrowForward",
+  BeenhereRounded = "BeenhereRounded",
   ChatBubbleOutline = "ChatBubbleOutline",
   CheckCircle = "CheckCircle",
+  ChevronRight = "ChevronRight",
+  ContactSupport = "ContactSupport",
   FormatQuote = "FormatQuote",
   LiveTv = "LiveTv",
   LockOpen = "LockOpen",
   MenuBook = "MenuBook",
   PlayArrow = "PlayArrow",
   RadioButtonUnchecked = "RadioButtonUnchecked",
+  SendRounded = "SendRounded",
+  SubscriptionsRounded = "SubscriptionsRounded",
   Translate = "Translate",
 }
 

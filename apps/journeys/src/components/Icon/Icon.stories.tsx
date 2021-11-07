@@ -29,7 +29,9 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          marginTop: 1,
+          marginBottom: 1
         }}
       >
         <Typography>{`${variant}`}</Typography>
@@ -46,14 +48,19 @@ Variant.args = {
   size: IconSize.lg,
   variants: [
     IconName.ArrowForward,
+    IconName.BeenhereRounded,
     IconName.ChatBubbleOutline,
     IconName.CheckCircle,
+    IconName.ChevronRight,
+    IconName.ContactSupport,
     IconName.FormatQuote,
     IconName.LiveTv,
     IconName.LockOpen,
     IconName.MenuBook,
     IconName.PlayArrow,
     IconName.RadioButtonUnchecked,
+    IconName.SendRounded,
+    IconName.SubscriptionsRounded,
     IconName.Translate
   ]
 }

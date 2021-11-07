@@ -137,7 +137,7 @@ export type IconColor =
 /** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
   | 'ArrowForward'
-  | 'BeenHereRounded'
+  | 'BeenhereRounded'
   | 'ChatBubbleOutline'
   | 'CheckCircle'
   | 'ChevronRight'

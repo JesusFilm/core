@@ -9,7 +9,12 @@ import {
   ArrowForward,
   ChatBubbleOutline,
   LiveTv,
-  MenuBook
+  MenuBook,
+  ChevronRight,
+  BeenhereRounded,
+  SendRounded,
+  SubscriptionsRounded,
+  ContactSupport
 } from '@mui/icons-material'
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
 
@@ -35,7 +40,12 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
     ArrowForward,
     ChatBubbleOutline,
     LiveTv,
-    MenuBook
+    MenuBook,
+    ChevronRight,
+    BeenhereRounded,
+    SendRounded,
+    SubscriptionsRounded,
+    ContactSupport
   }
 
   return createElement(icons[name], {
