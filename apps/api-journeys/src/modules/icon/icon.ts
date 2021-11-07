@@ -16,6 +16,11 @@ const typeDefs = gql`
     ChatBubbleOutline
     LiveTv
     MenuBook
+    ChevronRight
+    BeenHereRounded
+    SendRounded
+    SubscriptionsRounded
+    ContactSupport
   }
 
   enum IconColor {

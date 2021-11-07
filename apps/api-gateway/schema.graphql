@@ -143,14 +143,19 @@ enum IconColor {
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
   ArrowForward
+  BeenHereRounded
   ChatBubbleOutline
   CheckCircle
+  ChevronRight
+  ContactSupport
   FormatQuote
   LiveTv
   LockOpen
   MenuBook
   PlayArrow
   RadioButtonUnchecked
+  SendRounded
+  SubscriptionsRounded
   Translate
 }
 

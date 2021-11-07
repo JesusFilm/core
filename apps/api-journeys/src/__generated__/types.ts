@@ -137,14 +137,19 @@ export type IconColor =
 /** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
   | 'ArrowForward'
+  | 'BeenHereRounded'
   | 'ChatBubbleOutline'
   | 'CheckCircle'
+  | 'ChevronRight'
+  | 'ContactSupport'
   | 'FormatQuote'
   | 'LiveTv'
   | 'LockOpen'
   | 'MenuBook'
   | 'PlayArrow'
   | 'RadioButtonUnchecked'
+  | 'SendRounded'
+  | 'SubscriptionsRounded'
   | 'Translate';
 
 export type IconSize =
