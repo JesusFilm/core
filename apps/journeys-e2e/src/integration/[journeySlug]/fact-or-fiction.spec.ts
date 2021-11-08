@@ -14,8 +14,10 @@ describe('fact-or-fiction joruney', () => {
   })
 
   it('clicking on the button should trigger the video to start', () => {
-    cy.get('button').contains('Explore Now').click({force: true}) // button has error, parent class has 'disaply: none' -- remove {force: true} to check
-    cy.get('video').should('have.prop', 'paused', false).and('have.prop', 'ended', false)
+    cy.get('button').contains('Explore Now').click({ force: true }) // button has error, parent class has 'disaply: none' -- remove {force: true} to check
+    cy.get('video')
+      .should('have.prop', 'paused', false)
+      .and('have.prop', 'ended', false)
     // cy.get('video').then(($video) => {
     //   $video[0].playbackRate = 10
     // })
@@ -28,10 +30,12 @@ describe('fact-or-fiction joruney', () => {
   })
 
   it('click one of the buttons should trigger the continuation of the video', () => {
-    cy.get('button').contains('Yes').click({force: true})
-    cy.get('video').should('have.prop', 'paused', false).and('have.prop', 'ended', false)
+    cy.get('button').contains('Yes').click({ force: true })
+    cy.get('video')
+      .should('have.prop', 'paused', false)
+      .and('have.prop', 'ended', false)
   })
-  
+
   it('video should trigger the next step', () => {
     cy.get('h2').contains('Jesus in History').should('exist')
     cy.get('button').contains('One question remains').should('exist')
