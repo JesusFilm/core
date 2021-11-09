@@ -10,8 +10,8 @@ describe('journeys', () => {
   it('should display link to What About The Resurrection?', () => {
     cy.get('a').contains('What About The Resurrection?').should('exist')
   })
-  it('should display link to What\'s Jesus Got to Do With Me?', () => {
-    cy.get('a').contains('What\'s Jesus Got to Do With Me?').should('exist')
+  it("should display link to What's Jesus Got to Do With Me?", () => {
+    cy.get('a').contains("What's Jesus Got to Do With Me?").should('exist')
   })
   it('should display link to Decision', () => {
     cy.get('a').contains('Decision').should('exist')
