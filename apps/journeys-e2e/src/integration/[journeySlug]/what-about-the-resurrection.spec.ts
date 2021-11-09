@@ -2,7 +2,9 @@ describe('what-about-the-resurrection', () => {
   before(() => {
     cy.visit('/')
     cy.on('uncaught:exception', (err, runnable) => {
-      return false
+      if (err.message.includes('ResizeObserver loop limit exceeded')) {
+        return false
+      }
     })
   })
 
@@ -17,9 +19,9 @@ describe('what-about-the-resurrection', () => {
     cy.get('video')
       .should('have.prop', 'paused', false)
       .and('have.prop', 'ended', false)
-    // cy.get('video').then(($video) => {
-    //   $video[0].playbackRate = 1
-    // })
+      .then(($video) => {
+        $video[0].playbackRate = 10
+      })
   })
 
   it('Where did his body go?', () => {
@@ -34,6 +36,9 @@ describe('what-about-the-resurrection', () => {
     cy.get('video')
       .should('have.prop', 'paused', false)
       .and('have.prop', 'ended', false)
+      .then(($video) => {
+        $video[0].playbackRate = 10
+      })
   })
 
   it('a quote', () => {
@@ -46,6 +51,9 @@ describe('what-about-the-resurrection', () => {
     cy.get('video')
       .should('have.prop', 'paused', false)
       .and('have.prop', 'ended', false)
+      .then(($video) => {
+        $video[0].playbackRate = 10
+      })
   })
 
   it('What is Christianity to you', () => {
