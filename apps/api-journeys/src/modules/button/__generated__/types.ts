@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace ButtonModule {
   interface DefinedFields {
-    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
+    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'fullWidth' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
   };
   
   interface DefinedEnumValues {
@@ -35,6 +35,7 @@ export namespace ButtonModule {
       id?: gm.Middleware[];
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
+      fullWidth?: gm.Middleware[];
       variant?: gm.Middleware[];
       color?: gm.Middleware[];
       size?: gm.Middleware[];

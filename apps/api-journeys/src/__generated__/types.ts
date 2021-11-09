@@ -30,6 +30,7 @@ export type ButtonBlock = Block & {
   action?: Maybe<Action>;
   color?: Maybe<ButtonColor>;
   endIcon?: Maybe<Icon>;
+  fullWidth?: Maybe<Scalars['Boolean']>;
   id: Scalars['ID'];
   label: Scalars['String'];
   parentBlockId?: Maybe<Scalars['ID']>;
@@ -694,6 +695,7 @@ export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentTyp
   action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['ButtonColor']>, ParentType, ContextType>;
   endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
+  fullWidth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;

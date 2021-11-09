@@ -67,6 +67,7 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
+  fullWidth: boolean | null;
   startIcon: GetJourney_journey_blocks_ButtonBlock_startIcon | null;
   endIcon: GetJourney_journey_blocks_ButtonBlock_endIcon | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;

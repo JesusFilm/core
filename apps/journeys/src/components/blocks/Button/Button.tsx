@@ -12,7 +12,8 @@ export function Button({
   size,
   startIcon,
   endIcon,
-  action
+  action,
+  fullWidth
 }: ButtonFields): ReactElement {
   const router = useRouter()
   const handleClick = (): void => {
@@ -45,7 +46,7 @@ export function Button({
         )
       }
       onClick={handleClick}
-      fullWidth
+      fullWidth={fullWidth ?? undefined}
     >
       {label}
     </MuiButton>

@@ -29,6 +29,7 @@ type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
   endIcon: Icon
+  fullWidth: Boolean
   id: ID!
   label: String!
   parentBlockId: ID

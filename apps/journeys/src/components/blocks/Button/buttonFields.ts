@@ -10,6 +10,7 @@ export const BUTTON_FIELDS = gql`
     buttonVariant: variant
     buttonColor: color
     size
+    fullWidth
     startIcon {
       name
       color

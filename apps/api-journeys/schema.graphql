@@ -11,6 +11,7 @@ type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
   label: String!
+  fullWidth: Boolean
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize

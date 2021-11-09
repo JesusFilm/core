@@ -42,6 +42,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         key={i}
         label={`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
         buttonColor={variant as ButtonColor}
+        fullWidth={false}
       />
     ))}
   </StoryCard>

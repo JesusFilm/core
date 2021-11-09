@@ -58,6 +58,7 @@ const childrenOne: TreeBlock[] = [
     label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
+    fullWidth: true,
     size: ButtonSize.large,
     startIcon: {
       __typename: 'Icon',

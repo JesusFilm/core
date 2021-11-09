@@ -60,6 +60,7 @@ describe('ButtonModule', () => {
           variant: 'contained',
           color: 'primary',
           size: 'large',
+          fullWidth: true,
           startIcon: {
             name: 'ArrowForward',
             color: 'secondary',
@@ -90,6 +91,7 @@ describe('ButtonModule', () => {
                 variant
                 color
                 size
+                fullWidth
                 startIcon {
                   name
                   color
@@ -128,6 +130,7 @@ describe('ButtonModule', () => {
           variant: 'contained',
           color: 'primary',
           size: 'large',
+          fullWidth: true,
           startIcon: {
             name: 'ArrowForward',
             color: 'secondary',

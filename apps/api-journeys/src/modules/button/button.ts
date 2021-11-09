@@ -24,6 +24,7 @@ const typeDefs = gql`
     id: ID!
     parentBlockId: ID
     label: String!
+    fullWidth: Boolean
     variant: ButtonVariant
     color: ButtonColor
     size: ButtonSize

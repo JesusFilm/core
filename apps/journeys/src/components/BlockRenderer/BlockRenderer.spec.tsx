@@ -11,6 +11,7 @@ describe('BlockRenderer', () => {
       label: 'Click to continue',
       buttonVariant: null,
       buttonColor: null,
+      fullWidth: true,
       size: null,
       startIcon: null,
       endIcon: null,

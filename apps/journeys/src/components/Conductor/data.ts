@@ -332,6 +332,7 @@ export const imageBlocks: TreeBlock[] = [
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
+            fullWidth: false,
             size: ButtonSize.large,
             startIcon: {
               __typename: 'Icon',
@@ -405,6 +406,7 @@ export const imageBlocks: TreeBlock[] = [
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
+            fullWidth: true,
             size: ButtonSize.large,
             startIcon: {
               __typename: 'Icon',
@@ -677,6 +679,7 @@ export const imageBlocks: TreeBlock[] = [
             label: 'Start Over',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
+            fullWidth: true,
             size: ButtonSize.large,
             startIcon: {
               __typename: 'Icon',

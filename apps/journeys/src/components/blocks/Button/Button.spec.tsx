@@ -34,6 +34,7 @@ describe('Button', () => {
     id: 'button',
     parentBlockId: 'question',
     label: 'This is a button',
+    fullWidth: true,
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.small,
