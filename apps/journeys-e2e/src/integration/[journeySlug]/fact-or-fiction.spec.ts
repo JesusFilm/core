@@ -2,13 +2,14 @@ describe('fact-or-fiction joruney', () => {
   before(() => {
     cy.visit('/')
     cy.on('uncaught:exception', (err, runnable) => {
-      return false
+      if (err.message.includes('ResizeObserver loop limit exceeded')) {
+        return false
+      }
     })
   })
 
   it('should display the correct text for the first step', () => {
     cy.get('a').contains('Fact or Fiction').click()
-    // this uncaught error will fail the test, catching it for now
     cy.get('h2').contains('Fact or Fiction').should('exist')
     cy.get('button').contains('Explore Now').should('exist')
   })
@@ -18,9 +19,9 @@ describe('fact-or-fiction joruney', () => {
     cy.get('video')
       .should('have.prop', 'paused', false)
       .and('have.prop', 'ended', false)
-    // cy.get('video').then(($video) => {
-    //   $video[0].playbackRate = 10
-    // })
+      .then(($video) => {
+        $video[0].playbackRate = 10
+      })
   })
 
   it('video should trigger the next step', () => {
@@ -34,6 +35,9 @@ describe('fact-or-fiction joruney', () => {
     cy.get('video')
       .should('have.prop', 'paused', false)
       .and('have.prop', 'ended', false)
+      .then(($video) => {
+        $video[0].playbackRate = 10
+      })
   })
 
   it('video should trigger the next step', () => {
@@ -42,6 +46,7 @@ describe('fact-or-fiction joruney', () => {
   })
 
   it('clicking on the button should show the response step', () => {
+    cy.get('button').contains('One question remains').click({ force: true })
     cy.get('h2').contains('Who was this Jesus?').should('exist')
     cy.get('button').contains('A great influencer').should('exist')
     cy.get('button').contains('The Son of God').should('exist')
