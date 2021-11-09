@@ -8,13 +8,13 @@ describe('what-about-the-resurrection', () => {
     })
   })
 
-  it('what about it', () => {
+  it('should display the correct text for the first step', () => {
     cy.get('a').contains('What About The Resurrection?').click()
     cy.get('h3').contains('What About It?').should('exist')
     cy.get('button').contains('Find Out').should('exist')
   })
 
-  it('(video start)', () => {
+  it('clicking on the button should trigger the video to start', () => {
     cy.get('button').contains('Find Out').click({ force: true })
     cy.get('video')
       .should('have.prop', 'paused', false)
@@ -24,14 +24,14 @@ describe('what-about-the-resurrection', () => {
       })
   })
 
-  it('Where did his body go?', () => {
+  it('video should trigger the next step after some time', () => {
     cy.get('h3').contains('Where did his body go?').should('exist')
     cy.get('button').contains('Someone stole').should('exist')
     cy.get('button').contains("didn't really die").should('exist')
     cy.get('button').contains('rose from the dead').should('exist')
   })
 
-  it('(video continues 1)', () => {
+  it('clicking one of the buttons should trigger the continuation of the video', () => {
     cy.get('button').contains('Someone stole').click({ force: true })
     cy.get('video')
       .should('have.prop', 'paused', false)
@@ -41,12 +41,12 @@ describe('what-about-the-resurrection', () => {
       })
   })
 
-  it('a quote', () => {
+  it('video should trigger the next step after some time', () => {
     cy.get('h6').contains("pierced Jesus' side").should('exist')
     cy.get('button').contains('What does it mean?').should('exist')
   })
 
-  it('(video continues 2)', () => {
+  it('clicking one of the buttons should trigger the continuation of the video', () => {
     cy.get('button').contains('What does it mean?').click({ force: true })
     cy.get('video')
       .should('have.prop', 'paused', false)
@@ -56,7 +56,7 @@ describe('what-about-the-resurrection', () => {
       })
   })
 
-  it('What is Christianity to you', () => {
+  it('video should trigger the next final step after some time', () => {
     cy.get('h3').contains('What is Christianity to you?').should('exist')
     cy.get('button').contains('many ways').should('exist')
     cy.get('button').contains('great lie').should('exist')
