@@ -9,6 +9,7 @@ const Demo = {
   component: Conductor,
   title: 'Journeys/Conductor',
   parameters: {
+    ...journeysConfig.parameters,
     layout: 'fullscreen'
   }
 }

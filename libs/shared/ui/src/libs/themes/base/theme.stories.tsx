@@ -17,7 +17,12 @@ const ThemeDemo = {
   ...sharedUiConfig,
   component: Typography,
   title: 'Default Theme',
-  parameters: { theme: 'dark' }
+  parameters: {
+    theme: 'dark',
+    chromatic: {
+      viewports: [600]
+    }
+  }
 }
 
 interface ColorStoryProps extends TypographyProps {
