@@ -14,6 +14,33 @@ describe('fact-or-fiction joruney', () => {
     cy.get('button').contains('Explore Now').should('exist')
   })
 
+  it('Should have correct metadata', () => {
+    // cy.get('head meta[property="og:image"]').should(
+    //   'have.attr',
+    //   'content',
+    //   '[image url]'
+    // )
+    // cy.get('head meta[name="description"]').should(
+    //   'have.attr',
+    //   'content',
+    //   'some description'
+    // )
+    cy.get('head meta[property="og:title"]').should(
+      'have.attr',
+      'content',
+      'Fact or Fiction'
+    )
+    cy.title().should('eq', 'Fact or Fiction')
+  })
+
+  it('Should have correct slug', () => {
+    cy.url().should('include', '/fact-or-fiction')
+  })
+
+  it('should not have any data from other steps', () => {
+    cy.get('h2').contains('Who was this Jesus?').should('not.exist')
+  })
+
   it('clicking on the button should trigger the video to start', () => {
     cy.get('button').contains('Explore Now').click({ force: true }) // error, parent class has 'disaply: none'
     cy.get('video')

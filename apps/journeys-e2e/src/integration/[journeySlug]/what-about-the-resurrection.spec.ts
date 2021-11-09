@@ -14,6 +14,23 @@ describe('what-about-the-resurrection', () => {
     cy.get('button').contains('Find Out').should('exist')
   })
 
+  it('Should have correct metadata', () => {
+    cy.get('head meta[property="og:title"]').should(
+      'have.attr',
+      'content',
+      'What About The Resurrection?'
+    )
+    cy.title().should('eq', 'What About The Resurrection?')
+  })
+
+  it('Should have correct slug', () => {
+    cy.url().should('include', '/what-about-the-resurrection')
+  })
+
+  it('should not have any data from other steps', () => {
+    cy.get('h3').contains('What is Christianity to you?').should('not.exist')
+  })
+
   it('clicking on the button should trigger the video to start', () => {
     cy.get('button').contains('Find Out').click({ force: true })
     cy.get('video')
