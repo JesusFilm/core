@@ -1,17 +1,11 @@
-describe('fact-or-fiction joruney', () => {
+describe('fact-or-fiction', () => {
   before(() => {
-    cy.visit('/')
+    cy.visit('/fact-or-fiction')
     cy.on('uncaught:exception', (err, runnable) => {
       if (err.message.includes('ResizeObserver loop limit exceeded')) {
         return false
       }
     })
-  })
-
-  it('should display the correct text for the first step', () => {
-    cy.get('a').contains('Fact or Fiction').click()
-    cy.get('h2').contains('Fact or Fiction').should('exist')
-    cy.get('button').contains('Explore Now').should('exist')
   })
 
   it('Should have correct metadata', () => {
@@ -35,6 +29,23 @@ describe('fact-or-fiction joruney', () => {
 
   it('Should have correct slug', () => {
     cy.url().should('include', '/fact-or-fiction')
+  })
+})
+
+describe('fact-or-fiction user joruney', () => {
+  before(() => {
+    cy.visit('/')
+    cy.on('uncaught:exception', (err, runnable) => {
+      if (err.message.includes('ResizeObserver loop limit exceeded')) {
+        return false
+      }
+    })
+  })
+
+  it('should display the correct text for the first step', () => {
+    cy.get('a').contains('Fact or Fiction').click()
+    cy.get('h2').contains('Fact or Fiction').should('exist')
+    cy.get('button').contains('Explore Now').should('exist')
   })
 
   it('should not have any data from other steps', () => {

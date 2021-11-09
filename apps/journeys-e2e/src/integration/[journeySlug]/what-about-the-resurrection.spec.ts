@@ -1,17 +1,11 @@
-describe('what-about-the-resurrection', () => {
+describe('what-about-the-resurrectopm', () => {
   before(() => {
-    cy.visit('/')
+    cy.visit('/what-about-the-resurrection')
     cy.on('uncaught:exception', (err, runnable) => {
       if (err.message.includes('ResizeObserver loop limit exceeded')) {
         return false
       }
     })
-  })
-
-  it('should display the correct text for the first step', () => {
-    cy.get('a').contains('What About The Resurrection?').click()
-    cy.get('h3').contains('What About It?').should('exist')
-    cy.get('button').contains('Find Out').should('exist')
   })
 
   it('Should have correct metadata', () => {
@@ -25,6 +19,23 @@ describe('what-about-the-resurrection', () => {
 
   it('Should have correct slug', () => {
     cy.url().should('include', '/what-about-the-resurrection')
+  })
+})
+
+describe('what-about-the-resurrection user journey', () => {
+  before(() => {
+    cy.visit('/')
+    cy.on('uncaught:exception', (err, runnable) => {
+      if (err.message.includes('ResizeObserver loop limit exceeded')) {
+        return false
+      }
+    })
+  })
+
+  it('should display the correct text for the first step', () => {
+    cy.get('a').contains('What About The Resurrection?').click()
+    cy.get('h3').contains('What About It?').should('exist')
+    cy.get('button').contains('Find Out').should('exist')
   })
 
   it('should not have any data from other steps', () => {
