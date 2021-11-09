@@ -13,8 +13,8 @@ const customViewports = {
   mobileMin: {
     name: 'Small Mobile',
     styles: {
-      width: '320px',
-      height: '568px'
+      width: '360px',
+      height: '640px'
     },
     type: 'mobile'
   },
@@ -44,9 +44,7 @@ module.exports = {
         disable: true
       }
     },
-    // 2x viewport breakpoints (XS, SM, MD) Largest out of bounds for Chromatic.
-    // TODO: Split out light / dark mode tests during Cooldown
-    chromatic: { viewports: [640, 1136, 1200] },
+    chromatic: { viewports: [320, 568, 600, 961, 1200] },
     controls: { disabled: true },
     viewport: {
       viewports: customViewports

@@ -20,10 +20,10 @@ const ThemeContainer = ({
   return (
     <div
       style={{
-        position: 'absolute',
-        inset: mode === 'light' ? '0px 50vw 0px 0px' : '0px 0px 0px 50vw',
-        width: '50vw',
-        maxHeight: '100vh',
+        inset: mode === 'light' ? 'auto 0px 0px 0px' : '0px 0px 0vh 0px',
+        width: '100%',
+        height: 'auto',
+        minHeight: '50vh',
         overflow: 'auto',
         padding: layout === 'padded' ? '1.5rem' : '0px',
         background: themes.base[mode as ThemeMode].palette.background.default,
@@ -51,7 +51,11 @@ export const ThemeDecorator = ({
         <div
           style={{
             display: 'flex',
-            flexDirection: 'row'
+            flexDirection: 'column',
+            maxWidth: '100vw',
+            maxHeight: '160vh',
+            margin: layout === 'fullscreen' ? '0px' : '-16px',
+            overflowX: 'hidden'
           }}
         >
           <ThemeContainer mode="light" children={children} layout={layout} />
