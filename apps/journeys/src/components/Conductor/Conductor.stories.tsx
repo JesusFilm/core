@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 import Conductor, { ConductorProps } from '.'
-import { basic, imageBlocks } from './data'
+import { basic, imageBlocks, videoBlock } from './data'
 import { journeysConfig } from '../../libs/storybook'
 
 const Demo = {
@@ -53,6 +53,11 @@ WithContentOnDark.args = {
 }
 WithContentOnDark.parameters = {
   theme: 'dark'
+}
+
+export const WithVideoContent: Story<ConductorProps> = Template.bind({})
+WithVideoContent.args = {
+  blocks: videoBlock
 }
 
 export default Demo as Meta

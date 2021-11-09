@@ -11,6 +11,7 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'
 import { handleAction } from '../../../libs/action'
 import { Icon } from '../../Icon'
+import { useRouter } from 'next/router'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
   mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
@@ -38,6 +39,7 @@ export const SignUp = ({
   submitLabel = 'Submit',
   action
 }: SignUpProps): ReactElement => {
+  const router = useRouter()
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
   )
@@ -83,7 +85,7 @@ export const SignUp = ({
       onSubmit={(values) => {
         // TODO: Handle server error responses when available
         void onSubmitHandler(values).then(() => {
-          handleAction(action)
+          handleAction(router, action)
         })
       }}
     >

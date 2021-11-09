@@ -152,11 +152,17 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      src: 'https://www.youtube.com',
+      videoContent: {
+        __typename: 'VideoArclight',
+        src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      },
       title: 'title',
-      volume: 0,
       autoplay: false,
+      muted: false,
+      endAt: null,
+      startAt: null,
       parentBlockId: null,
+      posterBlockId: null,
       children: []
     }
     const { getByTestId } = renderWithApolloClient(<BlockRenderer {...block} />)

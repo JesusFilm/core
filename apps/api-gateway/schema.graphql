@@ -162,6 +162,11 @@ enum IconSize {
   xl
 }
 
+enum IdType {
+  databaseId
+  slug
+}
+
 type ImageBlock implements Block {
   alt: String!
 
@@ -205,6 +210,7 @@ type Journey
   locale: String! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   published: Boolean! @join__field(graph: JOURNEYS)
+  slug: String! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -219,6 +225,12 @@ input JourneyCreateInput {
   """
   id: ID
   locale: String
+
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String!
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
@@ -229,6 +241,7 @@ input JourneyUpdateInput {
   id: ID!
   locale: String
   primaryImageBlockId: ID
+  slug: String
   themeMode: ThemeMode
   themeName: ThemeName
   title: String
@@ -265,11 +278,12 @@ type NavigateToBlockAction implements Action {
 
 type NavigateToJourneyAction implements Action {
   gtmEventName: String
+  journey: Journey
   journeyId: String!
 }
 
 type Query {
-  journey(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
 }
 
@@ -400,19 +414,47 @@ enum TypographyVariant {
   subtitle2
 }
 
+type VideoArclight implements VideoContent {
+  languageId: String!
+  mediaComponentId: String!
+  src: String!
+}
+
 type VideoBlock implements Block {
   autoplay: Boolean
   description: String
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
   id: ID!
+  muted: Boolean
   parentBlockId: ID
-  src: String!
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
   title: String!
-  volume: Int
+  videoContent: VideoContent!
+}
+
+interface VideoContent {
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
+  src: String!
 }
 
 type VideoResponse implements Response {
   block: VideoBlock
   id: ID!
+  position: Int
   state: VideoResponseStateEnum!
   userId: ID!
 }
@@ -424,6 +466,7 @@ input VideoResponseCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  position: Float
   state: VideoResponseStateEnum!
 }
 
@@ -431,4 +474,20 @@ enum VideoResponseStateEnum {
   FINISHED
   PAUSED
   PLAYING
+}
+
+"""
+VideoTriggerBlock is a block that indicates the video to navigate
+to the next block at the designated time.
+"""
+type VideoTriggerBlock implements Block {
+  action: Action!
+  id: ID!
+  parentBlockId: ID
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int!
 }

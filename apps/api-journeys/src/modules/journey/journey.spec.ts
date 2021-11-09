@@ -4,380 +4,563 @@ import { journeyModule } from '.'
 import { pick } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import dbMock from '../../../tests/dbMock'
-import { Journey, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
+import {
+  Journey,
+  ThemeName,
+  ThemeMode,
+  Prisma,
+  Block
+} from '.prisma/api-journeys-client'
+import { DocumentNode, ExecutionResult } from 'graphql'
+import { actionModule, blockModule, buttonModule, iconModule } from '..'
 
-it('returns published journeys', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
+describe('JourneyModule', () => {
+  let app
 
-  const publishedJourney: Journey = {
-    id: uuidv4(),
-    title: 'published',
-    published: true,
-    locale: 'id-ID',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null,
-    primaryImageBlockId: null
+  beforeEach(() => {
+    app = testkit.testModule(journeyModule, {
+      schemaBuilder
+    })
+  })
+
+  async function query(
+    document: DocumentNode,
+    variableValues?: { [key: string]: unknown },
+    contextValue?: { [key: string]: unknown }
+  ): Promise<ExecutionResult> {
+    return await testkit.execute(app, {
+      document,
+      variableValues,
+      contextValue: {
+        ...contextValue,
+        db: dbMock
+      }
+    })
   }
-  dbMock.journey.findMany.mockResolvedValue([publishedJourney])
 
-  const { data } = await testkit.execute(app, {
-    document: gql`
-      query {
-        journeys {
-          id
-          title
-          published
-          locale
-          themeName
-          themeMode
+  describe('Query', () => {
+    describe('journeys', () => {
+      it('returns published journeys', async () => {
+        const publishedJourney: Journey = {
+          id: uuidv4(),
+          title: 'published',
+          published: true,
+          locale: 'id-ID',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'published-slug'
         }
-      }
-    `,
-    contextValue: {
-      db: dbMock,
-      userId: 'userId'
-    }
-  })
-  expect(data?.journeys).toEqual([
-    pick(publishedJourney, [
-      'id',
-      'title',
-      'published',
-      'locale',
-      'themeName',
-      'themeMode'
-    ])
-  ])
-})
+        dbMock.journey.findMany.mockResolvedValue([publishedJourney])
+        const { data } = await query(gql`
+          query {
+            journeys {
+              id
+              title
+              published
+              locale
+              themeName
+              themeMode
+              slug
+            }
+          }
+        `)
+        expect(data?.journeys).toEqual([
+          pick(publishedJourney, [
+            'id',
+            'title',
+            'published',
+            'locale',
+            'themeName',
+            'themeMode',
+            'slug'
+          ])
+        ])
+      })
+    })
 
-it('returns journey', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
-
-  const journey = {
-    id: uuidv4(),
-    title: 'published',
-    published: true,
-    locale: 'hi-IN',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null,
-    primaryImageBlockId: null
-  }
-  dbMock.journey.findUnique.mockResolvedValue(journey)
-
-  const { data } = await testkit.execute(app, {
-    document: gql`
-      query ($id: ID!) {
-        journey(id: $id) {
-          id
-          title
-          published
-          locale
-          themeName
-          themeMode
+    describe('journey', () => {
+      it('returns journey', async () => {
+        const journey = {
+          id: uuidv4(),
+          title: 'published',
+          published: true,
+          locale: 'hi-IN',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'published-slug'
         }
-      }
-    `,
-    variableValues: {
-      id: journey.id
-    },
-    contextValue: {
-      db: dbMock,
-      userId: 'userId'
-    }
+        dbMock.journey.findUnique.mockResolvedValue(journey)
+
+        const { data } = await query(
+          gql`
+            query ($id: ID!) {
+              journey(id: $id) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                slug
+              }
+            }
+          `,
+          {
+            id: journey.id
+          }
+        )
+
+        expect(data?.journey).toEqual(
+          pick(journey, [
+            'id',
+            'title',
+            'published',
+            'locale',
+            'themeName',
+            'themeMode',
+            'slug'
+          ])
+        )
+      })
+    })
   })
 
-  expect(data?.journey).toEqual(
-    pick(journey, [
-      'id',
-      'title',
-      'published',
-      'locale',
-      'themeName',
-      'themeMode'
-    ])
-  )
-})
-
-it('creates journey', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
-
-  const journey: Journey = {
-    id: uuidv4(),
-    title: 'my journey',
-    published: false,
-    locale: 'hi-IN',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: 'test description',
-    primaryImageBlockId: null
-  }
-  dbMock.journey.create.mockResolvedValue(journey)
-
-  const { data } = await testkit.execute(app, {
-    document: gql`
-      mutation ($input: JourneyCreateInput!) {
-        journeyCreate(input: $input) {
-          id
-          title
-          published
-          locale
-          themeName
-          themeMode
-          description
+  describe('Mutation', () => {
+    describe('journeyCreate', () => {
+      it('creates journey', async () => {
+        const journey: Journey = {
+          id: uuidv4(),
+          title: 'my journey',
+          published: false,
+          locale: 'hi-IN',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: 'test description',
+          primaryImageBlockId: null,
+          slug: 'my-journey'
         }
-      }
-    `,
-    variableValues: {
-      input: {
-        title: 'my journey',
-        locale: 'hi-IN',
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        description: 'test description'
-      }
-    },
-    contextValue: {
-      db: dbMock,
-      userId: 'userId'
-    }
-  })
+        dbMock.journey.create.mockResolvedValue(journey)
 
-  expect(data?.journeyCreate).toEqual({
-    id: journey.id,
-    title: 'my journey',
-    published: false,
-    locale: 'hi-IN',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: 'test description'
-  })
-})
+        const { data } = await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                description
+                slug
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              locale: 'hi-IN',
+              themeName: ThemeName.base,
+              themeMode: ThemeMode.light,
+              description: 'test description',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
 
-it('creates journey with default locale and theme', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
+        expect(data?.journeyCreate).toEqual({
+          id: journey.id,
+          title: 'my journey',
+          published: false,
+          locale: 'hi-IN',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: 'test description',
+          slug: 'my-journey'
+        })
+      })
 
-  const journey: Journey = {
-    id: uuidv4(),
-    title: 'my journey',
-    published: false,
-    locale: 'en-US',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null,
-    primaryImageBlockId: null
-  }
-  dbMock.journey.create.mockResolvedValue(journey)
-
-  const { data } = await testkit.execute(app, {
-    document: gql`
-      mutation ($input: JourneyCreateInput!) {
-        journeyCreate(input: $input) {
-          id
-          title
-          published
-          locale
-          themeName
-          themeMode
-          description
+      it('creates journey with default locale and theme', async () => {
+        const journey: Journey = {
+          id: uuidv4(),
+          title: 'my journey',
+          published: false,
+          locale: 'en-US',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'my-journey'
         }
-      }
-    `,
-    variableValues: {
-      input: {
-        title: 'my journey'
-      }
-    },
-    contextValue: {
-      db: dbMock,
-      userId: 'userId'
-    }
-  })
+        dbMock.journey.create.mockResolvedValue(journey)
 
-  expect(data?.journeyCreate).toEqual({
-    id: journey.id,
-    title: 'my journey',
-    published: false,
-    locale: 'en-US',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null
-  })
-})
+        const { data } = await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                description
+                slug
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
 
-it('updates journey', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
+        expect(data?.journeyCreate).toEqual({
+          id: journey.id,
+          title: 'my journey',
+          published: false,
+          locale: 'en-US',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          slug: 'my-journey'
+        })
+      })
 
-  const journey: Journey = {
-    id: uuidv4(),
-    title: 'my journey',
-    published: false,
-    locale: 'en-US',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null,
-    primaryImageBlockId: null
-  }
-  dbMock.journey.update.mockResolvedValue(journey)
+      it('throws an error on create without authentication', async () => {
+        const { errors } = await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey'
+            }
+          }
+        )
 
-  const { data } = await testkit.execute(app, {
-    document: gql`
-      mutation ($input: JourneyUpdateInput!) {
-        journeyUpdate(input: $input) {
-          id
-          title
-          published
-          locale
-          themeName
-          themeMode
-          description
-          primaryImageBlockId
+        expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+      })
+
+      it('throws an error if attempting to create a slug that already exists', async () => {
+        dbMock.journey.create.mockImplementation(() => {
+          throw new Prisma.PrismaClientKnownRequestError(
+            'slug already exists',
+            'P2002',
+            '1.0',
+            { target: ['slug'] }
+          )
+        })
+
+        const { errors } = await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+                slug
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
+        expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
+      })
+    })
+
+    describe('journeyUpdate', () => {
+      it('updates journey', async () => {
+        const journey: Journey = {
+          id: uuidv4(),
+          title: 'my journey',
+          published: false,
+          locale: 'en-US',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'my-journey'
         }
-      }
-    `,
-    variableValues: {
-      input: {
-        id: journey.id,
-        title: 'my journey',
-        primaryImageBlockId: '1'
-      }
-    },
-    contextValue: {
-      db: dbMock,
-      userId: 'userId'
-    }
-  })
+        dbMock.journey.update.mockResolvedValue(journey)
 
-  expect(data?.journeyUpdate).toEqual({
-    id: journey.id,
-    title: 'my journey',
-    published: false,
-    locale: 'en-US',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null
-    // primaryImageBlockId: '1'
-  })
-})
+        const { data } = await query(
+          gql`
+            mutation ($input: JourneyUpdateInput!) {
+              journeyUpdate(input: $input) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                description
+                slug
+              }
+            }
+          `,
+          {
+            input: {
+              id: journey.id,
+              title: 'my journey',
+              primaryImageBlockId: 'primaryImageBlockId',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
 
-it('publishes journey', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
+        expect(data?.journeyUpdate).toEqual({
+          id: journey.id,
+          title: 'my journey',
+          published: false,
+          locale: 'en-US',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          slug: 'my-journey'
+        })
+      })
 
-  const journey: Journey = {
-    id: uuidv4(),
-    title: 'my journey',
-    published: true,
-    locale: 'id-ID',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null,
-    primaryImageBlockId: null
-  }
-  dbMock.journey.update.mockResolvedValue(journey)
+      it('throws an error on update without authentication', async () => {
+        const { errors } = await query(
+          gql`
+            mutation ($input: JourneyUpdateInput!) {
+              journeyUpdate(input: $input) {
+                id
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              id: journeyModule.id
+            }
+          }
+        )
+        expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+      })
 
-  const { data } = await testkit.execute(app, {
-    document: gql`
-      mutation ($id: ID!) {
-        journeyPublish(id: $id) {
-          id
-          title
-          published
-          locale
-          themeName
-          themeMode
-          description
-          primaryImageBlockId
+      it('throws an error if attempting to update a slug that already exists', async () => {
+        dbMock.journey.update.mockImplementation(() => {
+          throw new Prisma.PrismaClientKnownRequestError(
+            'slug already exists',
+            'P2002',
+            '1.0',
+            { target: ['slug'] }
+          )
+        })
+
+        const { errors } = await query(
+          gql`
+            mutation ($input: JourneyUpdateInput!) {
+              journeyUpdate(input: $input) {
+                id
+                slug
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey',
+              id: journeyModule.id
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
+        expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
+      })
+    })
+
+    describe('journeyPublish', () => {
+      it('publishes journey', async () => {
+        const journey: Journey = {
+          id: uuidv4(),
+          title: 'my journey',
+          published: true,
+          locale: 'id-ID',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'my-journey'
         }
-      }
-    `,
-    variableValues: {
-      id: journey.id
-    },
-    contextValue: {
-      db: dbMock,
-      userId: 'userId'
-    }
+        dbMock.journey.update.mockResolvedValue(journey)
+
+        const { data } = await query(
+          gql`
+            mutation ($id: ID!) {
+              journeyPublish(id: $id) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                description
+                primaryImageBlockId
+                slug
+              }
+            }
+          `,
+          {
+            id: journey.id
+          },
+          {
+            userId: 'userId'
+          }
+        )
+
+        expect(data?.journeyPublish).toEqual({
+          id: journey.id,
+          title: 'my journey',
+          published: true,
+          locale: 'id-ID',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          slug: 'my-journey'
+        })
+      })
+
+      it('throws an error on publish without authentication', async () => {
+        const { errors } = await query(
+          gql`
+            mutation ($id: ID!) {
+              journeyPublish(id: $id) {
+                id
+              }
+            }
+          `,
+          {
+            id: journeyModule.id
+          }
+        )
+
+        expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
+      })
+    })
   })
 
-  expect(data?.journeyPublish).toEqual({
-    id: journey.id,
-    title: 'my journey',
-    published: true,
-    locale: 'id-ID',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    description: null
-  })
-})
+  describe('NavigateToJourneyAction', () => {
+    beforeEach(() => {
+      app = testkit.testModule(journeyModule, {
+        schemaBuilder,
+        modules: [blockModule, buttonModule, actionModule, iconModule]
+      })
+    })
 
-it('throws an error on create without authentication', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
-
-  const { errors } = await testkit.execute(app, {
-    document: gql`
-      mutation ($input: JourneyCreateInput!) {
-        journeyCreate(input: $input) {
-          id
+    describe('journey', () => {
+      it('returns journey on NavigateToJourneyAction', async () => {
+        const journey = {
+          id: uuidv4(),
+          title: 'published',
+          published: true,
+          locale: 'hi-IN',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'published-slug'
         }
-      }
-    `,
-    variableValues: {
-      input: {
-        title: 'my journey'
-      }
-    },
-    contextValue: {
-      db: dbMock
-    }
-  })
+        dbMock.journey.findUnique.mockResolvedValue(journey)
 
-  expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
-})
-
-it('throws an error on update without authentication', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
-
-  const { errors } = await testkit.execute(app, {
-    document: gql`
-      mutation ($input: JourneyUpdateInput!) {
-        journeyUpdate(input: $input) {
-          id
+        const button: Block = {
+          id: uuidv4(),
+          journeyId: journey.id,
+          blockType: 'ButtonBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          extraAttrs: {
+            label: 'label',
+            variant: 'contained',
+            color: 'primary',
+            size: 'large',
+            startIcon: {
+              name: 'ArrowForward',
+              color: 'secondary',
+              size: 'lg'
+            },
+            endIcon: {
+              name: 'LockOpen',
+              color: 'action',
+              size: 'xl'
+            },
+            action: {
+              gtmEventName: 'gtmEventName',
+              journeyId: journey.id
+            }
+          }
         }
-      }
-    `,
-    variableValues: {
-      input: {
-        title: 'my journey',
-        id: journeyModule.id
-      }
-    },
-    contextValue: {
-      db: dbMock
-    }
+        dbMock.block.findMany.mockResolvedValue([button])
+
+        const { data } = await query(
+          gql`
+            query ($id: ID!) {
+              journey(id: $id) {
+                id
+                blocks {
+                  id
+                  ... on ButtonBlock {
+                    action {
+                      ... on NavigateToJourneyAction {
+                        journey {
+                          id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          {
+            id: journey.id
+          }
+        )
+
+        expect(data?.journey).toEqual({
+          id: journey.id,
+          blocks: [
+            {
+              id: button.id,
+              action: {
+                journey: {
+                  id: journey.id
+                }
+              }
+            }
+          ]
+        })
+      })
+    })
   })
-
-  expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
-})
-
-it('throws an error on publish without authentication', async () => {
-  const app = testkit.testModule(journeyModule, { schemaBuilder })
-
-  const { errors } = await testkit.execute(app, {
-    document: gql`
-      mutation ($id: ID!) {
-        journeyPublish(id: $id) {
-          id
-        }
-      }
-    `,
-    variableValues: {
-      id: journeyModule.id
-    },
-    contextValue: {
-      db: dbMock
-    }
-  })
-
-  expect(errors?.[0].extensions?.code).toEqual('UNAUTHENTICATED')
 })

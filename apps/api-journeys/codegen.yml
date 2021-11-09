@@ -23,6 +23,7 @@ generates:
         StepBlock: .prisma/api-journeys-client#Block as BlockType
         TypographyBlock: .prisma/api-journeys-client#Block as BlockType
         VideoBlock: .prisma/api-journeys-client#Block as BlockType
+        VideoTriggerBlock: .prisma/api-journeys-client#Block as BlockType
         RadioQuestionResponse: .prisma/api-journeys-client#Response as ResponseType
         SignUpResponse: .prisma/api-journeys-client#Response as ResponseType
         VideoResponse: .prisma/api-journeys-client#Response as ResponseType

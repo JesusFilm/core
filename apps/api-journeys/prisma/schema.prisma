@@ -32,6 +32,7 @@ model Journey {
   description String?
   primaryImageBlockId String?
   primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
+  slug      String    @unique
 }
 
 enum BlockType {
@@ -46,6 +47,7 @@ enum BlockType {
   StepBlock
   TypographyBlock
   VideoBlock
+  VideoTriggerBlock
 }
 
 model Block {
