@@ -20,7 +20,6 @@ const ThemeContainer = ({
   return (
     <div
       style={{
-        inset: mode === 'light' ? 'auto 0px 0px 0px' : '0px 0px 0vh 0px',
         width: '100%',
         height: 'auto',
         minHeight: '50vh',
@@ -53,7 +52,6 @@ export const ThemeDecorator = ({
             display: 'flex',
             flexDirection: 'column',
             maxWidth: '100vw',
-            maxHeight: '160vh',
             margin: layout === 'fullscreen' ? '0px' : '-16px',
             overflowX: 'hidden'
           }}
