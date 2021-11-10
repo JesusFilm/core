@@ -73,14 +73,14 @@ describe('Button', () => {
         {...block}
         startIcon={{
           __typename: 'Icon',
-          name: IconName.CheckCircle,
+          name: IconName.CheckCircleRounded,
           color: IconColor.primary,
           size: IconSize.md
         }}
       />
     )
-    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass(
+    expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-startIcon'
     )
   })
@@ -90,14 +90,14 @@ describe('Button', () => {
         {...block}
         endIcon={{
           __typename: 'Icon',
-          name: IconName.CheckCircle,
+          name: IconName.CheckCircleRounded,
           color: IconColor.primary,
           size: IconSize.md
         }}
       />
     )
-    expect(getByTestId('CheckCircleIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleIcon').parentElement).toHaveClass(
+    expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-endIcon'
     )
   })

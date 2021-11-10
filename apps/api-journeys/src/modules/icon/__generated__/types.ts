@@ -7,7 +7,7 @@ export namespace IconModule {
   };
   
   interface DefinedEnumValues {
-    IconName: 'PlayArrow' | 'Translate' | 'CheckCircle' | 'RadioButtonUnchecked' | 'FormatQuote' | 'LockOpen' | 'ArrowForward' | 'ChatBubbleOutline' | 'LiveTv' | 'MenuBook' | 'ChevronRight' | 'BeenhereRounded' | 'SendRounded' | 'SubscriptionsRounded' | 'ContactSupport';
+    IconName: 'PlayArrowRounded' | 'TranslateRounded' | 'CheckCircleRounded' | 'RadioButtonUncheckedRounded' | 'FormatQuoteRounded' | 'LockOpenRounded' | 'ArrowForwardRounded' | 'ChatBubbleOutlineRounded' | 'LiveTvRounded' | 'MenuBookRounded' | 'ChevronRightRounded' | 'BeenhereRounded' | 'SendRounded' | 'SubscriptionsRounded' | 'ContactSupportRounded';
     IconColor: 'primary' | 'secondary' | 'action' | 'error' | 'disabled' | 'inherit';
     IconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit';
   };

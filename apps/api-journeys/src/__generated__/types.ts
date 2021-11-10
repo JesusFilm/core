@@ -136,21 +136,21 @@ export type IconColor =
 
 /** IconName is equivalent to the icons found in @mui/icons-material */
 export type IconName =
-  | 'ArrowForward'
+  | 'ArrowForwardRounded'
   | 'BeenhereRounded'
-  | 'ChatBubbleOutline'
-  | 'CheckCircle'
-  | 'ChevronRight'
-  | 'ContactSupport'
-  | 'FormatQuote'
-  | 'LiveTv'
-  | 'LockOpen'
-  | 'MenuBook'
-  | 'PlayArrow'
-  | 'RadioButtonUnchecked'
+  | 'ChatBubbleOutlineRounded'
+  | 'CheckCircleRounded'
+  | 'ChevronRightRounded'
+  | 'ContactSupportRounded'
+  | 'FormatQuoteRounded'
+  | 'LiveTvRounded'
+  | 'LockOpenRounded'
+  | 'MenuBookRounded'
+  | 'PlayArrowRounded'
+  | 'RadioButtonUncheckedRounded'
   | 'SendRounded'
   | 'SubscriptionsRounded'
-  | 'Translate';
+  | 'TranslateRounded';
 
 export type IconSize =
   | 'inherit'

@@ -156,7 +156,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'large',
         startIcon: {
-          name: 'PlayArrow'
+          name: 'PlayArrowRounded'
         },
         action: {
           gtmEventName: 'click',
@@ -448,7 +448,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'medium',
         startIcon: {
-          name: 'ContactSupport'
+          name: 'ContactSupportRounded'
         },
         action: {
           gtmEventName: 'click',
