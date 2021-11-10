@@ -30,7 +30,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <StoryCard>
     <Grid
       container
-      spacing={{ xs: 2, md: 4 }}
+      spacing={6}
       columns={{ xs: 4, sm: 8, md: 12 }}
     >
       {args.variants.map((variant, i) => (
@@ -41,13 +41,12 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
           xs={2}
           sm={4}
           md={4}
-          spacing={1}
           direction="column"
-          justifyContent="space-between"
+          justifyContent="center"
           alignItems="center"
         >
           <Icon {...args} name={variant as IconName} />
-          <Typography mt={4} variant={'caption'}>{`${variant}`}</Typography>
+          <Typography mt={1} variant={'caption'}>{`${variant}`}</Typography>
         </Grid>
       ))}
     </Grid>
