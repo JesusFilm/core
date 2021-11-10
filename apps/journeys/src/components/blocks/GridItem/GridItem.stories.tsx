@@ -15,7 +15,7 @@ import {
 const Demo = {
   ...journeysConfig,
   component: GridItem,
-  title: 'Journeys/Blocks/GridItem'
+  title: 'Journeys/Blocks/Grid/Item'
 }
 
 const DefaultTemplate: Story<TreeBlock<GridItemBlock>> = ({ ...props }) => (
