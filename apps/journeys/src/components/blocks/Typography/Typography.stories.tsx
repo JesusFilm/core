@@ -9,10 +9,15 @@ import {
   TypographyColor,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
-import { journeysConfig, StoryCard } from '../../../libs/storybook'
+import {
+  journeysConfig,
+  simpleComponentConfig,
+  StoryCard
+} from '../../../libs/storybook'
 
 const TypographyDemo = {
   ...journeysConfig,
+  ...simpleComponentConfig,
   component: Typography,
   title: 'Journeys/Blocks/Typography'
 }

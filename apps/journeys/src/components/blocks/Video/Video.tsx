@@ -155,7 +155,7 @@ export function Video({
         backgroundColor: '#000000',
         borderRadius: 4,
         overflow: 'hidden',
-        minWidth: { sm: 328, md: '100%' }
+        m: 0
       }}
     >
       <video

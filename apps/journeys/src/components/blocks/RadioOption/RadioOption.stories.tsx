@@ -1,9 +1,14 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysConfig, StoryCard } from '../../../libs/storybook'
+import {
+  journeysConfig,
+  simpleComponentConfig,
+  StoryCard
+} from '../../../libs/storybook'
 import { RadioOption, RadioOptionProps } from '.'
 
 const Demo = {
   ...journeysConfig,
+  ...simpleComponentConfig,
   component: RadioOption,
   title: 'Journeys/Blocks/RadioOption'
 }
