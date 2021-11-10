@@ -18,7 +18,7 @@ import {
 const Demo = {
   ...journeysConfig,
   component: GridContainer,
-  title: 'Journeys/Blocks/GridContainer'
+  title: 'Journeys/Blocks/Grid/Container'
 }
 
 const DefaultTemplate: Story<TreeBlock<GridContainerBlock>> = ({
@@ -131,7 +131,7 @@ Default.args = {
       lg: 6,
       sm: 6,
       parentBlockId: 'GridContainer',
-      children: childrenOne
+      children: childrenTwo
     }
   ]
 }

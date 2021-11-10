@@ -16,7 +16,13 @@ import { sharedUiConfig, themes, useBreakpoints } from '../../../index'
 const ThemeDemo = {
   ...sharedUiConfig,
   component: Typography,
-  title: 'Default Theme'
+  title: 'Default Theme',
+  parameters: {
+    theme: 'dark',
+    chromatic: {
+      viewports: [600]
+    }
+  }
 }
 
 interface ColorStoryProps extends TypographyProps {
@@ -173,6 +179,9 @@ export const Colors = ColorTemplate.bind({})
 Colors.args = {
   mainColor: ['light', 'main', 'dark'],
   overrideColors: ['primary', 'secondary', 'error']
+}
+Colors.parameters = {
+  theme: 'all'
 }
 
 // Make sure this is consistent with palette in colors.ts
@@ -353,7 +362,6 @@ Viewport.args = {
 }
 Viewport.parameters = {
   layout: 'fullscreen',
-  theme: 'dark',
   chromatic: {
     viewports: [
       breakpoints.values.sm - 1,

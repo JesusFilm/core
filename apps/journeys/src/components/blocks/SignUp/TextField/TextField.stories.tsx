@@ -3,10 +3,15 @@ import { Form, Formik } from 'formik'
 import * as Yup from 'yup'
 
 import TextField, { TextFieldProps } from './TextField'
-import { journeysConfig, StoryCard } from '../../../../libs/storybook'
+import {
+  journeysConfig,
+  simpleComponentConfig,
+  StoryCard
+} from '../../../../libs/storybook'
 
 const Demo = {
   ...journeysConfig,
+  ...simpleComponentConfig,
   component: TextField,
   title: 'Journeys/Blocks/SignUp/TextField'
 }

@@ -9,10 +9,15 @@ import {
 } from '../../../__generated__/globalTypes'
 
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
-import { journeysConfig, StoryCard } from '../../libs/storybook'
+import {
+  journeysConfig,
+  simpleComponentConfig,
+  StoryCard
+} from '../../libs/storybook'
 
 const IconDemo = {
   ...journeysConfig,
+  ...simpleComponentConfig,
   component: Icon,
   title: 'Journeys/Icon'
 }

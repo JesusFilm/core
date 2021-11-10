@@ -9,17 +9,8 @@ const Demo = {
   component: Conductor,
   title: 'Journeys/Conductor',
   parameters: {
-    layout: 'fullscreen',
-    theme: 'light',
-    chromatic: {
-      viewports: [
-        360, // Mobile (P)
-        568, // Mobile (L)
-        600, // Tablet (P)
-        961, // Tablet (L)
-        1200 // Laptop/Desktop
-      ]
-    }
+    ...journeysConfig.parameters,
+    layout: 'fullscreen'
   }
 }
 
@@ -34,25 +25,9 @@ Default.args = {
   blocks: basic
 }
 
-export const DefaultOnDark: Story<ConductorProps> = Template.bind({})
-DefaultOnDark.args = {
-  blocks: basic
-}
-DefaultOnDark.parameters = {
-  theme: 'dark'
-}
-
 export const WithContent: Story<ConductorProps> = Template.bind({})
 WithContent.args = {
   blocks: imageBlocks
-}
-
-export const WithContentOnDark: Story<ConductorProps> = Template.bind({})
-WithContentOnDark.args = {
-  blocks: imageBlocks
-}
-WithContentOnDark.parameters = {
-  theme: 'dark'
 }
 
 export const WithVideoContent: Story<ConductorProps> = Template.bind({})
