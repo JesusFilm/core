@@ -28,11 +28,7 @@ interface IconStoryProps extends IconType {
 
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <StoryCard>
-    <Grid
-      container
-      spacing={6}
-      columns={{ xs: 4, sm: 8, md: 12 }}
-    >
+    <Grid container spacing={6} columns={{ xs: 4, sm: 8, md: 12 }}>
       {args.variants.map((variant, i) => (
         <Grid
           container
