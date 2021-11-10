@@ -1,5 +1,9 @@
 import { Meta } from '@storybook/react'
-import { journeysConfig, StoryCard } from '../../../libs/storybook'
+import {
+  journeysConfig,
+  simpleComponentConfig,
+  StoryCard
+} from '../../../libs/storybook'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
@@ -10,6 +14,7 @@ import { ButtonFields_startIcon as IconType } from '../../../../__generated__/Bu
 
 const Demo = {
   ...journeysConfig,
+  ...simpleComponentConfig,
   component: SignUp,
   title: 'Journeys/Blocks/SignUp'
 }

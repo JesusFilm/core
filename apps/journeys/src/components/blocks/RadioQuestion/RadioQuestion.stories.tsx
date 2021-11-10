@@ -5,7 +5,11 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { RadioQuestion } from './RadioQuestion'
-import { journeysConfig, StoryCard } from '../../../libs/storybook'
+import {
+  journeysConfig,
+  simpleComponentConfig,
+  StoryCard
+} from '../../../libs/storybook'
 import { MockedProvider } from '@apollo/client/testing'
 import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
@@ -67,6 +71,7 @@ const longLabel: Array<TreeBlock<RadioOptionBlock>> = [
 
 const Demo = {
   ...journeysConfig,
+  ...simpleComponentConfig,
   component: RadioQuestion,
   title: 'Journeys/Blocks/RadioQuestion'
 }
