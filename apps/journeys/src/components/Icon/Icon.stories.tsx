@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { Icon } from '.'
 import { Box } from '@mui/system'
-import { Typography } from '@mui/material'
+import { Typography, Grid } from '@mui/material'
 import {
   IconName,
   IconSize,
@@ -23,21 +23,28 @@ interface IconStoryProps extends IconType {
 
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <StoryCard>
-    {args.variants.map((variant, i) => (
-      <Box
-        key={i}
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop: 1,
-          marginBottom: 1
-        }}
-      >
-        <Typography>{`${variant}`}</Typography>
-        <Icon {...args} name={variant as IconName} />
-      </Box>
-    ))}
+    <Grid
+      container
+      spacing={{ xs: 2, md: 4 }}
+      columns={{ xs: 4, sm: 8, md: 12 }}
+    >
+      {args.variants.map((variant, i) => (
+        <Grid
+          container
+          item
+          key={i}
+          xs={2}
+          sm={4}
+          md={4}
+          direction="column"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Icon {...args} name={variant as IconName} />
+          <Typography>{`${variant}`}</Typography>
+        </Grid>
+      ))}
+    </Grid>
   </StoryCard>
 )
 
