@@ -336,7 +336,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIcon: {
               __typename: 'Icon',
-              name: IconName.PlayArrow,
+              name: IconName.PlayArrowRounded,
               color: null,
               size: IconSize.md
             },
@@ -410,7 +410,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIcon: {
               __typename: 'Icon',
-              name: IconName.PlayArrow,
+              name: IconName.PlayArrowRounded,
               color: null,
               size: IconSize.md
             },
@@ -683,7 +683,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIcon: {
               __typename: 'Icon',
-              name: IconName.PlayArrow,
+              name: IconName.PlayArrowRounded,
               color: null,
               size: IconSize.md
             },

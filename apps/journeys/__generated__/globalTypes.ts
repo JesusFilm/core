@@ -58,16 +58,21 @@ export enum IconColor {
  * IconName is equivalent to the icons found in @mui/icons-material
  */
 export enum IconName {
-  ArrowForward = "ArrowForward",
-  ChatBubbleOutline = "ChatBubbleOutline",
-  CheckCircle = "CheckCircle",
-  FormatQuote = "FormatQuote",
-  LiveTv = "LiveTv",
-  LockOpen = "LockOpen",
-  MenuBook = "MenuBook",
-  PlayArrow = "PlayArrow",
-  RadioButtonUnchecked = "RadioButtonUnchecked",
-  Translate = "Translate",
+  ArrowForwardRounded = "ArrowForwardRounded",
+  BeenhereRounded = "BeenhereRounded",
+  ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
+  CheckCircleRounded = "CheckCircleRounded",
+  ChevronRightRounded = "ChevronRightRounded",
+  ContactSupportRounded = "ContactSupportRounded",
+  FormatQuoteRounded = "FormatQuoteRounded",
+  LiveTvRounded = "LiveTvRounded",
+  LockOpenRounded = "LockOpenRounded",
+  MenuBookRounded = "MenuBookRounded",
+  PlayArrowRounded = "PlayArrowRounded",
+  RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
+  SendRounded = "SendRounded",
+  SubscriptionsRounded = "SubscriptionsRounded",
+  TranslateRounded = "TranslateRounded",
 }
 
 export enum IconSize {

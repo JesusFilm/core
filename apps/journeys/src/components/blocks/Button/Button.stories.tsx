@@ -79,7 +79,7 @@ Size.args = {
 const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
   const icon: StartIcon | EndIcon = {
     __typename: 'Icon',
-    name: IconName.CheckCircle,
+    name: IconName.CheckCircleRounded,
     color: null,
     size: IconSize.md
   }
