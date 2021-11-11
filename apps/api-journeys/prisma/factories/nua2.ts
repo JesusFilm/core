@@ -154,6 +154,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'large',
+        fullWidth: true,
         startIcon: {
           name: 'PlayArrowRounded'
         },
@@ -460,6 +461,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'medium',
+        fullWidth: true,
         startIcon: {
           name: 'ContactSupportRounded'
         },

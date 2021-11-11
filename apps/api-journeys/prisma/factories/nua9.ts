@@ -151,6 +151,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'large',
+        fullWidth: true,
         startIcon: {
           name: 'PlayArrowRounded'
         },
@@ -388,6 +389,33 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 2
     }
   })
+  const prayerGridContainer = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: prayerCard1.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'column',
+        justifyContent: 'flexEnd',
+        alignItems: 'flexEnd'
+      },
+      parentOrder: 3
+    }
+  })
+  const prayerGridItem1 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: prayerGridContainer.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
 
   // Second part of the prayer
   const stepPrayer2 = await prisma.block.create({
@@ -405,12 +433,12 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: prayerCard1.id,
+      parentBlockId: prayerGridItem1.id,
       extraAttrs: {
         label: 'Next',
         variant: 'contained',
         color: 'primary',
-        size: 'small',
+        size: 'medium',
         startIcon: {
           name: 'ChevronRightRounded'
         },
@@ -481,6 +509,33 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
+  const prayerGridContainer2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: prayerCard2.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'column',
+        justifyContent: 'flexEnd',
+        alignItems: 'flexEnd'
+      },
+      parentOrder: 3
+    }
+  })
+  const prayerGridItem2 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: prayerGridContainer2.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
 
   // Third part of the prayer
   const stepPrayer3 = await prisma.block.create({
@@ -498,12 +553,12 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: prayerCard2.id,
+      parentBlockId: prayerGridItem2.id,
       extraAttrs: {
         label: 'Next',
         variant: 'contained',
         color: 'primary',
-        size: 'small',
+        size: 'medium',
         startIcon: {
           name: 'ChevronRightRounded'
         },
@@ -574,6 +629,33 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 1
     }
   })
+  const prayerGridContainer3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridContainerBlock',
+      parentBlockId: prayerCard3.id,
+      extraAttrs: {
+        spacing: 6,
+        direction: 'column',
+        justifyContent: 'flexEnd',
+        alignItems: 'flexEnd'
+      },
+      parentOrder: 3
+    }
+  })
+  const prayerGridItem3 = await prisma.block.create({
+    data: {
+      journeyId: journey.id,
+      blockType: 'GridItemBlock',
+      parentBlockId: prayerGridContainer3.id,
+      extraAttrs: {
+        xl: 6,
+        lg: 6,
+        sm: 6
+      },
+      parentOrder: 0
+    }
+  })
 
   // final part of the prayer
   const stepPrayer4 = await prisma.block.create({
@@ -591,12 +673,12 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'ButtonBlock',
-      parentBlockId: prayerCard3.id,
+      parentBlockId: prayerGridItem3.id,
       extraAttrs: {
         label: 'Amen',
         variant: 'contained',
         color: 'primary',
-        size: 'small',
+        size: 'medium',
         startIcon: {
           name: 'BeenhereRounded'
         },
@@ -639,7 +721,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
-  const prayerGridContainer = await prisma.block.create({
+  const prayerGridContainer4 = await prisma.block.create({
     data: {
       journeyId: journey.id,
       blockType: 'GridContainerBlock',
@@ -656,7 +738,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'GridItemBlock',
-      parentBlockId: prayerGridContainer.id,
+      parentBlockId: prayerGridContainer4.id,
       extraAttrs: {
         xl: 6,
         lg: 6,
@@ -669,7 +751,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     data: {
       journeyId: journey.id,
       blockType: 'GridItemBlock',
-      parentBlockId: prayerGridContainer.id,
+      parentBlockId: prayerGridContainer4.id,
       extraAttrs: {
         xl: 6,
         lg: 6,
@@ -830,6 +912,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'large',
+        fullWidth: true,
         startIcon: {
           name: 'SendRounded'
         },
@@ -1062,6 +1145,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'large',
+        fullWidth: true,
         startIcon: {
           name: 'ContactSupportRounded'
         },
@@ -1294,6 +1378,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'large',
+        fullWidth: true,
         startIcon: {
           name: 'ContactSupportRounded'
         },
@@ -1551,6 +1636,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         variant: 'contained',
         color: 'primary',
         size: 'medium',
+        fullWidth: true,
         startIcon: {
           name: 'SubscriptionsRounded'
         },
