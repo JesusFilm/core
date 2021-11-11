@@ -12,6 +12,8 @@ custom:
   stage: ${opt:env}
   bundle:
     linting: false
+    externals:
+      - canvas
     tsConfig: "tsconfig.app.json"
     forceExclude:
       - "_http_common"
