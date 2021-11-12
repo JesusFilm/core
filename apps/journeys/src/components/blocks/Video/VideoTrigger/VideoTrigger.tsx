@@ -1,6 +1,6 @@
 import videojs from 'video.js'
 import { TreeBlock } from '../../../../libs/transformer/transformer'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { GetJourney_journey_blocks_VideoTriggerBlock as TriggerBlock } from '../../../../../__generated__/GetJourney'
 import { handleAction } from '../../../../libs/action'
 import { useRouter } from 'next/router'
@@ -15,6 +15,14 @@ export function Trigger({
   triggerStart
 }: TriggerProps): ReactElement {
   const router = useRouter()
+  const [triggered, setTriggered] = useState(false)
+
+  const handleTriggerAction = useCallback((): void => {
+    if (!triggered) {
+      setTriggered(true)
+      handleAction(router, triggerAction)
+    }
+  }, [setTriggered, router, triggerAction, triggered])
 
   useEffect(() => {
     if (player != null) {
@@ -24,16 +32,14 @@ export function Trigger({
 
           if (player.isFullscreen()) {
             player.exitFullscreen()
-            setTimeout(() => {
-              handleAction(router, triggerAction)
-            }, 1000)
+            setTimeout(handleTriggerAction, 1000)
           } else {
-            handleAction(router, triggerAction)
+            handleTriggerAction()
           }
         }
       })
     }
-  }, [player, triggerAction, triggerStart, router])
+  }, [player, triggerStart, handleTriggerAction])
 
   return <></>
 }
