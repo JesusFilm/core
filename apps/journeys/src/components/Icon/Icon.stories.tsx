@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { Icon } from '.'
 import { Box } from '@mui/system'
-import { Typography } from '@mui/material'
+import { Typography, Grid } from '@mui/material'
 import {
   IconName,
   IconSize,
@@ -28,19 +28,24 @@ interface IconStoryProps extends IconType {
 
 const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   <StoryCard>
-    {args.variants.map((variant, i) => (
-      <Box
-        key={i}
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Typography>{`${variant}`}</Typography>
-        <Icon {...args} name={variant as IconName} />
-      </Box>
-    ))}
+    <Grid container spacing={6} columns={{ xs: 4, sm: 8, md: 12 }}>
+      {args.variants.map((variant, i) => (
+        <Grid
+          container
+          item
+          key={i}
+          xs={2}
+          sm={4}
+          md={4}
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Icon {...args} name={variant as IconName} />
+          <Typography mt={1} variant={'caption'}>{`${variant}`}</Typography>
+        </Grid>
+      ))}
+    </Grid>
   </StoryCard>
 )
 
@@ -50,16 +55,21 @@ Variant.args = {
   color: null,
   size: IconSize.lg,
   variants: [
-    IconName.ArrowForward,
-    IconName.ChatBubbleOutline,
-    IconName.CheckCircle,
-    IconName.FormatQuote,
-    IconName.LiveTv,
-    IconName.LockOpen,
-    IconName.MenuBook,
-    IconName.PlayArrow,
-    IconName.RadioButtonUnchecked,
-    IconName.Translate
+    IconName.ArrowForwardRounded,
+    IconName.BeenhereRounded,
+    IconName.ChatBubbleOutlineRounded,
+    IconName.CheckCircleRounded,
+    IconName.ChevronRightRounded,
+    IconName.ContactSupportRounded,
+    IconName.FormatQuoteRounded,
+    IconName.LiveTvRounded,
+    IconName.LockOpenRounded,
+    IconName.MenuBookRounded,
+    IconName.PlayArrowRounded,
+    IconName.RadioButtonUncheckedRounded,
+    IconName.SendRounded,
+    IconName.SubscriptionsRounded,
+    IconName.TranslateRounded
   ]
 }
 
@@ -84,7 +94,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
 export const Color = ColorTemplate.bind({})
 Color.args = {
   __typename: 'Icon',
-  name: IconName.CheckCircle,
+  name: IconName.CheckCircleRounded,
   size: IconSize.lg,
   variants: [
     IconColor.inherit,
@@ -117,7 +127,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
 export const Size = SizeTemplate.bind({})
 Size.args = {
   __typename: 'Icon',
-  name: IconName.CheckCircle,
+  name: IconName.CheckCircleRounded,
   color: null,
   variants: [
     IconSize.inherit,

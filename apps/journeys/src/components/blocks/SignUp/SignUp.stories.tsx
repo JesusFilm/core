@@ -21,7 +21,7 @@ const Demo = {
 
 const icon: IconType = {
   __typename: 'Icon',
-  name: IconName.LockOpen,
+  name: IconName.LockOpenRounded,
   size: null,
   color: null
 }
