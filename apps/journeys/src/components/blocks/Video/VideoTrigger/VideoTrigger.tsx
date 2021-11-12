@@ -26,7 +26,7 @@ export function Trigger({
 
   useEffect(() => {
     if (player != null) {
-      player.on('timeupdate', () => {
+      const timeUpdate = (): void => {
         if (player.currentTime() >= triggerStart) {
           player.pause()
 
@@ -37,7 +37,9 @@ export function Trigger({
             handleTriggerAction()
           }
         }
-      })
+      }
+      player.on('timeupdate', timeUpdate)
+      return () => player.off('timeupdate', timeUpdate)
     }
   }, [player, triggerStart, handleTriggerAction])
 
