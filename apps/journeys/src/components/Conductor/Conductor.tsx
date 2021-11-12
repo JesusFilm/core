@@ -75,12 +75,6 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
-  // const prevBlock = previousBlocks.length > 0 ? previousBlocks.slice(-1) : { id: '1' }
-  // const prevBlock = previousBlocks != null ? previousBlocks : { id: '1' }
-
-  // console.log('prev ', previousBlocks)
-  // console.log('active ', activeBlock)
-
   return (
     <Box
       sx={{
@@ -146,7 +140,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
                 }}
               >
                 {activeBlock?.id === block.id ||
-                previousBlocks.slice(-1)?.id === block.id ? (
+                previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
                   <BlockRenderer {...block} />
                 ) : (
                   <CardWrapper

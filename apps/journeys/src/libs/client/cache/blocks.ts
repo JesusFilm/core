@@ -5,7 +5,6 @@ import { TreeBlock } from '../../transformer/transformer'
 
 export const activeBlockVar = makeVar<TreeBlock<StepBlock> | null>(null)
 export const previousBlocksVar = makeVar<TreeBlock[]>([])
-// export const previousBlocksVar = makeVar<TreeBlock<StepBlock> | null>(null)
 export const treeBlocksVar = makeVar<TreeBlock[]>([])
 
 interface NextActiveBlockArgs {
@@ -19,7 +18,6 @@ interface UseBlocksHook {
   activeBlock: TreeBlock<StepBlock> | null
   treeBlocks: TreeBlock[]
   previousBlocks: TreeBlock[]
-  // previousBlocks: TreeBlock<StepBlock> | null
 }
 
 export function nextActiveBlock(args?: NextActiveBlockArgs): void {
@@ -39,8 +37,6 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
   if (block != null) {
     if (activeBlock != null) {
       previousBlocksVar([...previousBlocksVar(), activeBlock])
-      // previousBlocksVar(activeBlock)
-      // console.log('previous ', activeBlock)
     }
     activeBlockVar(block)
   }
