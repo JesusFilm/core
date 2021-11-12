@@ -22,7 +22,7 @@ describe('what-about-the-resurrectopm', () => {
   })
 })
 
-describe('what-about-the-resurrection user journey', () => {
+describe.skip('what-about-the-resurrection user journey', () => {
   before(() => {
     cy.visit('/')
     cy.on('uncaught:exception', (err, runnable) => {

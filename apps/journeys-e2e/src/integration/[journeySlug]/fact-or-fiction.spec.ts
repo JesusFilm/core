@@ -32,7 +32,7 @@ describe('fact-or-fiction', () => {
   })
 })
 
-describe('fact-or-fiction user joruney', () => {
+describe.skip('fact-or-fiction user joruney', () => {
   before(() => {
     cy.visit('/')
     cy.on('uncaught:exception', (err, runnable) => {
