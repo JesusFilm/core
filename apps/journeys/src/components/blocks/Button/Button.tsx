@@ -24,8 +24,8 @@ export function Button({
   return (
     <MuiButton
       variant={buttonVariant ?? 'contained'}
-      color={buttonColor ?? undefined}
-      size={size ?? undefined}
+      color={buttonColor ?? 'primary'}
+      size={size ?? 'medium'}
       startIcon={
         startIcon != null && (
           <Icon

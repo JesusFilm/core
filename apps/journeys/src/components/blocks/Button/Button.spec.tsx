@@ -28,7 +28,14 @@ jest.mock('next/router', () => ({
 
 describe('Button', () => {
   it('should render the button successfully', () => {
-    const { getByText, getByRole } = render(<Button {...block} />)
+    const { getByText, getByRole } = render(
+      <Button
+        {...block}
+        label={'This is a button'}
+        buttonVariant={ButtonVariant.contained}
+        size={ButtonSize.small}
+      />
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-root')
     expect(getByRole('button')).toHaveClass('MuiButton-contained')
     expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')

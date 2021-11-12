@@ -131,6 +131,8 @@ export function Cover({
       >
         <Box
           sx={{
+            display: 'flex',
+            flexDirection: 'column',
             margin: 'auto',
             p: {
               xs: `calc(6vw + ${theme.spacing(4)}) ${theme.spacing(
@@ -200,7 +202,16 @@ export function Cover({
                 overflow: 'hidden'
               }}
             >
-              <Box sx={{ transform: 'skewY(10deg)', px: 7 }}>{children}</Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transform: 'skewY(10deg)',
+                  px: 7
+                }}
+              >
+                {children}
+              </Box>
               <Box
                 ref={lgRef}
                 sx={{

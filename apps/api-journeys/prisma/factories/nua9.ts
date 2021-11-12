@@ -413,7 +413,7 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
         color: 'primary',
         size: 'medium',
         fullWidth: false,
-        alignSelf: 'center',
+        alignSelf: 'flexEnd',
         startIcon: {
           name: 'ChevronRightRounded'
         },
