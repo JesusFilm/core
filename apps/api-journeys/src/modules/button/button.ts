@@ -20,11 +20,18 @@ const typeDefs = gql`
     large
   }
 
+  enum ButtonAlignSelf {
+    center
+    flexStart
+    flexEnd
+  }
+
   type ButtonBlock implements Block {
     id: ID!
     parentBlockId: ID
     label: String!
     fullWidth: Boolean
+    alignSelf: ButtonAlignSelf
     variant: ButtonVariant
     color: ButtonColor
     size: ButtonSize

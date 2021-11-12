@@ -55,6 +55,7 @@ const childrenOne: TreeBlock[] = [
     buttonColor: ButtonColor.primary,
     fullWidth: true,
     size: ButtonSize.large,
+    alignSelf: null,
     startIcon: {
       __typename: 'Icon',
       name: IconName.PlayArrowRounded,

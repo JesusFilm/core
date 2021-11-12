@@ -7,6 +7,12 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ButtonAlignSelf {
+  center = "center",
+  flexEnd = "flexEnd",
+  flexStart = "flexStart",
+}
+
 export enum ButtonColor {
   error = "error",
   inherit = "inherit",

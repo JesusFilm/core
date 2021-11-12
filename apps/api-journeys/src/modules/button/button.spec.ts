@@ -61,6 +61,7 @@ describe('ButtonModule', () => {
           color: 'primary',
           size: 'large',
           fullWidth: true,
+          alignSelf: 'flexEnd',
           startIcon: {
             name: 'ArrowForwardRounded',
             color: 'secondary',
@@ -92,6 +93,7 @@ describe('ButtonModule', () => {
                 color
                 size
                 fullWidth
+                alignSelf
                 startIcon {
                   name
                   color
@@ -131,6 +133,7 @@ describe('ButtonModule', () => {
           color: 'primary',
           size: 'large',
           fullWidth: true,
+          alignSelf: 'flexEnd',
           startIcon: {
             name: 'ArrowForwardRounded',
             color: 'secondary',

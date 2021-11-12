@@ -25,8 +25,15 @@ interface Block {
   parentBlockId: ID
 }
 
+enum ButtonAlignSelf {
+  center
+  flexEnd
+  flexStart
+}
+
 type ButtonBlock implements Block {
   action: Action
+  alignSelf: ButtonAlignSelf
   color: ButtonColor
   endIcon: Icon
   fullWidth: Boolean

@@ -5,7 +5,8 @@ import {
   ButtonColor,
   ButtonSize,
   IconName,
-  IconSize
+  IconSize,
+  ButtonAlignSelf
 } from '../../../../__generated__/globalTypes'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import {
@@ -27,12 +28,42 @@ interface ButtonStoryProps extends ButtonFields {
 
 const Template: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
-    <Button {...args} />
+    {args.variants.map((variant, i) => (
+      <Button
+        {...args}
+        key={i}
+        label={`${variant}`}
+        buttonVariant={variant as ButtonVariant}
+      />
+    ))}
   </StoryCard>
 )
 
 export const Variant = Template.bind({})
-Variant.args = { label: ButtonVariant.contained }
+Variant.args = { variants: [ButtonVariant.contained, ButtonVariant.text] }
+
+const AlignmentTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
+  <StoryCard>
+    {args.variants.map((variant, i) => (
+      <Button
+        {...args}
+        key={i}
+        label={`${variant}`}
+        alignSelf={variant as ButtonAlignSelf}
+        fullWidth={false}
+      />
+    ))}
+  </StoryCard>
+)
+
+export const Alignment = AlignmentTemplate.bind({})
+Alignment.args = {
+  variants: [
+    ButtonAlignSelf.flexStart,
+    ButtonAlignSelf.center,
+    ButtonAlignSelf.flexEnd
+  ]
+}
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
@@ -42,7 +73,6 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         key={i}
         label={`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
         buttonColor={variant as ButtonColor}
-        fullWidth={false}
       />
     ))}
   </StoryCard>

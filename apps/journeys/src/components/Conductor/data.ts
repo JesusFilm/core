@@ -5,9 +5,6 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  GridDirection,
-  GridJustifyContent,
-  GridAlignItems,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 
@@ -329,47 +326,27 @@ export const imageBlocks: TreeBlock[] = [
             children: []
           },
           {
-            id: 'GridContainer',
-            __typename: 'GridContainerBlock',
-            spacing: 6,
-            direction: GridDirection.column,
-            justifyContent: GridJustifyContent.flexEnd,
-            alignItems: GridAlignItems.flexEnd,
-            parentBlockId: 'card0.id',
-            children: [
-              {
-                id: 'GridItem',
-                __typename: 'GridItemBlock',
-                xl: 5,
-                lg: 5,
-                sm: 5,
-                parentBlockId: 'GridContainer',
-                children: [
-                  {
-                    __typename: 'ButtonBlock',
-                    id: 'button',
-                    parentBlockId: 'GridItem',
-                    label: 'Next',
-                    buttonVariant: ButtonVariant.contained,
-                    buttonColor: ButtonColor.primary,
-                    fullWidth: false,
-                    size: ButtonSize.small,
-                    startIcon: {
-                      __typename: 'Icon',
-                      name: IconName.ChevronRightRounded,
-                      color: null,
-                      size: null
-                    },
-                    endIcon: null,
-                    action: {
-                      __typename: 'NavigateAction',
-                      gtmEventName: 'gtmEventName'
-                    },
-                    children: []
-                  }
-                ]
-              }
-            ]
+            __typename: 'ButtonBlock',
+            id: 'button',
+            parentBlockId: 'GridItem',
+            label: 'Next',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            fullWidth: true,
+            alignSelf: null,
+            size: ButtonSize.large,
+            startIcon: {
+              __typename: 'Icon',
+              name: IconName.ChevronRightRounded,
+              color: null,
+              size: null
+            },
+            endIcon: null,
+            action: {
+              __typename: 'NavigateAction',
+              gtmEventName: 'gtmEventName'
+            },
+            children: []
           },
           {
             id: 'image0.id',
@@ -432,6 +409,7 @@ export const imageBlocks: TreeBlock[] = [
             buttonColor: ButtonColor.primary,
             fullWidth: true,
             size: ButtonSize.large,
+            alignSelf: null,
             startIcon: {
               __typename: 'Icon',
               name: IconName.PlayArrowRounded,
@@ -705,6 +683,7 @@ export const imageBlocks: TreeBlock[] = [
             buttonColor: ButtonColor.primary,
             fullWidth: true,
             size: ButtonSize.large,
+            alignSelf: null,
             startIcon: {
               __typename: 'Icon',
               name: IconName.PlayArrowRounded,

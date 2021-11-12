@@ -25,9 +25,15 @@ export type Block = {
   parentBlockId?: Maybe<Scalars['ID']>;
 };
 
+export type ButtonAlignSelf =
+  | 'center'
+  | 'flexEnd'
+  | 'flexStart';
+
 export type ButtonBlock = Block & {
   __typename?: 'ButtonBlock';
   action?: Maybe<Action>;
+  alignSelf?: Maybe<ButtonAlignSelf>;
   color?: Maybe<ButtonColor>;
   endIcon?: Maybe<Icon>;
   fullWidth?: Maybe<Scalars['Boolean']>;
@@ -586,6 +592,7 @@ export type ResolversTypes = {
   Action: ResolversTypes['LinkAction'] | ResolversTypes['NavigateAction'] | ResolversTypes['NavigateToBlockAction'] | ResolversTypes['NavigateToJourneyAction'];
   Block: ResolverTypeWrapper<BlockType>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  ButtonAlignSelf: ButtonAlignSelf;
   ButtonBlock: ResolverTypeWrapper<BlockType>;
   ButtonColor: ButtonColor;
   ButtonSize: ButtonSize;
@@ -698,6 +705,7 @@ export type BlockResolvers<ContextType = GraphQLModules.Context, ParentType exte
 
 export type ButtonBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['ButtonBlock'] = ResolversParentTypes['ButtonBlock']> = {
   action?: Resolver<Maybe<ResolversTypes['Action']>, ParentType, ContextType>;
+  alignSelf?: Resolver<Maybe<ResolversTypes['ButtonAlignSelf']>, ParentType, ContextType>;
   color?: Resolver<Maybe<ResolversTypes['ButtonColor']>, ParentType, ContextType>;
   endIcon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
   fullWidth?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;

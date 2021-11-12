@@ -3,18 +3,20 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace ButtonModule {
   interface DefinedFields {
-    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'fullWidth' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
+    ButtonBlock: 'id' | 'parentBlockId' | 'label' | 'fullWidth' | 'alignSelf' | 'variant' | 'color' | 'size' | 'startIcon' | 'endIcon' | 'action';
   };
   
   interface DefinedEnumValues {
     ButtonVariant: 'text' | 'contained';
     ButtonColor: 'primary' | 'secondary' | 'error' | 'inherit';
     ButtonSize: 'small' | 'medium' | 'large';
+    ButtonAlignSelf: 'center' | 'flexStart' | 'flexEnd';
   };
   
   export type ButtonVariant = DefinedEnumValues['ButtonVariant'];
   export type ButtonColor = DefinedEnumValues['ButtonColor'];
   export type ButtonSize = DefinedEnumValues['ButtonSize'];
+  export type ButtonAlignSelf = DefinedEnumValues['ButtonAlignSelf'];
   export type ButtonBlock = Pick<Types.ButtonBlock, DefinedFields['ButtonBlock']>;
   export type Icon = Types.Icon;
   export type Action = Types.Action;
@@ -36,6 +38,7 @@ export namespace ButtonModule {
       parentBlockId?: gm.Middleware[];
       label?: gm.Middleware[];
       fullWidth?: gm.Middleware[];
+      alignSelf?: gm.Middleware[];
       variant?: gm.Middleware[];
       color?: gm.Middleware[];
       size?: gm.Middleware[];

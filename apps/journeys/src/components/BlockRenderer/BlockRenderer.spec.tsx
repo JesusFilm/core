@@ -12,6 +12,7 @@ describe('BlockRenderer', () => {
       buttonVariant: null,
       buttonColor: null,
       fullWidth: true,
+      alignSelf: null,
       size: null,
       startIcon: null,
       endIcon: null,

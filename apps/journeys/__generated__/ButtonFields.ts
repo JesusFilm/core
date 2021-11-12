@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignSelf, IconName, IconColor, IconSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
@@ -62,6 +62,7 @@ export interface ButtonFields {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
+  alignSelf: ButtonAlignSelf | null;
   fullWidth: boolean | null;
   startIcon: ButtonFields_startIcon | null;
   endIcon: ButtonFields_endIcon | null;

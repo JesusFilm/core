@@ -1,9 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
-import { ButtonFields } from '../../../../__generated__/ButtonFields'
-import { Button } from '.'
+import { Button, ButtonData as block } from '.'
 import {
   ButtonVariant,
-  ButtonColor,
   ButtonSize,
   IconColor,
   IconName,
@@ -29,20 +27,6 @@ jest.mock('next/router', () => ({
 }))
 
 describe('Button', () => {
-  const block: ButtonFields = {
-    __typename: 'ButtonBlock',
-    id: 'button',
-    parentBlockId: 'question',
-    label: 'This is a button',
-    fullWidth: true,
-    buttonVariant: ButtonVariant.contained,
-    buttonColor: ButtonColor.primary,
-    size: ButtonSize.small,
-    startIcon: null,
-    endIcon: null,
-    action: null
-  }
-
   it('should render the button successfully', () => {
     const { getByText, getByRole } = render(<Button {...block} />)
     expect(getByRole('button')).toHaveClass('MuiButton-root')

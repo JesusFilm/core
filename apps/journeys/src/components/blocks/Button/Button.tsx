@@ -12,6 +12,7 @@ export function Button({
   size,
   startIcon,
   endIcon,
+  alignSelf,
   action,
   fullWidth
 }: ButtonFields): ReactElement {
@@ -47,8 +48,14 @@ export function Button({
       }
       onClick={handleClick}
       fullWidth={fullWidth ?? undefined}
+      sx={{
+        alignSelf: alignSelf != null ? hyphenate(alignSelf) : undefined
+      }}
     >
       {label}
     </MuiButton>
   )
 }
+
+const hyphenate = (value): string =>
+  value.replace(/([A-Z])/g, (g: string[]): string => `-${g[0].toLowerCase()}`)

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignSelf, IconName, IconColor, IconSize, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -67,6 +67,7 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
+  alignSelf: ButtonAlignSelf | null;
   fullWidth: boolean | null;
   startIcon: GetJourney_journey_blocks_ButtonBlock_startIcon | null;
   endIcon: GetJourney_journey_blocks_ButtonBlock_endIcon | null;
