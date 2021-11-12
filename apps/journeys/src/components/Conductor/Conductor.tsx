@@ -17,8 +17,13 @@ export interface ConductorProps {
 }
 
 const Conductor = ({ blocks }: ConductorProps): ReactElement => {
-  const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
-    useBlocks()
+  const {
+    setTreeBlocks,
+    nextActiveBlock,
+    treeBlocks,
+    activeBlock,
+    previousBlocks
+  } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
@@ -69,6 +74,12 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     )
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
+
+  // const prevBlock = previousBlocks.length > 0 ? previousBlocks.slice(-1) : { id: '1' }
+  // const prevBlock = previousBlocks != null ? previousBlocks : { id: '1' }
+
+  // console.log('prev ', previousBlocks)
+  // console.log('active ', activeBlock)
 
   return (
     <Box
@@ -134,7 +145,8 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
                   }
                 }}
               >
-                {activeBlock?.id === block.id ? (
+                {activeBlock?.id === block.id ||
+                previousBlocks.slice(-1)?.id === block.id ? (
                   <BlockRenderer {...block} />
                 ) : (
                   <CardWrapper

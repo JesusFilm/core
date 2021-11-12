@@ -4,6 +4,8 @@ import { useCallback } from 'react'
 import { TreeBlock } from '../../transformer/transformer'
 
 export const activeBlockVar = makeVar<TreeBlock<StepBlock> | null>(null)
+export const previousBlocksVar = makeVar<TreeBlock[]>([])
+// export const previousBlocksVar = makeVar<TreeBlock<StepBlock> | null>(null)
 export const treeBlocksVar = makeVar<TreeBlock[]>([])
 
 interface NextActiveBlockArgs {
@@ -16,6 +18,8 @@ interface UseBlocksHook {
   setTreeBlocks: (blocks: TreeBlock[]) => void
   activeBlock: TreeBlock<StepBlock> | null
   treeBlocks: TreeBlock[]
+  previousBlocks: TreeBlock[]
+  // previousBlocks: TreeBlock<StepBlock> | null
 }
 
 export function nextActiveBlock(args?: NextActiveBlockArgs): void {
@@ -33,6 +37,11 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
     ) as TreeBlock<StepBlock> | undefined
   }
   if (block != null) {
+    if (activeBlock != null) {
+      previousBlocksVar([...previousBlocksVar(), activeBlock])
+      // previousBlocksVar(activeBlock)
+      // console.log('previous ', activeBlock)
+    }
     activeBlockVar(block)
   }
 }
@@ -56,6 +65,7 @@ export function isActiveBlockOrDescendant(blockId: string): boolean {
 export function useBlocks(): UseBlocksHook {
   const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
+  const previousBlocks = useReactiveVar(previousBlocksVar)
 
   const setTreeBlocks = useCallback((blocks: TreeBlock[]): void => {
     treeBlocksVar(blocks)
@@ -67,6 +77,7 @@ export function useBlocks(): UseBlocksHook {
     nextActiveBlock,
     setTreeBlocks,
     activeBlock,
-    treeBlocks
+    treeBlocks,
+    previousBlocks
   }
 }
