@@ -59,7 +59,10 @@ describe('fact-or-fiction user joruney', () => {
       .and('have.prop', 'ended', false)
       .then(($video) => {
         $video[0].playbackRate = 10
+        // $video[0].currentTime = 215
+        // .setTime ??
       })
+    // cy.get('video', { timeout: 22000 }).and('have.prop', 'paused', true)
   })
 
   it('video should trigger the next step after some time', () => {
