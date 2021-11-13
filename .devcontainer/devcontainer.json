@@ -32,7 +32,8 @@
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [3000, 5432],
+  // 8529 is Arangodb
+  "forwardPorts": [8529],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash ./.devcontainer/post-create-command.sh",

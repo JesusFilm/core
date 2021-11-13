@@ -36,5 +36,12 @@ services:
       POSTGRES_DB: postgres
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
+  newdb:
+    image: arangodb/arangodb
+    volumes:
+      - arango-data:/var/lib/arangodb3
+    environment:
+      ARANGO_NO_AUTH: 1
 volumes:
   postgres-data:
+  arango-data:
