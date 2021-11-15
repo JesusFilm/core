@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publshedOn' | 'createdOn';
+    Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publshedAt' | 'createdAt';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
     NavigateToJourneyAction: 'journey';
@@ -55,8 +55,8 @@ export namespace JourneyModule {
       themeName?: gm.Middleware[];
       description?: gm.Middleware[];
       slug?: gm.Middleware[];
-      publshedOn?: gm.Middleware[];
-      createdOn?: gm.Middleware[];
+      publshedAt?: gm.Middleware[];
+      createdAt?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];

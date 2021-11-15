@@ -31,8 +31,8 @@ model Journey {
   primaryImageBlockId String?
   primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
   slug      String    @unique
-  createdOn DateTime  @default(now())   
-  publishedOn DateTime?
+  createdAt DateTime  @default(now())   
+  publishedAt DateTime?
 }
 
 enum BlockType {

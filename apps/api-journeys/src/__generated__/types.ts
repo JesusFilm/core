@@ -190,12 +190,12 @@ export type ImageBlockCreateInput = {
 export type Journey = {
   __typename?: 'Journey';
   blocks?: Maybe<Array<Block>>;
-  createdOn: Scalars['String'];
+  createdAt: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   locale: Scalars['String'];
   primaryImageBlock?: Maybe<ImageBlock>;
-  publshedOn?: Maybe<Scalars['String']>;
+  publshedAt?: Maybe<Scalars['String']>;
   slug: Scalars['String'];
   themeMode: ThemeMode;
   themeName: ThemeName;
@@ -759,12 +759,12 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
-  createdOn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
-  publshedOn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  publshedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;

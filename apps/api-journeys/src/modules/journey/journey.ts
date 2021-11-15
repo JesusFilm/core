@@ -24,8 +24,8 @@ const typeDefs = gql`
     themeName: ThemeName!
     description: String
     slug: String!
-    publshedOn: String
-    createdOn: String!
+    publshedAt: String
+    createdAt: String!
   }
 
   enum IdType {
@@ -83,7 +83,7 @@ const resolvers: JourneyModule.Resolvers = {
     async journeys(_, __, { db }) {
       return await db.journey.findMany({
         where: {
-          publishedOn: { not: null }
+          publishedAt: { not: null }
         }
       })
     },
@@ -164,7 +164,7 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.update({
         where: { id },
         data: {
-          publishedOn: new Date()
+          publishedAt: new Date()
         }
       })
     }
