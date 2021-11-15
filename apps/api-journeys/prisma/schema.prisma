@@ -23,7 +23,6 @@ enum ThemeName {
 model Journey {
   id        String     @id @default(uuid())
   title     String
-  published Boolean    @default(false)
   blocks    Block[]
   locale    String     @default("en-US")
   themeMode ThemeMode  @default(light)
@@ -32,6 +31,8 @@ model Journey {
   primaryImageBlockId String?
   primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
   slug      String    @unique
+  createdOn DateTime  @default(now())   
+  publishedOn DateTime?
 }
 
 enum BlockType {
