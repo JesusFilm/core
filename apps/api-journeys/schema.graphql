@@ -183,13 +183,14 @@ input ImageBlockCreateInput {
 
 type Journey @key(fields: "id") {
   id: ID!
-  published: Boolean!
   title: String!
   locale: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
+  publshedOn: String
+  createdOn: String!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
