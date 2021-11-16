@@ -16,6 +16,8 @@ import { actionModule, blockModule, buttonModule, iconModule } from '..'
 
 describe('JourneyModule', () => {
   let app
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(journeyModule, {
@@ -44,13 +46,14 @@ describe('JourneyModule', () => {
         const publishedJourney: Journey = {
           id: uuidv4(),
           title: 'published',
-          published: true,
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'published-slug'
+          slug: 'published-slug',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.findMany.mockResolvedValue([publishedJourney])
         const { data } = await query(gql`
@@ -63,18 +66,22 @@ describe('JourneyModule', () => {
               themeName
               themeMode
               slug
+              createdAt
+              publishedAt
             }
           }
         `)
+        console.log(data)
         expect(data?.journeys).toEqual([
           pick(publishedJourney, [
             'id',
             'title',
-            'published',
             'locale',
             'themeName',
             'themeMode',
-            'slug'
+            'slug',
+            'createdAt',
+            'publishedAt'
           ])
         ])
       })
@@ -85,7 +92,8 @@ describe('JourneyModule', () => {
         const journey = {
           id: uuidv4(),
           title: 'published',
-          published: true,
+          publishedAt: new Date(),
+          createdAt: new Date(),
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
@@ -135,7 +143,8 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: false,
+          publishedAt: new Date(),
+          createdAt: new Date(),
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
@@ -191,7 +200,8 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: false,
+          publishedAt: new Date(),
+          createdAt: new Date(),
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
@@ -297,7 +307,8 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: false,
+          publishedAt: new Date(),
+          createdAt: new Date(),
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
@@ -405,7 +416,8 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: true,
+          publishedAt: new Date(),
+          createdAt: new Date(),
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
@@ -483,7 +495,8 @@ describe('JourneyModule', () => {
         const journey = {
           id: uuidv4(),
           title: 'published',
-          published: true,
+          publishedAt: new Date(),
+          createdAt: new Date(),
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,

@@ -24,7 +24,7 @@ const typeDefs = gql`
     themeName: ThemeName!
     description: String
     slug: String!
-    publshedAt: String
+    publishedAt: String
     createdAt: String!
   }
 
