@@ -91,14 +91,14 @@ describe('JourneyModule', () => {
         const journey = {
           id: uuidv4(),
           title: 'published',
-          publishedAt: new Date(),
-          createdAt: new Date(),
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'published-slug'
+          slug: 'published-slug',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.findUnique.mockResolvedValue(journey)
 
@@ -108,11 +108,12 @@ describe('JourneyModule', () => {
               journey(id: $id) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -129,7 +130,9 @@ describe('JourneyModule', () => {
             'locale',
             'themeName',
             'themeMode',
-            'slug'
+            'slug',
+            'publishedAt',
+            'createdAt'
           ])
         )
       })
@@ -142,14 +145,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          publishedAt: new Date(),
-          createdAt: new Date(),
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: 'test description',
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.create.mockResolvedValue(journey)
 
@@ -159,12 +162,13 @@ describe('JourneyModule', () => {
               journeyCreate(input: $input) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -186,12 +190,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyCreate).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: false,
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: 'test description',
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -199,14 +204,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          publishedAt: new Date(),
-          createdAt: new Date(),
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.create.mockResolvedValue(journey)
 
@@ -216,12 +221,13 @@ describe('JourneyModule', () => {
               journeyCreate(input: $input) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -239,12 +245,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyCreate).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: false,
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -306,14 +313,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          publishedAt: new Date(),
-          createdAt: new Date(),
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.update.mockResolvedValue(journey)
 
@@ -323,12 +330,13 @@ describe('JourneyModule', () => {
               journeyUpdate(input: $input) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -348,12 +356,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyUpdate).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: false,
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -415,14 +424,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          publishedAt: new Date(),
-          createdAt: new Date(),
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.update.mockResolvedValue(journey)
 
@@ -432,13 +441,14 @@ describe('JourneyModule', () => {
               journeyPublish(id: $id) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 primaryImageBlockId
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -453,12 +463,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyPublish).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: true,
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -494,14 +505,14 @@ describe('JourneyModule', () => {
         const journey = {
           id: uuidv4(),
           title: 'published',
-          publishedAt: new Date(),
-          createdAt: new Date(),
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'published-slug'
+          slug: 'published-slug',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.findUnique.mockResolvedValue(journey)
 

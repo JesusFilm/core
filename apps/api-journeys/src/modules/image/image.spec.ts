@@ -46,13 +46,14 @@ describe('ImageModule', () => {
     dbMock.journey.findUnique.mockResolvedValue({
       id: journeyId,
       title: 'published',
-      published: true,
       locale: 'en-US',
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
       primaryImageBlockId: null,
-      slug: 'published-slug'
+      slug: 'published-slug',
+      publishedAt: new Date(),
+      createdAt: new Date()
     })
   })
 
@@ -127,13 +128,14 @@ describe('ImageModule', () => {
       const journey: Journey = {
         id: 'journeyId',
         title: 'published',
-        published: true,
         locale: 'hi-IN',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
         primaryImageBlockId: 'primaryImageBlockId',
-        slug: 'published-slug'
+        slug: 'published-slug',
+        publishedAt: new Date(),
+        createdAt: new Date()
       }
 
       const primaryImage: Block = {
@@ -179,13 +181,14 @@ describe('ImageModule', () => {
       const journey: Journey = {
         id: 'journeyId',
         title: 'published',
-        published: true,
         locale: 'hi-IN',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
         primaryImageBlockId: 'primaryImageBlockId',
-        slug: 'published-slug'
+        slug: 'published-slug',
+        publishedAt: new Date(),
+        createdAt: new Date()
       }
 
       const primaryImage: Block = {

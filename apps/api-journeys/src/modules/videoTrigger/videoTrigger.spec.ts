@@ -23,13 +23,14 @@ describe('VideoTriggerModule', () => {
     dbMock.journey.findUnique.mockResolvedValue({
       id: journeyId,
       title: 'published',
-      published: true,
       locale: 'en-US',
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
       primaryImageBlockId: null,
-      slug: 'published-slug'
+      slug: 'published-slug',
+      publishedAt: new Date(),
+      createdAt: new Date()
     })
   })
 
