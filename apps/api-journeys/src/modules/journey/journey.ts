@@ -24,13 +24,19 @@ const typeDefs = gql`
     themeName: ThemeName!
     description: String
     slug: String!
-    publishedAt: String
-    createdAt: String!
+    publishedAt: Date
+    createdAt: Date!
   }
 
   enum IdType {
     databaseId
     slug
+  }
+
+  scalar Date
+
+  type dateTime {
+    created: Date
   }
 
   extend type Query {

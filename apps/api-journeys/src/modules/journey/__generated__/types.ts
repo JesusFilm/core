@@ -3,7 +3,8 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publshedAt' | 'createdAt';
+    Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publishedAt' | 'createdAt';
+    dateTime: 'created';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
     NavigateToJourneyAction: 'journey';
@@ -24,22 +25,29 @@ export namespace JourneyModule {
   export type ThemeName = DefinedEnumValues['ThemeName'];
   export type Journey = Pick<Types.Journey, DefinedFields['Journey']>;
   export type IdType = DefinedEnumValues['IdType'];
+  export type dateTime = Pick<Types.DateTime, DefinedFields['dateTime']>;
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
   export type JourneyUpdateInput = Pick<Types.JourneyUpdateInput, DefinedInputFields['JourneyUpdateInput']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   export type NavigateToJourneyAction = Types.NavigateToJourneyAction;
   
+  export type Scalars = Pick<Types.Scalars, 'Date'>;
+  export type DateScalarConfig = Types.DateScalarConfig;
+  
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey'] | '__isTypeOf'>;
+  export type dateTimeResolvers = Pick<Types.DateTimeResolvers, DefinedFields['dateTime'] | '__isTypeOf'>;
   export type QueryResolvers = Pick<Types.QueryResolvers, DefinedFields['Query']>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
   export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction']>;
   
   export interface Resolvers {
     Journey?: JourneyResolvers;
+    dateTime?: dateTimeResolvers;
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
+    Date?: Types.Resolvers['Date'];
   };
   
   export interface MiddlewareMap {
@@ -55,8 +63,12 @@ export namespace JourneyModule {
       themeName?: gm.Middleware[];
       description?: gm.Middleware[];
       slug?: gm.Middleware[];
-      publshedAt?: gm.Middleware[];
+      publishedAt?: gm.Middleware[];
       createdAt?: gm.Middleware[];
+    };
+    dateTime?: {
+      '*'?: gm.Middleware[];
+      created?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];

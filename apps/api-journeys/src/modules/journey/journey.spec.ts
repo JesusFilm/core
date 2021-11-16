@@ -71,7 +71,6 @@ describe('JourneyModule', () => {
             }
           }
         `)
-        console.log(data)
         expect(data?.journeys).toEqual([
           pick(publishedJourney, [
             'id',

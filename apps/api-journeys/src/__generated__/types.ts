@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { Block as BlockType, Journey as JourneyType, Response as ResponseType } from '.prisma/api-journeys-client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -14,6 +14,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
 
 export type Action = {
@@ -82,6 +83,7 @@ export type CardBlock = Block & {
    */
   themeName?: Maybe<ThemeName>;
 };
+
 
 export type GridAlignItems =
   | 'baseline'
@@ -190,12 +192,12 @@ export type ImageBlockCreateInput = {
 export type Journey = {
   __typename?: 'Journey';
   blocks?: Maybe<Array<Block>>;
-  createdAt: Scalars['String'];
+  createdAt: Scalars['Date'];
   description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   locale: Scalars['String'];
   primaryImageBlock?: Maybe<ImageBlock>;
-  publshedAt?: Maybe<Scalars['String']>;
+  publishedAt?: Maybe<Scalars['Date']>;
   slug: Scalars['String'];
   themeMode: ThemeMode;
   themeName: ThemeName;
@@ -514,6 +516,11 @@ export type VideoTriggerBlock = Block & {
   triggerStart: Scalars['Int'];
 };
 
+export type DateTime = {
+  __typename?: 'dateTime';
+  created?: Maybe<Scalars['Date']>;
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -591,6 +598,7 @@ export type ResolversTypes = {
   ButtonSize: ButtonSize;
   ButtonVariant: ButtonVariant;
   CardBlock: ResolverTypeWrapper<BlockType>;
+  Date: ResolverTypeWrapper<Scalars['Date']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   GridAlignItems: GridAlignItems;
   GridContainerBlock: ResolverTypeWrapper<BlockType>;
@@ -639,6 +647,7 @@ export type ResolversTypes = {
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoResponseStateEnum: VideoResponseStateEnum;
   VideoTriggerBlock: ResolverTypeWrapper<BlockType>;
+  dateTime: ResolverTypeWrapper<DateTime>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -648,6 +657,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   ButtonBlock: BlockType;
   CardBlock: BlockType;
+  Date: Scalars['Date'];
   Float: Scalars['Float'];
   GridContainerBlock: BlockType;
   GridItemBlock: BlockType;
@@ -683,6 +693,7 @@ export type ResolversParentTypes = {
   VideoResponse: ResponseType;
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoTriggerBlock: BlockType;
+  dateTime: DateTime;
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
@@ -719,6 +730,10 @@ export type CardBlockResolvers<ContextType = GraphQLModules.Context, ParentType 
   themeName?: Resolver<Maybe<ResolversTypes['ThemeName']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
 
 export type GridContainerBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['GridContainerBlock'] = ResolversParentTypes['GridContainerBlock']> = {
   alignItems?: Resolver<ResolversTypes['GridAlignItems'], ParentType, ContextType>;
@@ -759,12 +774,12 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locale?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
-  publshedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  publishedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
@@ -926,11 +941,17 @@ export type VideoTriggerBlockResolvers<ContextType = GraphQLModules.Context, Par
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type DateTimeResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['dateTime'] = ResolversParentTypes['dateTime']> = {
+  created?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = GraphQLModules.Context> = {
   Action?: ActionResolvers<ContextType>;
   Block?: BlockResolvers<ContextType>;
   ButtonBlock?: ButtonBlockResolvers<ContextType>;
   CardBlock?: CardBlockResolvers<ContextType>;
+  Date?: GraphQLScalarType;
   GridContainerBlock?: GridContainerBlockResolvers<ContextType>;
   GridItemBlock?: GridItemBlockResolvers<ContextType>;
   Icon?: IconResolvers<ContextType>;
@@ -956,5 +977,8 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   VideoGeneric?: VideoGenericResolvers<ContextType>;
   VideoResponse?: VideoResponseResolvers<ContextType>;
   VideoTriggerBlock?: VideoTriggerBlockResolvers<ContextType>;
+  dateTime?: DateTimeResolvers<ContextType>;
 };
 
+
+export type Date = Scalars["Date"];
