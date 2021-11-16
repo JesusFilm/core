@@ -7,6 +7,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
+import { Typography, Box } from '@mui/material'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -25,8 +26,12 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta property="og:image" content={journey.primaryImageBlock.src} />
         )}
       </Head>
-      {<h1>Single Journey Page</h1>}
-      {<h2>{journey.title}</h2>}
+      <Box sx={{ m: 10 }}>
+        <Typography variant={'h2'} sx={{ mb: 4 }}>
+          Single Journey Page
+        </Typography>
+        <Typography variant={'h6'}>{journey.title}</Typography>
+      </Box>
     </>
   )
 }

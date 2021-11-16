@@ -7,8 +7,10 @@ import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
 function Dashboard(): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <Container>
-        <Typography variant={'h1'}>Dashboard</Typography>
+      <Container sx={{ my: 10 }}>
+        <Typography variant={'h1'} sx={{ mb: 8 }}>
+          Dashboard
+        </Typography>
         <Box my={2}>
           <Link href={`/journeys`} passHref>
             <Button variant="contained" fullWidth>

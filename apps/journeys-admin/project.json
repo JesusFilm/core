@@ -1,14 +1,14 @@
 {
-  "root": "apps/journey-admin",
-  "sourceRoot": "apps/journey-admin",
+  "root": "apps/journeys-admin",
+  "sourceRoot": "apps/journeys-admin",
   "projectType": "application",
   "targets": {
     "build": {
       "executor": "@nrwl/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "root": "apps/journey-admin",
-        "outputPath": "dist/apps/journey-admin"
+        "root": "apps/journeys-admin",
+        "outputPath": "dist/apps/journeys-admin"
       },
       "configurations": {
         "production": {}
@@ -17,14 +17,14 @@
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {
-        "buildTarget": "journey-admin:build",
+        "buildTarget": "journeys-admin:build",
         "dev": true,
         "hostname": "0.0.0.0",
         "port": 4100
       },
       "configurations": {
         "production": {
-          "buildTarget": "journey-admin:build:production",
+          "buildTarget": "journeys-admin:build:production",
           "dev": false
         }
       }
@@ -40,7 +40,7 @@
             "command": "nx serve api-gateway"
           },
           {
-            "command": "nx serve journey-admin"
+            "command": "nx serve journeys-admin"
           }
         ],
         "parallel": true
@@ -49,28 +49,28 @@
     "export": {
       "executor": "@nrwl/next:export",
       "options": {
-        "buildTarget": "journey-admin:build:production"
+        "buildTarget": "journeys-admin:build:production"
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/journey-admin"],
+      "outputs": ["coverage/apps/journeys-admin"],
       "options": {
-        "jestConfig": "apps/journey-admin/jest.config.js",
+        "jestConfig": "apps/journeys-admin/jest.config.js",
         "passWithNoTests": true
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/journey-admin/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/journeys-admin/**/*.{ts,tsx,js,jsx}"]
       },
       "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journey-admin/tsconfig.json"
+        "command": "npx tsc -b apps/journeys-admin/tsconfig.json"
       }
     },
     "demo": {
@@ -96,7 +96,7 @@
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
           },
           {
-            "command": "npx apollo client:codegen --config apps/journey-admin/apollo.config.js --target typescript --outputFlat apps/journey-admin/__generated__"
+            "command": "npx apollo client:codegen --config apps/journeys-admin/apollo.config.js --target typescript --outputFlat apps/journeys-admin/__generated__"
           }
         ]
       }

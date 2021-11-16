@@ -1,6 +1,6 @@
 {
-  "root": "apps/journey-admin-e2e",
-  "sourceRoot": "apps/journey-admin-e2e/src",
+  "root": "apps/journeys-admin-e2e",
+  "sourceRoot": "apps/journeys-admin-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
@@ -8,7 +8,7 @@
       "options": {
         "commands": [
           {
-            "command": "start-server-and-test \"nx serve journey-admin:serve-all\" 4100 \"nx _e2e journey-admin-e2e\""
+            "command": "start-server-and-test \"nx serve journeys-admin:serve-all\" 4100 \"nx _e2e journeys-admin-e2e\""
           }
         ]
       }
@@ -16,8 +16,8 @@
     "_e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/journey-admin-e2e/cypress.json",
-        "tsConfig": "apps/journey-admin-e2e/tsconfig.e2e.json",
+        "cypressConfig": "apps/journeys-admin-e2e/cypress.json",
+        "tsConfig": "apps/journeys-admin-e2e/tsconfig.e2e.json",
         "baseUrl": "http://localhost:4100"
       }
     },
@@ -25,17 +25,17 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/journey-admin-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": ["apps/journeys-admin-e2e/**/*.{js,ts}"]
       }
     },
 
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journey-admin-e2e/tsconfig.json"
+        "command": "npx tsc -b apps/journeys-admin-e2e/tsconfig.json"
       }
     }
   },
   "tags": [],
-  "implicitDependencies": ["journey-admin"]
+  "implicitDependencies": ["journeys-admin"]
 }

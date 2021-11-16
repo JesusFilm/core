@@ -1,4 +1,4 @@
-describe('journey-admin', () => {
+describe('journeys-admin', () => {
   beforeEach(() => cy.visit('/'))
 
   it('should display dashboard heading', () => {

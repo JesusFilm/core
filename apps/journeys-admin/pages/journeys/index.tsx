@@ -18,8 +18,10 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <Container>
-        <Typography variant={'h1'}>Journeys List</Typography>
+      <Container sx={{ my: 10 }}>
+        <Typography variant={'h1'} sx={{ mb: 8 }}>
+          Journeys List
+        </Typography>
         {journeys.map(({ id, title, slug }) => (
           <Box key={id} my={2}>
             <Link href={`/journeys/${slug}`} passHref>

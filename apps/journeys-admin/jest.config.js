@@ -1,11 +1,11 @@
 module.exports = {
-  displayName: 'journey-admin',
+  displayName: 'journeys-admin',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nrwl/react/plugins/jest',
     '^.+\\.[tj]sx?$': 'babel-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/journey-admin',
+  coverageDirectory: '../../coverage/apps/journeys-admin',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts']
 }

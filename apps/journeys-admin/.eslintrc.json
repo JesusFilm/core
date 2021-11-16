@@ -12,14 +12,14 @@
       "rules": {
         "@next/next/no-html-link-for-pages": [
           "error",
-          "apps/journey-admin/pages/"
+          "apps/journeys-admin/pages/"
         ]
       }
     },
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["apps/journey-admin/tsconfig.*?.json"]
+        "project": ["apps/journeys-admin/tsconfig.*?.json"]
       },
       "rules": {
         "no-void": ["error", { "allowAsStatement": true }]

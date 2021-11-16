@@ -30,7 +30,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   return (
     <>
       <Head>
-        <title>Journey Admin</title>
+        <title>Journeys Admin</title>
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
