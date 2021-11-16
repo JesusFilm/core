@@ -4,9 +4,10 @@
   "integrationFolder": "./src/integration",
   "modifyObstructiveCode": false,
   "supportFile": "./src/support/index.ts",
-  "pluginsFile": false,
+  "pluginsFile": "./src/plugins/index",
   "video": true,
   "videosFolder": "../../dist/cypress/apps/journey-admin-e2e/videos",
   "screenshotsFolder": "../../dist/cypress/apps/journey-admin-e2e/screenshots",
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "defaultCommandTimeout": 50000
 }

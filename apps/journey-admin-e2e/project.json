@@ -4,15 +4,21 @@
   "projectType": "application",
   "targets": {
     "e2e": {
+      "builder": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "start-server-and-test \"nx serve journey-admin:serve-all\" 4100 \"nx _e2e journey-admin-e2e\""
+          }
+        ]
+      }
+    },
+    "_e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
         "cypressConfig": "apps/journey-admin-e2e/cypress.json",
-        "devServerTarget": "journey-admin:serve"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "journey-admin:serve:production"
-        }
+        "tsConfig": "apps/journey-admin-e2e/tsconfig.e2e.json",
+        "baseUrl": "http://localhost:4100"
       }
     },
     "lint": {
@@ -20,6 +26,13 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/journey-admin-e2e/**/*.{js,ts}"]
+      }
+    },
+
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/journey-admin-e2e/tsconfig.json"
       }
     }
   },
