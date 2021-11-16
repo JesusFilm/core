@@ -17,6 +17,5 @@ export const sharedUiConfig = {
   ],
   parameters: {
     ...rootParameters
-    // TODO: Currently app background and card background are same color, update background if this needs changing
   }
 }

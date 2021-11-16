@@ -10,15 +10,18 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 const Demo = {
   ...journeysConfig,
   component: Video,
-  title: 'Journeys/Blocks/Video'
+  title: 'Journeys/Blocks/Video',
+  parameters: {
+    chromatic: { disableSnapshot: true }
+  }
 }
 
 const videoBlock: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   id: 'Video1',
   parentBlockId: 'step1.id',
-  autoplay: true,
-  muted: true,
+  autoplay: false,
+  muted: false,
   title: 'video1',
   videoContent: {
     __typename: 'VideoArclight',
@@ -83,9 +86,22 @@ const Template: Story<ConductorProps> = ({ ...props }) => (
   </MockedProvider>
 )
 
-export const ArclightSource = Template.bind({})
-ArclightSource.args = {
+export const Default = Template.bind({})
+Default.args = {
   blocks: conductorProps([videoBlock])
+}
+Default.parameters = {
+  chromatic: { disableSnapshot: false }
+}
+
+export const Autoplay = Template.bind({})
+Autoplay.args = {
+  blocks: conductorProps([{ ...videoBlock, autoplay: true }])
+}
+
+export const Muted = Template.bind({})
+Muted.args = {
+  blocks: conductorProps([{ ...videoBlock, muted: true }])
 }
 
 export const ExternalSource = Template.bind({})
@@ -109,6 +125,34 @@ StartAt.args = {
       startAt: 20
     }
   ])
+}
+
+// TODO: Add EndAt
+
+export const Poster = Template.bind({})
+Poster.args = {
+  blocks: conductorProps([
+    {
+      ...videoBlock,
+      posterBlockId: 'posterBlockId',
+      children: [
+        {
+          id: 'posterBlockId',
+          __typename: 'ImageBlock',
+          src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+          alt: 'random image from unsplash',
+          width: 1600,
+          height: 1067,
+          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+          parentBlockId: 'videoBlockId',
+          children: []
+        }
+      ]
+    }
+  ])
+}
+Poster.parameters = {
+  chromatic: { disableSnapshot: false }
 }
 
 export default Demo as Meta

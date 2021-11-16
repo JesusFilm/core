@@ -125,7 +125,8 @@ export function Video({
         )
       })
       playerRef.current.on('ended', () => {
-        playerRef.current?.exitFullscreen()
+        if (playerRef?.current?.isFullscreen() === true)
+          playerRef.current?.exitFullscreen()
         handleVideoResponse(
           VideoResponseStateEnum.FINISHED,
           playerRef.current?.currentTime()
@@ -154,7 +155,7 @@ export function Video({
         backgroundColor: '#000000',
         borderRadius: 4,
         overflow: 'hidden',
-        minWidth: { sm: 328, md: '100%' }
+        m: 0
       }}
     >
       <video
