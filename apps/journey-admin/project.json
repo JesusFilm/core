@@ -1,0 +1,106 @@
+{
+  "root": "apps/journey-admin",
+  "sourceRoot": "apps/journey-admin",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "root": "apps/journey-admin",
+        "outputPath": "dist/apps/journey-admin"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "options": {
+        "buildTarget": "journey-admin:build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4100
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "journey-admin:build:production",
+          "dev": false
+        }
+      }
+    },
+    "serve-all": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve api-journeys"
+          },
+          {
+            "command": "nx serve api-gateway"
+          },
+          {
+            "command": "nx serve journey-admin"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "journey-admin:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/journey-admin"],
+      "options": {
+        "jestConfig": "apps/journey-admin/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/journey-admin/**/*.{ts,tsx,js,jsx}"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/journey-admin/tsconfig.json"
+      }
+    },
+    "demo": {
+      "executor": "@nrwl/storybook:storybook",
+      "options": {
+        "uiFramework": "@storybook/react",
+        "port": 4400,
+        "config": {
+          "configFolder": ".storybook"
+        }
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "npx apollo client:codegen --config apps/journey-admin/apollo.config.js --target typescript --outputFlat apps/journey-admin/__generated__"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

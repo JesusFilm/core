@@ -3,6 +3,8 @@
   "projects": {
     "api-gateway": "apps/api-gateway",
     "api-journeys": "apps/api-journeys",
+    "journey-admin": "apps/journey-admin",
+    "journey-admin-e2e": "apps/journey-admin-e2e",
     "journeys": "apps/journeys",
     "journeys-e2e": "apps/journeys-e2e",
     "shared-storybook": "libs/shared/storybook",
