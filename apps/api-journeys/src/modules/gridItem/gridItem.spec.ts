@@ -8,6 +8,8 @@ import { DocumentNode, ExecutionResult } from 'graphql'
 
 describe('GridItemModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(gridItemModule, {
@@ -24,8 +26,8 @@ describe('GridItemModule', () => {
       description: null,
       primaryImageBlockId: null,
       slug: 'published-slug',
-      publishedAt: new Date(),
-      createdAt: new Date()
+      publishedAt,
+      createdAt
     })
   })
 

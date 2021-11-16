@@ -126,7 +126,6 @@ describe('JourneyModule', () => {
           pick(journey, [
             'id',
             'title',
-            'published',
             'locale',
             'themeName',
             'themeMode',
@@ -137,10 +136,10 @@ describe('JourneyModule', () => {
         )
       })
 
-      it('publishedAt prop is null if journey is not yet published', async () => {
+      it('should not be published by default', async () => {
         const journey = {
           id: uuidv4(),
-          title: 'published',
+          title: 'not-published',
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
@@ -176,7 +175,6 @@ describe('JourneyModule', () => {
           pick(journey, [
             'id',
             'title',
-            'published',
             'locale',
             'themeName',
             'themeMode',

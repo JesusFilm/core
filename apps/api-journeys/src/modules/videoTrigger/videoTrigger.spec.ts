@@ -13,6 +13,8 @@ import { DocumentNode, ExecutionResult } from 'graphql'
 
 describe('VideoTriggerModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(videoTriggerModule, {
@@ -29,8 +31,8 @@ describe('VideoTriggerModule', () => {
       description: null,
       primaryImageBlockId: null,
       slug: 'published-slug',
-      publishedAt: new Date(),
-      createdAt: new Date()
+      publishedAt,
+      createdAt
     })
   })
 

@@ -20,6 +20,8 @@ import { get } from 'lodash'
 
 describe('VideoModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(videoModule, {
@@ -36,8 +38,8 @@ describe('VideoModule', () => {
       description: null,
       primaryImageBlockId: null,
       slug: 'published-slug',
-      publishedAt: new Date(),
-      createdAt: new Date()
+      publishedAt,
+      createdAt
     })
   })
 

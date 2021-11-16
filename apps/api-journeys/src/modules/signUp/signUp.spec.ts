@@ -20,6 +20,8 @@ import { DocumentNode, ExecutionResult } from 'graphql'
 
 describe('SignUpModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(signUpModule, {
@@ -42,8 +44,8 @@ describe('SignUpModule', () => {
       description: null,
       primaryImageBlockId: null,
       slug: 'published-slug',
-      publishedAt: new Date(),
-      createdAt: new Date()
+      publishedAt,
+      createdAt
     })
   })
 

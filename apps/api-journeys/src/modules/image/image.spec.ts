@@ -36,6 +36,8 @@ jest.mock('canvas', () => {
 
 describe('ImageModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(imageModule, {
@@ -52,8 +54,8 @@ describe('ImageModule', () => {
       description: null,
       primaryImageBlockId: null,
       slug: 'published-slug',
-      publishedAt: new Date(),
-      createdAt: new Date()
+      publishedAt,
+      createdAt
     })
   })
 
@@ -134,8 +136,8 @@ describe('ImageModule', () => {
         description: null,
         primaryImageBlockId: 'primaryImageBlockId',
         slug: 'published-slug',
-        publishedAt: new Date(),
-        createdAt: new Date()
+        publishedAt,
+        createdAt
       }
 
       const primaryImage: Block = {
@@ -187,8 +189,8 @@ describe('ImageModule', () => {
         description: null,
         primaryImageBlockId: 'primaryImageBlockId',
         slug: 'published-slug',
-        publishedAt: new Date(),
-        createdAt: new Date()
+        publishedAt,
+        createdAt
       }
 
       const primaryImage: Block = {
