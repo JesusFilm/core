@@ -35,10 +35,6 @@ const typeDefs = gql`
 
   scalar Date
 
-  # type dateTime {
-  #   created: Date
-  # }
-
   extend type Query {
     journeys: [Journey!]!
     journey(id: ID!, idType: IdType): Journey

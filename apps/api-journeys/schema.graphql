@@ -73,10 +73,6 @@ type CardBlock implements Block {
 
 scalar Date
 
-type dateTime {
-  created: Date
-}
-
 enum GridAlignItems {
   baseline
   flexStart

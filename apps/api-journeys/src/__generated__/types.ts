@@ -84,7 +84,6 @@ export type CardBlock = Block & {
   themeName?: Maybe<ThemeName>;
 };
 
-
 export type GridAlignItems =
   | 'baseline'
   | 'center'
@@ -966,6 +965,5 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   VideoResponse?: VideoResponseResolvers<ContextType>;
   VideoTriggerBlock?: VideoTriggerBlockResolvers<ContextType>;
 };
-
 
 export type Date = Scalars["Date"];
