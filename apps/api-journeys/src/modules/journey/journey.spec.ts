@@ -136,6 +136,56 @@ describe('JourneyModule', () => {
           ])
         )
       })
+
+      it('publishedAt prop is null if journey is not yet published', async () => {
+        const journey = {
+          id: uuidv4(),
+          title: 'published',
+          locale: 'hi-IN',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'published-slug',
+          publishedAt: null,
+          createdAt
+        }
+        dbMock.journey.findUnique.mockResolvedValue(journey)
+
+        const { data } = await query(
+          gql`
+            query ($id: ID!) {
+              journey(id: $id) {
+                id
+                title
+                locale
+                themeName
+                themeMode
+                slug
+                publishedAt
+                createdAt
+              }
+            }
+          `,
+          {
+            id: journey.id
+          }
+        )
+
+        expect(data?.journey).toEqual(
+          pick(journey, [
+            'id',
+            'title',
+            'published',
+            'locale',
+            'themeName',
+            'themeMode',
+            'slug',
+            'publishedAt',
+            'createdAt'
+          ])
+        )
+      })
     })
   })
 
