@@ -1,3 +1,5 @@
-const TestComponent = () => <div>Test Component</div>
+import { ReactElement } from 'react'
+
+const TestComponent = (): ReactElement => <div>Test Component</div>
 
 export default TestComponent
