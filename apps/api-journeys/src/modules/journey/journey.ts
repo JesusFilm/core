@@ -35,9 +35,9 @@ const typeDefs = gql`
 
   scalar Date
 
-  type dateTime {
-    created: Date
-  }
+  # type dateTime {
+  #   created: Date
+  # }
 
   extend type Query {
     journeys: [Journey!]!

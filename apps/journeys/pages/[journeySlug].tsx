@@ -79,6 +79,8 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
           themeMode
           title
           description
+          publishedAt
+          createdAt
           primaryImageBlock {
             src
           }

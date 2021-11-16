@@ -516,11 +516,6 @@ export type VideoTriggerBlock = Block & {
   triggerStart: Scalars['Int'];
 };
 
-export type DateTime = {
-  __typename?: 'dateTime';
-  created?: Maybe<Scalars['Date']>;
-};
-
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -647,7 +642,6 @@ export type ResolversTypes = {
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoResponseStateEnum: VideoResponseStateEnum;
   VideoTriggerBlock: ResolverTypeWrapper<BlockType>;
-  dateTime: ResolverTypeWrapper<DateTime>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -693,7 +687,6 @@ export type ResolversParentTypes = {
   VideoResponse: ResponseType;
   VideoResponseCreateInput: VideoResponseCreateInput;
   VideoTriggerBlock: BlockType;
-  dateTime: DateTime;
 };
 
 export type ActionResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Action'] = ResolversParentTypes['Action']> = {
@@ -941,11 +934,6 @@ export type VideoTriggerBlockResolvers<ContextType = GraphQLModules.Context, Par
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type DateTimeResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['dateTime'] = ResolversParentTypes['dateTime']> = {
-  created?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type Resolvers<ContextType = GraphQLModules.Context> = {
   Action?: ActionResolvers<ContextType>;
   Block?: BlockResolvers<ContextType>;
@@ -977,7 +965,6 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   VideoGeneric?: VideoGenericResolvers<ContextType>;
   VideoResponse?: VideoResponseResolvers<ContextType>;
   VideoTriggerBlock?: VideoTriggerBlockResolvers<ContextType>;
-  dateTime?: DateTimeResolvers<ContextType>;
 };
 
 
