@@ -28,7 +28,7 @@ enum UserJourneyRole {
 
 model User {
   id          String        @id @default(uuid())
-  firebaseId  String
+  firebaseId  String        @unique
   firstName   String
   lastName    String
   email       String

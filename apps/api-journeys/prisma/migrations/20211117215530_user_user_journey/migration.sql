@@ -21,6 +21,9 @@ CREATE TABLE "UserJourney" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User.firebaseId_unique" ON "User"("firebaseId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "uniqueUserJourney" ON "UserJourney"("userId", "journeyId");
 
 -- AddForeignKey

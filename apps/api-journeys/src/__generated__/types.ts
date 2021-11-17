@@ -438,6 +438,24 @@ export type TypographyVariant =
   | 'subtitle1'
   | 'subtitle2';
 
+export type User = {
+  __typename?: 'User';
+  UserJourney?: Maybe<Array<UserJourney>>;
+  email?: Maybe<Scalars['String']>;
+  firebaseId?: Maybe<Scalars['ID']>;
+  firstName?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  imageUrl?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+};
+
+export type UserJourney = {
+  __typename?: 'UserJourney';
+  journeyId: Scalars['ID'];
+  role?: Maybe<Scalars['String']>;
+  userId: Scalars['ID'];
+};
+
 export type VideoArclight = VideoContent & {
   __typename?: 'VideoArclight';
   languageId: Scalars['String'];
@@ -630,6 +648,8 @@ export type ResolversTypes = {
   TypographyBlock: ResolverTypeWrapper<BlockType>;
   TypographyColor: TypographyColor;
   TypographyVariant: TypographyVariant;
+  User: ResolverTypeWrapper<User>;
+  UserJourney: ResolverTypeWrapper<UserJourney>;
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   VideoContent: ResolversTypes['VideoArclight'] | ResolversTypes['VideoGeneric'];
@@ -675,6 +695,8 @@ export type ResolversParentTypes = {
   StepBlock: BlockType;
   String: Scalars['String'];
   TypographyBlock: BlockType;
+  User: User;
+  UserJourney: UserJourney;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
   VideoContent: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
@@ -876,6 +898,24 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  UserJourney?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  firebaseId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserJourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['UserJourney'] = ResolversParentTypes['UserJourney']> = {
+  journeyId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type VideoArclightResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['VideoArclight'] = ResolversParentTypes['VideoArclight']> = {
   languageId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   mediaComponentId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -948,6 +988,8 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   SignUpResponse?: SignUpResponseResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
+  UserJourney?: UserJourneyResolvers<ContextType>;
   VideoArclight?: VideoArclightResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;
   VideoContent?: VideoContentResolvers<ContextType>;
