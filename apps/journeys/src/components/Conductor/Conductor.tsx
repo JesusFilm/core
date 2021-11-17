@@ -145,11 +145,11 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
                 ) : (
                   <CardWrapper
                     id={block.id}
-                    backgroundColor={theme.palette.primary.light}
+                    backgroundColor={theme.palette.background.paper}
                     themeMode={null}
                     themeName={null}
                   >
-                    <div />
+                    <></>
                   </CardWrapper>
                 )}
               </Box>
