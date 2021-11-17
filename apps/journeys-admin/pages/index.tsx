@@ -3,6 +3,7 @@ import { Box, Button, Container, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ThemeProvider } from '@core/shared/ui'
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+import { Wrapper } from '../src/components/UserAuthentication/Wrapper'
 
 function Dashboard(): ReactElement {
   return (
@@ -18,6 +19,7 @@ function Dashboard(): ReactElement {
             </Button>
           </Link>
         </Box>
+        <Wrapper />
       </Container>
     </ThemeProvider>
   )
