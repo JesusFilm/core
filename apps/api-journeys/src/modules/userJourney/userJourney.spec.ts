@@ -65,7 +65,7 @@ describe('UserModule', () => {
           role: 'inviteRequested'
         }
 
-        dbMock.journey.findMany.mockResolvedValue([userJourney])
+        dbMock.userJourney.findMany.mockResolvedValue([userJourney])
         const { data } = await query(gql`
           query {
             userJourney {
@@ -75,7 +75,7 @@ describe('UserModule', () => {
             }
           }
         `)
-        expect(data?.journeys).toEqual([
+        expect(data?.userJourneys).toEqual([
           pick(userJourney, ['userId', 'journeyId', 'role'])
         ])
       })

@@ -43,10 +43,10 @@ describe('UserModule', () => {
           imageUrl: 'po'
         }
 
-        dbMock.journey.findMany.mockResolvedValue([user])
+        dbMock.user.findMany.mockResolvedValue([user])
         const { data } = await query(gql`
           query {
-            journeys {
+            user {
               id
               firebaseId
               firstName
@@ -56,7 +56,7 @@ describe('UserModule', () => {
             }
           }
         `)
-        expect(data?.journeys).toEqual([
+        expect(data?.users).toEqual([
           pick(user, [
             'id',
             'title',
