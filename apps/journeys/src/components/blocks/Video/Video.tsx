@@ -11,10 +11,6 @@ import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Trigger } from './VideoTrigger'
-import {
-  isActiveBlockOrDescendant,
-  useBlocks
-} from '../../../libs/client/cache/blocks'
 
 import 'video.js/dist/video-js.css'
 
@@ -44,7 +40,6 @@ export function Video({
 }: VideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
-  const { activeBlock } = useBlocks()
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageBlock> | undefined
@@ -82,7 +77,7 @@ export function Video({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: false,
+        autoplay: autoplay === true,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -108,9 +103,6 @@ export function Video({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
-        if (autoplay === true && isActiveBlockOrDescendant(blockId)) {
-          void playerRef.current?.play()
-        }
       })
       playerRef.current.on('playing', () => {
         handleVideoResponse(
@@ -134,16 +126,6 @@ export function Video({
       })
     }
   }, [handleVideoResponse, startAt, muted, autoplay, blockId, posterBlock])
-
-  useEffect(() => {
-    if (
-      playerRef.current != null &&
-      autoplay === true &&
-      isActiveBlockOrDescendant(blockId)
-    ) {
-      void playerRef.current.play()
-    }
-  }, [autoplay, blockId, activeBlock])
 
   return (
     <Box
