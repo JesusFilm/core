@@ -36,5 +36,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["shared-ui", "journeys"]
+  "implicitDependencies": ["shared-ui", "journeys", "journeys-admin"]
 }

@@ -6,6 +6,12 @@ const storiesForProject = {
     '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
   ],
+  'journeys-admin': [
+    '../apps/journeys-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/journeys-admin/src/components/**/*.stories.mdx',
+    '../apps/journeys-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/journeys-admin/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
   'shared-ui': [
     '../libs/shared/ui/src/**/**/*.stories.mdx',
     '../libs/shared/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
@@ -15,6 +21,7 @@ const storiesForProject = {
 
 const allStories = [
   ...storiesForProject['journeys'],
+  ...storiesForProject['journeys-admin'],
   ...storiesForProject['shared-ui']
 ]
 
