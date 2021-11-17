@@ -101,6 +101,9 @@ export function Video({
         muted: muted === true,
         poster: posterBlock?.src
       })
+      playerRef.current.on('ready', () => {
+        playerRef.current?.currentTime(startAt ?? 0)
+      })
       playerRef.current.on('playing', () => {
         handleVideoResponse(
           VideoResponseStateEnum.PLAYING,
