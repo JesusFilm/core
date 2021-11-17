@@ -145,7 +145,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
                 ) : (
                   <CardWrapper
                     id={block.id}
-                    backgroundColor={theme.palette.background.paper}
+                    backgroundColor={theme.palette.primary.light}
                     themeMode={null}
                     themeName={null}
                   >
