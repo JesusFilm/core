@@ -1,25 +1,11 @@
 import { Button, Container, Typography, Grid, TextField } from '@mui/material'
 import { ReactElement, useState } from 'react'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { useAuth } from '../../../libs/firebaseClient'
 
 export const Register = (): ReactElement => {
   const [email, setEmail] = useState<string>()
   const [password, setPassword] = useState<string>()
-
-  const signUp = (event): void => {
-    event.preventDefault()
-
-    const auth = getAuth()
-    if (email !== undefined && password !== undefined) {
-      void createUserWithEmailAndPassword(auth, email, password).catch(
-        (error) => {
-          console.log(error.message)
-        }
-      )
-    }
-
-    // Add functionality to redirect to the dashboard
-  }
+  const { signUp } = useAuth()
 
   // MUI components used are just for testing purposes and is not the set components that will be used
   return (
@@ -57,7 +43,7 @@ export const Register = (): ReactElement => {
             fullWidth
             variant="contained"
             color="primary"
-            onClick={signUp}
+            onClick={signUp(email, password)}
           >
             Sign Up
           </Button>

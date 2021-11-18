@@ -10,12 +10,26 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
+import { useAuth } from '../../src/libs/firebaseClient/'
+import { useRouter } from 'next/router'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
+  const { logOut } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await logOut()
+      void router.push('/')
+    } catch {
+      console.log('error with logging out')
+    }
+  }
+
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       <Container sx={{ my: 10 }}>
@@ -31,6 +45,9 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
             </Link>
           </Box>
         ))}
+        <Button variant="contained" onClick={() => handleLogout()}>
+          SignOut
+        </Button>
       </Container>
     </ThemeProvider>
   )
