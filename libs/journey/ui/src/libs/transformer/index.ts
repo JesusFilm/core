@@ -1,1 +1,1 @@
-export { default, TreeBlock, Block } from './transformer'
+export { default, TreeBlock } from './transformer'
