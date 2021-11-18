@@ -96,7 +96,8 @@ describe('BlockRenderer', () => {
       description: 'description',
       children: []
     }
-    const { getByText } = render( <MockedProvider mocks={[]} addTypename={false}>
+    const { getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
         <BlockRenderer {...block} />
       </MockedProvider>
     )

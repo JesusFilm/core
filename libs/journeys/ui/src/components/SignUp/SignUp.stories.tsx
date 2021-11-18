@@ -9,7 +9,10 @@ import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import { IconName } from '../../../__generated__/globalTypes'
-import { SignUpFields, SignUpFields_submitIcon } from './__generated__/SignUpFields'
+import {
+  SignUpFields,
+  SignUpFields_submitIcon
+} from './__generated__/SignUpFields'
 
 const Demo = {
   ...journeyUiConfig,
@@ -39,7 +42,9 @@ const signUpProps: TreeBlock<SignUpFields> = {
   children: []
 }
 
-const Template: Story<TreeBlock<SignUpFields>> = ({ ...props }): ReactElement => (
+const Template: Story<TreeBlock<SignUpFields>> = ({
+  ...props
+}): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -68,11 +73,7 @@ const Template: Story<TreeBlock<SignUpFields>> = ({ ...props }): ReactElement =>
     ]}
   >
     <StoryCard>
-      <SignUp
-        {...signUpProps}
-        {...props}
-        uuid={() => 'uuid'}
-      />
+      <SignUp {...signUpProps} {...props} uuid={() => 'uuid'} />
     </StoryCard>
   </MockedProvider>
 )

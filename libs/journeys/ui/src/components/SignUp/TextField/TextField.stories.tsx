@@ -3,11 +3,7 @@ import { Form, Formik } from 'formik'
 import * as Yup from 'yup'
 
 import TextField, { TextFieldProps } from './TextField'
-import {
-  journeyUiConfig,
-  simpleComponentConfig,
-  StoryCard
-} from '../../..'
+import { journeyUiConfig, simpleComponentConfig, StoryCard } from '../../..'
 
 const Demo = {
   ...journeyUiConfig,

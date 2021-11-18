@@ -13,11 +13,11 @@ import { VideoFields } from './__generated__/VideoFields'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 
 export const VIDEO_RESPONSE_CREATE = gql`
-mutation VideoResponseCreate($input: VideoResponseCreateInput!) {
-  videoResponseCreate(input: $input) {
-    id
-    state
-    position
+  mutation VideoResponseCreate($input: VideoResponseCreateInput!) {
+    videoResponseCreate(input: $input) {
+      id
+      state
+      position
     }
   }
 `

@@ -68,12 +68,14 @@ Default.parameters = {
 
 export const Autoplay = Template.bind({})
 Autoplay.args = {
-  ...videoBlock, autoplay: true 
+  ...videoBlock,
+  autoplay: true
 }
 
 export const Muted = Template.bind({})
 Muted.args = {
-  ...videoBlock, muted: true 
+  ...videoBlock,
+  muted: true
 }
 
 export const ExternalSource = Template.bind({})

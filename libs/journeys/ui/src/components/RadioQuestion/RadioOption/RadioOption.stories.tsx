@@ -1,9 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import {
-  journeyUiConfig,
-  simpleComponentConfig,
-  StoryCard
-} from '../../..'
+import { journeyUiConfig, simpleComponentConfig, StoryCard } from '../../..'
 import { RadioOption, RadioOptionProps } from '.'
 
 const Demo = {

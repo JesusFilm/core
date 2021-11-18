@@ -1,8 +1,5 @@
 import { RadioOption } from './RadioOption'
-import {
-  fireEvent,
-  render
-} from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { TreeBlock, handleAction } from '../../../'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 

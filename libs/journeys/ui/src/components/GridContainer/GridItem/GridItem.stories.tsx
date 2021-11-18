@@ -65,7 +65,9 @@ const childrenOne: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<GridItemFields>> = DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<GridItemFields>> = DefaultTemplate.bind(
+  {}
+)
 Default.args = {
   id: 'GridItemLeft',
   __typename: 'GridItemBlock',

@@ -13,7 +13,6 @@ jest.mock('../../libs/action', () => {
   }
 })
 
-
 describe('RadioQuestion', () => {
   const block: TreeBlock<RadioQuestionFields> = {
     __typename: 'RadioQuestionBlock',
@@ -43,19 +42,19 @@ describe('RadioQuestion', () => {
 
   it('should render question props', () => {
     const { getByText } = render(
-       <MockedProvider mocks={[]} addTypename={false}>
-       < RadioQuestion { ...block } />
+      <MockedProvider mocks={[]} addTypename={false}>
+        <RadioQuestion {...block} />
       </MockedProvider>
     )
-      
+
     expect(getByText('Label')).toBeInTheDocument()
     expect(getByText('Description')).toBeInTheDocument()
   })
 
   it('should display the correct options', () => {
     const { getByText } = render(
-       <MockedProvider mocks={[]} addTypename={false}>
-       < RadioQuestion { ...block } />
+      <MockedProvider mocks={[]} addTypename={false}>
+        <RadioQuestion {...block} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
