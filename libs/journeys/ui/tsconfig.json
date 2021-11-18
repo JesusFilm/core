@@ -21,9 +21,6 @@
     },
     {
       "path": "./tsconfig.stories.json"
-    },
-    {
-      "path": "./tsconfig.eslint.json"
     }
   ]
 }
