@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { kebabCase } from 'lodash'
 import { Grid as MaterialGrid, GridDirection } from '@mui/material'
 import { TreeBlock } from '../..'
 import { BlockRenderer } from '../BlockRenderer'
@@ -15,9 +16,9 @@ export function GridContainer({
     <MaterialGrid
       container
       spacing={spacing}
-      direction={hyphenate(direction) as GridDirection}
-      alignItems={hyphenate(alignItems)}
-      justifyContent={hyphenate(justifyContent)}
+      direction={kebabCase(direction) as GridDirection}
+      alignItems={kebabCase(alignItems)}
+      justifyContent={kebabCase(justifyContent)}
     >
       {children?.map((block) => (
         <BlockRenderer {...block} key={block.id} />
@@ -25,6 +26,3 @@ export function GridContainer({
     </MaterialGrid>
   )
 }
-
-const hyphenate = (value): string =>
-  value.replace(/([A-Z])/g, (g: string[]): string => `-${g[0].toLowerCase()}`)

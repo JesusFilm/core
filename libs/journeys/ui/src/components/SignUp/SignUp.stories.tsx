@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import {
   journeyUiConfig,
   simpleComponentConfig,
@@ -9,8 +9,7 @@ import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import { IconName } from '../../../__generated__/globalTypes'
-import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
-import { SignUpFields } from './__generated__/SignUpFields'
+import { SignUpFields, SignUpFields_submitIcon } from './__generated__/SignUpFields'
 
 const Demo = {
   ...journeyUiConfig,
@@ -19,7 +18,7 @@ const Demo = {
   title: 'Journeys/Blocks/SignUp'
 }
 
-const icon: IconType = {
+const icon: SignUpFields_submitIcon = {
   __typename: 'Icon',
   name: IconName.LockOpenRounded,
   size: null,
@@ -40,7 +39,7 @@ const signUpProps: TreeBlock<SignUpFields> = {
   children: []
 }
 
-const Template = ({ submitIcon, submitLabel }): ReactElement => (
+const Template: Story<TreeBlock<SignUpFields>> = ({ ...props }): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -71,9 +70,8 @@ const Template = ({ submitIcon, submitLabel }): ReactElement => (
     <StoryCard>
       <SignUp
         {...signUpProps}
+        {...props}
         uuid={() => 'uuid'}
-        submitIcon={submitIcon}
-        submitLabel={submitLabel}
       />
     </StoryCard>
   </MockedProvider>

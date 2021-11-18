@@ -43,7 +43,7 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
 }
 
 function flatten(children: TreeBlock[]): TreeBlock[] {
-  return children.reduce(
+  return (children).reduce<TreeBlock[]>(
     (result, item) => [...result, item, ...flatten(item.children)],
     []
   )
