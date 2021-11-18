@@ -1,4 +1,5 @@
-import { TreeBlock, renderWithApolloClient } from '../../'
+import { render } from '@testing-library/react'
+import { TreeBlock } from '../../'
 import { Video, VIDEO_RESPONSE_CREATE } from '.'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
@@ -35,7 +36,7 @@ describe('VideoComponent', () => {
   }
 
   it('should render the video through mediaComponentId and languageId successfully', () => {
-    const { getByTestId } = renderWithApolloClient(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -70,7 +71,7 @@ describe('VideoComponent', () => {
   })
 
   it('should render the video through a generic source successfully', () => {
-    const { getByTestId } = renderWithApolloClient(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -111,7 +112,7 @@ describe('VideoComponent', () => {
   })
 
   it('should render the video through a generic source successfully', () => {
-    const { getByTestId } = renderWithApolloClient(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {

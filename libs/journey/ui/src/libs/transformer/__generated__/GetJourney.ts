@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
+import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -12,12 +12,6 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName,
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
   src: string;
-}
-
-export interface GetJourney_journey_blocks_CardBlock {
-  __typename: "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock";
-  id: string;
-  parentBlockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
@@ -78,6 +72,57 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
 }
 
+export interface GetJourney_journey_blocks_CardBlock {
+  __typename: "CardBlock";
+  id: string;
+  parentBlockId: string | null;
+  /**
+   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   */
+  backgroundColor: string | null;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode: ThemeMode | null;
+  /**
+   * themeName can override journey themeName. If nothing is set then use
+   * themeName from journey
+   */
+  themeName: ThemeName | null;
+  /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: boolean;
+}
+
+export interface GetJourney_journey_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock";
+  id: string;
+  parentBlockId: string | null;
+  spacing: number;
+  direction: GridDirection;
+  justifyContent: GridJustifyContent;
+  alignItems: GridAlignItems;
+}
+
+export interface GetJourney_journey_blocks_GridItemBlock {
+  __typename: "GridItemBlock";
+  id: string;
+  parentBlockId: string | null;
+  xl: number;
+  lg: number;
+  sm: number;
+}
+
 export interface GetJourney_journey_blocks_ImageBlock {
   __typename: "ImageBlock";
   id: string;
@@ -91,6 +136,100 @@ export interface GetJourney_journey_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
+
+export interface GetJourney_journey_blocks_RadioOptionBlock {
+  __typename: "RadioOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  label: string;
+  action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
+}
+
+export interface GetJourney_journey_blocks_RadioQuestionBlock {
+  __typename: "RadioQuestionBlock";
+  id: string;
+  parentBlockId: string | null;
+  label: string;
+  description: string | null;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction;
+
+export interface GetJourney_journey_blocks_SignUpBlock_submitIcon {
+  __typename: "Icon";
+  name: IconName;
+  color: IconColor | null;
+  size: IconSize | null;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock {
+  __typename: "SignUpBlock";
+  id: string;
+  parentBlockId: string | null;
+  submitLabel: string | null;
+  action: GetJourney_journey_blocks_SignUpBlock_action | null;
+  submitIcon: GetJourney_journey_blocks_SignUpBlock_submitIcon | null;
 }
 
 export interface GetJourney_journey_blocks_StepBlock {
@@ -193,7 +332,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetJourney_journey {
   __typename: "Journey";
