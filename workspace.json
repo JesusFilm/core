@@ -7,6 +7,7 @@
     "journeys-admin-e2e": "apps/journeys-admin-e2e",
     "journeys": "apps/journeys",
     "journeys-e2e": "apps/journeys-e2e",
+    "journey-ui": "libs/journey/ui",
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "shared-util-graphql": "libs/shared/util-graphql"

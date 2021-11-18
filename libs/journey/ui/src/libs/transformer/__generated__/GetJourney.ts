@@ -1,0 +1,150 @@
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./../../../../__generated__/globalTypes";
+
+// ====================================================
+// GraphQL query operation: GetJourney
+// ====================================================
+
+export interface GetJourney_journey_primaryImageBlock {
+  __typename: "ImageBlock";
+  src: string;
+}
+
+export interface GetJourney_journey_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+  id: string;
+  parentBlockId: string | null;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
+  __typename: "Icon";
+  name: IconName;
+  color: IconColor | null;
+  size: IconSize | null;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_endIcon {
+  __typename: "Icon";
+  name: IconName;
+  color: IconColor | null;
+  size: IconSize | null;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
+  __typename: "LinkAction";
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction;
+
+export interface GetJourney_journey_blocks_ButtonBlock {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIcon: GetJourney_journey_blocks_ButtonBlock_startIcon | null;
+  endIcon: GetJourney_journey_blocks_ButtonBlock_endIcon | null;
+  action: GetJourney_journey_blocks_ButtonBlock_action | null;
+}
+
+export interface GetJourney_journey_blocks_CardBlock {
+  __typename: "CardBlock";
+  id: string;
+  parentBlockId: string | null;
+  /**
+   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   */
+  backgroundColor: string | null;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode: ThemeMode | null;
+  /**
+   * themeName can override journey themeName. If nothing is set then use
+   * themeName from journey
+   */
+  themeName: ThemeName | null;
+  /**
+   * fullscreen should control how the coverBlock is displayed. When fullscreen
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
+   */
+  fullscreen: boolean;
+}
+
+export interface GetJourney_journey_blocks_StepBlock {
+  __typename: "StepBlock";
+  id: string;
+  parentBlockId: string | null;
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: boolean;
+  /**
+   * nextBlockId contains the preferred block to navigate to when a
+   * NavigateAction occurs or if the user manually tries to advance to the next
+   * step. If no nextBlockId is set it can be assumed that this step represents
+   * the end of the current journey.
+   */
+  nextBlockId: string | null;
+}
+
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_StepBlock;
+
+export interface GetJourney_journey {
+  __typename: "Journey";
+  id: string;
+  themeName: ThemeName;
+  themeMode: ThemeMode;
+  title: string;
+  description: string | null;
+  primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
+  blocks: GetJourney_journey_blocks[] | null;
+}
+
+export interface GetJourney {
+  journey: GetJourney_journey | null;
+}
+
+export interface GetJourneyVariables {
+  id: string;
+}
