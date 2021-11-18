@@ -5,7 +5,7 @@ import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import Conductor, { ConductorProps } from '../../Conductor'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 
 const Demo = {
   ...journeysConfig,

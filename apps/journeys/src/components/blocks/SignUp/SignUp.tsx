@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import TextField from './TextField'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'
 import { handleAction } from '../../../libs/action'
 import { Icon } from '../../Icon'

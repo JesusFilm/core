@@ -7,7 +7,7 @@ import {
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { IconName } from '../../../../__generated__/globalTypes'
 import { ButtonFields_startIcon as IconType } from '../../../../__generated__/ButtonFields'

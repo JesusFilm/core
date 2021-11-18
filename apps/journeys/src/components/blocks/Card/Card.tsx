@@ -1,4 +1,4 @@
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { ReactElement, ReactNode } from 'react'
 import { BlockRenderer } from '../../BlockRenderer'
 import {

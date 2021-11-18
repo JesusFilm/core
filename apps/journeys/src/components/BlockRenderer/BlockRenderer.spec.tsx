@@ -1,6 +1,6 @@
 import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { BlockRenderer } from '.'
-import { TreeBlock } from '../../libs/transformer/transformer'
+import { TreeBlock } from '../../libs/TreeBlock'
 
 describe('BlockRenderer', () => {
   it('should render Button', () => {

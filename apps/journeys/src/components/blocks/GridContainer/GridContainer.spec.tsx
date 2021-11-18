@@ -1,6 +1,6 @@
 import { render } from '../../../../test/testingLibrary'
 import { GridContainer } from '.'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import {
   GridDirection,
   GridJustifyContent,

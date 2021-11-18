@@ -6,7 +6,7 @@ import {
 } from '../../../../test/testingLibrary'
 import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { MockedProvider } from '@apollo/client/testing'
 
 describe('RadioQuestion', () => {

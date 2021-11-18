@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { GetJourney_journey_blocks_GridItemBlock as GridItemBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { Grid as MaterialGrid, GridSize } from '@mui/material'
 import { BlockRenderer } from '../../BlockRenderer'
 

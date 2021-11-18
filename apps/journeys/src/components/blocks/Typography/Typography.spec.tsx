@@ -6,7 +6,7 @@ import {
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import Typography from './Typography'
 
 describe('Typography', () => {

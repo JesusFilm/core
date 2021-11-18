@@ -12,7 +12,7 @@ import {
   Video
 } from '../blocks'
 import { ReactElement } from 'react'
-import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transformer'
+import { TreeBlock as BlockRendererProps } from '../../libs/TreeBlock'
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {
   switch (block.__typename) {

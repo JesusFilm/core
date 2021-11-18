@@ -1,4 +1,4 @@
-import { TreeBlock } from '../../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../../libs/TreeBlock'
 import { ReactElement, ReactNode, useEffect, useRef } from 'react'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,

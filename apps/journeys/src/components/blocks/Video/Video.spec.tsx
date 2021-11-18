@@ -1,5 +1,5 @@
 import { renderWithApolloClient } from '../../../../test/testingLibrary'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { Video, VIDEO_RESPONSE_CREATE } from '.'
 import { MockedProvider } from '@apollo/client/testing'

@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { Image } from './Image'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 

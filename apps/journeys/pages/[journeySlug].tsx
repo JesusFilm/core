@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import Conductor from '../src/components/Conductor'
-import transformer from '../src/libs/transformer'
+import { transformer, ThemeProvider } from '@core/shared/ui'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
@@ -8,7 +8,6 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
-import { ThemeProvider } from '@core/shared/ui'
 import {
   TYPOGRAPHY_FIELDS,
   BUTTON_FIELDS,

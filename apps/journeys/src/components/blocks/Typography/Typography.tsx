@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { Typography as MuiTypography } from '@mui/material'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 
 export function Typography({
   variant,

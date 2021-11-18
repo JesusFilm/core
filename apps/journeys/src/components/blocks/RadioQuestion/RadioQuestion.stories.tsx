@@ -3,7 +3,7 @@ import {
   GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock,
   GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock
 } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { RadioQuestion } from './RadioQuestion'
 import {
   journeysConfig,

@@ -5,7 +5,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import { VideoResponseCreate } from '../../../../__generated__/VideoResponseCreate'

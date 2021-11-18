@@ -1,5 +1,5 @@
 import videojs from 'video.js'
-import { TreeBlock } from '../../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../../libs/TreeBlock'
 import { ReactElement, useEffect, useState } from 'react'
 import { GetJourney_journey_blocks_VideoTriggerBlock as TriggerBlock } from '../../../../../__generated__/GetJourney'
 import { handleAction } from '../../../../libs/action'

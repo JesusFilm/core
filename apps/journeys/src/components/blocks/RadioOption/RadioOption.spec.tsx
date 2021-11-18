@@ -4,7 +4,7 @@ import {
   renderWithApolloClient
 } from '../../../../test/testingLibrary'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { handleAction } from '../../../libs/action'
 
 jest.mock('../../../libs/action', () => {

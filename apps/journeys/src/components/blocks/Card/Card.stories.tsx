@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { Card } from './Card'
 import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import {
   TypographyColor,
   TypographyVariant,

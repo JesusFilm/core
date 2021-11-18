@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { ReactElement } from 'react'

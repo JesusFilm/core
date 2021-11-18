@@ -1,9 +1,26 @@
-import transformer from '.'
+import { transformer } from '.'
+
+type Block =
+  | {
+      __typename: 'StepBlock'
+      nextBlockId: string | null
+      locked: boolean
+    }
+  | {
+      __typename: 'RadioQuestionBlock'
+      label: string
+      description: string
+    }
+  | {
+      __typename: 'RadioOptionBlock'
+      label: string
+      action: null
+    }
 
 describe('transformer', () => {
   it('should change flat array into tree successfully', () => {
     expect(
-      transformer([
+      transformer<Block>([
         {
           __typename: 'StepBlock',
           parentBlockId: null,

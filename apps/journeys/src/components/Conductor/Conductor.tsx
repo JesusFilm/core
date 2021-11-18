@@ -1,6 +1,6 @@
 import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect, useState } from 'react'
-import { TreeBlock } from '../../libs/transformer/transformer'
+import { TreeBlock } from '../../libs/TreeBlock'
 import { useBlocks } from '../../libs/client/cache/blocks'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'

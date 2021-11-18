@@ -1,6 +1,6 @@
 import { render } from '../../../../test/testingLibrary'
 import { GridItem } from '.'
-import { TreeBlock } from '../../../libs/transformer/transformer'
+import { TreeBlock } from '../../../libs/TreeBlock'
 
 describe('GridItemBlock', () => {
   const block: TreeBlock = {

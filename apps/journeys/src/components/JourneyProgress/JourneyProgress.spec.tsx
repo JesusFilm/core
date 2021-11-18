@@ -2,7 +2,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__gen
 import { JourneyProgress } from '.'
 import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
-import { TreeBlock } from '../../libs/transformer/transformer'
+import { TreeBlock } from '../../libs/TreeBlock'
 
 describe('JourneyProgress', () => {
   it('returns 0 when no activeBlock or treeBlocks', () => {
