@@ -10,7 +10,7 @@ const Demo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: RadioOption,
-  title: 'Journey-Ui/RadioQuestion/RadioOption'
+  title: 'Journeys-Ui/RadioQuestion/RadioOption'
 }
 
 const Template: Story<RadioOptionProps> = ({ ...props }) => (

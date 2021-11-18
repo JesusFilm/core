@@ -17,7 +17,7 @@ import { GridContainer } from './GridContainer'
 const Demo = {
   ...journeyUiConfig,
   component: GridContainer,
-  title: 'Journey-Ui/Grid/Container'
+  title: 'Journeys-Ui/Grid/Container'
 }
 
 const DefaultTemplate: Story<TreeBlock<GridContainerFields>> = ({

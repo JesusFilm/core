@@ -21,7 +21,7 @@ const TypographyDemo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: Typography,
-  title: 'Journey-Ui/Typography'
+  title: 'Journeys-Ui/Typography'
 }
 
 interface TypographyStoryProps extends TreeBlock<TypographyFields> {

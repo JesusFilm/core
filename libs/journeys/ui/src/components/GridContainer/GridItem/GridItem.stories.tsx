@@ -14,7 +14,7 @@ import { GridItemFields } from './__generated__/GridItemFields'
 const Demo = {
   ...journeyUiConfig,
   component: GridItem,
-  title: 'Journey-Ui/Grid/Item'
+  title: 'Journeys-Ui/Grid/Item'
 }
 
 const DefaultTemplate: Story<TreeBlock<GridItemFields>> = ({ ...props }) => (

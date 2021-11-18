@@ -16,7 +16,7 @@ import { Card } from './Card'
 const Demo: Meta = {
   ...journeyUiConfig,
   component: Card,
-  title: 'Journey-Ui/Card'
+  title: 'Journeys-Ui/Card'
 }
 
 const Template: Story<TreeBlock<CardFields>> = ({ ...props }) => {

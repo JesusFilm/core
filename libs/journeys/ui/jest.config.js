@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'journey-ui',
+  displayName: 'journeys-ui',
   preset: '../../../jest.preset.js',
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest'

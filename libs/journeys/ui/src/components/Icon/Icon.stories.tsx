@@ -14,7 +14,7 @@ const IconDemo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: Icon,
-  title: 'Journey-Ui/Icon'
+  title: 'Journeys-Ui/Icon'
 }
 
 interface IconStoryProps extends IconType {

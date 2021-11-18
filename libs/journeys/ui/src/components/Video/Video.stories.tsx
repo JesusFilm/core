@@ -8,7 +8,7 @@ import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 const Demo = {
   ...journeyUiConfig,
   component: Video,
-  title: 'Journey-Ui/Video',
+  title: 'Journeys-Ui/Video',
   parameters: {
     chromatic: { disableSnapshot: true }
   }

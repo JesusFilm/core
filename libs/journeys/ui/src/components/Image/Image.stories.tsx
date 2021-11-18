@@ -6,7 +6,7 @@ import { ImageFields } from './__generated__/ImageFields'
 const Demo = {
   ...journeyUiConfig,
   component: Image,
-  title: 'Journey-Ui/Image'
+  title: 'Journeys-Ui/Image'
 }
 
 const DefaultTemplate: Story<TreeBlock<ImageFields>> = ({ alt, ...props }) => (

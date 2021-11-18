@@ -71,7 +71,7 @@ const Demo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: RadioQuestion,
-  title: 'Journey-Ui/RadioQuestion'
+  title: 'Journeys-Ui/RadioQuestion'
 }
 
 const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
