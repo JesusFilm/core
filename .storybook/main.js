@@ -13,8 +13,8 @@ const storiesForProject = {
     '../apps/journeys-admin/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'journey-ui': [
-    '../libs/journey/ui/src/**/**/*.stories.mdx',
-    '../libs/journey/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
+    '../libs/journeys/ui/src/**/**/*.stories.mdx',
+    '../libs/journeys/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'shared-ui': [
     '../libs/shared/ui/src/**/**/*.stories.mdx',
