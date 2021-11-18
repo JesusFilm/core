@@ -1,1 +1,2 @@
-export { transformer, TreeBlock } from './transformer'
+export { transformer } from './transformer'
+export type { TreeBlock } from './transformer'

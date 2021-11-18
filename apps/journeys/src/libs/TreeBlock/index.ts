@@ -1,1 +1,1 @@
-export { TreeBlock } from './TreeBlock'
+export type { TreeBlock } from './TreeBlock'
