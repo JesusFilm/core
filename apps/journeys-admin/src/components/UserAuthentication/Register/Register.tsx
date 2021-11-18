@@ -11,15 +11,14 @@ export const Register = (): ReactElement => {
 
     const auth = getAuth()
     if (email !== undefined && password !== undefined) {
-      void createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // check
-          console.log(userCredential.user)
-        })
-        .catch((error) => {
+      void createUserWithEmailAndPassword(auth, email, password).catch(
+        (error) => {
           console.log(error.message)
-        })
+        }
+      )
     }
+
+    // Add functionality to redirect to the dashboard
   }
 
   // MUI components used are just for testing purposes and is not the set components that will be used

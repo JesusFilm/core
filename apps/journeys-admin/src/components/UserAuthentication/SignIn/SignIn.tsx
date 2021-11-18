@@ -1,24 +1,29 @@
 import { ReactElement } from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import { firebaseClient } from '../../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 
-export const firebaseClient = firebase.initializeApp(
-  JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_CONFIG_JSON ?? '{}')
-)
-
 export function SignIn(): ReactElement {
+  // make the sign in state available to all the pages
+
   const uiConfig = {
     signInFlow: 'popup',
     signInSuccessUrl: '/journeys',
     signInOptions: [
+      firebase.auth.EmailAuthProvider.PROVIDER_ID,
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-      firebase.auth.EmailAuthProvider.PROVIDER_ID
-    ]
+      firebase.auth.FacebookAuthProvider.PROVIDER_ID
+    ],
+    callbacks: {
+      signInSuccessWithAuthResult: () => true
+    }
   }
 
   return (
-    <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+    <StyledFirebaseAuth
+      uiConfig={uiConfig}
+      firebaseAuth={firebaseClient.auth()}
+    />
   )
 }
