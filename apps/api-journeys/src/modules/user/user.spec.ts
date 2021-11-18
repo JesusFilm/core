@@ -43,21 +43,23 @@ describe('UserModule', () => {
           imageUrl: 'po'
         }
         dbMock.user.findUnique.mockResolvedValue(user)
-        const { data } = await query(gql`
-          query ($id: ID!) {
-            user (id: $id) {
-              id
-              firebaseId
-              firstName
-              lastName
-              email
-              imageUrl
+        const { data } = await query(
+          gql`
+            query ($id: ID!) {
+              user(id: $id) {
+                id
+                firebaseId
+                firstName
+                lastName
+                email
+                imageUrl
+              }
             }
+          `,
+          {
+            id: user.id
           }
-        `,
-        {
-          id: user.id
-        })
+        )
         expect(data?.user).toEqual(
           pick(user, [
             'id',
@@ -70,7 +72,6 @@ describe('UserModule', () => {
         )
       })
     })
-
 
     describe('users', () => {
       it('returns user', async () => {

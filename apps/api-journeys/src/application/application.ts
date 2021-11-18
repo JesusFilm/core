@@ -38,7 +38,7 @@ export const application = createApplication({
     stepModule,
     typographyModule,
     userModule,
-    userJourneyModule,  
+    userJourneyModule,
     videoModule,
     videoTriggerModule
   ],

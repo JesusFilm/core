@@ -83,7 +83,7 @@ const resolvers: UserModule.Resolvers = {
         }
         throw e
       }
-    },
+    }
   }
 }
 
