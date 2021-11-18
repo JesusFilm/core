@@ -138,20 +138,20 @@ describe('BlockRenderer', () => {
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
 
-  // it('should render Typography', () => {
-  //   const block: TreeBlock = {
-  //     id: 'typographyBlockId1',
-  //     __typename: 'TypographyBlock',
-  //     parentBlockId: null,
-  //     align: null,
-  //     color: null,
-  //     content: 'How did we get here?',
-  //     variant: null,
-  //     children: []
-  //   }
-  //   const { getByText } = renderWithApolloClient(<BlockRenderer {...block} />)
-  //   expect(getByText('How did we get here?')).toBeInTheDocument()
-  // })
+  it('should render Typography', () => {
+    const block: TreeBlock = {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: null,
+      color: null,
+      content: 'How did we get here?',
+      variant: null,
+      children: []
+    }
+    const { getByText } = render(<BlockRenderer {...block} />)
+    expect(getByText('How did we get here?')).toBeInTheDocument()
+  })
 
   // it('should render Video', () => {
   //   const block: TreeBlock = {

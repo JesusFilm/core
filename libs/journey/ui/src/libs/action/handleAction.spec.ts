@@ -1,5 +1,5 @@
 import { NextRouter } from 'next/dist/client/router'
-import { nextActiveBlock } from '../'
+import { nextActiveBlock } from '..'
 import { handleAction } from '.'
 
 jest.mock('../useBlocks/blocks', () => {

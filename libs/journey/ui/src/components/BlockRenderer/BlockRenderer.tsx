@@ -7,8 +7,8 @@ import {
   // RadioOption,
   // RadioQuestion,
   // SignUp,
-  Step
-  // Typography,
+  Step,
+  Typography
   // Video
 } from '../'
 import { ReactElement } from 'react'
@@ -34,8 +34,8 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
     //   return <SignUp {...block} />
     case 'StepBlock':
       return <Step {...block} />
-    // case 'TypographyBlock':
-    //   return <Typography {...block} />
+    case 'TypographyBlock':
+      return <Typography {...block} />
     // case 'VideoBlock':
     //   return <Video {...block} />
     default:

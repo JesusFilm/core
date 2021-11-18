@@ -18,7 +18,7 @@ import { Button } from '.'
 const ButtonDemo = {
   ...journeyUiConfig,
   component: Button,
-  title: 'Journeys/Blocks/Button'
+  title: 'Journey-Ui/Button'
 }
 
 interface ButtonStoryProps extends ButtonFields {
