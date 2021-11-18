@@ -13,9 +13,11 @@ export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
+  description: string | null;
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  locale: string;
 }
 
 export interface GetJourneys {
