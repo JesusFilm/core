@@ -1,13 +1,13 @@
 import { ReactElement } from 'react'
 import { Attributes } from './Attributes'
-import { CardNavigation } from './CardNavigation'
+import { Navigation } from './Navigation'
 
 export function ControlPanel(): ReactElement {
   return (
     <>
       <div>ControlPanel</div>
       <Attributes />
-      <CardNavigation />
+      <Navigation steps={[]} />
     </>
   )
 }
