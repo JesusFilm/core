@@ -32,6 +32,46 @@ describe('UserModule', () => {
   }
 
   describe('Query', () => {
+    describe('get user by id', () => {
+      it('returns user', async () => {
+        const user: User = {
+          id: uuidv4(),
+          firebaseId: 'yo',
+          firstName: 'fo',
+          lastName: 'sho',
+          email: 'tho@no.co',
+          imageUrl: 'po'
+        }
+        dbMock.user.findUnique.mockResolvedValue(user)
+        const { data } = await query(gql`
+          query ($id: ID!) {
+            user (id: $id) {
+              id
+              firebaseId
+              firstName
+              lastName
+              email
+              imageUrl
+            }
+          }
+        `,
+        {
+          id: user.id
+        })
+        expect(data?.user).toEqual(
+          pick(user, [
+            'id',
+            'email',
+            'firebaseId',
+            'firstName',
+            'lastName',
+            'imageUrl'
+          ])
+        )
+      })
+    })
+
+
     describe('users', () => {
       it('returns user', async () => {
         const user: User = {
@@ -42,11 +82,10 @@ describe('UserModule', () => {
           email: 'tho@no.co',
           imageUrl: 'po'
         }
-
         dbMock.user.findMany.mockResolvedValue([user])
         const { data } = await query(gql`
           query {
-            user {
+            users {
               id
               firebaseId
               firstName
@@ -59,12 +98,11 @@ describe('UserModule', () => {
         expect(data?.users).toEqual([
           pick(user, [
             'id',
-            'title',
-            'published',
-            'locale',
-            'themeName',
-            'themeMode',
-            'slug'
+            'email',
+            'firebaseId',
+            'firstName',
+            'lastName',
+            'imageUrl'
           ])
         ])
       })

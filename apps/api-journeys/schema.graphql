@@ -237,6 +237,7 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  userCreate(input: UserCreateInput!): User!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
@@ -262,6 +263,8 @@ type NavigateToJourneyAction implements Action {
 extend type Query {
   journeys: [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  users: [User!]!
+  user(id: ID!, userIdType: UserIdType): User
 }
 
 type RadioOptionBlock implements Block {
@@ -387,6 +390,35 @@ enum TypographyVariant {
   body2
   caption
   overline
+}
+
+type User @key(fields: "id") {
+  id: ID!
+  firebaseId: ID
+  firstName: String
+  lastName: String
+  email: String
+  imageUrl: String
+}
+
+input UserCreateInput {
+  id: ID
+  firebaseId: ID
+  firstName: String
+  lastName: String
+  email: String
+  imageUrl: String
+}
+
+enum UserIdType {
+  databaseId
+  firebaseId
+}
+
+type UserJourney {
+  userId: ID!
+  journeyId: ID!
+  role: String
 }
 
 type VideoArclight implements VideoContent {

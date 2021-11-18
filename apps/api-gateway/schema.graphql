@@ -265,6 +265,7 @@ type Mutation {
   journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  userCreate(input: UserCreateInput!): User! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -290,6 +291,8 @@ type NavigateToJourneyAction implements Action {
 type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
+  user(id: ID!, userIdType: UserIdType): Journey @join__field(graph: JOURNEYS)
+  users: [User!]! @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
@@ -417,6 +420,39 @@ enum TypographyVariant {
   overline
   subtitle1
   subtitle2
+}
+
+type User
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  email: String @join__field(graph: JOURNEYS)
+  firebaseId: ID @join__field(graph: JOURNEYS)
+  firstName: String @join__field(graph: JOURNEYS)
+  id: ID! @join__field(graph: JOURNEYS)
+  imageUrl: String @join__field(graph: JOURNEYS)
+  lastName: String @join__field(graph: JOURNEYS)
+  userJourney: [UserJourney!] @join__field(graph: JOURNEYS)
+}
+
+input UserCreateInput {
+  email: String
+  firebaseId: ID
+  firstName: String
+  id: ID
+  imageUrl: String
+  lastName: String
+}
+
+enum UserIdType {
+  databaseId
+  firebaseId
+}
+
+type UserJourney {
+  journeyId: ID!
+  role: String
+  userId: ID!
 }
 
 type VideoArclight implements VideoContent {

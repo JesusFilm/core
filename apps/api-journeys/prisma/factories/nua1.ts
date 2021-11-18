@@ -39,8 +39,7 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
   })
   const user = await prisma.user.create({
     data: {
-      id: 'yoImFake',
-      firebaseId: 'yoImFake',
+      firebaseId: uuidv4(),
       firstName: 'yo',
       lastName: 'Fake',
       email: 'yo@fake.com',

@@ -1,6 +1,6 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import { userModule } from '..'
+import { userJourneyModule } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -13,11 +13,11 @@ import {
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { pick } from 'lodash'
 
-describe('UserModule', () => {
+describe('UserJourneyModule', () => {
   let app
 
   beforeEach(() => {
-    app = testkit.testModule(userModule, {
+    app = testkit.testModule(userJourneyModule, {
       schemaBuilder
     })
   })
@@ -38,8 +38,8 @@ describe('UserModule', () => {
   }
 
   describe('Query', () => {
-    describe('users', () => {
-      it('returns user', async () => {
+    describe('userJourney', () => {
+      it('returns user journey', async () => {
         const user: User = {
           id: uuidv4(),
           firebaseId: 'yo',
@@ -48,6 +48,8 @@ describe('UserModule', () => {
           email: 'tho@no.co',
           imageUrl: 'po'
         }
+        dbMock.user.findMany.mockResolvedValue([user])
+
         const publishedJourney: Journey = {
           id: uuidv4(),
           title: 'published',
@@ -59,6 +61,8 @@ describe('UserModule', () => {
           primaryImageBlockId: null,
           slug: 'published-slug'
         }
+        dbMock.journey.findMany.mockResolvedValue([publishedJourney])
+
         const userJourney: UserJourney = {
           userId: user.id,
           journeyId: publishedJourney.id,

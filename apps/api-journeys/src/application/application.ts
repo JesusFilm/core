@@ -15,6 +15,8 @@ import {
   signUpModule,
   stepModule,
   typographyModule,
+  userModule,
+  userJourneyModule,
   videoModule,
   videoTriggerModule
 } from '../modules'
@@ -35,6 +37,8 @@ export const application = createApplication({
     signUpModule,
     stepModule,
     typographyModule,
+    userModule,
+    userJourneyModule,  
     videoModule,
     videoTriggerModule
   ],

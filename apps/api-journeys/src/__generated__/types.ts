@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { GraphQLResolveInfo } from 'graphql';
-import { Block as BlockType, Journey as JourneyType, Response as ResponseType } from '.prisma/api-journeys-client';
+import { Block as BlockType, Journey as JourneyType, User as UserType, UserJourney as UserJourneyType, Response as ResponseType } from '.prisma/api-journeys-client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -245,6 +245,7 @@ export type Mutation = {
   journeyUpdate: Journey;
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
+  userCreate: User;
   videoResponseCreate: VideoResponse;
 };
 
@@ -279,6 +280,11 @@ export type MutationSignUpResponseCreateArgs = {
 };
 
 
+export type MutationUserCreateArgs = {
+  input: UserCreateInput;
+};
+
+
 export type MutationVideoResponseCreateArgs = {
   input: VideoResponseCreateInput;
 };
@@ -309,12 +315,20 @@ export type Query = {
   __typename?: 'Query';
   journey?: Maybe<Journey>;
   journeys: Array<Journey>;
+  user?: Maybe<User>;
+  users: Array<User>;
 };
 
 
 export type QueryJourneyArgs = {
   id: Scalars['ID'];
   idType?: Maybe<IdType>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID'];
+  userIdType?: Maybe<UserIdType>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -440,7 +454,6 @@ export type TypographyVariant =
 
 export type User = {
   __typename?: 'User';
-  UserJourney?: Maybe<Array<UserJourney>>;
   email?: Maybe<Scalars['String']>;
   firebaseId?: Maybe<Scalars['ID']>;
   firstName?: Maybe<Scalars['String']>;
@@ -448,6 +461,19 @@ export type User = {
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
 };
+
+export type UserCreateInput = {
+  email?: Maybe<Scalars['String']>;
+  firebaseId?: Maybe<Scalars['ID']>;
+  firstName?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  imageUrl?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+};
+
+export type UserIdType =
+  | 'databaseId'
+  | 'firebaseId';
 
 export type UserJourney = {
   __typename?: 'UserJourney';
@@ -648,8 +674,10 @@ export type ResolversTypes = {
   TypographyBlock: ResolverTypeWrapper<BlockType>;
   TypographyColor: TypographyColor;
   TypographyVariant: TypographyVariant;
-  User: ResolverTypeWrapper<User>;
-  UserJourney: ResolverTypeWrapper<UserJourney>;
+  User: ResolverTypeWrapper<UserType>;
+  UserCreateInput: UserCreateInput;
+  UserIdType: UserIdType;
+  UserJourney: ResolverTypeWrapper<UserJourneyType>;
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   VideoContent: ResolversTypes['VideoArclight'] | ResolversTypes['VideoGeneric'];
@@ -695,8 +723,9 @@ export type ResolversParentTypes = {
   StepBlock: BlockType;
   String: Scalars['String'];
   TypographyBlock: BlockType;
-  User: User;
-  UserJourney: UserJourney;
+  User: UserType;
+  UserCreateInput: UserCreateInput;
+  UserJourney: UserJourneyType;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
   VideoContent: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
@@ -806,6 +835,7 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
+  userCreate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserCreateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };
 
@@ -830,6 +860,8 @@ export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Contex
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
@@ -899,7 +931,6 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
 };
 
 export type UserResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  UserJourney?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firebaseId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
