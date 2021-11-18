@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { GridContainer } from '.'
-import { TreeBlock } from '../../'
+import { TreeBlock } from '../..'
 import {
   GridDirection,
   GridJustifyContent,
