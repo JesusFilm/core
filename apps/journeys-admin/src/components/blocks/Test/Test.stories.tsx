@@ -6,7 +6,7 @@ import TestComponent from './Test'
 const TestStory = {
   ...journeyAdminConfig,
   component: TestComponent,
-  title: 'JourneyAdmin/TestStory'
+  title: 'Journeys-Admin/TestStory'
 }
 
 const Template: Story = () => <TestComponent />
