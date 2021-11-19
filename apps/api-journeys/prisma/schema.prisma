@@ -11,6 +11,8 @@ generator client {
   output   = "../../../node_modules/.prisma/api-journeys-client"
 }
 
+scalar DateTime
+
 enum ThemeMode {
   light
   dark

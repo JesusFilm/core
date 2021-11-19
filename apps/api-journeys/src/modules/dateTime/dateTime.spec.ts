@@ -1,50 +1,48 @@
-import { testkit, gql } from 'graphql-modules'
+import { testkit, gql, createModule } from 'graphql-modules'
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import {
-    dateTimeModule
-} from '..'
-import dbMock from '../../../tests/dbMock'
-// import dbMock from '../../../tests/dbMock'
+import { dateTimeModule } from '..'
 
-test('ing', () => {
-    const app = testkit.testModule(dateTimeModule, {
-        schemaBuilder
-    });
-  
-    console.log('testing');
-    if(app.schema.getQueryType() === null){
-        console.log("type null");
+const typeDefs = gql`
+  extend type Query {
+    dateTime: DateTime
+  }
+
+  extend type Mutation {
+    setDate(input: DateTime!): DateTime!
+  }
+`
+
+const dateTimeQueryModule = createModule({
+  id: 'dateTimeQuery',
+  dirname: __dirname,
+  typeDefs: [typeDefs],
+  resolvers: {
+    Query: {
+      dateTime: () => new Date('2021-11-19T12:34:56.647Z')
     }
-    expect(app.schema.getQueryType()).toBeDefined();
-  });
+  }
+})
 
 describe('DateTimeModule', () => {
-    let app
-    // var dateTimeScalar = require()
-    beforeEach(() => {
-        app = testkit.testModule(dateTimeModule, {
-          schemaBuilder
-        })
-      })
-      async function query(document: DocumentNode): Promise<ExecutionResult> {
-        return await testkit.execute(app, {
-          document,
-          variableValues: {
-            id: null
-          },
-          contextValue: {
-            db: dbMock
-          }
-        })
-      }
-
-    it('should return DateTime in ISO format', async () => {
-        const data = await query(gql`
-            query {
-                dateTime
-          }`)
-          console.log(data);
-          return true;
+  let app
+  beforeEach(() => {
+    app = testkit.testModule(dateTimeQueryModule, {
+      schemaBuilder,
+      modules: [dateTimeModule]
     })
-});
+  })
+  async function query(document: DocumentNode): Promise<ExecutionResult> {
+    return await testkit.execute(app, { document })
+  }
+
+  it('should return DateTime in ISO format', async () => {
+    const data = await query(gql`
+      query {
+        dateTime
+      }
+    `)
+    console.log(data.data?.dateTime)
+    return true
+  })
+})
