@@ -6,6 +6,9 @@ import 'firebase/compat/auth'
 export function SignIn(): ReactElement {
   const { signInConfig } = useAuth()
 
+  // TODO:
+  // Add types when ready
+
   return (
     <StyledFirebaseAuth
       uiConfig={signInConfig}

@@ -21,7 +21,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   const { logOut } = useAuth()
   const router = useRouter()
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
       await logOut()
       void router.push('/')
@@ -45,7 +45,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
             </Link>
           </Box>
         ))}
-        <Button variant="contained" onClick={() => handleLogout()}>
+        <Button variant="contained" onClick={async () => await handleLogout()}>
           SignOut
         </Button>
       </Container>

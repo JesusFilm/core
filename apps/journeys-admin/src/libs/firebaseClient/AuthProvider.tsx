@@ -1,9 +1,9 @@
 import {
-  ReactElement,
   createContext,
   useContext,
   useState,
-  useEffect
+  useEffect,
+  ReactNode
 } from 'react'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
@@ -11,13 +11,17 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 
 const AuthContext = createContext()
 
-export function useAuth(): void {
+export function useAuth() {
   return useContext(AuthContext)
 }
 
-export function AuthProvider({ children }): ReactElement {
+export function AuthProvider({ children }): ReactNode {
   const [currentUser, setCurrentUser] = useState()
   const auth = getAuth()
+
+  // TODO: 
+  // Save user sign in session as a cookie or local storage
+  // Fix firebase error (auth/admin-restricted-operation)
 
   const signInConfig = {
     signInFlow: 'popup',
@@ -57,7 +61,7 @@ export function AuthProvider({ children }): ReactElement {
     }
   }
 
-  const logOut = () => {
+  const logOut = (): void => {
     void auth.signOut()
   }
 
