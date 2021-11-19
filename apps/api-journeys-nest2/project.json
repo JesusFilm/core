@@ -1,0 +1,52 @@
+{
+  "root": "apps/api-journeys-nest2",
+  "sourceRoot": "apps/api-journeys-nest2/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-journeys-nest2",
+        "main": "apps/api-journeys-nest2/src/main.ts",
+        "tsConfig": "apps/api-journeys-nest2/tsconfig.app.json",
+        "assets": ["apps/api-journeys-nest2/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-journeys-nest2/src/environments/environment.ts",
+              "with": "apps/api-journeys-nest2/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "api-journeys-nest2:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-journeys-nest2/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-journeys-nest2"],
+      "options": {
+        "jestConfig": "apps/api-journeys-nest2/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
