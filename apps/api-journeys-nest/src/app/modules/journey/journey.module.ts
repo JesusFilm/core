@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 
 import { DatabaseModule } from '../database/database.module';
-import { JourneyController } from './journey.controller';
+// import { JourneyController } from './journey.controller';
 // import {userProviders} from './user.providers';
 import { JourneyService } from './journey.service';
 import { JourneyResolvers } from './journey.resolvers';
@@ -10,7 +10,7 @@ import { JourneyResolvers } from './journey.resolvers';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [JourneyController],
+  // controllers: [JourneyController],
   providers: [JourneyService, JourneyResolvers],
   exports: [JourneyService],
 })

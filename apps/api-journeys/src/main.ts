@@ -5,6 +5,7 @@ import db from './lib/db'
 const schema = application.createSchemaForApollo()
 const server = new ApolloServer({
   schema,
+  subscriptions: false,
   context: ({ req }) => {
     const userId = req.headers['user-id']
     return { db, userId }

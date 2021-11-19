@@ -12,5 +12,5 @@ export class JourneyService extends BaseService {
     super();
   }
 
-  collection: DocumentCollection = this.db.collection('users');
+  collection: DocumentCollection = this.db.collection('journeys');
 }

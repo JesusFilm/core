@@ -42,6 +42,8 @@ services:
       - arango-data:/var/lib/arangodb3
     environment:
       ARANGO_NO_AUTH: 1
+    ports:
+      - 8529:8529
 volumes:
   postgres-data:
   arango-data:

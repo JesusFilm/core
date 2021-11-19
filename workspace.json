@@ -2,10 +2,8 @@
   "version": 2,
   "projects": {
     "api-gateway": "apps/api-gateway",
-    "api-gateway-nest": "apps/api-gateway-nest",
     "api-journeys": "apps/api-journeys",
     "api-journeys-nest": "apps/api-journeys-nest",
-    "api-journeys-nest2": "apps/api-journeys-nest2",
     "journeys": "apps/journeys",
     "journeys-e2e": "apps/journeys-e2e",
     "shared-storybook": "libs/shared/storybook",

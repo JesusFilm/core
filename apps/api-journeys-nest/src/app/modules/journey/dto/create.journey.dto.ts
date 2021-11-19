@@ -1,13 +1,13 @@
-import {ApiModelProperty} from '@nestjs/swagger';
+import { ThemeMode, ThemeName } from "../../../interfaces/theme.interface";
 
-export class CreateUserDto {
-  @ApiModelProperty()
+export class CreateJourneyDto {
   _key: string;
-  @ApiModelProperty() roles: string[];
-  @ApiModelProperty() email: string;
-  @ApiModelProperty() password: string;
-  @ApiModelProperty() name: String;
-  @ApiModelProperty() birthed: String;
-  @ApiModelProperty() title: String;
-  @ApiModelProperty() gender: String;
+  published: boolean;
+  title: string;
+  locale: string;
+  themeMode: ThemeMode;
+  themeName: ThemeName;
+  description?: string;
+  slug: string;    
 }
+
