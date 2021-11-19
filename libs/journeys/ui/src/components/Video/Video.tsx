@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
-import { Trigger } from './VideoTrigger'
+import { VideoTrigger } from './VideoTrigger'
 
 import 'video.js/dist/video-js.css'
 import { VideoFields } from './__generated__/VideoFields'
@@ -155,7 +155,7 @@ export function Video({
       {children?.map(
         (option) =>
           option.__typename === 'VideoTriggerBlock' && (
-            <Trigger player={playerRef.current} {...option} />
+            <VideoTrigger player={playerRef.current} {...option} />
           )
       )}
     </Box>
