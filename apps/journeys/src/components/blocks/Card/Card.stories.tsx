@@ -4,8 +4,6 @@ import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
-  ThemeMode,
-  ThemeName,
   TypographyColor,
   TypographyVariant,
   ButtonVariant,
@@ -19,19 +17,7 @@ import { useTheme, Box } from '@mui/material'
 const Demo: Meta = {
   ...journeysConfig,
   component: Card,
-  title: 'Journeys/Blocks/Card',
-  parameters: {
-    theme: 'light',
-    chromatic: {
-      viewports: [
-        360, // Mobile (P)
-        568, // Mobile (L)
-        600, // Tablet (P)
-        961, // Tablet (L)
-        1200 // Laptop/Desktop
-      ]
-    }
-  }
+  title: 'Journeys/Blocks/Card'
 }
 
 const Template: Story<TreeBlock<CardBlock>> = ({ ...props }) => {
@@ -87,7 +73,7 @@ const children: TreeBlock[] = [
     size: ButtonSize.large,
     startIcon: {
       __typename: 'Icon',
-      name: IconName.PlayArrow,
+      name: IconName.PlayArrowRounded,
       color: null,
       size: IconSize.md
     },
@@ -99,29 +85,15 @@ const children: TreeBlock[] = [
 
 export const Default: Story<TreeBlock<CardBlock>> = Template.bind({})
 Default.args = {
-  themeMode: ThemeMode.light,
-  themeName: ThemeName.base,
+  themeMode: null,
+  themeName: null,
   children
-}
-
-export const Dark: Story<TreeBlock<CardBlock>> = Template.bind({})
-Dark.args = {
-  ...Default.args,
-  themeMode: ThemeMode.dark
 }
 
 export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
 CustomColor.args = {
   backgroundColor: '#F1A025',
   children
-}
-
-export const CustomColorDark: Story<TreeBlock<CardBlock>> = Template.bind({})
-CustomColorDark.args = {
-  ...CustomColor.args
-}
-CustomColorDark.parameters = {
-  theme: 'dark'
 }
 
 export const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
@@ -171,14 +143,6 @@ ImageCover.args = {
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
     }
   ]
-}
-
-export const ImageCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageCoverDark.args = {
-  ...ImageCover.args
-}
-ImageCoverDark.parameters = {
-  theme: 'dark'
 }
 
 export const VideoCover: Story<TreeBlock<CardBlock>> = Template.bind({})
@@ -247,14 +211,6 @@ VideoCover.args = {
   ]
 }
 
-export const VideoCoverDark: Story<TreeBlock<CardBlock>> = Template.bind({})
-VideoCoverDark.args = {
-  ...VideoCover.args
-}
-VideoCoverDark.parameters = {
-  theme: 'dark'
-}
-
 export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageBlur.args = {
   coverBlockId: 'imageBlockId1',
@@ -303,14 +259,6 @@ ImageBlur.args = {
     }
   ],
   fullscreen: true
-}
-
-export const ImageBlurDark: Story<TreeBlock<CardBlock>> = Template.bind({})
-ImageBlurDark.args = {
-  ...ImageBlur.args
-}
-ImageBlurDark.parameters = {
-  theme: 'dark'
 }
 
 export default Demo

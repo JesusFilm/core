@@ -15,7 +15,7 @@ import {
 const Demo = {
   ...journeysConfig,
   component: GridItem,
-  title: 'Journeys/Blocks/GridItem'
+  title: 'Journeys/Blocks/Grid/Item'
 }
 
 const DefaultTemplate: Story<TreeBlock<GridItemBlock>> = ({ ...props }) => (
@@ -56,7 +56,7 @@ const childrenOne: TreeBlock[] = [
     size: ButtonSize.large,
     startIcon: {
       __typename: 'Icon',
-      name: IconName.PlayArrow,
+      name: IconName.PlayArrowRounded,
       color: null,
       size: IconSize.lg
     },

@@ -1,15 +1,20 @@
 import { createElement, ReactElement } from 'react'
 import {
-  CheckCircle,
-  PlayArrow,
-  Translate,
-  RadioButtonUnchecked,
-  FormatQuote,
-  LockOpen,
-  ArrowForward,
-  ChatBubbleOutline,
-  LiveTv,
-  MenuBook
+  CheckCircleRounded,
+  PlayArrowRounded,
+  TranslateRounded,
+  RadioButtonUncheckedRounded,
+  FormatQuoteRounded,
+  LockOpenRounded,
+  ArrowForwardRounded,
+  ChatBubbleOutlineRounded,
+  LiveTvRounded,
+  MenuBookRounded,
+  ChevronRightRounded,
+  BeenhereRounded,
+  SendRounded,
+  SubscriptionsRounded,
+  ContactSupportRounded
 } from '@mui/icons-material'
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
 
@@ -26,16 +31,21 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
       : 'inherit'
 
   const icons = {
-    CheckCircle,
-    PlayArrow,
-    Translate,
-    RadioButtonUnchecked,
-    FormatQuote,
-    LockOpen,
-    ArrowForward,
-    ChatBubbleOutline,
-    LiveTv,
-    MenuBook
+    CheckCircleRounded,
+    PlayArrowRounded,
+    TranslateRounded,
+    RadioButtonUncheckedRounded,
+    FormatQuoteRounded,
+    LockOpenRounded,
+    ArrowForwardRounded,
+    ChatBubbleOutlineRounded,
+    LiveTvRounded,
+    MenuBookRounded,
+    ChevronRightRounded,
+    BeenhereRounded,
+    SendRounded,
+    SubscriptionsRounded,
+    ContactSupportRounded
   }
 
   return createElement(icons[name], {
