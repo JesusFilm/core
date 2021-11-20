@@ -1,18 +1,18 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { ThemeMode, ThemeName } from '../../interfaces/theme.interface';
+import {ThemeMode, ThemeName} from '../theme/theme.models';
 
 @ObjectType()
-export class JourneyType {
-  @Field(type => String)
+export class Journey {
+  @Field()
   readonly _key: string;
 
   @Field(type => Boolean)
   readonly published: boolean;
 
-  @Field(type => String)
+  @Field()
   readonly title: string;
 
-  @Field(type => String)
+  @Field()
   readonly locale: string;
 
   @Field(type => ThemeMode)
@@ -21,10 +21,10 @@ export class JourneyType {
   @Field(type => ThemeName)
   readonly themeName: ThemeName;
 
-  @Field(type => String, { nullable: true })
+  @Field({ nullable: true })
   readonly description?: string;
 
-  @Field(type => String)
+  @Field()
   readonly slug: string;
 }
 
@@ -33,28 +33,22 @@ export class JourneyInput {
   @Field(type => Boolean)
   readonly published: boolean;
 
-  @Field(type => String)
+  @Field()
   readonly title: string;
 
-  @Field(type => String)
+  @Field()
   readonly locale: string;
 
-  @Field(type => ThemeMode)
-  readonly themeMode: ThemeMode;
+  @Field()
+  readonly themeMode: string;
 
-  @Field(type => ThemeName)
-  readonly themeName: ThemeName;
+  @Field()
+  readonly themeName: string;
 
-  @Field(type => String, { nullable: true })
+  @Field({ nullable: true })
   readonly description?: string;
 
-  @Field(type => String)
+  @Field({ description: 'Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not)'})
   readonly slug: string;
-}
-
-@ObjectType()
-export enum ThemeModeType {
-  @Field(type => ThemeMode)
-  readonly ThemeMode: ThemeMode
 }
 

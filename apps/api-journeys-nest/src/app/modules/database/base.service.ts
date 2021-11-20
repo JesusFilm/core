@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 export abstract class BaseService {
   abstract collection: any;
 
-  async getAll(opts: any): Promise<any[]> {
+  async getAll(opts: any = {}): Promise<any[]> {
     const rst: any = await this.collection.all(opts);
-    return rst._result;
+    return rst.all();
   }
   async getByKey(_key: string): Promise<any> {
     const rst: any[] = await this.collection.lookupByKeys([_key]);
@@ -17,7 +17,7 @@ export abstract class BaseService {
   async getByBindVars(bindVars: object): Promise<any> {
     return await this.collection.firstExample(bindVars);
   }
-  async updateBykey(_key: string, body: any): Promise<any> {
+  async updateByKey(_key: string, body: any): Promise<any> {
     return await this.collection.update(_key, body, { returnNew: true });
   }
   async insertOne(body: any): Promise<any> {

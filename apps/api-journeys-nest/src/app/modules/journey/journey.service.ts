@@ -1,9 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-// import {DatabaseModule} from '../database/database.module';
 import { Database } from 'arangojs';
 
 import { BaseService } from '../database/base.service';
-import { IJourney } from '../../interfaces/journey.interface';
 import { DocumentCollection } from 'arangojs/collection';
 
 @Injectable()

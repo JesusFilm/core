@@ -33,7 +33,7 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // 8529 is Arangodb
-  "forwardPorts": [8529, 3000], // ArangoDB & GraphQL playground
+  "forwardPorts": [8529], // ArangoDB & GraphQL playground
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash ./.devcontainer/post-create-command.sh",
