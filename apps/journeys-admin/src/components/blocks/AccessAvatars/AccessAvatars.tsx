@@ -21,16 +21,23 @@ export function AccessAvatars({
   }
 
   return (
-    <AvatarGroup max={4} sx={{ width: 23, height: 24 }}>
-      {accessAvatarsProps?.map((user) => (
-        <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
-          <Avatar
-            onClick={() => handleClick(user)}
-            alt={user.firstName}
-            src={user.image}
-          />
-        </Tooltip>
-      ))}
-    </AvatarGroup>
+    <div style={avatarGroupStyle}>
+      <AvatarGroup max={4} sx={{ width: 23, height: 24 }}>
+        {accessAvatarsProps?.map((user) => (
+          <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
+            <Avatar
+              onClick={() => handleClick(user)}
+              alt={user.firstName}
+              src={user.image}
+            />
+          </Tooltip>
+        ))}
+      </AvatarGroup>
+    </div>
   )
+}
+
+const avatarGroupStyle = {
+  display: 'flex',
+  justifyContent: 'center'
 }
