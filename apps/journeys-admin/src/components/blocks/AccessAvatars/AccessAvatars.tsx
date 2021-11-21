@@ -29,7 +29,9 @@ export function AccessAvatars({
               onClick={() => handleClick(user)}
               alt={user.firstName}
               src={user.image}
-            />
+            >
+              {user.firstName[0]}
+            </Avatar>
           </Tooltip>
         ))}
       </AvatarGroup>

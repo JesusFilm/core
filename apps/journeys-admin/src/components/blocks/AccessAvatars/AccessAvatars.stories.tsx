@@ -80,7 +80,7 @@ const avatars = [
     id: '3',
     firstName: 'Coral',
     lastName: 'Ortega',
-    image: 'https://source.unsplash.com/random/301x300',
+    // image: 'https://source.unsplash.com/random/301x300',
     email: 'coral@email.com'
   },
   {
