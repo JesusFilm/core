@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import { IconButton } from '@mui/material'
 
 // Pass journeyID and slug to JourneyCardMenu
 
@@ -31,15 +32,16 @@ const JourneyCardMenu = (): ReactElement => {
 
   return (
     <div>
-      <Button
+      {/* https://mui.com/components/material-icons/ use correct icon */}
+      <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleOpenMenu}
       >
-        Dashboard
-      </Button>
+        ...
+      </IconButton>
       <Menu
         id="journey-actions"
         anchorEl={anchorEl}
