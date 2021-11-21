@@ -1,16 +1,13 @@
-import { Box, Card, Stack } from '@mui/material'
-import {
-  GetJourneyForEdit_journey_blocks as Block,
-  GetJourneyForEdit_journey_blocks_StepBlock as StepBlock
-} from '../../../../../__generated__/GetJourneyForEdit'
+import { Box, Stack } from '@mui/material'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourneyForEdit'
 import { ReactElement } from 'react'
 import { Actions } from './Actions'
-import { TreeBlock } from '@core/shared/ui'
+import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
 
 export interface NavigationProps {
-  onSelect?: (card: TreeBlock<StepBlock, Block>) => void
-  selectedStep?: TreeBlock<StepBlock, Block>
-  steps: Array<TreeBlock<StepBlock, Block>>
+  onSelect?: (card: TreeBlock<StepBlock>) => void
+  selectedStep?: TreeBlock<StepBlock>
+  steps: Array<TreeBlock<StepBlock>>
 }
 
 export function Navigation({
@@ -33,26 +30,44 @@ export function Navigation({
             key={step.id}
             sx={{
               p: 1,
-              borderRadius: 4,
-              minWidth: 95,
-              maxWidth: 95,
-              height: 140,
+              borderRadius: 2,
+              minWidth: 103,
+              maxWidth: 103,
+              height: 148,
+              transition: '0.2s border-color ease-out',
+              position: 'relative',
               border: (theme) =>
                 selectedStep?.id === step.id
                   ? `3px ${theme.palette.primary.main} solid`
-                  : '3px transparent solid'
+                  : `3px ${theme.palette.background.default} solid`
             }}
+            onClick={() => onSelect?.(step)}
           >
-            <Card
-              onClick={() => onSelect?.(step)}
+            <Box
               sx={{
-                borderRadius: 2,
-                width: '100%',
-                height: '100%'
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                zIndex: 1
+              }}
+            />
+            <Box
+              sx={{
+                transform: 'scale(0.33)',
+                transformOrigin: 'top left'
               }}
             >
-              Hello World
-            </Card>
+              <Box
+                sx={{
+                  width: 267,
+                  height: 402
+                }}
+              >
+                <BlockRenderer {...step} />
+              </Box>
+            </Box>
           </Box>
         ))}
       </Stack>
