@@ -17,7 +17,7 @@ export const Register = (): ReactElement => {
   const [error, setError] = useState<string>()
   const [loading, setLoading] = useState<boolean>(false)
 
-  const { signUp } = useAuth()
+  const { signUp, handleAuthResponse } = useAuth()
 
   // TODO:
   // Add backend types when ready
@@ -35,6 +35,7 @@ export const Register = (): ReactElement => {
     try {
       setLoading(true)
       await signUp(email, password)
+      // handleAuthResponse(firstName, lastName, email)
     } catch {
       setError('Failed to create an account')
     }

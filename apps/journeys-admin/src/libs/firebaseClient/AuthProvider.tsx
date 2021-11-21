@@ -8,6 +8,8 @@ import {
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { useMutation, gql } from '@apollo/client'
+import { v4 as uuidv4 } from 'uuid'
 
 const AuthContext = createContext()
 
@@ -15,13 +17,61 @@ export function useAuth() {
   return useContext(AuthContext)
 }
 
-export function AuthProvider({ children }): ReactNode {
-  const [currentUser, setCurrentUser] = useState()
-  const auth = getAuth()
+export const USER_CREATE = gql`
+  mutation UserCreate($input: UserCreateInput!) {
+    userCreate(input: $input) {
+      id
+      firebaseId
+      firstName
+      lastName
+      email
+      imageUrl
+    }
+  }
+`
 
-  // TODO: 
+export function AuthProvider({ children }): ReactNode {
+  const [currentUser, setCurrentUser] = useState<string | null>()
+  const [firebaseId, setFirebaseId] = useState<string>()
+  const auth = getAuth()
+  const [userCreate] = useMutation<UserCreate>(USER_CREATE)
+  const uuid = uuidv4
+  // TODO:
   // Save user sign in session as a cookie or local storage
   // Fix firebase error (auth/admin-restricted-operation)
+
+  // Should we handle the mutation in this file?
+  const handleAuthResponse = (
+    firstName?: string,
+    lastName?: string,
+    email?: string,
+    imageUrl?: string
+  ): void => {
+    const id = uuid
+
+    void userCreate({
+      variables: {
+        input: {
+          id,
+          firebaseId,
+          firstName,
+          lastName,
+          email,
+          imageUrl
+        },
+        optimisticResponse: {
+          userCreate: {
+            id,
+            firebaseId: firebaseId,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            imageUrl: imageUrl
+          }
+        }
+      }
+    })
+  }
 
   const signInConfig = {
     signInFlow: 'popup',
@@ -45,8 +95,11 @@ export function AuthProvider({ children }): ReactNode {
     const unregisterAuthOberserver = firebase
       .auth()
       .onAuthStateChanged((user) => {
-        if (user != null) setCurrentUser(user)
-        console.log('user is logged in')
+        console.log(user)
+        if (user != null) {
+          setCurrentUser(user.email)
+          setFirebaseId(user.uid)
+        }
       })
     return unregisterAuthOberserver()
   }, [])
@@ -69,7 +122,8 @@ export function AuthProvider({ children }): ReactNode {
     currentUser,
     signInConfig,
     signUp,
-    logOut
+    logOut,
+    handleAuthResponse
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
