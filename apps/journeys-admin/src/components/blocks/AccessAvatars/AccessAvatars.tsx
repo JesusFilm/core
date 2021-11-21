@@ -21,7 +21,7 @@ export function AccessAvatars({
   }
 
   return (
-    <AvatarGroup max={4}>
+    <AvatarGroup max={4} sx={{ width: 23, height: 24 }}>
       {accessAvatarsProps?.map((user) => (
         <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
           <Avatar
