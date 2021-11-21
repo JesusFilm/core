@@ -5,7 +5,7 @@ import { Attributes } from '.'
 const AttributesStory = {
   ...journeyAdminConfig,
   component: Attributes,
-  title: 'JourneyAdmin/Editor/ControlPanel/Attributes'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes'
 }
 
 const Template: Story = () => <Attributes />
