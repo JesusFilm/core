@@ -13,7 +13,7 @@ const Template: Story = () => (
   <StoryCard>
     <AccessAvatars accessAvatarsProps={avatars.slice(0, 1)} />
     <br />
-    <AccessAvatars accessAvatarsProps={avatars.slice(0, 4)} />
+    <AccessAvatars accessAvatarsProps={avatars.slice(0, 3)} />
     <br />
     <AccessAvatars accessAvatarsProps={avatars} />
   </StoryCard>
@@ -89,13 +89,6 @@ const avatars = [
     lastName: 'Lowe',
     image: 'https://source.unsplash.com/random/302x300',
     email: 'effie@email.com'
-  },
-  {
-    id: '5',
-    firstName: 'Leffie',
-    lastName: 'Lowe',
-    image: 'https://source.unsplash.com/random/302x301',
-    email: 'leffie@email.com'
   }
 ]
 

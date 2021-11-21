@@ -22,7 +22,7 @@ export function AccessAvatars({
 
   return (
     <div style={avatarGroupStyle}>
-      <AvatarGroup max={4} sx={{ width: 23, height: 24 }}>
+      <AvatarGroup max={3} sx={{ width: 23, height: 24 }}>
         {accessAvatarsProps?.map((user) => (
           <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
             <Avatar
