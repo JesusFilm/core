@@ -5,7 +5,7 @@ import { ControlPanel } from '.'
 const ControlPanelStory = {
   ...journeyAdminConfig,
   component: ControlPanel,
-  title: 'JourneyAdmin/Editor/ControlPanel'
+  title: 'Journeys-Admin/Editor/ControlPanel'
 }
 
 const Template: Story = () => <ControlPanel />

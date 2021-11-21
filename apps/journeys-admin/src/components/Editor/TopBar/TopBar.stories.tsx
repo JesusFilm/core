@@ -5,7 +5,7 @@ import { TopBar } from '.'
 const TopBarStory = {
   ...journeyAdminConfig,
   component: TopBar,
-  title: 'JourneyAdmin/Editor/TopBar'
+  title: 'Journeys-Admin/Editor/TopBar'
 }
 
 const Template: Story = () => <TopBar />

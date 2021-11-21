@@ -5,7 +5,7 @@ import { Canvas } from '.'
 const CanvasStory = {
   ...journeyAdminConfig,
   component: Canvas,
-  title: 'JourneyAdmin/Editor/Canvas'
+  title: 'Journeys-Admin/Editor/Canvas'
 }
 
 const Template: Story = () => <Canvas />

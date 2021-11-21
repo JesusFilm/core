@@ -9,7 +9,7 @@ import { MockedProvider } from '@apollo/client/testing'
 const NavigationStory = {
   ...journeyAdminConfig,
   component: Navigation,
-  title: 'JourneyAdmin/Editor/ControlPanel/Navigation',
+  title: 'Journeys-Admin/Editor/ControlPanel/Navigation',
   parameters: {
     layout: 'fullscreen'
   }

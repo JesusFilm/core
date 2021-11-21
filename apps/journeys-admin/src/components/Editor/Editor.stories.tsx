@@ -5,7 +5,7 @@ import { Editor } from '.'
 const EditorStory = {
   ...journeyAdminConfig,
   component: Editor,
-  title: 'JourneyAdmin/Editor'
+  title: 'Journeys-Admin/Editor'
 }
 
 const Template: Story = () => <Editor />

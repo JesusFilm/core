@@ -5,7 +5,7 @@ import { Tabs } from '.'
 const TabsStory = {
   ...journeyAdminConfig,
   component: Tabs,
-  title: 'JourneyAdmin/Editor/Tabs'
+  title: 'Journeys-Admin/Editor/Tabs'
 }
 
 const Template: Story = () => <Tabs />
