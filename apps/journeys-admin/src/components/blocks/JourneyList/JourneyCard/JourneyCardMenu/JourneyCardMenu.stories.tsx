@@ -1,16 +1,15 @@
 import { Story, Meta } from '@storybook/react'
 
-import { journeyAdminConfig } from '../../../../libs/storybook'
-import JourneyListCard from './JourneyListCard'
-import { defaultJourney } from '../journeyListData'
+import { journeyAdminConfig } from '../../../../../libs/storybook'
+import JourneyCardMenu from './JourneyCardMenu'
 
 const TestStory = {
   ...journeyAdminConfig,
-  component: JourneyListCard,
-  title: 'Journey-Admin/JourneyListCard'
+  component: JourneyCardMenu,
+  title: 'Journey-Admin/JourneyCardMenu'
 }
 
-const Template: Story = () => <JourneyListCard journey={defaultJourney} />
+const Template: Story = () => <JourneyCardMenu />
 
 export const StoryComponent = Template.bind({})
 

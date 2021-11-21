@@ -3,6 +3,8 @@ import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 
+// Pass journeyID and slug to JourneyCardMenu
+
 const JourneyCardMenu = (): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -14,16 +16,16 @@ const JourneyCardMenu = (): ReactElement => {
     setAnchorEl(null)
   }
 
-  const handleEdit = () => {
+  const handleEdit = (): void => {
     // trigger LinkAction to Edit Card page Tatai makes
   }
-  const handleDuplicate = () => {
+  const handleDuplicate = (): void => {
     // trigger the duplicate journey mutation based on journey.id
   }
-  const handleChangeAccess = () => {
+  const handleChangeAccess = (): void => {
     // trigger the change access modal that John / Gavin build
   }
-  const handleCopyUrl = () => {
+  const handleCopyUrl = (): void => {
     // get journey.slug and save to client clipboard
   }
 
