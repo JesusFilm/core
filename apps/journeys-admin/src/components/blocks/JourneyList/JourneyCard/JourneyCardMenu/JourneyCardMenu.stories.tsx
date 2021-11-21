@@ -6,7 +6,7 @@ import JourneyCardMenu from './JourneyCardMenu'
 const TestStory = {
   ...journeyAdminConfig,
   component: JourneyCardMenu,
-  title: 'Journey-Admin/JourneyCardMenu'
+  title: 'Journey-Admin/JourneyCard/JourneyCardMenu'
 }
 
 const Template: Story = () => <JourneyCardMenu />

@@ -7,7 +7,7 @@ import { defaultJourney } from '../journeyListData'
 const TestStory = {
   ...journeyAdminConfig,
   component: JourneyCard,
-  title: 'Journey-Admin/JourneyCard'
+  title: 'Journey-Admin/JourneyList/JourneyCard'
 }
 
 const Template: Story = () => <JourneyCard journey={defaultJourney} />
