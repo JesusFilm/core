@@ -10,7 +10,7 @@ export interface AccessAvatar {
 }
 
 export interface AccessAvatarsProps {
-  users?: AccessAvatar[]
+  users: AccessAvatar[]
 }
 
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
@@ -28,7 +28,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       }}
       onClick={handleClick}
     >
-      {users?.map((user) => (
+      {users.map((user) => (
         <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
           <Avatar alt={user.firstName} src={user.image}>
             {user.firstName[0]}

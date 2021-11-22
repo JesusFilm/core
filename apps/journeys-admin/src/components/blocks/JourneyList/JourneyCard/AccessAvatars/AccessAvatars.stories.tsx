@@ -10,11 +10,7 @@ const AccessAvatarsDemo = {
   title: 'Journey-Admin/JourneyList/JourneyCard/AccessAvatar'
 }
 
-const Template: Story = ({ ...args }) => (
-  <>
-    <AccessAvatars {...args} />
-  </>
-)
+const Template: Story = ({ ...args }) => <AccessAvatars users={[]} {...args} />
 
 export const Single: Story<AccessAvatarsProps> = Template.bind({})
 Single.args = {
@@ -26,8 +22,8 @@ Multiple.args = {
   users: [user1, user2, user3]
 }
 
-export const FallBack: Story<AccessAvatarsProps> = Template.bind({})
-FallBack.args = {
+export const Fallback: Story<AccessAvatarsProps> = Template.bind({})
+Fallback.args = {
   users: [
     { ...user1, image: undefined },
     { ...user2, image: undefined },
