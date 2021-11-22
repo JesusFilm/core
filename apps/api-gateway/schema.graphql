@@ -88,7 +88,7 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-scalar Date
+scalar DateTime
 
 enum GridAlignItems {
   baseline
@@ -212,12 +212,12 @@ type Journey
   @join__type(graph: JOURNEYS, key: "id")
 {
   blocks: [Block!] @join__field(graph: JOURNEYS)
-  createdAt: Date! @join__field(graph: JOURNEYS)
+  createdAt: DateTime! @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
-  publishedAt: Date @join__field(graph: JOURNEYS)
+  publishedAt: DateTime @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)

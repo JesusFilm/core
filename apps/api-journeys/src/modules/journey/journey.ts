@@ -24,8 +24,8 @@ const typeDefs = gql`
     themeName: ThemeName!
     description: String
     slug: String!
-    publishedAt: Date
-    createdAt: Date!
+    publishedAt: DateTime
+    createdAt: DateTime!
   }
 
   enum IdType {
@@ -33,7 +33,7 @@ const typeDefs = gql`
     slug
   }
 
-  scalar Date
+  scalar DateTime
 
   extend type Query {
     journeys: [Journey!]!

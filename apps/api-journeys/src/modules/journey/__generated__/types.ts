@@ -30,8 +30,8 @@ export namespace JourneyModule {
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   export type NavigateToJourneyAction = Types.NavigateToJourneyAction;
   
-  export type Scalars = Pick<Types.Scalars, 'Date'>;
-  export type DateScalarConfig = Types.DateScalarConfig;
+  export type Scalars = Pick<Types.Scalars, 'DateTime'>;
+  export type DateTimeScalarConfig = Types.DateTimeScalarConfig;
   
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey'] | '__isTypeOf'>;
   export type QueryResolvers = Pick<Types.QueryResolvers, DefinedFields['Query']>;
@@ -43,7 +43,7 @@ export namespace JourneyModule {
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
-    Date?: Types.Resolvers['Date'];
+    DateTime?: Types.Resolvers['DateTime'];
   };
   
   export interface MiddlewareMap {
