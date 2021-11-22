@@ -15,7 +15,8 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
-        slug: 'fact-or-fiction'
+        slug: 'fact-or-fiction',
+        publishedAt: new Date('2021-11-15T03:42:22.322Z')
       }
     })
   }

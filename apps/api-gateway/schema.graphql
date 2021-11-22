@@ -240,10 +240,14 @@ input JourneyCreateInput {
   (server will throw BAD_USER_INPUT error if not)
   """
   slug: String!
-  status: JourneyStatus
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
+}
+
+enum JourneyStatus {
+  draft
+  published
 }
 
 input JourneyUpdateInput {
@@ -252,15 +256,9 @@ input JourneyUpdateInput {
   locale: String
   primaryImageBlockId: ID
   slug: String
-  status: JourneyStatus
   themeMode: ThemeMode
   themeName: ThemeName
   title: String
-}
-
-enum JourneyStatus {
-  draft
-  published
 }
 
 type LinkAction implements Action {
@@ -299,8 +297,9 @@ type NavigateToJourneyAction implements Action {
 }
 
 type Query {
+  allJourneys: [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  journeys: [Journey!]! @join__field(graph: JOURNEYS)
+  journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {

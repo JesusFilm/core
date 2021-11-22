@@ -43,7 +43,7 @@ const typeDefs = gql`
 
   extend type Query {
     allJourneys: [Journey!]!
-    journeys: [Journey!]!
+    journeys(status: JourneyStatus): [Journey!]!
     journey(id: ID!, idType: IdType): Journey
   }
 
@@ -94,15 +94,23 @@ const resolvers: JourneyModule.Resolvers = {
     }
   },
   Query: {
-    async allJourneys(_, __, { db }) {
-      return await db.journey.findMany()
-    },
-    async journeys(_, __, { db }) {
-      return await db.journey.findMany({
-        where: {
-          publishedAt: { not: null }
-        }
-      })
+    async journeys(_, { status }, { db }) {
+      switch (status) {
+        case 'published':
+          return await db.journey.findMany({
+            where: {
+              publishedAt: { not: null }
+            }
+          })
+        case 'draft':
+          return await db.journey.findMany({
+            where: {
+              publishedAt: null
+            }
+          })
+        default:
+          return await db.journey.findMany()
+      }
     },
     async journey(_parent, { id, idType }, { db }) {
       if (idType === 'slug') {

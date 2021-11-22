@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum JourneyStatus {
+  draft = "draft",
+  published = "published",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",

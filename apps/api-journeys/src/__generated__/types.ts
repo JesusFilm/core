@@ -333,6 +333,11 @@ export type QueryJourneyArgs = {
   idType?: Maybe<IdType>;
 };
 
+
+export type QueryJourneysArgs = {
+  status?: Maybe<JourneyStatus>;
+};
+
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
@@ -835,7 +840,7 @@ export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType exte
   allJourneys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
   dateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
-  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
+  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneysArgs, never>>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {

@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
     Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publishedAt' | 'createdAt' | 'status';
-    Query: 'allJourneys' | 'journeys' | 'journey';
+    Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
     NavigateToJourneyAction: 'journey';
   };
@@ -67,7 +67,6 @@ export namespace JourneyModule {
     };
     Query?: {
       '*'?: gm.Middleware[];
-      allJourneys?: gm.Middleware[];
       journeys?: gm.Middleware[];
       journey?: gm.Middleware[];
     };

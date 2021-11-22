@@ -78,13 +78,12 @@ describe('JourneyModule', () => {
   ]
 
   describe('Query', () => {
-    describe('allJourneys', () => {
+    describe('journeys', () => {
       it('returns all journeys', async () => {
         dbMock.journey.findMany.mockResolvedValue([
           draftJourney,
           publishedJourney
         ])
-
         const { data } = await query(gql`
           query {
             journeys {
@@ -113,35 +112,73 @@ describe('JourneyModule', () => {
           }
         ])
       })
-    })
-    describe('journeys', () => {
+
       it('returns published journeys', async () => {
         dbMock.journey.findMany.mockResolvedValue([
           draftJourney,
           publishedJourney
         ])
-
-        const { data } = await query(gql`
-          query {
-            journeys {
-              id
-              title
-              published
-              locale
-              themeName
-              themeMode
-              slug
-              createdAt
-              publishedAt
-              status
+        const { data } = await query(
+          gql`
+            query ($status: JourneyStatus) {
+              journeys(status: $status) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                slug
+                createdAt
+                publishedAt
+                status
+              }
             }
+          `,
+          {
+            status: 'published'
           }
-        `)
+        )
 
         expect(data?.journeys).toEqual([
           {
             ...pick(publishedJourney, testProps),
             status: 'published'
+          }
+        ])
+      })
+
+      it('returns draft journeys', async () => {
+        dbMock.journey.findMany.mockResolvedValue([
+          draftJourney,
+          publishedJourney
+        ])
+        const { data } = await query(
+          gql`
+            query ($status: JourneyStatus) {
+              journeys(status: $status) {
+                id
+                title
+                published
+                locale
+                themeName
+                themeMode
+                slug
+                createdAt
+                publishedAt
+                status
+              }
+            }
+          `,
+          {
+            status: 'draft'
+          }
+        )
+
+        expect(data?.journeys).toEqual([
+          {
+            ...pick(draftJourney, testProps),
+            status: 'draft'
           }
         ])
       })
@@ -226,61 +263,6 @@ describe('JourneyModule', () => {
         expect(data?.journeyCreate).toEqual({
           ...newJourney,
           status: 'draft'
-        })
-      })
-
-      it('creates journey with default locale and theme', async () => {
-        const journey: Journey = {
-          id: uuidv4(),
-          title: 'my journey',
-          locale: 'en-US',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          primaryImageBlockId: null,
-          slug: 'my-journey',
-          publishedAt,
-          createdAt
-        }
-        dbMock.journey.create.mockResolvedValue(journey)
-
-        const { data } = await query(
-          gql`
-            mutation ($input: JourneyCreateInput!) {
-              journeyCreate(input: $input) {
-                id
-                title
-                locale
-                themeName
-                themeMode
-                description
-                slug
-                publishedAt
-                createdAt
-              }
-            }
-          `,
-          {
-            input: {
-              title: 'my journey',
-              slug: 'my-journey'
-            }
-          },
-          {
-            userId: 'userId'
-          }
-        )
-
-        expect(data?.journeyCreate).toEqual({
-          id: journey.id,
-          title: 'my journey',
-          locale: 'en-US',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          slug: 'my-journey',
-          publishedAt,
-          createdAt
         })
       })
 
