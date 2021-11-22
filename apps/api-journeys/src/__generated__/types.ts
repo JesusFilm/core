@@ -321,7 +321,6 @@ export type NavigateToJourneyAction = Action & {
 
 export type Query = {
   __typename?: 'Query';
-  allJourneys: Array<Journey>;
   dateTime?: Maybe<Scalars['DateTime']>;
   journey?: Maybe<Journey>;
   journeys: Array<Journey>;
@@ -837,7 +836,6 @@ export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Contex
 };
 
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  allJourneys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
   dateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneysArgs, never>>;

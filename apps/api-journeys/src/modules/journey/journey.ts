@@ -42,7 +42,6 @@ const typeDefs = gql`
   scalar DateTime
 
   extend type Query {
-    allJourneys: [Journey!]!
     journeys(status: JourneyStatus): [Journey!]!
     journey(id: ID!, idType: IdType): Journey
   }
