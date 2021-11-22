@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields

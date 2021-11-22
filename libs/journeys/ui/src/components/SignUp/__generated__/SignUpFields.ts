@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IconName, IconColor, IconSize } from "../../../../__generated__/globalTypes";
+import { IconName, IconColor, IconSize } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: SignUpFields
