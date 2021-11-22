@@ -1,0 +1,57 @@
+{
+  "root": "libs/journeys/ui",
+  "sourceRoot": "libs/journeys/ui/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/journeys/ui/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b libs/journeys/ui/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/journeys/ui"],
+      "options": {
+        "jestConfig": "libs/journeys/ui/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "demo": {
+      "executor": "@nrwl/storybook:storybook",
+      "options": {
+        "uiFramework": "@storybook/react",
+        "port": 4400,
+        "config": {
+          "configFolder": ".storybook"
+        }
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
+          }
+        ]
+      }
+    }
+  }
+}
