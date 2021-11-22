@@ -124,7 +124,6 @@ describe('JourneyModule', () => {
               journeys(status: $status) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
@@ -159,7 +158,6 @@ describe('JourneyModule', () => {
               journeys(status: $status) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
