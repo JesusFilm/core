@@ -2,12 +2,7 @@ import { journeyAdminConfig } from '../../../../../libs/storybook'
 import { AccessAvatars } from '.'
 import { Meta, Story } from '@storybook/react'
 import { AccessAvatarsProps } from './AccessAvatars'
-import {
-  singleAvatar,
-  multipleAvatars,
-  fallBackAvatars,
-  moreThanMaxAvatars
-} from './AccessAvatarsData'
+import { user1, user2, user3, user4, user5 } from './AccessAvatarsData'
 
 const AccessAvatarsDemo = {
   ...journeyAdminConfig,
@@ -17,20 +12,32 @@ const AccessAvatarsDemo = {
 
 const Template: Story = ({ ...args }) => (
   <>
-    <AccessAvatars users={args.users} />
+    <AccessAvatars {...args} />
   </>
 )
 
 export const Single: Story<AccessAvatarsProps> = Template.bind({})
-Single.args = singleAvatar
+Single.args = {
+  users: [user1]
+}
 
 export const Multiple: Story<AccessAvatarsProps> = Template.bind({})
-Multiple.args = multipleAvatars
+Multiple.args = {
+  users: [user1, user2, user3]
+}
 
 export const FallBack: Story<AccessAvatarsProps> = Template.bind({})
-FallBack.args = fallBackAvatars
+FallBack.args = {
+  users: [
+    { ...user1, image: undefined },
+    { ...user2, image: undefined },
+    { ...user2, image: undefined }
+  ]
+}
 
 export const ExtraAvatars: Story<AccessAvatarsProps> = Template.bind({})
-ExtraAvatars.args = moreThanMaxAvatars
+ExtraAvatars.args = {
+  users: [user1, user2, user3, user4, user5]
+}
 
 export default AccessAvatarsDemo as Meta
