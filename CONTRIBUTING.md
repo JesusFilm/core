@@ -71,7 +71,7 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 1. Install [Docker Desktop](https://www.docker.com/get-started)
 1. Start Docker Desktop
-1. Docker set up:
+1. Docker set up:nx generate-graphql api-gateway
    - **Mac users**: add `/workspaces` from Docker -> Preferences... > Resources > File Sharing and then apply and restart Docker.
    - **PC users**: Windows limits resources to WSL 2 (Memory/CPU), this limit can be configured in your [.wslconfig file](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig).
 1. Start VS Code and add [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
