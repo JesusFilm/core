@@ -37,9 +37,9 @@ describe('UserJourneyModule', () => {
     })
   }
 
-  describe('Query', () => {
+  describe('Mutation', () => {
     describe('userJourney', () => {
-      it('returns user journey', async () => {
+      it('creates a user journey', async () => {
         const user: User = {
           id: uuidv4(),
           firebaseId: 'yo',
@@ -71,7 +71,7 @@ describe('UserJourneyModule', () => {
 
         dbMock.userJourney.findMany.mockResolvedValue([userJourney])
         const { data } = await query(gql`
-          query {
+          mutation {
             userJourney {
               userId
               journeyId

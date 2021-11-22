@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace UserModule {
   interface DefinedFields {
-    User: 'id' | 'firebaseId' | 'firstName' | 'lastName' | 'email' | 'imageUrl';
+    User: 'id' | 'firebaseId' | 'firstName' | 'lastName' | 'email' | 'imageUrl' | 'UserJourney';
     Query: 'users' | 'user';
     Mutation: 'userCreate';
   };
@@ -19,6 +19,7 @@ export namespace UserModule {
   export type UserIdType = DefinedEnumValues['UserIdType'];
   export type UserCreateInput = Pick<Types.UserCreateInput, DefinedInputFields['UserCreateInput']>;
   export type User = Pick<Types.User, DefinedFields['User']>;
+  export type UserJourney = Types.UserJourney;
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
@@ -44,6 +45,7 @@ export namespace UserModule {
       lastName?: gm.Middleware[];
       email?: gm.Middleware[];
       imageUrl?: gm.Middleware[];
+      UserJourney?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];

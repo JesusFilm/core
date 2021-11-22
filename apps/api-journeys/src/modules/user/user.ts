@@ -1,9 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { AuthenticationError } from 'apollo-server-errors'
 import { UserModule } from './__generated__/types'
-import { Prisma } from '.prisma/api-journeys-client'
-import { get } from 'lodash'
 
 const typeDefs = gql`
   enum UserIdType {
@@ -27,6 +25,7 @@ const typeDefs = gql`
     lastName: String
     email: String
     imageUrl: String
+    UserJourney: [UserJourney]
   }
 
   extend type Query {
@@ -42,13 +41,18 @@ const typeDefs = gql`
 const resolvers: UserModule.Resolvers = {
   Query: {
     async users(_, __, { db }) {
-      return await db.user.findMany({})
+      return await db.user.findMany({
+        include: { UserJourney: true, }
+      })
     },
     async user(_parent, { id, userIdType }, { db }) {
       if (userIdType === 'firebaseId') {
-        return await db.user.findUnique({ where: { firebaseId: id } })
+        return await db.user.findUnique({ 
+          where: { firebaseId: id }, 
+          include: { UserJourney: true, }
+        })
       } else {
-        return await db.user.findUnique({ where: { id } })
+        return await db.user.findUnique({ where: { id }, include: { UserJourney: true, } })
       }
     }
   },
@@ -60,29 +64,17 @@ const resolvers: UserModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      try {
-        return await db.user.create({
-          data: {
-            id: id as string | undefined,
-            firebaseId: firebaseId as string,
-            firstName: firstName as string,
-            lastName: lastName as string,
-            email: email as string,
-            imageUrl: imageUrl as string
-          }
-        })
-      } catch (e) {
-        if (
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === 'P2002' &&
-          (get(e.meta, 'target') as string[]).includes('slug')
-        ) {
-          throw new UserInputError(e.message, {
-            argumentName: 'slug'
-          })
+      
+      return await db.user.create({
+        data: {
+          id: id as string | undefined,
+          firebaseId: firebaseId as string,
+          firstName: firstName as string,
+          lastName: lastName as string,
+          email: email as string,
+          imageUrl: imageUrl as string
         }
-        throw e
-      }
+      })
     }
   }
 }

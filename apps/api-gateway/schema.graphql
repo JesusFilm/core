@@ -209,6 +209,7 @@ type Journey
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
+  UserJourney: [UserJourney] @join__field(graph: JOURNEYS)
   blocks: [Block!] @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
@@ -266,6 +267,8 @@ type Mutation {
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   userCreate(input: UserCreateInput!): User! @join__field(graph: JOURNEYS)
+  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -426,6 +429,7 @@ type User
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
+  UserJourney: [UserJourney] @join__field(graph: JOURNEYS)
   email: String @join__field(graph: JOURNEYS)
   firebaseId: ID @join__field(graph: JOURNEYS)
   firstName: String @join__field(graph: JOURNEYS)
@@ -449,8 +453,28 @@ enum UserIdType {
 }
 
 type UserJourney {
+  Journey: Journey!
+  User: User!
   journeyId: ID!
-  role: String
+  role: UserJourneyRole!
+  userId: ID!
+}
+
+input UserJourneyCreateInput {
+  journeyId: ID!
+  role: UserJourneyRole
+  userId: ID!
+}
+
+enum UserJourneyRole {
+  editor
+  inviteRequested
+  owner
+}
+
+input UserJourneyUpdateInput {
+  journeyId: ID!
+  role: UserJourneyRole!
   userId: ID!
 }
 
