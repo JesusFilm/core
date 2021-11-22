@@ -16,14 +16,14 @@ import { actionModule, blockModule, buttonModule, iconModule } from '..'
 
 describe('JourneyModule', () => {
   let app
-  const publishedAt = new Date('2021-11-19T12:34:56.647Z');
-  const createdAt = new Date('2021-11-19T12:34:56.647Z');
+  const publishedAt = new Date('2021-11-19T12:34:56.647Z')
+  const createdAt = new Date('2021-11-19T12:34:56.647Z')
 
   beforeEach(() => {
     app = testkit.testModule(journeyModule, {
       schemaBuilder
     })
-   })
+  })
 
   async function query(
     document: DocumentNode,
@@ -468,15 +468,14 @@ describe('JourneyModule', () => {
     })
 
     describe('journeyPublish', () => {
-
       beforeEach(() => {
-        jest.useFakeTimers('modern');
-        jest.setSystemTime(new Date('2021-11-19T12:34:56.647Z'));
-       })
-    
+        jest.useFakeTimers('modern')
+        jest.setSystemTime(new Date('2021-11-19T12:34:56.647Z'))
+      })
+
       afterEach(() => {
-        jest.useRealTimers();
-      });
+        jest.useRealTimers()
+      })
       it('publishes journey', async () => {
         const journey: Journey = {
           id: uuidv4(),
@@ -535,7 +534,6 @@ describe('JourneyModule', () => {
             publishedAt: new Date()
           }
         })
-
       })
 
       it('throws an error on publish without authentication', async () => {

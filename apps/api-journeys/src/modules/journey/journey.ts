@@ -166,7 +166,7 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.update({
         where: { id },
         data: {
-          publishedAt:  new Date()
+          publishedAt: new Date()
         }
       })
     }
