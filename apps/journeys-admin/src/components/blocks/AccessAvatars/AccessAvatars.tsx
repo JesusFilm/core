@@ -10,7 +10,8 @@ export interface AvatarProps {
 }
 
 export interface AvatarsArray {
-  accessAvatarsProps: AvatarProps[]
+  // chnage to access avatar props
+  accessAvatarsProps: AvatarProps[] // change to users:...
 }
 
 export function AccessAvatars({
