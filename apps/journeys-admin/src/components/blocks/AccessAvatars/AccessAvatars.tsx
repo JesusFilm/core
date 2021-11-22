@@ -13,20 +13,32 @@ export interface AccessAvatarsProps {
   users: AccessAvatar[]
 }
 
-const avatarSize = {
-  height: 24,
-  width: 23
-}
-
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
   function handleClick(): void {
     console.log('Click!')
   }
 
+  const avatarConfig = {
+    height: 24,
+    width: 23,
+    max: 3
+  }
+
+  const padding =
+    users.length >= avatarConfig.max
+      ? avatarConfig.max * avatarConfig.width
+      : users.length - 1 * avatarConfig.width
+
+  console.log(`length:${users.length}, padding:${padding}`)
   return (
     <AvatarGroup
-      max={3}
-      sx={{ width: avatarSize.width, height: avatarSize.height }}
+      max={avatarConfig.max}
+      sx={{
+        width: avatarConfig.width,
+        height: avatarConfig.height,
+        paddingLeft: padding,
+        margin: 3
+      }}
       onClick={handleClick}
     >
       {users?.map((user) => (
