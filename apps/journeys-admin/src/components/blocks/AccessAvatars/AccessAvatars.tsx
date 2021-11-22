@@ -29,7 +29,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       ? avatarConfig.max * avatarConfig.width
       : users.length - 1 * avatarConfig.width
 
-  console.log(`length:${users.length}, padding:${padding}`)
+  // console.log(`length:${users.length}, padding:${padding}`)
   return (
     <AvatarGroup
       max={avatarConfig.max}

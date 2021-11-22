@@ -11,17 +11,105 @@ const AccessAvatarsDemo = {
 
 const Template: Story = ({ ...args }) => (
   <>
-    <AccessAvatars users={args.users.slice(0, 1)} />
-    <br />
-    <AccessAvatars users={args.users.slice(0, 3)} />
-    <br />
     <AccessAvatars users={args.users} />
   </>
 )
 
-export const Default: Story<AccessAvatarsProps> = Template.bind({})
-Default.args = {
+export const Single: Story<AccessAvatarsProps> = Template.bind({})
+Single.args = {
   users: [
+    {
+      id: '1',
+      firstName: 'Amin',
+      lastName: 'Person',
+      image: 'https://source.unsplash.com/random/300x300',
+      email: 'amin@email.com'
+    }
+  ]
+}
+
+export const Multiple: Story<AccessAvatarsProps> = Template.bind({})
+Multiple.args = {
+  users: [
+    {
+      id: '1',
+      firstName: 'Amin',
+      lastName: 'Person',
+      image: 'https://source.unsplash.com/random/300x300',
+      email: 'amin@email.com'
+    },
+    {
+      id: '2',
+      firstName: 'Horace',
+      lastName: 'Reader',
+      image: 'https://source.unsplash.com/random/300x301',
+      email: 'horace@email.com'
+    },
+    {
+      id: '3',
+      firstName: 'Coral',
+      lastName: 'Ortega',
+      image: 'https://source.unsplash.com/random/301x300',
+      email: 'coral@email.com'
+    }
+  ]
+}
+
+export const fallBackImage: Story<AccessAvatarsProps> = Template.bind({})
+fallBackImage.args = {
+  users: [
+    {
+      id: '1',
+      firstName: 'Amin',
+      lastName: 'Person',
+      email: 'amin@email.com'
+    },
+    {
+      id: '2',
+      firstName: 'Horace',
+      lastName: 'Reader',
+      email: 'horace@email.com'
+    },
+    {
+      id: '3',
+      firstName: 'Coral',
+      lastName: 'Ortega',
+      email: 'coral@email.com'
+    }
+  ]
+}
+
+export const moreThanMax: Story<AccessAvatarsProps> = Template.bind({})
+moreThanMax.args = {
+  users: [
+    {
+      id: '1',
+      firstName: 'Amin',
+      lastName: 'Person',
+      image: 'https://source.unsplash.com/random/300x300',
+      email: 'amin@email.com'
+    },
+    {
+      id: '2',
+      firstName: 'Horace',
+      lastName: 'Reader',
+      image: 'https://source.unsplash.com/random/300x301',
+      email: 'horace@email.com'
+    },
+    {
+      id: '3',
+      firstName: 'Coral',
+      lastName: 'Ortega',
+      image: 'https://source.unsplash.com/random/301x300',
+      email: 'coral@email.com'
+    },
+    {
+      id: '4',
+      firstName: 'Effie',
+      lastName: 'Lowe',
+      image: 'https://source.unsplash.com/random/302x300',
+      email: 'effie@email.com'
+    },
     {
       id: '1',
       firstName: 'Amin',
