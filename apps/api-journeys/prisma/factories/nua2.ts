@@ -12,7 +12,6 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: 'What About The Resurrection?',
-        published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,

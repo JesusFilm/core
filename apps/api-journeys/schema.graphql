@@ -71,6 +71,8 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
+scalar DateTime
+
 enum GridAlignItems {
   baseline
   flexStart
@@ -183,13 +185,14 @@ input ImageBlockCreateInput {
 
 type Journey @key(fields: "id") {
   id: ID!
-  published: Boolean!
   title: String!
   locale: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
+  publishedAt: DateTime
+  createdAt: DateTime!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
