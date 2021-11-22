@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, ThemeName } from "../../../../__generated__/globalTypes";
+import { ThemeMode, ThemeName } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: CardFields
