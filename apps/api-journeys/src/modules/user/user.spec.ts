@@ -73,8 +73,50 @@ describe('UserModule', () => {
       })
     })
 
-    describe('users', () => {
+    describe('get user by firebase id', () => {
       it('returns user', async () => {
+        const user: User = {
+          id: uuidv4(),
+          firebaseId: uuidv4(),
+          firstName: 'fo',
+          lastName: 'sho',
+          email: 'tho@no.co',
+          imageUrl: 'po'
+        }
+        dbMock.user.findUnique.mockResolvedValue(user)
+        const { data } = await query(
+          gql`
+            query ($id: ID!, $userIdType: UserIdType) {
+              user(id: $id, userIdType: $userIdType) {
+                id
+                firebaseId
+                firstName
+                lastName
+                email
+                imageUrl
+              }
+            }
+          `,
+          {
+            id: user.firebaseId,
+            userIdType: 'firebaseId'
+          }
+        )
+        expect(data?.user).toEqual(
+          pick(user, [
+            'id',
+            'email',
+            'firebaseId',
+            'firstName',
+            'lastName',
+            'imageUrl'
+          ])
+        )
+      })
+    })
+
+    describe('list of users', () => {
+      it('returns all users', async () => {
         const user: User = {
           id: uuidv4(),
           firebaseId: 'yo',
@@ -106,6 +148,54 @@ describe('UserModule', () => {
             'imageUrl'
           ])
         ])
+      })
+    })
+  })
+
+  describe('Mutation', () => {
+    it('creates a user', async () => {
+      const user: User = {
+        id: uuidv4(),
+        firebaseId: 'yo',
+        firstName: 'fo',
+        lastName: 'sho',
+        email: 'tho@no.co',
+        imageUrl: 'po'
+      }
+      dbMock.user.create.mockResolvedValue(user)
+      const { data } = await query(
+        gql`
+          mutation ($input: UserCreateInput!) {
+            userCreate(input: $input) {
+              id
+              firebaseId
+              firstName
+              lastName
+              email
+              imageUrl
+            }
+          }
+        `,
+        {
+          input: {
+            firebaseId: 'yo',
+            firstName: 'fo',
+            lastName: 'sho',
+            email: 'tho@no.co',
+            imageUrl: 'po'
+          }
+        },
+        {
+          userId: 'userId'
+        }
+      )
+      expect(data?.userCreate).toEqual({
+        id: user.id,
+        firebaseId: 'yo',
+        firstName: 'fo',
+        lastName: 'sho',
+        email: 'tho@no.co',
+        imageUrl: 'po'
       })
     })
   })
