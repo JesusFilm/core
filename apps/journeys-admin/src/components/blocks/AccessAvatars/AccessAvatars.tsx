@@ -36,8 +36,10 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       sx={{
         width: avatarConfig.width,
         height: avatarConfig.height,
-        paddingLeft: padding,
-        margin: 3
+        paddingRight: padding,
+        margin: 3,
+        display: 'flex',
+        justifyContent: 'left'
       }}
       onClick={handleClick}
     >
