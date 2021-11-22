@@ -191,8 +191,8 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
-  publishedAt: Date
-  createdAt: Date!
+  publishedAt: DateTime
+  createdAt: DateTime!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
   status: JourneyStatus

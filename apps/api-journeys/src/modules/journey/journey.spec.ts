@@ -449,6 +449,14 @@ describe('JourneyModule', () => {
     })
 
     describe('journeyPublish', () => {
+      beforeEach(() => {
+        jest.useFakeTimers('modern')
+        jest.setSystemTime(new Date('2021-11-19T12:34:56.647Z'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
       it('publishes journey', async () => {
         dbMock.journey.update.mockResolvedValue(publishedJourney)
 

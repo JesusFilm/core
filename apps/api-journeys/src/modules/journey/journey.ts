@@ -29,8 +29,8 @@ const typeDefs = gql`
     themeName: ThemeName!
     description: String
     slug: String!
-    publishedAt: Date
-    createdAt: Date!
+    publishedAt: DateTime
+    createdAt: DateTime!
     status: JourneyStatus
   }
 
