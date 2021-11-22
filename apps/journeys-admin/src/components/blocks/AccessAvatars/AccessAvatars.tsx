@@ -37,7 +37,6 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
         width: avatarConfig.width,
         height: avatarConfig.height,
         paddingRight: padding,
-        margin: 3,
         display: 'flex',
         justifyContent: 'left'
       }}
