@@ -11,7 +11,6 @@ import {
   ThemeMode
 } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
-import { pick } from 'lodash'
 
 describe('UserJourneyModule', () => {
   let app
@@ -40,17 +39,7 @@ describe('UserJourneyModule', () => {
   describe('Mutation', () => {
     describe('userJourney', () => {
       it('creates a user journey', async () => {
-        const user: User = {
-          id: uuidv4(),
-          firebaseId: 'yo',
-          firstName: 'fo',
-          lastName: 'sho',
-          email: 'tho@no.co',
-          imageUrl: 'po'
-        }
-        dbMock.user.findMany.mockResolvedValue([user])
-
-        const publishedJourney: Journey = {
+        const journey: Journey = {
           id: uuidv4(),
           title: 'published',
           published: true,
@@ -61,27 +50,81 @@ describe('UserJourneyModule', () => {
           primaryImageBlockId: null,
           slug: 'published-slug'
         }
-        dbMock.journey.findMany.mockResolvedValue([publishedJourney])
+        dbMock.journey.create.mockResolvedValue(journey)
+
+        const user: User = {
+          id: uuidv4(),
+          firebaseId: 'yo',
+          firstName: 'fo',
+          lastName: 'sho',
+          email: 'tho@no.co',
+          imageUrl: 'po'
+        }
+        dbMock.user.create.mockResolvedValue(user)
 
         const userJourney: UserJourney = {
           userId: user.id,
-          journeyId: publishedJourney.id,
-          role: 'inviteRequested'
+          journeyId: journey.id,
+          role: 'editor'
         }
-
-        dbMock.userJourney.findMany.mockResolvedValue([userJourney])
-        const { data } = await query(gql`
-          mutation {
-            userJourney {
-              userId
-              journeyId
-              role
+        dbMock.userJourney.create.mockResolvedValue(userJourney)
+        const { data } = await query(
+          gql`
+            mutation ($input: UserJourneyCreateInput!) {
+              userJourneyCreate(input: $input) {
+                userId
+                journeyId
+                role
+              }
+            }
+          `,
+          {
+            input: {
+              userId: user.id,
+              journeyId: journey.id,
+              role: 'editor'
             }
           }
-        `)
-        expect(data?.userJourneys).toEqual([
-          pick(userJourney, ['userId', 'journeyId', 'role'])
-        ])
+        )
+        expect(data?.userJourneyCreate).toEqual({
+          userId: user.id,
+          journeyId: journey.id,
+          role: 'editor'
+        })
+      })
+    })
+
+    describe('userJourney', () => {
+      it('updates a user journey', async () => {
+        const userJourney: UserJourney = {
+          userId: uuidv4(),
+          journeyId: uuidv4(),
+          role: 'owner'
+        }
+        dbMock.userJourney.update.mockResolvedValue(userJourney)
+        const { data } = await query(
+          gql`
+            mutation ($input: UserJourneyUpdateInput!) {
+              userJourneyUpdate(input: $input) {
+                userId
+                journeyId
+                role
+              }
+            }
+          `,
+          {
+            input: {
+              userId: userJourney.userId,
+              journeyId: userJourney.journeyId,
+              role: 'owner'
+            }
+          }
+        )
+        expect(data?.userJourneyUpdate).toEqual({
+          userId: userJourney.userId,
+          journeyId: userJourney.journeyId,
+          role: 'owner'
+        })
       })
     })
   })

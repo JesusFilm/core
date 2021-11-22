@@ -190,7 +190,6 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
-  UserJourney: [UserJourney]
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
@@ -423,8 +422,6 @@ type UserJourney {
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
-  User: User!
-  Journey: Journey!
 }
 
 input UserJourneyCreateInput {

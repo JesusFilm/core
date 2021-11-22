@@ -209,7 +209,6 @@ type Journey
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
-  UserJourney: [UserJourney] @join__field(graph: JOURNEYS)
   blocks: [Block!] @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
@@ -453,8 +452,6 @@ enum UserIdType {
 }
 
 type UserJourney {
-  Journey: Journey!
-  User: User!
   journeyId: ID!
   role: UserJourneyRole!
   userId: ID!

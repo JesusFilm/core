@@ -25,7 +25,6 @@ const typeDefs = gql`
     themeName: ThemeName!
     description: String
     slug: String!
-    UserJourney: [UserJourney]
   }
 
   enum IdType {

@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { UserJourneyModule, UserJourneyRole } from './__generated__/types'
+import { UserJourneyModule } from './__generated__/types'
 
 const typeDefs = gql`
   enum UserJourneyRole {
@@ -25,8 +25,6 @@ const typeDefs = gql`
     userId: ID!
     journeyId: ID!
     role: UserJourneyRole!
-    User: User!
-    Journey: Journey!
   }
 
   extend type Mutation {
@@ -39,14 +37,14 @@ const resolvers: UserJourneyModule.Resolvers = {
   Mutation: {
     async userJourneyCreate(
       _parent,
-      { input: { userId, journeyId, role} },
+      { input: { userId, journeyId, role } },
       { db }
     ) {
       return await db.userJourney.create({
         data: {
-          userId: userId as string,
-          journeyId: journeyId as string,
-          role: role as UserJourneyRole,
+          userId: userId,
+          journeyId: journeyId,
+          role: role as UserJourneyModule.UserJourneyRole
         }
       })
     },
@@ -65,7 +63,6 @@ const resolvers: UserJourneyModule.Resolvers = {
     }
   }
 }
-
 
 export const userJourneyModule = createModule({
   id: 'userJourney',

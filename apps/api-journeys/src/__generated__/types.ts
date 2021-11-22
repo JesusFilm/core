@@ -189,7 +189,6 @@ export type ImageBlockCreateInput = {
 
 export type Journey = {
   __typename?: 'Journey';
-  UserJourney?: Maybe<Array<Maybe<UserJourney>>>;
   blocks?: Maybe<Array<Block>>;
   description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
@@ -491,8 +490,6 @@ export type UserIdType =
 
 export type UserJourney = {
   __typename?: 'UserJourney';
-  Journey: Journey;
-  User: User;
   journeyId: Scalars['ID'];
   role: UserJourneyRole;
   userId: Scalars['ID'];
@@ -846,7 +843,6 @@ export type ImageBlockResolvers<ContextType = GraphQLModules.Context, ParentType
 };
 
 export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Journey'] = ResolversParentTypes['Journey']> = {
-  UserJourney?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserJourney']>>>, ParentType, ContextType>;
   blocks?: Resolver<Maybe<Array<ResolversTypes['Block']>>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -983,8 +979,6 @@ export type UserResolvers<ContextType = GraphQLModules.Context, ParentType exten
 };
 
 export type UserJourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['UserJourney'] = ResolversParentTypes['UserJourney']> = {
-  Journey?: Resolver<ResolversTypes['Journey'], ParentType, ContextType>;
-  User?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   journeyId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['UserJourneyRole'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

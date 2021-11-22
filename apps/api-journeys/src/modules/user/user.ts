@@ -25,7 +25,6 @@ const typeDefs = gql`
     lastName: String
     email: String
     imageUrl: String
-    UserJourney: [UserJourney]
   }
 
   extend type Query {
@@ -42,17 +41,20 @@ const resolvers: UserModule.Resolvers = {
   Query: {
     async users(_, __, { db }) {
       return await db.user.findMany({
-        include: { UserJourney: true, }
+        // include: { UserJourney: true }
       })
     },
     async user(_parent, { id, userIdType }, { db }) {
       if (userIdType === 'firebaseId') {
-        return await db.user.findUnique({ 
-          where: { firebaseId: id }, 
-          include: { UserJourney: true, }
+        return await db.user.findUnique({
+          where: { firebaseId: id }
+          // include: { UserJourney: true }
         })
       } else {
-        return await db.user.findUnique({ where: { id }, include: { UserJourney: true, } })
+        return await db.user.findUnique({
+          where: { id }
+          // include: { UserJourney: true }
+        })
       }
     }
   },
@@ -64,7 +66,7 @@ const resolvers: UserModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
-      
+
       return await db.user.create({
         data: {
           id: id as string | undefined,
