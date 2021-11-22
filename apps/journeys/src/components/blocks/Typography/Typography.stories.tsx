@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
 
-import { Typography, TypographyProps } from './Typography'
+import { Typography } from './Typography'
 import {
   ThemeMode,
   ThemeName,
@@ -14,6 +14,8 @@ import {
   simpleComponentConfig,
   StoryCard
 } from '../../../libs/storybook'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../__generated__/GetJourney'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 
 const TypographyDemo = {
   ...journeysConfig,
@@ -22,7 +24,7 @@ const TypographyDemo = {
   title: 'Journeys/Blocks/Typography'
 }
 
-interface TypographyStoryProps extends TypographyProps {
+interface TypographyStoryProps extends TreeBlock<TypographyBlock> {
   variants: Array<string | null>
   heading?: string
 }

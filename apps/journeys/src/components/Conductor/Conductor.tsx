@@ -10,14 +10,20 @@ import { Box, IconButton, useTheme } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import { CardWrapper } from '../blocks/Card'
 
 export interface ConductorProps {
   blocks: TreeBlock[]
 }
 
 const Conductor = ({ blocks }: ConductorProps): ReactElement => {
-  const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
-    useBlocks()
+  const {
+    setTreeBlocks,
+    nextActiveBlock,
+    treeBlocks,
+    activeBlock,
+    previousBlocks
+  } = useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
@@ -133,7 +139,19 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
                   }
                 }}
               >
-                <BlockRenderer {...block} />
+                {activeBlock?.id === block.id ||
+                previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
+                  <BlockRenderer {...block} />
+                ) : (
+                  <CardWrapper
+                    id={block.id}
+                    backgroundColor={theme.palette.primary.light}
+                    themeMode={null}
+                    themeName={null}
+                  >
+                    <></>
+                  </CardWrapper>
+                )}
               </Box>
             </SwiperSlide>
           ))}
