@@ -18,20 +18,10 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
     console.log('Click!')
   }
 
-  // TODO move folder into Journey Card
-  // TODO delete this
-  const avatarConfig = {
-    height: 24,
-    width: 23,
-    max: 3
-  }
-
   return (
     <AvatarGroup
-      max={avatarConfig.max}
+      max={3}
       sx={{
-        // width: avatarConfig.width,
-        // height: avatarConfig.height,
         display: 'flex',
         justifyContent: 'flex-end'
       }}

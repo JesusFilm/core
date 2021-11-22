@@ -1,4 +1,4 @@
-import { journeyAdminConfig } from '../../../../libs/storybook'
+import { journeyAdminConfig } from '../../../../../libs/storybook'
 import { AccessAvatars } from '.'
 import { Meta, Story } from '@storybook/react'
 import { AccessAvatarsProps } from './AccessAvatars'
@@ -12,7 +12,7 @@ import {
 const AccessAvatarsDemo = {
   ...journeyAdminConfig,
   component: AccessAvatars,
-  title: 'Journey-Admin/JourneyList/AccessAvatar'
+  title: 'Journey-Admin/JourneyList/JourneyCard/AccessAvatar'
 }
 
 const Template: Story = ({ ...args }) => (

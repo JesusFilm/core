@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import { Card, Chip, Typography } from '@mui/material'
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import JourneyCardMenu from './JourneyCardMenu'
-import { AccessAvatars } from '../AccessAvatars'
-import { multipleAvatars } from '../AccessAvatars/AccessAvatarsData'
+import { AccessAvatars } from './AccessAvatars'
+import { multipleAvatars } from './AccessAvatars/AccessAvatarsData'
 
 interface JourneyCardProps {
   journey: Journey
