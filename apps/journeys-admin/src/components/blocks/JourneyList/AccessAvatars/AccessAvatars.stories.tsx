@@ -27,10 +27,10 @@ Single.args = singleAvatar
 export const Multiple: Story<AccessAvatarsProps> = Template.bind({})
 Multiple.args = multipleAvatars
 
-export const fallBackImage: Story<AccessAvatarsProps> = Template.bind({})
-fallBackImage.args = fallBackAvatars
+export const FallBack: Story<AccessAvatarsProps> = Template.bind({})
+FallBack.args = fallBackAvatars
 
-export const moreThanMax: Story<AccessAvatarsProps> = Template.bind({})
-moreThanMax.args = moreThanMaxAvatars
+export const ExtraAvatars: Story<AccessAvatarsProps> = Template.bind({})
+ExtraAvatars.args = moreThanMaxAvatars
 
 export default AccessAvatarsDemo as Meta

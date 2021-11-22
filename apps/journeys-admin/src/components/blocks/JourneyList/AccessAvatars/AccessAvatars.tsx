@@ -18,6 +18,8 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
     console.log('Click!')
   }
 
+  // TODO move folder into Journey Card
+  // TODO delete this
   const avatarConfig = {
     height: 24,
     width: 23,
@@ -35,7 +37,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       }}
       onClick={handleClick}
     >
-      {users?.map((user) => (
+      {users.map((user) => (
         <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
           <Avatar alt={user.firstName} src={user.image}>
             {user.firstName[0]}
