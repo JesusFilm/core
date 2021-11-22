@@ -1,4 +1,4 @@
-import { journeyAdminConfig, StoryCard } from '../../../libs/storybook'
+import { journeyAdminConfig } from '../../../libs/storybook'
 import { AccessAvatars } from '.'
 import { Meta, Story } from '@storybook/react'
 import { AvatarsArray } from './AccessAvatars'
@@ -10,13 +10,13 @@ const AccessAvatarsDemo = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <StoryCard>
+  <>
     <AccessAvatars accessAvatarsProps={args.accessAvatarsProps.slice(0, 1)} />
     <br />
     <AccessAvatars accessAvatarsProps={args.accessAvatarsProps.slice(0, 3)} />
     <br />
     <AccessAvatars accessAvatarsProps={args.accessAvatarsProps} />
-  </StoryCard>
+  </>
 )
 
 export const Default: Story<AvatarsArray> = Template.bind({})
