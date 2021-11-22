@@ -114,10 +114,7 @@ describe('JourneyModule', () => {
       })
 
       it('returns published journeys', async () => {
-        dbMock.journey.findMany.mockResolvedValue([
-          draftJourney,
-          publishedJourney
-        ])
+        dbMock.journey.findMany.mockResolvedValue([publishedJourney])
         const { data } = await query(
           gql`
             query ($status: JourneyStatus) {
@@ -148,10 +145,7 @@ describe('JourneyModule', () => {
       })
 
       it('returns draft journeys', async () => {
-        dbMock.journey.findMany.mockResolvedValue([
-          draftJourney,
-          publishedJourney
-        ])
+        dbMock.journey.findMany.mockResolvedValue([draftJourney])
         const { data } = await query(
           gql`
             query ($status: JourneyStatus) {
