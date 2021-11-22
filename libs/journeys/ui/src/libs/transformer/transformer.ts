@@ -1,4 +1,4 @@
-import { GetJourney_journey_blocks as Block } from './__generated__/GetJourney'
+import { BlockFields as Block } from './__generated__/BlockFields'
 
 export type TreeBlock<T = Block> = T & {
   children: TreeBlock[]

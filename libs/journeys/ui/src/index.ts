@@ -31,6 +31,7 @@ export {
   simpleComponentConfig,
   StoryCard,
   transformer,
+  BLOCK_FIELDS,
   useBlocks,
   nextActiveBlock,
   isActiveBlockOrDescendant
