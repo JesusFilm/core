@@ -8,7 +8,7 @@ export const Wrapper = (): ReactElement => {
   const [createAccount, setCreateAccount] = useState(false)
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Box
         sx={{
           display: 'flex',
