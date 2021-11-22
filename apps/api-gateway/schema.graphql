@@ -88,7 +88,7 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-scalar Date
+scalar DateTime
 
 enum GridAlignItems {
   baseline
@@ -219,6 +219,7 @@ type Journey
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: Date @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
+  status: JourneyStatus @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -239,6 +240,7 @@ input JourneyCreateInput {
   (server will throw BAD_USER_INPUT error if not)
   """
   slug: String!
+  status: JourneyStatus
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
@@ -250,9 +252,15 @@ input JourneyUpdateInput {
   locale: String
   primaryImageBlockId: ID
   slug: String
+  status: JourneyStatus
   themeMode: ThemeMode
   themeName: ThemeName
   title: String
+}
+
+enum JourneyStatus {
+  draft
+  published
 }
 
 type LinkAction implements Action {

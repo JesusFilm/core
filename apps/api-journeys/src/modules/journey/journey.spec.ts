@@ -16,14 +16,14 @@ import { actionModule, blockModule, buttonModule, iconModule } from '..'
 
 describe('JourneyModule', () => {
   let app
-  const publishedAt = new Date('2021-11-19T12:34:56.647Z');
-  const createdAt = new Date('2021-11-19T12:34:56.647Z');
+  const publishedAt = new Date('2021-11-19T12:34:56.647Z')
+  const createdAt = new Date('2021-11-19T12:34:56.647Z')
 
   beforeEach(() => {
     app = testkit.testModule(journeyModule, {
       schemaBuilder
     })
-   })
+  })
 
   async function query(
     document: DocumentNode,
@@ -40,22 +40,51 @@ describe('JourneyModule', () => {
     })
   }
 
+  const publishedJourney: Journey = {
+    id: uuidv4(),
+    title: 'published',
+    locale: 'id-ID',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    publishedAt,
+    createdAt
+  }
+
+  const draftJourney: Journey = {
+    id: uuidv4(),
+    title: 'draft',
+    locale: 'id-ID',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'draft-slug',
+    publishedAt: null,
+    createdAt
+  }
+
+  const testProps = [
+    'id',
+    'title',
+    'locale',
+    'themeName',
+    'themeMode',
+    'slug',
+    'createdAt',
+    'publishedAt'
+  ]
+
   describe('Query', () => {
-    describe('journeys', () => {
-      it('returns published journeys', async () => {
-        const publishedJourney: Journey = {
-          id: uuidv4(),
-          title: 'published',
-          locale: 'id-ID',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          primaryImageBlockId: null,
-          slug: 'published-slug',
-          publishedAt,
-          createdAt
-        }
-        dbMock.journey.findMany.mockResolvedValue([publishedJourney])
+    describe('allJourneys', () => {
+      it('returns all journeys', async () => {
+        dbMock.journey.findMany.mockResolvedValue([
+          draftJourney,
+          publishedJourney
+        ])
+
         const { data } = await query(gql`
           query {
             journeys {
@@ -68,39 +97,60 @@ describe('JourneyModule', () => {
               slug
               createdAt
               publishedAt
+              status
             }
           }
         `)
+
         expect(data?.journeys).toEqual([
-          pick(publishedJourney, [
-            'id',
-            'title',
-            'locale',
-            'themeName',
-            'themeMode',
-            'slug',
-            'createdAt',
-            'publishedAt'
-          ])
+          {
+            ...pick(draftJourney, testProps),
+            status: 'draft'
+          },
+          {
+            ...pick(publishedJourney, testProps),
+            status: 'published'
+          }
+        ])
+      })
+    })
+    describe('journeys', () => {
+      it('returns published journeys', async () => {
+        dbMock.journey.findMany.mockResolvedValue([
+          draftJourney,
+          publishedJourney
+        ])
+
+        const { data } = await query(gql`
+          query {
+            journeys {
+              id
+              title
+              published
+              locale
+              themeName
+              themeMode
+              slug
+              createdAt
+              publishedAt
+              status
+            }
+          }
+        `)
+
+        expect(data?.journeys).toEqual([
+          {
+            ...pick(publishedJourney, testProps),
+            status: 'published'
+          }
         ])
       })
     })
 
     describe('journey', () => {
+      // TODO test returns journey based on slug and based on id
       it('returns journey', async () => {
-        const journey = {
-          id: uuidv4(),
-          title: 'published',
-          locale: 'hi-IN',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          primaryImageBlockId: null,
-          slug: 'published-slug',
-          publishedAt,
-          createdAt
-        }
-        dbMock.journey.findUnique.mockResolvedValue(journey)
+        dbMock.journey.findUnique.mockResolvedValue(publishedJourney)
 
         const { data } = await query(
           gql`
@@ -118,71 +168,11 @@ describe('JourneyModule', () => {
             }
           `,
           {
-            id: journey.id
+            id: publishedJourney.id
           }
         )
 
-        expect(data?.journey).toEqual(
-          pick(journey, [
-            'id',
-            'title',
-            'locale',
-            'themeName',
-            'themeMode',
-            'slug',
-            'publishedAt',
-            'createdAt'
-          ])
-        )
-      })
-
-      it('should not be published by default', async () => {
-        const journey = {
-          id: uuidv4(),
-          title: 'not-published',
-          locale: 'hi-IN',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          primaryImageBlockId: null,
-          slug: 'published-slug',
-          publishedAt: null,
-          createdAt
-        }
-        dbMock.journey.findUnique.mockResolvedValue(journey)
-
-        const { data } = await query(
-          gql`
-            query ($id: ID!) {
-              journey(id: $id) {
-                id
-                title
-                locale
-                themeName
-                themeMode
-                slug
-                publishedAt
-                createdAt
-              }
-            }
-          `,
-          {
-            id: journey.id
-          }
-        )
-
-        expect(data?.journey).toEqual(
-          pick(journey, [
-            'id',
-            'title',
-            'locale',
-            'themeName',
-            'themeMode',
-            'slug',
-            'publishedAt',
-            'createdAt'
-          ])
-        )
+        expect(data?.journey).toEqual(pick(publishedJourney, testProps))
       })
     })
   })
@@ -190,19 +180,16 @@ describe('JourneyModule', () => {
   describe('Mutation', () => {
     describe('journeyCreate', () => {
       it('creates journey', async () => {
-        const journey: Journey = {
-          id: uuidv4(),
+        const newJourney: Journey = {
+          ...draftJourney,
           title: 'my journey',
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: 'test description',
-          primaryImageBlockId: null,
-          slug: 'my-journey',
-          publishedAt,
-          createdAt
+          slug: 'my-journey'
         }
-        dbMock.journey.create.mockResolvedValue(journey)
+        dbMock.journey.create.mockResolvedValue(newJourney)
 
         const { data } = await query(
           gql`
@@ -217,6 +204,7 @@ describe('JourneyModule', () => {
                 slug
                 publishedAt
                 createdAt
+                status
               }
             }
           `,
@@ -236,15 +224,8 @@ describe('JourneyModule', () => {
         )
 
         expect(data?.journeyCreate).toEqual({
-          id: journey.id,
-          title: 'my journey',
-          locale: 'hi-IN',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: 'test description',
-          slug: 'my-journey',
-          publishedAt,
-          createdAt
+          ...newJourney,
+          status: 'draft'
         })
       })
 
@@ -468,29 +449,8 @@ describe('JourneyModule', () => {
     })
 
     describe('journeyPublish', () => {
-
-      beforeEach(() => {
-        jest.useFakeTimers('modern');
-        jest.setSystemTime(new Date('2021-11-19T12:34:56.647Z'));
-       })
-    
-      afterEach(() => {
-        jest.useRealTimers();
-      });
       it('publishes journey', async () => {
-        const journey: Journey = {
-          id: uuidv4(),
-          title: 'my journey',
-          locale: 'id-ID',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          primaryImageBlockId: null,
-          slug: 'my-journey',
-          publishedAt,
-          createdAt
-        }
-        dbMock.journey.update.mockResolvedValue(journey)
+        dbMock.journey.update.mockResolvedValue(publishedJourney)
 
         const { data } = await query(
           gql`
@@ -506,11 +466,12 @@ describe('JourneyModule', () => {
                 slug
                 publishedAt
                 createdAt
+                status
               }
             }
           `,
           {
-            id: journey.id
+            id: publishedJourney.id
           },
           {
             userId: 'userId'
@@ -518,24 +479,15 @@ describe('JourneyModule', () => {
         )
 
         expect(data?.journeyPublish).toEqual({
-          id: journey.id,
-          title: 'my journey',
-          locale: 'id-ID',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          description: null,
-          slug: 'my-journey',
-          publishedAt,
-          createdAt
+          ...publishedJourney,
+          status: 'published'
         })
-
         expect(dbMock.journey.update).toBeCalledWith({
-          where: { id: journey.id },
+          where: { id: publishedJourney.id },
           data: {
             publishedAt: new Date()
           }
         })
-
       })
 
       it('throws an error on publish without authentication', async () => {

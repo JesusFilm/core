@@ -16,6 +16,11 @@ const typeDefs = gql`
     base
   }
 
+  enum JourneyStatus {
+    draft
+    published
+  }
+
   type Journey @key(fields: "id") {
     id: ID!
     title: String!
@@ -26,6 +31,7 @@ const typeDefs = gql`
     slug: String!
     publishedAt: Date
     createdAt: Date!
+    status: JourneyStatus
   }
 
   enum IdType {
@@ -33,9 +39,10 @@ const typeDefs = gql`
     slug
   }
 
-  scalar Date
+  scalar DateTime
 
   extend type Query {
+    allJourneys: [Journey!]!
     journeys: [Journey!]!
     journey(id: ID!, idType: IdType): Journey
   }
@@ -81,7 +88,15 @@ const typeDefs = gql`
 `
 
 const resolvers: JourneyModule.Resolvers = {
+  Journey: {
+    status: (journey) => {
+      return journey.publishedAt === null ? 'draft' : 'published'
+    }
+  },
   Query: {
+    async allJourneys(_, __, { db }) {
+      return await db.journey.findMany()
+    },
     async journeys(_, __, { db }) {
       return await db.journey.findMany({
         where: {
@@ -166,7 +181,7 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.update({
         where: { id },
         data: {
-          publishedAt:  new Date()
+          publishedAt: new Date()
         }
       })
     }

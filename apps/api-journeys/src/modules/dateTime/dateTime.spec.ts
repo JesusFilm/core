@@ -7,10 +7,6 @@ const typeDefs = gql`
   extend type Query {
     dateTime: DateTime
   }
-
-  extend type Mutation {
-    setDate(input: DateTime!): DateTime!
-  }
 `
 
 const dateTimeQueryModule = createModule({
@@ -37,14 +33,12 @@ describe('DateTimeModule', () => {
   }
 
   it('should return DateTime in ISO format', async () => {
-    const {data} = await query(gql`
+    const { data } = await query(gql`
       query {
         dateTime
       }
     `)
     console.log(data?.dateTime)
-    expect(data?.dateTime).toEqual(
-        '2021-11-19T12:34:56.647Z'
-    )
+    expect(data?.dateTime).toEqual('2021-11-19T12:34:56.647Z')
   })
 })

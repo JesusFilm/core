@@ -201,6 +201,7 @@ export type Journey = {
   primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['Date']>;
   slug: Scalars['String'];
+  status?: Maybe<JourneyStatus>;
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
@@ -223,6 +224,10 @@ export type JourneyCreateInput = {
   themeName?: Maybe<ThemeName>;
   title: Scalars['String'];
 };
+
+export type JourneyStatus =
+  | 'draft'
+  | 'published';
 
 export type JourneyUpdateInput = {
   description?: Maybe<Scalars['String']>;
@@ -312,6 +317,7 @@ export type NavigateToJourneyAction = Action & {
 
 export type Query = {
   __typename?: 'Query';
+  allJourneys: Array<Journey>;
   dateTime?: Maybe<Scalars['DateTime']>;
   journey?: Maybe<Journey>;
   journeys: Array<Journey>;
@@ -615,6 +621,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Journey: ResolverTypeWrapper<JourneyType>;
   JourneyCreateInput: JourneyCreateInput;
+  JourneyStatus: JourneyStatus;
   JourneyUpdateInput: JourneyUpdateInput;
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -783,6 +790,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
   publishedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['JourneyStatus']>, ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -825,6 +833,7 @@ export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Contex
 };
 
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  allJourneys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
   dateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;

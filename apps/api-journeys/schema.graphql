@@ -71,7 +71,7 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-scalar Date
+scalar DateTime
 
 enum GridAlignItems {
   baseline
@@ -195,6 +195,7 @@ type Journey @key(fields: "id") {
   createdAt: Date!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  status: JourneyStatus
 }
 
 input JourneyCreateInput {
@@ -214,6 +215,7 @@ input JourneyCreateInput {
   (server will throw BAD_USER_INPUT error if not)
   """
   slug: String!
+  status: JourneyStatus
 }
 
 input JourneyUpdateInput {
@@ -225,6 +227,12 @@ input JourneyUpdateInput {
   description: String
   primaryImageBlockId: ID
   slug: String
+  status: JourneyStatus
+}
+
+enum JourneyStatus {
+  draft
+  published
 }
 
 type LinkAction implements Action {
