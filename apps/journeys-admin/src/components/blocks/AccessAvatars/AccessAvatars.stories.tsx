@@ -1,27 +1,27 @@
 import { journeyAdminConfig } from '../../../libs/storybook'
 import { AccessAvatars } from '.'
 import { Meta, Story } from '@storybook/react'
-import { AvatarsArray } from './AccessAvatars'
+import { AccessAvatarsProps } from './AccessAvatars'
 
 const AccessAvatarsDemo = {
   ...journeyAdminConfig,
   component: AccessAvatars,
-  title: 'JourneyAdmin/AccessAvatarDemo' // remove demo
+  title: 'JourneyAdmin/AccessAvatar'
 }
 
 const Template: Story = ({ ...args }) => (
   <>
-    <AccessAvatars accessAvatarsProps={args.accessAvatarsProps.slice(0, 1)} />
+    <AccessAvatars users={args.users.slice(0, 1)} />
     <br />
-    <AccessAvatars accessAvatarsProps={args.accessAvatarsProps.slice(0, 3)} />
+    <AccessAvatars users={args.users.slice(0, 3)} />
     <br />
-    <AccessAvatars accessAvatarsProps={args.accessAvatarsProps} />
+    <AccessAvatars users={args.users} />
   </>
 )
 
-export const Default: Story<AvatarsArray> = Template.bind({})
+export const Default: Story<AccessAvatarsProps> = Template.bind({})
 Default.args = {
-  accessAvatarsProps: [
+  users: [
     {
       id: '1',
       firstName: 'Amin',
@@ -40,7 +40,7 @@ Default.args = {
       id: '3',
       firstName: 'Coral',
       lastName: 'Ortega',
-      // image: 'https://source.unsplash.com/random/301x300',
+      image: 'https://source.unsplash.com/random/301x300',
       email: 'coral@email.com'
     },
     {

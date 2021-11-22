@@ -1,7 +1,7 @@
 import { Avatar, AvatarGroup, Tooltip } from '@mui/material'
 import { ReactElement } from 'react'
 
-export interface AvatarProps {
+export interface AccessAvatar {
   id: string
   firstName: string
   lastName: string
@@ -9,22 +9,19 @@ export interface AvatarProps {
   email?: string
 }
 
-export interface AvatarsArray {
-  // chnage to access avatar props
-  accessAvatarsProps: AvatarProps[] // change to users:...
+export interface AccessAvatarsProps {
+  users: AccessAvatar[]
 }
 
-export function AccessAvatars({
-  accessAvatarsProps
-}: AvatarsArray): ReactElement {
-  function handleClick(user: AvatarProps): void {
+export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
+  function handleClick(user: AccessAvatar): void {
     console.log(`You clicked ${user.firstName}`)
   }
 
   return (
     <div style={avatarGroupStyle}>
       <AvatarGroup max={3} sx={{ width: 23, height: 24 }}>
-        {accessAvatarsProps?.map((user) => (
+        {users?.map((user) => (
           <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
             <Avatar
               onClick={() => handleClick(user)}
