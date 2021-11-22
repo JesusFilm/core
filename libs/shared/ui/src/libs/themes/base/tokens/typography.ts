@@ -73,7 +73,8 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 11,
       fontWeight: 600,
       lineHeight: '16px',
-      letterSpacing: 3
+      letterSpacing: 3,
+      marginBottom: '4px'
     },
     caption: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
