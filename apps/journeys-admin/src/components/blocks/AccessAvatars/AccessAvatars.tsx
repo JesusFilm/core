@@ -13,31 +13,29 @@ export interface AccessAvatarsProps {
   users: AccessAvatar[]
 }
 
+const avatarSize = {
+  height: 24,
+  width: 23
+}
+
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
-  function handleClick(user: AccessAvatar): void {
-    console.log(`You clicked ${user.firstName}`)
+  function handleClick(): void {
+    console.log('Click!')
   }
 
   return (
-    <div style={avatarGroupStyle}>
-      <AvatarGroup max={3} sx={{ width: 23, height: 24 }}>
-        {users?.map((user) => (
-          <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
-            <Avatar
-              onClick={() => handleClick(user)}
-              alt={user.firstName}
-              src={user.image}
-            >
-              {user.firstName[0]}
-            </Avatar>
-          </Tooltip>
-        ))}
-      </AvatarGroup>
-    </div>
+    <AvatarGroup
+      max={3}
+      sx={{ width: avatarSize.width, height: avatarSize.height }}
+      onClick={handleClick}
+    >
+      {users?.map((user) => (
+        <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
+          <Avatar alt={user.firstName} src={user.image}>
+            {user.firstName[0]}
+          </Avatar>
+        </Tooltip>
+      ))}
+    </AvatarGroup>
   )
-}
-
-const avatarGroupStyle = {
-  display: 'flex',
-  justifyContent: 'center'
 }
