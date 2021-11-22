@@ -1,13 +1,8 @@
 import { ReactElement, useState } from 'react'
-import {
-  Alert,
-  Button,
-  Container,
-  Typography,
-  Grid,
-  TextField
-} from '@mui/material'
+import { Alert, Button, Container, Grid, TextField } from '@mui/material'
 import { useAuth } from '../../../libs/firebaseClient'
+
+// Add backend types when ready
 
 export const Register = (): ReactElement => {
   const [firstName, setFirstName] = useState<string>()
@@ -19,18 +14,8 @@ export const Register = (): ReactElement => {
 
   const { signUp, handleAuthResponse } = useAuth()
 
-  // TODO:
-  // Add backend types when ready
-  // Create mutation here for adding a new user to our backend
-  // create the remaining needed fields
-
   const handleSignUp = async (event): Promise<void> => {
     event.preventDefault()
-
-    // Pass in first and last name to the backend when ready
-    if (firstName !== undefined && lastName !== undefined) {
-      console.log(`${firstName} ${lastName}`)
-    }
 
     try {
       setLoading(true)
@@ -46,11 +31,10 @@ export const Register = (): ReactElement => {
   // MUI components used are just for testing purposes and is not the set components that will be used
   return (
     <Container maxWidth="xs">
-      <Typography variant="h5">Sign Up</Typography>
       {error != null && error && <Alert severity="error">{error}</Alert>}
       <form>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <TextField
               variant="outlined"
               required
@@ -61,10 +45,9 @@ export const Register = (): ReactElement => {
               onChange={(e) => setFirstName(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <TextField
               variant="outlined"
-              required
               fullWidth
               id="last-name"
               label="Last Name"
@@ -95,6 +78,7 @@ export const Register = (): ReactElement => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </Grid>
+          {/* Add upload image functionality */}
           <Button
             type="submit"
             disabled={loading}

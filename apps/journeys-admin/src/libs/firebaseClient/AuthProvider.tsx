@@ -3,7 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
-  ReactNode
+  ReactElement
 } from 'react'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
@@ -11,11 +11,23 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
-const AuthContext = createContext()
-
-export function useAuth() {
-  return useContext(AuthContext)
+interface AuthContextType {
+  currentUser?: string | null
+  signInConfig?: string | unknown
+  signUp?: (email: string, password: string) => void
+  logOut?: () => void
+  handleAuthResponse?: (
+    firstName?: string,
+    lastName?: string,
+    email?: string,
+    imageUrl?: string
+  ) => void
 }
+
+const AuthContext = createContext<AuthContextType | null>(null)
+
+export const useAuth = () => useContext(AuthContext)
+
 
 export const USER_CREATE = gql`
   mutation UserCreate($input: UserCreateInput!) {
@@ -30,7 +42,7 @@ export const USER_CREATE = gql`
   }
 `
 
-export function AuthProvider({ children }): ReactNode {
+export function AuthProvider({ children }): ReactElement {
   const [currentUser, setCurrentUser] = useState<string | null>()
   const [firebaseId, setFirebaseId] = useState<string>()
   const auth = getAuth()
@@ -104,7 +116,7 @@ export function AuthProvider({ children }): ReactNode {
     return unregisterAuthOberserver()
   }, [])
 
-  const signUp = (email, password): void => {
+  const signUp = (email: string, password: string): void => {
     if (email !== undefined && password !== undefined) {
       void createUserWithEmailAndPassword(auth, email, password).catch(
         (error) => {

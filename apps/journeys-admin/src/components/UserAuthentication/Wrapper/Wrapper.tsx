@@ -1,28 +1,56 @@
 import { ReactElement, useState } from 'react'
 import { Register } from '../Register'
 import { SignIn } from '../SignIn'
-import { Button, Container } from '@mui/material'
+import { Container, Link, Typography } from '@mui/material'
+import { Box } from '@mui/system'
 
 export const Wrapper = (): ReactElement => {
   const [createAccount, setCreateAccount] = useState(false)
-  // Add proper logic to render out different options for sign in or sign up
-  // When schema is done
+
   return (
-    <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column' }}>
-      {!createAccount ? (
-        <>
-          <SignIn />
-          <Button
-            variant={'contained'}
-            fullWidth={false}
-            onClick={() => setCreateAccount(true)}
-          >
-            Create an account
-          </Button>
-        </>
-      ) : (
-        <Register />
-      )}
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        {!createAccount ? (
+          <>
+            <Typography variant="h4">Sign In</Typography>
+            <SignIn />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row'
+              }}
+            >
+              <Typography>Need to create an account? </Typography>
+              <Link href="#" onClick={() => setCreateAccount(true)}>
+                Sign Up
+              </Link>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Typography variant="h4">Sign up</Typography>
+            <Register />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row'
+              }}
+            >
+              <Typography>Already have an account? </Typography>
+              <Link href="#" onClick={() => setCreateAccount(false)}>
+                Sign In
+              </Link>
+            </Box>
+          </>
+        )}
+      </Box>
     </Container>
   )
 }
