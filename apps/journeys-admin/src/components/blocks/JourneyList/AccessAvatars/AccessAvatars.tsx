@@ -24,21 +24,14 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
     max: 3
   }
 
-  const padding =
-    users.length >= avatarConfig.max
-      ? avatarConfig.max * avatarConfig.width
-      : users.length - 1 * avatarConfig.width
-
-  // console.log(`length:${users.length}, padding:${padding}`)
   return (
     <AvatarGroup
       max={avatarConfig.max}
       sx={{
-        width: avatarConfig.width,
-        height: avatarConfig.height,
-        paddingRight: padding,
+        // width: avatarConfig.width,
+        // height: avatarConfig.height,
         display: 'flex',
-        justifyContent: 'left'
+        justifyContent: 'flex-end'
       }}
       onClick={handleClick}
     >
