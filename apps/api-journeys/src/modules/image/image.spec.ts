@@ -36,6 +36,8 @@ jest.mock('canvas', () => {
 
 describe('ImageModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(imageModule, {
@@ -46,13 +48,14 @@ describe('ImageModule', () => {
     dbMock.journey.findUnique.mockResolvedValue({
       id: journeyId,
       title: 'published',
-      published: true,
       locale: 'en-US',
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
       primaryImageBlockId: null,
-      slug: 'published-slug'
+      slug: 'published-slug',
+      publishedAt,
+      createdAt
     })
   })
 
@@ -127,13 +130,14 @@ describe('ImageModule', () => {
       const journey: Journey = {
         id: 'journeyId',
         title: 'published',
-        published: true,
         locale: 'hi-IN',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
         primaryImageBlockId: 'primaryImageBlockId',
-        slug: 'published-slug'
+        slug: 'published-slug',
+        publishedAt,
+        createdAt
       }
 
       const primaryImage: Block = {
@@ -179,13 +183,14 @@ describe('ImageModule', () => {
       const journey: Journey = {
         id: 'journeyId',
         title: 'published',
-        published: true,
         locale: 'hi-IN',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         description: null,
         primaryImageBlockId: 'primaryImageBlockId',
-        slug: 'published-slug'
+        slug: 'published-slug',
+        publishedAt,
+        createdAt
       }
 
       const primaryImage: Block = {

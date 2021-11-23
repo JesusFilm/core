@@ -12,7 +12,6 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: 'Fact or Fiction',
-        published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,

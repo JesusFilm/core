@@ -16,6 +16,8 @@ import { actionModule, blockModule, buttonModule, iconModule } from '..'
 
 describe('JourneyModule', () => {
   let app
+  const publishedAt = new Date('2021-11-19T12:34:56.647Z')
+  const createdAt = new Date('2021-11-19T12:34:56.647Z')
 
   beforeEach(() => {
     app = testkit.testModule(journeyModule, {
@@ -44,13 +46,14 @@ describe('JourneyModule', () => {
         const publishedJourney: Journey = {
           id: uuidv4(),
           title: 'published',
-          published: true,
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'published-slug'
+          slug: 'published-slug',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.findMany.mockResolvedValue([publishedJourney])
         const { data } = await query(gql`
@@ -63,6 +66,8 @@ describe('JourneyModule', () => {
               themeName
               themeMode
               slug
+              createdAt
+              publishedAt
             }
           }
         `)
@@ -70,11 +75,12 @@ describe('JourneyModule', () => {
           pick(publishedJourney, [
             'id',
             'title',
-            'published',
             'locale',
             'themeName',
             'themeMode',
-            'slug'
+            'slug',
+            'createdAt',
+            'publishedAt'
           ])
         ])
       })
@@ -85,13 +91,14 @@ describe('JourneyModule', () => {
         const journey = {
           id: uuidv4(),
           title: 'published',
-          published: true,
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'published-slug'
+          slug: 'published-slug',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.findUnique.mockResolvedValue(journey)
 
@@ -101,11 +108,12 @@ describe('JourneyModule', () => {
               journey(id: $id) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -118,11 +126,61 @@ describe('JourneyModule', () => {
           pick(journey, [
             'id',
             'title',
-            'published',
             'locale',
             'themeName',
             'themeMode',
-            'slug'
+            'slug',
+            'publishedAt',
+            'createdAt'
+          ])
+        )
+      })
+
+      it('should not be published by default', async () => {
+        const journey = {
+          id: uuidv4(),
+          title: 'not-published',
+          locale: 'hi-IN',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          description: null,
+          primaryImageBlockId: null,
+          slug: 'published-slug',
+          publishedAt: null,
+          createdAt
+        }
+        dbMock.journey.findUnique.mockResolvedValue(journey)
+
+        const { data } = await query(
+          gql`
+            query ($id: ID!) {
+              journey(id: $id) {
+                id
+                title
+                locale
+                themeName
+                themeMode
+                slug
+                publishedAt
+                createdAt
+              }
+            }
+          `,
+          {
+            id: journey.id
+          }
+        )
+
+        expect(data?.journey).toEqual(
+          pick(journey, [
+            'id',
+            'title',
+            'locale',
+            'themeName',
+            'themeMode',
+            'slug',
+            'publishedAt',
+            'createdAt'
           ])
         )
       })
@@ -135,13 +193,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: false,
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: 'test description',
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.create.mockResolvedValue(journey)
 
@@ -151,12 +210,13 @@ describe('JourneyModule', () => {
               journeyCreate(input: $input) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -178,12 +238,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyCreate).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: false,
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: 'test description',
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -191,13 +252,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: false,
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.create.mockResolvedValue(journey)
 
@@ -207,12 +269,13 @@ describe('JourneyModule', () => {
               journeyCreate(input: $input) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -230,12 +293,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyCreate).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: false,
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -297,13 +361,14 @@ describe('JourneyModule', () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: false,
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.update.mockResolvedValue(journey)
 
@@ -313,12 +378,13 @@ describe('JourneyModule', () => {
               journeyUpdate(input: $input) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -338,12 +404,13 @@ describe('JourneyModule', () => {
         expect(data?.journeyUpdate).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: false,
           locale: 'en-US',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         })
       })
 
@@ -401,17 +468,26 @@ describe('JourneyModule', () => {
     })
 
     describe('journeyPublish', () => {
+      beforeEach(() => {
+        jest.useFakeTimers('modern')
+        jest.setSystemTime(new Date('2021-11-19T12:34:56.647Z'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
       it('publishes journey', async () => {
         const journey: Journey = {
           id: uuidv4(),
           title: 'my journey',
-          published: true,
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.update.mockResolvedValue(journey)
 
@@ -421,13 +497,14 @@ describe('JourneyModule', () => {
               journeyPublish(id: $id) {
                 id
                 title
-                published
                 locale
                 themeName
                 themeMode
                 description
                 primaryImageBlockId
                 slug
+                publishedAt
+                createdAt
               }
             }
           `,
@@ -442,12 +519,20 @@ describe('JourneyModule', () => {
         expect(data?.journeyPublish).toEqual({
           id: journey.id,
           title: 'my journey',
-          published: true,
           locale: 'id-ID',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
-          slug: 'my-journey'
+          slug: 'my-journey',
+          publishedAt,
+          createdAt
+        })
+
+        expect(dbMock.journey.update).toBeCalledWith({
+          where: { id: journey.id },
+          data: {
+            publishedAt: new Date()
+          }
         })
       })
 
@@ -483,13 +568,14 @@ describe('JourneyModule', () => {
         const journey = {
           id: uuidv4(),
           title: 'published',
-          published: true,
           locale: 'hi-IN',
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           description: null,
           primaryImageBlockId: null,
-          slug: 'published-slug'
+          slug: 'published-slug',
+          publishedAt,
+          createdAt
         }
         dbMock.journey.findUnique.mockResolvedValue(journey)
 
