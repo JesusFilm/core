@@ -37,17 +37,14 @@ export const getServerSideProps: GetServerSideProps<JourneysPageProps> =
   async () => {
     const { data } = await client.query<GetJourneys>({
       query: gql`
-        query GetJourneys($status: JourneyStatus) {
-          journeys(status: $status) {
+        query GetJourneys {
+          journeys(status: published) {
             id
             title
             slug
           }
         }
-      `,
-      variables: {
-        status: 'published'
-      }
+      `
     })
 
     if (data.journeys === null) {
