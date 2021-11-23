@@ -31,9 +31,9 @@ export function Navigation({
             sx={{
               p: 1,
               borderRadius: 2,
-              minWidth: 103,
-              maxWidth: 103,
-              height: 148,
+              minWidth: 113,
+              maxWidth: 113,
+              height: 200,
               transition: '0.2s border-color ease-out',
               position: 'relative',
               border: (theme) =>
@@ -61,8 +61,16 @@ export function Navigation({
             >
               <Box
                 sx={{
-                  width: 267,
-                  height: 402
+                  width: {
+                    xs: 296,
+                    sm: 476,
+                    md: 854
+                  },
+                  height: {
+                    xs: 560,
+                    sm: 880,
+                    md: 480
+                  }
                 }}
               >
                 <BlockRenderer {...step} />
