@@ -8,6 +8,7 @@ import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
 interface JourneyCardProps {
   journey: Journey
 }
+// initial commit
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
   const AccessAvatarsProps = {
