@@ -18,19 +18,22 @@ const typeDefs = gql`
 
   type Journey @key(fields: "id") {
     id: ID!
-    published: Boolean!
     title: String!
     locale: String!
     themeMode: ThemeMode!
     themeName: ThemeName!
     description: String
     slug: String!
+    publishedAt: DateTime
+    createdAt: DateTime!
   }
 
   enum IdType {
     databaseId
     slug
   }
+
+  scalar DateTime
 
   extend type Query {
     journeys: [Journey!]!
@@ -81,7 +84,9 @@ const resolvers: JourneyModule.Resolvers = {
   Query: {
     async journeys(_, __, { db }) {
       return await db.journey.findMany({
-        where: { published: true }
+        where: {
+          publishedAt: { not: null }
+        }
       })
     },
     async journey(_parent, { id, idType }, { db }) {
@@ -161,7 +166,7 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.update({
         where: { id },
         data: {
-          published: true
+          publishedAt: new Date()
         }
       })
     }

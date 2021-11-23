@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace JourneyModule {
   interface DefinedFields {
-    Journey: 'id' | 'published' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug';
+    Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publishedAt' | 'createdAt';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
     NavigateToJourneyAction: 'journey';
@@ -30,6 +30,9 @@ export namespace JourneyModule {
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   export type NavigateToJourneyAction = Types.NavigateToJourneyAction;
   
+  export type Scalars = Pick<Types.Scalars, 'DateTime'>;
+  export type DateTimeScalarConfig = Types.DateTimeScalarConfig;
+  
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey'] | '__isTypeOf'>;
   export type QueryResolvers = Pick<Types.QueryResolvers, DefinedFields['Query']>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
@@ -40,6 +43,7 @@ export namespace JourneyModule {
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
+    DateTime?: Types.Resolvers['DateTime'];
   };
   
   export interface MiddlewareMap {
@@ -49,13 +53,14 @@ export namespace JourneyModule {
     Journey?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
-      published?: gm.Middleware[];
       title?: gm.Middleware[];
       locale?: gm.Middleware[];
       themeMode?: gm.Middleware[];
       themeName?: gm.Middleware[];
       description?: gm.Middleware[];
       slug?: gm.Middleware[];
+      publishedAt?: gm.Middleware[];
+      createdAt?: gm.Middleware[];
     };
     Query?: {
       '*'?: gm.Middleware[];

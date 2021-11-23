@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoResponseCreateInput, VideoResponseStateEnum } from "../../../../__generated__/globalTypes";
+import { VideoResponseCreateInput, VideoResponseStateEnum } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: VideoResponseCreate

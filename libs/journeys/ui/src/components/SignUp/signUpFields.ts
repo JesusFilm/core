@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { ACTION_FIELDS } from '../../libs/action'
+import { ACTION_FIELDS } from '../../libs/action/actionFields'
 
 export const SIGN_UP_FIELDS = gql`
   ${ACTION_FIELDS}
