@@ -3,7 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
-  ReactElement
+  ReactElement,
+  ReactNode
 } from 'react'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
@@ -25,7 +26,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-export const useAuth = (): AuthContextType | null => useContext(AuthContext)
+export const useAuth = (): ReactNode => useContext(AuthContext)
 
 // export const USER_CREATE = gql`
 //   mutation UserCreate($input: UserCreateInput!) {

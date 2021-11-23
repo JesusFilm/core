@@ -1,4 +1,4 @@
-import { useEffect, useCallback, ReactElement } from 'react'
+import { useEffect, ReactElement } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -6,39 +6,33 @@ import { getAuth } from 'firebase/auth'
 import { AuthProvider, firebaseClient } from '../src/libs/firebaseClient'
 import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 import { createApolloClient } from '../src/libs/client'
-// import { setContext } from '@apollo/client/link/context'
-
-// const httpLink = createHttpLink({
-//   uri: '/journeys',
-// })
-
-// const authLink = setContext((_, { headers }) => {
-//   const token = getAuth().currentUser?.getIdToken()
-//   return {
-//     headers: {
-//       ...headers,
-//       authorization: token ? `Bearer ${token}` : '',
-//     },
-//   }
-// })
-
-// const client = new ApolloClient({
-//   link: authLink.concat(httpLink),
-//   cache: new InMemoryCache(),
-// })
+import { setContext } from '@apollo/client/link/context'
 
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
-  const client = createApolloClient(user?.accessToken)
-  const signIn = useCallback(async (): Promise<void> => {
-    // listen for the state change
-    //
-  }, [])
+  const firebaseToken = createApolloClient(user?.accessToken)
+  console.log('this is the firebase token', firebaseToken)
 
-  useEffect(() => {
-    void signIn()
-  }, [signIn])
+  const httpLink = createHttpLink({
+    uri: '/',
+  })
+
+  const authLink = setContext((_, { headers }) => {
+    const token = firebaseToken
+    // const token = localStorage.getItem('token')
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    }
+  })
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  })
 
   useEffect(() => {
     // Remove the server-side injected CSS.
