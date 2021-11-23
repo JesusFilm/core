@@ -112,8 +112,6 @@ export function AuthProvider({ children }): ReactElement {
   }, [])
 
   const signUp = (email: string, password: string): void => {
-    // TODO: Pass in first name, last name, email, imageUrl to handleAuthResponse
-    // TODO: Handle sign up route
     if (email !== undefined && password !== undefined) {
       void createUserWithEmailAndPassword(auth, email, password).catch(
         (error) => {
