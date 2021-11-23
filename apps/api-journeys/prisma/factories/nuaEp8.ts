@@ -12,7 +12,6 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: "What's Jesus Got to Do With Me?",
-        published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,

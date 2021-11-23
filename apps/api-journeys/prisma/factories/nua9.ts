@@ -9,7 +9,6 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: 'Decision',
-        published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,

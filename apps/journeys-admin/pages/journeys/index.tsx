@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
-import { Box, Button, Container, Typography } from '@mui/material'
-import Link from 'next/link'
+import { Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
 import { gql } from '@apollo/client'
@@ -12,6 +11,7 @@ import {
 } from '../../__generated__/GetJourneys'
 import { useAuth } from '../../src/libs/firebaseClient/'
 import { useRouter } from 'next/router'
+import { JourneyList } from '../../src/components/blocks'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -32,19 +32,12 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+      {/* Next Steps Header */}
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
-          Journeys List
+          Journeys
         </Typography>
-        {journeys.map(({ id, title, slug }) => (
-          <Box key={id} my={2}>
-            <Link href={`/journeys/${slug}`} passHref>
-              <Button variant="contained" fullWidth>
-                {title}
-              </Button>
-            </Link>
-          </Box>
-        ))}
+        <JourneyList journeys={journeys} />
         <Button variant="contained" onClick={async () => await handleLogout()}>
           SignOut
         </Button>
@@ -61,9 +54,11 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
           journeys {
             id
             title
+            description
             slug
             themeName
             themeMode
+            locale
           }
         }
       `

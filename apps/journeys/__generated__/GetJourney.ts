@@ -341,6 +341,8 @@ export interface GetJourney_journey {
   themeMode: ThemeMode;
   title: string;
   description: string | null;
+  publishedAt: any | null;
+  createdAt: any;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   blocks: GetJourney_journey_blocks[] | null;
 }
