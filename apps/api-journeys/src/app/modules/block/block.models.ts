@@ -1,5 +1,5 @@
 import { Directive, Field, ID, Int, InterfaceType, ObjectType } from '@nestjs/graphql'
-import { Action } from '../action/action.model'
+import { Action } from '../action/action.models'
 import { ButtonColor, ButtonSize, ButtonVariant } from '../button/button.models'
 import { GridAlignItems, GridDirection, GridJustifyContent } from '../grid/grid.models'
 import { Icon } from '../icon/icon.models'

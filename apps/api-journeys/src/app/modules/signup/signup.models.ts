@@ -1,7 +1,5 @@
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql"
-import { Action } from "../action/action.model"
 import { Block, SignUpBlock } from "../block/block.models"
-import { Icon } from "../icon/icon.models"
 import { Response } from "../response/response.models"
 
 @InputType()

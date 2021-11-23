@@ -2,7 +2,8 @@ import {
     Args,
     Mutation,
     Query,
-    Resolver
+    Resolver,
+    ResolveReference
   } from '@nestjs/graphql'
   
 import { RadioQuestionService } from './radio-question.service'
@@ -22,9 +23,9 @@ export class RadioQuestionResolvers {
         return await this.radioquestionservice.insertOne(input)
     }
 
-    // @ResolveReference()
-    // async resolveReference(reference: { __typename: string; id: string }) {
-    //     return await this.radioquestionservice.getByKey(reference.id)
-    // }
+    @ResolveReference()
+    async resolveReference(reference: { __typename: string; id: string }) {
+        return await this.radioquestionservice.getByKey(reference.id)
+    }
 }
   

@@ -1,5 +1,6 @@
 import {
     Args,
+    ID,
     Mutation,
     Query,
     Resolver
@@ -16,9 +17,9 @@ import {
     async blocks() {
       return await this.blockservice.getAll();
     }
-
+    
     @Query(returns => Block)
-    async block(@Args('id') _key: string) {
+    async block(@Args('id', { type: () => ID }) _key: string) {
       return await this.blockservice.getByKey(_key);
     }
 

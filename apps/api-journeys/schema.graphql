@@ -26,6 +26,52 @@ interface Block {
   journey: Journey!
 }
 
+type Journey {
+  id: ID!
+  published: Boolean!
+  title: String!
+  locale: String!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  description: String
+  slug: String!
+  blocks: [Block!]!
+  primaryImageBlock: ImageBlock!
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+"""
+NavigateAction is an Action that navigates to the nextBlockId field set on the
+closest ancestor StepBlock.
+"""
+type NavigateAction implements Action {
+  gtmEventName: String!
+}
+
+type NavigateToBlockAction implements Action {
+  gtmEventName: String!
+  blockId: String!
+}
+
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String!
+  journey: Journey!
+}
+
+type LinkAction implements Action {
+  gtmEventName: String!
+  url: String!
+  target: String!
+}
+
 type Icon {
   name: IconName!
   color: IconColor!
@@ -131,15 +177,6 @@ type CardBlock implements Block {
       themeName from journey
   """
   themeName: ThemeName!
-}
-
-enum ThemeMode {
-  dark
-  light
-}
-
-enum ThemeName {
-  base
 }
 
 type GridContainerBlock implements Block {
@@ -321,20 +358,9 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
-type Journey {
-  id: ID!
-  published: Boolean!
-  title: String!
-  locale: String!
-  themeMode: ThemeMode!
-  themeName: ThemeName!
-  description: String
-  slug: String!
-  blocks: [Block!]!
-  primaryImageBlock: ImageBlock!
-}
-
 type Query {
+  blocks: [Block!]!
+  block(id: ID!): Block!
   journeys: [Journey!]!
   journey(idType: String!, id: ID!): Journey!
 }

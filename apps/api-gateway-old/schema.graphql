@@ -220,8 +220,32 @@ input JourneyInput {
   title: String!
 }
 
+type LinkAction implements Action {
+  gtmEventName: String!
+  target: String!
+  url: String!
+}
+
 type Mutation {
   createJourney(journey: JourneyInput!): Journey! @join__field(graph: JOURNEYS)
+}
+
+"""
+NavigateAction is an Action that navigates to the nextBlockId field set on the
+closest ancestor StepBlock.
+"""
+type NavigateAction implements Action {
+  gtmEventName: String!
+}
+
+type NavigateToBlockAction implements Action {
+  blockId: String!
+  gtmEventName: String!
+}
+
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String!
+  journey: Journey!
 }
 
 type Query {

@@ -10,5 +10,5 @@ export class RadioQuestionService extends BaseService {
     super()
   }
 
-  collection: DocumentCollection = this.db.collection('responses')
+  collection: DocumentCollection = this.db.collection('blocks')
 }
