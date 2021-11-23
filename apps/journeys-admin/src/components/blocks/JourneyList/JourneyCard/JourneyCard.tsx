@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { Card, Chip, Typography, Box } from '@mui/material'
+import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import JourneyCardMenu from './JourneyCardMenu'
 import { AccessAvatars } from './AccessAvatars'
@@ -14,7 +15,9 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
     users: [user1, user2, user3]
   }
 
-  // createdAt, add formating
+  // add text wrapping to title and description
+  // createdAt, add formating, Tatai changed something into blocks
+  // avatars styling, decrease size, ensure next chip is always same distance
 
   return (
     <Card>
@@ -23,9 +26,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         <Typography variant="subtitle1">{journey.title}</Typography>
 
         <Box sx={{ display: 'flex', paddingBottom: '14px' }}>
-          {/* <Typography>{journey.createdAt}</Typography> */}
           <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            October 1st
+            {moment(journey.createdAt).format('MMMM Do')}
           </Typography>
           <Typography variant="body2">&nbsp;- {journey.description}</Typography>
         </Box>

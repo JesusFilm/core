@@ -18,6 +18,8 @@ export interface GetJourneys_journeys {
   themeName: ThemeName;
   themeMode: ThemeMode;
   locale: string;
+  createdAt: any;
+  publishedAt: any | null;
 }
 
 export interface GetJourneys {

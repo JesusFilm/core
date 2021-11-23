@@ -9,5 +9,7 @@ export const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
-  locale: 'en_US'
+  locale: 'en_US',
+  createdAt: new Date('2021-11-19T12:34:56.647Z'),
+  publishedAt: null
 }
