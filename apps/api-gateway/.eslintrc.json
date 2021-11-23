@@ -8,9 +8,6 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "parserOptions": {
-        "project": ["apps/api-gateway/tsconfig.*?.json"]
-      },
       "rules": {}
     },
     {

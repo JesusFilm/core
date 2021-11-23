@@ -37,7 +37,7 @@
             "command": "nx serve api-journeys"
           },
           {
-            "command": "nx serve api-gateway"
+            "command": "sleep 5 && nx serve api-gateway"
           },
           {
             "command": "nx serve journeys"

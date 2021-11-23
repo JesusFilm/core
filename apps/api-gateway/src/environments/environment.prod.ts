@@ -1,6 +1,3 @@
-import { EnvironmentConfig } from './types'
-
-export const config: EnvironmentConfig = {
-  production: true,
-  gatewayConfig: {}
+export const environment = {
+  production: true
 }

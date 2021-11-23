@@ -1,22 +1,21 @@
-import { ApolloServer } from 'apollo-server'
-import { application } from './application'
-import db from './lib/db'
+/**
+ * This is not a production server yet!
+ * This is only a minimal backend to get started.
+ */
 
-const schema = application.createSchemaForApollo()
-const server = new ApolloServer({
-  schema,
-  subscriptions: false,
-  context: ({ req }) => {
-    const userId = req.headers['user-id']
-    return { db, userId }
-  }
-})
+import { Logger } from '@nestjs/common'
+import { NestFactory } from '@nestjs/core'
 
-server
-  .listen({ host: '0.0.0.0', port: 4001 })
-  .then(({ url }) => {
-    console.log(`🚀  Server ready at ${url}graphql`)
+import { AppModule } from './app/app.module'
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+  const globalPrefix = 'api'
+  app.setGlobalPrefix(globalPrefix)
+  const port = process.env.PORT || 4001
+  await app.listen(port, () => {
+    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix)
   })
-  .catch((err) => {
-    console.error(err)
-  })
+}
+
+bootstrap()

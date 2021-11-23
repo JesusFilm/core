@@ -47,5 +47,5 @@
       }
     }
   },
-  "defaultProject": "api-journeys"
+  "defaultProject": "api-journeys-postgres"
 }

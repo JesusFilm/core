@@ -1,0 +1,1 @@
+import { CardBlock } from "./card.model";

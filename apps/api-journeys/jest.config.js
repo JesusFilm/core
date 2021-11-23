@@ -6,10 +6,10 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.spec.json'
     }
   },
+  testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api-journeys',
-  setupFilesAfterEnv: ['<rootDir>tests/setup.ts']
+  coverageDirectory: '../../coverage/apps/api-journeys'
 }

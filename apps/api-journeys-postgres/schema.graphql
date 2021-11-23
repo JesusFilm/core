@@ -1,0 +1,477 @@
+interface Action {
+  gtmEventName: String
+}
+
+interface Block {
+  id: ID!
+  parentBlockId: ID
+}
+
+type ButtonBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIcon: Icon
+  endIcon: Icon
+  action: Action
+}
+
+enum ButtonColor {
+  primary
+  secondary
+  error
+  inherit
+}
+
+enum ButtonSize {
+  small
+  medium
+  large
+}
+
+enum ButtonVariant {
+  text
+  contained
+}
+
+type CardBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+
+  """
+  backgroundColor should be a HEX color value e.g #FFFFFF for white.
+  """
+  backgroundColor: String
+
+  """
+  coverBlockId is present if a child block should be used as a cover.
+  This child block should not be rendered normally, instead it should be used
+  as a background. Blocks are often of type ImageBlock or VideoBlock.
+  """
+  coverBlockId: ID
+
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean!
+
+  """
+  themeMode can override journey themeMode. If nothing is set then use
+  themeMode from journey
+  """
+  themeMode: ThemeMode
+
+  """
+  themeName can override journey themeName. If nothing is set then use
+  themeName from journey
+  """
+  themeName: ThemeName
+}
+
+enum GridAlignItems {
+  baseline
+  flexStart
+  flexEnd
+  center
+}
+
+type GridContainerBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  spacing: Int!
+  direction: GridDirection!
+  justifyContent: GridJustifyContent!
+  alignItems: GridAlignItems!
+}
+
+enum GridDirection {
+  columnReverse
+  column
+  row
+  rowReverse
+}
+
+type GridItemBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  xl: Int!
+  lg: Int!
+  sm: Int!
+}
+
+enum GridJustifyContent {
+  flexStart
+  flexEnd
+  center
+}
+
+type Icon {
+  name: IconName!
+  color: IconColor
+  size: IconSize
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+"""
+IconName is equivalent to the icons found in @mui/icons-material
+"""
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+type ImageBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  src: String!
+  width: Int!
+  height: Int!
+  alt: String!
+
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+  """
+  blurhash: String!
+}
+
+input ImageBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String!
+  alt: String!
+}
+
+type Journey @key(fields: "id") {
+  id: ID!
+  published: Boolean!
+  title: String!
+  locale: String!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  description: String
+  slug: String!
+  blocks: [Block!]
+  primaryImageBlock: ImageBlock
+}
+
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID
+  (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  title: String!
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String!
+}
+
+input JourneyUpdateInput {
+  id: ID!
+  title: String
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  primaryImageBlockId: ID
+  slug: String
+}
+
+type LinkAction implements Action {
+  gtmEventName: String
+  url: String!
+  target: String
+}
+
+extend type Mutation {
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyUpdate(input: JourneyUpdateInput!): Journey!
+  journeyPublish(id: ID!): Journey
+  radioQuestionResponseCreate(
+    input: RadioQuestionResponseCreateInput!
+  ): RadioQuestionResponse!
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
+}
+
+"""
+NavigateAction is an Action that navigates to the nextBlockId field set on the
+closest ancestor StepBlock.
+"""
+type NavigateAction implements Action {
+  gtmEventName: String
+}
+
+type NavigateToBlockAction implements Action {
+  gtmEventName: String
+  blockId: String!
+}
+
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String
+  journeyId: String!
+  journey: Journey
+}
+
+extend type Query {
+  journeys: [Journey!]!
+  journey(id: ID!, idType: IdType): Journey
+}
+
+type RadioOptionBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  label: String!
+  action: Action
+}
+
+type RadioQuestionBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  label: String!
+  description: String
+}
+
+type RadioQuestionResponse implements Response {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
+input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
+interface Response {
+  id: ID!
+  userId: ID!
+}
+
+type SignUpBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  action: Action
+  submitIcon: Icon
+  submitLabel: String
+}
+
+type SignUpResponse implements Response {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+input SignUpResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
+}
+
+type StepBlock implements Block {
+  id: ID!
+
+  """
+  nextBlockId contains the preferred block to navigate to when a
+  NavigateAction occurs or if the user manually tries to advance to the next
+  step. If no nextBlockId is set it can be assumed that this step represents
+  the end of the current journey.
+  """
+  nextBlockId: ID
+
+  """
+  locked will be set to true if the user should not be able to manually
+  advance to the next step.
+  """
+  locked: Boolean!
+  parentBlockId: ID
+}
+
+enum ThemeMode {
+  light
+  dark
+}
+
+enum ThemeName {
+  base
+}
+
+enum TypographyAlign {
+  left
+  center
+  right
+}
+
+type TypographyBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+enum TypographyColor {
+  primary
+  secondary
+  error
+}
+
+enum TypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
+}
+
+type VideoArclight implements VideoContent {
+  mediaComponentId: String!
+  languageId: String!
+  src: String!
+}
+
+type VideoBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  title: String!
+
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
+
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContent!
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
+interface VideoContent {
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
+  src: String!
+}
+
+type VideoResponse implements Response {
+  id: ID!
+  userId: ID!
+  state: VideoResponseStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
+input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoResponseStateEnum!
+  position: Float
+}
+
+enum VideoResponseStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+"""
+VideoTriggerBlock is a block that indicates the video to navigate
+to the next block at the designated time.
+"""
+type VideoTriggerBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+
+  """
+  triggerStart sets the time as to when a video navigates to the next block,
+  this is the number of seconds since the start of the video
+  """
+  triggerStart: Int!
+  action: Action!
+}

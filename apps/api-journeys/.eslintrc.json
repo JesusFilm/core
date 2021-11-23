@@ -8,9 +8,6 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "parserOptions": {
-        "project": ["apps/api-journeys/tsconfig.*?.json"]
-      },
       "rules": {}
     },
     {
