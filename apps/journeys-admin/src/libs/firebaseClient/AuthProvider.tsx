@@ -9,12 +9,11 @@ import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { useMutation, gql } from '@apollo/client'
-import { v4 as uuidv4 } from 'uuid'
 
 interface AuthContextType {
   currentUser?: string | null
   signInConfig?: string | unknown
-  signUp?: (email: string, password: string) => void
+  signUp: (email: string, password: string) => void
   logOut?: () => void
   handleAuthResponse?: (
     firstName?: string,
@@ -26,64 +25,59 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-export const useAuth = () => useContext(AuthContext)
+export const useAuth = (): AuthContextType | null => useContext(AuthContext)
 
-
-export const USER_CREATE = gql`
-  mutation UserCreate($input: UserCreateInput!) {
-    userCreate(input: $input) {
-      id
-      firebaseId
-      firstName
-      lastName
-      email
-      imageUrl
-    }
-  }
-`
+// export const USER_CREATE = gql`
+//   mutation UserCreate($input: UserCreateInput!) {
+//     userCreate(input: $input) {
+//       id
+//       firebaseId
+//       firstName
+//       lastName
+//       email
+//       imageUrl
+//     }
+//   }
+// `
 
 export function AuthProvider({ children }): ReactElement {
   const [currentUser, setCurrentUser] = useState<string | null>()
   const [firebaseId, setFirebaseId] = useState<string>()
+  const [imageUrl, setImageUrl] = useState<string | null>()
   const auth = getAuth()
-  const [userCreate] = useMutation<UserCreate>(USER_CREATE)
-  const uuid = uuidv4
+  // const [userCreate] = useMutation<UserCreate>(USER_CREATE)
+
   // TODO:
   // Save user sign in session as a cookie or local storage
-  // Fix firebase error (auth/admin-restricted-operation)
 
-  // Should we handle the mutation in this file?
-  const handleAuthResponse = (
-    firstName?: string,
-    lastName?: string,
-    email?: string,
-    imageUrl?: string
-  ): void => {
-    const id = uuid
+  // const handleAuthResponse = (
+  //   firstName?: string,
+  //   lastName?: string,
+  //   email?: string
+  // ): void => {
+  //   void userCreate({
+  //     variables: {
+  //       input: {
+  //         firebaseId,
+  //         firstName,
+  //         lastName,
+  //         email,
+  //         imageUrl
+  //       },
+  //       optimisticResponse: {
+  //         userCreate: {
+  //           firebaseId: firebaseId,
+  //           firstName: firstName,
+  //           lastName: lastName,
+  //           email: email,
+  //           imageUrl: imageUrl
+  //         }
+  //       }
+  //     }
+  //   })
+  // }
 
-    void userCreate({
-      variables: {
-        input: {
-          id,
-          firebaseId,
-          firstName,
-          lastName,
-          email,
-          imageUrl
-        },
-        optimisticResponse: {
-          userCreate: {
-            id,
-            firebaseId: firebaseId,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            imageUrl: imageUrl
-          }
-        }
-      }
-    })
-  }
+  // I think I might have to create another auth response but for sign in
 
   const signInConfig = {
     signInFlow: 'popup',
@@ -111,12 +105,15 @@ export function AuthProvider({ children }): ReactElement {
         if (user != null) {
           setCurrentUser(user.email)
           setFirebaseId(user.uid)
+          setImageUrl(user.photoURL)
         }
       })
     return unregisterAuthOberserver()
   }, [])
 
   const signUp = (email: string, password: string): void => {
+    // TODO: Pass in first name, last name, email, imageUrl to handleAuthResponse
+    // TODO: Handle sign up route
     if (email !== undefined && password !== undefined) {
       void createUserWithEmailAndPassword(auth, email, password).catch(
         (error) => {
@@ -134,8 +131,8 @@ export function AuthProvider({ children }): ReactElement {
     currentUser,
     signInConfig,
     signUp,
-    logOut,
-    handleAuthResponse
+    logOut
+    // handleAuthResponse
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

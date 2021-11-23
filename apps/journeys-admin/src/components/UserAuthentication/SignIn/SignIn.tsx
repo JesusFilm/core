@@ -11,6 +11,7 @@ export function SignIn(): ReactElement {
 
   return (
     <StyledFirebaseAuth
+      data-testid="firebaseui"
       uiConfig={signInConfig}
       firebaseAuth={firebaseClient.auth()}
     />

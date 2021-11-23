@@ -49,6 +49,7 @@ export const Register = (): ReactElement => {
             <TextField
               variant="outlined"
               fullWidth
+              required
               id="last-name"
               label="Last Name"
               name="last-name"
@@ -78,7 +79,6 @@ export const Register = (): ReactElement => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </Grid>
-          {/* Add upload image functionality */}
           <Button
             type="submit"
             disabled={loading}

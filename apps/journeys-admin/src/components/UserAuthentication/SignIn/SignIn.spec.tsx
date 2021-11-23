@@ -1,10 +1,14 @@
 import { render } from '@testing-library/react'
+import { AuthProvider } from '../../../../src/libs/firebaseClient'
 import { SignIn } from '.'
 
 describe('Sign In', () => {
-  // TODO: Write a test for signin
-  it('should render Email as a sign-in option', () => {
-    const { getByRole } = render(<SignIn />)
-    expect(getByRole('button')).toHaveClass('firebaseui-idp-password')
+  it('should render sign in options', () => {
+    const { getByTestId } = render(
+      <AuthProvider>
+        <SignIn />
+      </AuthProvider>
+    )
+    expect(getByTestId('firebaseui')).toHaveClass('firebaseui-container')
   })
 })
