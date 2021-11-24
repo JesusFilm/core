@@ -10,7 +10,7 @@ import {
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { useRouter } from 'next/router'
-import { JourneyList } from '../../src/components/blocks'
+import { JourneyList } from '../../src/components/'
 import { getAuth, signOut } from 'firebase/auth'
 import { firebaseClient } from '../../src/libs/firebaseClient'
 

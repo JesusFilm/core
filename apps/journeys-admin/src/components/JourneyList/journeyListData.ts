@@ -1,5 +1,5 @@
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 
 export const defaultJourney: Journey = {
   __typename: 'Journey',

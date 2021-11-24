@@ -199,6 +199,7 @@ export type Journey = {
   primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['DateTime']>;
   slug: Scalars['String'];
+  status?: Maybe<JourneyStatus>;
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
@@ -221,6 +222,10 @@ export type JourneyCreateInput = {
   themeName?: Maybe<ThemeName>;
   title: Scalars['String'];
 };
+
+export type JourneyStatus =
+  | 'draft'
+  | 'published';
 
 export type JourneyUpdateInput = {
   description?: Maybe<Scalars['String']>;
@@ -325,6 +330,11 @@ export type Query = {
 export type QueryJourneyArgs = {
   id: Scalars['ID'];
   idType?: Maybe<IdType>;
+};
+
+
+export type QueryJourneysArgs = {
+  status?: Maybe<JourneyStatus>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -618,6 +628,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Journey: ResolverTypeWrapper<JourneyType>;
   JourneyCreateInput: JourneyCreateInput;
+  JourneyStatus: JourneyStatus;
   JourneyUpdateInput: JourneyUpdateInput;
   LinkAction: ResolverTypeWrapper<LinkAction>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -781,6 +792,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
   publishedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['JourneyStatus']>, ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -826,7 +838,7 @@ export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Contex
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   dateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
-  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
+  journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneysArgs, never>>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
