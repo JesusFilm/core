@@ -9,26 +9,28 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
-import { useAuth } from '../../src/libs/firebaseClient/'
 import { useRouter } from 'next/router'
 import { JourneyList } from '../../src/components/blocks'
+import { getAuth, signOut } from 'firebase/auth'
+import { firebaseClient } from '../../src/libs/firebaseClient'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  const { logOut } = useAuth()
   const router = useRouter()
+  const auth = getAuth(firebaseClient)
 
   const handleLogout = async (): Promise<void> => {
-    try {
-      await logOut()
+    void signOut(auth).then(() => {
+      // sign out user and clear cache
       void router.push('/')
-    } catch {
-      console.log('error with logging out')
-    }
+    }).catch((error) => {
+      console.log(error.message)
+    })
   }
+
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
