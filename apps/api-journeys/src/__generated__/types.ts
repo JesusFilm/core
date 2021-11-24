@@ -252,7 +252,6 @@ export type Mutation = {
   journeyPublish?: Maybe<Journey>;
   journeyUpdate: Journey;
   radioQuestionResponseCreate: RadioQuestionResponse;
-  setDate: Scalars['DateTime'];
   signUpResponseCreate: SignUpResponse;
   videoResponseCreate: VideoResponse;
 };
@@ -280,11 +279,6 @@ export type MutationJourneyUpdateArgs = {
 
 export type MutationRadioQuestionResponseCreateArgs = {
   input: RadioQuestionResponseCreateInput;
-};
-
-
-export type MutationSetDateArgs = {
-  input: Scalars['DateTime'];
 };
 
 
@@ -812,7 +806,6 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyPublish?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<MutationJourneyPublishArgs, 'id'>>;
   journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
-  setDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType, RequireFields<MutationSetDateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };

@@ -16,6 +16,10 @@ export async function nua9(prisma: PrismaClient): Promise<void> {
       }
     })
   }
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { publishedAt: new Date('2031-12-25T12:34:56.647Z') }
+  })
   await prisma.response.deleteMany({
     where: { block: { journeyId: journey.id } }
   })
