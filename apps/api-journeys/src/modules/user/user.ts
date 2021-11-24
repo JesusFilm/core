@@ -27,6 +27,10 @@ const typeDefs = gql`
     imageUrl: String
   }
 
+  extend type UserJourney {
+    user: User
+  }
+
   extend type Query {
     users: [User!]!
     user(id: ID!, userIdType: UserIdType): User
@@ -38,23 +42,25 @@ const typeDefs = gql`
 `
 
 const resolvers: UserModule.Resolvers = {
+  UserJourney: {
+    async user(userJourney, __, { db }) {
+      const user = await db.user.findUnique({
+        where: {
+          id: userJourney.userId
+        }
+      })
+      return user
+    }
+  },
   Query: {
     async users(_, __, { db }) {
-      return await db.user.findMany({
-        // include: { UserJourney: true }
-      })
+      return await db.user.findMany({})
     },
     async user(_parent, { id, userIdType }, { db }) {
       if (userIdType === 'firebaseId') {
-        return await db.user.findUnique({
-          where: { firebaseId: id }
-          // include: { UserJourney: true }
-        })
+        return await db.user.findUnique({ where: { firebaseId: id } })
       } else {
-        return await db.user.findUnique({
-          where: { id }
-          // include: { UserJourney: true }
-        })
+        return await db.user.findUnique({ where: { id } })
       }
     }
   },

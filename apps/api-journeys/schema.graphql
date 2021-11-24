@@ -192,6 +192,7 @@ type Journey @key(fields: "id") {
   slug: String!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  usersJourneys: [UserJourney!]
 }
 
 input JourneyCreateInput {
@@ -401,7 +402,7 @@ type User @key(fields: "id") {
   lastName: String
   email: String
   imageUrl: String
-  UserJourney: [UserJourney]
+  usersJourneys: [UserJourney!]
 }
 
 input UserCreateInput {
@@ -422,6 +423,7 @@ type UserJourney {
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
+  user: User
 }
 
 input UserJourneyCreateInput {

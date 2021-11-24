@@ -199,6 +199,7 @@ export type Journey = {
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
+  usersJourneys?: Maybe<Array<UserJourney>>;
 };
 
 export type JourneyCreateInput = {
@@ -466,13 +467,13 @@ export type TypographyVariant =
 
 export type User = {
   __typename?: 'User';
-  UserJourney?: Maybe<Array<Maybe<UserJourney>>>;
   email?: Maybe<Scalars['String']>;
   firebaseId?: Maybe<Scalars['ID']>;
   firstName?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
+  usersJourneys?: Maybe<Array<UserJourney>>;
 };
 
 export type UserCreateInput = {
@@ -492,6 +493,7 @@ export type UserJourney = {
   __typename?: 'UserJourney';
   journeyId: Scalars['ID'];
   role: UserJourneyRole;
+  user?: Maybe<User>;
   userId: Scalars['ID'];
 };
 
@@ -853,6 +855,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  usersJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -968,19 +971,20 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
 };
 
 export type UserResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  UserJourney?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserJourney']>>>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firebaseId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  usersJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserJourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['UserJourney'] = ResolversParentTypes['UserJourney']> = {
   journeyId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['UserJourneyRole'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

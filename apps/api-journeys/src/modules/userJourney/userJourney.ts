@@ -21,6 +21,14 @@ const typeDefs = gql`
     role: UserJourneyRole!
   }
 
+  extend type Journey {
+    usersJourneys: [UserJourney!]
+  }
+
+  extend type User {
+    usersJourneys: [UserJourney!]
+  }
+
   type UserJourney {
     userId: ID!
     journeyId: ID!
@@ -34,6 +42,26 @@ const typeDefs = gql`
 `
 
 const resolvers: UserJourneyModule.Resolvers = {
+  Journey: {
+    async usersJourneys(journey, __, { db }) {
+      const usersJourneys = await db.userJourney.findMany({
+        where: {
+          journeyId: journey.id
+        }
+      })
+      return usersJourneys
+    }
+  },
+  User: {
+    async usersJourneys(user, __, { db }) {
+      const usersJourneys = await db.userJourney.findMany({
+        where: {
+          userId: user.id
+        }
+      })
+      return usersJourneys
+    }
+  },
   Mutation: {
     async userJourneyCreate(
       _parent,
