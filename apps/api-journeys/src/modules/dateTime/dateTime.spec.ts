@@ -7,10 +7,6 @@ const typeDefs = gql`
   extend type Query {
     dateTime: DateTime
   }
-
-  extend type Mutation {
-    setDate(input: DateTime!): DateTime!
-  }
 `
 
 const dateTimeQueryModule = createModule({
