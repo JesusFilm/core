@@ -23,14 +23,15 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   const auth = getAuth(firebaseClient)
 
   const handleLogout = async (): Promise<void> => {
-    void signOut(auth).then(() => {
-      // sign out user and clear cache
-      void router.push('/')
-    }).catch((error) => {
-      console.log(error.message)
-    })
+    void signOut(auth)
+      .then(() => {
+        // sign out user and clear cache
+        void router.push('/')
+      })
+      .catch((error) => {
+        console.log(error.message)
+      })
   }
-
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
