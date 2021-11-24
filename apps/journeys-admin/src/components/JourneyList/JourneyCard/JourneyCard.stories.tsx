@@ -1,8 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import JourneyCard from './JourneyCard'
-import { defaultJourney } from '../JourneyList/journeyListData'
+import { defaultJourney } from '../journeyListData'
 
 const TestStory = {
   ...journeysAdminConfig,

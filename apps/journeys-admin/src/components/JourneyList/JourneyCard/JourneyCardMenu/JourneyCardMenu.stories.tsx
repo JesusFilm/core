@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import JourneyCardMenu from './JourneyCardMenu'
 
 const TestStory = {

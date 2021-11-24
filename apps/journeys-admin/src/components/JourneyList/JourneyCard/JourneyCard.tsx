@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { Card, Chip, Typography } from '@mui/material'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import JourneyCardMenu from './JourneyCardMenu'
 
 interface JourneyCardProps {
