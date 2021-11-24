@@ -12,7 +12,6 @@ interface JourneyCardProps {
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
   const AccessAvatarsProps = { users: [user1, user2, user3] }
-  // adding styling on avatar breaks the component
   const date =
     moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
       ? moment(journey.createdAt).format('MMM Do')
@@ -20,16 +19,13 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
   return (
     <Card sx={{ padding: '15px 29px' }}>
-      {/* Update according to wireframe */}
       <Typography
         variant="subtitle1"
         sx={{
-          display: 'block',
-          // textOverflow: 'ellipsis',
-          // wordWrap: 'break-word',
-          overflow: 'hidden',
-          maxHeight: '3.6em',
-          lineHeight: '1.8em'
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
         }}
         gutterBottom
       >
@@ -39,12 +35,10 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       <Typography
         variant="body2"
         sx={{
-          display: 'block',
-          // textOverflow: 'ellipsis',
-          // wordWrap: 'break-word',
-          overflow: 'hidden',
-          maxHeight: '3.6em',
-          lineHeight: '1.8em'
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
         }}
         gutterBottom
       >
