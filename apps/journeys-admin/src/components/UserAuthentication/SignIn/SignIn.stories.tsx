@@ -1,17 +1,23 @@
 import { Story, Meta } from '@storybook/react'
 import { SignIn } from './SignIn'
-import { journeyAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { ApolloProvider } from '@apollo/client'
+import client from '../../../../src/libs/client'
 
 // Do we have to write a storybook test for this?
 // Wrote a simple storybook test
 
 const Demo: Meta = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: SignIn,
-  title: 'JourneyAdmin/UserAuthentication/SignIn'
+  title: 'Journeys-Admin/UserAuthentication/SignIn'
 }
 
-const Template: Story = () => <SignIn />
+const Template: Story = () => (
+  <ApolloProvider client={client}>
+    <SignIn />
+  </ApolloProvider>
+)
 
 export const Default: Story = Template.bind({})
 

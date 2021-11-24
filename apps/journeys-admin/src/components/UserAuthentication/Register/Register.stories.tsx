@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { Register } from './Register'
-import { journeyAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 
 // Do we have to write a storybook test for this?
 // Wrote a simple storybook test
 
 const Demo: Meta = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: Register,
-  title: 'JourneyAdmin/UserAuthentication/Register'
+  title: 'Journeys-Admin/UserAuthentication/Register'
 }
 
 const Template: Story = () => <Register />
