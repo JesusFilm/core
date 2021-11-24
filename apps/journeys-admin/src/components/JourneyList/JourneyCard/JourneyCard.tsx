@@ -20,7 +20,6 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       {/* Update according to wireframe */}
       <Typography
         variant="subtitle1"
-        noWrap
         sx={{
           display: 'block',
           // textOverflow: 'ellipsis',
