@@ -9,7 +9,7 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
-import { JourneyList } from '../../src/components/blocks'
+import { JourneyList } from '../../src/components'
 
 interface JourneysListPageProps {
   journeys: Journey[]

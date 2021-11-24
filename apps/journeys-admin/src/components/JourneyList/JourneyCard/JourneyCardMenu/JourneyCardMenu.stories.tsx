@@ -1,12 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 
-import { journeyAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import JourneyCardMenu from './JourneyCardMenu'
 
 const TestStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: JourneyCardMenu,
-  title: 'Journey-Admin/JourneyCard/JourneyCardMenu'
+  title: 'Journeys-Admin/JourneyList/JourneyCard/JourneyCardMenu'
 }
 
 const Template: Story = () => <JourneyCardMenu />

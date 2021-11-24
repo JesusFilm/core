@@ -1,13 +1,13 @@
-import { journeyAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { AccessAvatars } from '.'
 import { Meta, Story } from '@storybook/react'
 import { AccessAvatarsProps } from './AccessAvatars'
 import { user1, user2, user3, user4, user5 } from './AccessAvatarsData'
 
 const AccessAvatarsDemo = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: AccessAvatars,
-  title: 'Journey-Admin/JourneyList/JourneyCard/AccessAvatar'
+  title: 'Journeys-Admin/JourneyList/JourneyCard/AccessAvatar'
 }
 
 const Template: Story = ({ ...args }) => <AccessAvatars users={[]} {...args} />
