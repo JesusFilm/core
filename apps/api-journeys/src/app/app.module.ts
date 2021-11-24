@@ -7,6 +7,9 @@ import { BlockModule } from './modules/block/block.module'
 import { DatabaseModule } from './modules/database/database.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { RadioQuestionModule } from './modules/radio-question/radio-question.module'
+import { ResponseModule } from './modules/response/response.module'
+import { SignUpModule } from './modules/signup/signup.module'
+import { VideoModule } from './modules/video/video.module'
 
 @Module({
   imports: [
@@ -14,7 +17,10 @@ import { RadioQuestionModule } from './modules/radio-question/radio-question.mod
     ActionModule,
     BlockModule,
     JourneyModule,
-    // RadioQuestionModule,
+    ResponseModule,
+    RadioQuestionModule,
+    SignUpModule,
+    VideoModule,
     GraphQLFederationModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'apps/api-journeys/schema.graphql'),
       cors: true

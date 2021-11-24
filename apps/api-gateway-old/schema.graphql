@@ -23,20 +23,20 @@ interface Action {
 interface Block {
   id: ID!
   journey: Journey!
-  parentBlockId: ID!
+  parentBlockId: ID
 }
 
 type ButtonBlock implements Block {
-  action: Action!
-  color: ButtonColor!
-  endIcon: Icon!
+  action: Action
+  color: ButtonColor
+  endIcon: Icon
   id: ID!
   journey: Journey!
   label: String!
-  parentBlockId: ID!
-  size: ButtonSize!
-  startIcon: Icon!
-  variant: ButtonVariant!
+  parentBlockId: ID
+  size: ButtonSize
+  startIcon: Icon
+  variant: ButtonVariant
 }
 
 enum ButtonColor {
@@ -59,36 +59,36 @@ enum ButtonVariant {
 
 type CardBlock implements Block {
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
-  backgroundColor: String!
+  backgroundColor: String
 
   """
   coverBlockId is present if a child block should be used as a cover.
       This child block should not be rendered normally, instead it should be used
       as a background. Blocks are often of type ImageBlock or VideoBlock.
   """
-  coverBlockId: String!
+  coverBlockId: String
 
   """
   fullscreen should control how the coverBlock is displayed. When fullscreen
       is set to true the coverBlock Image should be displayed as a blur in the
       background.
   """
-  fullscreen: Boolean!
+  fullscreen: Boolean
   id: ID!
   journey: Journey!
-  parentBlockId: ID!
+  parentBlockId: ID
 
   """
   themeMode can override journey themeMode. If nothing is set then use
       themeMode from journey
   """
-  themeMode: ThemeMode!
+  themeMode: ThemeMode
 
   """
   themeName can override journey themeName. If nothing is set then use
       themeName from journey
   """
-  themeName: ThemeName!
+  themeName: ThemeName
 }
 
 enum GridAlignItems {
@@ -104,7 +104,7 @@ type GridContainerBlock implements Block {
   id: ID!
   journey: Journey!
   justifyContent: GridJustifyContent!
-  parentBlockId: ID!
+  parentBlockId: ID
   spacing: Int!
 }
 
@@ -119,7 +119,7 @@ type GridItemBlock implements Block {
   id: ID!
   journey: Journey!
   lg: Int!
-  parentBlockId: ID!
+  parentBlockId: ID
   sm: Int!
   xl: Int!
 }
@@ -182,7 +182,7 @@ type ImageBlock implements Block {
   height: Int!
   id: ID!
   journey: Journey!
-  parentBlockId: ID!
+  parentBlockId: ID
   src: String!
   width: Int!
 }
@@ -198,7 +198,7 @@ type Journey {
   description: String
   id: ID!
   locale: String!
-  primaryImageBlock: ImageBlock!
+  primaryImageBlock: ImageBlock
   published: Boolean!
   slug: String!
   themeMode: ThemeMode!
@@ -228,6 +228,9 @@ type LinkAction implements Action {
 
 type Mutation {
   createJourney(journey: JourneyInput!): Journey! @join__field(graph: JOURNEYS)
+  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
 """
@@ -249,33 +252,66 @@ type NavigateToJourneyAction implements Action {
 }
 
 type Query {
+  block(id: ID!): Response! @join__field(graph: JOURNEYS)
+  blocks: [Response!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: String!): Journey! @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
-  action: Action!
+  action: Action
   id: ID!
   journey: Journey!
   label: String!
-  parentBlockId: ID!
+  parentBlockId: ID
 }
 
 type RadioQuestionBlock implements Block {
-  description: String!
+  description: String
   id: ID!
   journey: Journey!
   label: String!
-  parentBlockId: ID!
+  parentBlockId: ID
+}
+
+type RadioQuestionResponse implements Response {
+  block: RadioQuestionBlock!
+  id: ID!
+  radioOptionBlockId: ID!
+  userId: ID!
+}
+
+input RadioQuestionResponseCreateInput {
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
+interface Response {
+  id: ID!
+  userId: ID!
 }
 
 type SignUpBlock implements Block {
-  action: Action!
+  action: Action
   id: ID!
   journey: Journey!
-  parentBlockId: ID!
-  submitIcon: Icon!
-  submitLabel: String!
+  parentBlockId: ID
+  submitIcon: Icon
+  submitLabel: String
+}
+
+type SignUpResponse implements Response {
+  block: Block!
+  email: String!
+  id: ID!
+  name: String!
+  userId: ID!
+}
+
+input SignUpResponseCreateInput {
+  blockId: ID!
+  email: String!
+  name: String!
 }
 
 type StepBlock implements Block {
@@ -294,8 +330,8 @@ type StepBlock implements Block {
   step. If no nextBlockId is set it can be assumed that this step represents
   the end of the current journey.
   """
-  nextBlockId: ID!
-  parentBlockId: ID!
+  nextBlockId: ID
+  parentBlockId: ID
 }
 
 enum ThemeMode {
@@ -314,13 +350,13 @@ enum TypographyAlign {
 }
 
 type TypographyBlock implements Block {
-  align: TypographyAlign!
-  color: TypographyColor!
+  align: TypographyAlign
+  color: TypographyColor
   content: String!
   id: ID!
   journey: Journey!
-  parentBlockId: ID!
-  variant: TypographyVariant!
+  parentBlockId: ID
+  variant: TypographyVariant
 }
 
 enum TypographyColor {
@@ -344,23 +380,29 @@ enum TypographyVariant {
   subtitle2
 }
 
+type VideoArclight implements VideoContent {
+  languageId: String!
+  mediaComponentId: String!
+  src: String!
+}
+
 type VideoBlock implements Block {
-  autoplay: Boolean!
-  description: String!
+  autoplay: Boolean
+  description: String
 
   """endAt dictates at which point of time the video should end"""
-  endAt: Int!
+  endAt: Int
   id: ID!
   journey: Journey!
-  muted: Boolean!
-  parentBlockId: ID!
+  muted: Boolean
+  parentBlockId: ID
 
   """
   posterBlockId is present if a child block should be used as a poster.
     This child block should not be rendered normally, instead it should be used
     as the video poster. PosterBlock should be of type ImageBlock.
   """
-  posterBlockId: ID!
+  posterBlockId: ID
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int!
@@ -372,6 +414,30 @@ interface VideoContent {
   src: String!
 }
 
+type VideoGeneric implements VideoContent {
+  src: String!
+}
+
+type VideoResponse implements Response {
+  block: VideoBlock!
+  id: ID!
+  position: Int!
+  state: VideoResponseStateEnum!
+  userId: ID!
+}
+
+input VideoResponseCreateInput {
+  blockId: ID!
+  position: Float!
+  state: VideoResponseStateEnum!
+}
+
+enum VideoResponseStateEnum {
+  FINISHED
+  PAUSED
+  PLAYING
+}
+
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -380,7 +446,7 @@ type VideoTriggerBlock implements Block {
   action: Action!
   id: ID!
   journey: Journey!
-  parentBlockId: ID!
+  parentBlockId: ID
 
   """
   triggerStart sets the time as to when a video navigates to the next block,

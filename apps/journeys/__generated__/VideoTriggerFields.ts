@@ -9,12 +9,12 @@
 
 export interface VideoTriggerFields_triggerAction_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
 }
 
 export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
   blockId: string;
 }
 
@@ -26,13 +26,13 @@ export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journe
 
 export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string | null;
-  journey: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey | null;
+  gtmEventName: string;
+  journey: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey;
 }
 
 export interface VideoTriggerFields_triggerAction_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
   url: string;
 }
 
@@ -44,7 +44,7 @@ export interface VideoTriggerFields {
   parentBlockId: string | null;
   /**
    * triggerStart sets the time as to when a video navigates to the next block,
-   * this is the number of seconds since the start of the video
+   *   this is the number of seconds since the start of the video
    */
   triggerStart: number;
   triggerAction: VideoTriggerFields_triggerAction;

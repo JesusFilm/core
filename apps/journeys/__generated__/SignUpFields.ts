@@ -11,12 +11,12 @@ import { IconName, IconColor, IconSize } from "./globalTypes";
 
 export interface SignUpFields_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
 }
 
 export interface SignUpFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
   blockId: string;
 }
 
@@ -28,13 +28,13 @@ export interface SignUpFields_action_NavigateToJourneyAction_journey {
 
 export interface SignUpFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string | null;
-  journey: SignUpFields_action_NavigateToJourneyAction_journey | null;
+  gtmEventName: string;
+  journey: SignUpFields_action_NavigateToJourneyAction_journey;
 }
 
 export interface SignUpFields_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
   url: string;
 }
 
@@ -43,8 +43,8 @@ export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFie
 export interface SignUpFields_submitIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
+  color: IconColor;
+  size: IconSize;
 }
 
 export interface SignUpFields {

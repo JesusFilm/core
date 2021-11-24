@@ -11,11 +11,12 @@ export class BlockService extends BaseService {
   }
   
   async forJourney(_key: string) {
-    return await this.db.query(aql`
+    const res = await this.db.query(aql`
       FOR block in ${this.collection}
       FILTER block.journeyId == ${_key}
       RETURN block
     `);
+    return res.all();
   }
 
   collection: DocumentCollection = this.db.collection('blocks');

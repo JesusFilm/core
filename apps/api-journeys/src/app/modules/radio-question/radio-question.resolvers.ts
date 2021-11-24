@@ -1,31 +1,20 @@
 import {
     Args,
     Mutation,
-    Query,
     Resolver,
-    ResolveReference
   } from '@nestjs/graphql'
+import { RadioQuestionResponse } from '../response/response.models'
+import { ResponseService } from '../response/response.service'
   
-import { RadioQuestionService } from './radio-question.service'
-import { RadioQuestionResponse, RadioQuestionResponseCreateInput } from './radio-question.models'
+import { RadioQuestionResponseCreateInput } from './radio-question.models'
   
-@Resolver(of => RadioQuestionResponse)
+@Resolver('RadioQuestion')
 export class RadioQuestionResolvers {
-    constructor(private readonly radioquestionservice: RadioQuestionService) {}
-
-    @Query(returns => RadioQuestionResponse)
-    async radioQuestionResponse(@Args('id') _key: string) {
-        return await this.radioquestionservice.getByKey(_key);
-    }
+    constructor(private readonly responseservice: ResponseService) {}
     
     @Mutation(returns => RadioQuestionResponse)
     async radioQuestionResponseCreate(@Args('input') input: RadioQuestionResponseCreateInput) {
-        return await this.radioquestionservice.insertOne(input)
-    }
-
-    @ResolveReference()
-    async resolveReference(reference: { __typename: string; id: string }) {
-        return await this.radioquestionservice.getByKey(reference.id)
+        return await this.responseservice.insertOne(input)
     }
 }
   

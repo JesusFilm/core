@@ -11,7 +11,7 @@ import {
 
 import { JourneyService } from './journey.service'
 import { Journey, JourneyInput } from './journey.models'
-import { Block } from '../block/block.models'
+import { Block, ImageBlock } from '../block/block.models'
 import { BlockService } from '../block/block.service'
 
 @Resolver(of => Journey)
@@ -34,9 +34,15 @@ export class JourneyResolvers {
   async createJourney(@Args('journey') journey: JourneyInput) {
     return await this.journeyservice.insertOne(journey)
   }
+  
   @ResolveField(of => [Block])
   async blocks(@Parent() journey: Journey) {
-    return this.blockService.forJourney(journey._key);
+    return this.blockService.forJourney(journey._key)
+  }
+
+  @ResolveField(of => ImageBlock, { nullable: true })
+  async primaryImageBlock(@Parent() journey: Journey) {
+    return this.blockService.getByKey(journey.primaryImageBlockId)
   }
 
   @ResolveReference()

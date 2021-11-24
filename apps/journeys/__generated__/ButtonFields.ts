@@ -12,25 +12,25 @@ import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize }
 export interface ButtonFields_startIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
+  color: IconColor;
+  size: IconSize;
 }
 
 export interface ButtonFields_endIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
+  color: IconColor;
+  size: IconSize;
 }
 
 export interface ButtonFields_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
 }
 
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
   blockId: string;
 }
 
@@ -42,13 +42,13 @@ export interface ButtonFields_action_NavigateToJourneyAction_journey {
 
 export interface ButtonFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string | null;
-  journey: ButtonFields_action_NavigateToJourneyAction_journey | null;
+  gtmEventName: string;
+  journey: ButtonFields_action_NavigateToJourneyAction_journey;
 }
 
 export interface ButtonFields_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string | null;
+  gtmEventName: string;
   url: string;
 }
 

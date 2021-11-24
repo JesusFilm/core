@@ -54,9 +54,6 @@ export enum IconColor {
   secondary = "secondary",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
 export enum IconName {
   ArrowForwardRounded = "ArrowForwardRounded",
   BeenhereRounded = "BeenhereRounded",
@@ -127,21 +124,18 @@ export enum VideoResponseStateEnum {
 
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
-  id?: string | null;
   radioOptionBlockId: string;
 }
 
 export interface SignUpResponseCreateInput {
   blockId: string;
   email: string;
-  id?: string | null;
   name: string;
 }
 
 export interface VideoResponseCreateInput {
   blockId: string;
-  id?: string | null;
-  position?: number | null;
+  position: number;
   state: VideoResponseStateEnum;
 }
 

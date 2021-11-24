@@ -17,7 +17,7 @@ export interface ImageFields {
   height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
-   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   *   Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
 }

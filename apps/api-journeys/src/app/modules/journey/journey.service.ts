@@ -10,11 +10,13 @@ export class JourneyService extends BaseService {
     super()
   }
   async getBySlug(_key: string) {
-    return await this.db.query(aql`
+    const result = await this.db.query(aql`
       FOR journey in ${this.collection}
       FILTER journey.slug == ${_key}
+      LIMIT 1
       RETURN journey
-    `)[0];
+    `);
+    return result.next();
   }
   collection: DocumentCollection = this.db.collection('journeys')
 }

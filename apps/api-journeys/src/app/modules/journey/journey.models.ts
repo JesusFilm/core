@@ -31,11 +31,7 @@ export class Journey {
   @Field()
   readonly slug: string
 
-  @Field(type => [Block])
-  readonly blocks?: Block[];
-
-  @Field(type => ImageBlock)
-  readonly primaryImageBlock: ImageBlock
+  readonly primaryImageBlockId: string
 }
 
 @InputType()

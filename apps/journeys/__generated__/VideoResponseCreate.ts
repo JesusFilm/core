@@ -13,7 +13,7 @@ export interface VideoResponseCreate_videoResponseCreate {
   __typename: "VideoResponse";
   id: string;
   state: VideoResponseStateEnum;
-  position: number | null;
+  position: number;
 }
 
 export interface VideoResponseCreate {

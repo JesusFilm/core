@@ -2,17 +2,20 @@ import {
     Args,
     ID,
     Mutation,
+    Parent,
     Query,
-    Resolver
-  } from '@nestjs/graphql';
+    ResolveField,
+    Resolver,
+    ResolveReference
+} from '@nestjs/graphql';
 
-  import { BlockService } from './block.service';
-  import { Block } from './block.models';
+import { BlockService } from './block.service';
+import { Block, ImageBlock } from './block.models';
+import { Journey } from '../journey/journey.models';
 
   @Resolver(of => Block)
   export class BlockResolvers {
     constructor(private readonly blockservice: BlockService) {}
-
     @Query(returns => [Block])
     async blocks() {
       return await this.blockservice.getAll();
@@ -27,4 +30,14 @@ import {
     // async createBlock(@Args('block') block: BlockInput) {
     //   return await this.blockservice.insertOne(block);
     // }
+
+    @ResolveField(of => Journey)
+    journey(@Parent() block: ImageBlock) {
+      return { __typename: 'Journey', id: block.journey._key };
+    }
+    
+    @ResolveReference()
+    resolveReference(reference: { __typename: string; id: string }) {
+      return this.blockservice.getByKey(reference.id);
+    }
   }
