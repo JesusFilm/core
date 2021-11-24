@@ -10,7 +10,7 @@ const TestStory = {
   title: 'Journey-Admin/JourneyList/JourneyCard'
 }
 
-const Template: Story = (args) => (
+const Template: Story = ({ ...args }) => (
   <JourneyCard journey={defaultJourney} {...args} />
 )
 
@@ -18,6 +18,8 @@ export const Default = Template.bind({})
 Default.args = { journey: defaultJourney }
 
 export const CardWithLongText = Template.bind({})
-CardWithLongText.args = { journey: descriptiveJourney }
+CardWithLongText.args = {
+  journey: descriptiveJourney
+}
 
 export default TestStory as Meta

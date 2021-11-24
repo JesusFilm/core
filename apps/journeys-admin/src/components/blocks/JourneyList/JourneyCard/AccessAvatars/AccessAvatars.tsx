@@ -30,7 +30,14 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
     >
       {users.map((user) => (
         <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
-          <Avatar alt={user.firstName} src={user.image}>
+          <Avatar
+            alt={user.firstName}
+            src={user.image}
+            sx={{
+              height: '24px',
+              width: '23px'
+            }}
+          >
             {user.firstName[0]}
           </Avatar>
         </Tooltip>

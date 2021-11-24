@@ -3,19 +3,16 @@ import { Card, Chip, Typography, Box } from '@mui/material'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import JourneyCardMenu from './JourneyCardMenu'
-import { AccessAvatars } from './AccessAvatars'
-import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
+import { AccessAvatars } from './AccessAvatars/AccessAvatars'
+import { user1, user2, user3, user4 } from './AccessAvatars/AccessAvatarsData'
 
 interface JourneyCardProps {
   journey: Journey
 }
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
-  const AccessAvatarsProps = {
-    users: [user1, user2, user3]
-  }
+  const AccessAvatarsProps = { users: [user1, user2, user3, user4] }
 
-  // add text wrapping to title and description, change color of description
   // avatars styling, decrease size, ensure next chip is always same distance
 
   return (
@@ -23,6 +20,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       {/* Update according to wireframe */}
       <Typography
         variant="subtitle1"
+        noWrap
         sx={{
           display: 'block',
           // textOverflow: 'ellipsis',
