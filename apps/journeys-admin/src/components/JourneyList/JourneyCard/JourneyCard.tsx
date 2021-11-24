@@ -11,7 +11,7 @@ interface JourneyCardProps {
 }
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
-  const AccessAvatarsProps = { users: [user1, user2, user3, user4] }
+  const AccessAvatarsProps = { users: [user1, user2, user3] }
 
   // avatars styling, decrease size, ensure next chip is always same distance
 
@@ -52,7 +52,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
       <Box sx={{ display: 'flex' }}>
         <AccessAvatars {...AccessAvatarsProps} />
-        {/* <Chip label={journey.status }/> */}
+        {/* <Chip label={journey.status} /> */}
         <Chip label={'Published'} sx={{ margin: '0px 10px' }} />
         <Chip
           label={journey.locale.substr(0, 2)}

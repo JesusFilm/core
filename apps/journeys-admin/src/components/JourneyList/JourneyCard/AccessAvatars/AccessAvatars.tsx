@@ -19,25 +19,28 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
     console.log('Click!')
   }
 
+  let padding = '0px'
+  if (users.length === 1) {
+    padding = '72px'
+  } else if (users.length === 2) {
+    padding = '36px'
+  } else {
+    padding = '0px'
+  }
+
   return (
     <AvatarGroup
       max={3}
       sx={{
         display: 'flex',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        paddingRight: padding
       }}
       onClick={handleClick}
     >
       {users.map((user) => (
         <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
-          <Avatar
-            alt={user.firstName}
-            src={user.image}
-            sx={{
-              height: '24px',
-              width: '23px'
-            }}
-          >
+          <Avatar alt={user.firstName} src={user.image}>
             {user.firstName[0]}
           </Avatar>
         </Tooltip>
