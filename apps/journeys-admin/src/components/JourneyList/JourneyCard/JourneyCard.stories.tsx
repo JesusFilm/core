@@ -2,7 +2,11 @@ import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
 import JourneyCard from './JourneyCard'
-import { defaultJourney, descriptiveJourney } from '../journeyListData'
+import {
+  defaultJourney,
+  descriptiveJourney,
+  oldJourney
+} from '../journeyListData'
 
 const TestStory = {
   ...journeysAdminConfig,
@@ -20,6 +24,10 @@ Default.args = { journey: defaultJourney }
 export const CardWithLongText = Template.bind({})
 CardWithLongText.args = {
   journey: descriptiveJourney
+}
+export const OldJourney = Template.bind({})
+OldJourney.args = {
+  journey: oldJourney
 }
 
 export default TestStory as Meta

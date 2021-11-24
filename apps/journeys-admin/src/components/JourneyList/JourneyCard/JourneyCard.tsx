@@ -13,6 +13,10 @@ interface JourneyCardProps {
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
   const AccessAvatarsProps = { users: [user1, user2, user3] }
   // adding styling on avatar breaks the component
+  const date =
+    moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
+      ? moment(journey.createdAt).format('MMM Do')
+      : moment(journey.createdAt).format('MMM Do, YYYY')
 
   return (
     <Card sx={{ padding: '15px 29px' }}>
@@ -44,7 +48,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         }}
         gutterBottom
       >
-        <b>{moment(journey.createdAt).format('MMMM Do')}</b> {' - '}
+        <b>{date}</b> {' - '}
         {journey.description}
       </Typography>
 

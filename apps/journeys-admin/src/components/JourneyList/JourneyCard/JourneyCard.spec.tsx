@@ -19,7 +19,7 @@ describe('JourneyCard', () => {
       slug: 'default',
       locale: 'en_US',
       createdAt: new Date('2021-11-19T12:34:56.647Z'),
-      publishedAt: null,
+      publishedAt: new Date('2021-12-19T12:34:56.647Z'),
       status: JourneyStatus.published
     }
 
@@ -34,7 +34,7 @@ describe('JourneyCard', () => {
       const { getAllByText } = render(
         <JourneyCard journey={publishedJourney} />
       )
-      expect(getAllByText('November 19th')[0]).toBeInTheDocument()
+      expect(getAllByText('Nov 19th')[0]).toBeInTheDocument()
     })
 
     it('should render the description with the dash', () => {
@@ -85,6 +85,26 @@ describe('JourneyCard', () => {
     it('should not render published status', () => {
       const publishedStatus = screen.queryByText('Published')
       expect(publishedStatus).not.toBeInTheDocument()
+    })
+  })
+
+  describe('journey created at before the current year', () => {
+    const oldJourney: Journey = {
+      __typename: 'Journey',
+      id: 'journey-id',
+      title: 'Published Journey Heading',
+      description: 'Description',
+      themeName: ThemeName.base,
+      themeMode: ThemeMode.light,
+      slug: 'default',
+      locale: 'en_US',
+      createdAt: new Date('1995-11-19T12:34:56.647Z'),
+      publishedAt: null,
+      status: JourneyStatus.draft
+    }
+    it('should render the formated date with year', () => {
+      const { getAllByText } = render(<JourneyCard journey={oldJourney} />)
+      expect(getAllByText('Nov 19th, 1995')[0]).toBeInTheDocument()
     })
   })
 })

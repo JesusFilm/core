@@ -19,6 +19,20 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.published
 }
 
+export const oldJourney: Journey = {
+  __typename: 'Journey',
+  id: 'journey-id',
+  title: 'Journey Heading',
+  description: 'Description for a journey created before the current year',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  slug: 'default',
+  locale: 'en_US',
+  createdAt: new Date('1995-11-19T12:34:56.647Z'),
+  publishedAt: null,
+  status: JourneyStatus.published
+}
+
 export const descriptiveJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
