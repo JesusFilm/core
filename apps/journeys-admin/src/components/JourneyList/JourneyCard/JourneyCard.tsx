@@ -16,6 +16,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
   return (
     <Card sx={{ padding: '15px 29px' }}>
+      {/* Update according to wireframe */}
       <Typography
         variant="subtitle1"
         sx={{
@@ -43,7 +44,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         }}
         gutterBottom
       >
-        <b>{moment(journey.createdAt).format('MMMM Do')}</b> -{' '}
+        <b>{moment(journey.createdAt).format('MMMM Do')}</b> {' - '}
         {journey.description}
       </Typography>
 
@@ -53,34 +54,33 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           <Chip
             label={'Draft'}
             sx={{
-              margin: '0px 10px',
+              margin: '0px 15px',
               height: '42px',
               width: 'auto',
               borderRadius: '18px',
               paddingRight: '23px',
-              fontSize: '15px'
+              fontSize: '17px'
             }}
           />
         ) : (
           <Chip
             label={'Published'}
             sx={{
-              margin: '0px 10px',
+              margin: '0px 15px',
               height: '42px',
               width: 'auto',
               borderRadius: '18px',
-              fontSize: '15px'
+              fontSize: '17px'
             }}
           />
         )}
         <Chip
           label={journey.locale.substr(0, 2).toUpperCase()}
           sx={{
-            marginRight: '10px',
             height: '42px',
             width: 'auto',
             borderRadius: '18px',
-            fontSize: '15px'
+            fontSize: '17px'
           }}
         />
         <Box sx={{ marginLeft: 'auto' }}>
