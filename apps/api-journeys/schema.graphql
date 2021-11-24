@@ -63,24 +63,24 @@ type NavigateAction implements Action {
 
 type NavigateToBlockAction implements Action {
   gtmEventName: String!
-  blockId: String!
+  blockId: String
 }
 
 type NavigateToJourneyAction implements Action {
   gtmEventName: String!
-  journey: Journey!
+  journey: Journey
 }
 
 type LinkAction implements Action {
   gtmEventName: String!
-  url: String!
+  url: String
   target: String!
 }
 
 type Icon {
   name: IconName!
-  color: IconColor!
-  size: IconSize!
+  color: IconColor
+  size: IconSize
 }
 
 enum IconName {
@@ -339,7 +339,7 @@ type VideoBlock implements Block {
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
-  startAt: Int!
+  startAt: Int
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
@@ -369,8 +369,8 @@ type VideoTriggerBlock implements Block {
   triggerStart sets the time as to when a video navigates to the next block,
     this is the number of seconds since the start of the video
   """
-  triggerStart: Int!
-  action: Action!
+  triggerStart: Int
+  action: Action
 }
 
 type RadioQuestionResponse implements Response {

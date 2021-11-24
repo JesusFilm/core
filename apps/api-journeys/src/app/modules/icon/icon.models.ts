@@ -6,10 +6,10 @@ export class Icon {
     @Field(type => IconName)
     readonly name: IconName
 
-    @Field(type => IconColor)
+    @Field(type => IconColor, { nullable: true })
     readonly color?: IconColor
 
-    @Field(type => IconSize)
+    @Field(type => IconSize, { nullable: true })
     readonly size?: IconSize
 }
 

@@ -26,6 +26,12 @@
         }
       }
     },
+    "seed": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx ts-node apps/api-journeys/db/seed.ts"
+      }
+    },
     "serve": {
       "executor": "@nrwl/node:execute",
       "options": {

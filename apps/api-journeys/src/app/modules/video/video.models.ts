@@ -1,4 +1,4 @@
-import { Field, Float, ID, InputType, InterfaceType, ObjectType, registerEnumType, ResolveField } from "@nestjs/graphql";
+import { Field, FieldMiddleware, Float, ID, InputType, InterfaceType, MiddlewareContext, NextFn, ObjectType, registerEnumType, ResolveField } from "@nestjs/graphql";
 
 @InterfaceType({
     resolveType(obj) {
@@ -9,7 +9,12 @@ import { Field, Float, ID, InputType, InterfaceType, ObjectType, registerEnumTyp
 })
 export abstract class VideoContent {
     @Field()
-    src: string // | (() => string)
+    src: string
+}
+
+const arclightMiddleware: FieldMiddleware = async (ctx: MiddlewareContext, next: NextFn) => {
+    const value = await next();
+    return `https://arc.gt/hls/${ctx.source.mediaComponentId}/${ctx.source.languageId}`;
 }
 
 @ObjectType({ implements: () => VideoContent})
@@ -20,11 +25,10 @@ export class VideoArclight extends VideoContent {
     @Field()
     readonly languageId: string
 
-    // @ResolveField(type => String)
-    // src() {
-    //   return `https://arc.gt/hls/${this.mediaComponentId}/${this.languageId}`
-    // }
+    @Field({ middleware: [arclightMiddleware]})
+    src: string;
 }
+
 
 @ObjectType({ implements: () => VideoContent})
 export class VideoGeneric extends VideoContent {}

@@ -10,8 +10,9 @@ import { VideoContent } from '../video/video.models'
 
 @InterfaceType({
   resolveType(obj) {
-    console.log(obj);
     switch(obj.type) {
+      case 'ButtonBlock':
+        return ButtonBlock;
       case 'CardBlock':
         return CardBlock;
       case 'GridContainerBlock':
@@ -31,11 +32,12 @@ import { VideoContent } from '../video/video.models'
       case 'TypographyBlock':
         return TypographyBlock;
       case 'VideoBlock':
+        console.log(obj)
         return VideoBlock;
       case 'VideoTriggerBlock':
         return VideoTriggerBlock;
       default:
-        return Block;
+        console.log('Bad Block', obj);
     }
   }
 })
@@ -233,7 +235,7 @@ export class VideoBlock extends Block {
   @Field()
   readonly title: string
 
-  @Field(type => Int, { description: 'startAt dictates at which point of time the video should start playing'})
+  @Field(type => Int, { nullable: true,description: 'startAt dictates at which point of time the video should start playing'})
   readonly startAt?: number
 
   @Field(type => Int, { nullable: true, description: 'endAt dictates at which point of time the video should end'})
@@ -261,10 +263,10 @@ export class VideoBlock extends Block {
 to the next block at the designated time.`})
 export class VideoTriggerBlock extends Block {
   type: 'VideoTriggerBlock'
-  @Field(type => Int, { description: `triggerStart sets the time as to when a video navigates to the next block,
+  @Field(type => Int, { nullable: true, description: `triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video`})
   readonly triggerStart: number
 
-  @Field(type => Action)
+  @Field(type => Action, { nullable: true })
   readonly action: Action
 }
