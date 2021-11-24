@@ -15,10 +15,15 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
-        slug: 'fact-or-fiction'
+        slug: 'fact-or-fiction',
+        publishedAt: new Date('2021-11-21T03:86:33.844Z')
       }
     })
   }
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { publishedAt: new Date('2021-11-19T12:34:56.647Z') }
+  })
   await prisma.response.deleteMany({
     where: { block: { journeyId: journey.id } }
   })
