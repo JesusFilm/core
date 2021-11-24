@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import JourneyCard from './JourneyCard'
-import { defaultJourney } from '../journeyListData'
+import { defaultJourney } from '../JourneyList/journeyListData'
 
 describe('JourneyCard', () => {
   it('should render Journey Card', () => {

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { Box, Button } from '@mui/material'
 import Link from 'next/link'
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 
 interface JourneysListProps {
   journeys: Journey[]
