@@ -1,6 +1,5 @@
 import { Directive, Field, ID, InputType, ObjectType } from '@nestjs/graphql'
 import { ThemeMode, ThemeName } from '../theme/theme.models'
-import { Block, ImageBlock } from '../block/block.models'
 
 @ObjectType()
 @Directive('@extends')

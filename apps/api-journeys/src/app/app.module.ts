@@ -5,6 +5,7 @@ import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 
 import { DatabaseModule } from './modules/database/database.module'
+import { Journey } from './modules/journey/journey.models'
 import { JourneyModule } from './modules/journey/journey.module'
 import { RadioQuestionModule } from './modules/radio-question/radio-question.module'
 import { ResponseModule } from './modules/response/response.module'
@@ -23,7 +24,10 @@ import { VideoModule } from './modules/video/video.module'
     VideoModule,
     GraphQLFederationModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'apps/api-journeys/schema.graphql'),
-      cors: true
+      buildSchemaOptions: {
+        orphanedTypes: [Journey],
+      },
+      cors: true,
     })
   ]
 })

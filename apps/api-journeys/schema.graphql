@@ -13,7 +13,7 @@ directive @requires(fields: String!) on FIELD_DEFINITION
 directive @provides(fields: String!) on FIELD_DEFINITION
 
 interface Action {
-  gtmEventName: String!
+  gtmEventName: String
 }
 
 interface VideoContent {
@@ -23,7 +23,6 @@ interface VideoContent {
 interface Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
 }
 
 interface Response {
@@ -58,21 +57,21 @@ NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
-  gtmEventName: String!
+  gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
-  gtmEventName: String!
+  gtmEventName: String
   blockId: String
 }
 
 type NavigateToJourneyAction implements Action {
-  gtmEventName: String!
+  gtmEventName: String
   journey: Journey
 }
 
 type LinkAction implements Action {
-  gtmEventName: String!
+  gtmEventName: String
   url: String
   target: String!
 }
@@ -131,7 +130,6 @@ type VideoGeneric implements VideoContent {
 type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -162,7 +160,6 @@ enum ButtonSize {
 type CardBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
@@ -179,7 +176,7 @@ type CardBlock implements Block {
       is set to true the coverBlock Image should be displayed as a blur in the
       background.
   """
-  fullscreen: Boolean
+  fullscreen: Boolean!
 
   """
   themeMode can override journey themeMode. If nothing is set then use
@@ -197,7 +194,6 @@ type CardBlock implements Block {
 type GridContainerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
@@ -227,7 +223,6 @@ enum GridAlignItems {
 type GridItemBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   xl: Int!
   lg: Int!
   sm: Int!
@@ -236,7 +231,6 @@ type GridItemBlock implements Block {
 type ImageBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   src: String!
   width: Int!
   height: Int!
@@ -252,7 +246,6 @@ type ImageBlock implements Block {
 type RadioOptionBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   label: String!
   action: Action
 }
@@ -260,7 +253,6 @@ type RadioOptionBlock implements Block {
 type RadioQuestionBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   label: String!
   description: String
 }
@@ -268,7 +260,6 @@ type RadioQuestionBlock implements Block {
 type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   action: Action
   submitIcon: Icon
   submitLabel: String
@@ -277,7 +268,6 @@ type SignUpBlock implements Block {
 type StepBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
 
   """
   
@@ -298,7 +288,6 @@ type StepBlock implements Block {
 type TypographyBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -335,7 +324,6 @@ enum TypographyAlign {
 type VideoBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
@@ -363,7 +351,6 @@ to the next block at the designated time.
 type VideoTriggerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  journey: Journey!
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
@@ -403,10 +390,10 @@ enum VideoResponseStateEnum {
 }
 
 type Query {
-  blocks: [Response!]!
-  block(id: ID!): Response!
   journeys: [Journey!]!
   journey(idType: String!, id: ID!): Journey!
+  blocks: [Response!]!
+  block(id: ID!): Response!
 }
 
 type Mutation {

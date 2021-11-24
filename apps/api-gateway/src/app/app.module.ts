@@ -51,9 +51,9 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
             return {}
           }
         },
-        buildService({ url }) {
-          return new AuthenticatedDataSource({ url })
-        }
+        // buildService({ url }) {
+        //   return new AuthenticatedDataSource({ url })
+        // }
       },
     })
   })],

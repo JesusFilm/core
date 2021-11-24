@@ -8,7 +8,7 @@ import { ResponseService } from '../response/response.service'
 import { VideoResponseCreateInput } from './video.models'
   
   
-@Resolver('Video')
+@Resolver(of=> VideoResponse)
 export class VideoResolvers {
     constructor(private readonly responseservice: ResponseService) {}
     

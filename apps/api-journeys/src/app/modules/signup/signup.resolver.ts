@@ -8,7 +8,7 @@ import { ResponseService } from '../response/response.service'
 import { SignUpResponseCreateInput } from './signup.models'
   
   
-@Resolver('SignUp')
+@Resolver(of => SignUpResponse)
 export class SignUpResolvers {
     constructor(private readonly responseservice: ResponseService) {}
     

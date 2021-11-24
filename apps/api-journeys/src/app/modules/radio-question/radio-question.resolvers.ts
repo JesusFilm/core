@@ -8,7 +8,7 @@ import { ResponseService } from '../response/response.service'
   
 import { RadioQuestionResponseCreateInput } from './radio-question.models'
   
-@Resolver('RadioQuestion')
+@Resolver(of => RadioQuestionResponse)
 export class RadioQuestionResolvers {
     constructor(private readonly responseservice: ResponseService) {}
     

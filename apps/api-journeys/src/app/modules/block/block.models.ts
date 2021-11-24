@@ -32,7 +32,6 @@ import { VideoContent } from '../video/video.models'
       case 'TypographyBlock':
         return TypographyBlock;
       case 'VideoBlock':
-        console.log(obj)
         return VideoBlock;
       case 'VideoTriggerBlock':
         return VideoTriggerBlock;
@@ -49,8 +48,9 @@ export abstract class Block {
   @Field(type => ID, { nullable: true })
   readonly parentBlockId?: string
 
-  @Field(type => Journey)
-  readonly journey: Journey
+  // @Field(type => Journey)
+  // readonly journey: Journey
+  readonly journeyId: string;
 
   type: string;
   readonly parentOrder: number;  
@@ -96,12 +96,12 @@ export class CardBlock extends Block {
   })
   readonly coverBlockId?: string
 
-  @Field({ nullable: true,
+  @Field({
     description: `fullscreen should control how the coverBlock is displayed. When fullscreen
     is set to true the coverBlock Image should be displayed as a blur in the
     background.`
   })
-  readonly fullscreen?: boolean
+  readonly fullscreen: boolean
 
   @Field((type) => ThemeMode, { nullable: true,
     description: `themeMode can override journey themeMode. If nothing is set then use

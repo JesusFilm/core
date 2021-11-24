@@ -13,8 +13,8 @@ import { Journey } from "../journey/journey.models";
   }
 })
 export abstract class Action {
-  @Field()
-  readonly gtmEventName: string;
+  @Field({ nullable: true })
+  readonly gtmEventName?: string;
 }
 
 @ObjectType({ implements: ()=> [Action], description: `NavigateAction is an Action that navigates to the nextBlockId field set on the
