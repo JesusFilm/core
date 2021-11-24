@@ -4,7 +4,7 @@ import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJo
 import { Card, Chip, Typography, Box } from '@mui/material'
 import JourneyCardMenu from './JourneyCardMenu'
 import { AccessAvatars } from './AccessAvatars/AccessAvatars'
-import { user1, user2, user3, user4 } from './AccessAvatars/AccessAvatarsData'
+import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
 
 interface JourneyCardProps {
   journey: Journey
@@ -12,12 +12,10 @@ interface JourneyCardProps {
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
   const AccessAvatarsProps = { users: [user1, user2, user3] }
-
-  // avatars styling, decrease size, ensure next chip is always same distance
+  // adding styling on avatar breaks the component
 
   return (
     <Card sx={{ padding: '15px 29px' }}>
-      {/* Update according to wireframe */}
       <Typography
         variant="subtitle1"
         sx={{
@@ -51,11 +49,39 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
       <Box sx={{ display: 'flex' }}>
         <AccessAvatars {...AccessAvatarsProps} />
-        {/* <Chip label={journey.status} /> */}
-        <Chip label={'Published'} sx={{ margin: '0px 10px' }} />
+        {journey.status === 'draft' ? (
+          <Chip
+            label={'Draft'}
+            sx={{
+              margin: '0px 10px',
+              height: '42px',
+              width: 'auto',
+              borderRadius: '18px',
+              paddingRight: '23px',
+              fontSize: '15px'
+            }}
+          />
+        ) : (
+          <Chip
+            label={'Published'}
+            sx={{
+              margin: '0px 10px',
+              height: '42px',
+              width: 'auto',
+              borderRadius: '18px',
+              fontSize: '15px'
+            }}
+          />
+        )}
         <Chip
-          label={journey.locale.substr(0, 2)}
-          sx={{ marginRight: '10px' }}
+          label={journey.locale.substr(0, 2).toUpperCase()}
+          sx={{
+            marginRight: '10px',
+            height: '42px',
+            width: 'auto',
+            borderRadius: '18px',
+            fontSize: '15px'
+          }}
         />
         <Box sx={{ marginLeft: 'auto' }}>
           <JourneyCardMenu />

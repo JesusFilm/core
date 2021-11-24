@@ -1,5 +1,9 @@
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+import {
+  ThemeName,
+  ThemeMode,
+  JourneyStatus
+} from '../../../__generated__/globalTypes'
 
 export const defaultJourney: Journey = {
   __typename: 'Journey',
@@ -11,7 +15,8 @@ export const defaultJourney: Journey = {
   slug: 'default',
   locale: 'en_US',
   createdAt: new Date('2021-11-19T12:34:56.647Z'),
-  publishedAt: null
+  publishedAt: null,
+  status: JourneyStatus.published
 }
 
 export const descriptiveJourney: Journey = {
@@ -26,5 +31,6 @@ export const descriptiveJourney: Journey = {
   slug: 'default',
   locale: 'en_US',
   createdAt: new Date('2021-11-19T12:34:56.647Z'),
-  publishedAt: null
+  publishedAt: null,
+  status: JourneyStatus.draft
 }
