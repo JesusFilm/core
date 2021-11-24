@@ -65,7 +65,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
 
   const edgeSlideWidth = 16
   const getResponsiveGap = (
-    minGapBetween = breakpoints.xs ? 16 : 44,
+    minGapBetween = breakpoints.sm ? 44 : 16,
     maxSlideWidth = 854
   ): number =>
     Math.max(
