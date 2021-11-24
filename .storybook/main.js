@@ -10,7 +10,7 @@ const storiesForProject = {
     '../apps/journeys-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/journeys-admin/src/components/**/*.stories.mdx',
     '../apps/journeys-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/journeys-admin/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
+    '../apps/journeys-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'journeys-ui': [
     '../libs/journeys/ui/src/**/**/*.stories.mdx',
