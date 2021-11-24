@@ -15,34 +15,53 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
     users: [user1, user2, user3]
   }
 
-  // add text wrapping to title and description
-  // createdAt, add formating, Tatai changed something into blocks
+  // add text wrapping to title and description, change color of description
   // avatars styling, decrease size, ensure next chip is always same distance
 
   return (
-    <Card>
-      <Box sx={{ margin: '15px 29px' }}>
-        {/* Update according to wireframe */}
-        <Typography variant="subtitle1">{journey.title}</Typography>
+    <Card sx={{ padding: '15px 29px' }}>
+      {/* Update according to wireframe */}
+      <Typography
+        variant="subtitle1"
+        sx={{
+          display: 'block',
+          // textOverflow: 'ellipsis',
+          // wordWrap: 'break-word',
+          overflow: 'hidden',
+          maxHeight: '3.6em',
+          lineHeight: '1.8em'
+        }}
+        gutterBottom
+      >
+        {journey.title}
+      </Typography>
 
-        <Box sx={{ display: 'flex', paddingBottom: '14px' }}>
-          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            {moment(journey.createdAt).format('MMMM Do')}
-          </Typography>
-          <Typography variant="body2">&nbsp;- {journey.description}</Typography>
-        </Box>
+      <Typography
+        variant="body2"
+        sx={{
+          display: 'block',
+          // textOverflow: 'ellipsis',
+          // wordWrap: 'break-word',
+          overflow: 'hidden',
+          maxHeight: '3.6em',
+          lineHeight: '1.8em'
+        }}
+        gutterBottom
+      >
+        <b>{moment(journey.createdAt).format('MMMM Do')}</b> -{' '}
+        {journey.description}
+      </Typography>
 
-        <Box sx={{ display: 'flex' }}>
-          <AccessAvatars {...AccessAvatarsProps} />
-          {/* <Chip label={journey.status }/> */}
-          <Chip label={'Published'} sx={{ margin: '0px 10px' }} />
-          <Chip
-            label={journey.locale.substr(0, 2)}
-            sx={{ marginRight: '10px' }}
-          />
-          <Box sx={{ marginLeft: 'auto' }}>
-            <JourneyCardMenu />
-          </Box>
+      <Box sx={{ display: 'flex' }}>
+        <AccessAvatars {...AccessAvatarsProps} />
+        {/* <Chip label={journey.status }/> */}
+        <Chip label={'Published'} sx={{ margin: '0px 10px' }} />
+        <Chip
+          label={journey.locale.substr(0, 2)}
+          sx={{ marginRight: '10px' }}
+        />
+        <Box sx={{ marginLeft: 'auto' }}>
+          <JourneyCardMenu />
         </Box>
       </Box>
     </Card>
