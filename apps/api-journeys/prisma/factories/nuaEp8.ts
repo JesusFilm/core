@@ -1,4 +1,9 @@
-import { PrismaClient, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
+import {
+  PrismaClient,
+  ThemeName,
+  ThemeMode,
+  JourneyStatus
+} from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
 
 export async function nuaEp8(prisma: PrismaClient): Promise<void> {
@@ -21,7 +26,10 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   }
   await prisma.journey.update({
     where: { id: journey.id },
-    data: { publishedAt: new Date('2031-12-25T12:34:56.647Z') }
+    data: {
+      publishedAt: new Date('2031-12-25T12:34:56.647Z'),
+      status: JourneyStatus.published
+    }
   })
   await prisma.response.deleteMany({
     where: { block: { journeyId: journey.id } }
