@@ -33,4 +33,24 @@ describe('AccessAvatars', () => {
     const {getByLabelText} = render(<AccessAvatars users={props.users} />)
     expect(getByLabelText('drake@email.com')).toBeInTheDocument();
   })
+
+  it('should use "No name or email available for this user" as tooltip if user has no firstname and no email', () => {
+    const props: AccessAvatarsProps = {
+      users: [
+        {...user6, firstName: undefined, email: undefined}
+      ]
+    }
+    const {getByLabelText} = render(<AccessAvatars users={props.users} />)
+    expect(getByLabelText('No name or email available for this user')).toBeInTheDocument();
+  })
+
+  it('should display generic avatar icon if user has no firstname, no email and no image', () => {
+    const props: AccessAvatarsProps = {
+      users: [
+        {...user6, firstName: undefined, email: undefined, image: undefined}
+      ]
+    }
+    const {getByTestId} = render(<AccessAvatars users={props.users} />)
+    expect(getByTestId('PersonIcon')).toBeInTheDocument();
+  })  
 })

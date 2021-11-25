@@ -37,9 +37,11 @@ export const user5: AccessAvatar = {
   email: 'jan@email.com'
 }
 
-// use without a name, for testing purposes
 export const user6: AccessAvatar = {
   id: '6', 
+  firstName: 'Drake',
+  lastName: 'Graham',
   image: 'https://source.unsplash.com/random/300x300',
-  email: 'drake@email.com'
+  email: 'grahamDrake@email.com'
 }
+

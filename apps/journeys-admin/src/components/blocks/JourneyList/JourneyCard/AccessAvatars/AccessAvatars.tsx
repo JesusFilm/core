@@ -34,7 +34,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       {users.map((user) => (
         <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
           <Avatar alt={user.firstName} src={user.image}>
-            {createFallbackLetter(user)}
+            { createFallbackLetter(user) }
           </Avatar>
         </Tooltip>
       ))}
@@ -48,16 +48,16 @@ function createToolTipTitle(user: AccessAvatar): string{
   } else if(user.email !=null){
     return `${user.email}`
   } else {
-    return `No name or email available`;
+    return `No name or email available for this user`;
   }
 }
 
-function createFallbackLetter(user:AccessAvatar): string{
+function createFallbackLetter(user:AccessAvatar): string | null{
   if(user.firstName !=null){
     return `${user.firstName[0].toUpperCase()}`
   } else if(user.email !=null){
     return `${user.email[0].toUpperCase()}`
   } else {
-    return ``;
+    return null;
   }
 }
