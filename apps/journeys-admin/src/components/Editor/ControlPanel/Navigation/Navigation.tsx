@@ -4,6 +4,8 @@ import { ReactElement } from 'react'
 import { Actions } from './Actions'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
 import { FramePortal } from '../../../FramePortal'
+import { ThemeProvider } from '@core/shared/ui'
+import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
 
 export interface NavigationProps {
   onSelect?: (card: TreeBlock<StepBlock>) => void
@@ -20,10 +22,10 @@ export function Navigation({
     <>
       <Stack
         direction="row"
-        spacing={4}
+        spacing={2}
         sx={{
           overflowX: 'auto',
-          p: 6
+          p: 4
         }}
       >
         {steps.map((step) => (
@@ -32,11 +34,11 @@ export function Navigation({
             sx={{
               p: 1,
               borderRadius: 2,
-              minWidth: 113,
-              maxWidth: 113,
-              height: 200,
               transition: '0.2s border-color ease-out',
               position: 'relative',
+              width: 89,
+              height: 134,
+              boxSizing: 'content-box',
               border: (theme) =>
                 selectedStep?.id === step.id
                   ? `3px ${theme.palette.primary.main} solid`
@@ -56,26 +58,23 @@ export function Navigation({
             />
             <Box
               sx={{
-                transform: 'scale(0.33)',
+                transform: 'scale(0.25)',
                 transformOrigin: 'top left'
               }}
             >
               <Box
                 sx={{
-                  width: {
-                    xs: 296,
-                    sm: 476,
-                    md: 854
-                  },
-                  height: {
-                    xs: 560,
-                    sm: 880,
-                    md: 480
-                  }
+                  width: 356,
+                  height: 536
                 }}
               >
                 <FramePortal id={step.id}>
-                  <BlockRenderer {...step} />
+                  <ThemeProvider
+                    themeName={ThemeName.base}
+                    themeMode={ThemeMode.light}
+                  >
+                    <BlockRenderer {...step} />
+                  </ThemeProvider>
                 </FramePortal>
               </Box>
             </Box>

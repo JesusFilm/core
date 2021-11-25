@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeyAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Actions } from '.'
 
 const ActionsStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: Actions,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Actions'
 }

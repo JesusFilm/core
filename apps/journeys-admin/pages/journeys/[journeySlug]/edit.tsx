@@ -8,6 +8,7 @@ import {
   GetJourneyForEdit_journey as Journey
 } from '../../../__generated__/GetJourneyForEdit'
 import { Typography, Box } from '@mui/material'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
 
 interface SingleJourneyEditPageProps {
   journey: Journey
@@ -35,6 +36,7 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyEditPageProps> 
   async (context) => {
     const { data } = await client.query<GetJourneyForEdit>({
       query: gql`
+        ${BLOCK_FIELDS}
         query GetJourneyForEdit($id: ID!) {
           journey(id: $id, idType: slug) {
             id
@@ -43,19 +45,7 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyEditPageProps> 
             title
             description
             blocks {
-              id
-              parentBlockId
-              ... on CardBlock {
-                backgroundColor
-                coverBlockId
-                themeMode
-                themeName
-                fullscreen
-              }
-              ... on StepBlock {
-                locked
-                nextBlockId
-              }
+              ...BlockFields
             }
           }
         }

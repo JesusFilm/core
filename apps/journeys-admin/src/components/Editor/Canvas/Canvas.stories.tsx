@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeyAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { Canvas } from '.'
 
 const CanvasStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: Canvas,
   title: 'Journeys-Admin/Editor/Canvas'
 }

@@ -2,21 +2,18 @@ import { createPortal } from 'react-dom'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import {
-  cloneElement,
   DetailedHTMLProps,
   IframeHTMLAttributes,
   memo,
   ReactElement,
   ReactNode,
-  useCallback,
   useEffect,
   useMemo,
   useReducer,
   useRef
 } from 'react'
-import { createTheme, ThemeProvider } from '@mui/material'
-import { jssPreset, StylesProvider } from '@mui/styles'
-import { create } from 'jss'
+import { styled } from '@mui/material'
+import { StylesProvider } from '@mui/styles'
 
 interface ContentProps {
   id: string
@@ -25,16 +22,6 @@ interface ContentProps {
 }
 
 function Content({ children, document }: ContentProps): ReactElement {
-  const { jss, sheetsManager } = useMemo(() => {
-    return {
-      jss: create({
-        plugins: [...jssPreset().plugins],
-        insertionPoint: document.head
-      }),
-      sheetsManager: new Map()
-    }
-  }, [document])
-
   const cache = useMemo(
     () =>
       createCache({
@@ -46,21 +33,18 @@ function Content({ children, document }: ContentProps): ReactElement {
     [document]
   )
 
-  const getWindow = useCallback(() => document.defaultView, [document])
-
   return (
-    <StylesProvider jss={jss} sheetsManager={sheetsManager}>
-      <CacheProvider value={cache}>
-        <ThemeProvider theme={createTheme()}>
-          {cloneElement(children, {
-            window: getWindow
-          })}
-          {children}
-        </ThemeProvider>
-      </CacheProvider>
+    <StylesProvider>
+      <CacheProvider value={cache}>{children}</CacheProvider>
     </StylesProvider>
   )
 }
+
+const StyledFrame = styled('iframe')(() => ({
+  border: 0,
+  height: '100%',
+  width: '100%'
+}))
 
 interface FrameProps
   extends Omit<
@@ -85,10 +69,10 @@ export function Frame({ id, children, ...other }: FrameProps): ReactElement {
     // When we hydrate the iframe then the load event is already dispatched
     // once the iframe markup is parsed (maybe later but the important part is
     // that it happens before React can attach event listeners).
-    // We need to check the readyState of the document once the iframe is mounted
-    // and "replay" the missed load event.
-    // See https://github.com/facebook/react/pull/13862 for ongoing effort in React
-    // (though not with iframes in mind).
+    // We need to check the readyState of the document once the iframe is
+    // mounted and "replay" the missed load event.
+    // See https://github.com/facebook/react/pull/13862 for ongoing effort in
+    // React (though not with iframes in mind).
     if (
       frameRef?.current?.contentDocument != null &&
       frameRef.current.contentDocument.readyState === 'complete' &&
@@ -100,7 +84,7 @@ export function Frame({ id, children, ...other }: FrameProps): ReactElement {
 
   return (
     <>
-      <iframe onLoad={onLoad} ref={frameRef} {...other} />
+      <StyledFrame onLoad={onLoad} ref={frameRef} {...other} />
       {iframeLoaded &&
         document != null &&
         createPortal(
