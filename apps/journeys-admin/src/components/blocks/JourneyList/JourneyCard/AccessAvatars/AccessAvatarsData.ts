@@ -36,3 +36,10 @@ export const user5: AccessAvatar = {
   image: 'https://source.unsplash.com/random/300x300',
   email: 'jan@email.com'
 }
+
+// use without a name, for testing purposes
+export const user6: AccessAvatar = {
+  id: '6', 
+  image: 'https://source.unsplash.com/random/300x300',
+  email: 'drake@email.com'
+}

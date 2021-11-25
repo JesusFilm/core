@@ -3,8 +3,8 @@ import { ReactElement } from 'react'
 
 export interface AccessAvatar {
   id: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
   image?: string
   email?: string
 }
@@ -14,27 +14,50 @@ export interface AccessAvatarsProps {
 }
 
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
-  function handleClick(): void {
-    // TODO update this to link to access edit for journey
-    console.log('Click!')
+  let padding = '0px'
+  if (users.length === 1) {
+    padding = '72px'
+  } else if (users.length === 2) {
+    padding = '36px'
+  } else {
+    padding = '0px'
   }
-
   return (
     <AvatarGroup
       max={3}
       sx={{
         display: 'flex',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        paddingRight: padding
       }}
-      onClick={handleClick}
     >
       {users.map((user) => (
-        <Tooltip title={`${user.firstName} ${user.lastName}`} key={user.id}>
+        <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
           <Avatar alt={user.firstName} src={user.image}>
-            {user.firstName[0]}
+            {createFallbackLetter(user)}
           </Avatar>
         </Tooltip>
       ))}
     </AvatarGroup>
-  )
+  ) 
+}
+ 
+function createToolTipTitle(user: AccessAvatar): string{
+  if(user.firstName !=null && user.lastName != null){
+    return `${user.firstName} ${user.lastName}`
+  } else if(user.email !=null){
+    return `${user.email}`
+  } else {
+    return `No name or email available`;
+  }
+}
+
+function createFallbackLetter(user:AccessAvatar): string{
+  if(user.firstName !=null){
+    return `${user.firstName[0].toUpperCase()}`
+  } else if(user.email !=null){
+    return `${user.email[0].toUpperCase()}`
+  } else {
+    return ``;
+  }
 }

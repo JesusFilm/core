@@ -27,7 +27,7 @@ Fallback.args = {
   users: [
     { ...user1, image: undefined },
     { ...user2, image: undefined },
-    { ...user2, image: undefined }
+    { ...user3, image: undefined }
   ]
 }
 
