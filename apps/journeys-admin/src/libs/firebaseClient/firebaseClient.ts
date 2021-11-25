@@ -1,5 +1,5 @@
-import firebase from 'firebase/compat/app'
+import { initializeApp } from '@firebase/app'
 
-export const firebaseClient = firebase.initializeApp(
+export const firebaseClient = initializeApp(
   JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_CONFIG_JSON ?? '{}')
 )

@@ -1,4 +1,4 @@
-import { useEffect, useCallback, ReactElement } from 'react'
+import { useEffect, ReactElement } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -11,13 +11,6 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
   const client = createApolloClient(user?.accessToken)
-  const signIn = useCallback(async (): Promise<void> => {
-    //
-  }, [])
-
-  useEffect(() => {
-    void signIn()
-  }, [signIn])
 
   useEffect(() => {
     // Remove the server-side injected CSS.

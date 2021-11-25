@@ -1,17 +1,14 @@
 import { ReactElement, useState } from 'react'
-import { Alert, Button, Container, Grid, TextField } from '@mui/material'
-import { getAuth } from 'firebase/auth'
+import { Button, Container, Grid, TextField } from '@mui/material'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { firebaseClient } from '../../../libs/firebaseClient'
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth'
 
 export const Register = (): ReactElement => {
   const [firstName, setFirstName] = useState<string>()
   const [lastName, setLastName] = useState<string>()
-  const [email, setEmail] = useState<string | undefined>()
+  const [email, setEmail] = useState<string>()
   const [password, setPassword] = useState<string>()
   const auth = getAuth(firebaseClient)
-  const [createUserWithEmailAndPassword, error, loading] =
-    useCreateUserWithEmailAndPassword(auth)
 
   const handleSignUp = async (event): Promise<void> => {
     event.preventDefault()
@@ -20,18 +17,19 @@ export const Register = (): ReactElement => {
 
     // handle loading state
 
-    email !== undefined &&
-      password !== undefined &&
-      createUserWithEmailAndPassword(email, password)
+    if (email !== undefined && password !== undefined) {
+      createUserWithEmailAndPassword(auth, email, password).catch((error) => {
+        console.log(error)
+      })
+    }
     // handleAuthResponse(firstName, lastName, email)
   }
 
-  // MUI components used are just for testing purposes and is not the set components that will be used
   return (
     <Container maxWidth="xs">
-      {error != null && error && (
+      {/* {error != null && error && (
         <Alert severity="error">{error.message}</Alert>
-      )}
+      )} */}
       <form>
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -81,7 +79,6 @@ export const Register = (): ReactElement => {
           </Grid>
           <Button
             type="submit"
-            disabled={loading}
             fullWidth
             variant="contained"
             color="primary"

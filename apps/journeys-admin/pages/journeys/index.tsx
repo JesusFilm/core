@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
@@ -9,28 +9,28 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
-import { useRouter } from 'next/router'
 import { JourneyList } from '../../src/components/'
-import { getAuth, signOut } from 'firebase/auth'
-import { firebaseClient } from '../../src/libs/firebaseClient'
+import { FirebaseHandler } from '../../src/libs/firebaseClient'
+import { useRouter } from 'next/router'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
+  const { logOut, getCurrentUser } = FirebaseHandler()
   const router = useRouter()
-  const auth = getAuth(firebaseClient)
+
+  useEffect(() => {
+    console.log('this ', getCurrentUser)
+
+    if (!getCurrentUser) {
+      void router.push('/')
+    }
+  }, [getCurrentUser, router])
 
   const handleLogout = async (): Promise<void> => {
-    void signOut(auth)
-      .then(() => {
-        // sign out user and clear cache
-        void router.push('/')
-      })
-      .catch((error) => {
-        console.log(error.message)
-      })
+    void logOut()
   }
 
   return (
