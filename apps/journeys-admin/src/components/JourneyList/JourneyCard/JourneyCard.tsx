@@ -17,7 +17,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       {/* AccessAvatars */}
       {/* <Chip label={journey.status }/> */}
       <Chip label={journey.locale.substr(0, 2)} />
-      <JourneyCardMenu />
+      <JourneyCardMenu status={journey.status} slug={journey.slug} />
     </Card>
   )
 }

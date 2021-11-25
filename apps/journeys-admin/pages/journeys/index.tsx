@@ -42,6 +42,7 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
             themeName
             themeMode
             locale
+            status
           }
         }
       `

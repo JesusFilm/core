@@ -3,7 +3,7 @@ import JourneyCardMenu from '.'
 
 describe('JourneyCardMenu', () => {
   it('should open menu on click', () => {
-    render(<JourneyCardMenu />)
+    render(<JourneyCardMenu status={'Draft'} slug={'draft-journey'} />)
     // check all 4 aria props :
     // aria-expanded, aria-labelledby aria-controls, aria-haspopup
   })

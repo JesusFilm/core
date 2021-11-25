@@ -1,10 +1,18 @@
 import { ReactElement, useState } from 'react'
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import { IconButton, Menu, MenuItem, Divider } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 // Pass journeyID and slug to JourneyCardMenu
+interface JourneyCardMenuProps {
+  status: JourneyStatus
+  slug: string
+}
 
-const JourneyCardMenu = (): ReactElement => {
+const JourneyCardMenu = ({
+  status,
+  slug
+}: JourneyCardMenuProps): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -16,7 +24,7 @@ const JourneyCardMenu = (): ReactElement => {
   }
 
   const handleEdit = (): void => {
-    // trigger LinkAction to Edit Card page Tatai makes
+    // trigger LinkAction to Edit Card page Tatai makes=
   }
   const handleChangeAccess = (): void => {
     // trigger the change access modal that John / Gavin build
@@ -27,7 +35,6 @@ const JourneyCardMenu = (): ReactElement => {
 
   return (
     <div>
-      {/* https://mui.com/components/material-icons/ use correct icon */}
       <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
@@ -48,8 +55,14 @@ const JourneyCardMenu = (): ReactElement => {
       >
         <MenuItem onClick={handleEdit}>Edit</MenuItem>
         <MenuItem onClick={handleChangeAccess}>Change Access</MenuItem>
-        {/* 'Grey out' preview if journey is draft */}
-        <MenuItem onClick={handlePreview}>Preview</MenuItem>
+        <Divider />
+        {status === JourneyStatus.draft ? (
+          <MenuItem disabled onClick={handlePreview}>
+            Preview
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={handlePreview}>Preview</MenuItem>
+        )}
       </Menu>
     </div>
   )
