@@ -11,15 +11,11 @@ describe('JourneyCardMenu', () => {
     // const { getAllByText } = render(<JourneyCardMenu />)
     // expect(getAllByText('Journey Heading')[0]).toBeInTheDocument()
   })
-  it('should handle duplicate journey', () => {
-    // const { getAllByText } = render(<JourneyCardMenu />)
-    // expect(getAllByText('Journey Heading')[0]).toBeInTheDocument()
-  })
   it('should handle changing journey access', () => {
     // const { getAllByText } = render(<JourneyCardMenu />)
     // expect(getAllByText('Journey Heading')[0]).toBeInTheDocument()
   })
-  it('should handle copy url', () => {
+  it('should handle preview', () => {
     // const { getAllByText } = render(<JourneyCardMenu />)
     // expect(getAllByText('Journey Heading')[0]).toBeInTheDocument()
   })

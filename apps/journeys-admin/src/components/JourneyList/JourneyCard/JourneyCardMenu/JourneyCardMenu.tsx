@@ -17,14 +17,11 @@ const JourneyCardMenu = (): ReactElement => {
   const handleEdit = (): void => {
     // trigger LinkAction to Edit Card page Tatai makes
   }
-  const handleDuplicate = (): void => {
-    // trigger the duplicate journey mutation based on journey.id
-  }
   const handleChangeAccess = (): void => {
     // trigger the change access modal that John / Gavin build
   }
-  const handleCopyUrl = (): void => {
-    // get journey.slug and save to client clipboard
+  const handlePreview = (): void => {
+    // tirgger link action to journey preview
   }
 
   return (
@@ -49,9 +46,9 @@ const JourneyCardMenu = (): ReactElement => {
         }}
       >
         <MenuItem onClick={handleEdit}>Edit</MenuItem>
-        <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
         <MenuItem onClick={handleChangeAccess}>Change Access</MenuItem>
-        <MenuItem onClick={handleCopyUrl}>Copy URL</MenuItem>
+        {/* 'Grey out' preview if journey is draft */}
+        <MenuItem onClick={handlePreview}>Preview</MenuItem>
       </Menu>
     </div>
   )
