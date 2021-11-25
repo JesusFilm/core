@@ -3,6 +3,7 @@ import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../.
 import { ReactElement } from 'react'
 import { Actions } from './Actions'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
+import { FramePortal } from '../../../FramePortal'
 
 export interface NavigationProps {
   onSelect?: (card: TreeBlock<StepBlock>) => void
@@ -73,7 +74,9 @@ export function Navigation({
                   }
                 }}
               >
-                <BlockRenderer {...step} />
+                <FramePortal id={step.id}>
+                  <BlockRenderer {...step} />
+                </FramePortal>
               </Box>
             </Box>
           </Box>
