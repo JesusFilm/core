@@ -1,6 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { IconButton, Menu, MenuItem, Divider } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Link from 'next/link'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 // Pass journeyID and slug to JourneyCardMenu
@@ -23,14 +24,8 @@ const JourneyCardMenu = ({
     setAnchorEl(null)
   }
 
-  const handleEdit = (): void => {
-    // trigger LinkAction to Edit Card page Tatai makes=
-  }
-  const handleChangeAccess = (): void => {
-    // trigger the change access modal that John / Gavin build
-  }
   const handlePreview = (): void => {
-    // tirgger link action to journey preview
+    // tirgger link action to journey preview, need to use handleAction because navigating out of this project
   }
 
   return (
@@ -53,8 +48,14 @@ const JourneyCardMenu = ({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <MenuItem onClick={handleEdit}>Edit</MenuItem>
-        <MenuItem onClick={handleChangeAccess}>Change Access</MenuItem>
+        <Link href={`/journeys/${slug}/edit`} passHref>
+          <MenuItem>Edit</MenuItem>
+        </Link>
+        {/* update link */}
+        <Link href={`/journeys/${slug}/access`} passHref>
+          <MenuItem>Change Access</MenuItem>
+        </Link>
+
         <Divider />
         {status === JourneyStatus.draft ? (
           <MenuItem disabled onClick={handlePreview}>
