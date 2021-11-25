@@ -52,6 +52,7 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             status
             createdAt
             publishedAt
+            status
             primaryImageBlock {
               src
             }
