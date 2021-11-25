@@ -199,7 +199,7 @@ export type Journey = {
   primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['DateTime']>;
   slug: Scalars['String'];
-  status: JourneyStatus;
+  status?: Maybe<JourneyStatus>;
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
@@ -786,7 +786,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   primaryImageBlock?: Resolver<Maybe<ResolversTypes['ImageBlock']>, ParentType, ContextType>;
   publishedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['JourneyStatus'], ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['JourneyStatus']>, ParentType, ContextType>;
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

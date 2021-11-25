@@ -20,11 +20,6 @@ enum ThemeName {
   base
 }
 
-enum JourneyStatus {
-  draft
-  published
-}
-
 model Journey {
   id        String     @id @default(uuid())
   title     String
@@ -38,7 +33,6 @@ model Journey {
   slug      String    @unique
   createdAt DateTime  @default(now())   
   publishedAt DateTime?
-  status    JourneyStatus    @default(draft)
 }
 
 enum BlockType {
