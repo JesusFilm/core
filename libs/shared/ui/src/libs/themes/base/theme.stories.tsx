@@ -286,15 +286,28 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center',
-        height: '600px'
+        height: '600px',
+        m: '20%'
       }}
     >
+      <Typography
+        variant="caption"
+        sx={{ display: 'flex', alignSelf: 'flex-end' }}
+      >
+        {`Current width: ${width}px`}
+      </Typography>
+      <Typography
+        variant="caption"
+        gutterBottom
+        sx={{ display: 'flex', alignSelf: 'flex-end' }}
+      >
+        {`Current height: ${height}px`}
+      </Typography>
       {args.variants.map((variant: string) => {
         return (
           <>
             <Typography
-              variant="h4"
+              variant="h2"
               sx={{
                 [theme.breakpoints.only(variant as Breakpoint)]: {
                   display: 'flex'
@@ -302,25 +315,37 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
                 display: 'none'
               }}
             >
-              {`sx: theme.breakpoint: ${variant}`}
+              {/* Test breakpoints.only() */}
+              {`${variant.toUpperCase()}`}
             </Typography>
             <Typography
-              variant="h4"
-              align="center"
-              style={{
-                display: breakpoints[variant as Breakpoint] ? 'flex' : 'none'
-              }}
-            >
-              {`style: useBreakpoint: ${variant}`}
-            </Typography>
-            <Typography
-              variant="body1"
               sx={{
                 [theme.breakpoints.only(variant as Breakpoint)]: {
                   display: 'flex'
                 },
                 display: 'none'
               }}
+            >
+              {/* Test useBreakpoints */}
+              {breakpoints.xl
+                ? 'Desktop'
+                : breakpoints.lg
+                ? 'Tablet (L)'
+                : breakpoints.md
+                ? 'Tablet (P)'
+                : breakpoints.sm
+                ? 'Mobile (L)'
+                : 'Mobile (P)'}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                [theme.breakpoints.only(variant as Breakpoint)]: {
+                  display: 'flex'
+                },
+                display: 'none'
+              }}
+              gutterBottom
             >
               {`Range: ${
                 theme.breakpoints.values[variant as Breakpoint]
@@ -329,25 +354,23 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
           </>
         )
       })}
-      <Typography
-        variant="body1"
-        gutterBottom
-      >{`Current width: ${width}px | Current height: ${height}px`}</Typography>
-      <Typography
-        variant="overline"
-        align="center"
+      {/* Test breakpoints.up() */}
+      <Box
         sx={{
           height: '30px',
-          color: '#FC624E',
+          width: '100%',
+          backgroundColor: '#FC624E',
           [theme.breakpoints.up('md')]: {
-            color: '#7fe0aa'
+            backgroundColor: '#7fe0aa'
           },
           [theme.breakpoints.up('xl')]: {
-            color: '#4ec4fc'
-          }
+            backgroundColor: '#4ec4fc'
+          },
+          mb: 1
         }}
-      >
-        Mobile - red | Tablet - green | Desktop - blue
+      />
+      <Typography variant="caption">
+        Mobile - Red | Tablet - Green | Desktop - Blue
       </Typography>
     </Box>
   )
