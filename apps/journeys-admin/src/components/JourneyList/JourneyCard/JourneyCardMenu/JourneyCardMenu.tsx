@@ -1,6 +1,5 @@
 import { ReactElement, useState } from 'react'
 import { IconButton, Menu, MenuItem } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 // Pass journeyID and slug to JourneyCardMenu
 
@@ -36,9 +35,7 @@ const JourneyCardMenu = (): ReactElement => {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleOpenMenu}
-      >
-        <MoreVertIcon />
-      </IconButton>
+      ></IconButton>
       <Menu
         id="journey-actions"
         anchorEl={anchorEl}

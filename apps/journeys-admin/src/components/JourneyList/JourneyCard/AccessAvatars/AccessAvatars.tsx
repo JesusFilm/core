@@ -19,22 +19,12 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
     console.log('Click!')
   }
 
-  let padding = '0px'
-  if (users.length === 1) {
-    padding = '72px'
-  } else if (users.length === 2) {
-    padding = '36px'
-  } else {
-    padding = '0px'
-  }
-
   return (
     <AvatarGroup
       max={3}
       sx={{
         display: 'flex',
-        justifyContent: 'flex-end',
-        paddingRight: padding
+        justifyContent: 'flex-end'
       }}
       onClick={handleClick}
     >
