@@ -31,7 +31,7 @@ const typeDefs = gql`
     slug: String!
     publishedAt: DateTime
     createdAt: DateTime!
-    status: JourneyStatus
+    status: JourneyStatus!
   }
 
   enum IdType {
@@ -85,7 +85,6 @@ const typeDefs = gql`
     journey: Journey
   }
 `
-// reverted changes
 const resolvers: JourneyModule.Resolvers = {
   Journey: {
     status: (journey) => {
