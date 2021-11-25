@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import JourneyCardMenu from './JourneyCardMenu'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 const JoruneyCardMenuDemo = {
   ...journeysAdminConfig,
@@ -15,12 +15,12 @@ const Template: Story = ({ ...args }) => (
 
 export const DraftJoruneyCardMenu = Template.bind({})
 DraftJoruneyCardMenu.args = {
-  status: 'Draft',
+  status: JourneyStatus.draft,
   slug: 'draft-journey'
 }
 export const PublishedJoruneyCardMenu = Template.bind({})
 PublishedJoruneyCardMenu.args = {
-  status: 'Published',
+  status: JourneyStatus.published,
   slug: 'published-journey'
 }
 
