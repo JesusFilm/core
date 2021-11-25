@@ -53,7 +53,7 @@ NoNameOrImage.args = {
   ]
 }
 
-// display user without first name/email/image, should display blank silhouette with
+// display user without first name/email/image, should display generic avatar icon with
 // "No name or email available for this user" as tooltip
 export const NoNameEmailOrImage: Story<AccessAvatarsProps> = Template.bind({})
 NoNameEmailOrImage.args = {
