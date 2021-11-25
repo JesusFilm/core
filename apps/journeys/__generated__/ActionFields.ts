@@ -9,13 +9,13 @@
 
 export interface ActionFields_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface ActionFields_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface ActionFields_NavigateToJourneyAction_journey {
@@ -26,14 +26,14 @@ export interface ActionFields_NavigateToJourneyAction_journey {
 
 export interface ActionFields_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: ActionFields_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: ActionFields_NavigateToJourneyAction_journey | null;
 }
 
 export interface ActionFields_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type ActionFields = ActionFields_NavigateAction | ActionFields_NavigateToBlockAction | ActionFields_NavigateToJourneyAction | ActionFields_LinkAction;

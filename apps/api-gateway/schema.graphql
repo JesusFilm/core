@@ -1,28 +1,33 @@
 schema
-  @core(feature: "https://specs.apollo.dev/core/v0.1"),
-  @core(feature: "https://specs.apollo.dev/join/v0.1")
-{
+  @core(feature: "https://specs.apollo.dev/core/v0.1")
+  @core(feature: "https://specs.apollo.dev/join/v0.1") {
   query: Query
   mutation: Mutation
 }
 
 directive @core(feature: String!) repeatable on SCHEMA
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet) on FIELD_DEFINITION
+directive @join__field(
+  graph: join__Graph
+  requires: join__FieldSet
+  provides: join__FieldSet
+) on FIELD_DEFINITION
 
-directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on OBJECT | INTERFACE
+directive @join__type(
+  graph: join__Graph!
+  key: join__FieldSet
+) repeatable on OBJECT | INTERFACE
 
 directive @join__owner(graph: join__Graph!) on OBJECT | INTERFACE
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
 interface Action {
-  gtmEventName: String!
+  gtmEventName: String
 }
 
 interface Block {
   id: ID!
-  journey: Journey!
   parentBlockId: ID
 }
 
@@ -31,7 +36,6 @@ type ButtonBlock implements Block {
   color: ButtonColor
   endIcon: Icon
   id: ID!
-  journey: Journey!
   label: String!
   parentBlockId: ID
   size: ButtonSize
@@ -58,7 +62,9 @@ enum ButtonVariant {
 }
 
 type CardBlock implements Block {
-  """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
+  """
+  backgroundColor should be a HEX color value e.g #FFFFFF for white.
+  """
   backgroundColor: String
 
   """
@@ -73,9 +79,8 @@ type CardBlock implements Block {
       is set to true the coverBlock Image should be displayed as a blur in the
       background.
   """
-  fullscreen: Boolean
+  fullscreen: Boolean!
   id: ID!
-  journey: Journey!
   parentBlockId: ID
 
   """
@@ -102,7 +107,6 @@ type GridContainerBlock implements Block {
   alignItems: GridAlignItems!
   direction: GridDirection!
   id: ID!
-  journey: Journey!
   justifyContent: GridJustifyContent!
   parentBlockId: ID
   spacing: Int!
@@ -117,7 +121,6 @@ enum GridDirection {
 
 type GridItemBlock implements Block {
   id: ID!
-  journey: Journey!
   lg: Int!
   parentBlockId: ID
   sm: Int!
@@ -131,9 +134,9 @@ enum GridJustifyContent {
 }
 
 type Icon {
-  color: IconColor!
+  color: IconColor
   name: IconName!
-  size: IconSize!
+  size: IconSize
 }
 
 enum IconColor {
@@ -181,7 +184,6 @@ type ImageBlock implements Block {
   blurhash: String!
   height: Int!
   id: ID!
-  journey: Journey!
   parentBlockId: ID
   src: String!
   width: Int!
@@ -190,7 +192,7 @@ type ImageBlock implements Block {
 scalar join__FieldSet
 
 enum join__Graph {
-  JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
+  JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
 }
 
 type Journey {
@@ -221,16 +223,20 @@ input JourneyInput {
 }
 
 type LinkAction implements Action {
-  gtmEventName: String!
+  gtmEventName: String
   target: String!
-  url: String!
+  url: String
 }
 
 type Mutation {
   createJourney(journey: JourneyInput!): Journey! @join__field(graph: JOURNEYS)
-  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
-  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
+  radioQuestionResponseCreate(
+    input: RadioQuestionResponseCreateInput!
+  ): RadioQuestionResponse! @join__field(graph: JOURNEYS)
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+    @join__field(graph: JOURNEYS)
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
+    @join__field(graph: JOURNEYS)
 }
 
 """
@@ -238,17 +244,17 @@ NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
-  gtmEventName: String!
+  gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
-  blockId: String!
-  gtmEventName: String!
+  blockId: String
+  gtmEventName: String
 }
 
 type NavigateToJourneyAction implements Action {
-  gtmEventName: String!
-  journey: Journey!
+  gtmEventName: String
+  journey: Journey
 }
 
 type Query {
@@ -261,7 +267,6 @@ type Query {
 type RadioOptionBlock implements Block {
   action: Action
   id: ID!
-  journey: Journey!
   label: String!
   parentBlockId: ID
 }
@@ -269,7 +274,6 @@ type RadioOptionBlock implements Block {
 type RadioQuestionBlock implements Block {
   description: String
   id: ID!
-  journey: Journey!
   label: String!
   parentBlockId: ID
 }
@@ -294,7 +298,6 @@ interface Response {
 type SignUpBlock implements Block {
   action: Action
   id: ID!
-  journey: Journey!
   parentBlockId: ID
   submitIcon: Icon
   submitLabel: String
@@ -316,7 +319,6 @@ input SignUpResponseCreateInput {
 
 type StepBlock implements Block {
   id: ID!
-  journey: Journey!
 
   """
   locked will be set to true if the user should not be able to manually
@@ -354,7 +356,6 @@ type TypographyBlock implements Block {
   color: TypographyColor
   content: String!
   id: ID!
-  journey: Journey!
   parentBlockId: ID
   variant: TypographyVariant
 }
@@ -390,10 +391,11 @@ type VideoBlock implements Block {
   autoplay: Boolean
   description: String
 
-  """endAt dictates at which point of time the video should end"""
+  """
+  endAt dictates at which point of time the video should end
+  """
   endAt: Int
   id: ID!
-  journey: Journey!
   muted: Boolean
   parentBlockId: ID
 
@@ -404,8 +406,10 @@ type VideoBlock implements Block {
   """
   posterBlockId: ID
 
-  """startAt dictates at which point of time the video should start playing"""
-  startAt: Int!
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
   title: String!
   videoContent: VideoContent!
 }
@@ -443,14 +447,13 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block {
-  action: Action!
+  action: Action
   id: ID!
-  journey: Journey!
   parentBlockId: ID
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
     this is the number of seconds since the start of the video
   """
-  triggerStart: Int!
+  triggerStart: Int
 }

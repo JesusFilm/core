@@ -12,26 +12,26 @@ import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize }
 export interface ButtonFields_startIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor;
-  size: IconSize;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface ButtonFields_endIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor;
-  size: IconSize;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface ButtonFields_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface ButtonFields_action_NavigateToJourneyAction_journey {
@@ -42,14 +42,14 @@ export interface ButtonFields_action_NavigateToJourneyAction_journey {
 
 export interface ButtonFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: ButtonFields_action_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: ButtonFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface ButtonFields_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type ButtonFields_action = ButtonFields_action_NavigateAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_NavigateToJourneyAction | ButtonFields_action_LinkAction;

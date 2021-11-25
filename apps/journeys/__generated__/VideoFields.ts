@@ -22,7 +22,7 @@ export interface VideoFields {
   /**
    * startAt dictates at which point of time the video should start playing
    */
-  startAt: number;
+  startAt: number | null;
   /**
    * endAt dictates at which point of time the video should end
    */

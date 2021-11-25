@@ -11,7 +11,7 @@ export interface TriggerProps extends TreeBlock<TriggerBlock> {
 
 export function Trigger({
   player,
-  triggerAction,
+  action,
   triggerStart
 }: TriggerProps): ReactElement {
   const router = useRouter()
@@ -25,16 +25,16 @@ export function Trigger({
           player.pause()
           if (player.isFullscreen()) {
             player.exitFullscreen()
-            setTimeout(() => handleAction(router, triggerAction), 1000)
+            setTimeout(() => handleAction(router, action), 1000)
           } else {
-            handleAction(router, triggerAction)
+            handleAction(router, action)
           }
         }
       }
       player.on('timeupdate', timeUpdate)
       return () => player.off('timeupdate', timeUpdate)
     }
-  }, [player, triggerStart, router, triggerAction, triggered])
+  }, [player, triggerStart, router, action, triggered])
 
   return <></>
 }

@@ -9,13 +9,13 @@
 
 export interface RadioOptionFields_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface RadioOptionFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface RadioOptionFields_action_NavigateToJourneyAction_journey {
@@ -26,14 +26,14 @@ export interface RadioOptionFields_action_NavigateToJourneyAction_journey {
 
 export interface RadioOptionFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: RadioOptionFields_action_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: RadioOptionFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface RadioOptionFields_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type RadioOptionFields_action = RadioOptionFields_action_NavigateAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_NavigateToJourneyAction | RadioOptionFields_action_LinkAction;

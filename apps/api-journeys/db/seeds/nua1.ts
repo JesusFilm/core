@@ -23,6 +23,7 @@ export async function nua1(): Promise<void> {
     const resurrection = await resurrectionQuery.next();
 
     const journey = await db.collection('journeys').save({
+        _key: "1",
         title: 'Fact or Fiction',
         published: true,
         locale: 'en-US',
@@ -36,7 +37,8 @@ export async function nua1(): Promise<void> {
       journeyId: journey._key,
       type: 'StepBlock',
       locked: false,
-      parentOrder: 0
+      parentOrder: 0,
+      nextBlockId: "2"
   },  { returnNew: true })
 
   const card1 = await db.collection('blocks').save({
@@ -45,6 +47,7 @@ export async function nua1(): Promise<void> {
       parentBlockId: step1._key,
         themeMode: 'dark',
         themeName: 'base',
+        fullscreen: false,
       parentOrder: 0
   }, { returnNew: true })
 
@@ -64,7 +67,8 @@ export async function nua1(): Promise<void> {
           'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
   }, { returnNew: true})
   await db.collection('blocks').update(card1._key, { coverBlockId: video._key })
-  await db.collection('blocks').save({
+ 
+  const poster = await db.collection('blocks').save({
       journeyId: journey._key,
       type: 'ImageBlock',
       parentBlockId: video._key,
@@ -75,6 +79,8 @@ export async function nua1(): Promise<void> {
         blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
       parentOrder: 0
   })
+  await db.collection('blocks').update(video._key, { posterBlockId: poster._key })
+  
   await db.collection('blocks').save({
       journeyId: journey._key,
       type: 'TypographyBlock',
@@ -112,6 +118,7 @@ export async function nua1(): Promise<void> {
       journeyId: journey._key,
       type: 'StepBlock',
         locked: false,
+  nextBlockId: "2",
       parentOrder: 1
   }, { returnNew: true })
 
@@ -151,6 +158,7 @@ export async function nua1(): Promise<void> {
       journeyId: journey._key,
       type: 'StepBlock',
         locked: false,
+  nextBlockId: "2",
       parentOrder: 2
   }, { returnNew: true })
   await db.collection('blocks').save({
@@ -170,6 +178,7 @@ export async function nua1(): Promise<void> {
       parentBlockId: step3._key,
         themeMode: 'dark',
         themeName: 'base',
+        fullscreen: false,
       parentOrder: 0
   }, { returnNew: true})
   const image = await db.collection('blocks').save({
@@ -207,6 +216,7 @@ export async function nua1(): Promise<void> {
       journeyId: journey._key,
       type: 'StepBlock',
         locked: false,
+  nextBlockId: 2,
       parentOrder: 3
   }, { returnNew: true })
   await db.collection('blocks').save({
@@ -249,18 +259,17 @@ export async function nua1(): Promise<void> {
       journeyId: journey._key,
       type: 'StepBlock',
         locked: false,
+  nextBlockId: "2",
       parentOrder: 4
   }, { returnNew: true })
   await db.collection('blocks').save({
       journeyId: journey._key,
       type: 'VideoTriggerBlock',
       parentBlockId: video1._key,
-      extraAttrs: {
         triggerStart: 306,
         action: {
           gtmEventName: 'trigger',
           blockId: step5._key
-        }
       }
   })
 
@@ -270,6 +279,7 @@ export async function nua1(): Promise<void> {
       parentBlockId: step5._key,
         themeMode: 'dark',
         themeName: 'base',
+        fullscreen: false,
       parentOrder: 0
   }, { returnNew: true })
 
@@ -322,6 +332,7 @@ export async function nua1(): Promise<void> {
       journeyId: journey._key,
       type: 'StepBlock',
         locked: false,
+  nextBlockId: "2"
       parentOrder: 5
   })
   await db.collection('blocks').save({

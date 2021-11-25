@@ -9,8 +9,7 @@
       "options": {
         "outputPath": "dist/apps/api-gateway",
         "main": "apps/api-gateway/src/main.ts",
-        "tsConfig": "apps/api-gateway/tsconfig.app.json",
-        "assets": ["apps/api-gateway/src/assets"]
+        "tsConfig": "apps/api-gateway/tsconfig.app.json"
       },
       "configurations": {
         "production": {
@@ -32,19 +31,41 @@
         "buildTarget": "api-gateway:build"
       }
     },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+    "serve-all": {
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+        "commands": [
+          {
+            "command": "nx serve api-journeys"
+          },
+          {
+            "command": "nx serve api-gateway"
+          }
+        ],
+        "parallel": true
       }
     },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api-gateway"],
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
       "options": {
-        "jestConfig": "apps/api-gateway/jest.config.js",
-        "passWithNoTests": true
+        "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-gateway/tsconfig.json"
+      }
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml > apps/api-gateway/schema.graphql"
+          }
+        ]
       }
     }
   },

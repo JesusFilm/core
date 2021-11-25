@@ -2,7 +2,6 @@
   "version": 2,
   "projects": {
     "api-gateway": "apps/api-gateway",
-    "api-gateway-old": "apps/api-gateway-old",
     "api-journeys": "apps/api-journeys",
     "api-journeys-postgres": "apps/api-journeys-postgres",
     "journeys": "apps/journeys",

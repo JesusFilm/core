@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { GraphQLFederationModule } from '@nestjs/graphql'
+import { GraphQLFederationModule, GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
@@ -22,7 +22,7 @@ import { VideoModule } from './modules/video/video.module'
     RadioQuestionModule,
     SignUpModule,
     VideoModule,
-    GraphQLFederationModule.forRoot({
+    GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'apps/api-journeys/schema.graphql'),
       // buildSchemaOptions: {
       //   orphanedTypes: [Journey],

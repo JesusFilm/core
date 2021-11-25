@@ -11,13 +11,13 @@ import { IconName, IconColor, IconSize } from "./globalTypes";
 
 export interface SignUpFields_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface SignUpFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface SignUpFields_action_NavigateToJourneyAction_journey {
@@ -28,14 +28,14 @@ export interface SignUpFields_action_NavigateToJourneyAction_journey {
 
 export interface SignUpFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: SignUpFields_action_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: SignUpFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface SignUpFields_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction;
@@ -43,8 +43,8 @@ export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFie
 export interface SignUpFields_submitIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor;
-  size: IconSize;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface SignUpFields {

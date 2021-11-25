@@ -17,26 +17,26 @@ export interface GetJourney_journey_primaryImageBlock {
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor;
-  size: IconSize;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_endIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor;
-  size: IconSize;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
@@ -47,14 +47,14 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyA
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction;
@@ -101,7 +101,7 @@ export interface GetJourney_journey_blocks_CardBlock {
    *     is set to true the coverBlock Image should be displayed as a blur in the
    *     background.
    */
-  fullscreen: boolean | null;
+  fullscreen: boolean;
 }
 
 export interface GetJourney_journey_blocks_GridContainerBlock {
@@ -140,13 +140,13 @@ export interface GetJourney_journey_blocks_ImageBlock {
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
@@ -157,14 +157,14 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJou
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
@@ -187,13 +187,13 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
@@ -204,14 +204,14 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyA
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
 export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction;
@@ -219,8 +219,8 @@ export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_bl
 export interface GetJourney_journey_blocks_SignUpBlock_submitIcon {
   __typename: "Icon";
   name: IconName;
-  color: IconColor;
-  size: IconSize;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock {
@@ -275,7 +275,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   /**
    * startAt dictates at which point of time the video should start playing
    */
-  startAt: number;
+  startAt: number | null;
   /**
    * endAt dictates at which point of time the video should end
    */
@@ -289,36 +289,36 @@ export interface GetJourney_journey_blocks_VideoBlock {
   videoContent: GetJourney_journey_blocks_VideoBlock_videoContent;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateAction {
   __typename: "NavigateAction";
-  gtmEventName: string;
+  gtmEventName: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  gtmEventName: string;
-  blockId: string;
+  gtmEventName: string | null;
+  blockId: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  gtmEventName: string;
-  journey: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey;
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_action_LinkAction {
   __typename: "LinkAction";
-  gtmEventName: string;
-  url: string;
+  gtmEventName: string | null;
+  url: string | null;
 }
 
-export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction;
+export type GetJourney_journey_blocks_VideoTriggerBlock_action = GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_VideoTriggerBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -328,8 +328,8 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
    * triggerStart sets the time as to when a video navigates to the next block,
    *   this is the number of seconds since the start of the video
    */
-  triggerStart: number;
-  triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
+  triggerStart: number | null;
+  action: GetJourney_journey_blocks_VideoTriggerBlock_action | null;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
