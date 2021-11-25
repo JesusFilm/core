@@ -33,7 +33,7 @@ import { Journey } from '../journey/journey.models';
 
     // @ResolveField(of => Journey)
     // journey(@Parent() block: ImageBlock) {
-    //   return { __typename: 'Journey', id: block.journey._key };
+    //   return { __typename: 'Journey', id: block.journeyId };
     // }
     
     @ResolveReference()

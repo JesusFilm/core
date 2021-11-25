@@ -1,9 +1,8 @@
-import { Directive, Field, ID, Int, InterfaceType, ObjectType } from '@nestjs/graphql'
+import { Field, ID, Int, InterfaceType, ObjectType } from '@nestjs/graphql'
 import { Action } from '../action/action.models'
 import { ButtonColor, ButtonSize, ButtonVariant } from '../button/button.models'
 import { GridAlignItems, GridDirection, GridJustifyContent } from '../grid/grid.models'
 import { Icon } from '../icon/icon.models'
-import { Journey } from '../journey/journey.models'
 import { ThemeMode, ThemeName } from '../theme/theme.models'
 import { TypographyAlign, TypographyColor, TypographyVariant } from '../typography/typography.models'
 import { VideoContent } from '../video/video.models'
@@ -40,7 +39,7 @@ import { VideoContent } from '../video/video.models'
     }
   }
 })
-@Directive('@key(fields: "id")')
+
 export abstract class Block {
   @Field(type => ID, { name: 'id' })
   readonly _key: string

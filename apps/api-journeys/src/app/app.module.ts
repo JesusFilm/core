@@ -24,9 +24,9 @@ import { VideoModule } from './modules/video/video.module'
     VideoModule,
     GraphQLFederationModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'apps/api-journeys/schema.graphql'),
-      buildSchemaOptions: {
-        orphanedTypes: [Journey],
-      },
+      // buildSchemaOptions: {
+      //   orphanedTypes: [Journey],
+      // },
       cors: true,
     })
   ]
