@@ -193,7 +193,7 @@ type Journey @key(fields: "id") {
   slug: String!
   publishedAt: DateTime
   createdAt: DateTime!
-  status: JourneyStatus!
+  status: JourneyStatus
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }

@@ -219,7 +219,7 @@ type Journey
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
-  status: JourneyStatus! @join__field(graph: JOURNEYS)
+  status: JourneyStatus @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
