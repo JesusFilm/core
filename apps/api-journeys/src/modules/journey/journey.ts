@@ -85,6 +85,7 @@ const typeDefs = gql`
     journey: Journey
   }
 `
+
 const resolvers: JourneyModule.Resolvers = {
   Journey: {
     status: (journey) => {
