@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { JourneyStatus } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetJourney
 // ====================================================
@@ -17,6 +19,9 @@ export interface GetJourney_journey {
   id: string;
   title: string;
   description: string | null;
+  status: JourneyStatus | null;
+  createdAt: any;
+  publishedAt: any | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
 }
 

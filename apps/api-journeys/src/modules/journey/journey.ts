@@ -16,15 +16,22 @@ const typeDefs = gql`
     base
   }
 
+  enum JourneyStatus {
+    draft
+    published
+  }
+
   type Journey @key(fields: "id") {
     id: ID!
-    published: Boolean!
     title: String!
     locale: String!
     themeMode: ThemeMode!
     themeName: ThemeName!
     description: String
     slug: String!
+    publishedAt: DateTime
+    createdAt: DateTime!
+    status: JourneyStatus
   }
 
   enum IdType {
@@ -32,8 +39,10 @@ const typeDefs = gql`
     slug
   }
 
+  scalar DateTime
+
   extend type Query {
-    journeys: [Journey!]!
+    journeys(status: JourneyStatus): [Journey!]!
     journey(id: ID!, idType: IdType): Journey
   }
 
@@ -78,11 +87,29 @@ const typeDefs = gql`
 `
 
 const resolvers: JourneyModule.Resolvers = {
+  Journey: {
+    status: (journey) => {
+      return journey.publishedAt === null ? 'draft' : 'published'
+    }
+  },
   Query: {
-    async journeys(_, __, { db }) {
-      return await db.journey.findMany({
-        where: { published: true }
-      })
+    async journeys(_, { status }, { db }) {
+      switch (status) {
+        case 'published':
+          return await db.journey.findMany({
+            where: {
+              publishedAt: { not: null }
+            }
+          })
+        case 'draft':
+          return await db.journey.findMany({
+            where: {
+              publishedAt: null
+            }
+          })
+        default:
+          return await db.journey.findMany()
+      }
     },
     async journey(_parent, { id, idType }, { db }) {
       if (idType === 'slug') {
@@ -161,7 +188,7 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.update({
         where: { id },
         data: {
-          published: true
+          publishedAt: new Date()
         }
       })
     }

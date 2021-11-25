@@ -12,7 +12,6 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
     journey = await prisma.journey.create({
       data: {
         title: "What's Jesus Got to Do With Me?",
-        published: true,
         locale: 'en-US',
         themeMode: ThemeMode.light,
         themeName: ThemeName.base,
@@ -20,6 +19,10 @@ export async function nuaEp8(prisma: PrismaClient): Promise<void> {
       }
     })
   }
+  await prisma.journey.update({
+    where: { id: journey.id },
+    data: { publishedAt: new Date('2031-12-25T12:34:56.647Z') }
+  })
   await prisma.response.deleteMany({
     where: { block: { journeyId: journey.id } }
   })

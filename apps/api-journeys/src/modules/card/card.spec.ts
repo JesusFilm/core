@@ -8,6 +8,8 @@ import { DocumentNode, ExecutionResult } from 'graphql'
 
 describe('CardModule', () => {
   let app, journeyId
+  const publishedAt = new Date()
+  const createdAt = new Date()
 
   beforeEach(() => {
     app = testkit.testModule(cardModule, {
@@ -18,13 +20,14 @@ describe('CardModule', () => {
     dbMock.journey.findUnique.mockResolvedValue({
       id: journeyId,
       title: 'published',
-      published: true,
       locale: 'en-US',
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       description: null,
       primaryImageBlockId: null,
-      slug: 'published-slug'
+      slug: 'published-slug',
+      publishedAt,
+      createdAt
     })
   })
 
