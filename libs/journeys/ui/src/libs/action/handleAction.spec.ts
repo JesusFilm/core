@@ -42,6 +42,15 @@ describe('handleAction', () => {
     expect(router.push).toHaveBeenCalledWith('/journey-slug')
   })
 
+  it('should handle LinkAction', () => {
+    handleAction(router, {
+      __typename: 'LinkAction',
+      url: 'https://www.google.com/',
+      gtmEventName: null
+    })
+    expect(router.push).toHaveBeenCalledWith('https://www.google.com/')
+  })
+
   it('should handle NavigateToJourneyAction when journey is null', () => {
     expect(() =>
       handleAction(router, {
