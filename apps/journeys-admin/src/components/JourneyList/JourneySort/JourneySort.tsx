@@ -1,4 +1,11 @@
-import { ReactElement, useState, MouseEvent, FormEvent } from 'react'
+import {
+  ReactElement,
+  useState,
+  useEffect,
+  useRef,
+  MouseEvent,
+  FormEvent
+} from 'react'
 import {
   Box,
   Button,
@@ -22,13 +29,23 @@ export enum SortBy {
 interface JourneySortProps {
   sortBy: SortBy
   setSortBy: (value: SortBy) => void
+  open?: boolean // for testing
 }
 
-const JourneySort = ({ sortBy, setSortBy }: JourneySortProps): ReactElement => {
-  const [showSortBy, setShowSortBy] = useState(false)
+const JourneySort = ({
+  sortBy,
+  setSortBy,
+  open
+}: JourneySortProps): ReactElement => {
+  const [showSortBy, setShowSortBy] = useState(open ?? false)
   const [value, setValue] = useState(sortBy)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
+  const chipRef = useRef(null)
+
+  useEffect(() => {
+    setAnchorEl(chipRef.current)
+  }, [chipRef])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -89,6 +106,7 @@ const JourneySort = ({ sortBy, setSortBy }: JourneySortProps): ReactElement => {
       <Chip
         label={sortBy === SortBy.UNDEFINED ? 'Sort By' : sortBy}
         onClick={handleClick}
+        ref={chipRef}
       />
       {breakpoints.md ? (
         <Popover
