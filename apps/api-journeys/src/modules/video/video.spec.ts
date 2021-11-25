@@ -13,7 +13,8 @@ import {
   Block,
   ThemeName,
   ThemeMode,
-  Response
+  Response,
+  JourneyStatus
 } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { get } from 'lodash'
@@ -39,7 +40,8 @@ describe('VideoModule', () => {
       primaryImageBlockId: null,
       slug: 'published-slug',
       publishedAt,
-      createdAt
+      createdAt,
+      status: JourneyStatus.published
     })
   })
 

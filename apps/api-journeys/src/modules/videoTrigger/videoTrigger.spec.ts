@@ -8,7 +8,12 @@ import {
 } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
-import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
+import {
+  Block,
+  ThemeName,
+  ThemeMode,
+  JourneyStatus
+} from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 
 describe('VideoTriggerModule', () => {
@@ -32,7 +37,8 @@ describe('VideoTriggerModule', () => {
       primaryImageBlockId: null,
       slug: 'published-slug',
       publishedAt,
-      createdAt
+      createdAt,
+      status: JourneyStatus.published
     })
   })
 

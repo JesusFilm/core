@@ -7,7 +7,8 @@ import {
   Journey,
   Block,
   ThemeName,
-  ThemeMode
+  ThemeMode,
+  JourneyStatus
 } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { ImageBlockCreateInput } from '../../__generated__/types'
@@ -55,7 +56,8 @@ describe('ImageModule', () => {
       primaryImageBlockId: null,
       slug: 'published-slug',
       publishedAt,
-      createdAt
+      createdAt,
+      status: JourneyStatus.published
     })
   })
 
@@ -137,7 +139,8 @@ describe('ImageModule', () => {
         primaryImageBlockId: 'primaryImageBlockId',
         slug: 'published-slug',
         publishedAt,
-        createdAt
+        createdAt,
+        status: JourneyStatus.published
       }
 
       const primaryImage: Block = {
@@ -190,7 +193,8 @@ describe('ImageModule', () => {
         primaryImageBlockId: 'primaryImageBlockId',
         slug: 'published-slug',
         publishedAt,
-        createdAt
+        createdAt,
+        status: JourneyStatus.published
       }
 
       const primaryImage: Block = {
