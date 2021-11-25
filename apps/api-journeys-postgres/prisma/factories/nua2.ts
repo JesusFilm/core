@@ -229,7 +229,7 @@ export async function nua2(prisma: PrismaClient): Promise<void> {
       parentBlockId: card3.id,
       extraAttrs: {
         src: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-        alt: 'Where did his body go?',
+        alt: 'here did hWis body go?',
         width: 1920,
         height: 1080,
         blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-'
