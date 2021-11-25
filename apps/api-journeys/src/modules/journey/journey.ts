@@ -85,7 +85,7 @@ const typeDefs = gql`
     journey: Journey
   }
 `
-
+// reverted changes
 const resolvers: JourneyModule.Resolvers = {
   Journey: {
     status: (journey) => {
