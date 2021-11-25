@@ -54,7 +54,6 @@ module.exports = {
       '@emotion/react': require.resolve('@emotion/react'),
       '@emotion/cache': require.resolve('@emotion/cache')
     }
-    console.log(config.resolve.alias)
 
     return config
   }
