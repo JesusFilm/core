@@ -3,7 +3,7 @@ import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
 import { isNil, omitBy, get } from 'lodash'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { Prisma, JourneyStatus } from '.prisma/api-journeys-client'
+import { Prisma } from '.prisma/api-journeys-client'
 import slugify from 'slugify'
 
 const typeDefs = gql`
@@ -189,7 +189,7 @@ const resolvers: JourneyModule.Resolvers = {
         where: { id },
         data: {
           publishedAt: new Date(),
-          status: JourneyStatus.published
+          status: 'published'
         }
       })
     }

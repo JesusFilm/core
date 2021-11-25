@@ -14,8 +14,7 @@ import {
   Block,
   ThemeName,
   ThemeMode,
-  Response,
-  JourneyStatus
+  Response
 } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 
@@ -46,8 +45,7 @@ describe('SignUpModule', () => {
       primaryImageBlockId: null,
       slug: 'published-slug',
       publishedAt,
-      createdAt,
-      status: JourneyStatus.published
+      createdAt
     })
   })
 

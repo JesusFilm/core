@@ -9,8 +9,7 @@ import {
   ThemeName,
   ThemeMode,
   Prisma,
-  Block,
-  JourneyStatus
+  Block
 } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { actionModule, blockModule, buttonModule, iconModule } from '..'
@@ -51,8 +50,7 @@ describe('JourneyModule', () => {
     primaryImageBlockId: null,
     slug: 'published-slug',
     publishedAt,
-    createdAt,
-    status: JourneyStatus.published
+    createdAt
   }
 
   const draftJourney: Journey = {
@@ -65,8 +63,7 @@ describe('JourneyModule', () => {
     primaryImageBlockId: null,
     slug: 'draft-slug',
     publishedAt: null,
-    createdAt,
-    status: JourneyStatus.draft
+    createdAt
   }
 
   const omitProps = ['description', 'primaryImageBlockId']
@@ -96,8 +93,14 @@ describe('JourneyModule', () => {
         `)
 
         expect(data?.journeys).toEqual([
-          { ...omit(draftJourney, omitProps) },
-          { ...omit(publishedJourney, omitProps) }
+          {
+            ...omit(draftJourney, omitProps),
+            status: 'draft'
+          },
+          {
+            ...omit(publishedJourney, omitProps),
+            status: 'published'
+          }
         ])
         expect(dbMock.journey.findMany).toBeCalledWith()
       })
@@ -186,7 +189,6 @@ describe('JourneyModule', () => {
                 slug
                 publishedAt
                 createdAt
-                status
               }
             }
           `,
@@ -448,13 +450,13 @@ describe('JourneyModule', () => {
         )
 
         expect(data?.journeyPublish).toEqual({
-          ...omit(publishedJourney, omitProps)
+          ...omit(publishedJourney, ['description', 'primaryImageBlockId']),
+          status: 'published'
         })
         expect(dbMock.journey.update).toBeCalledWith({
           where: { id: publishedJourney.id },
           data: {
-            publishedAt: new Date(),
-            status: JourneyStatus.published
+            publishedAt: new Date()
           }
         })
       })
@@ -498,8 +500,7 @@ describe('JourneyModule', () => {
           primaryImageBlockId: null,
           slug: 'published-slug',
           publishedAt,
-          createdAt,
-          status: JourneyStatus.published
+          createdAt
         }
         dbMock.journey.findUnique.mockResolvedValue(journey)
 

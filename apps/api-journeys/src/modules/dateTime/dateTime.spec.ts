@@ -38,6 +38,7 @@ describe('DateTimeModule', () => {
         dateTime
       }
     `)
+    console.log(data?.dateTime)
     expect(data?.dateTime).toEqual('2021-11-19T12:34:56.647Z')
   })
 })
