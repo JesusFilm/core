@@ -31,7 +31,7 @@ const typeDefs = gql`
     slug: String!
     publishedAt: DateTime
     createdAt: DateTime!
-    status: JourneyStatus
+    status: JourneyStatus!
   }
 
   enum IdType {
