@@ -31,7 +31,7 @@ const typeDefs = gql`
     slug: String!
     publishedAt: DateTime
     createdAt: DateTime!
-    status: JourneyStatus
+    status: JourneyStatus!
   }
 
   enum IdType {
@@ -188,7 +188,8 @@ const resolvers: JourneyModule.Resolvers = {
       return await db.journey.update({
         where: { id },
         data: {
-          publishedAt: new Date()
+          publishedAt: new Date(),
+          status: 'published'
         }
       })
     }
