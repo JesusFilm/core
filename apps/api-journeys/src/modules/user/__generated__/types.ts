@@ -3,21 +3,16 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace UserModule {
   interface DefinedFields {
-    User: 'id' | 'firebaseId' | 'firstName' | 'lastName' | 'email' | 'imageUrl';
-    Query: 'users' | 'user';
+    User: 'id' | 'firstName' | 'lastName' | 'email' | 'imageUrl';
+    Query: 'me' | 'users' | 'user';
     Mutation: 'userCreate';
     UserJourney: 'user';
   };
   
-  interface DefinedEnumValues {
-    UserIdType: 'databaseId' | 'firebaseId';
-  };
-  
   interface DefinedInputFields {
-    UserCreateInput: 'id' | 'firebaseId' | 'firstName' | 'lastName' | 'email' | 'imageUrl';
+    UserCreateInput: 'id' | 'firstName' | 'lastName' | 'email' | 'imageUrl';
   };
   
-  export type UserIdType = DefinedEnumValues['UserIdType'];
   export type UserCreateInput = Pick<Types.UserCreateInput, DefinedInputFields['UserCreateInput']>;
   export type User = Pick<Types.User, DefinedFields['User']>;
   export type UserJourney = Types.UserJourney;
@@ -43,7 +38,6 @@ export namespace UserModule {
     User?: {
       '*'?: gm.Middleware[];
       id?: gm.Middleware[];
-      firebaseId?: gm.Middleware[];
       firstName?: gm.Middleware[];
       lastName?: gm.Middleware[];
       email?: gm.Middleware[];
@@ -55,6 +49,7 @@ export namespace UserModule {
     };
     Query?: {
       '*'?: gm.Middleware[];
+      me?: gm.Middleware[];
       users?: gm.Middleware[];
       user?: gm.Middleware[];
     };

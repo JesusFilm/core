@@ -4,21 +4,27 @@ import { userJourneyModule } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
 import {
-  User,
   ThemeName,
   UserJourney,
   Journey,
   ThemeMode
 } from '.prisma/api-journeys-client'
-import { DocumentNode, ExecutionResult } from 'graphql'
+import { DocumentNode, ExecutionResult, GraphQLError } from 'graphql'
 
 describe('UserJourneyModule', () => {
-  let app
+  let app, user
 
   beforeEach(() => {
     app = testkit.testModule(userJourneyModule, {
       schemaBuilder
     })
+    user = {
+      id: uuidv4(),
+      firstName: 'fo',
+      lastName: 'sho',
+      email: 'tho@no.co',
+      imageUrl: 'po'
+    }
   })
 
   async function query(
@@ -52,14 +58,7 @@ describe('UserJourneyModule', () => {
         }
         dbMock.journey.create.mockResolvedValue(journey)
 
-        const user: User = {
-          id: uuidv4(),
-          firebaseId: 'yo',
-          firstName: 'fo',
-          lastName: 'sho',
-          email: 'tho@no.co',
-          imageUrl: 'po'
-        }
+
         dbMock.user.create.mockResolvedValue(user)
 
         const userJourney: UserJourney = {
@@ -84,6 +83,9 @@ describe('UserJourneyModule', () => {
               journeyId: journey.id,
               role: 'editor'
             }
+          },
+          {
+            userId: user.id
           }
         )
         expect(data?.userJourneyCreate).toEqual({
@@ -95,13 +97,22 @@ describe('UserJourneyModule', () => {
     })
 
     describe('userJourney', () => {
-      it('updates a user journey', async () => {
-        const userJourney: UserJourney = {
+      it('updates a user journey with journey owner', async () => {
+        const journeyId = uuidv4()
+        const userJourneyOwner: UserJourney = {
           userId: uuidv4(),
-          journeyId: uuidv4(),
+          journeyId: journeyId,
           role: 'owner'
         }
+        dbMock.userJourney.update.mockResolvedValue(userJourneyOwner)
+
+        const userJourney: UserJourney = {
+          userId: uuidv4(),
+          journeyId: journeyId,
+          role: 'inviteRequested'
+        }
         dbMock.userJourney.update.mockResolvedValue(userJourney)
+
         const { data } = await query(
           gql`
             mutation ($input: UserJourneyUpdateInput!) {
@@ -115,9 +126,12 @@ describe('UserJourneyModule', () => {
           {
             input: {
               userId: userJourney.userId,
-              journeyId: userJourney.journeyId,
-              role: 'owner'
+              journeyId: journeyId,
+              role: 'editor'
             }
+          },
+          {
+            userId: userJourneyOwner.userId
           }
         )
         expect(data?.userJourneyUpdate).toEqual({
@@ -125,6 +139,41 @@ describe('UserJourneyModule', () => {
           journeyId: userJourney.journeyId,
           role: 'owner'
         })
+      })
+    })
+
+    describe('userJourney', () => {
+      it('does not update a user journey by a non-owner', async () => {
+        const userJourney: UserJourney = {
+          userId: uuidv4(),
+          journeyId: uuidv4(),
+          role: 'inviteRequested'
+        }
+        dbMock.userJourney.update.mockResolvedValue(userJourney)
+        const {data, errors} = await query(
+          gql`
+            mutation ($input: UserJourneyUpdateInput!) {
+              userJourneyUpdate(input: $input) {
+                userId
+                journeyId
+                role
+              }
+            }
+          `,
+          {
+            input: {
+              userId: userJourney.userId,
+              journeyId: userJourney.journeyId,
+              role: 'editor'
+            }
+          },
+          {
+            userId: "notownerid"
+          }
+        )
+        expect(errors).toBeDefined();
+        expect(errors).toEqual([new GraphQLError('You do not own this journey so you cannot change roles')])
+        expect(data?.userJourneyUpdate).toEqual(undefined)
       })
     })
   })

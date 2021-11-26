@@ -294,7 +294,8 @@ type NavigateToJourneyAction implements Action {
 type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
-  user(id: ID!, userIdType: UserIdType): User @join__field(graph: JOURNEYS)
+  me: User @join__field(graph: JOURNEYS)
+  user(id: ID!): User @join__field(graph: JOURNEYS)
   users: [User!]! @join__field(graph: JOURNEYS)
 }
 
@@ -430,7 +431,6 @@ type User
   @join__type(graph: JOURNEYS, key: "id")
 {
   email: String @join__field(graph: JOURNEYS)
-  firebaseId: ID @join__field(graph: JOURNEYS)
   firstName: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   imageUrl: String @join__field(graph: JOURNEYS)
@@ -440,16 +440,10 @@ type User
 
 input UserCreateInput {
   email: String
-  firebaseId: ID
   firstName: String
   id: ID
   imageUrl: String
   lastName: String
-}
-
-enum UserIdType {
-  databaseId
-  firebaseId
 }
 
 type UserJourney {
@@ -471,9 +465,14 @@ enum UserJourneyRole {
   owner
 }
 
+enum UserJourneyRoleForUpdates {
+  editor
+  inviteRequested
+}
+
 input UserJourneyUpdateInput {
   journeyId: ID!
-  role: UserJourneyRole!
+  role: UserJourneyRoleForUpdates!
   userId: ID!
 }
 

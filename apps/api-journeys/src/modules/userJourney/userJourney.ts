@@ -1,12 +1,18 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { UserJourneyModule } from './__generated__/types'
+import { AuthenticationError } from 'apollo-server-errors'
 
 const typeDefs = gql`
   enum UserJourneyRole {
     inviteRequested
     editor
     owner
+  }
+
+  enum UserJourneyRoleForUpdates {
+    inviteRequested
+    editor
   }
 
   input UserJourneyCreateInput {
@@ -18,7 +24,7 @@ const typeDefs = gql`
   input UserJourneyUpdateInput {
     userId: ID!
     journeyId: ID!
-    role: UserJourneyRole!
+    role: UserJourneyRoleForUpdates!
   }
 
   extend type Journey {
@@ -65,18 +71,37 @@ const resolvers: UserJourneyModule.Resolvers = {
   Mutation: {
     async userJourneyCreate(
       _parent,
-      { input: { userId, journeyId, role } },
-      { db }
+      { input },
+      { db, userId }
     ) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
+
       return await db.userJourney.create({
         data: {
-          userId: userId,
-          journeyId: journeyId,
-          role: role as UserJourneyModule.UserJourneyRole
+          userId: input.userId,
+          journeyId: input.journeyId,
+          role: input.role as UserJourneyModule.UserJourneyRole
         }
       })
     },
-    async userJourneyUpdate(_parent, { input }, { db }) {
+    async userJourneyUpdate(_parent, { input }, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
+
+      // can only update user journey roles if you are the journey's owner. 
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId: userId,
+            journeyId: input.journeyId
+          },
+        }
+      })
+
+      if (actor === null || actor?.role !== "owner")
+        throw new AuthenticationError('You do not own this journey so you cannot change roles')
+
       return await db.userJourney.update({
         where: {
           uniqueUserJourney: {

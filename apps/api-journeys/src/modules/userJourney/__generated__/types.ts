@@ -11,6 +11,7 @@ export namespace UserJourneyModule {
   
   interface DefinedEnumValues {
     UserJourneyRole: 'inviteRequested' | 'editor' | 'owner';
+    UserJourneyRoleForUpdates: 'inviteRequested' | 'editor';
   };
   
   interface DefinedInputFields {
@@ -19,6 +20,7 @@ export namespace UserJourneyModule {
   };
   
   export type UserJourneyRole = DefinedEnumValues['UserJourneyRole'];
+  export type UserJourneyRoleForUpdates = DefinedEnumValues['UserJourneyRoleForUpdates'];
   export type UserJourneyCreateInput = Pick<Types.UserJourneyCreateInput, DefinedInputFields['UserJourneyCreateInput']>;
   export type UserJourneyUpdateInput = Pick<Types.UserJourneyUpdateInput, DefinedInputFields['UserJourneyUpdateInput']>;
   export type Journey = Types.Journey;

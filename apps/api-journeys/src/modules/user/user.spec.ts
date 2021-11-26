@@ -3,17 +3,24 @@ import { schemaBuilder } from '@core/shared/util-graphql'
 import { userModule } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
-import { User } from '.prisma/api-journeys-client'
 import { DocumentNode, ExecutionResult } from 'graphql'
 import { pick } from 'lodash'
 
 describe('UserModule', () => {
-  let app
+  let app, user
 
   beforeEach(() => {
     app = testkit.testModule(userModule, {
       schemaBuilder
     })
+
+    user = {
+      id: uuidv4(),
+      firstName: 'fo',
+      lastName: 'sho',
+      email: 'tho@no.co',
+      imageUrl: 'po'
+    }
   })
 
   async function query(
@@ -34,21 +41,12 @@ describe('UserModule', () => {
   describe('Query', () => {
     describe('get user by id', () => {
       it('returns user', async () => {
-        const user: User = {
-          id: uuidv4(),
-          firebaseId: 'yo',
-          firstName: 'fo',
-          lastName: 'sho',
-          email: 'tho@no.co',
-          imageUrl: 'po'
-        }
         dbMock.user.findUnique.mockResolvedValue(user)
         const { data } = await query(
           gql`
             query ($id: ID!) {
               user(id: $id) {
                 id
-                firebaseId
                 firstName
                 lastName
                 email
@@ -64,7 +62,6 @@ describe('UserModule', () => {
           pick(user, [
             'id',
             'email',
-            'firebaseId',
             'firstName',
             'lastName',
             'imageUrl'
@@ -73,64 +70,14 @@ describe('UserModule', () => {
       })
     })
 
-    describe('get user by firebase id', () => {
-      it('returns user', async () => {
-        const user: User = {
-          id: uuidv4(),
-          firebaseId: uuidv4(),
-          firstName: 'fo',
-          lastName: 'sho',
-          email: 'tho@no.co',
-          imageUrl: 'po'
-        }
-        dbMock.user.findUnique.mockResolvedValue(user)
-        const { data } = await query(
-          gql`
-            query ($id: ID!, $userIdType: UserIdType) {
-              user(id: $id, userIdType: $userIdType) {
-                id
-                firebaseId
-                firstName
-                lastName
-                email
-                imageUrl
-              }
-            }
-          `,
-          {
-            id: user.firebaseId,
-            userIdType: 'firebaseId'
-          }
-        )
-        expect(data?.user).toEqual(
-          pick(user, [
-            'id',
-            'email',
-            'firebaseId',
-            'firstName',
-            'lastName',
-            'imageUrl'
-          ])
-        )
-      })
-    })
 
     describe('list of users', () => {
       it('returns all users', async () => {
-        const user: User = {
-          id: uuidv4(),
-          firebaseId: 'yo',
-          firstName: 'fo',
-          lastName: 'sho',
-          email: 'tho@no.co',
-          imageUrl: 'po'
-        }
         dbMock.user.findMany.mockResolvedValue([user])
         const { data } = await query(gql`
           query {
             users {
               id
-              firebaseId
               firstName
               lastName
               email
@@ -142,7 +89,6 @@ describe('UserModule', () => {
           pick(user, [
             'id',
             'email',
-            'firebaseId',
             'firstName',
             'lastName',
             'imageUrl'
@@ -154,21 +100,12 @@ describe('UserModule', () => {
 
   describe('Mutation', () => {
     it('creates a user', async () => {
-      const user: User = {
-        id: uuidv4(),
-        firebaseId: 'yo',
-        firstName: 'fo',
-        lastName: 'sho',
-        email: 'tho@no.co',
-        imageUrl: 'po'
-      }
       dbMock.user.create.mockResolvedValue(user)
       const { data } = await query(
         gql`
           mutation ($input: UserCreateInput!) {
             userCreate(input: $input) {
               id
-              firebaseId
               firstName
               lastName
               email
@@ -178,7 +115,7 @@ describe('UserModule', () => {
         `,
         {
           input: {
-            firebaseId: 'yo',
+            id: user.id,
             firstName: 'fo',
             lastName: 'sho',
             email: 'tho@no.co',
@@ -191,7 +128,6 @@ describe('UserModule', () => {
       )
       expect(data?.userCreate).toEqual({
         id: user.id,
-        firebaseId: 'yo',
         firstName: 'fo',
         lastName: 'sho',
         email: 'tho@no.co',

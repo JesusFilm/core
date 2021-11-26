@@ -4,14 +4,8 @@ import { AuthenticationError } from 'apollo-server-errors'
 import { UserModule } from './__generated__/types'
 
 const typeDefs = gql`
-  enum UserIdType {
-    databaseId
-    firebaseId
-  }
-
   input UserCreateInput {
     id: ID
-    firebaseId: ID
     firstName: String
     lastName: String
     email: String
@@ -20,7 +14,6 @@ const typeDefs = gql`
 
   type User @key(fields: "id") {
     id: ID!
-    firebaseId: ID
     firstName: String
     lastName: String
     email: String
@@ -32,8 +25,9 @@ const typeDefs = gql`
   }
 
   extend type Query {
+    me: User
     users: [User!]!
-    user(id: ID!, userIdType: UserIdType): User
+    user(id: ID!): User
   }
 
   extend type Mutation {
@@ -56,27 +50,25 @@ const resolvers: UserModule.Resolvers = {
     async users(_, __, { db }) {
       return await db.user.findMany({})
     },
-    async user(_parent, { id, userIdType }, { db }) {
-      if (userIdType === 'firebaseId') {
-        return await db.user.findUnique({ where: { firebaseId: id } })
-      } else {
-        return await db.user.findUnique({ where: { id } })
-      }
+    async user(_parent, { id }, { db }) {
+      return await db.user.findUnique({ where: { id } })
+    },
+    async me(_parent, _, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('You must be logged in to get your profile')
+
+      return await db.user.findUnique({ where: { id: userId } })
     }
   },
   Mutation: {
     async userCreate(
       _parent,
-      { input: { id, firebaseId, firstName, lastName, email, imageUrl } },
-      { db, userId }
+      { input: { id, firstName, lastName, email, imageUrl } },
+      { db }
     ) {
-      if (userId == null)
-        throw new AuthenticationError('No user token provided')
-
       return await db.user.create({
         data: {
-          id: id as string | undefined,
-          firebaseId: firebaseId as string,
+          id: id as string,
           firstName: firstName as string,
           lastName: lastName as string,
           email: email as string,

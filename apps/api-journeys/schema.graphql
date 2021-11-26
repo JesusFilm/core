@@ -266,8 +266,9 @@ type NavigateToJourneyAction implements Action {
 extend type Query {
   journeys: [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  me: User
   users: [User!]!
-  user(id: ID!, userIdType: UserIdType): User
+  user(id: ID!): User
 }
 
 type RadioOptionBlock implements Block {
@@ -397,7 +398,6 @@ enum TypographyVariant {
 
 type User @key(fields: "id") {
   id: ID!
-  firebaseId: ID
   firstName: String
   lastName: String
   email: String
@@ -407,16 +407,10 @@ type User @key(fields: "id") {
 
 input UserCreateInput {
   id: ID
-  firebaseId: ID
   firstName: String
   lastName: String
   email: String
   imageUrl: String
-}
-
-enum UserIdType {
-  databaseId
-  firebaseId
 }
 
 type UserJourney {
@@ -438,10 +432,15 @@ enum UserJourneyRole {
   owner
 }
 
+enum UserJourneyRoleForUpdates {
+  inviteRequested
+  editor
+}
+
 input UserJourneyUpdateInput {
   userId: ID!
   journeyId: ID!
-  role: UserJourneyRole!
+  role: UserJourneyRoleForUpdates!
 }
 
 type VideoArclight implements VideoContent {

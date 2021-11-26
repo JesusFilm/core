@@ -328,6 +328,7 @@ export type Query = {
   __typename?: 'Query';
   journey?: Maybe<Journey>;
   journeys: Array<Journey>;
+  me?: Maybe<User>;
   user?: Maybe<User>;
   users: Array<User>;
 };
@@ -341,7 +342,6 @@ export type QueryJourneyArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID'];
-  userIdType?: Maybe<UserIdType>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -468,7 +468,6 @@ export type TypographyVariant =
 export type User = {
   __typename?: 'User';
   email?: Maybe<Scalars['String']>;
-  firebaseId?: Maybe<Scalars['ID']>;
   firstName?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   imageUrl?: Maybe<Scalars['String']>;
@@ -478,16 +477,11 @@ export type User = {
 
 export type UserCreateInput = {
   email?: Maybe<Scalars['String']>;
-  firebaseId?: Maybe<Scalars['ID']>;
   firstName?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['ID']>;
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
 };
-
-export type UserIdType =
-  | 'databaseId'
-  | 'firebaseId';
 
 export type UserJourney = {
   __typename?: 'UserJourney';
@@ -508,9 +502,13 @@ export type UserJourneyRole =
   | 'inviteRequested'
   | 'owner';
 
+export type UserJourneyRoleForUpdates =
+  | 'editor'
+  | 'inviteRequested';
+
 export type UserJourneyUpdateInput = {
   journeyId: Scalars['ID'];
-  role: UserJourneyRole;
+  role: UserJourneyRoleForUpdates;
   userId: Scalars['ID'];
 };
 
@@ -708,10 +706,10 @@ export type ResolversTypes = {
   TypographyVariant: TypographyVariant;
   User: ResolverTypeWrapper<UserType>;
   UserCreateInput: UserCreateInput;
-  UserIdType: UserIdType;
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
   UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyRole: UserJourneyRole;
+  UserJourneyRoleForUpdates: UserJourneyRoleForUpdates;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
@@ -900,6 +898,7 @@ export type NavigateToJourneyActionResolvers<ContextType = GraphQLModules.Contex
 export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
@@ -972,7 +971,6 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
 
 export type UserResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  firebaseId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
