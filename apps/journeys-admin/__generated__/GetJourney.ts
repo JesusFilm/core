@@ -19,7 +19,7 @@ export interface GetJourney_journey {
   id: string;
   title: string;
   description: string | null;
-  status: JourneyStatus | null;
+  status: JourneyStatus;
   createdAt: any;
   publishedAt: any | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
