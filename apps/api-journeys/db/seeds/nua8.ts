@@ -2,8 +2,8 @@ import { aql, Database } from 'arangojs'
 
 const db = new Database({ url: 'arangodb://arangodb:8529' });
 
-export async function nua2(): Promise<void> {
-  const slug = 'what-about-the-resurrection';
+export async function nua8(): Promise<void> {
+  const slug = 'whats-jesus-got-to-do-with-me';
   await db.query(aql`
         FOR journey in journeys
             FILTER journey.slug == ${slug}
@@ -16,8 +16,8 @@ export async function nua2(): Promise<void> {
         REMOVE journey IN journeys`);
 
   const journey = await db.collection('journeys').save({
-    _key: "2",
-    title: 'What About The Resurrection?',
+    _key: "3",
+    title: "What's Jesus Got to Do With Me",
     published: true,
     locale: 'en-US',
     themeMode: 'light',
@@ -48,13 +48,13 @@ export async function nua2(): Promise<void> {
     type: 'VideoBlock',
     parentBlockId: card1._key,
     videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
+      mediaComponentId: '5_0-NUA0803-0-0',
       languageId: '529'
     },
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'What about the resurrection',
+    title: 'Decision',
   })
   await db.collection('blocks').update(card1._key, { coverBlockId: coverblock._key })
 
@@ -75,7 +75,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'TypographyBlock',
     parentBlockId: card1._key,
-    content: 'The Resurection',
+    content: "JESUS' DEATH AND RESURRECTION",
     variant: 'h6',
     color: 'primary',
     align: 'left',
@@ -84,7 +84,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'TypographyBlock',
     parentBlockId: card1._key,
-    content: 'What About It?',
+    content: 'Does It Matter?',
     variant: 'h2',
     color: 'primary',
     align: 'left',
@@ -93,8 +93,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'TypographyBlock',
     parentBlockId: card1._key,
-    content:
-      'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
+    content: 'Why did Jesus have to die, and does it affect my life at all?',
     variant: 'body1',
     color: 'primary',
     align: 'left',
@@ -114,7 +113,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'ButtonBlock',
     parentBlockId: card1._key,
-    label: 'Find Out',
+    label: 'Explore Now',
     variant: 'contained',
     color: 'primary',
     size: 'large',
@@ -133,11 +132,11 @@ export async function nua2(): Promise<void> {
     type: 'VideoBlock',
     parentBlockId: step2._key,
     videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
+      mediaComponentId: '5_0-NUA0803-0-0',
       languageId: '529'
     },
     autoplay: true,
-    title: 'What About The Ressurection?',
+    title: "What' Jesus Got to Do With Me?"
   })
 
   // third step
@@ -153,7 +152,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'VideoTriggerBlock',
     parentBlockId: video._key,
-    triggerStart: 108,
+    triggerStart: 161,
     action: {
       gtmEventName: 'trigger',
       blockId: step3._key
@@ -174,11 +173,11 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'ImageBlock',
     parentBlockId: card3._key,
-    src: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    alt: 'Where did his body go?',
+    src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
+    alt: "What's Jesus Got to Do With Me?",
     width: 1920,
     height: 1080,
-    blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-',
+    blurhash: 'L3B|d2_N%$9F-B?b00NG4nIV00IA',
     parentOrder: 0
   })
   await db.collection('blocks').update(card3._key, { coverBlockId: image._key })
@@ -198,7 +197,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'RadioQuestionBlock',
     parentBlockId: card3._key,
-    label: 'Where did his body go?',
+    label: 'Do you need to change to be good enough for God?',
     parentOrder: 2
   })
 
@@ -215,7 +214,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'RadioOptionBlock',
     parentBlockId: question2._key,
-    label: 'Someone stole it from the tomb',
+    label: 'Yes, God likes good people',
     action: {
       gtmEventName: 'click',
       blockId: step4._key
@@ -225,22 +224,12 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'RadioOptionBlock',
     parentBlockId: question2._key,
-    label: "He didn't really die",
+    label: "No, He will accept me as I am",
     action: {
       gtmEventName: 'click',
       blockId: step4._key
     },
     parentOrder: 2
-  }, {
-    journeyId: journey._key,
-    type: 'RadioOptionBlock',
-    parentBlockId: question2._key,
-    label: "He actually rose from the dead",
-    action: {
-      gtmEventName: 'click',
-      blockId: step4._key
-    },
-    parentOrder: 3
   }])
 
   const video1 = await db.collection('blocks').save({
@@ -248,19 +237,19 @@ export async function nua2(): Promise<void> {
     type: 'VideoBlock',
     parentBlockId: step4._key,
     videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
+      mediaComponentId: '5_0-NUA0803-0-0',
       languageId: '529'
     },
     autoplay: true,
-    title: 'What About The Ressurection?',
-    startAt: 109
+    title: "What' Jesus Got to Do With Me?",
+    startAt: 158
   })
 
   // fifth step
   const step5 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'StepBlock',
-    locked: false,    
+    locked: false,  
     parentOrder: 4
   })
   await db.collection('blocks').update(step4._key, { nextBlockId: step5._key })
@@ -269,7 +258,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'VideoTriggerBlock',
     parentBlockId: video1._key,
-    triggerStart: 272,
+    triggerStart: 221,
     action: {
       gtmEventName: 'trigger',
       blockId: step5._key
@@ -299,7 +288,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'TypographyBlock',
     parentBlockId: card5._key,
-    content: "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
+    content: '"God sent his Son into the world not to judge the world, but to save the world through him."',
     variant: 'subtitle1',
     color: 'primary',
     align: 'left',
@@ -308,7 +297,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'TypographyBlock',
     parentBlockId: card5._key,
-    content: '- The Bible, John 19:34',
+    content: '- The Bible, John 3:17',
     variant: 'body1',
     color: 'primary',
     align: 'left',
@@ -319,11 +308,11 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'ImageBlock',
     parentBlockId: card5._key,
-    src: 'https://images.unsplash.com/photo-1616977545092-f4a423c3f22e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=765&q=80',
+    src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'quote',
     width: 1920,
     height: 1080,
-    blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU',
+    blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
     parentOrder: 0
   })
   await db.collection('blocks').update(card5._key, { coverBlockId: image2._key })
@@ -360,12 +349,12 @@ export async function nua2(): Promise<void> {
     type: 'VideoBlock',
     parentBlockId: step6._key,
     videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
+      mediaComponentId: '5_0-NUA0803-0-0',
       languageId: '529'
     },
     autoplay: true,
-    title: 'What About The Ressurection?',
-    startAt: 272
+    title: "What' Jesus Got to Do With Me?",
+    startAt: 221
   })
 
   // seventh step
@@ -381,7 +370,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'VideoTriggerBlock',
     parentBlockId: video2._key,
-    triggerStart: 348,
+    triggerStart: 382,
     action: {
       gtmEventName: 'trigger',
       blockId: step7._key
@@ -394,43 +383,78 @@ export async function nua2(): Promise<void> {
     parentBlockId: step7._key,
     themeMode: 'dark',
     themeName: 'base',
-    fullscreen: false,
+    fullscreen: true,
     parentOrder: 0
+  })
+
+  const gridContainer = await db.collection('blocks').save({
+    journeyId: journey._key,
+    type: 'GridContainerBlock',
+    parentBlockId: card7._key,
+    spacing: 6,
+    direction: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  })
+
+  const gridItemLeft = await db.collection('blocks').save({
+    journeyId: journey._key,
+    type: 'GridItemBlock',
+    parentBlockId: gridContainer._key,
+    xl: 6,
+    lg: 6,
+    sm: 6,
+    parentOrder: 0
+  })
+
+  const gridItemRight = await db.collection('blocks').save({
+    journeyId: journey._key,
+    type: 'GridItemBlock',
+    parentBlockId: gridContainer._key,
+    xl: 6,
+    lg: 6,
+    sm: 6,
+    parentOrder: 1
   })
 
   const image3 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'ImageBlock',
     parentBlockId: card7._key,
-    src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80',
+    src: 'https://images.unsplash.com/photo-1552676382-77b33d7639fa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'Who was this Jesus?',
     width: 1920,
     height: 1080,
-    blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@',
+    blurhash: 'L5AwUX~5080QHwNdD.%I0%E5%b$~',
     parentOrder: 1
   })
   await db.collection('blocks').update(card7._key, { coverBlockId: image3._key })
 
-  await db.collection('blocks').save({
+  await db.collection('blocks').saveAll([{
     journeyId: journey._key,
     type: 'TypographyBlock',
-    parentBlockId: card7._key,
+    parentBlockId: gridItemLeft._key,
     content: "IF IT'S TRUE...",
     variant: 'h6',
     color: 'primary',
     align: 'left',
+    parentOrder: 0
+  }, {
+    journeyId: journey._key,
+    type: 'TypographyBlock',
+    parentBlockId: gridItemLeft._key,
+    content: "What does Jesus have to do with me",
+    variant: 'h2',
+    color: 'primary',
+    align: 'left',
     parentOrder: 1
-  })
+  }])
 
   const question5 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'RadioQuestionBlock',
-    parentBlockId: card7._key,
-    label: 'What is Christianity to you?',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "3"
-    },
+    parentBlockId: gridItemRight._key,
+    label: '',
     parentOrder: 2
   })
 
@@ -438,7 +462,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'RadioOptionBlock',
     parentBlockId: question5._key,
-    label: 'One of many ways to God',
+    label: 'He loves me',
     action: {
       gtmEventName: 'click',
       journeyId: "3"
@@ -448,7 +472,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'RadioOptionBlock',
     parentBlockId: question5._key,
-    label: 'One great lie...',
+    label: 'He came to free me from sin',
     action: {
       gtmEventName: 'click',
       journeyId: "3"
@@ -458,11 +482,21 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     type: 'RadioOptionBlock',
     parentBlockId: question5._key,
-    label: 'One true way to God',
+    label: "He doesn't care about me",
     action: {
       gtmEventName: 'click',
       journeyId: "3"
     },
     parentOrder: 2
+  }, {
+    journeyId: journey._key,
+    type: 'RadioOptionBlock',
+    parentBlockId: question5._key,
+    label: "I'm not sure",
+    action: {
+      gtmEventName: 'click',
+      journeyId: "3"
+    },
+    parentOrder: 3
   }])
 }

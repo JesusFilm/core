@@ -23,16 +23,15 @@ export async function nua1(): Promise<void> {
     themeMode: 'light',
     themeName: 'base',
     slug: 'fact-or-fiction'
-  }, { returnNew: true })
+  })
 
   // first step
   const step1 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'StepBlock',
     locked: false,
-    parentOrder: 0,
-    nextBlockId: "2"
-  }, { returnNew: true })
+    parentOrder: 0,    
+  })
 
   const card1 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -42,7 +41,7 @@ export async function nua1(): Promise<void> {
     themeName: 'base',
     fullscreen: false,
     parentOrder: 0
-  }, { returnNew: true })
+  })
 
   const coverblock = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -58,7 +57,7 @@ export async function nua1(): Promise<void> {
     title: 'Fact or fiction',
     description:
       'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
-  }, { returnNew: true })
+  })
   await db.collection('blocks').update(card1._key, { coverBlockId: coverblock._key })
 
   const poster = await db.collection('blocks').save({
@@ -109,9 +108,10 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     type: 'StepBlock',
     locked: false,
-    nextBlockId: "2",
     parentOrder: 1
-  }, { returnNew: true })
+  })
+  await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
+
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -149,10 +149,10 @@ export async function nua1(): Promise<void> {
   const step3 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'StepBlock',
-    locked: false,
-    nextBlockId: "2",
+    locked: false,    
     parentOrder: 2
-  }, { returnNew: true })
+  })
+  await db.collection('blocks').update(step2._key, { nextBlockId: step3._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -173,7 +173,7 @@ export async function nua1(): Promise<void> {
     themeName: 'base',
     fullscreen: false,
     parentOrder: 0
-  }, { returnNew: true })
+  })
 
   const image = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -185,7 +185,7 @@ export async function nua1(): Promise<void> {
     height: 1080,
     blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
     parentOrder: 0
-  }, { returnNew: true })
+  })
   await db.collection('blocks').update(card3._key, { coverBlockId: image._key })
 
   await db.collection('blocks').save({
@@ -211,10 +211,10 @@ export async function nua1(): Promise<void> {
   const step4 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'StepBlock',
-    locked: false,
-    nextBlockId: "2",
+    locked: false,    
     parentOrder: 3
-  }, { returnNew: true })
+  })
+  await db.collection('blocks').update(step3._key, { nextBlockId: step4._key })
 
   await db.collection('blocks').saveAll([{
     journeyId: journey._key,
@@ -255,10 +255,10 @@ export async function nua1(): Promise<void> {
   const step5 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'StepBlock',
-    locked: false,
-    nextBlockId: "2",
+    locked: false,    
     parentOrder: 4
-  }, { returnNew: true })
+  })
+  await db.collection('blocks').update(step4._key, { nextBlockId: step5._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -279,7 +279,7 @@ export async function nua1(): Promise<void> {
     themeName: 'base',
     fullscreen: false,
     parentOrder: 0
-  }, { returnNew: true })
+  })
 
   await db.collection('blocks').saveAll([{
     journeyId: journey._key,
@@ -321,7 +321,7 @@ export async function nua1(): Promise<void> {
     height: 1080,
     blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW',
     parentOrder: 0
-  }, { returnNew: true })
+  })
   await db.collection('blocks').update(card5._key, { coverBlockId: image2._key })
 
   // sixth step
@@ -331,6 +331,7 @@ export async function nua1(): Promise<void> {
     locked: false,
     parentOrder: 5
   })
+  await db.collection('blocks').update(step5._key, { nextBlockId: step6._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -358,7 +359,7 @@ export async function nua1(): Promise<void> {
     themeName: 'base',
     fullscreen: true,
     parentOrder: 0
-  }, { returnNew: true })
+  })
 
   const gridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -368,7 +369,7 @@ export async function nua1(): Promise<void> {
     direction: 'row',
     justifyContent: 'center',
     alignItems: 'center'
-  }, { returnNew: true })
+  })
 
   const gridItemLeft = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -378,7 +379,7 @@ export async function nua1(): Promise<void> {
     lg: 6,
     sm: 6,
     parentOrder: 0
-  }, { returnNew: true })
+  })
 
   const gridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -388,8 +389,8 @@ export async function nua1(): Promise<void> {
     lg: 6,
     sm: 6,
     parentOrder: 1
-
   })
+  
   const image3 = await db.collection('blocks').save({
     journeyId: journey._key,
     type: 'ImageBlock',
@@ -429,7 +430,7 @@ export async function nua1(): Promise<void> {
     parentBlockId: gridItemRight._key,
     label: '',
     parentOrder: 2
-  }, { returnNew: true })
+  })
 
   await db.collection('blocks').saveAll([{
     journeyId: journey._key,
