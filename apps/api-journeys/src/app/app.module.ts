@@ -30,4 +30,4 @@ import { VideoModule } from './modules/video/video.module'
     })
   ]
 })
-export class AppModule {}
+export class AppModule { }

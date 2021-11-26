@@ -5,4 +5,4 @@ import { ActionService } from './action.service';
 @Module({
   providers: [ActionResolver, ActionService]
 })
-export class ActionModule {}
+export class ActionModule { }

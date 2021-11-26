@@ -33,7 +33,7 @@ export enum IconName {
 registerEnumType(IconName, { name: 'IconName' })
 
 export enum IconColor {
-    action = 'action', 
+    action = 'action',
     disabled = 'disabled',
     error = 'error',
     inherit = 'inherit',

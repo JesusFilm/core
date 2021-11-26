@@ -9,4 +9,4 @@ import { ResponseService } from '../response/response.service'
   providers: [RadioQuestionResolvers, ResponseService],
   exports: []
 })
-export class RadioQuestionModule {}
+export class RadioQuestionModule { }

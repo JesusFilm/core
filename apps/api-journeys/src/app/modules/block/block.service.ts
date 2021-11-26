@@ -9,7 +9,7 @@ export class BlockService extends BaseService {
   constructor(@Inject('DATABASE') private readonly db: Database) {
     super();
   }
-  
+
   async forJourney(_key: string) {
     const res = await this.db.query(aql`
       FOR block in ${this.collection}

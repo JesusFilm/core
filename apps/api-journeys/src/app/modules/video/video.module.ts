@@ -7,4 +7,4 @@ import { VideoResolvers } from './video.resolver';
   imports: [DatabaseModule],
   providers: [VideoResolvers, ResponseService]
 })
-export class VideoModule {}
+export class VideoModule { }

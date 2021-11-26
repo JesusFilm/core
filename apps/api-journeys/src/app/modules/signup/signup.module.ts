@@ -10,4 +10,4 @@ import { SignUpResolvers } from './signup.resolver'
   providers: [ResponseService, BlockService, SignUpResolvers],
   exports: []
 })
-export class SignUpModule {}
+export class SignUpModule { }

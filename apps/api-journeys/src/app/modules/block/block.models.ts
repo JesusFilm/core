@@ -1,4 +1,4 @@
-import { Directive, Field, ID, Int, InterfaceType, ObjectType } from '@nestjs/graphql'
+import { Field, ID, Int, InterfaceType, ObjectType } from '@nestjs/graphql'
 import { Action } from '../action/action.models'
 import { ButtonColor, ButtonSize, ButtonVariant } from '../button/button.models'
 import { GridAlignItems, GridDirection, GridJustifyContent } from '../grid/grid.models'
@@ -9,7 +9,7 @@ import { VideoContent } from '../video/video.models'
 
 @InterfaceType({
   resolveType(obj) {
-    switch(obj.type) {
+    switch (obj.type) {
       case 'ButtonBlock':
         return ButtonBlock;
       case 'CardBlock':
@@ -46,19 +46,17 @@ export abstract class Block {
   @Field(type => ID, { nullable: true })
   readonly parentBlockId?: string
 
-  // @Field(type => Journey)
-  // readonly journey: Journey
   readonly journeyId: string;
 
   type: string;
-  readonly parentOrder: number;  
+  readonly parentOrder: number;
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class ButtonBlock extends Block {
   @Field()
   readonly label: string;
-  
+
   @Field(type => ButtonVariant, { nullable: true })
   readonly variant?: ButtonVariant
 
@@ -81,13 +79,15 @@ export class ButtonBlock extends Block {
 @ObjectType({ implements: () => [Block] })
 export class CardBlock extends Block {
   type: 'CardBlock'
-  @Field({ nullable: true,
+  @Field({
+    nullable: true,
     description:
       'backgroundColor should be a HEX color value e.g #FFFFFF for white.'
   })
   readonly backgroundColor?: string
 
-  @Field({ nullable: true,
+  @Field({
+    nullable: true,
     description: `coverBlockId is present if a child block should be used as a cover.
     This child block should not be rendered normally, instead it should be used
     as a background. Blocks are often of type ImageBlock or VideoBlock.`
@@ -101,20 +101,22 @@ export class CardBlock extends Block {
   })
   readonly fullscreen: boolean
 
-  @Field((type) => ThemeMode, { nullable: true,
+  @Field((type) => ThemeMode, {
+    nullable: true,
     description: `themeMode can override journey themeMode. If nothing is set then use
     themeMode from journey`
   })
   themeMode?: ThemeMode
 
-  @Field((type) => ThemeName, { nullable: true,
+  @Field((type) => ThemeName, {
+    nullable: true,
     description: `themeName can override journey themeName. If nothing is set then use
     themeName from journey`
   })
   themeName?: ThemeName
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class GridContainerBlock extends Block {
   type: 'GridContainerBlock'
   @Field(type => Int)
@@ -130,7 +132,7 @@ export class GridContainerBlock extends Block {
   readonly alignItems: GridAlignItems
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class GridItemBlock extends Block {
   type: 'GridItemBlock';
   @Field(type => Int)
@@ -143,7 +145,7 @@ export class GridItemBlock extends Block {
   readonly sm: number
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class ImageBlock extends Block {
   type: 'ImageBlock'
   @Field()
@@ -151,19 +153,20 @@ export class ImageBlock extends Block {
 
   @Field(type => Int)
   readonly width: number
-  
+
   @Field(type => Int)
   readonly height: number
 
   @Field()
   readonly alt: string
 
-  @Field({ description: `blurhash is a compact representation of a placeholder for an image.
+  @Field({
+    description: `blurhash is a compact representation of a placeholder for an image.
   Find a frontend implementation at https://github.com/woltapp/blurhash`})
   readonly blurhash: string
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class RadioOptionBlock extends Block {
   type: 'RadioOptionBlock'
   @Field()
@@ -173,7 +176,7 @@ export class RadioOptionBlock extends Block {
   readonly action?: Action
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class RadioQuestionBlock extends Block {
   type: 'RadioQuestionBlock'
   @Field()
@@ -183,35 +186,37 @@ export class RadioQuestionBlock extends Block {
   readonly description?: string
 }
 
-@ObjectType({ implements: () => [Block]})  
+@ObjectType({ implements: () => [Block] })
 export class SignUpBlock extends Block {
   type: 'SignUpBlock';
-    @Field(type => Action, { nullable: true })
-    readonly action?: Action
+  @Field(type => Action, { nullable: true })
+  readonly action?: Action
 
-    @Field(type => Icon, { nullable: true })
-    readonly submitIcon?: Icon
+  @Field(type => Icon, { nullable: true })
+  readonly submitIcon?: Icon
 
-    @Field({ nullable: true })
-    readonly submitLabel?: string
+  @Field({ nullable: true })
+  readonly submitLabel?: string
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class StepBlock extends Block {
   type: 'StepBlock'
-  @Field(type => ID, { nullable: true, description: `
+  @Field(type => ID, {
+    nullable: true, description: `
   nextBlockId contains the preferred block to navigate to when a
   NavigateAction occurs or if the user manually tries to advance to the next
   step. If no nextBlockId is set it can be assumed that this step represents
   the end of the current journey.`})
   readonly nextBlockId?: string
 
-  @Field(type => Boolean, { description: `locked will be set to true if the user should not be able to manually
+  @Field(type => Boolean, {
+    description: `locked will be set to true if the user should not be able to manually
   advance to the next step.`})
   readonly locked: Boolean
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class TypographyBlock extends Block {
   type: 'TypographyBlock';
   @Field()
@@ -227,16 +232,16 @@ export class TypographyBlock extends Block {
   readonly align?: TypographyAlign
 }
 
-@ObjectType({ implements: () => [Block]})
+@ObjectType({ implements: () => [Block] })
 export class VideoBlock extends Block {
   type: 'VideoBlock'
   @Field()
   readonly title: string
 
-  @Field(type => Int, { nullable: true,description: 'startAt dictates at which point of time the video should start playing'})
+  @Field(type => Int, { nullable: true, description: 'startAt dictates at which point of time the video should start playing' })
   readonly startAt?: number
 
-  @Field(type => Int, { nullable: true, description: 'endAt dictates at which point of time the video should end'})
+  @Field(type => Int, { nullable: true, description: 'endAt dictates at which point of time the video should end' })
   readonly endAt?: number
 
   @Field({ nullable: true })
@@ -251,17 +256,20 @@ export class VideoBlock extends Block {
   @Field(type => VideoContent)
   readonly videoContent: VideoContent
 
-  @Field(type => ID, { nullable: true, description: `posterBlockId is present if a child block should be used as a poster.
+  @Field(type => ID, {
+    nullable: true, description: `posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
   as the video poster. PosterBlock should be of type ImageBlock.`})
   readonly posterBlockId?: string
 }
 
-@ObjectType({ implements: () => [Block], description: `VideoTriggerBlock is a block that indicates the video to navigate
+@ObjectType({
+  implements: () => [Block], description: `VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.`})
 export class VideoTriggerBlock extends Block {
   type: 'VideoTriggerBlock'
-  @Field(type => Int, { nullable: true, description: `triggerStart sets the time as to when a video navigates to the next block,
+  @Field(type => Int, {
+    nullable: true, description: `triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video`})
   readonly triggerStart: number
 

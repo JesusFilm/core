@@ -377,13 +377,13 @@ export async function nua2(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-      type: 'VideoTriggerBlock',
-      parentBlockId: video2._key,
-      triggerStart: 348,
-      action: {
-        gtmEventName: 'trigger',
-        blockId: step7._key
-      }
+    type: 'VideoTriggerBlock',
+    parentBlockId: video2._key,
+    triggerStart: 348,
+    action: {
+      gtmEventName: 'trigger',
+      blockId: step7._key
+    }
   })
 
   const card7 = await db.collection('blocks').save({

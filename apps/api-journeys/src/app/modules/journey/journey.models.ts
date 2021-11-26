@@ -5,7 +5,7 @@ import { ThemeMode, ThemeName } from '../theme/theme.models'
 @Directive('@extends')
 @Directive('@key(fields: "id")')
 export class Journey {
-  @Field(type => ID, {name: 'id'})
+  @Field(type => ID, { name: 'id' })
   @Directive('@external')
   readonly _key: string
 

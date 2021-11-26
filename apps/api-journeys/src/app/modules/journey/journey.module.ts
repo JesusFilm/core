@@ -10,4 +10,4 @@ import { BlockService } from '../block/block.service'
   providers: [JourneyService, JourneyResolvers, BlockService],
   exports: [JourneyService]
 })
-export class JourneyModule {}
+export class JourneyModule { }

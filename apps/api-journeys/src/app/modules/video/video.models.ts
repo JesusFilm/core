@@ -17,7 +17,7 @@ const arclightMiddleware: FieldMiddleware = async (ctx: MiddlewareContext, next:
     return `https://arc.gt/hls/${ctx.source.mediaComponentId}/${ctx.source.languageId}`;
 }
 
-@ObjectType({ implements: () => VideoContent})
+@ObjectType({ implements: () => VideoContent })
 export class VideoArclight extends VideoContent {
     @Field()
     readonly mediaComponentId: string
@@ -25,13 +25,13 @@ export class VideoArclight extends VideoContent {
     @Field()
     readonly languageId: string
 
-    @Field({ middleware: [arclightMiddleware]})
+    @Field({ middleware: [arclightMiddleware] })
     src: string;
 }
 
 
-@ObjectType({ implements: () => VideoContent})
-export class VideoGeneric extends VideoContent {}
+@ObjectType({ implements: () => VideoContent })
+export class VideoGeneric extends VideoContent { }
 
 export enum VideoResponseStateEnum {
     PLAYING = 'PLAYING',

@@ -6,9 +6,9 @@ import { DocumentCollection } from 'arangojs/collection';
 
 @Injectable()
 export class ResponseService extends BaseService {
-    constructor(@Inject('DATABASE') private readonly db: Database) {
-        super();
-      }    
-    
-      collection: DocumentCollection = this.db.collection('responses');
+  constructor(@Inject('DATABASE') private readonly db: Database) {
+    super();
+  }
+
+  collection: DocumentCollection = this.db.collection('responses');
 }
