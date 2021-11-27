@@ -55,7 +55,9 @@ const resolvers: UserModule.Resolvers = {
     },
     async me(_parent, _, { db, userId }) {
       if (userId == null)
-        throw new AuthenticationError('You must be logged in to get your profile')
+        throw new AuthenticationError(
+          'You must be logged in to get your profile'
+        )
 
       return await db.user.findUnique({ where: { id: userId } })
     }

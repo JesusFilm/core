@@ -69,11 +69,7 @@ const resolvers: UserJourneyModule.Resolvers = {
     }
   },
   Mutation: {
-    async userJourneyCreate(
-      _parent,
-      { input },
-      { db, userId }
-    ) {
+    async userJourneyCreate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
 
@@ -89,18 +85,20 @@ const resolvers: UserJourneyModule.Resolvers = {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
 
-      // can only update user journey roles if you are the journey's owner. 
+      // can only update user journey roles if you are the journey's owner.
       const actor = await db.userJourney.findUnique({
         where: {
           uniqueUserJourney: {
             userId: userId,
             journeyId: input.journeyId
-          },
+          }
         }
       })
 
-      if (actor === null || actor?.role !== "owner")
-        throw new AuthenticationError('You do not own this journey so you cannot change roles')
+      if (actor === null || actor?.role !== 'owner')
+        throw new AuthenticationError(
+          'You do not own this journey so you cannot change roles'
+        )
 
       return await db.userJourney.update({
         where: {

@@ -59,17 +59,10 @@ describe('UserModule', () => {
           }
         )
         expect(data?.user).toEqual(
-          pick(user, [
-            'id',
-            'email',
-            'firstName',
-            'lastName',
-            'imageUrl'
-          ])
+          pick(user, ['id', 'email', 'firstName', 'lastName', 'imageUrl'])
         )
       })
     })
-
 
     describe('list of users', () => {
       it('returns all users', async () => {
@@ -86,13 +79,7 @@ describe('UserModule', () => {
           }
         `)
         expect(data?.users).toEqual([
-          pick(user, [
-            'id',
-            'email',
-            'firstName',
-            'lastName',
-            'imageUrl'
-          ])
+          pick(user, ['id', 'email', 'firstName', 'lastName', 'imageUrl'])
         ])
       })
     })
