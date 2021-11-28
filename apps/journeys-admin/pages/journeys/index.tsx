@@ -26,7 +26,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   const [user] = useAuthState(auth)
 
   useEffect(() => {
-    // check if user is logged in
+    // prevent user from accessing this page if they are not logged in
     // if (user == null) {
     //   void router.push('/')
     // }
