@@ -5,6 +5,8 @@ describe('Sign In', () => {
   // fix test
   it('should render sign in options', () => {
     const { container } = renderWithApolloClient(<SignIn />)
-    expect(container.getElementsByClassName('firebaseui_container').length).toBe(0)
+    expect(
+      container.getElementsByClassName('firebaseui_container').length
+    ).toBe(0)
   })
 })

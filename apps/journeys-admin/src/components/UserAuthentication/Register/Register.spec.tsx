@@ -1,12 +1,11 @@
 import { render, fireEvent } from '@testing-library/react'
 import { Register } from '.'
 
-const handleSignUp = jest.fn(() => {
-  return {
-    createUserWithEmailAndPassword: jest.fn(async () => await Promise.resolve())
-  }
-})
-
+// const handleSignUp = jest.fn(() => {
+//   return {
+//     createUserWithEmailAndPassword: jest.fn(async () => await Promise.resolve())
+//   }
+// })
 
 describe('Register', () => {
   it('should render register form', () => {
