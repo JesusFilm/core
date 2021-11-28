@@ -17,13 +17,11 @@ export const Register = (): ReactElement => {
     console.log(firstName, lastName)
 
     if (email !== undefined && password !== undefined) {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          console.log('User created')
-        })
-        .catch((error) => {
-          setError(error.message)
-        })
+      createUserWithEmailAndPassword(auth, email, password).then(() => {
+        console.log('User created')
+      }).catch((error) => {
+        setError(error.message)
+      })
     }
 
     // handleAuthResponse(firstName, lastName, email)
@@ -31,7 +29,9 @@ export const Register = (): ReactElement => {
 
   return (
     <Container maxWidth="xs">
-      {error != null && error && <Alert severity="error">{error}</Alert>}
+      {error != null && error && (
+        <Alert severity="error">{error}</Alert>
+      )}
       <form>
         <Grid container spacing={2}>
           <Grid item xs={6}>

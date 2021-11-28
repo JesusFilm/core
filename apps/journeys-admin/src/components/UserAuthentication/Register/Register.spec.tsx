@@ -1,16 +1,12 @@
 import { render, fireEvent } from '@testing-library/react'
 import { Register } from '.'
-import firebase from 'firebase/compat/app'
 
-const authMockObject = {
-  createUserWithEmailAndPassword: jest.fn(
-    async () => await Promise.resolve(true)
-  )
-}
+const handleSignUp = jest.fn(() => {
+  return {
+    createUserWithEmailAndPassword: jest.fn(async () => await Promise.resolve())
+  }
+})
 
-const authMock = jest.fn(() => authMockObject)
-
-firebase.auth = authMock
 
 describe('Register', () => {
   it('should render register form', () => {
@@ -23,11 +19,13 @@ describe('Register', () => {
 
   // TODO: Add mock test for sign up on click
   // TODO: Add error test for sign up
-  it('calls Firebase sign up method', () => {
+  it('calls Firebase sign up method', async () => {
     const { getByText } = render(<Register />)
     const button = getByText('Sign Up')
 
+    expect(button).toBeInTheDocument()
     fireEvent.click(button)
-    expect(firebase.auth().createUserWithEmailAndPassword).toHaveBeenCalled()
+    // await waitFor(() => expect(handleSignUp).toHaveBeenCalled())
+    // await waitFor(() => expect(createUserWithEmailAndPassword).toHaveBeenCalled())
   })
 })
