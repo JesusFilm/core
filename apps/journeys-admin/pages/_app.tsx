@@ -11,6 +11,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
   const client = createApolloClient(user?.accessToken)
+  console.log(user)
 
   useEffect(() => {
     // Remove the server-side injected CSS.

@@ -1,18 +1,12 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import { firebaseClient } from '../../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
-import { FirebaseHandler } from '../../../libs/firebaseClient/FirebaseHandler'
 
 export function SignIn(): ReactElement {
   const auth = getAuth(firebaseClient)
-  const { updateUser } = FirebaseHandler()
-
-  useEffect(() => {
-    void updateUser()
-  }, [updateUser])
 
   const uiConfig = {
     signInFlow: 'popup',
@@ -32,7 +26,7 @@ export function SignIn(): ReactElement {
     }
   }
 
-  // write logic on setting persistence
+  // do we need to handle persistence?
 
   // auth
   //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)

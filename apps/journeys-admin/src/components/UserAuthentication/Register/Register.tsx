@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react'
-import { Button, Container, Grid, TextField } from '@mui/material'
+import { Alert, Button, Container, Grid, TextField } from '@mui/material'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { firebaseClient } from '../../../libs/firebaseClient'
 
@@ -8,6 +8,7 @@ export const Register = (): ReactElement => {
   const [lastName, setLastName] = useState<string>()
   const [email, setEmail] = useState<string>()
   const [password, setPassword] = useState<string>()
+  const [error, setError] = useState<string>()
   const auth = getAuth(firebaseClient)
 
   const handleSignUp = async (event): Promise<void> => {
@@ -15,21 +16,22 @@ export const Register = (): ReactElement => {
 
     console.log(firstName, lastName)
 
-    // handle loading state
-
     if (email !== undefined && password !== undefined) {
-      createUserWithEmailAndPassword(auth, email, password).catch((error) => {
-        console.log(error)
-      })
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          console.log('User created')
+        })
+        .catch((error) => {
+          setError(error.message)
+        })
     }
+
     // handleAuthResponse(firstName, lastName, email)
   }
 
   return (
     <Container maxWidth="xs">
-      {/* {error != null && error && (
-        <Alert severity="error">{error.message}</Alert>
-      )} */}
+      {error != null && error && <Alert severity="error">{error}</Alert>}
       <form>
         <Grid container spacing={2}>
           <Grid item xs={6}>

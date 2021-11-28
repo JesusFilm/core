@@ -10,28 +10,27 @@ import {
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components/'
-import { FirebaseHandler } from '../../src/libs/firebaseClient'
+import { FirebaseHandler, firebaseClient } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
+import { getAuth } from 'firebase/auth'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  const { logOut, getCurrentUser } = FirebaseHandler()
+  const { logOut } = FirebaseHandler()
   const router = useRouter()
+  const auth = getAuth(firebaseClient)
+  const [user] = useAuthState(auth)
 
   useEffect(() => {
-    console.log('this ', getCurrentUser)
-
-    if (!getCurrentUser) {
-      void router.push('/')
-    }
-  }, [getCurrentUser, router])
-
-  const handleLogout = async (): Promise<void> => {
-    void logOut()
-  }
+    // check if user is logged in
+    // if (user == null) {
+    //   void router.push('/')
+    // }
+  }, [user, router])
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
@@ -41,7 +40,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
           Journeys
         </Typography>
         <JourneyList journeys={journeys} />
-        <Button variant="contained" onClick={async () => await handleLogout()}>
+        <Button variant="contained" onClick={() => logOut()}>
           SignOut
         </Button>
       </Container>
