@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react'
-import { IconButton, Menu, MenuItem, Divider } from '@mui/material'
+import { IconButton, Menu, MenuItem, Divider, useTheme } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Link from 'next/link'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
@@ -16,16 +16,13 @@ const JourneyCardMenu = ({
 }: JourneyCardMenuProps): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+  const theme = useTheme()
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
-  }
-
-  const handlePreview = (): void => {
-    // tirgger link action to journey preview, need to use handleAction because navigating out of this project
   }
 
   return (
@@ -58,11 +55,20 @@ const JourneyCardMenu = ({
 
         <Divider />
         {status === JourneyStatus.draft ? (
-          <MenuItem disabled onClick={handlePreview}>
-            Preview
-          </MenuItem>
+          <MenuItem disabled>Preview</MenuItem>
         ) : (
-          <MenuItem onClick={handlePreview}>Preview</MenuItem>
+          <MenuItem>
+            {/* update link */}
+            <a
+              style={{
+                textDecoration: 'none',
+                color: theme.palette.primary.main
+              }}
+              href="#"
+            >
+              Preview
+            </a>
+          </MenuItem>
         )}
       </Menu>
     </div>
