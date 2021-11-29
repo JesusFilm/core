@@ -16,7 +16,6 @@ import { styled } from '@mui/material'
 import { StylesProvider } from '@mui/styles'
 
 interface ContentProps {
-  id: string
   children: ReactNode
   document: Document
 }
@@ -27,8 +26,7 @@ function Content({ children, document }: ContentProps): ReactElement {
       createCache({
         key: 'iframe',
         container: document.head,
-        prepend: true,
-        stylisPlugins: []
+        prepend: true
       }),
     [document]
   )
@@ -41,9 +39,7 @@ function Content({ children, document }: ContentProps): ReactElement {
 }
 
 const StyledFrame = styled('iframe')(() => ({
-  border: 0,
-  height: '100%',
-  width: '100%'
+  border: 0
 }))
 
 interface FrameProps
@@ -54,14 +50,16 @@ interface FrameProps
     >,
     'css'
   > {
-  id: string
   children: ReactNode
 }
 
-export function Frame({ id, children, ...other }: FrameProps): ReactElement {
+export const FramePortal = memo(function FramePortal({
+  children,
+  ...other
+}: FrameProps): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
-  // If we portal content into the iframe before the load event then that content
-  // is dropped in firefox.
+  // If we portal content into the iframe before the load event then that
+  // content is dropped in firefox.
   const [iframeLoaded, onLoad] = useReducer(() => true, false)
   const document = frameRef.current?.contentDocument
 
@@ -88,13 +86,9 @@ export function Frame({ id, children, ...other }: FrameProps): ReactElement {
       {iframeLoaded &&
         document != null &&
         createPortal(
-          <Content id={id} document={document}>
-            {children}
-          </Content>,
+          <Content document={document}>{children}</Content>,
           document.body
         )}
     </>
   )
-}
-
-export const FramePortal = memo(Frame)
+})
