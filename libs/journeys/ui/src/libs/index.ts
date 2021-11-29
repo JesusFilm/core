@@ -8,3 +8,4 @@ export {
   nextActiveBlock,
   isActiveBlockOrDescendant
 } from './useBlocks/blocks'
+export { getLocaleOption, getLocaleOptions } from './locales'
