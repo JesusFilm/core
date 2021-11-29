@@ -18,7 +18,7 @@ export interface GetJourneys_journeys {
   themeName: ThemeName;
   themeMode: ThemeMode;
   locale: string;
-  status: JourneyStatus | null;
+  status: JourneyStatus;
 }
 
 export interface GetJourneys {
