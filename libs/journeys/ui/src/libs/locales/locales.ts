@@ -13,12 +13,12 @@ export const locales: { [key: string]: Locale } = {
   'en-US': {
     locale: 'en-US',
     language: 'English',
-    region: 'US'
+    region: 'United States'
   },
   'en-NZ': {
     locale: 'en-NZ',
     language: 'English',
-    region: 'NZ'
+    region: 'New Zealand'
   }
 }
 
@@ -32,5 +32,5 @@ export const getLocaleOption = (locale: string): SelectOption => {
 
 // This may vary for different languages in future
 export const getLocaleLabel = (l: Locale): string => {
-  return `${l.language} (${l.region})`
+  return `${l.language} (${l.locale.split('-')[1]})`
 }
