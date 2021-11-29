@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeyAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { Editor } from '.'
 
 const EditorStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: Editor,
   title: 'Journeys-Admin/Editor'
 }

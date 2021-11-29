@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeyAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { CardNavigation } from '.'
 
 const CardNavigationStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: CardNavigation,
   title: 'Journeys-Admin/Editor/ControlPanel/CardNavigation'
 }

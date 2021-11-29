@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeyAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { ControlPanel } from '.'
 
 const ControlPanelStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: ControlPanel,
   title: 'Journeys-Admin/Editor/ControlPanel'
 }

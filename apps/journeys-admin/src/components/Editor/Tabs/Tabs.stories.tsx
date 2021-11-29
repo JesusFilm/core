@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeyAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { Tabs } from '.'
 
 const TabsStory = {
-  ...journeyAdminConfig,
+  ...journeysAdminConfig,
   component: Tabs,
   title: 'Journeys-Admin/Editor/Tabs'
 }
