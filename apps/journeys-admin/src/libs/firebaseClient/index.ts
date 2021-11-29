@@ -1,2 +1,2 @@
 export { firebaseClient } from './firebaseClient'
-export { FirebaseHandler } from './FirebaseHandler'
+export { UseFirebase } from './UseFirebase'

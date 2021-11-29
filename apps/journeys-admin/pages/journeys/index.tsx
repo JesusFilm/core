@@ -10,27 +10,23 @@ import {
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components/'
-import { FirebaseHandler, firebaseClient } from '../../src/libs/firebaseClient'
+import { UseFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
-import { getAuth } from 'firebase/auth'
-import { useAuthState } from 'react-firebase-hooks/auth'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  const { logOut } = FirebaseHandler()
+  const { logOut, user, loading } = UseFirebase()
   const router = useRouter()
-  const auth = getAuth(firebaseClient)
-  const [user] = useAuthState(auth)
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
-    // if (user == null) {
-    //   void router.push('/')
-    // }
-  }, [user, router])
+    if (loading === false && user == null) {
+      void router.push('/')
+    }
+  }, [user, router, loading])
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>

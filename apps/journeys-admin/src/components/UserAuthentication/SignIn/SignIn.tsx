@@ -27,23 +27,11 @@ export function SignIn(): ReactElement {
       {
         provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
         customParameters: {
-          auth_type: 'reauthenticate',
+          auth_type: 'reauthenticate'
         }
       }
     ]
   }
-
-  // do we need to handle persistence?
-
-  // auth
-  //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  //   .then(function () {
-  //     console.log('Local persistence set')
-  //   })
-  //   .catch(function (error) {
-  //     console.log(error)
-  //     console.log('Local persistence has not been set')
-  //   })
 
   return (
     <StyledFirebaseAuth
