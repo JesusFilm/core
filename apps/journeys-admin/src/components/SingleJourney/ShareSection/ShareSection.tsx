@@ -52,12 +52,13 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             'aria-labelledby': 'share-actions'
           }}
         >
-          <Link href="#" underline="none">
-            <MenuItem>Copy Link</MenuItem>
-          </Link>
-          <Link href="#" underline="none">
-            <MenuItem>Change Link</MenuItem>
-          </Link>
+          <MenuItem>Copy Link</MenuItem>
+          {/* Update link */}
+          <MenuItem>
+            <Link href={`/journeys/${slug}/edit`} underline="none">
+              Change Link
+            </Link>
+          </MenuItem>
         </Menu>
       </Box>
 
@@ -67,7 +68,8 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
         fullWidth
         hiddenLabel
         variant="filled"
-        value={`journeys/${slug}`}
+        // update link
+        value={`/journeys/${slug}`}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
