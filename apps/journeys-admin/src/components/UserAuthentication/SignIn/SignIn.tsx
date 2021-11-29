@@ -18,12 +18,19 @@ export function SignIn(): ReactElement {
           status: true
         }
       },
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.FacebookAuthProvider.PROVIDER_ID
-    ],
-    callbacks: {
-      signInSuccessWithAuthResult: () => true
-    }
+      {
+        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        customParameters: {
+          prompt: 'select_account'
+        }
+      },
+      {
+        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        customParameters: {
+          auth_type: 'reauthenticate',
+        }
+      }
+    ]
   }
 
   // do we need to handle persistence?
