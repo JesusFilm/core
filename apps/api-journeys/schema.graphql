@@ -71,6 +71,8 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
+scalar DateTime
+
 enum GridAlignItems {
   baseline
   flexStart
@@ -183,13 +185,15 @@ input ImageBlockCreateInput {
 
 type Journey @key(fields: "id") {
   id: ID!
-  published: Boolean!
   title: String!
   locale: String!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  status: JourneyStatus!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
@@ -211,6 +215,11 @@ input JourneyCreateInput {
   (server will throw BAD_USER_INPUT error if not)
   """
   slug: String!
+}
+
+enum JourneyStatus {
+  draft
+  published
 }
 
 input JourneyUpdateInput {
@@ -260,7 +269,7 @@ type NavigateToJourneyAction implements Action {
 }
 
 extend type Query {
-  journeys: [Journey!]!
+  journeys(status: JourneyStatus): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

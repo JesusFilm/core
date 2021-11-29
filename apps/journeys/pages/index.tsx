@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps<JourneysPageProps> =
     const { data } = await client.query<GetJourneys>({
       query: gql`
         query GetJourneys {
-          journeys {
+          journeys(status: published) {
             id
             title
             slug
