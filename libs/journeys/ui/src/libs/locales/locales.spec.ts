@@ -10,7 +10,7 @@ describe('locales', () => {
     const label = getLocaleLabel({
       locale: 'en-NZ',
       language: 'English',
-      region: 'NZ'
+      region: 'New Zealand'
     })
     expect(label).toEqual('English (NZ)')
   })
