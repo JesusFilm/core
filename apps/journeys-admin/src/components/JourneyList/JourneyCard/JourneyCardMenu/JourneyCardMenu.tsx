@@ -35,7 +35,9 @@ const JourneyCardMenu = (): ReactElement => {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleOpenMenu}
-      ></IconButton>
+      >
+        ...
+      </IconButton>
       <Menu
         id="journey-actions"
         anchorEl={anchorEl}

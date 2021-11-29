@@ -22,7 +22,7 @@ export const defaultJourney: Journey = {
 export const oldJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
-  title: 'Journey Heading',
+  title: 'Old Journey Heading',
   description: 'Description for a journey created before the current year',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
