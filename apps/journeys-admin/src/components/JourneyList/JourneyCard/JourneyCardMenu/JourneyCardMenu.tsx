@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
-import { IconButton, Menu, MenuItem, Divider, useTheme } from '@mui/material'
+import { IconButton, Menu, MenuItem, Divider, Link } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import Link from 'next/link'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 // Pass journeyID and slug to JourneyCardMenu
@@ -16,7 +15,6 @@ const JourneyCardMenu = ({
 }: JourneyCardMenuProps): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const theme = useTheme()
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -45,11 +43,11 @@ const JourneyCardMenu = ({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}/edit`} passHref>
+        <Link href={`/journeys/${slug}/edit`} underline="none">
           <MenuItem>Edit</MenuItem>
         </Link>
         {/* update link */}
-        <Link href={`/journeys/${slug}/access`} passHref>
+        <Link href={`/journeys/${slug}/access`} underline="none">
           <MenuItem>Change Access</MenuItem>
         </Link>
 
@@ -57,18 +55,10 @@ const JourneyCardMenu = ({
         {status === JourneyStatus.draft ? (
           <MenuItem disabled>Preview</MenuItem>
         ) : (
-          <MenuItem>
+          <Link href={'https://google.com'} underline="none">
             {/* update link */}
-            <a
-              style={{
-                textDecoration: 'none',
-                color: theme.palette.primary.main
-              }}
-              href={`/journeys/${slug}/preview`}
-            >
-              Preview
-            </a>
-          </MenuItem>
+            <MenuItem>Preview</MenuItem>
+          </Link>
         )}
       </Menu>
     </div>

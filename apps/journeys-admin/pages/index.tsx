@@ -2,7 +2,12 @@ import { ReactElement } from 'react'
 import { Box, Button, Container, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ThemeProvider } from '@core/shared/ui'
-import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../__generated__/globalTypes'
+import JourneyCardMenu from '../src/components/JourneyList/JourneyCard/JourneyCardMenu'
 
 function Dashboard(): ReactElement {
   return (
@@ -19,6 +24,7 @@ function Dashboard(): ReactElement {
           </Link>
         </Box>
       </Container>
+      <JourneyCardMenu status={JourneyStatus.published} slug={'journey-slug'} />
     </ThemeProvider>
   )
 }
