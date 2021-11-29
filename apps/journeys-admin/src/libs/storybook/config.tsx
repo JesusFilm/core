@@ -3,7 +3,7 @@ import { sharedUiConfig } from '@core/shared/ui'
 // Must set parameters at component level for shared-storybook stories to work
 export const journeysAdminConfig = {
   ...sharedUiConfig,
-  parameters:{
+  parameters: {
     ...sharedUiConfig.parameters,
     theme: 'light'
   }
