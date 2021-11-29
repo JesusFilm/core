@@ -11,8 +11,8 @@ const JourneyShareDemo = {
 
 const Template: Story = ({ ...args }) => <JourneyShare slug={args.slug} />
 
-export const defaultStory = Template.bind({})
-defaultStory.args = {
+export const defaultShareSection = Template.bind({})
+defaultShareSection.args = {
   slug: 'journey-slug'
 }
 

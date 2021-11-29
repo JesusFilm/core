@@ -5,9 +5,12 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  TextField
+  TextField,
+  InputAdornment,
+  Link
 } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import InsertLinkIcon from '@mui/icons-material/InsertLink'
 
 interface ShareSectionProps {
   slug: string
@@ -26,38 +29,52 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
 
   return (
     <Box>
-      <Typography variant="h4">Journey Link</Typography>
+      <Box sx={{ display: 'flex' }}>
+        <Typography variant="h4">Journey Link</Typography>
 
-      <IconButton
-        id="share-actions"
-        aria-controls="share-actions"
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : 'false'}
-        onClick={handleOpenMenu}
-      >
-        <MoreHorizIcon />
-      </IconButton>
+        <IconButton
+          id="share-actions"
+          aria-controls="share-actions"
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : 'false'}
+          onClick={handleOpenMenu}
+          sx={{ marginLeft: 'auto' }}
+        >
+          <MoreHorizIcon />
+        </IconButton>
 
-      <Menu
-        id="journey-actions"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleCloseMenu}
-        MenuListProps={{
-          'aria-labelledby': 'share-actions'
-        }}
-      >
-        <MenuItem>Copy Link</MenuItem>
-        <MenuItem>Change Link</MenuItem>
-      </Menu>
+        <Menu
+          id="journey-actions"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleCloseMenu}
+          MenuListProps={{
+            'aria-labelledby': 'share-actions'
+          }}
+        >
+          <Link href="#" underline="none">
+            <MenuItem>Copy Link</MenuItem>
+          </Link>
+          <Link href="#" underline="none">
+            <MenuItem>Change Link</MenuItem>
+          </Link>
+        </Menu>
+      </Box>
 
       <TextField
         id="filled-basic"
         disabled
+        fullWidth
+        hiddenLabel
         variant="filled"
         value={`journeys/${slug}`}
-        size="small"
-        sx={{ color: 'black' }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <InsertLinkIcon />
+            </InputAdornment>
+          )
+        }}
       />
     </Box>
   )
