@@ -436,14 +436,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 const Template: Story = () => {
-  const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
-    steps[0]
-  )
+  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
       <Navigation
         onSelect={(step) => setSelectedStep(step)}
-        selectedStep={selectedStep}
+        selected={selected}
         steps={steps}
       />
     </MockedProvider>
