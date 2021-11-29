@@ -31,7 +31,7 @@ const JourneyCardMenu = ({
         id="journey-actions"
         aria-controls="journey-actions"
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
       >
         <MoreVertIcon />
@@ -64,7 +64,7 @@ const JourneyCardMenu = ({
                 textDecoration: 'none',
                 color: theme.palette.primary.main
               }}
-              href="#"
+              href={`/journeys/${slug}/preview`}
             >
               Preview
             </a>
