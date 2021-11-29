@@ -109,7 +109,6 @@ describe('UserJourneyModule', () => {
         })
       })
     })
-
     // describe('userJourney', () => {
     //   it('updates a user journey with journey owner', async () => {
     //     dbMock.journey.create.mockResolvedValue(journey)
