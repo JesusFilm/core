@@ -8,7 +8,9 @@ import {
   TextField,
   InputAdornment,
   Link,
-  Alert
+  Alert,
+  Snackbar,
+  Fade
 } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import InsertLinkIcon from '@mui/icons-material/InsertLink'
@@ -89,23 +91,26 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
         }}
       />
 
-      {showAlert && (
-        <Box sx={{ position: 'absolute', bottom: '16px', right: '16px' }}>
-          <Alert
-            icon={false}
-            severity="success"
-            action={<CheckCircleIcon sx={{ color: '#5EA10A' }} />}
-            sx={{
-              width: '286px',
-              color: 'white',
-              backgroundColor: 'black',
-              borderRadius: '2px'
-            }}
-          >
-            Link Copied
-          </Alert>
-        </Box>
-      )}
+      <Snackbar
+        open={showAlert}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        TransitionComponent={Fade}
+      >
+        <Alert
+          icon={false}
+          severity="success"
+          action={<CheckCircleIcon sx={{ color: '#5EA10A' }} />}
+          sx={{
+            width: '286px',
+            color: 'white',
+            backgroundColor: 'black',
+            borderRadius: '2px'
+          }}
+        >
+          Link Copied
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
