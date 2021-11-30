@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { Box, Button } from '@mui/material'
 import Link from 'next/link'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import AppHeader from './AppHeader/AppHeader'
 
 interface JourneysListProps {
   journeys: Journey[]
@@ -10,6 +11,7 @@ interface JourneysListProps {
 const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
   return (
     <>
+      <AppHeader/>
       {/* Remove this once we link journey cards to the Single Journey page */}
       {journeys.map(({ id, title, slug }) => (
         <Box key={id} my={2}>
