@@ -9,6 +9,7 @@ input RadioQuestionResponseCreateInput {
 
   type RadioOptionBlock implements Block {
     id: ID!
+    type: String!
     parentBlockId: ID
     label: String!
     action: Action
@@ -16,6 +17,7 @@ input RadioQuestionResponseCreateInput {
 
   type RadioQuestionBlock implements Block {
     id: ID!
+    type: String!
     parentBlockId: ID
     label: String!
     description: String

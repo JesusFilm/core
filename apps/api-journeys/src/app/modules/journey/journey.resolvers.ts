@@ -4,11 +4,10 @@ import {
   Parent,
   Query,
   ResolveField,
-  Resolver,
-  ResolveReference
+  Resolver
 } from '@nestjs/graphql'
-import { IdType, Journey, JourneyCreateInput } from '../../graphql'
-import { KeyAsId } from '../../lib/decorators'
+import { Block, IdType, Journey, JourneyCreateInput } from '../../graphql'
+import { BlockMiddleware, KeyAsId } from '../../lib/decorators'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from './journey.service'
 
@@ -18,27 +17,28 @@ export class JourneyResolvers {
 
   @Query()
   @KeyAsId()
-  async journeys() {
+  async journeys(): Promise<Journey[]> {
     return await this.journeyservice.getAll()
   }
 
   @Query()
   @KeyAsId()
-  async journey(@Args('id') _key: string, @Args('idType') idType: IdType = IdType.slug) {
+  async journey(@Args('id') _key: string, @Args('idType') idType: IdType = IdType.slug): Promise<Journey> {
     return idType === IdType.slug
       ? await this.journeyservice.getBySlug(_key)
       : await this.journeyservice.getByKey(_key)
   }
 
   @Mutation()
-  async createJourney(@Args('journey') journey: JourneyCreateInput) {
+  async createJourney(@Args('journey') journey: JourneyCreateInput): Promise<Journey> {
     return await this.journeyservice.insertOne(journey)
   }
 
   @ResolveField('blocks')
   @KeyAsId()
-  async blocks(@Parent() journey: Journey) {
-    return this.blockService.forJourney(journey.id)
+  @BlockMiddleware()
+  async blocks(@Parent() journey: Journey): Promise<Block[]> {
+    return await this.blockService.forJourney(journey.id)
   }
 
   // @ResolveField(of => ImageBlock, { nullable: true })

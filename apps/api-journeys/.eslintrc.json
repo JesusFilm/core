@@ -8,7 +8,12 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "parserOptions": {
+        "project": ["apps/api-journeys/tsconfig.*?.json"]
+      },
+      "rules": {
+        "no-prototype-builtins": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],

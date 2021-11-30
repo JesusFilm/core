@@ -1,9 +1,8 @@
 import {
-    Args,
-    Mutation,
     ResolveField,
     Resolver,
 } from '@nestjs/graphql'
+import { VideoContent } from '../../../graphql';
 import { ResponseService } from '../../response/response.service'
 
 @Resolver('VideoResponse')
@@ -19,9 +18,9 @@ export class VideoResolvers {
 @Resolver('VideoContent')
 export class VideoContentResolvers {
     @ResolveField()
-    __resolveType(obj) {
+    __resolveType(obj: VideoContent): string {
         if (obj.hasOwnProperty('mediaComponentId'))
-        return 'VideoArclight';
-    return 'VideoGeneric';
+            return 'VideoArclight';
+        return 'VideoGeneric';
     }
 }

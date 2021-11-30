@@ -1,15 +1,37 @@
+import * as _ from 'lodash';
+import { Block, Journey, VideoArclight, VideoBlock } from '../graphql';
+
+const keyAsId = (obj): Block | Journey  => ({...obj, id: obj._key })
 export function KeyAsId() {
-        return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-            let childFunction = descriptor.value;
-            descriptor.value = async function (){
-                var result = await childFunction.apply(this, arguments);
-                if (Array.isArray(result))
-                  result.forEach(result => { result.id = result._key });
-                else
-                  result.id = result._key;
-                return result;
+        return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
+            const childFunction = descriptor.value;
+            descriptor.value = async function (...args){
+                const result = await childFunction.apply(this, args);
+                return Array.isArray(result)
+                  ? result.map(keyAsId)
+                  : keyAsId(result);
             }
         }
     }
+
+const arcLightVideoSrc = (obj: VideoBlock): Block => {
+  if (obj.type === 'VideoBlock' && obj.videoContent.hasOwnProperty('mediaComponentId')) {
+    (obj.videoContent as VideoArclight).src = `https://arc.gt/hls/${(obj.videoContent as VideoArclight).mediaComponentId}/${(obj.videoContent as VideoArclight).languageId}`;
+  }
+  return obj;
+}
+
+const blockMiddleWares = _.flow([arcLightVideoSrc]);
+    export function BlockMiddleware() {
+      return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
+          const childFunction = descriptor.value;
+          descriptor.value = async function (...args){
+              const result = await childFunction.apply(this, args);
+              return Array.isArray(result)
+                ? result.map(blockMiddleWares)
+                : blockMiddleWares(result);
+          }
+      }
+  }
 
     

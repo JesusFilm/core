@@ -1,13 +1,8 @@
 import {
-  Args,
-  ID,
-  Mutation,
-  Parent,
-  Query,
   ResolveField,
   Resolver,
-  ResolveReference
 } from '@nestjs/graphql';
+import { Block } from '../../graphql';
 
 import { BlockService } from './block.service';
 
@@ -15,7 +10,7 @@ import { BlockService } from './block.service';
 export class BlockResolvers {
   constructor(private readonly blockservice: BlockService) { }
   @ResolveField()
-  __resolveType(obj) {
+  __resolveType(obj: Block): string {
     return obj.type;
   }
   // @Query(returns => [Block])

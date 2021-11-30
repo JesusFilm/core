@@ -8,14 +8,15 @@ import { NestFactory } from '@nestjs/core'
 
 import { AppModule } from './app/app.module'
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule)
   const globalPrefix = 'api'
   app.setGlobalPrefix(globalPrefix)
-  const port = process.env.PORT || 4001
+  const port = process.env.PORT ?? "4001"
   await app.listen(port, () => {
     Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix)
   })
 }
 
-bootstrap()
+// eslint-disable-next-line
+bootstrap() 

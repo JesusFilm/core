@@ -30,7 +30,8 @@
     "mtxr.sqltools-driver-pg",
     "nrwl.angular-console",
     "monotykamary.vscode-aql",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "graphql.vscode-graphql"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
