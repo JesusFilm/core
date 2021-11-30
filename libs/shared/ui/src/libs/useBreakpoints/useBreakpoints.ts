@@ -6,10 +6,10 @@ export const useBreakpoints = (): { [key in Breakpoint]: boolean } => {
   // Update if we need to SSR
   // https://mui.com/components/use-media-query/#server-side-rendering
   return {
-    xs: useMediaQuery(theme.breakpoints.only('xs'), { noSsr: true }),
-    sm: useMediaQuery(theme.breakpoints.only('sm'), { noSsr: true }),
-    md: useMediaQuery(theme.breakpoints.only('md'), { noSsr: true }),
-    lg: useMediaQuery(theme.breakpoints.only('lg'), { noSsr: true }),
-    xl: useMediaQuery(theme.breakpoints.only('xl'), { noSsr: true })
+    xs: useMediaQuery(theme.breakpoints.up('xs'), { noSsr: true }),
+    sm: useMediaQuery(theme.breakpoints.up('sm'), { noSsr: true }),
+    md: useMediaQuery(theme.breakpoints.up('md'), { noSsr: true }),
+    lg: useMediaQuery(theme.breakpoints.up('lg'), { noSsr: true }),
+    xl: useMediaQuery(theme.breakpoints.up('xl'), { noSsr: true })
   }
 }
