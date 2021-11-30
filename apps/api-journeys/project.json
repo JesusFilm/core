@@ -32,10 +32,21 @@
         "command": "npx ts-node apps/api-journeys/db/seed.ts"
       }
     },
+    "serve-nowatch": {
+        "executor": "@nrwl/node:execute",
+        "options": {
+          "buildTarget": "api-journeys:build"
+        }
+      },
     "serve": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "buildTarget": "api-journeys:build"
+        "commands": [{
+          "command": "nx serve-nowatch api-journeys"
+        }, {
+          "command": "npx ts-node apps/api-journeys/src/generate-typings.ts"
+        }],
+        "parallel": true
       }
     },
     "lint": {

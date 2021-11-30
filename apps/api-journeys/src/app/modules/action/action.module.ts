@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ActionResolver } from './action.resolver';
-import { ActionService } from './action.service';
 
 @Module({
-  providers: [ActionResolver, ActionService]
+  providers: [ActionResolver]
 })
 export class ActionModule { }

@@ -1,6 +1,5 @@
 import {
   Args,
-  ID,
   Mutation,
   Parent,
   Query,
@@ -8,45 +7,42 @@ import {
   Resolver,
   ResolveReference
 } from '@nestjs/graphql'
-
-import { JourneyService } from './journey.service'
-import { Journey, JourneyInput } from './journey.models'
-import { Block, ImageBlock } from '../block/block.models'
+import { IdType, Journey, JourneyCreateInput } from '../../graphql'
+import { KeyAsId } from '../../lib/decorators'
 import { BlockService } from '../block/block.service'
+import { JourneyService } from './journey.service'
 
-@Resolver(of => Journey)
+@Resolver('Journey')
 export class JourneyResolvers {
   constructor(private readonly journeyservice: JourneyService, private readonly blockService: BlockService) { }
 
-  @Query(returns => [Journey])
+  @Query()
+  @KeyAsId()
   async journeys() {
     return await this.journeyservice.getAll()
   }
 
-  @Query(returns => Journey)
-  async journey(@Args('id', { type: () => ID }) _key: string, @Args('idType') idType: string = '') {
-    return idType === 'slug'
+  @Query()
+  @KeyAsId()
+  async journey(@Args('id') _key: string, @Args('idType') idType: IdType = IdType.slug) {
+    return idType === IdType.slug
       ? await this.journeyservice.getBySlug(_key)
       : await this.journeyservice.getByKey(_key)
   }
 
-  @Mutation(returns => Journey)
-  async createJourney(@Args('journey') journey: JourneyInput) {
+  @Mutation()
+  async createJourney(@Args('journey') journey: JourneyCreateInput) {
     return await this.journeyservice.insertOne(journey)
   }
 
-  @ResolveField(of => [Block])
+  @ResolveField('blocks')
+  @KeyAsId()
   async blocks(@Parent() journey: Journey) {
-    return this.blockService.forJourney(journey._key)
+    return this.blockService.forJourney(journey.id)
   }
 
-  @ResolveField(of => ImageBlock, { nullable: true })
-  async primaryImageBlock(@Parent() journey: Journey) {
-    return this.blockService.getByKey(journey.primaryImageBlockId)
-  }
-
-  @ResolveReference()
-  async resolveReference(reference: { __typename: string; id: string }) {
-    return await this.journeyservice.getByKey(reference.id)
-  }
+  // @ResolveField(of => ImageBlock, { nullable: true })
+  // async primaryImageBlock(@Parent() journey: Journey) {
+  //   return this.blockService.getByKey(journey.primaryImageBlockId)
+  // }
 }

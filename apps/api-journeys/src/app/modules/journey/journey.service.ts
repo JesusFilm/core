@@ -3,13 +3,14 @@ import { aql, Database } from 'arangojs'
 
 import { BaseService } from '../database/base.service'
 import { DocumentCollection } from 'arangojs/collection'
+import { Journey } from '../../graphql'
 
 @Injectable()
 export class JourneyService extends BaseService {
   constructor(@Inject('DATABASE') private readonly db: Database) {
     super()
   }
-  async getBySlug(_key: string) {
+  async getBySlug(_key: string): Promise<Journey> {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}
       FILTER journey.slug == ${_key}

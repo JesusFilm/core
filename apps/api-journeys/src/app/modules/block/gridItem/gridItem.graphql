@@ -1,0 +1,7 @@
+  type GridItemBlock implements Block {
+    id: ID!
+    parentBlockId: ID
+    xl: Int!
+    lg: Int!
+    sm: Int!
+  }
