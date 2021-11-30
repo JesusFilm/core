@@ -1,7 +1,21 @@
 import { ReactElement, useState } from 'react'
 import { Alert, Button, Container, Grid, TextField } from '@mui/material'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
-import { firebaseClient } from '../../../libs/firebaseClient'
+import { firebaseClient, UseFirebase } from '../../../libs/firebaseClient'
+import { useMutation, gql } from '@apollo/client'
+import { UserCreate } from '../../../../__generated__/UserCreate'
+
+export const USER_CREATE = gql`
+  mutation UserCreate($input: UserCreateInput!) {
+    userCreate(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      imageUrl
+    }
+  }
+`
 
 export const Register = (): ReactElement => {
   const [firstName, setFirstName] = useState<string>()
@@ -10,11 +24,42 @@ export const Register = (): ReactElement => {
   const [password, setPassword] = useState<string>()
   const [error, setError] = useState<string>()
   const auth = getAuth(firebaseClient)
+  const { user } = UseFirebase()
+  const [userCreate] = useMutation<UserCreate>(USER_CREATE)
+
+  const handleAuthResponse = (
+    id: string,
+    firstName?: string,
+    lastName?: string,
+    email?: string,
+    imageUrl?: string
+  ): void => {
+    void userCreate({
+      variables: {
+        input: {
+          id,
+          firstName,
+          lastName,
+          email,
+          imageUrl
+        },
+        optimisticResponse: {
+          userCreate: {
+            id: id,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            imageUrl: imageUrl
+          }
+        }
+      }
+    })
+  }
+
+  console.log(user.uid)
 
   const handleSignUp = async (event): Promise<void> => {
     event.preventDefault()
-
-    console.log(firstName, lastName)
 
     if (email !== undefined && password !== undefined) {
       createUserWithEmailAndPassword(auth, email, password)
@@ -26,7 +71,7 @@ export const Register = (): ReactElement => {
         })
     }
 
-    // handleAuthResponse(firstName, lastName, email)
+    handleAuthResponse(user.uid, firstName, lastName, email, user.photoURL)
   }
 
   return (
@@ -93,49 +138,3 @@ export const Register = (): ReactElement => {
     </Container>
   )
 }
-
-// TODO: Include code below once backend is ready
-
-// import { useMutation, gql } from '@apollo/client'
-
-// const [userCreate] = useMutation<UserCreate>(USER_CREATE)
-
-// export const USER_CREATE = gql`
-//   mutation UserCreate($input: UserCreateInput!) {
-//     userCreate(input: $input) {
-//       id
-//       firebaseId
-//       firstName
-//       lastName
-//       email
-//       imageUrl
-//     }
-//   }
-// `
-
-// const handleAuthResponse = (
-//   firstName?: string,
-//   lastName?: string,
-//   email?: string
-// ): void => {
-//   void userCreate({
-//     variables: {
-//       input: {
-//         firebaseId,
-//         firstName,
-//         lastName,
-//         email,
-//         imageUrl
-//       },
-//       optimisticResponse: {
-//         userCreate: {
-//           firebaseId: firebaseId,
-//           firstName: firstName,
-//           lastName: lastName,
-//           email: email,
-//           imageUrl: imageUrl
-//         }
-//       }
-//     }
-//   })
-// }

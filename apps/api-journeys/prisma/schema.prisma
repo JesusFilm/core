@@ -20,6 +20,21 @@ enum ThemeName {
   base
 }
 
+enum UserJourneyRole {
+  owner
+  editor
+  inviteRequested
+}
+
+model User {
+  id          String        @id
+  firstName   String
+  lastName    String
+  email       String
+  imageUrl    String
+  UserJourney UserJourney[] @relation("User")
+}
+
 model Journey {
   id        String     @id @default(uuid())
   title     String
@@ -33,6 +48,17 @@ model Journey {
   slug      String    @unique
   createdAt DateTime  @default(now())   
   publishedAt DateTime?
+  UserJourney         UserJourney[] @relation("Journey")
+}
+
+model UserJourney {
+  userId    String
+  user      User            @relation("User", fields: [userId], references: [id])
+  journeyId String
+  journey   Journey         @relation("Journey", fields: [journeyId], references: [id])
+  role      UserJourneyRole @default(inviteRequested)
+
+  @@unique([userId, journeyId], name: "uniqueUserJourney")
 }
 
 enum BlockType {
@@ -51,17 +77,17 @@ enum BlockType {
 }
 
 model Block {
-  id            String    @id @default(uuid())
-  blockType     BlockType @default(StepBlock)
-  journey       Journey   @relation(fields: [journeyId], references: [id])
-  journeyId     String
-  parentBlock   Block?    @relation("BlockChildren", fields: [parentBlockId], references: [id])
-  parentBlockId String?
-  childBlocks   Block[]   @relation("BlockChildren")
-  primaryImageJourney   Journey?   @relation("PrimaryImageJourney")
-  extraAttrs    Json?
-  parentOrder   Int       @default(0)
-  responses     Response[]
+  id                  String     @id @default(uuid())
+  blockType           BlockType  @default(StepBlock)
+  journey             Journey    @relation(fields: [journeyId], references: [id])
+  journeyId           String
+  parentBlock         Block?     @relation("BlockChildren", fields: [parentBlockId], references: [id])
+  parentBlockId       String?
+  childBlocks         Block[]    @relation("BlockChildren")
+  primaryImageJourney Journey?   @relation("PrimaryImageJourney")
+  extraAttrs          Json?
+  parentOrder         Int        @default(0)
+  responses           Response[]
 }
 
 enum ResponseType {
@@ -71,10 +97,10 @@ enum ResponseType {
 }
 
 model Response {
-  id            String       @id @default(uuid())
-  type          ResponseType
-  userId        String
-  block         Block        @relation(fields: [blockId], references: [id])
-  blockId       String
-  extraAttrs    Json
+  id         String       @id @default(uuid())
+  type       ResponseType
+  userId     String
+  block      Block        @relation(fields: [blockId], references: [id])
+  blockId    String
+  extraAttrs Json
 }

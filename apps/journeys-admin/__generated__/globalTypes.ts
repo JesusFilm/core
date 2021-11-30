@@ -21,6 +21,14 @@ export enum ThemeName {
   base = "base",
 }
 
+export interface UserCreateInput {
+  email?: string | null;
+  firstName?: string | null;
+  id?: string | null;
+  imageUrl?: string | null;
+  lastName?: string | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

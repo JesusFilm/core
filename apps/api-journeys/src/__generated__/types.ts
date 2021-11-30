@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Block as BlockType, Journey as JourneyType, Response as ResponseType } from '.prisma/api-journeys-client';
+import { Block as BlockType, Journey as JourneyType, User as UserType, UserJourney as UserJourneyType, Response as ResponseType } from '.prisma/api-journeys-client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -203,6 +203,7 @@ export type Journey = {
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
+  usersJourneys?: Maybe<Array<UserJourney>>;
 };
 
 export type JourneyCreateInput = {
@@ -253,6 +254,9 @@ export type Mutation = {
   journeyUpdate: Journey;
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
+  userCreate: User;
+  userJourneyCreate: UserJourney;
+  userJourneyUpdate: UserJourney;
   videoResponseCreate: VideoResponse;
 };
 
@@ -287,6 +291,21 @@ export type MutationSignUpResponseCreateArgs = {
 };
 
 
+export type MutationUserCreateArgs = {
+  input: UserCreateInput;
+};
+
+
+export type MutationUserJourneyCreateArgs = {
+  input: UserJourneyCreateInput;
+};
+
+
+export type MutationUserJourneyUpdateArgs = {
+  input: UserJourneyUpdateInput;
+};
+
+
 export type MutationVideoResponseCreateArgs = {
   input: VideoResponseCreateInput;
 };
@@ -318,6 +337,9 @@ export type Query = {
   dateTime?: Maybe<Scalars['DateTime']>;
   journey?: Maybe<Journey>;
   journeys: Array<Journey>;
+  me?: Maybe<User>;
+  user?: Maybe<User>;
+  users: Array<User>;
 };
 
 
@@ -329,6 +351,11 @@ export type QueryJourneyArgs = {
 
 export type QueryJourneysArgs = {
   status?: Maybe<JourneyStatus>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID'];
 };
 
 export type RadioOptionBlock = Block & {
@@ -451,6 +478,53 @@ export type TypographyVariant =
   | 'overline'
   | 'subtitle1'
   | 'subtitle2';
+
+export type User = {
+  __typename?: 'User';
+  email?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  imageUrl?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  usersJourneys?: Maybe<Array<UserJourney>>;
+};
+
+export type UserCreateInput = {
+  email?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  imageUrl?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+};
+
+export type UserJourney = {
+  __typename?: 'UserJourney';
+  journeyId: Scalars['ID'];
+  role: UserJourneyRole;
+  user?: Maybe<User>;
+  userId: Scalars['ID'];
+};
+
+export type UserJourneyCreateInput = {
+  journeyId: Scalars['ID'];
+  role?: Maybe<UserJourneyRole>;
+  userId: Scalars['ID'];
+};
+
+export type UserJourneyRole =
+  | 'editor'
+  | 'inviteRequested'
+  | 'owner';
+
+export type UserJourneyRoleForUpdates =
+  | 'editor'
+  | 'inviteRequested';
+
+export type UserJourneyUpdateInput = {
+  journeyId: Scalars['ID'];
+  role: UserJourneyRoleForUpdates;
+  userId: Scalars['ID'];
+};
 
 export type VideoArclight = VideoContent & {
   __typename?: 'VideoArclight';
@@ -646,6 +720,13 @@ export type ResolversTypes = {
   TypographyBlock: ResolverTypeWrapper<BlockType>;
   TypographyColor: TypographyColor;
   TypographyVariant: TypographyVariant;
+  User: ResolverTypeWrapper<UserType>;
+  UserCreateInput: UserCreateInput;
+  UserJourney: ResolverTypeWrapper<UserJourneyType>;
+  UserJourneyCreateInput: UserJourneyCreateInput;
+  UserJourneyRole: UserJourneyRole;
+  UserJourneyRoleForUpdates: UserJourneyRoleForUpdates;
+  UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   VideoContent: ResolversTypes['VideoArclight'] | ResolversTypes['VideoGeneric'];
@@ -692,6 +773,11 @@ export type ResolversParentTypes = {
   StepBlock: BlockType;
   String: Scalars['String'];
   TypographyBlock: BlockType;
+  User: UserType;
+  UserCreateInput: UserCreateInput;
+  UserJourney: UserJourneyType;
+  UserJourneyCreateInput: UserJourneyCreateInput;
+  UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
   VideoContent: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
@@ -790,6 +876,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  usersJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -807,6 +894,9 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
+  userCreate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserCreateArgs, 'input'>>;
+  userJourneyCreate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyCreateArgs, 'input'>>;
+  userJourneyUpdate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyUpdateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };
 
@@ -832,6 +922,9 @@ export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType exte
   dateTime?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneysArgs, never>>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
@@ -897,6 +990,24 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   parentBlockId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   variant?: Resolver<Maybe<ResolversTypes['TypographyVariant']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  usersJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserJourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['UserJourney'] = ResolversParentTypes['UserJourney']> = {
+  journeyId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['UserJourneyRole'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -973,6 +1084,8 @@ export type Resolvers<ContextType = GraphQLModules.Context> = {
   SignUpResponse?: SignUpResponseResolvers<ContextType>;
   StepBlock?: StepBlockResolvers<ContextType>;
   TypographyBlock?: TypographyBlockResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
+  UserJourney?: UserJourneyResolvers<ContextType>;
   VideoArclight?: VideoArclightResolvers<ContextType>;
   VideoBlock?: VideoBlockResolvers<ContextType>;
   VideoContent?: VideoContentResolvers<ContextType>;
