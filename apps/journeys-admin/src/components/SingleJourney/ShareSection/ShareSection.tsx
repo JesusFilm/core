@@ -37,7 +37,16 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
   const handleCopyLink = async (): Promise<void> => {
     await navigator.clipboard.writeText(journeyLink)
     setShowAlert(true)
-    setTimeout(() => setShowAlert(false), 3000)
+  }
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ): void => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setShowAlert(false)
   }
 
   return (
@@ -92,9 +101,10 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
 
       <Snackbar
         open={showAlert}
-        autoHideDuration={2000}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         TransitionComponent={Fade}
+        autoHideDuration={5000}
+        onClose={handleClose}
       >
         <Alert
           icon={false}

@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import ShareSection from '.'
 
 describe('JourneyShare', () => {
@@ -30,6 +30,31 @@ describe('JourneyShare', () => {
       'aria-labelledby',
       'share-actions'
     )
+  })
+
+  it('should handle copy link', async () => {
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: () => {
+          return null
+        }
+      }
+    })
+
+    jest.spyOn(navigator.clipboard, 'writeText')
+
+    const { getByRole, getByText } = render(
+      <ShareSection slug={'my-journey'} />
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
+
+    await waitFor(() => {
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        '/journeys/my-journey'
+      )
+      expect(getByText('Link Copied')).toBeInTheDocument()
+    })
   })
 
   it('should have menu links to the the correct address', () => {
