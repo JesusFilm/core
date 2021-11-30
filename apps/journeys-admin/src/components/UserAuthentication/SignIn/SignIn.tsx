@@ -4,6 +4,8 @@ import { firebaseClient } from '../../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
+// import { useMutation, gql } from '@apollo/client'
+// import { UserCreate } from '../../../../__generated__/UserCreate'
 
 export function SignIn(): ReactElement {
   const auth = getAuth(firebaseClient)
@@ -13,10 +15,7 @@ export function SignIn(): ReactElement {
     signInSuccessUrl: '/journeys',
     signInOptions: [
       {
-        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        disableSignUp: {
-          status: true
-        }
+        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
       },
       {
         provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -41,3 +40,34 @@ export function SignIn(): ReactElement {
     />
   )
 }
+
+// const [userCreate] = useMutation<UserCreate>(USER_CREATE)
+
+// const handleAuthResponse = (
+//   id: string,
+//   firstName?: string,
+//   lastName?: string,
+//   email?: string,
+//   imageUrl?: string
+// ): void => {
+//   void userCreate({
+//     variables: {
+//       input: {
+//         id,
+//         firstName,
+//         lastName,
+//         email,
+//         imageUrl
+//       },
+//       optimisticResponse: {
+//         userCreate: {
+//           id: id,
+//           firstName: firstName,
+//           lastName: lastName,
+//           email: email,
+//           imageUrl: imageUrl
+//         }
+//       }
+//     }
+//   })
+// }

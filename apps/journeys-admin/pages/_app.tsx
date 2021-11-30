@@ -8,7 +8,6 @@ import { createApolloClient } from '../src/libs/client'
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const { user } = UseFirebase()
   const client = createApolloClient(user?.accessToken)
-  console.log(user)
 
   useEffect(() => {
     // Remove the server-side injected CSS.
