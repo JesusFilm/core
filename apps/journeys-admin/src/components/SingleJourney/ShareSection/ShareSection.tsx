@@ -77,7 +77,6 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
 
       <TextField
         id="filled-basic"
-        disabled
         fullWidth
         hiddenLabel
         variant="filled"
