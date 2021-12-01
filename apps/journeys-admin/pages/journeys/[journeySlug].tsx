@@ -27,8 +27,8 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta property="og:image" content={journey.primaryImageBlock.src} />
         )}
       </Head>
+      <JourneyCardNavBar />
       <Box sx={{ m: 10 }}>
-        <JourneyCardNavBar/>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
           Single Journey Page
         </Typography>
