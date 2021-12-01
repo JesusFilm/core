@@ -5,8 +5,16 @@ import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../.
 
 describe('ControlPanel', () => {
   it('should render the element', () => {
-    const step: TreeBlock<StepBlock> = {
-      id: 'step.id',
+    const step1: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+    const step2: TreeBlock<StepBlock> = {
+      id: 'step2.id',
       __typename: 'StepBlock',
       parentBlockId: null,
       locked: false,
@@ -14,13 +22,16 @@ describe('ControlPanel', () => {
       children: []
     }
     const { getByTestId, getByText, getByRole } = render(
-      <ControlPanel steps={[step]} />
+      <ControlPanel steps={[step1, step2]} />
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).toBeDisabled()
-    fireEvent.click(getByTestId('step-step.id'))
-    expect(getByText('step.id')).toBeInTheDocument()
+    fireEvent.click(getByTestId('step-step1.id'))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
+    expect(getByText('step1.id')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Cards' }))
+    fireEvent.click(getByTestId('step-step2.id'))
+    expect(getByText('step2.id')).toBeInTheDocument()
   })
 })
