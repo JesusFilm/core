@@ -38,42 +38,47 @@ function a11yProps(index: number): { id: string; 'aria-controls': string } {
 }
 
 export function Tabs(): ReactElement {
-  const [value, setValue] = useState(0)
+  const [selectedTab, setSelectedTab] = useState(0)
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>()
   const [selectedBlock, setSelectedBlock] = useState<TreeBlock>()
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
-    newValue: number
+    tab: number
   ): void => {
-    setValue(newValue)
+    setSelectedTab(tab)
   }
 
   const handleNavigationSelect = (step: TreeBlock<StepBlock>): void => {
     setSelectedStep(step)
     setSelectedBlock(step)
+    setSelectedTab(1)
   }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <MuiTabs value={value} onChange={handleChange} aria-label="editor tabs">
+        <MuiTabs
+          value={selectedTab}
+          onChange={handleChange}
+          aria-label="editor tabs"
+        >
           <Tab label="Cards" {...a11yProps(0)} />
           <Tab label="Properties" {...a11yProps(1)} />
           <Tab label="Blocks" {...a11yProps(2)} />
         </MuiTabs>
       </Box>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={selectedTab} index={0}>
         <Navigation
           selected={selectedStep}
           onSelect={handleNavigationSelect}
           steps={[]}
         />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={selectedTab} index={1}>
         <Attributes selected={selectedBlock} />
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel value={selectedTab} index={2}>
         Blocks
       </TabPanel>
     </Box>
