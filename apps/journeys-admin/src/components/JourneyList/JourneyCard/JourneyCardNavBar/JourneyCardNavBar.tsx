@@ -4,7 +4,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
-export default function JourneyCardNavBar(): ReactElement {
+const JourneyCardNavBar = (): ReactElement => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ backgroundColor:(theme)=> theme.palette.background.default }}>
@@ -24,3 +24,5 @@ export default function JourneyCardNavBar(): ReactElement {
     </Box>
   );
 }
+
+export default JourneyCardNavBar;
