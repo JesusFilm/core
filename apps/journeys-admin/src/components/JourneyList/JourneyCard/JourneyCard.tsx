@@ -79,7 +79,9 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           />
         )}
         <Chip
-          label={journey.locale.substr(0, 2).toUpperCase()}
+          label={`${journey.locale
+            .substring(0, 2)
+            .toUpperCase()} (${journey.locale.substring(3)})`}
           icon={<TranslateIcon />}
           sx={{
             height: '42px',
