@@ -96,4 +96,4 @@ As an example we are going to run through the steps to get the Next Steps Journe
 
 ## Adding to the code base
 
-New features should be merged to a `feature/*` branch where it can be refined until it's production-ready, ready to be merged to `main`.
+New features should be merged to a `feature/*` branch where it can be refined until it's ready to be merged to `main`.
