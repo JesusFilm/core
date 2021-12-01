@@ -8,6 +8,7 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
+import JourneyCardNavBar from '../../src/components/JourneyList/JourneyCard/JourneyCardNavBar'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -27,6 +28,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         )}
       </Head>
       <Box sx={{ m: 10 }}>
+        <JourneyCardNavBar/>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
           Single Journey Page
         </Typography>
