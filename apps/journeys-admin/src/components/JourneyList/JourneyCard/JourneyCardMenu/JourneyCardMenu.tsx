@@ -1,6 +1,17 @@
 import { ReactElement, useState } from 'react'
-import { IconButton, Menu, MenuItem, Divider, Link } from '@mui/material'
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  Link,
+  ListItemText,
+  ListItemIcon
+} from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import EditIcon from '@mui/icons-material/Edit'
+import PeopleIcon from '@mui/icons-material/People'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 // Pass journeyID and slug to JourneyCardMenu
@@ -44,20 +55,41 @@ const JourneyCardMenu = ({
         }}
       >
         <Link href={`/journeys/${slug}/edit`} underline="none">
-          <MenuItem>Edit</MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
         </Link>
+
         {/* update link */}
         <Link href={`/journeys/${slug}/access`} underline="none">
-          <MenuItem>Change Access</MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText>Change Access</ListItemText>
+          </MenuItem>
         </Link>
 
         <Divider />
         {status === JourneyStatus.draft ? (
-          <MenuItem disabled>Preview</MenuItem>
+          <MenuItem disabled>
+            <ListItemIcon>
+              <VisibilityIcon />
+            </ListItemIcon>
+            <ListItemText>Preview</ListItemText>
+          </MenuItem>
         ) : (
           <Link href={'https://google.com'} underline="none">
             {/* update link */}
-            <MenuItem>Preview</MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <VisibilityIcon />
+              </ListItemIcon>
+              <ListItemText>Preview</ListItemText>
+            </MenuItem>
           </Link>
         )}
       </Menu>
