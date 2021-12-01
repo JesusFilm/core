@@ -2,6 +2,10 @@ import { ReactElement } from 'react'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { Card, Chip, Typography, Box } from '@mui/material'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import EditIcon from '@mui/icons-material/Edit'
+import TranslateIcon from '@mui/icons-material/Translate'
+
 import JourneyCardMenu from './JourneyCardMenu'
 import { AccessAvatars } from './AccessAvatars/AccessAvatars'
 import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
@@ -51,6 +55,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         {journey.status === 'draft' ? (
           <Chip
             label={'Draft'}
+            icon={<EditIcon style={{ color: '#F0720C' }} />}
             sx={{
               margin: '0px 15px',
               height: '42px',
@@ -63,6 +68,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         ) : (
           <Chip
             label={'Published'}
+            icon={<CheckCircleIcon style={{ color: '#3AA74A' }} />}
             sx={{
               margin: '0px 15px',
               height: '42px',
@@ -74,6 +80,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         )}
         <Chip
           label={journey.locale.substr(0, 2).toUpperCase()}
+          icon={<TranslateIcon />}
           sx={{
             height: '42px',
             width: 'auto',
