@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Canvas } from './Canvas'
 import { ControlPanel } from './ControlPanel'
-import { Tabs } from './Tabs'
 import { TopBar } from './TopBar'
 
 export function Editor(): ReactElement {
@@ -10,8 +9,7 @@ export function Editor(): ReactElement {
       <div>Editor</div>
       <TopBar />
       <Canvas />
-      <Tabs />
-      <ControlPanel />
+      <ControlPanel steps={[]} />
     </>
   )
 }

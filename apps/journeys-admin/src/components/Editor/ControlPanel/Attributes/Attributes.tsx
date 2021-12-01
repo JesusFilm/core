@@ -1,5 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui'
-import { Box } from '@mui/material'
+import { Stack } from '@mui/material'
 import { ReactElement } from 'react'
 import { Card, Step } from './blocks'
 
@@ -15,13 +15,21 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
 }
 
 interface AttributesProps {
-  selected?: TreeBlock
+  selected: TreeBlock
 }
 
 export function Attributes({ selected }: AttributesProps): ReactElement {
   return (
-    <Box sx={{ backgroundColor: '#EFEFEF', p: 5 }}>
+    <Stack
+      direction="row"
+      spacing={4}
+      sx={{
+        overflowX: 'auto',
+        py: 5,
+        px: 6
+      }}
+    >
       <AttributesContent selected={selected} />
-    </Box>
+    </Stack>
   )
 }
