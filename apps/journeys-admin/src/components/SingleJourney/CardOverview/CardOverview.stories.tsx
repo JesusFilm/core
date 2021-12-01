@@ -1,16 +1,19 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
-import CardOverview from './CardOverview'
+import CardOverview from '.'
 
-const TestStory = {
+const CardOverviewDemo = {
   ...journeysAdminConfig,
   component: CardOverview,
-  title: 'Journeys-Admin//SingleJourney/CardOverview'
+  title: 'Journeys-Admin/SingleJourney/CardOverview'
 }
 
-const Template: Story = () => <CardOverview />
+const Template: Story = ({ ...args }) => <CardOverview slug={''} {...args} />
 
-export const StoryComponent = Template.bind({})
+export const Default = Template.bind({})
+Default.args = {
+  slug: 'my-journey'
+}
 
-export default TestStory as Meta
+export default CardOverviewDemo as Meta
