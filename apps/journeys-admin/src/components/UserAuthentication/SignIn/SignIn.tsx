@@ -98,11 +98,5 @@ export function SignIn(): ReactElement {
     }
   }
 
-  return (
-    <StyledFirebaseAuth
-      data-testid="firebaseui"
-      uiConfig={uiConfig}
-      firebaseAuth={auth}
-    />
-  )
+  return <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
 }

@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { SignIn } from './SignIn'
+import { SignIn, USER_CREATE } from './SignIn'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { MockedProvider } from '@apollo/client/testing'
 
 // Do we have to write a storybook test for this?
-// Wrote a simple storybook test
 
 const Demo: Meta = {
   ...journeysAdminConfig,
@@ -11,7 +11,35 @@ const Demo: Meta = {
   title: 'Journeys-Admin/UserAuthentication/SignIn'
 }
 
-const Template: Story = () => <SignIn />
+const Template: Story = () => (
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: USER_CREATE,
+          variables: {
+            id: 'uid',
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
+            imageUrl: 'imageUrl'
+          }
+        },
+        result: {
+          data: {
+            id: 'uid',
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
+            imageUrl: 'imageUrl'
+          }
+        }
+      }
+    ]}
+  >
+    <SignIn />
+  </MockedProvider>
+)
 
 export const Default: Story = Template.bind({})
 
