@@ -3,11 +3,11 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
- import nextStepsLogo from './NextStepsLogo.svg'
-  import Image from 'next/image'
+import nextStepsLogo from './NextStepsLogo.svg'
+import Image from 'next/image'
 
 
-export default function AppHeader(): ReactElement {
+const AppHeader = (): ReactElement => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ backgroundColor:(theme)=> theme.palette.background.default }}>
@@ -20,3 +20,5 @@ export default function AppHeader(): ReactElement {
     </Box>
   );
 }
+
+export default AppHeader;
