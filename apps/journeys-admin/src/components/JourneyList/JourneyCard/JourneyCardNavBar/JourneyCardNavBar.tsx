@@ -1,7 +1,8 @@
 import { ReactElement } from 'react'
 import * as React from 'react';
-import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 export default function JourneyCardNavBar(): ReactElement {
   return (
@@ -10,9 +11,9 @@ export default function JourneyCardNavBar(): ReactElement {
         <Toolbar>
           <Box my={2}>
             <Link href={`/journeys`} passHref>
-              <Button variant="text" fullWidth>
-                &#60;
-              </Button>
+              <IconButton>
+                <ArrowBackIosNewIcon/>
+              </IconButton>
             </Link>
           </Box>
           <Typography variant="h6" component="div" sx={{  color: "black"}}>
