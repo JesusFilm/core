@@ -19,7 +19,7 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <AppHeader/>
+      <AppHeader />
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys
