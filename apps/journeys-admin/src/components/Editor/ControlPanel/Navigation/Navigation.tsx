@@ -20,10 +20,11 @@ export function Navigation({
   return (
     <Stack
       direction="row"
-      spacing={2}
+      spacing={4}
       sx={{
         overflowX: 'auto',
-        p: 4
+        py: 5,
+        px: 6
       }}
     >
       {steps.map((step) => (
@@ -34,7 +35,8 @@ export function Navigation({
             borderRadius: 2,
             transition: '0.2s border-color ease-out',
             position: 'relative',
-            width: 89,
+            maxWidth: 89,
+            minWidth: 89,
             height: 134,
             boxSizing: 'content-box',
             overflow: 'hidden',

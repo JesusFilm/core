@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material'
 
 export const theme = createTheme({
+  spacing: 4,
   typography: {
     fontFamily: "'Open Sans', sans-serif",
     h1: {
@@ -41,6 +42,14 @@ export const theme = createTheme({
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 'bold',
           borderRadius: '1000px'
+        }
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontWeight: 'bold',
+          textTransform: 'none'
         }
       }
     }
