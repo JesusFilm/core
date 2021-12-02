@@ -306,7 +306,7 @@ describe('JourneyModule', () => {
         expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
       })
 
-      it('allocates a role to the user', async () => {
+      it('allocates an owner role to the user', async () => {
         dbMock.journey.create.mockResolvedValue(draftJourney)
 
         await query(
