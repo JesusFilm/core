@@ -8,6 +8,13 @@ export interface AccessAvatar {
   lastName?: string
   image?: string
   email?: string
+  role: Role
+}
+
+export enum Role {
+  inviteRequested = 'inviteRequested',
+  editor = 'editor',
+  owner = 'owner'
 }
 
 export interface AccessAvatarsProps {
@@ -15,23 +22,54 @@ export interface AccessAvatarsProps {
 }
 
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
-  return (
-    <AvatarGroup
-      max={3}
-      sx={{
-        display: 'flex',
-        justifyContent: 'flex-end'
-      }}
-    >
-      {users.map((user) => (
-        <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
-          <Avatar alt={user.firstName} src={user.image}>
-            {createFallbackLetter(user)}
-          </Avatar>
+  const orderedAvatars = orderAvatars(users)
+
+  if (orderedAvatars.length <= 3) {
+    return (
+      <AvatarGroup
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}
+      >
+        {orderedAvatars.slice(0, 3).map((user) => (
+          <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
+            <Avatar alt={user.firstName} src={user.image}>
+              {createFallbackLetter(user)}
+            </Avatar>
+          </Tooltip>
+        ))}
+      </AvatarGroup>
+    )
+  } else {
+    return (
+      <AvatarGroup
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}
+      >
+        {orderedAvatars.slice(0, 2).map((user) => (
+          <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
+            <Avatar alt={user.firstName} src={user.image}>
+              {createFallbackLetter(user)}
+            </Avatar>
+          </Tooltip>
+        ))}
+        <Tooltip
+          title={orderedAvatars.slice(3).map((user) => {
+            return (
+              <>
+                <p style={{ margin: '0px' }}>{createToolTipTitle(user)}</p>
+              </>
+            )
+          })}
+        >
+          <Avatar>{`+${users.slice(3).length}`}</Avatar>
         </Tooltip>
-      ))}
-    </AvatarGroup>
-  )
+      </AvatarGroup>
+    )
+  }
 }
 
 function createToolTipTitle(user: AccessAvatar): string {
@@ -40,7 +78,7 @@ function createToolTipTitle(user: AccessAvatar): string {
   } else if (user.email != null) {
     return `${user.email}`
   } else {
-    return `No name or email available for this user`
+    return 'Anonymous'
   }
 }
 
@@ -52,4 +90,13 @@ function createFallbackLetter(user: AccessAvatar): string | null {
   } else {
     return null
   }
+}
+
+function orderAvatars(users: AccessAvatar[]): AccessAvatar[] {
+  const owners = users.filter((user) => user.role === Role.owner)
+  const editors = users.filter((user) => user.role === Role.editor)
+  const inviteRequests = users.filter(
+    (user) => user.role === Role.inviteRequested
+  )
+  return owners.concat(editors).concat(inviteRequests)
 }

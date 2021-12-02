@@ -91,6 +91,7 @@ export default SingleJourneyPage
 //         firstName
 //         lastName
 //         email
+//         role
 //         imageUrl
 //       }
 //     }
