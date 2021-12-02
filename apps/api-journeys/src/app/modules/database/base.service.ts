@@ -1,44 +1,39 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
+import { DocumentCollection } from 'arangojs/collection'
+import { aql, Database } from 'arangojs';
 @Injectable()
 export abstract class BaseService {
-  abstract collection: any
+  constructor(@Inject('DATABASE') public readonly db: Database) { }
+  abstract collection: DocumentCollection
 
-  async getAll(opts: any = {}): Promise<any[]> {
-    const rst: any = await this.collection.all(opts)
-    return rst.all()
+  async getAll<T>(): Promise<T[]> {
+    const rst = await this.db.query(aql`
+    FOR item in ${this.collection}
+      RETURN item`);
+    return await rst.all()
   }
   
-  async getByKey(_key: string): Promise<any> {
-    const rst: any[] = await this.collection.lookupByKeys([_key])
-    return rst[0]
+  async get<T>(_key: string): Promise<T> {
+    const rst = await this.db.query(aql`
+    FOR item in ${this.collection}
+      FILTER item._key == ${_key}
+      LIMIT 1
+      RETURN item`);
+    return await rst.next();
   }
 
-  async getByKeys(_key: string[]): Promise<any> {
-    return this.collection.lookupByKeys([..._key])
+  async update<T, T2>(_key: string, body: T2): Promise<T> {
+    const result =  await this.collection.update(_key, body, { returnNew: true })
+    return result.new
   }
 
-  // async getByBindVars(bindVars: object): Promise<any> {
-  //   return this.collection.firstExample(bindVars)
-  // }
-
-  async updateByKey(_key: string, body: any): Promise<any> {
-    return this.collection.update(_key, body, { returnNew: true })
+  async save<T, T2>(body: T2): Promise<T> {
+    const result = await this.collection.save(body, { returnNew: true })
+    return result.new;
   }
 
-  async insertOne(body: any): Promise<any> {
-    return this.collection.save(body, { returnNew: true })
-  }
-
-  // async insertList(list: any[]): Promise<any[]> { }
-  async deleteOne(_key: string): Promise<any> {
-    return this.collection.removeByKeys([_key], {})
-  }
-
-  async deleteByKeys(_keys: string[]): Promise<any> {
-    return this.collection.removeByKeys([..._keys], {})
-  }
-
-  async count(): Promise<any> {
-    return this.collection.count()
+  async count(): Promise<number> {
+    const result = await this.collection.count()
+    return result.count;
   }
 }

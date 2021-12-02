@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common'
-import { aql, Database } from 'arangojs'
+import { Injectable } from '@nestjs/common'
+import { aql } from 'arangojs'
 
 import { BaseService } from '../database/base.service'
 import { DocumentCollection } from 'arangojs/collection'
@@ -7,9 +7,6 @@ import { Journey } from '../../graphql'
 
 @Injectable()
 export class JourneyService extends BaseService {
-  constructor(@Inject('DATABASE') private readonly db: Database) {
-    super()
-  }
   async getBySlug(_key: string): Promise<Journey> {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}
@@ -17,7 +14,8 @@ export class JourneyService extends BaseService {
       LIMIT 1
       RETURN journey
     `);
-    return result.next();
+    return await result.next();
   }
+
   collection: DocumentCollection = this.db.collection('journeys')
 }

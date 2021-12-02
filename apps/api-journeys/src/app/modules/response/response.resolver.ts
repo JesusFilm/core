@@ -1,18 +1,28 @@
-// import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-// import { BaseService } from '../database/base.service';
-// import { Response } from './response.models';
-// import { ResponseService } from './response.service';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { RadioQuestionResponse, RadioQuestionResponseCreateInput, SignUpResponse, SignUpResponseCreateInput, VideoResponse, VideoResponseCreateInput } from '../../graphql';
+import { ResponseService } from './response.service';
 
-// @Resolver(of => Response)
-// export class ResponseResolver {
-//   constructor(private readonly responseserive: ResponseService) { }
-//   @Query(returns => [Response])
-//   async blocks() {
-//     return await this.responseserive.getAll();
-//   }
+@Resolver('Response')
+export class ResponseResolver {
+  constructor(private readonly responseservice: ResponseService) { }
+  @Mutation()
+  async radioQuestionResponseCreate(
+      @Args('input') input: RadioQuestionResponseCreateInput
+  ): Promise<RadioQuestionResponse> {
+      return await this.responseservice.save(input)
+  }
 
-//   @Query(returns => Response)
-//   async block(@Args('id', { type: () => ID }) _key: string) {
-//     return await this.responseserive.getByKey(_key);
-//   }
-// }
+  @Mutation()
+  async signUpResponseCreate(
+      @Args('input') input: SignUpResponseCreateInput
+  ): Promise<SignUpResponse> {
+      return await this.responseservice.save(input)
+  }
+
+  @Mutation()
+  async videoResponseCreate(
+      @Args('input') input: VideoResponseCreateInput
+  ): Promise<VideoResponse> {
+      return await this.responseservice.save(input)
+  }
+}

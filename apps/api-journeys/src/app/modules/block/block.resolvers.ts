@@ -1,9 +1,12 @@
 import {
+  Args,
+  Mutation,
+  Query,
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Block } from '../../graphql';
-
+import { Block, ImageBlock, ImageBlockCreateInput } from '../../graphql';
+import { IdAsKey, KeyAsId } from '../../lib/decorators';
 import { BlockService } from './block.service';
 
 @Resolver('Block')
@@ -13,22 +16,22 @@ export class BlockResolvers {
   __resolveType(obj: Block): string {
     return obj.type;
   }
-  // @Query(returns => [Block])
-  // async blocks() {
-  //   return await this.blockservice.getAll();
-  // }
 
-  // @Query(returns => Block)
-  // async block(@Args('id', { type: () => ID }) _key: string) {
-  //   return await this.blockservice.getByKey(_key);
-  // }
+  @Query()
+  @KeyAsId()
+  async blocks(): Promise<Block[]> {
+    return await this.blockservice.getAll();
+  }
 
-  // @Mutation(returns => Block)
-  // async createBlock(@Args('block') block: BlockInput) {
-  //   return await this.blockservice.insertOne(block);
-  // }
-//   @ResolveReference()
-//   resolveReference(reference: { __typename: string; id: string }) {
-//     return this.blockservice.getByKey(reference.id);
-//   }
+  @Query()
+  @KeyAsId()
+  async block(@Args('id') _key: string): Promise<Block> {
+    return await this.blockservice.get(_key);
+  }
+
+  @Mutation()
+  @IdAsKey()
+  async imageBlockCreate(@Args('block') block: ImageBlockCreateInput): Promise<ImageBlock>{
+    return await this.blockservice.save(block);
+  }
 }

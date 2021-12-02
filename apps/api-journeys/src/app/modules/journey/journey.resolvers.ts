@@ -6,7 +6,7 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { Block, IdType, Journey, JourneyCreateInput } from '../../graphql'
+import { Block, IdType, Journey, JourneyCreateInput, JourneyUpdateInput } from '../../graphql'
 import { BlockMiddleware, KeyAsId } from '../../lib/decorators'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from './journey.service'
@@ -26,12 +26,17 @@ export class JourneyResolvers {
   async journey(@Args('id') _key: string, @Args('idType') idType: IdType = IdType.slug): Promise<Journey> {
     return idType === IdType.slug
       ? await this.journeyservice.getBySlug(_key)
-      : await this.journeyservice.getByKey(_key)
+      : await this.journeyservice.get(_key)
   }
 
   @Mutation()
   async createJourney(@Args('journey') journey: JourneyCreateInput): Promise<Journey> {
-    return await this.journeyservice.insertOne(journey)
+    return await this.journeyservice.save(journey)
+  }
+
+  @Mutation()
+  async journeyUpdate(@Args('journey') journey: JourneyUpdateInput): Promise<Journey> {
+    return await this.journeyservice.update(journey.id, journey)
   }
 
   @ResolveField('blocks')

@@ -12,7 +12,9 @@
         "project": ["apps/api-journeys/tsconfig.*?.json"]
       },
       "rules": {
-        "no-prototype-builtins": "off"
+        "no-floating-promises": "off",
+        "no-prototype-builtins": "off",
+        "no-return-await": "off"
       }
     },
     {
