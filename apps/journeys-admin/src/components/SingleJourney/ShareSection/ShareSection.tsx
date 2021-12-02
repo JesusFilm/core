@@ -3,16 +3,12 @@ import {
   Box,
   Typography,
   IconButton,
-  Menu,
-  MenuItem,
   TextField,
   InputAdornment,
-  Link,
   Alert,
   Snackbar,
   Fade
 } from '@mui/material'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import InsertLinkIcon from '@mui/icons-material/InsertLink'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
@@ -21,18 +17,9 @@ interface ShareSectionProps {
 }
 
 const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
   // update link
   const journeyLink = `/journeys/${slug}`
   const [showAlert, setShowAlert] = useState(false)
-
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleCloseMenu = (): void => {
-    setAnchorEl(null)
-  }
 
   const handleCopyLink = async (): Promise<void> => {
     await navigator.clipboard.writeText(journeyLink)
@@ -51,38 +38,9 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex' }}>
-        <Typography variant="h4">Journey Link</Typography>
-
-        <IconButton
-          id="share-actions"
-          aria-controls="share-actions"
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : 'false'}
-          onClick={handleOpenMenu}
-          sx={{ marginLeft: 'auto' }}
-        >
-          <MoreHorizIcon />
-        </IconButton>
-
-        <Menu
-          id="journey-actions"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleCloseMenu}
-          MenuListProps={{
-            'aria-labelledby': 'share-actions'
-          }}
-        >
-          <MenuItem onClick={handleCopyLink}>Copy Link</MenuItem>
-          {/* Update link */}
-          <MenuItem>
-            <Link href={`/journeys/${slug}/edit`} underline="none">
-              Change Link
-            </Link>
-          </MenuItem>
-        </Menu>
-      </Box>
+      <Typography variant="h4" gutterBottom={true}>
+        Journey Link
+      </Typography>
 
       <TextField
         id="filled-basic"
@@ -93,7 +51,9 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <InsertLinkIcon />
+              <IconButton onClick={handleCopyLink}>
+                <InsertLinkIcon />
+              </IconButton>
             </InputAdornment>
           )
         }}
@@ -113,7 +73,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
           sx={{
             width: '286px',
             color: 'white',
-            backgroundColor: 'black',
+            backgroundColor: '#26262E',
             borderRadius: '2px'
           }}
         >
