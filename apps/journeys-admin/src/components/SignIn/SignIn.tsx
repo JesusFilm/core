@@ -4,57 +4,14 @@ import { firebaseClient } from '../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
-import { useMutation, gql } from '@apollo/client'
-import { UserCreate } from '../../../__generated__/UserCreate'
-
-export const USER_CREATE = gql`
-  mutation UserCreate($input: UserCreateInput!) {
-    userCreate(input: $input) {
-      id
-      firstName
-      lastName
-      email
-      imageUrl
-    }
-  }
-`
+import { useRouter } from 'next/router'
 
 export function SignIn(): ReactElement {
   const auth = getAuth(firebaseClient)
-  const [userCreate] = useMutation<UserCreate>(USER_CREATE)
-
-  const handleAuthResponse = (
-    id: string,
-    firstName?: string,
-    lastName?: string,
-    email?: string,
-    imageUrl?: string
-  ): void => {
-    void userCreate({
-      variables: {
-        input: {
-          id,
-          firstName,
-          lastName,
-          email,
-          imageUrl
-        },
-        optimisticResponse: {
-          userCreate: {
-            id: id,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            imageUrl: imageUrl
-          }
-        }
-      }
-    })
-  }
+  const router = useRouter()
 
   const uiConfig = {
     signInFlow: 'popup',
-    signInSuccessUrl: '/journeys',
     signInOptions: [
       {
         provider: firebase.auth.EmailAuthProvider.PROVIDER_ID
@@ -70,26 +27,8 @@ export function SignIn(): ReactElement {
       }
     ],
     callbacks: {
-      signInSuccessWithAuthResult: (response) => {
-        const firstName = response.user.displayName
-          .split(' ')
-          .slice(0, -1)
-          .join(' ')
-        const lastName = response.user.displayName
-          .split(' ')
-          .slice(-1)
-          .join(' ')
-        const imageUrl =
-          response.user.photoURL != null ? response.user.photoURL : ''
-
-        handleAuthResponse(
-          response.user.uid,
-          firstName,
-          lastName,
-          response.user.email,
-          imageUrl
-        )
-
+      signInSuccessWithAuthResult: () => {
+        void router.push('/journeys')
         return true
       }
     }
