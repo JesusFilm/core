@@ -45,7 +45,7 @@ module.exports = {
       ? config.resolve.plugins.push(tsPaths)
       : (config.resolve.plugins = [tsPaths])
 
-    // TODO: Remove once Storybook supports Emotion 11.
+    // TODO: Remove once Storybook supports Emotion 11
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/styled': require.resolve('@emotion/styled'),
