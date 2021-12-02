@@ -10,7 +10,7 @@ const CardOverview = ({ slug }: CardOverviewProps): ReactElement => {
   return (
     <Box>
       <Typography variant="h4">Cards</Typography>
-      {/* <StoryCards /> */}
+      {/* <StoryCards /> goes here */}
       <Button
         variant="contained"
         startIcon={<EditIcon />}
