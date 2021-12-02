@@ -22,7 +22,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       : moment(journey.createdAt).format('MMM Do, YYYY')
 
   return (
-    <Card sx={{ padding: '15px 29px' }}>
+    <Card sx={{ padding: '15px 29px', borderRadius: '0px' }} variant="outlined">
       <Typography
         variant="subtitle1"
         sx={{
@@ -62,7 +62,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
               width: 'auto',
               borderRadius: '18px',
               paddingRight: '23px',
-              fontSize: '17px'
+              fontSize: '17px',
+              backgroundColor: 'white'
             }}
           />
         ) : (
@@ -74,7 +75,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
               height: '42px',
               width: 'auto',
               borderRadius: '18px',
-              fontSize: '17px'
+              fontSize: '17px',
+              backgroundColor: 'white'
             }}
           />
         )}
@@ -87,7 +89,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             height: '42px',
             width: 'auto',
             borderRadius: '18px',
-            fontSize: '17px'
+            fontSize: '17px',
+            backgroundColor: 'white'
           }}
         />
         <Box sx={{ marginLeft: 'auto' }}>

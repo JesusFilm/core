@@ -13,7 +13,7 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
     <>
       {/* Remove this once we link journey cards to the Single Journey page */}
       {journeys.map((journey) => (
-        <Box key={journey.id} my={2}>
+        <Box key={journey.id}>
           <Link href={`/journeys/${journey.slug}`} passHref>
             <JourneyCard journey={journey} />
           </Link>
