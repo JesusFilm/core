@@ -1,10 +1,10 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { SortBy } from '.'
 import JourneySort from './JourneySort'
 
 describe('JourneySort', () => {
   it('should sort by date created by default', () => {
-    render(
+    const {getByRole, getByText, getByDisplayValue} = render(
       <JourneySort
         sortBy={SortBy.UNDEFINED}
         setSortBy={() => {
@@ -13,9 +13,17 @@ describe('JourneySort', () => {
       />
     )
 
+    const button = getByRole('button');
+   // console.log(button);
+    expect(button).toBeInTheDocument();
+
     // Check Chip label is "Sort By"
+    expect(getByText('Sort By')).toBeInTheDocument();
+
     // fireEvent click Chip
+    fireEvent.click(button);
     // Check radio option default value is "CREATED_AT"
+    expect(getByDisplayValue('Date Created')).toHaveAttribute('checked', "");
   })
 
   it('should sort by name', () => {
