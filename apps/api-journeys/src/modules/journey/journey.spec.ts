@@ -305,6 +305,37 @@ describe('JourneyModule', () => {
         )
         expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
       })
+
+      it('allocates a role to the user', async () => {
+        dbMock.journey.create.mockResolvedValue(draftJourney)
+
+        await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
+
+        expect(dbMock.userJourney.create).toBeCalledWith({
+          data: {
+            userId: 'userId',
+            journeyId: draftJourney.id,
+            role: 'owner'
+          }
+        })
+      })
     })
 
     describe('journeyUpdate', () => {
