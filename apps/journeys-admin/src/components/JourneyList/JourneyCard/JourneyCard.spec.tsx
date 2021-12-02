@@ -60,7 +60,7 @@ describe('JourneyCard', () => {
       const { getAllByText } = render(
         <JourneyCard journey={publishedJourney} />
       )
-      expect(getAllByText('EN')[0]).toBeInTheDocument()
+      expect(getAllByText('EN (US)')[0]).toBeInTheDocument()
     })
   })
   describe('draft journey', () => {
