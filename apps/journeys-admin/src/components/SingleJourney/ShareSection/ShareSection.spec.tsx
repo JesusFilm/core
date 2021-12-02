@@ -15,24 +15,7 @@ describe('JourneyShare', () => {
     )
   })
 
-  it('should have open menu on click', () => {
-    const { getByRole } = render(<ShareSection slug={'my-journey'} />)
-    expect(getByRole('button')).toHaveAttribute(
-      'aria-controls',
-      'share-actions'
-    )
-    expect(getByRole('button')).toHaveAttribute('aria-haspopup', 'true')
-    expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false')
-
-    fireEvent.click(getByRole('button'))
-
-    expect(getByRole('menu')).toHaveAttribute(
-      'aria-labelledby',
-      'share-actions'
-    )
-  })
-
-  it('should handle copy link', async () => {
+  it('should handle copy link on icon click', async () => {
     Object.assign(navigator, {
       clipboard: {
         writeText: () => {
@@ -47,7 +30,6 @@ describe('JourneyShare', () => {
       <ShareSection slug={'my-journey'} />
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
 
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
@@ -55,16 +37,5 @@ describe('JourneyShare', () => {
       )
       expect(getByText('Link Copied')).toBeInTheDocument()
     })
-  })
-
-  it('should have menu links to the the correct address', () => {
-    const { getByRole, getByText } = render(
-      <ShareSection slug={'my-journey'} />
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByText('Change Link')).toHaveAttribute(
-      'href',
-      '/journeys/my-journey/edit'
-    )
   })
 })
