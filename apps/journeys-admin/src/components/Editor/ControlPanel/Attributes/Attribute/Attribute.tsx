@@ -5,7 +5,7 @@ import {
   CardActionArea,
   CardContent,
   Typography,
-  Grid
+  Stack
 } from '@mui/material'
 
 interface AttributeProps {
@@ -30,15 +30,15 @@ export function Attribute({
       <MuiCard variant="outlined">
         <CardActionArea>
           <CardContent sx={{ py: 2, px: 4 }}>
-            <Grid container spacing={3} alignItems="center">
-              <Grid item>{icon}</Grid>
-              <Grid item sx={{ maxWidth: 92 }}>
+            <Stack spacing={3} alignItems="center" direction="row">
+              {icon}
+              <Box sx={{ maxWidth: 92 }}>
                 <Typography variant="caption" color="text.secondary" noWrap>
                   {name}
                 </Typography>
                 <Typography noWrap>{value}</Typography>
-              </Grid>
-            </Grid>
+              </Box>
+            </Stack>
           </CardContent>
         </CardActionArea>
       </MuiCard>

@@ -9,13 +9,16 @@ import {
   VerticalSplit
 } from '@mui/icons-material'
 
-export function Card({ id }: TreeBlock<CardBlock>): ReactElement {
+export function Card({
+  id,
+  backgroundColor
+}: TreeBlock<CardBlock>): ReactElement {
   return (
     <>
       <Attribute
         icon={<FiberManualRecord />}
         name="Color"
-        value={'Primary'}
+        value={backgroundColor ?? 'None'}
         description="Background Color"
       />
       <Attribute
