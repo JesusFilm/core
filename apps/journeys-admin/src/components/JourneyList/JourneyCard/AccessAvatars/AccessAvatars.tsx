@@ -29,41 +29,25 @@ export interface AccessAvatarsProps {
 
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
   const orderedAvatars = orderAvatars(users)
+  const max = orderedAvatars.length <= 3 ? 3 : 2
 
-  if (orderedAvatars.length <= 3) {
-    return (
-      <AvatarGroup
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}
-      >
-        {orderedAvatars.slice(0, 3).map((user) => (
-          <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
-            <Avatar alt={user.firstName} src={user.image}>
-              {createFallbackLetter(user)}
-            </Avatar>
-          </Tooltip>
-        ))}
-      </AvatarGroup>
-    )
-  } else {
-    return (
-      <AvatarGroup
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}
-      >
-        {orderedAvatars.slice(0, 2).map((user) => (
-          <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
-            <Avatar alt={user.firstName} src={user.image}>
-              {createFallbackLetter(user)}
-            </Avatar>
-          </Tooltip>
-        ))}
+  return (
+    <AvatarGroup
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end'
+      }}
+    >
+      {orderedAvatars.slice(0, max).map((user) => (
+        <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
+          <Avatar alt={user.firstName} src={user.image}>
+            {createFallbackLetter(user)}
+          </Avatar>
+        </Tooltip>
+      ))}
+      {max === 2 && (
         <Tooltip
-          title={orderedAvatars.slice(3).map((user) => {
+          title={orderedAvatars.slice(2).map((user) => {
             return (
               <>
                 <p style={{ margin: '0px' }}>{createToolTipTitle(user)}</p>
@@ -71,9 +55,9 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
             )
           })}
         >
-          <Avatar>{`+${users.slice(3).length}`}</Avatar>
+          <Avatar>{`+${users.slice(2).length}`}</Avatar>
         </Tooltip>
-      </AvatarGroup>
-    )
-  }
+      )}
+    </AvatarGroup>
+  )
 }
