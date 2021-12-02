@@ -85,6 +85,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
         }
       }
     },
+    // TODO: Use Mui-filled
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
