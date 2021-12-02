@@ -1,6 +1,7 @@
 import { Avatar, AvatarGroup, Tooltip } from '@mui/material'
 import { ReactElement } from 'react'
 
+// import from types when the backend is ready
 export interface AccessAvatar {
   id: string
   firstName?: string

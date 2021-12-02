@@ -41,7 +41,6 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
     const { data } = await client.query<GetJourney>({
       query: gql`
         query GetJourney($id: ID!) {
-          # slug might have to be string
           journey(id: $id, idType: slug) {
             id
             title
@@ -71,3 +70,23 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
   }
 
 export default SingleJourneyPage
+
+// query GetJourney($id: ID!) {
+//   journey(id: $id, idType: slug) {
+//     id
+//     title
+//     description
+//     primaryImageBlock {
+//       src
+//     }
+//     userJourneys {
+//       user {
+//         id
+//         firstName
+//         lastName
+//         email
+//         imageUrl
+//       }
+//     }
+//   }
+// }
