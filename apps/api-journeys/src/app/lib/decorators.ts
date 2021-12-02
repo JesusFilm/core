@@ -1,18 +1,13 @@
 import * as _ from 'lodash';
 import { Block, VideoArclight, VideoBlock } from '../graphql';
 
-function omit(key: string, obj: any): any {
-  const { [key]: omitted, ...rest } = obj;
-  return rest;
-}
-
-const idAsKey = (obj): any  => omit('_key', {...obj, id: obj._key })
-const keyAsId = (obj): any  => omit('id', {...obj, id: obj._key })
+const idAsKey = (obj): any  => _.omit({...obj, _key: obj.id }, ['id'])
+const keyAsId = (obj): any  => _.omit({...obj, id: obj._key }, ['_key'])
 
 export function IdAsKey() {
   return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
     const childFunction = descriptor.value;
-    descriptor.value = async function (...args){
+    descriptor.value = async function (...args) {
       const result = await childFunction.apply(this, args);
       return Array.isArray(result)
         ? result.map(idAsKey)
@@ -24,7 +19,7 @@ export function IdAsKey() {
 export function KeyAsId() {
   return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
     const childFunction = descriptor.value;
-    descriptor.value = async function (...args){
+    descriptor.value = async function (...args) {
       const result = await childFunction.apply(this, args);
       return Array.isArray(result)
         ? result.map(keyAsId)

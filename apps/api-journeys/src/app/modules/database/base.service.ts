@@ -1,21 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { DocumentCollection } from 'arangojs/collection'
 import { aql, Database } from 'arangojs';
+
 @Injectable()
 export abstract class BaseService {
   constructor(@Inject('DATABASE') public readonly db: Database) { }
   abstract collection: DocumentCollection
 
-  async getAll<T>(): Promise<T[]> {
+  removeQuotes(str: string): string  {
+    return str.replace(/'/g,"")
+  }
+
+  async getAll<T>(): Promise<T[]> {    
     const rst = await this.db.query(aql`
-    FOR item in ${this.collection}
+    FOR item IN ${this.collection}
       RETURN item`);
     return await rst.all()
   }
   
   async get<T>(_key: string): Promise<T> {
     const rst = await this.db.query(aql`
-    FOR item in ${this.collection}
+    FOR item IN ${this.collection}
       FILTER item._key == ${_key}
       LIMIT 1
       RETURN item`);

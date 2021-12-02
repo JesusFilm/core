@@ -17,7 +17,7 @@ export class JourneyResolvers {
 
   @Query()
   @KeyAsId()
-  async journeys(): Promise<Journey[]> {
+  async journeys(): Promise<Journey[]> {    
     return await this.journeyservice.getAll()
   }
 

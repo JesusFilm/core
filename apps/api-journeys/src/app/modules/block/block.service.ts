@@ -10,8 +10,8 @@ export class BlockService extends BaseService {
   async forJourney(_key: string): Promise<Block[]> {
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
-      FILTER block.journeyId == ${_key}
-      RETURN block
+        FILTER block.journeyId == ${_key}
+        RETURN block
     `);
     return await res.all();
   }

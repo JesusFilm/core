@@ -10,9 +10,9 @@ export class JourneyService extends BaseService {
   async getBySlug(_key: string): Promise<Journey> {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}
-      FILTER journey.slug == ${_key}
-      LIMIT 1
-      RETURN journey
+        FILTER journey.slug == ${_key}
+        LIMIT 1
+        RETURN journey
     `);
     return await result.next();
   }
