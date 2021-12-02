@@ -31,6 +31,9 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           Single Journey Page
         </Typography>
         <Typography variant={'h6'}>{journey.title}</Typography>
+        <Typography variant={'h6'}>{journey.status}</Typography>
+        <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
+        <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
       </Box>
     </>
   )
@@ -45,6 +48,9 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             id
             title
             description
+            status
+            createdAt
+            publishedAt
             primaryImageBlock {
               src
             }

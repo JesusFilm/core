@@ -193,6 +193,7 @@ type Journey @key(fields: "id") {
   slug: String!
   publishedAt: DateTime
   createdAt: DateTime!
+  status: JourneyStatus!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
 }
@@ -214,6 +215,11 @@ input JourneyCreateInput {
   (server will throw BAD_USER_INPUT error if not)
   """
   slug: String!
+}
+
+enum JourneyStatus {
+  draft
+  published
 }
 
 input JourneyUpdateInput {
@@ -263,7 +269,7 @@ type NavigateToJourneyAction implements Action {
 }
 
 extend type Query {
-  journeys: [Journey!]!
+  journeys(status: JourneyStatus): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

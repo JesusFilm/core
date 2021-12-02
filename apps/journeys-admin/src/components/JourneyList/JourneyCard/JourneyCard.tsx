@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { Card, Chip, Typography } from '@mui/material'
-import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
+import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import JourneyCardMenu from './JourneyCardMenu'
 import { AccessAvatars } from './AccessAvatars'
 import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
