@@ -127,6 +127,10 @@ const resolvers: JourneyModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+      // check if user has permission to create journey
+      // create associating journey with user
+      // allocate an owner role to the user
+      // db.userjourney.create({
       try {
         return await db.journey.create({
           data: {
