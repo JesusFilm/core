@@ -1,4 +1,4 @@
-import { renderWithApolloClient } from '../../../../test/testingLibrary'
+import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { SignIn, USER_CREATE } from '.'
 import { MockedProvider } from '@apollo/client/testing'
 

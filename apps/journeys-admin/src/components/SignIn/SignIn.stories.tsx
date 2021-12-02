@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { SignIn, USER_CREATE } from './SignIn'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { MockedProvider } from '@apollo/client/testing'
 
 // Do we have to write a storybook test for this?

@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Container, Typography } from '@mui/material'
 import { ThemeProvider } from '@core/shared/ui'
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
-import { SignIn } from '../src/components/UserAuthentication/SignIn'
+import { SignIn } from '../src/components/SignIn'
 
 function Dashboard(): ReactElement {
   return (

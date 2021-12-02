@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
-import { firebaseClient } from '../../../libs/firebaseClient'
+import { firebaseClient } from '../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
 import { useMutation, gql } from '@apollo/client'
-import { UserCreate } from '../../../../__generated__/UserCreate'
+import { UserCreate } from '../../../__generated__/UserCreate'
 
 export const USER_CREATE = gql`
   mutation UserCreate($input: UserCreateInput!) {
@@ -66,10 +66,7 @@ export function SignIn(): ReactElement {
         }
       },
       {
-        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-        customParameters: {
-          auth_type: 'reauthenticate'
-        }
+        provider: firebase.auth.FacebookAuthProvider.PROVIDER_ID
       }
     ],
     callbacks: {
