@@ -28,6 +28,7 @@ const TextField = ({
       }}
       fullWidth
       name={name}
+      // TODO: Use filled variant
       variant="outlined"
       error={hasError}
       helperText={hasError ? meta.error : ' '}
