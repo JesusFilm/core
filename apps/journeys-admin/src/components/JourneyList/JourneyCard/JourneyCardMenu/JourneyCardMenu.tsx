@@ -3,7 +3,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Divider,
   Link,
   ListItemText,
   ListItemIcon
@@ -73,7 +72,6 @@ const JourneyCardMenu = ({
           </MenuItem>
         </Link>
 
-        <Divider />
         {status === JourneyStatus.draft ? (
           <MenuItem disabled>
             <ListItemIcon>
@@ -82,7 +80,7 @@ const JourneyCardMenu = ({
             <ListItemText>Preview</ListItemText>
           </MenuItem>
         ) : (
-          <Link href={'https://google.com'} underline="none">
+          <Link href={`/journeys/${slug}/preview`} underline="none">
             {/* update link */}
             <MenuItem>
               <ListItemIcon>

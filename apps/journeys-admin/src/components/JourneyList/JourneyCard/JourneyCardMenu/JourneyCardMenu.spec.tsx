@@ -24,50 +24,52 @@ describe('JourneyCardMenu', () => {
     )
   })
   it('should handle edit journey', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <JourneyCardMenu
         status={JourneyStatus.published}
         slug={'published-journey'}
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByText('Edit')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
       'href',
       '/journeys/published-journey/edit'
     )
   })
   it('should handle changing journey access', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <JourneyCardMenu
         status={JourneyStatus.published}
         slug={'published-journey'}
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByText('Change Access')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Change Access' })).toHaveAttribute(
       'href',
       '/journeys/published-journey/access'
     )
   })
   it('should handle preview', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <JourneyCardMenu
         status={JourneyStatus.published}
         slug={'published-journey'}
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByText('Preview')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Preview' })).toHaveAttribute(
       'href',
       '/journeys/published-journey/preview'
     )
   })
 
   it('should have a disabled preview button is journey is draft', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <JourneyCardMenu status={JourneyStatus.draft} slug={'draft-journey'} />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByText('Preview')).toHaveAttribute('aria-disabled')
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'aria-disabled'
+    )
   })
 })
