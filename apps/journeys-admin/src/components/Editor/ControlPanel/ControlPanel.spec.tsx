@@ -17,7 +17,7 @@ describe('ControlPanel', () => {
       id: 'step2.id',
       __typename: 'StepBlock',
       parentBlockId: null,
-      locked: false,
+      locked: true,
       nextBlockId: null,
       children: []
     }
@@ -29,9 +29,9 @@ describe('ControlPanel', () => {
     fireEvent.click(getByTestId('step-step1.id'))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
-    expect(getByText('step1.id')).toBeInTheDocument()
+    expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
     fireEvent.click(getByTestId('step-step2.id'))
-    expect(getByText('step2.id')).toBeInTheDocument()
+    expect(getByText('Locked With Interaction')).toBeInTheDocument()
   })
 })
