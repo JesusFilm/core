@@ -29,7 +29,9 @@ export interface AccessAvatarsProps {
 
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
   const orderedAvatars = orderAvatars(users)
-  const max = orderedAvatars.length <= 3 ? 3 : 2
+  const maxAvatars = 3
+  const avatarsShown =
+    orderedAvatars.length <= maxAvatars ? maxAvatars : maxAvatars - 1
 
   return (
     <AvatarGroup
@@ -38,16 +40,16 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
         justifyContent: 'flex-end'
       }}
     >
-      {orderedAvatars.slice(0, max).map((user) => (
+      {orderedAvatars.slice(0, avatarsShown).map((user) => (
         <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
           <Avatar alt={user.firstName} src={user.image}>
             {createFallbackLetter(user)}
           </Avatar>
         </Tooltip>
       ))}
-      {max === 2 && (
+      {maxAvatars > avatarsShown && (
         <Tooltip
-          title={orderedAvatars.slice(2).map((user) => {
+          title={orderedAvatars.slice(avatarsShown).map((user) => {
             return (
               <>
                 <p style={{ margin: '0px' }}>{createToolTipTitle(user)}</p>
@@ -55,7 +57,9 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
             )
           })}
         >
-          <Avatar>{`+${users.slice(2).length}`}</Avatar>
+          <Avatar alt="overflow avatar">{`+${
+            users.slice(avatarsShown).length
+          }`}</Avatar>
         </Tooltip>
       )}
     </AvatarGroup>
