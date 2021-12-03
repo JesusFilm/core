@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
-import CardOverview from '.'
+import CardOverview, { CardOverviewProps } from '.'
 
 const CardOverviewDemo = {
   ...journeysAdminConfig,
@@ -9,7 +9,9 @@ const CardOverviewDemo = {
   title: 'Journeys-Admin/SingleJourney/CardOverview'
 }
 
-const Template: Story = ({ ...args }) => <CardOverview slug={''} {...args} />
+const Template: Story<CardOverviewProps> = ({ ...args }) => (
+  <CardOverview {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = {

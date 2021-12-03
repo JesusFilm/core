@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Button, Box, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 
-interface CardOverviewProps {
+export interface CardOverviewProps {
   slug: string
 }
 
