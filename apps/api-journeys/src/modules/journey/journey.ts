@@ -164,6 +164,19 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyUpdate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId,
+            journeyId: input.id
+          }
+        }
+      })
+
+      if (actor?.role !== 'owner' && actor?.role !== 'editor')
+        throw new AuthenticationError('User is not owner or editor of journey')
+
       try {
         if (input.slug != null) {
           input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
@@ -194,6 +207,19 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyPublish(_parent, { id }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId,
+            journeyId: id
+          }
+        }
+      })
+
+      if (actor?.role !== 'owner')
+        throw new AuthenticationError('User is not owner of journey')
+
       return await db.journey.update({
         where: { id },
         data: {
