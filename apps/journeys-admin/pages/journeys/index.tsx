@@ -16,7 +16,6 @@ interface JourneysListPageProps {
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  console.log(journeys)
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       {/* Next Steps Header */}

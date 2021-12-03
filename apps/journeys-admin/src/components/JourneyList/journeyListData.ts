@@ -8,7 +8,7 @@ import {
 export const defaultJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
-  title: 'Journey Heading',
+  title: 'Default Journey Heading',
   description: 'Description',
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
@@ -16,20 +16,22 @@ export const defaultJourney: Journey = {
   locale: 'en_US',
   createdAt: new Date('2021-11-19T12:34:56.647Z'),
   publishedAt: null,
-  status: JourneyStatus.published
+  status: JourneyStatus.draft
 }
 
 export const oldJourney: Journey = {
-  __typename: 'Journey',
-  id: 'journey-id',
+  ...defaultJourney,
   title: 'Old Journey Heading',
-  description: 'Description for a journey created before the current year',
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  slug: 'default',
-  locale: 'en_US',
+  description: 'Journey created before the current year',
   createdAt: new Date('1995-11-19T12:34:56.647Z'),
-  publishedAt: null,
+  publishedAt: new Date('1995-12-19T12:34:56.647Z'),
+  status: JourneyStatus.published
+}
+
+export const publishedJourney: Journey = {
+  ...defaultJourney,
+  title: 'Published Journey Heading',
+  publishedAt: new Date('2021-12-19T12:34:56.647Z'),
   status: JourneyStatus.published
 }
 

@@ -5,7 +5,8 @@ import JourneyList from './JourneyList'
 import {
   defaultJourney,
   oldJourney,
-  descriptiveJourney
+  descriptiveJourney,
+  publishedJourney
 } from './journeyListData'
 
 const TestStory = {
@@ -18,7 +19,7 @@ const Template: Story = ({ ...args }) => <JourneyList journeys={[]} {...args} />
 
 export const DefaultJourneyList = Template.bind({})
 DefaultJourneyList.args = {
-  journeys: [defaultJourney, oldJourney, descriptiveJourney]
+  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
 }
 
 export default TestStory as Meta
