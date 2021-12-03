@@ -1,7 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
-import CardOverview, { CardOverviewProps } from '.'
+import CardOverview from '.'
+import { CardOverviewProps } from './CardOverview'
 
 const CardOverviewDemo = {
   ...journeysAdminConfig,

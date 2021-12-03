@@ -1,1 +1,1 @@
-export { default, CardOverviewProps } from './CardOverview'
+export { default } from './CardOverview'
