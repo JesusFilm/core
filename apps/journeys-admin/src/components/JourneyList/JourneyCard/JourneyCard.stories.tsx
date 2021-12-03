@@ -6,7 +6,8 @@ import {
   defaultJourney,
   descriptiveJourney,
   oldJourney,
-  publishedJourney
+  publishedJourney,
+  noDescriptionJourney
 } from '../journeyListData'
 
 const TestStory = {
@@ -25,6 +26,10 @@ Default.args = { journey: defaultJourney }
 export const PublishedJourney = Template.bind({})
 PublishedJourney.args = {
   journey: publishedJourney
+}
+export const NoDescriptionJourney = Template.bind({})
+NoDescriptionJourney.args = {
+  journey: noDescriptionJourney
 }
 
 export const CardWithLongText = Template.bind({})

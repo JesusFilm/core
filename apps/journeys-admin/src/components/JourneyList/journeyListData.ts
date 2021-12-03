@@ -35,6 +35,12 @@ export const publishedJourney: Journey = {
   status: JourneyStatus.published
 }
 
+export const noDescriptionJourney: Journey = {
+  ...defaultJourney,
+  title: 'Journey with no description',
+  description: null
+}
+
 export const descriptiveJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
