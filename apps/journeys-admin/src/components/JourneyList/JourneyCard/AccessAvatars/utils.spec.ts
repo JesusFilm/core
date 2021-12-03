@@ -6,7 +6,7 @@ describe('utils', () => {
     it('should return first name and last', () => {
       const user = user1
       const expected = createToolTipTitle(user)
-      const answer = `${user.firstName.toString()} ${user.lastName.toString()}`
+      const answer = 'Amin Person'
       expect(expected).toEqual(answer)
     })
     it('should return email', () => {
@@ -27,15 +27,14 @@ describe('utils', () => {
     it('should return first letter for first name capitalized', () => {
       const user = user1
       const expected = createFallbackLetter(user)
-      const answer = user.firstName.charAt(0).toUpperCase()
+      const answer = 'A'
 
       expect(expected).toEqual(answer)
     })
     it('should return first letter for email capitalized', () => {
       const user = { ...user1, firstName: undefined }
       const expected = createFallbackLetter(user)
-      const answer = user.email.charAt(0).toUpperCase()
-
+      const answer = 'A'
       expect(expected).toEqual(answer)
     })
     it('should return null if no first name or last name', () => {
