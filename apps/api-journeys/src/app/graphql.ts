@@ -138,12 +138,14 @@ export class ImageBlockCreateInput {
 export class RadioQuestionResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    type?: Nullable<string>;
     radioOptionBlockId: string;
 }
 
 export class SignUpResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    type?: Nullable<string>;
     name: string;
     email: string;
 }
@@ -151,6 +153,7 @@ export class SignUpResponseCreateInput {
 export class VideoResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    type?: Nullable<string>;
     state: VideoResponseStateEnum;
     position?: Nullable<number>;
 }
@@ -378,7 +381,7 @@ export class VideoTriggerBlock implements Block {
     parentBlockId?: Nullable<string>;
     type: string;
     triggerStart: number;
-    action: Action;
+    action?: Nullable<Action>;
 }
 
 export class Icon {

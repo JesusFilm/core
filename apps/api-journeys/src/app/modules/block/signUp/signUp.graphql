@@ -4,6 +4,8 @@
     """
     id: ID
     blockId: ID!
+    """ type is set by the api """
+    type: String
     name: String!
     email: String!
   }

@@ -13,7 +13,7 @@ export interface StepFields {
   parentBlockId: string | null;
   /**
    * locked will be set to true if the user should not be able to manually
-   *   advance to the next step.
+   * advance to the next step.
    */
   locked: boolean;
   /**

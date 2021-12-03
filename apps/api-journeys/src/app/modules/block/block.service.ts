@@ -3,14 +3,18 @@ import { aql } from 'arangojs';
 
 import { BaseService } from '../database/base.service';
 import { DocumentCollection } from 'arangojs/collection';
-import { Block } from '../../graphql';
+import { Block, Journey } from '../../graphql';
 
 @Injectable()
 export class BlockService extends BaseService {
-  async forJourney(_key: string): Promise<Block[]> {
+  async forJourney(journey: Journey): Promise<Block[]> {
+    const primaryImageBlockId = journey.primaryImageBlock?.id;
+    const ignorePrimaryImageBlock = primaryImageBlockId !== null ? `AND block.id != ${primaryImageBlockId ?? 'null'}` : ''
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
-        FILTER block.journeyId == ${_key}
+        FILTER block.journeyId == ${journey.id}
+          AND block.journeyId != ${ignorePrimaryImageBlock}
+        SORT block.parentOrder ASC
         RETURN block
     `);
     return await res.all();

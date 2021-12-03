@@ -7,6 +7,14 @@ import { Journey } from '../../graphql'
 
 @Injectable()
 export class JourneyService extends BaseService {
+  async getAllPublishedJourneys(): Promise<Journey[]> {
+    const rst = await this.db.query(aql`
+    FOR journey IN ${this.collection}
+      FILTER journey.published == true
+      RETURN journey`);
+    return await rst.all();
+  }
+
   async getBySlug(_key: string): Promise<Journey> {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}

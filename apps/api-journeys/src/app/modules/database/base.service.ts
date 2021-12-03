@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { DocumentCollection } from 'arangojs/collection'
 import { aql, Database } from 'arangojs';
+import { DeepMockProxy } from 'jest-mock-extended';
 
 @Injectable()
 export abstract class BaseService {
-  constructor(@Inject('DATABASE') public readonly db: Database) { }
+  constructor(@Inject('DATABASE') public readonly db: Database | DeepMockProxy<Database>) { }
   abstract collection: DocumentCollection
 
   removeQuotes(str: string): string  {

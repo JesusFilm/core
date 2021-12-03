@@ -61,7 +61,23 @@
       "outputs": ["coverage/apps/api-journeys"],
       "options": {
         "jestConfig": "apps/api-journeys/jest.config.js",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "fileReplacements": [
+          {
+            "replace": "apps/api-journeys/src/environments/environment.ts",
+            "with": "apps/api-journeys/src/environments/environment.testing.ts"
+          }
+        ]
+      }      
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+          }
+        ]
       }
     }
   },

@@ -10,6 +10,8 @@ enum VideoResponseStateEnum {
     """
     id: ID
     blockId: ID!
+    """ type is set by the api """
+    type: String
     state: VideoResponseStateEnum!
     position: Float
   }
@@ -50,12 +52,12 @@ enum VideoResponseStateEnum {
     This child block should not be rendered normally, instead it should be used
     as the video poster. PosterBlock should be of type ImageBlock.
     """
-    posterBlockId: ID
+    posterBlockId: ID,    
   }
 
   type VideoResponse implements Response {
     id: ID!
-    userId: ID!
+    userId: ID!,
     state: VideoResponseStateEnum!
     position: Int
     block: VideoBlock

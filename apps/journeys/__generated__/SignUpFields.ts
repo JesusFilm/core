@@ -17,7 +17,7 @@ export interface SignUpFields_action_NavigateAction {
 export interface SignUpFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface SignUpFields_action_NavigateToJourneyAction_journey {
@@ -35,7 +35,7 @@ export interface SignUpFields_action_NavigateToJourneyAction {
 export interface SignUpFields_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type SignUpFields_action = SignUpFields_action_NavigateAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_NavigateToJourneyAction | SignUpFields_action_LinkAction;

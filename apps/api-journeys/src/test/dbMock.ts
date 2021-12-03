@@ -1,17 +1,18 @@
-import { Database } from 'arangojs'
-import { mockDeep, mockReset } from 'jest-mock-extended'
-import { DeepMockProxy } from 'jest-mock-extended/lib/cjs/Mock'
-// import db from '../src/lib/db'
+import { DocumentCollection } from 'arangojs/collection';
+import { ArrayCursor, BatchedArrayCursor } from 'arangojs/cursor';
+import { Document, DocumentMetadata } from 'arangojs/documents';
 
-jest.mock('../src/lib/db', () => ({
-  __esModule: true,
-  default: mockDeep<Database>()
-}))
+export const mockDbQueryResult = async (db, result: any[]): Promise<ArrayCursor> => await Promise.resolve(new BatchedArrayCursor(db, {
+    extra: {},
+    result: result,
+    hasMore: false,
+    id: "",
+    count: result.length
+}, 1, false).items)
 
-beforeEach(() => {
-  mockReset(dbMock)
+export const mockCollectionSaveResult = async (collection: DocumentCollection, result: any): Promise<DocumentMetadata & { new?: Document }> => await Promise.resolve({
+    _key: result._key,
+    _id: `${collection.name}`,
+    _rev: "1",
+    new: result
 })
-
-const dbMock = new Database()
-
-export default dbMock as unknown as DeepMockProxy<Database>

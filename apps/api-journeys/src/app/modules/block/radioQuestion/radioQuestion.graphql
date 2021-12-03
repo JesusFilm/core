@@ -4,6 +4,8 @@ input RadioQuestionResponseCreateInput {
     """
     id: ID
     blockId: ID!
+    """ type is set by the api """
+    type: String
     radioOptionBlockId: ID!
   }
 

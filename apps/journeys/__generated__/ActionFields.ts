@@ -15,7 +15,7 @@ export interface ActionFields_NavigateAction {
 export interface ActionFields_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface ActionFields_NavigateToJourneyAction_journey {
@@ -33,7 +33,7 @@ export interface ActionFields_NavigateToJourneyAction {
 export interface ActionFields_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type ActionFields = ActionFields_NavigateAction | ActionFields_NavigateToBlockAction | ActionFields_NavigateToJourneyAction | ActionFields_LinkAction;

@@ -15,7 +15,7 @@ export interface RadioOptionFields_action_NavigateAction {
 export interface RadioOptionFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface RadioOptionFields_action_NavigateToJourneyAction_journey {
@@ -33,7 +33,7 @@ export interface RadioOptionFields_action_NavigateToJourneyAction {
 export interface RadioOptionFields_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type RadioOptionFields_action = RadioOptionFields_action_NavigateAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_NavigateToJourneyAction | RadioOptionFields_action_LinkAction;

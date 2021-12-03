@@ -36,7 +36,7 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
@@ -54,7 +54,7 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyA
 export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction;
@@ -82,24 +82,24 @@ export interface GetJourney_journey_blocks_CardBlock {
   backgroundColor: string | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
-   *     This child block should not be rendered normally, instead it should be used
-   *     as a background. Blocks are often of type ImageBlock or VideoBlock.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
    */
   coverBlockId: string | null;
   /**
    * themeMode can override journey themeMode. If nothing is set then use
-   *     themeMode from journey
+   * themeMode from journey
    */
   themeMode: ThemeMode | null;
   /**
    * themeName can override journey themeName. If nothing is set then use
-   *     themeName from journey
+   * themeName from journey
    */
   themeName: ThemeName | null;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
-   *     is set to true the coverBlock Image should be displayed as a blur in the
-   *     background.
+   * is set to true the coverBlock Image should be displayed as a blur in the
+   * background.
    */
   fullscreen: boolean;
 }
@@ -133,7 +133,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
   height: number;
   /**
    * blurhash is a compact representation of a placeholder for an image.
-   *   Find a frontend implementation at https: // github.com/woltapp/blurhash
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
 }
@@ -146,7 +146,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateActio
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
@@ -164,7 +164,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJou
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction;
@@ -193,7 +193,7 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateAction {
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
@@ -211,7 +211,7 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyA
 export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction;
@@ -238,7 +238,7 @@ export interface GetJourney_journey_blocks_StepBlock {
   parentBlockId: string | null;
   /**
    * locked will be set to true if the user should not be able to manually
-   *   advance to the next step.
+   * advance to the next step.
    */
   locked: boolean;
   /**
@@ -282,8 +282,8 @@ export interface GetJourney_journey_blocks_VideoBlock {
   endAt: number | null;
   /**
    * posterBlockId is present if a child block should be used as a poster.
-   *   This child block should not be rendered normally, instead it should be used
-   *   as the video poster. PosterBlock should be of type ImageBlock.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
   videoContent: GetJourney_journey_blocks_VideoBlock_videoContent;
@@ -297,7 +297,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateActi
 export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
-  blockId: string | null;
+  blockId: string;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction_journey {
@@ -315,7 +315,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJo
 export interface GetJourney_journey_blocks_VideoTriggerBlock_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
-  url: string | null;
+  url: string;
 }
 
 export type GetJourney_journey_blocks_VideoTriggerBlock_action = GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_VideoTriggerBlock_action_LinkAction;
@@ -326,9 +326,9 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   parentBlockId: string | null;
   /**
    * triggerStart sets the time as to when a video navigates to the next block,
-   *   this is the number of seconds since the start of the video
+   * this is the number of seconds since the start of the video
    */
-  triggerStart: number | null;
+  triggerStart: number;
   action: GetJourney_journey_blocks_VideoTriggerBlock_action | null;
 }
 
@@ -342,11 +342,11 @@ export interface GetJourney_journey {
   title: string;
   description: string | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
-  blocks: GetJourney_journey_blocks[];
+  blocks: GetJourney_journey_blocks[] | null;
 }
 
 export interface GetJourney {
-  journey: GetJourney_journey;
+  journey: GetJourney_journey | null;
 }
 
 export interface GetJourneyVariables {

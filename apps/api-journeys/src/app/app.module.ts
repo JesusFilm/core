@@ -14,8 +14,9 @@ import { ResponseModule } from './modules/response/response.module'
     ResponseModule,
     GraphQLFederationModule.forRoot({
       typePaths: [join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql')],
-      cors: true,
-    })
+      cors: true,      
+      context: ({req}) => ({ headers: req.headers })
+    }),
   ]
 })
 export class AppModule { }
