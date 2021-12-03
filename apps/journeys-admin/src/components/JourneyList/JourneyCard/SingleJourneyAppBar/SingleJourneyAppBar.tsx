@@ -9,6 +9,7 @@ const SingleJourneyAppBar = (): ReactElement => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="static"
+        elevation={1}
         sx={{
           color: (theme) => theme.palette.text.primary,
           backgroundColor: (theme) => theme.palette.background.default
