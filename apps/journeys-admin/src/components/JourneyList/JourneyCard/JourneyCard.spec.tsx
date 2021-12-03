@@ -1,28 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import JourneyCard from './JourneyCard'
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import {
-  ThemeName,
-  ThemeMode,
-  JourneyStatus
-} from '../../../../__generated__/globalTypes'
+  publishedJourney,
+  noDescriptionJourney,
+  defaultJourney,
+  oldJourney
+} from '../journeyListData'
 
 describe('JourneyCard', () => {
   describe('published journey', () => {
-    const publishedJourney: Journey = {
-      __typename: 'Journey',
-      id: 'journey-id',
-      title: 'Published Journey Heading',
-      description: 'Description',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light,
-      slug: 'default',
-      locale: 'en_US',
-      createdAt: new Date('2021-11-19T12:34:56.647Z'),
-      publishedAt: new Date('2021-12-19T12:34:56.647Z'),
-      status: JourneyStatus.published
-    }
-
     it('should render the title', () => {
       const { getAllByText } = render(
         <JourneyCard journey={publishedJourney} />
@@ -30,18 +16,16 @@ describe('JourneyCard', () => {
       expect(getAllByText('Published Journey Heading')[0]).toBeInTheDocument()
     })
 
-    it('should render the formated  date', () => {
-      const { getAllByText } = render(
-        <JourneyCard journey={publishedJourney} />
+    it('should render the formatred  date', () => {
+      const { getByText } = render(
+        <JourneyCard journey={noDescriptionJourney} />
       )
-      expect(getAllByText('Nov 19th')[0]).toBeInTheDocument()
+      expect(getByText('Nov 19th')).toBeInTheDocument()
     })
 
     it('should render the description with the dash', () => {
-      const { getAllByText } = render(
-        <JourneyCard journey={publishedJourney} />
-      )
-      expect(getAllByText('- Description')[0]).toBeInTheDocument()
+      const { getByText } = render(<JourneyCard journey={publishedJourney} />)
+      expect(getByText('Nov 19th - Description')).toBeInTheDocument()
     })
 
     it('should render the published status', () => {
@@ -64,21 +48,8 @@ describe('JourneyCard', () => {
     })
   })
   describe('draft journey', () => {
-    const draftJourney: Journey = {
-      __typename: 'Journey',
-      id: 'journey-id',
-      title: 'Published Journey Heading',
-      description: 'Description',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light,
-      slug: 'default',
-      locale: 'en_US',
-      createdAt: new Date('2021-11-19T12:34:56.647Z'),
-      publishedAt: null,
-      status: JourneyStatus.draft
-    }
     it('should render the draft status', () => {
-      const { getAllByText } = render(<JourneyCard journey={draftJourney} />)
+      const { getAllByText } = render(<JourneyCard journey={defaultJourney} />)
       expect(getAllByText('Draft')[0]).toBeInTheDocument()
     })
 
@@ -89,22 +60,13 @@ describe('JourneyCard', () => {
   })
 
   describe('journey created at before the current year', () => {
-    const oldJourney: Journey = {
-      __typename: 'Journey',
-      id: 'journey-id',
-      title: 'Published Journey Heading',
-      description: 'Description',
-      themeName: ThemeName.base,
-      themeMode: ThemeMode.light,
-      slug: 'default',
-      locale: 'en_US',
-      createdAt: new Date('1995-11-19T12:34:56.647Z'),
-      publishedAt: null,
-      status: JourneyStatus.draft
-    }
     it('should render the formated date with year', () => {
       const { getAllByText } = render(<JourneyCard journey={oldJourney} />)
-      expect(getAllByText('Nov 19th, 1995')[0]).toBeInTheDocument()
+      expect(
+        getAllByText(
+          'Nov 19th, 1995 - Journey created before the current year'
+        )[0]
+      ).toBeInTheDocument()
     })
   })
 })
