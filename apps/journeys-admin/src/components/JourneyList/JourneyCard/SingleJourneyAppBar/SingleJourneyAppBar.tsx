@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import * as React from 'react'
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
+import { ChevronLeftRounded } from '@mui/icons-material'
 
 const SingleJourneyAppBar = (): ReactElement => {
   return (
@@ -18,7 +18,7 @@ const SingleJourneyAppBar = (): ReactElement => {
           <Box my={2}>
             <Link href={`/journeys`} passHref>
               <IconButton>
-                <ArrowBackIosNewIcon />
+                <ChevronLeftRounded />
               </IconButton>
             </Link>
           </Box>
