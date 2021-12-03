@@ -68,7 +68,7 @@ const breakpoints: Breakpoints = createBreakpoints({
   up,
   only,
   // Redundant when we have up & only
-  down: undefined,
+  // down: undefined,
   between: undefined
 })
 

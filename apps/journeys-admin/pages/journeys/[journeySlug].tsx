@@ -8,6 +8,7 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
+import SingleJourneyMenu from '../../src/components/SingleJourneyMenu'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -22,14 +23,12 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         {journey.description != null && (
           <meta name="description" content={journey.description} />
         )}
-        {journey.primaryImageBlock != null && (
-          <meta property="og:image" content={journey.primaryImageBlock.src} />
-        )}
       </Head>
       <Box sx={{ m: 10 }}>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
           Single Journey Page
         </Typography>
+        <SingleJourneyMenu journey={journey} />
         <Typography variant={'h6'}>{journey.title}</Typography>
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
@@ -49,12 +48,11 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             id
             title
             description
+            slug
             status
+            locale
             createdAt
             publishedAt
-            primaryImageBlock {
-              src
-            }
           }
         }
       `,

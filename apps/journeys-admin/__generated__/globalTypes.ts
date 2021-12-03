@@ -21,6 +21,17 @@ export enum ThemeName {
   base = "base",
 }
 
+export interface JourneyUpdateInput {
+  description?: string | null;
+  id: string;
+  locale?: string | null;
+  primaryImageBlockId?: string | null;
+  slug?: string | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+  title?: string | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
