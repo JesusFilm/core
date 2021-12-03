@@ -22,7 +22,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       : moment(journey.createdAt).format('MMM Do, YYYY')
 
   return (
-    <Card sx={{ padding: '15px 29px', borderRadius: '0px' }} variant="outlined">
+    <Card sx={{ borderRadius: '0px', px: 6, py: 4 }} variant="outlined">
       <Typography
         variant="subtitle1"
         sx={{
@@ -46,8 +46,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         }}
         gutterBottom
       >
-        <b>{date}</b> {' - '}
-        {journey.description}
+        {date}
+        {journey.description !== null && ` - ${journey.description}`}
       </Typography>
 
       <Box sx={{ display: 'flex' }}>
@@ -57,13 +57,12 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             label={'Draft'}
             icon={<EditIcon style={{ color: '#F0720C' }} />}
             sx={{
-              margin: '0px 15px',
               height: '42px',
               width: 'auto',
               borderRadius: '18px',
-              paddingRight: '23px',
               fontSize: '17px',
-              backgroundColor: 'white'
+              backgroundColor: 'white',
+              ml: 4
             }}
           />
         ) : (
@@ -71,12 +70,12 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             label={'Published'}
             icon={<CheckCircleIcon style={{ color: '#3AA74A' }} />}
             sx={{
-              margin: '0px 15px',
               height: '42px',
               width: 'auto',
               borderRadius: '18px',
               fontSize: '17px',
-              backgroundColor: 'white'
+              backgroundColor: 'white',
+              ml: 4
             }}
           />
         )}
@@ -90,7 +89,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             width: 'auto',
             borderRadius: '18px',
             fontSize: '17px',
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            ml: 4
           }}
         />
         <Box sx={{ marginLeft: 'auto' }}>
