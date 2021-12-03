@@ -10,7 +10,7 @@ import {
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components'
-import AppHeader from '../../src/components/JourneyList/AppHeader'
+import JourneysAppHeader from '../../src/components/JourneyList/JourneysAppHeader'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -19,7 +19,7 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <AppHeader />
+      <JourneysAppHeader />
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys

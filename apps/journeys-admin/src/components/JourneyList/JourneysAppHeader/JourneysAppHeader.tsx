@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import nextStepsLogo from './NextStepsLogo.svg'
 import Image from 'next/image'
 
-const AppHeader = (): ReactElement => {
+const JourneysAppHeader = (): ReactElement => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -17,7 +17,7 @@ const AppHeader = (): ReactElement => {
           {
             <Image
               src={nextStepsLogo}
-              alt="React Logo"
+              alt="Next Steps Logo"
               height={25}
               width={145}
             />
@@ -28,4 +28,4 @@ const AppHeader = (): ReactElement => {
   )
 }
 
-export default AppHeader
+export default JourneysAppHeader
