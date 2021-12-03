@@ -7,7 +7,7 @@ import { user1, user2, user3, user4, user5, user6 } from './AccessAvatarsData'
 const AccessAvatarsDemo = {
   ...journeysAdminConfig,
   component: AccessAvatars,
-  title: 'Journey-Admin/JourneyList/JourneyCard/AccessAvatar'
+  title: 'Journeys-Admin/JourneyList/JourneyCard/AccessAvatar'
 }
 
 const Template: Story = ({ ...args }) => <AccessAvatars users={[]} {...args} />
