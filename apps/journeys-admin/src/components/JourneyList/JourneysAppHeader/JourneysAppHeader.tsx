@@ -11,6 +11,7 @@ const JourneysAppHeader = (): ReactElement => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="static"
+        elevation={1}
         sx={{ backgroundColor: (theme) => theme.palette.background.default }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
