@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { AccessAvatars, AccessAvatarsProps } from './AccessAvatars'
-import { user1, user6 } from './AccessAvatarsData'
+import { user1, user2, user3, user4, user5, user6 } from './AccessAvatarsData'
 
 describe('AccessAvatars', () => {
   it('should render avatars', () => {
@@ -28,10 +28,10 @@ describe('AccessAvatars', () => {
 
   it('should use email as tooltip if user has no firstname', () => {
     const props: AccessAvatarsProps = {
-      users: [user6]
+      users: [{ ...user6, firstName: undefined }]
     }
     const { getByLabelText } = render(<AccessAvatars users={props.users} />)
-    expect(getByLabelText('drake@email.com')).toBeInTheDocument()
+    expect(getByLabelText('grahamDrake@email.com')).toBeInTheDocument()
   })
 
   it('should use "No name or email available for this user" as tooltip if user has no firstname and no email', () => {
@@ -50,5 +50,24 @@ describe('AccessAvatars', () => {
     }
     const { getByTestId } = render(<AccessAvatars users={props.users} />)
     expect(getByTestId('PersonIcon')).toBeInTheDocument()
+  })
+
+  it('should render overflow avatar with correct details', async () => {
+    const props: AccessAvatarsProps = {
+      users: [user1, user2, user3, user4, user5, user6]
+    }
+
+    const { getByRole, getByText } = render(
+      <AccessAvatars users={props.users} />
+    )
+    expect(getByText('+4')).toBeInTheDocument()
+    fireEvent.focus(getByText('+4'))
+    await waitFor(() => {
+      expect(getByRole('tooltip')).toBeInTheDocument()
+      expect(getByText('Effie Lowe')).toBeInTheDocument()
+      expect(getByText('Amin Person')).toBeInTheDocument()
+      expect(getByText('Janelle Clegg')).toBeInTheDocument()
+      expect(getByText('Drake Graham')).toBeInTheDocument()
+    })
   })
 })

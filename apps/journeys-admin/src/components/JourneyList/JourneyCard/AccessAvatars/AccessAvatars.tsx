@@ -1,11 +1,7 @@
 import { Avatar, AvatarGroup, Tooltip } from '@mui/material'
 import { ReactElement } from 'react'
 
-import {
-  createToolTipTitle,
-  createFallbackLetter,
-  orderAvatars
-} from './AccessAvatarsHelpers'
+import { createToolTipTitle, createFallbackLetter, orderAvatars } from './utils'
 
 // import from types when the backend is ready
 export interface AccessAvatar {
@@ -51,9 +47,9 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
         <Tooltip
           title={orderedAvatars.slice(avatarsShown).map((user) => {
             return (
-              <>
-                <p style={{ margin: '0px' }}>{createToolTipTitle(user)}</p>
-              </>
+              <p key={user.id} style={{ margin: '0px' }}>
+                {createToolTipTitle(user)}
+              </p>
             )
           })}
         >
