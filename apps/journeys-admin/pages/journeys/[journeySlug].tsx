@@ -22,9 +22,6 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         {journey.description != null && (
           <meta name="description" content={journey.description} />
         )}
-        {journey.primaryImageBlock != null && (
-          <meta property="og:image" content={journey.primaryImageBlock.src} />
-        )}
       </Head>
       <Box sx={{ m: 10 }}>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
@@ -52,9 +49,6 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             status
             createdAt
             publishedAt
-            primaryImageBlock {
-              src
-            }
           }
         }
       `,
