@@ -3,8 +3,7 @@ import * as React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
-import nextStepsLogo from './NextStepsLogo.svg'
-import Image from 'next/image'
+import Typography from '@mui/material/Typography';
 
 const JourneysAppHeader = (): ReactElement => {
   return (
@@ -12,17 +11,15 @@ const JourneysAppHeader = (): ReactElement => {
       <AppBar
         position="static"
         elevation={1}
-        sx={{ backgroundColor: (theme) => theme.palette.background.default }}
+        sx={{
+          color: (theme) => theme.palette.text.primary,
+          backgroundColor: (theme) => theme.palette.background.default
+        }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
-          {
-            <Image
-              src={nextStepsLogo}
-              alt="Next Steps Logo"
-              height={25}
-              width={145}
-            />
-          }
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Journeys
+          </Typography>
         </Toolbar>
       </AppBar>
     </Box>
