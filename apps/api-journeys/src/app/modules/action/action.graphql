@@ -1,27 +1,27 @@
-  interface Action {
-    gtmEventName: String
-  }
+interface Action {
+  gtmEventName: String
+}
 
-  """
-  NavigateAction is an Action that navigates to the nextBlockId field set on the
-  closest ancestor StepBlock.
-  """
-  type NavigateAction implements Action {
-    gtmEventName: String
-  }
+"""
+NavigateAction is an Action that navigates to the nextBlockId field set on the
+closest ancestor StepBlock.
+"""
+type NavigateAction implements Action {
+  gtmEventName: String
+}
 
-  type NavigateToBlockAction implements Action {
-    gtmEventName: String
-    blockId: String!
-  }
+type NavigateToBlockAction implements Action {
+  gtmEventName: String
+  blockId: String!
+}
 
-  type NavigateToJourneyAction implements Action {
-    gtmEventName: String
-    journeyId: String!
-  }
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String
+  journeyId: String!
+}
 
-  type LinkAction implements Action {
-    gtmEventName: String
-    url: String!
-    target: String
-  }
+type LinkAction implements Action {
+  gtmEventName: String
+  url: String!
+  target: String
+}

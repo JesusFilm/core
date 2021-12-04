@@ -1,0 +1,26 @@
+input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  """
+   type is set by the api
+  """
+  type: String
+  radioOptionBlockId: ID!
+}
+
+type RadioQuestionResponse implements Response {
+  id: ID!
+  userId: ID!
+  type: String!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
+extend type Mutation {
+  radioQuestionResponseCreate(
+    input: RadioQuestionResponseCreateInput!
+  ): RadioQuestionResponse!
+}

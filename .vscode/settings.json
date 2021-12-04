@@ -1,9 +1,12 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "[graphql]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

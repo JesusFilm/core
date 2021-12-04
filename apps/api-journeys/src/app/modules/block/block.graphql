@@ -1,9 +1,9 @@
-  interface Block {
-    id: ID!
-    type: String!
-    parentBlockId: ID
-  }
+interface Block {
+  id: ID!
+  type: String!
+  parentBlockId: ID
+}
 
-  extend type Journey {
-    blocks: [Block!]
-  }
+extend type Journey {
+  blocks: [Block!]
+}

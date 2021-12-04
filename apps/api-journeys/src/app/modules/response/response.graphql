@@ -1,4 +1,5 @@
-  interface Response {
-    id: ID!
-    userId: ID!
-  }
+interface Response {
+  id: ID!
+  userId: ID!
+  type: String!
+}

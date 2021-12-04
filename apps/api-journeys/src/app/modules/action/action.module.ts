@@ -1,12 +1,11 @@
-import { Module } from '@nestjs/common';
-import { GraphQLSchemaHost } from '@nestjs/graphql';
-import { ComplexityPlugin } from '../../plugins/complexity.plugin';
-import { DatabaseModule } from '../database/database.module';
-import { JourneyService } from '../journey/journey.service';
-import { ActionResolver, NavigateToJourneyActionResolver } from './action.resolver';
+import { Module } from '@nestjs/common'
+import { DatabaseModule } from '../database/database.module'
+import { JourneyService } from '../journey/journey.service'
+import { ActionResolver } from './action.resolvers'
+import { NavigateToJourneyActionResolver } from './navigateToJournney/navigateToJourney.resolvers'
 
 @Module({
   imports: [DatabaseModule],
-  providers: [ActionResolver, JourneyService]
+  providers: [ActionResolver, JourneyService, NavigateToJourneyActionResolver]
 })
 export class ActionModule { }

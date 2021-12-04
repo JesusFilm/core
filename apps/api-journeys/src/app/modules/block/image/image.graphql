@@ -1,33 +1,33 @@
 input ImageBlockCreateInput {
-    """
-    ID should be unique Response UUID (Provided for optimistic mutation result matching)
-    """
-    id: ID
-    parentBlockId: ID
-    journeyId: ID!
-    src: String!
-    alt: String!
-  }
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String!
+  alt: String!
+}
 
-  type ImageBlock implements Block {
-    id: ID!
-    type: String!
-    parentBlockId: ID
-    src: String!
-    width: Int!
-    height: Int!
-    alt: String!
-    """
-    blurhash is a compact representation of a placeholder for an image.
-    Find a frontend implementation at https://github.com/woltapp/blurhash
-    """
-    blurhash: String!
-  }
+type ImageBlock implements Block {
+  id: ID!
+  type: String!
+  parentBlockId: ID
+  src: String!
+  width: Int!
+  height: Int!
+  alt: String!
+  """
+  blurhash is a compact representation of a placeholder for an image.
+  Find a frontend implementation at https://github.com/woltapp/blurhash
+  """
+  blurhash: String!
+}
 
-  extend type Mutation {
-    imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  }
+extend type Mutation {
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+}
 
-  extend type Journey {
-    primaryImageBlock: ImageBlock
-  }
+extend type Journey {
+  primaryImageBlock: ImageBlock
+}

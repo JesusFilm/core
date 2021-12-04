@@ -72,12 +72,6 @@ export enum TypographyAlign {
     right = "right"
 }
 
-export enum VideoResponseStateEnum {
-    PLAYING = "PLAYING",
-    PAUSED = "PAUSED",
-    FINISHED = "FINISHED"
-}
-
 export enum IconName {
     PlayArrowRounded = "PlayArrowRounded",
     TranslateRounded = "TranslateRounded",
@@ -118,6 +112,12 @@ export enum IdType {
     slug = "slug"
 }
 
+export enum VideoResponseStateEnum {
+    PLAYING = "PLAYING",
+    PAUSED = "PAUSED",
+    FINISHED = "FINISHED"
+}
+
 export enum ThemeMode {
     dark = "dark",
     light = "light"
@@ -133,6 +133,27 @@ export class ImageBlockCreateInput {
     journeyId: string;
     src: string;
     alt: string;
+}
+
+export class JourneyCreateInput {
+    id?: Nullable<string>;
+    title: string;
+    locale?: Nullable<string>;
+    themeMode?: Nullable<ThemeMode>;
+    themeName?: Nullable<ThemeName>;
+    description?: Nullable<string>;
+    slug: string;
+}
+
+export class JourneyUpdateInput {
+    id: string;
+    title?: Nullable<string>;
+    locale?: Nullable<string>;
+    themeMode?: Nullable<ThemeMode>;
+    themeName?: Nullable<ThemeName>;
+    description?: Nullable<string>;
+    primaryImageBlockId?: Nullable<string>;
+    slug?: Nullable<string>;
 }
 
 export class RadioQuestionResponseCreateInput {
@@ -158,27 +179,6 @@ export class VideoResponseCreateInput {
     position?: Nullable<number>;
 }
 
-export class JourneyCreateInput {
-    id?: Nullable<string>;
-    title: string;
-    locale?: Nullable<string>;
-    themeMode?: Nullable<ThemeMode>;
-    themeName?: Nullable<ThemeName>;
-    description?: Nullable<string>;
-    slug: string;
-}
-
-export class JourneyUpdateInput {
-    id: string;
-    title?: Nullable<string>;
-    locale?: Nullable<string>;
-    themeMode?: Nullable<ThemeMode>;
-    themeName?: Nullable<ThemeName>;
-    description?: Nullable<string>;
-    primaryImageBlockId?: Nullable<string>;
-    slug?: Nullable<string>;
-}
-
 export interface Action {
     gtmEventName?: Nullable<string>;
 }
@@ -196,6 +196,7 @@ export interface VideoContent {
 export interface Response {
     id: string;
     userId: string;
+    type: string;
 }
 
 export class NavigateAction implements Action {
@@ -302,13 +303,6 @@ export class RadioQuestionBlock implements Block {
     description?: Nullable<string>;
 }
 
-export class RadioQuestionResponse implements Response {
-    id: string;
-    userId: string;
-    radioOptionBlockId: string;
-    block?: Nullable<RadioQuestionBlock>;
-}
-
 export class SignUpBlock implements Block {
     id: string;
     parentBlockId?: Nullable<string>;
@@ -316,14 +310,6 @@ export class SignUpBlock implements Block {
     action?: Nullable<Action>;
     submitIcon?: Nullable<Icon>;
     submitLabel?: Nullable<string>;
-}
-
-export class SignUpResponse implements Response {
-    id: string;
-    userId: string;
-    name: string;
-    email: string;
-    block?: Nullable<SignUpBlock>;
 }
 
 export class StepBlock implements Block {
@@ -368,14 +354,6 @@ export class VideoBlock implements Block {
     posterBlockId?: Nullable<string>;
 }
 
-export class VideoResponse implements Response {
-    id: string;
-    userId: string;
-    state: VideoResponseStateEnum;
-    position?: Nullable<number>;
-    block?: Nullable<VideoBlock>;
-}
-
 export class VideoTriggerBlock implements Block {
     id: string;
     parentBlockId?: Nullable<string>;
@@ -390,20 +368,46 @@ export class Icon {
     size?: Nullable<IconSize>;
 }
 
+export class RadioQuestionResponse implements Response {
+    id: string;
+    userId: string;
+    type: string;
+    radioOptionBlockId: string;
+    block?: Nullable<RadioQuestionBlock>;
+}
+
+export class SignUpResponse implements Response {
+    id: string;
+    userId: string;
+    type: string;
+    name: string;
+    email: string;
+    block?: Nullable<SignUpBlock>;
+}
+
+export class VideoResponse implements Response {
+    id: string;
+    userId: string;
+    type: string;
+    state: VideoResponseStateEnum;
+    position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
 export abstract class IMutation {
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
-
-    abstract radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput): RadioQuestionResponse | Promise<RadioQuestionResponse>;
-
-    abstract signUpResponseCreate(input: SignUpResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
-
-    abstract videoResponseCreate(input: VideoResponseCreateInput): VideoResponse | Promise<VideoResponse>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
     abstract journeyUpdate(input: JourneyUpdateInput): Journey | Promise<Journey>;
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput): RadioQuestionResponse | Promise<RadioQuestionResponse>;
+
+    abstract signUpResponseCreate(input: SignUpResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
+
+    abstract videoResponseCreate(input: VideoResponseCreateInput): VideoResponse | Promise<VideoResponse>;
 }
 
 export abstract class IQuery {

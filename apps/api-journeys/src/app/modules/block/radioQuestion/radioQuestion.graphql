@@ -1,39 +1,15 @@
-input RadioQuestionResponseCreateInput {
-    """
-    ID should be unique Response UUID (Provided for optimistic mutation result matching)
-    """
-    id: ID
-    blockId: ID!
-    """ type is set by the api """
-    type: String
-    radioOptionBlockId: ID!
-  }
+type RadioOptionBlock implements Block {
+  id: ID!
+  type: String!
+  parentBlockId: ID
+  label: String!
+  action: Action
+}
 
-  type RadioOptionBlock implements Block {
-    id: ID!
-    type: String!
-    parentBlockId: ID
-    label: String!
-    action: Action
-  }
-
-  type RadioQuestionBlock implements Block {
-    id: ID!
-    type: String!
-    parentBlockId: ID
-    label: String!
-    description: String
-  }
-
-  type RadioQuestionResponse implements Response {
-    id: ID!
-    userId: ID!
-    radioOptionBlockId: ID!
-    block: RadioQuestionBlock
-  }
-
-  extend type Mutation {
-    radioQuestionResponseCreate(
-      input: RadioQuestionResponseCreateInput!
-    ): RadioQuestionResponse!
-  }
+type RadioQuestionBlock implements Block {
+  id: ID!
+  type: String!
+  parentBlockId: ID
+  label: String!
+  description: String
+}

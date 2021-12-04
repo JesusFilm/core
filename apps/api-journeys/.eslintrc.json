@@ -4,7 +4,9 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "indent": ["error", 2]
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
@@ -14,7 +16,10 @@
       "rules": {
         "@typescript-eslint/no-floating-promises": "off",
         "no-prototype-builtins": "off",
-        "no-return-await": "off"
+        "no-return-await": "off",
+        "@typescript-eslint/indent": ["error", 2],
+        "indent": ["error", 2],
+        "@typescript-eslint/semi": "error"
       }
     },
     {

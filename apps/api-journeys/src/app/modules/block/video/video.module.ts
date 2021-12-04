@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
-import { DatabaseModule } from '../../database/database.module';
-import { ResponseService } from '../../response/response.service';
-import { VideoContentResolvers, VideoResolvers } from './video.resolver';
+import { Module } from '@nestjs/common'
+import { DatabaseModule } from '../../database/database.module'
+import { ResponseService } from '../../response/response.service'
+import { VideoContentResolvers } from './video.resolvers'
 
 @Module({
   imports: [DatabaseModule],
-  providers: [VideoResolvers, VideoContentResolvers, ResponseService]
+  providers: [VideoContentResolvers, ResponseService]
 })
 export class VideoModule { }

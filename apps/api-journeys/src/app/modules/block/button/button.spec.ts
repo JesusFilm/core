@@ -18,19 +18,19 @@ describe('Button', () => {
     color: 'primary',
     size: 'large',
     startIcon: {
-        name: 'ArrowForwardRounded',
-        color: 'secondary',
-        size: 'lg'
+      name: 'ArrowForwardRounded',
+      color: 'secondary',
+      size: 'lg'
     },
     endIcon: {
-        name: 'LockOpenRounded',
-        color: 'action',
-        size: 'xl'
+      name: 'LockOpenRounded',
+      color: 'action',
+      size: 'xl'
     },
     action: {
-        gtmEventName: 'gtmEventName',
-        url: 'https://jesusfilm.org',
-        target: 'target'
+      gtmEventName: 'gtmEventName',
+      url: 'https://jesusfilm.org',
+      target: 'target'
     }
   };
   const blockresponse = {
@@ -44,19 +44,19 @@ describe('Button', () => {
     color: 'primary',
     size: 'large',
     startIcon: {
-        name: 'ArrowForwardRounded',
-        color: 'secondary',
-        size: 'lg'
+      name: 'ArrowForwardRounded',
+      color: 'secondary',
+      size: 'lg'
     },
     endIcon: {
-        name: 'LockOpenRounded',
-        color: 'action',
-        size: 'xl'
+      name: 'LockOpenRounded',
+      color: 'action',
+      size: 'xl'
     },
     action: {
-        gtmEventName: 'gtmEventName',
-        url: 'https://jesusfilm.org',
-        target: 'target'
+      gtmEventName: 'gtmEventName',
+      url: 'https://jesusfilm.org',
+      target: 'target'
     }
   };
   
@@ -70,10 +70,10 @@ describe('Button', () => {
 
  
   beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-          providers: [BlockResolvers, blockservice]
-      }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers);
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [BlockResolvers, blockservice]
+    }).compile()
+    resolver = module.get<BlockResolvers>(BlockResolvers);
   })
 
   it('should be defined', () => {
@@ -82,8 +82,8 @@ describe('Button', () => {
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-        expect(resolver.block("1")).resolves.toEqual(blockresponse)
-        expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+      expect(resolver.block("1")).resolves.toEqual(blockresponse)
+      expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
     })
   })
 })

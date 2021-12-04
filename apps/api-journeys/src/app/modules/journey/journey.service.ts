@@ -11,8 +11,8 @@ export class JourneyService extends BaseService {
     const rst = await this.db.query(aql`
     FOR journey IN ${this.collection}
       FILTER journey.published == true
-      RETURN journey`);
-    return await rst.all();
+      RETURN journey`)
+    return await rst.all()
   }
 
   async getBySlug(_key: string): Promise<Journey> {
@@ -21,8 +21,8 @@ export class JourneyService extends BaseService {
         FILTER journey.slug == ${_key}
         LIMIT 1
         RETURN journey
-    `);
-    return await result.next();
+    `)
+    return await result.next()
   }
 
   collection: DocumentCollection = this.db.collection('journeys')

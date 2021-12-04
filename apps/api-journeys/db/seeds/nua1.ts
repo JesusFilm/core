@@ -1,19 +1,19 @@
 import { aql, Database } from 'arangojs'
 
-const db = new Database({ url: 'arangodb://arangodb:8529' });
+const db = new Database({ url: 'arangodb://arangodb:8529' })
 
 export async function nua1(): Promise<void> {
-  const slug = 'fact-or-fiction';
+  const slug = 'fact-or-fiction'
   await db.query(aql`
         FOR journey in journeys
             FILTER journey.slug == ${slug}
             FOR block in blocks
                 FILTER block.journeyId == journey._key
-                REMOVE block IN blocks`);
+                REMOVE block IN blocks`)
   await db.query(aql`
     FOR journey in journeys
         FILTER journey.slug == ${slug}
-        REMOVE journey IN journeys`);
+        REMOVE journey IN journeys`)
 
   const journey = await db.collection('journeys').save({
     _key: "1",

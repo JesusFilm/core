@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { DocumentCollection } from 'arangojs/collection'
-import { aql, Database } from 'arangojs';
-import { DeepMockProxy } from 'jest-mock-extended';
+import { aql, Database } from 'arangojs'
+import { DeepMockProxy } from 'jest-mock-extended'
 
 @Injectable()
 export abstract class BaseService {
@@ -15,7 +15,7 @@ export abstract class BaseService {
   async getAll<T>(): Promise<T[]> {    
     const rst = await this.db.query(aql`
     FOR item IN ${this.collection}
-      RETURN item`);
+      RETURN item`)
     return await rst.all()
   }
   
@@ -24,8 +24,8 @@ export abstract class BaseService {
     FOR item IN ${this.collection}
       FILTER item._key == ${_key}
       LIMIT 1
-      RETURN item`);
-    return await rst.next();
+      RETURN item`)
+    return await rst.next()
   }
 
   async update<T, T2>(_key: string, body: T2): Promise<T> {
@@ -35,11 +35,11 @@ export abstract class BaseService {
 
   async save<T, T2>(body: T2): Promise<T> {
     const result = await this.collection.save(body, { returnNew: true })
-    return result.new;
+    return result.new
   }
 
   async count(): Promise<number> {
     const result = await this.collection.count()
-    return result.count;
+    return result.count
   }
 }

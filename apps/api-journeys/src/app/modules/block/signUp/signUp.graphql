@@ -1,32 +1,8 @@
- input SignUpResponseCreateInput {
-    """
-    ID should be unique Response UUID (Provided for optimistic mutation result matching)
-    """
-    id: ID
-    blockId: ID!
-    """ type is set by the api """
-    type: String
-    name: String!
-    email: String!
-  }
-
-  type SignUpBlock implements Block {
-    id: ID!
-    parentBlockId: ID
-    type: String!
-    action: Action
-    submitIcon: Icon
-    submitLabel: String
-  }
-
-  type SignUpResponse implements Response {
-    id: ID!
-    userId: ID!
-    name: String!
-    email: String!
-    block: SignUpBlock
-  }
-
-  extend type Mutation {
-    signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  }
+type SignUpBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  type: String!
+  action: Action
+  submitIcon: Icon
+  submitLabel: String
+}

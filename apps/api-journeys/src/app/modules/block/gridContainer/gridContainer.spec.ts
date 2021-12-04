@@ -40,10 +40,10 @@ describe('GridContainer', () => {
 
  
   beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-          providers: [BlockResolvers, blockservice]
-      }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers);
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [BlockResolvers, blockservice]
+    }).compile()
+    resolver = module.get<BlockResolvers>(BlockResolvers);
   })
 
   it('should be defined', () => {
@@ -52,8 +52,8 @@ describe('GridContainer', () => {
 
   describe('GridContainerBlock', () => {
     it('returns GridContainerBlock', async () => {
-        expect(resolver.block("1")).resolves.toEqual(blockresponse)
-        expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+      expect(resolver.block("1")).resolves.toEqual(blockresponse)
+      expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
     })
   })
 })

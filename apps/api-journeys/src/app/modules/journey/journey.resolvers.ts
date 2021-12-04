@@ -66,7 +66,9 @@ export class JourneyResolvers {
     return await this.blockService.forJourney(journey)
   }
 
-  @ResolveField('ImageBlock')
+  @ResolveField('primaryImageBlock')
+  @KeyAsId()
+  @BlockMiddleware()
   async primaryImageBlock(@Parent() journey: Journey): Promise<ImageBlock | null> {
     if (journey.primaryImageBlock?.id == null)
       return null

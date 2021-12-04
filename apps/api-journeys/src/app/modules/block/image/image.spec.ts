@@ -1,9 +1,9 @@
 
    
-import { Test, TestingModule } from '@nestjs/testing';
-import { ImageBlockCreateInput } from '../../../graphql';
+import { Test, TestingModule } from '@nestjs/testing'
+import { ImageBlockCreateInput } from '../../../graphql'
 import { BlockResolvers } from '../block.resolvers'
-import { BlockService } from '../block.service';
+import { BlockService } from '../block.service'
 import { ImageBlockResolvers } from './image.resolvers'
 
 describe('Image', () => {
@@ -58,30 +58,30 @@ describe('Image', () => {
       getAll: jest.fn(() => [block, block]),
       save: jest.fn(async (input) => await Promise.resolve(input))
     })
-  };
+  }
   beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-          providers: [BlockResolvers, blockservice, ImageBlockResolvers]
-      }).compile()
-      blockResolver = module.get<BlockResolvers>(BlockResolvers);
-      resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers);
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [BlockResolvers, blockservice, ImageBlockResolvers]
+    }).compile()
+    blockResolver = module.get<BlockResolvers>(BlockResolvers)
+    resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers)
   })
 
   it('should be defined', () => {
-    expect(blockResolver).toBeDefined();
-    expect(blockResolver).toBeDefined();
-  });
+    expect(blockResolver).toBeDefined()
+    expect(blockResolver).toBeDefined()
+  })
 
   describe('ImageBlock', () => {
     it('returns ImageBlock', async () => {
-        expect(blockResolver.block("1")).resolves.toEqual(blockresponse)
-        expect(blockResolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+      expect(blockResolver.block("1")).resolves.toEqual(blockresponse)
+      expect(blockResolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
     })
   })
 
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {      
-      expect(await resolver.imageBlockCreate(input)).toEqual(imageblockresponse);
-    });
+      expect(await resolver.imageBlockCreate(input)).toEqual(imageblockresponse)
+    })
   })
 })

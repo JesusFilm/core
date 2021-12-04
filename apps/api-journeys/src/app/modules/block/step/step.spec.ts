@@ -1,45 +1,30 @@
 
    
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
-import { BlockService } from '../block.service';
+import { BlockService } from '../block.service'
 
-describe('SignUp', () => {
+describe('Step', () => {
   let resolver: BlockResolvers
 
   const block = {
-    _key: "1",
+    id: "1",
     journeyId: "2",
-    parentBlockId: "0",
-    type: 'SignUpBlock',        
-    parentOrder: 2,        
-    action: {
-      gtmEventName: 'gtmEventName',
-      journeyId: "2"
-    },
-    submitIcon: {
-      name: 'LockOpenRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
-    submitLabel: 'Unlock Now!'
+    type: 'StepBlock',
+    parentBlockId: "3",
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: "4"
   }
+
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    parentBlockId: "0",
-    type: 'SignUpBlock',        
-    parentOrder: 2,        
-    action: {
-      gtmEventName: 'gtmEventName',
-      journeyId: "2"
-    },
-    submitIcon: {
-      name: 'LockOpenRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
-    submitLabel: 'Unlock Now!'
+    type: 'StepBlock',
+    parentBlockId: "3",
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: "4"
   }
   
   const blockservice = {
@@ -48,24 +33,24 @@ describe('SignUp', () => {
       get: jest.fn(() =>  block),
       getAll: jest.fn(() => [block, block])
     })
-  };
+  }
 
  
   beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-          providers: [BlockResolvers, blockservice]
-      }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers);
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [BlockResolvers, blockservice]
+    }).compile()
+    resolver = module.get<BlockResolvers>(BlockResolvers)
   })
 
   it('should be defined', () => {
-    expect(resolver).toBeDefined();
-  });
+    expect(resolver).toBeDefined()
+  })
 
-  describe('SignUpBlock', () => {
-    it('returns SignUpBlock', async () => {
-        expect(resolver.block("1")).resolves.toEqual(blockresponse)
-        expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+  describe('StepBlock', () => {
+    it('returns StepBlock', async () => {
+      expect(resolver.block("1")).resolves.toEqual(blockresponse)
+      expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
     })
   })
 })

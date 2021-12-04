@@ -1,21 +1,21 @@
-import { UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common'
 import {
   Args,
   Mutation,
   Resolver,
-} from '@nestjs/graphql';
-import { ImageBlock, ImageBlockCreateInput } from '../../../graphql';
+} from '@nestjs/graphql'
+import { ImageBlock, ImageBlockCreateInput } from '../../../graphql'
 import { UserInputError } from 'apollo-server-errors'
-import { IdAsKey } from '../../../lib/decorators';
-import { AuthGuard } from '../../auth/auth.guard';
-import { BlockService } from '../block.service';
+import { IdAsKey } from '../../../lib/decorators'
+import { AuthGuard } from '../../auth/auth.guard'
+import { BlockService } from '../block.service'
 import { encode } from 'blurhash'
 import { createCanvas, loadImage, Image } from 'canvas'
 
 @Resolver('ImageBlock')
 export class ImageBlockResolvers {
-    constructor(private readonly blockservice: BlockService) { }
-@Mutation()
+  constructor(private readonly blockservice: BlockService) { }
+  @Mutation()
   @IdAsKey()
   @UseGuards(new AuthGuard())
   async imageBlockCreate(
@@ -51,6 +51,6 @@ export class ImageBlockResolvers {
       blurhash: blurhash
     }
 
-    return await this.blockservice.save(block);
+    return await this.blockservice.save(block)
   }
 }
