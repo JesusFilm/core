@@ -11,6 +11,7 @@ async function main(): Promise<void> {
   try {
     await db.createCollection('journeys')
     await db.createCollection('blocks')
+    await db.createCollection('responses')
   } catch {}
   await nua1()
   await nua2()
