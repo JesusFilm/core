@@ -12,7 +12,7 @@ describe('JourneyCard', () => {
     expect(getAllByText('Published Journey Heading')[0]).toBeInTheDocument()
   })
 
-  it('should render the formatred  date', () => {
+  it('should render the formatted  date', () => {
     const { getByText } = render(<JourneyCard journey={defaultJourney} />)
     expect(getByText('Nov 19th')).toBeInTheDocument()
   })

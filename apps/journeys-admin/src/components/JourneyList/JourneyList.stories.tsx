@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
-import JourneyList from './JourneyList'
+import JourneyList, { JourneysListProps } from './JourneyList'
 import {
   defaultJourney,
   oldJourney,
@@ -15,7 +15,9 @@ const TestStory = {
   title: 'Journeys-Admin/JourneyList'
 }
 
-const Template: Story = ({ ...args }) => <JourneyList journeys={[]} {...args} />
+const Template: Story<JourneysListProps> = ({ ...args }) => (
+  <JourneyList {...args} />
+)
 
 export const DefaultJourneyList = Template.bind({})
 DefaultJourneyList.args = {

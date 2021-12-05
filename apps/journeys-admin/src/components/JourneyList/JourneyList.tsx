@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import JourneyCard from './JourneyCard'
 
-interface JourneysListProps {
+export interface JourneysListProps {
   journeys: Journey[]
 }
 
