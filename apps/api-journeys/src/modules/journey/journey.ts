@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
-import { isNil, omitBy, get } from 'lodash'
+import { isNil, omitBy, get, includes } from 'lodash'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { Prisma } from '.prisma/api-journeys-client'
 import slugify from 'slugify'
@@ -174,7 +174,7 @@ const resolvers: JourneyModule.Resolvers = {
         }
       })
 
-      if (actor?.role !== 'owner' && actor?.role !== 'editor')
+      if (!includes(['owner', 'editor'], actor?.role))
         throw new AuthenticationError('User is not owner or editor of journey')
 
       try {

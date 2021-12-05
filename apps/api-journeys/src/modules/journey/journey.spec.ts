@@ -349,6 +349,12 @@ describe('JourneyModule', () => {
         }
         dbMock.journey.update.mockResolvedValue(updatedJourney)
 
+        dbMock.userJourney.findUnique.mockResolvedValue({
+          userId: 'userId',
+          journeyId: updatedJourney.id,
+          role: 'owner'
+        })
+
         const { data } = await query(
           gql`
             mutation ($input: JourneyUpdateInput!) {
@@ -420,6 +426,12 @@ describe('JourneyModule', () => {
           )
         })
 
+        dbMock.userJourney.findUnique.mockResolvedValue({
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: 'owner'
+        })
+
         const { errors } = await query(
           gql`
             mutation ($input: JourneyUpdateInput!) {
@@ -455,6 +467,12 @@ describe('JourneyModule', () => {
       })
       it('publishes journey', async () => {
         dbMock.journey.update.mockResolvedValue(publishedJourney)
+
+        dbMock.userJourney.findUnique.mockResolvedValue({
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: 'owner'
+        })
 
         const { data } = await query(
           gql`
