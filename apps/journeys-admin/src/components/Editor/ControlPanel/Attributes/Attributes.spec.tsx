@@ -22,6 +22,7 @@ describe('Attributes', () => {
     const { getByText } = render(<Attributes selected={step} />)
     expect(getByText('Background Color')).toBeInTheDocument()
   })
+
   it('should render step block with card block', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
