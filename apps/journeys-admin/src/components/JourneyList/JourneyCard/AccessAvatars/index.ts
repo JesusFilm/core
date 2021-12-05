@@ -1,1 +1,0 @@
-export { AccessAvatars } from './AccessAvatars'

@@ -9,7 +9,7 @@ export const defaultJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
   title: 'Default Journey Heading',
-  description: 'Description',
+  description: null,
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
@@ -22,23 +22,19 @@ export const defaultJourney: Journey = {
 export const oldJourney: Journey = {
   ...defaultJourney,
   title: 'Old Journey Heading',
-  description: 'Journey created before the current year',
-  createdAt: new Date('1995-11-19T12:34:56.647Z'),
-  publishedAt: new Date('1995-12-19T12:34:56.647Z'),
+  description:
+    'Journey created before the current year should also show the year in the date',
+  createdAt: new Date('2020-11-19T12:34:56.647Z'),
+  publishedAt: new Date('2020-12-19T12:34:56.647Z'),
   status: JourneyStatus.published
 }
 
 export const publishedJourney: Journey = {
   ...defaultJourney,
   title: 'Published Journey Heading',
+  description: ' a published journey',
   publishedAt: new Date('2021-12-19T12:34:56.647Z'),
   status: JourneyStatus.published
-}
-
-export const noDescriptionJourney: Journey = {
-  ...defaultJourney,
-  title: 'Journey with no description',
-  description: null
 }
 
 export const descriptiveJourney: Journey = {
@@ -51,7 +47,7 @@ export const descriptiveJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
-  locale: 'en_US',
+  locale: 'tzm-Latn-DZ',
   createdAt: new Date('2021-11-19T12:34:56.647Z'),
   publishedAt: null,
   status: JourneyStatus.draft

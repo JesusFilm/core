@@ -7,15 +7,12 @@ import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 
 import JourneyCardMenu from './JourneyCardMenu'
-import { AccessAvatars } from './AccessAvatars/AccessAvatars'
-import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
 
 interface JourneyCardProps {
   journey: Journey
 }
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
-  const AccessAvatarsProps = { users: [user1, user2, user3] }
   const date =
     moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
       ? moment(journey.createdAt).format('MMM Do')
@@ -51,7 +48,6 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       </Typography>
 
       <Box sx={{ display: 'flex' }}>
-        <AccessAvatars {...AccessAvatarsProps} />
         {journey.status === 'draft' ? (
           <Chip
             label={'Draft'}
@@ -79,6 +75,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             }}
           />
         )}
+        {/* Locale formatting does not currently work for every locale */}
         <Chip
           label={`${journey.locale
             .substring(0, 2)
