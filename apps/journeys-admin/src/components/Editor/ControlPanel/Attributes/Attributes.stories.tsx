@@ -22,11 +22,11 @@ export const Default: Story = () => {
         id: 'card1.id',
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
-        coverBlockId: 'image1.id',
+        coverBlockId: null,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
-        fullscreen: true,
+        fullscreen: false,
         children: []
       }
     ]

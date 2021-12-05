@@ -51,7 +51,7 @@ export function Card({
       {coverBlock?.__typename === 'ImageBlock' && (
         <Attribute
           icon={<ImageIcon />}
-          name="Cover"
+          name="Background"
           value={coverBlock.src.substring(
             coverBlock.src.lastIndexOf('/') + 1,
             coverBlock.src.length
@@ -62,9 +62,17 @@ export function Card({
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
           icon={<Videocam />}
-          name="Cover"
+          name="Background"
           value={coverBlock.title}
           description="Background Video"
+        />
+      )}
+      {coverBlock == null && (
+        <Attribute
+          icon={<ImageIcon />}
+          name="Background"
+          value="None"
+          description="Background Media"
         />
       )}
       <Attribute

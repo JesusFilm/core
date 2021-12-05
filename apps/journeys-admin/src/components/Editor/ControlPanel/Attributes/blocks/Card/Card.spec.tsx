@@ -4,7 +4,7 @@ import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Card } from '.'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 
-describe('Attributes', () => {
+describe('Card', () => {
   it('shows default messages', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
@@ -18,9 +18,9 @@ describe('Attributes', () => {
       children: []
     }
     const { getByText } = render(<Card {...card} />)
-    expect(getByText('None')).toBeInTheDocument()
     expect(getByText('Default')).toBeInTheDocument()
     expect(getByText('Contained')).toBeInTheDocument()
+    expect(getByText('Background')).toBeInTheDocument()
   })
 
   it('shows backgroundColor', () => {
