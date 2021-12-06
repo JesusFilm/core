@@ -97,17 +97,6 @@ export enum ThemeName {
   base = "base",
 }
 
-export interface JourneyUpdateInput {
-  description?: string | null;
-  id: string;
-  locale?: string | null;
-  primaryImageBlockId?: string | null;
-  slug?: string | null;
-  themeMode?: ThemeMode | null;
-  themeName?: ThemeName | null;
-  title?: string | null;
-}
-
 export enum TypographyAlign {
   center = "center",
   left = "left",
@@ -139,6 +128,17 @@ export enum VideoResponseStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
+}
+
+export interface JourneyUpdateInput {
+  description?: string | null;
+  id: string;
+  locale?: string | null;
+  primaryImageBlockId?: string | null;
+  slug?: string | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+  title?: string | null;
 }
 
 export interface RadioQuestionResponseCreateInput {

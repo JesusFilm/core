@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
-import { gql } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Head from 'next/head'
 import client from '../../src/libs/client'
 import {
@@ -8,33 +8,55 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
-import SingleJourneyMenu from '../../src/components/SingleJourneyMenu'
 import JourneysAppBar from '../../src/components/JourneysAppBar'
+
+export const GET_JOURNEY = gql`
+  query GetJourney($id: ID!) {
+    journey(id: $id, idType: slug) {
+      id
+      title
+      description
+      slug
+      status
+      locale
+      createdAt
+      publishedAt
+    }
+  }
+`
 
 interface SingleJourneyPageProps {
   journey: Journey
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+  const { data } = useQuery(GET_JOURNEY, {
+    variables: { id: journey.slug }
+  })
+
+  const updatedJourney = data !== undefined ? data.journey : journey
+
+  console.log('single page', data, journey)
   return (
     <>
       <Head>
-        <title>{journey.title}</title>
+        <title>{updatedJourney.title}</title>
         <meta property="og:title" content={journey.title} />
         {journey.description != null && (
           <meta name="description" content={journey.description} />
         )}
       </Head>
-      <JourneysAppBar journey={journey} />
+      <JourneysAppBar journey={updatedJourney} />
       <Box sx={{ m: 10 }}>
-        <Typography variant={'h2'} sx={{ mb: 4 }}>
-          Single Journey Page
+        <Typography variant={'h6'}>{updatedJourney.title}</Typography>
+        <Typography variant={'h6'}>{updatedJourney.description}</Typography>
+        <Typography variant={'h6'}>{updatedJourney.status}</Typography>
+        <Typography variant={'h6'}>
+          created: {updatedJourney.createdAt}
         </Typography>
-        <SingleJourneyMenu journey={journey} />
-        <Typography variant={'h6'}>{journey.title}</Typography>
-        <Typography variant={'h6'}>{journey.status}</Typography>
-        <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
-        <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
+        <Typography variant={'h6'}>
+          published: {updatedJourney.publishedAt}
+        </Typography>
       </Box>
     </>
   )
@@ -43,21 +65,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
 export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
-      query: gql`
-        query GetJourney($id: ID!) {
-          # slug might have to be string
-          journey(id: $id, idType: slug) {
-            id
-            title
-            description
-            slug
-            status
-            locale
-            createdAt
-            publishedAt
-          }
-        }
-      `,
+      query: GET_JOURNEY,
       variables: {
         id: context.query.journeySlug
       }

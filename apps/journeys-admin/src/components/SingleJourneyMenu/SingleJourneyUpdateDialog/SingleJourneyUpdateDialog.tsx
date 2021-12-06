@@ -7,15 +7,18 @@ import {
   Dialog,
   FormControl,
   FormLabel,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material'
 import { JourneyUpdate } from '../../../../__generated__/JourneyUpdate'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { useBreakpoints } from '@core/shared/ui'
+import { GET_JOURNEY } from '../../../../pages/journeys/[journeySlug]'
 
 export const JOURNEY_UPDATE = gql`
   mutation JourneyUpdate($input: JourneyUpdateInput!) {
     journeyUpdate(input: $input) {
+      id
       title
       description
     }
@@ -40,7 +43,12 @@ const SingleJourneyUpdateDialog = ({
   onClose
 }: SingleJourneyUpdateDialogProps): ReactElement => {
   const breakpoints = useBreakpoints()
-  const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE)
+  const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE, {
+    refetchQueries: [
+      GET_JOURNEY, // DocumentNode object parsed with gql
+      'GetJourney' // Query name
+    ]
+  })
   const [value, setValue] = useState(
     journey !== undefined ? journey[field] : ''
   )
@@ -61,6 +69,7 @@ const SingleJourneyUpdateDialog = ({
       variables: { input: { id: journey.id, ...updateValue } },
       optimisticResponse: {
         journeyUpdate: {
+          id: journey.id,
           __typename: 'Journey',
           ...updateValue
         }
@@ -79,7 +88,12 @@ const SingleJourneyUpdateDialog = ({
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
-          <FormLabel component="legend">{`Update ${field}`}</FormLabel>
+          <FormLabel component="legend">
+            <Typography
+              variant={'subtitle2'}
+              gutterBottom
+            >{`Update ${field}`}</Typography>
+          </FormLabel>
           <TextField
             value={value}
             multiline={field === UpdateJourneyFields.DESCRIPTION}

@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
   Alert,
+  Divider,
   IconButton,
   Link,
   Menu,
@@ -14,16 +15,18 @@ import { UpdateJourneyFields } from './SingleJourneyUpdateDialog/SingleJourneyUp
 import { MoreVert, CheckCircleRounded } from '@mui/icons-material'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { JourneyStatusUpdate } from '../../../__generated__/JourneyStatusUpdate'
+import { GET_JOURNEY } from '../../../pages/journeys/[journeySlug]'
 
 export const JOURNEY_STATUS_UPDATE = gql`
   mutation JourneyStatusUpdate($input: JourneyUpdateInput!) {
     journeyUpdate(input: $input) {
+      id
       status
     }
   }
 `
 
-interface SingleJourneyMenuProps {
+export interface SingleJourneyMenuProps {
   journey: Journey
 }
 
@@ -31,7 +34,13 @@ const SingleJourneyMenu = ({
   journey
 }: SingleJourneyMenuProps): ReactElement => {
   const [journeyUpdate] = useMutation<JourneyStatusUpdate>(
-    JOURNEY_STATUS_UPDATE
+    JOURNEY_STATUS_UPDATE,
+    {
+      refetchQueries: [
+        GET_JOURNEY, // DocumentNode object parsed with gql
+        'GetJourney' // Query name
+      ]
+    }
   )
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showDialog, setShowDialog] = useState(false)
@@ -63,11 +72,11 @@ const SingleJourneyMenu = ({
       variables: { input: JourneyStatus.published },
       optimisticResponse: {
         journeyUpdate: {
+          id: journey.id,
           __typename: 'Journey',
           status: JourneyStatus.published
         }
       }
-      // TODO: Set server error responses when available
     })
   }
 
@@ -118,15 +127,22 @@ const SingleJourneyMenu = ({
             Preview
           </Link>
         </MenuItem>
-        <MenuItem onClick={handlePublish}>Publish</MenuItem>
+        <MenuItem
+          disabled={journey.status === JourneyStatus.published}
+          onClick={handlePublish}
+        >
+          Publish
+        </MenuItem>
         <MenuItem onClick={handleUpdateTitle}>Title</MenuItem>
         <MenuItem onClick={handleUpdateDescription}>Description</MenuItem>
         <MenuItem onClick={handleUpdateAccess}>Access</MenuItem>
+        <Divider />
         <MenuItem>
           <Link href={`/journeys/${journey.slug}/edit`} underline="none">
             Edit Cards
           </Link>
         </MenuItem>
+        <Divider />
         <MenuItem onClick={handleCopyLink}>Copy Link</MenuItem>
       </Menu>
       <SingleJourneyUpdateDialog

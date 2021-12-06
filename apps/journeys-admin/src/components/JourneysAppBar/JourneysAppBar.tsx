@@ -16,28 +16,31 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
         position="static"
         elevation={1}
         sx={{
-          px: 4,
           color: (theme) => theme.palette.text.primary,
           backgroundColor: (theme) => theme.palette.background.default
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
           {journey !== undefined ? (
             <>
-              <Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Link href={`/journeys`} passHref>
                   <IconButton>
                     <ChevronLeftRounded />
                   </IconButton>
                 </Link>
+                <Typography
+                  variant="h4"
+                  component="div"
+                  sx={{ ml: 2, alignSelf: 'center' }}
+                >
+                  Journey
+                </Typography>
               </Box>
-              <Typography variant="h4" component="div" sx={{ ml: 2 }}>
-                Journey
-              </Typography>
               <SingleJourneyMenu journey={journey} />
             </>
           ) : (
-            <Typography variant="h4" component="div" sx={{ ml: 2 }}>
+            <Typography variant="h4" component="div" sx={{ ml: 4 }}>
               Journeys
             </Typography>
           )}
