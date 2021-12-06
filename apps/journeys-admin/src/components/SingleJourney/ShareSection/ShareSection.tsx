@@ -21,9 +21,10 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 
 export interface ShareSectionProps {
   slug: string
+  forceMenu?: boolean // used only for storybook testing
 }
 
-const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
+const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
   // update link
   const journeyLink = `/journeys/${slug}`
   const [showAlert, setShowAlert] = useState(false)
@@ -31,7 +32,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
   const [width, setWidth] = useState(window.innerWidth)
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
+  const open = forceMenu === true ? true : Boolean(anchorEl)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -82,6 +83,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             }}
             sx={{ width: '334px' }}
           />
+
           <Button
             onClick={handleCopyLink}
             startIcon={<ContentCopyIcon />}
@@ -108,6 +110,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             }}
             sx={{ width: '262px' }}
           />
+
           <IconButton
             id="journey-actions"
             aria-controls="journey-actions"
@@ -117,6 +120,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
           >
             <MoreHorizIcon />
           </IconButton>
+
           <Menu
             id="journey-actions"
             anchorEl={anchorEl}
@@ -124,6 +128,10 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             onClose={handleCloseMenu}
             MenuListProps={{
               'aria-labelledby': 'journey-actions'
+            }}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
             }}
           >
             <MenuItem onClick={handleCopyLink}>
