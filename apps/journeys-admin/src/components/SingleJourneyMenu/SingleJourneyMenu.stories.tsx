@@ -41,7 +41,7 @@ const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
 )
 
 export const Draft = Template.bind({})
-Draft.args = { journey: defaultJourney }
+Draft.args = { journey: defaultJourney, forceOpen: true }
 
 export const Published = Template.bind({})
 Published.args = {
@@ -49,7 +49,8 @@ Published.args = {
     ...defaultJourney,
     publishedAt: '2021-11-19T12:34:56.647Z',
     status: JourneyStatus.published
-  }
+  },
+  forceOpen: true
 }
 
 export default TestStory as Meta

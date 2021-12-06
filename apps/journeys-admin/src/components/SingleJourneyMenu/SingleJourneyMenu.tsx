@@ -28,10 +28,12 @@ export const JOURNEY_STATUS_UPDATE = gql`
 
 export interface SingleJourneyMenuProps {
   journey: Journey
+  forceOpen?: boolean
 }
 
 const SingleJourneyMenu = ({
-  journey
+  journey,
+  forceOpen
 }: SingleJourneyMenuProps): ReactElement => {
   const [journeyUpdate] = useMutation<JourneyStatusUpdate>(
     JOURNEY_STATUS_UPDATE,
@@ -42,13 +44,15 @@ const SingleJourneyMenu = ({
       ]
     }
   )
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showDialog, setShowDialog] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
   const [updateField, setUpdateField] = useState<UpdateJourneyFields>(
     UpdateJourneyFields.TITLE
   )
-  const open = Boolean(anchorEl)
+
+  const open = forceOpen || Boolean(anchorEl)
 
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -118,6 +122,14 @@ const SingleJourneyMenu = ({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
