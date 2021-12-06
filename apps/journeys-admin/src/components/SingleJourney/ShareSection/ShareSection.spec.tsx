@@ -4,7 +4,7 @@ import ShareSection from '.'
 describe('JourneyShare', () => {
   it('should render with the heading', () => {
     const { getByText } = render(<ShareSection slug={'my-journey'} />)
-    expect(getByText('Journey Link')).toBeInTheDocument()
+    expect(getByText('Journey URL')).toBeInTheDocument()
   })
 
   it('should, have the correct sharing url', () => {
