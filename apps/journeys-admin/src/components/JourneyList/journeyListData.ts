@@ -14,5 +14,7 @@ export const defaultJourney: Journey = {
   themeMode: ThemeMode.light,
   slug: 'default',
   locale: 'en_US',
-  status: JourneyStatus.published
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null
 }
