@@ -1,8 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { Navigation } from '.'
+import { journeysAdminConfig } from '../../libs/storybook'
+import { CardPreview } from '.'
 import { useState } from 'react'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
@@ -12,12 +12,12 @@ import {
   IconName,
   IconSize,
   TypographyVariant
-} from '../../../../../__generated__/globalTypes'
+} from '../../../__generated__/globalTypes'
 
-const NavigationStory = {
+const CardPreviewStory = {
   ...journeysAdminConfig,
-  component: Navigation,
-  title: 'Journeys-Admin/Editor/ControlPanel/Navigation',
+  component: CardPreview,
+  title: 'Journeys-Admin/CardPreview',
   parameters: {
     layout: 'fullscreen'
   }
@@ -439,7 +439,7 @@ const Template: Story = () => {
   const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
-      <Navigation
+      <CardPreview
         onSelect={(step) => setSelectedStep(step)}
         selected={selected}
         steps={steps}
@@ -450,4 +450,4 @@ const Template: Story = () => {
 
 export const Default = Template.bind({})
 
-export default NavigationStory as Meta
+export default CardPreviewStory as Meta

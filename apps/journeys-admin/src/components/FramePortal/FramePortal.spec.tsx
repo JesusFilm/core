@@ -7,7 +7,7 @@ describe('FramePortal', () => {
     const { baseElement } = render(
       <div>
         <FramePortal>
-          <Typography>hello world</Typography>
+          <Typography sx={{ fontFamily: 'sans-serif' }}>hello world</Typography>
         </FramePortal>
       </div>
     )
@@ -19,6 +19,6 @@ describe('FramePortal', () => {
     )
     expect(
       iframe.contentDocument?.body.getElementsByTagName('p')[0]
-    ).toHaveStyle('font-family: "Roboto","Helvetica","Arial",sans-serif')
+    ).toHaveStyle('font-family: sans-serif')
   })
 })

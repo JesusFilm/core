@@ -1,9 +1,9 @@
 import { Box, Tabs, Tab } from '@mui/material'
 import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react'
 import { Attributes } from '../ControlPanel/Attributes'
-import { Navigation } from '../ControlPanel/Navigation'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
+import { CardPreview } from '../../CardPreview'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -79,7 +79,7 @@ export function ControlPanel({ steps }: ControlPanelProps): ReactElement {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <Navigation
+        <CardPreview
           selected={selectedStep}
           onSelect={handleNavigationSelect}
           steps={steps}

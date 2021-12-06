@@ -1,22 +1,22 @@
 import { Box, Stack } from '@mui/material'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { ReactElement } from 'react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
-import { FramePortal } from '../../../FramePortal'
+import { FramePortal } from '../FramePortal'
 import { ThemeProvider } from '@core/shared/ui'
-import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 
-export interface NavigationProps {
+export interface CardPreviewProps {
   onSelect?: (card: TreeBlock<StepBlock>) => void
   selected?: TreeBlock<StepBlock>
   steps: Array<TreeBlock<StepBlock>>
 }
 
-export function Navigation({
+export function CardPreview({
   steps,
   selected,
   onSelect
-}: NavigationProps): ReactElement {
+}: CardPreviewProps): ReactElement {
   return (
     <Stack
       direction="row"

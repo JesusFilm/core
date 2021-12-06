@@ -1,9 +1,9 @@
 import { render, fireEvent } from '@testing-library/react'
-import { Navigation } from '.'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourneyForEdit'
+import { CardPreview } from '.'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 
-describe('Navigation', () => {
+describe('CardPreview', () => {
   it('should call onSelect when step is clicked on', () => {
     const onSelect = jest.fn()
     const step: TreeBlock<StepBlock> = {
@@ -15,7 +15,7 @@ describe('Navigation', () => {
       children: []
     }
     const { getByTestId } = render(
-      <Navigation onSelect={onSelect} steps={[step]} />
+      <CardPreview onSelect={onSelect} steps={[step]} />
     )
     fireEvent.click(getByTestId('step-step.id'))
     expect(onSelect).toHaveBeenCalledWith(step)
@@ -32,7 +32,7 @@ describe('Navigation', () => {
       children: []
     }
     const { getByTestId } = render(
-      <Navigation onSelect={onSelect} steps={[step]} selected={step} />
+      <CardPreview onSelect={onSelect} steps={[step]} selected={step} />
     )
     expect(getByTestId('step-step.id')).toHaveStyle('border: 3px solid #1976d2')
   })

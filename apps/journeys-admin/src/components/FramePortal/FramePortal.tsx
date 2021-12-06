@@ -13,7 +13,6 @@ import {
   useRef
 } from 'react'
 import { styled } from '@mui/material'
-import { StylesProvider } from '@mui/styles'
 
 interface ContentProps {
   children: ReactNode
@@ -31,15 +30,7 @@ function Content({ children, document }: ContentProps): ReactElement {
     [document]
   )
 
-  useEffect(() => {
-    document.body.style.backgroundColor = 'transparent'
-  }, [document])
-
-  return (
-    <StylesProvider>
-      <CacheProvider value={cache}>{children}</CacheProvider>
-    </StylesProvider>
-  )
+  return <CacheProvider value={cache}>{children}</CacheProvider>
 }
 
 const StyledFrame = styled('iframe')(() => ({
@@ -59,12 +50,12 @@ interface FrameProps
 
 export const FramePortal = memo(function FramePortal({
   children,
-  ...other
+  ...rest
 }: FrameProps): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
   // If we portal content into the iframe before the load event then that
   // content is dropped in firefox.
-  const [iframeLoaded, onLoad] = useReducer(() => true, false)
+  const [iframeLoaded, dispatch] = useReducer(() => true, false)
   const document = frameRef.current?.contentDocument
 
   useEffect(() => {
@@ -80,13 +71,13 @@ export const FramePortal = memo(function FramePortal({
       frameRef.current.contentDocument.readyState === 'complete' &&
       !iframeLoaded
     ) {
-      onLoad()
+      dispatch()
     }
   }, [iframeLoaded])
 
   return (
     <>
-      <StyledFrame onLoad={onLoad} ref={frameRef} {...other} />
+      <StyledFrame onLoad={dispatch} ref={frameRef} {...rest} />
       {iframeLoaded &&
         document != null &&
         createPortal(
