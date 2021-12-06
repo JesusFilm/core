@@ -3,9 +3,9 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Link,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  Link
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import EditIcon from '@mui/icons-material/Edit'
@@ -13,18 +13,19 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
-// Pass journeyID and slug to JourneyCardMenu
-interface JourneyCardMenuProps {
+export interface JourneyCardMenuProps {
   status: JourneyStatus
   slug: string
+  forceMenu?: boolean
 }
 
 const JourneyCardMenu = ({
   status,
-  slug
+  slug,
+  forceMenu // this is only used for storybook snapshots
 }: JourneyCardMenuProps): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
+  const open = forceMenu === true ? true : Boolean(anchorEl)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
