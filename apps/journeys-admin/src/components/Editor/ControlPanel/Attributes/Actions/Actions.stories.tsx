@@ -5,7 +5,7 @@ import { Actions } from '.'
 const ActionsStory = {
   ...journeysAdminConfig,
   component: Actions,
-  title: 'Journeys-Admin/Editor/ControlPanel/CardNavigation/Actions'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Actions'
 }
 
 const Template: Story = () => <Actions />
