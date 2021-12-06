@@ -9,13 +9,13 @@ import {
   MenuItem,
   Snackbar
 } from '@mui/material'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import SingleJourneyUpdateDialog from './SingleJourneyUpdateDialog'
 import { UpdateJourneyFields } from './SingleJourneyUpdateDialog/SingleJourneyUpdateDialog'
 import { MoreVert, CheckCircleRounded } from '@mui/icons-material'
-import { JourneyStatus } from '../../../__generated__/globalTypes'
-import { JourneyStatusUpdate } from '../../../__generated__/JourneyStatusUpdate'
-import { GET_JOURNEY } from '../../../pages/journeys/[journeySlug]'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyStatusUpdate } from '../../../../__generated__/JourneyStatusUpdate'
+import { GET_JOURNEY } from '../../../../pages/journeys/[journeySlug]'
 
 export const JOURNEY_STATUS_UPDATE = gql`
   mutation JourneyStatusUpdate($input: JourneyUpdateInput!) {

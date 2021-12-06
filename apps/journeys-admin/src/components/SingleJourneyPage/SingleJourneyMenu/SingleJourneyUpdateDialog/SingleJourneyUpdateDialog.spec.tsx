@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import SingleJourneyUpdateDialog, { UpdateJourneyFields } from '.'
-import { defaultJourney } from '../../JourneyList/journeyListData'
+import { defaultJourney } from '../../../JourneyList/journeyListData'
 
 const onClose = jest.fn()
 

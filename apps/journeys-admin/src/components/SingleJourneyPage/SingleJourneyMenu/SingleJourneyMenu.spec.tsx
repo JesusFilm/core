@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import SingleJourneyMenu from '.'
-import { defaultJourney } from '../JourneyList/journeyListData'
+import { defaultJourney } from '../../JourneyList/journeyListData'
 
 describe('SingleJourneyMenu', () => {
   it('should open menu on click', () => {

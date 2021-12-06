@@ -10,10 +10,10 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { JourneyUpdate } from '../../../../__generated__/JourneyUpdate'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { JourneyUpdate } from '../../../../../__generated__/JourneyUpdate'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { useBreakpoints } from '@core/shared/ui'
-import { GET_JOURNEY } from '../../../../pages/journeys/[journeySlug]'
+import { GET_JOURNEY } from '../../../../../pages/journeys/[journeySlug]'
 
 export const JOURNEY_UPDATE = gql`
   mutation JourneyUpdate($input: JourneyUpdateInput!) {

@@ -7,7 +7,7 @@ import { CardOverviewProps } from './CardOverview'
 const CardOverviewDemo = {
   ...journeysAdminConfig,
   component: CardOverview,
-  title: 'Journeys-Admin/SingleJourney/CardOverview'
+  title: 'Journeys-Admin/SingleJourneyPage/CardOverview'
 }
 
 const Template: Story<CardOverviewProps> = ({ ...args }) => (

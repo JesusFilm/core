@@ -7,8 +7,6 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { Typography, Box } from '@mui/material'
-import JourneysAppBar from '../../src/components/JourneysAppBar'
 
 export const GET_JOURNEY = gql`
   query GetJourney($id: ID!) {
@@ -36,7 +34,6 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
 
   const updatedJourney = data !== undefined ? data.journey : journey
 
-  console.log('single page', data, journey)
   return (
     <>
       <Head>
@@ -46,18 +43,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta name="description" content={journey.description} />
         )}
       </Head>
-      <JourneysAppBar journey={updatedJourney} />
-      <Box sx={{ m: 10 }}>
-        <Typography variant={'h6'}>{updatedJourney.title}</Typography>
-        <Typography variant={'h6'}>{updatedJourney.description}</Typography>
-        <Typography variant={'h6'}>{updatedJourney.status}</Typography>
-        <Typography variant={'h6'}>
-          created: {updatedJourney.createdAt}
-        </Typography>
-        <Typography variant={'h6'}>
-          published: {updatedJourney.publishedAt}
-        </Typography>
-      </Box>
+      <SingleJourneyPage journey={updatedJourney} />
     </>
   )
 }

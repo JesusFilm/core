@@ -1,8 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { defaultJourney } from '../../JourneyList/journeyListData'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { defaultJourney } from '../../../JourneyList/journeyListData'
 import SingleJourneyUpdateDialog, {
   JOURNEY_UPDATE,
   UpdateJourneyFields
@@ -11,7 +11,7 @@ import SingleJourneyUpdateDialog, {
 const TestStory = {
   ...journeysAdminConfig,
   component: SingleJourneyUpdateDialog,
-  title: 'Journeys-Admin/SingleJourney/SingleJourneyUpdateDialog'
+  title: 'Journeys-Admin/SingleJourneyPage/SingleJourneyUpdateDialog'
 }
 
 const Template: Story = () => {

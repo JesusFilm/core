@@ -3,7 +3,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import SingleJourneyMenu from '../SingleJourneyMenu'
+import SingleJourneyMenu from '../SingleJourneyPage/SingleJourneyMenu'
 
 export interface JourneysAppBarProps {
   journey?: Journey

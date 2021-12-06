@@ -1,15 +1,15 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { defaultJourney } from '../JourneyList/journeyListData'
+import { journeysAdminConfig } from '../../../libs/storybook'
+import { defaultJourney } from '../../JourneyList/journeyListData'
 import SingleJourneyMenu, { JOURNEY_STATUS_UPDATE } from './SingleJourneyMenu'
-import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { SingleJourneyMenuProps } from '.'
 
 const TestStory = {
   ...journeysAdminConfig,
   component: SingleJourneyMenu,
-  title: 'Journeys-Admin/SingleJourney/SingleJourneyMenu'
+  title: 'Journeys-Admin/SingleJourneyPage/SingleJourneyMenu'
 }
 
 const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
