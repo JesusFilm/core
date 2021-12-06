@@ -39,6 +39,7 @@ const JourneySort = ({
 }: JourneySortProps): ReactElement => {
   const [showSortBy, setShowSortBy] = useState(open ?? false)
   const [value, setValue] = useState(sortBy)
+  const [defaultSortbyValue, setDefaultSortByValue] = useState(SortBy.CREATED_AT)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
   const chipRef = useRef(null)
@@ -60,6 +61,8 @@ const JourneySort = ({
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
     setSortBy(value)
+    setDefaultSortByValue(value);
+    handleClose()
   }
 
   const sortByForm = (): ReactElement => (
@@ -69,7 +72,7 @@ const JourneySort = ({
           <FormLabel component="legend">Sort By</FormLabel>
           <RadioGroup
             aria-label="sort-by-options"
-            defaultValue={SortBy.CREATED_AT}
+            defaultValue={defaultSortbyValue}
             name="sort-by-buttons-group"
             onChange={(e) => setValue(e.currentTarget.value as SortBy)}
           >
