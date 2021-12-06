@@ -74,7 +74,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <IconButton onClick={handleCopyLink}>
+                  <IconButton>
                     <InsertLinkIcon />
                   </IconButton>
                 </InputAdornment>
@@ -83,6 +83,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             sx={{ width: '334px' }}
           />
           <Button
+            onClick={handleCopyLink}
             startIcon={<ContentCopyIcon />}
             sx={{ pl: 5, color: '#C52D3A' }}
           >
@@ -99,7 +100,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <IconButton onClick={handleCopyLink}>
+                  <IconButton>
                     <InsertLinkIcon />
                   </IconButton>
                 </InputAdornment>
@@ -125,7 +126,7 @@ const ShareSection = ({ slug }: ShareSectionProps): ReactElement => {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            <MenuItem>
+            <MenuItem onClick={handleCopyLink}>
               <ListItemIcon>
                 <ContentCopyIcon />
               </ListItemIcon>

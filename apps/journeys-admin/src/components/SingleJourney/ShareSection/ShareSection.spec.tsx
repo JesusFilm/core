@@ -29,7 +29,7 @@ describe('JourneyShare', () => {
     const { getByRole, getByText } = render(
       <ShareSection slug={'my-journey'} />
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('button', { name: 'Copy' }))
 
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
