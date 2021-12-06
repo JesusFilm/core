@@ -9,7 +9,7 @@ export function Editor(): ReactElement {
     <>
       <div>Editor</div>
       <TopBar />
-      <Canvas />
+      <Canvas steps={[]} />
       <Tabs />
       <ControlPanel />
     </>
