@@ -93,3 +93,7 @@ As an example we are going to run through the steps to get the Next Steps Journe
    - run `nx run journeys:serve-all`
    - run `nx run journeys-admin:serve-all`
 1. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
+
+## Adding to the code base
+
+New features should be merged to a `feature/*` branch where it can be refined until it's ready to be merged to `main`.
