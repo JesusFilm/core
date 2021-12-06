@@ -8,6 +8,7 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
+import JourneysAppBar from '../../src/components/JourneysAppBar'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -22,10 +23,8 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         {journey.description != null && (
           <meta name="description" content={journey.description} />
         )}
-        {journey.primaryImageBlock != null && (
-          <meta property="og:image" content={journey.primaryImageBlock.src} />
-        )}
       </Head>
+      <JourneysAppBar journey={journey} />
       <Box sx={{ m: 10 }}>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
           Single Journey Page
@@ -52,9 +51,6 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             status
             createdAt
             publishedAt
-            primaryImageBlock {
-              src
-            }
           }
         }
       `,
