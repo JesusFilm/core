@@ -256,6 +256,8 @@ export type Mutation = {
   signUpResponseCreate: SignUpResponse;
   userCreate: User;
   userJourneyCreate: UserJourney;
+  userJourneyPromote: UserJourney;
+  userJourneyRemove: UserJourney;
   userJourneyUpdate: UserJourney;
   videoResponseCreate: VideoResponse;
 };
@@ -298,6 +300,16 @@ export type MutationUserCreateArgs = {
 
 export type MutationUserJourneyCreateArgs = {
   input: UserJourneyCreateInput;
+};
+
+
+export type MutationUserJourneyPromoteArgs = {
+  input: UserJourneyPromoteInput;
+};
+
+
+export type MutationUserJourneyRemoveArgs = {
+  input: UserJourneyRemoveInput;
 };
 
 
@@ -508,6 +520,22 @@ export type UserJourney = {
 export type UserJourneyCreateInput = {
   journeyId: Scalars['ID'];
   role?: Maybe<UserJourneyRole>;
+  userId: Scalars['ID'];
+};
+
+export type UserJourneyPromote =
+  | 'editor'
+  | 'owner';
+
+export type UserJourneyPromoteInput = {
+  journeyId: Scalars['ID'];
+  role: UserJourneyPromote;
+  userId: Scalars['ID'];
+};
+
+export type UserJourneyRemoveInput = {
+  journeyId: Scalars['ID'];
+  role: UserJourneyRoleForUpdates;
   userId: Scalars['ID'];
 };
 
@@ -724,6 +752,9 @@ export type ResolversTypes = {
   UserCreateInput: UserCreateInput;
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
   UserJourneyCreateInput: UserJourneyCreateInput;
+  UserJourneyPromote: UserJourneyPromote;
+  UserJourneyPromoteInput: UserJourneyPromoteInput;
+  UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyRole: UserJourneyRole;
   UserJourneyRoleForUpdates: UserJourneyRoleForUpdates;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
@@ -777,6 +808,8 @@ export type ResolversParentTypes = {
   UserCreateInput: UserCreateInput;
   UserJourney: UserJourneyType;
   UserJourneyCreateInput: UserJourneyCreateInput;
+  UserJourneyPromoteInput: UserJourneyPromoteInput;
+  UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
@@ -896,6 +929,8 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
   userCreate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserCreateArgs, 'input'>>;
   userJourneyCreate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyCreateArgs, 'input'>>;
+  userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'input'>>;
+  userJourneyRemove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRemoveArgs, 'input'>>;
   userJourneyUpdate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyUpdateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };
