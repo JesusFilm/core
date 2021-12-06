@@ -29,7 +29,6 @@ const JourneyCardMenu = (): ReactElement => {
 
   return (
     <div>
-      {/* https://mui.com/components/material-icons/ use correct icon */}
       <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
