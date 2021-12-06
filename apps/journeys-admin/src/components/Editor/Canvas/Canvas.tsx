@@ -29,55 +29,66 @@ export function Canvas({
   })
 
   return (
-    <Box sx={{ backgroundColor: (theme) => theme.palette.background.paper }}>
+    <Box
+      sx={{
+        backgroundColor: (theme) => theme.palette.background.paper,
+        '& .swiper-slide': {
+          display: 'flex',
+          justifyContent: 'center'
+        }
+      }}
+    >
       <Swiper
         centeredSlides={true}
+        centeredSlidesBounds={true}
         onSwiper={(swiper) => setSwiper(swiper)}
-        slidesPerView="auto"
         onSlideChange={(swiper) => onSelect?.(steps[swiper.activeIndex])}
       >
         {steps.map((step) => (
-          <SwiperSlide key={step.id} style={{ width: 'auto' }}>
-            <Box
-              data-testid={`step-${step.id}`}
-              sx={{
-                borderRadius: 4,
-                transition: '0.2s border-color ease-out',
-                position: 'relative',
-                overflow: 'hidden',
-                border: (theme) =>
-                  selected?.id === step.id
-                    ? `3px solid ${theme.palette.primary.main}`
-                    : `3px solid ${theme.palette.background.default}`
-              }}
-              onClick={() => onSelect?.(step)}
-            >
+          <SwiperSlide key={step.id}>
+            {({ isActive }) => (
               <Box
+                data-testid={`step-${step.id}`}
                 sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  zIndex: 1,
-                  transition: '0.2s background-color ease-out',
-                  backgroundColor: (theme) =>
-                    selected?.id === step.id
-                      ? 'transparent'
-                      : theme.palette.background.default
+                  borderRadius: 4,
+                  transition: '0.2s border-color ease-out',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  width: 356,
+                  border: (theme) =>
+                    isActive
+                      ? `3px solid ${theme.palette.primary.main}`
+                      : `3px solid ${theme.palette.background.default}`
                 }}
-              />
-              <FramePortal width={356} height={536}>
-                <ThemeProvider
-                  themeName={ThemeName.base}
-                  themeMode={ThemeMode.light}
-                >
-                  <Box sx={{ p: 4, height: '100%' }}>
-                    <BlockRenderer {...step} />
-                  </Box>
-                </ThemeProvider>
-              </FramePortal>
-            </Box>
+                onClick={() => onSelect?.(step)}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    zIndex: 1,
+                    transition: '0.2s background-color ease-out',
+                    backgroundColor: (theme) =>
+                      isActive
+                        ? 'transparent'
+                        : theme.palette.background.default
+                  }}
+                />
+                <FramePortal width={356} height={536}>
+                  <ThemeProvider
+                    themeName={ThemeName.base}
+                    themeMode={ThemeMode.light}
+                  >
+                    <Box sx={{ p: 4, height: '100%' }}>
+                      <BlockRenderer {...step} />
+                    </Box>
+                  </ThemeProvider>
+                </FramePortal>
+              </Box>
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
