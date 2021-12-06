@@ -1,11 +1,9 @@
 name: Main
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main, feature/*]
 jobs:
   lint:
     runs-on: ubuntu-latest
