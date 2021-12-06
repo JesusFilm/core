@@ -9,6 +9,7 @@ import {
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
 import SingleJourneyMenu from '../../src/components/SingleJourneyMenu'
+import JourneysAppBar from '../../src/components/JourneysAppBar'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -24,6 +25,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta name="description" content={journey.description} />
         )}
       </Head>
+      <JourneysAppBar journey={journey} />
       <Box sx={{ m: 10 }}>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
           Single Journey Page

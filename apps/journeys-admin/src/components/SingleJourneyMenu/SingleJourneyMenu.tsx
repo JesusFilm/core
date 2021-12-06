@@ -94,8 +94,7 @@ const SingleJourneyMenu = ({
   }
 
   return (
-    <div>
-      {/* Move IconButton to nav bar */}
+    <>
       <IconButton
         id="single-journey-actions"
         aria-controls="single-journey-actions"
@@ -156,7 +155,7 @@ const SingleJourneyMenu = ({
           Link Copied
         </Alert>
       </Snackbar>
-    </div>
+    </>
   )
 }
 
