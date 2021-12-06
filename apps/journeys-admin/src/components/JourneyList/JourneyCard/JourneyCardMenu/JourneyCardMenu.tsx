@@ -46,6 +46,10 @@ const JourneyCardMenu = ({
         <MoreVertIcon />
       </IconButton>
       <Menu
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
         id="journey-actions"
         anchorEl={anchorEl}
         open={open}
