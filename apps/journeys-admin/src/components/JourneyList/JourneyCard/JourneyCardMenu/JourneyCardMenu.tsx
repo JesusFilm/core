@@ -34,6 +34,10 @@ const JourneyCardMenu = ({
     setAnchorEl(null)
   }
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
+    // show modal
+  }
+
   return (
     <div>
       <IconButton
@@ -67,15 +71,12 @@ const JourneyCardMenu = ({
           </MenuItem>
         </Link>
 
-        {/* update link */}
-        <Link href={`/journeys/${slug}/access`} underline="none">
-          <MenuItem>
-            <ListItemIcon>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText>Change Access</ListItemText>
-          </MenuItem>
-        </Link>
+        <MenuItem onClick={handleClick}>
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText>Access</ListItemText>
+        </MenuItem>
 
         {status === JourneyStatus.draft ? (
           <MenuItem disabled>
@@ -85,8 +86,7 @@ const JourneyCardMenu = ({
             <ListItemText>Preview</ListItemText>
           </MenuItem>
         ) : (
-          <Link href={`/journeys/${slug}/preview`} underline="none">
-            {/* update link */}
+          <Link href={`https://your.NextStep.is/${slug}`} underline="none">
             <MenuItem>
               <ListItemIcon>
                 <VisibilityIcon />

@@ -36,18 +36,8 @@ describe('JourneyCardMenu', () => {
       '/journeys/published-journey/edit'
     )
   })
-  it('should handle changing journey access', () => {
-    const { getByRole } = render(
-      <JourneyCardMenu
-        status={JourneyStatus.published}
-        slug={'published-journey'}
-      />
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Change Access' })).toHaveAttribute(
-      'href',
-      '/journeys/published-journey/access'
-    )
+  it('should handle changing journey access should show modal', () => {
+    // TODO
   })
   it('should handle preview', () => {
     const { getByRole } = render(
@@ -59,7 +49,7 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('link', { name: 'Preview' })).toHaveAttribute(
       'href',
-      '/journeys/published-journey/preview'
+      'https://your.NextStep.is/published-journey'
     )
   })
 
