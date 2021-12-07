@@ -15,8 +15,8 @@ const Template: Story<ShareSectionProps> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  slug: 'journey-slug',
-  forceMenu: true
+  slug: 'journey-slug'
+  // forceMenu: true
 }
 
 export default JourneyShareDemo as Meta

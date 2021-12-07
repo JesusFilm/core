@@ -28,8 +28,8 @@ export interface ShareSectionProps {
 }
 
 const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
-  // update link
-  const journeyLink = `/journeys/${slug}`
+  const journeyLink = `/journeys/${slug}` // update this
+  const journeyEditLink = `/journeys/${slug}/edit` // update this
   const [showAlert, setShowAlert] = useState(false)
   const theme = useTheme()
   const [width, setWidth] = useState(window.innerWidth)
@@ -76,7 +76,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
           <TextField
             id="filled-basic"
             hiddenLabel
-            variant="standard"
+            variant="filled"
             value={journeyLink}
             InputProps={{
               startAdornment: (
@@ -94,11 +94,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
               startIcon={<EditIcon />}
               sx={{ pl: 5, color: theme.palette.primary.main }}
             >
-              <Link
-                href="journey/edit/UPDATE_THIS"
-                color="inherit"
-                underline="none"
-              >
+              <Link href={journeyEditLink} color="inherit" underline="none">
                 Edit
               </Link>
             </Button>
@@ -117,7 +113,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
           <TextField
             id="filled-basic"
             label="Journey URL"
-            variant="standard"
+            variant="filled"
             value={journeyLink}
             InputProps={{
               startAdornment: (
@@ -154,6 +150,15 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
               horizontal: 'right'
             }}
           >
+            <Link href={journeyEditLink} color="inherit" underline="none">
+              <MenuItem>
+                <ListItemIcon>
+                  <EditIcon />
+                </ListItemIcon>
+                <ListItemText>Edit</ListItemText>
+              </MenuItem>
+            </Link>
+
             <MenuItem onClick={handleCopyLink}>
               <ListItemIcon>
                 <ContentCopyIcon />

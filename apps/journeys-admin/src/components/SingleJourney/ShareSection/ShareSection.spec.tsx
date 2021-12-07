@@ -15,6 +15,14 @@ describe('JourneyShare', () => {
     )
   })
 
+  it('should have correct url for the edit button', () => {
+    const { getByText } = render(<ShareSection slug={'my-journey'} />)
+    expect(getByText('Edit')).toHaveAttribute(
+      'href',
+      '/journeys/my-journey/edit'
+    )
+  })
+
   it('should handle copy link on icon click', async () => {
     Object.assign(navigator, {
       clipboard: {
