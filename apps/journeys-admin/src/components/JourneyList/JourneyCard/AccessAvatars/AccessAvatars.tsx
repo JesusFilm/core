@@ -1,5 +1,5 @@
-import { Avatar, AvatarGroup, Tooltip } from '@mui/material'
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
+import { Avatar, AvatarGroup, Tooltip, useTheme } from '@mui/material'
 
 import { createToolTipTitle, createFallbackLetter, orderAvatars } from './utils'
 
@@ -24,10 +24,21 @@ export interface AccessAvatarsProps {
 }
 
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
+  const theme = useTheme()
+  const [width, setWidth] = useState(window.innerWidth)
+
   const orderedAvatars = orderAvatars(users)
-  const maxAvatars = 3
+  const maxAvatars = width > theme.breakpoints.values.md ? 5 : 3
   const avatarsShown =
     orderedAvatars.length <= maxAvatars ? maxAvatars : maxAvatars - 1
+
+  useEffect(() => {
+    const updateWidth = (): void => {
+      setWidth(window.innerWidth)
+    }
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
 
   return (
     <AvatarGroup

@@ -17,14 +17,18 @@ Single.args = {
   users: [user1]
 }
 
-export const MaxAvatars: Story<AccessAvatarsProps> = Template.bind({})
-MaxAvatars.args = {
+export const MaxDesktop: Story<AccessAvatarsProps> = Template.bind({})
+MaxDesktop.args = {
+  users: [user1, user2, user3, user4, user5]
+}
+export const MaxMobile: Story<AccessAvatarsProps> = Template.bind({})
+MaxMobile.args = {
   users: [user1, user2, user3]
 }
 
 export const OverFlowAvatars: Story<AccessAvatarsProps> = Template.bind({})
 OverFlowAvatars.args = {
-  users: [user1, user2, user3, user4, user5]
+  users: [user1, user2, user3, user4, user5, user6]
 }
 
 export const NoImage: Story<AccessAvatarsProps> = Template.bind({})
@@ -42,8 +46,7 @@ NoFirstname.args = {
   users: [
     { ...user1, firstName: undefined },
     { ...user2, firstName: undefined },
-    { ...user3, firstName: undefined },
-    { ...user6, firstName: undefined }
+    { ...user3, firstName: undefined }
   ]
 }
 
@@ -54,8 +57,7 @@ NoEmailFirstname.args = {
   users: [
     { ...user1, firstName: undefined, image: undefined },
     { ...user2, firstName: undefined, image: undefined },
-    { ...user3, firstName: undefined, image: undefined },
-    { ...user6, firstName: undefined, image: undefined }
+    { ...user3, firstName: undefined, image: undefined }
   ]
 }
 
@@ -66,8 +68,7 @@ NoDetails.args = {
   users: [
     { ...user1, firstName: undefined, email: undefined, image: undefined },
     { ...user2, firstName: undefined, email: undefined, image: undefined },
-    { ...user3, firstName: undefined, email: undefined, image: undefined },
-    { ...user6, firstName: undefined, email: undefined, image: undefined }
+    { ...user3, firstName: undefined, email: undefined, image: undefined }
   ]
 }
 
