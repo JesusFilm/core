@@ -1,1 +1,1 @@
-export { journeyAdminConfig, simpleComponentConfig } from './config'
+export { journeysAdminConfig, simpleComponentConfig } from './config'

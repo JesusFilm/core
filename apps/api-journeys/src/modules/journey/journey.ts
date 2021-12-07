@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { JourneyModule } from './__generated__/types'
-import { isNil, omitBy, get } from 'lodash'
+import { isNil, omitBy, get, includes } from 'lodash'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { Prisma } from '.prisma/api-journeys-client'
 import slugify from 'slugify'
@@ -16,15 +16,22 @@ const typeDefs = gql`
     base
   }
 
+  enum JourneyStatus {
+    draft
+    published
+  }
+
   type Journey @key(fields: "id") {
     id: ID!
-    published: Boolean!
     title: String!
     locale: String!
     themeMode: ThemeMode!
     themeName: ThemeName!
     description: String
     slug: String!
+    publishedAt: DateTime
+    createdAt: DateTime!
+    status: JourneyStatus!
   }
 
   enum IdType {
@@ -32,8 +39,10 @@ const typeDefs = gql`
     slug
   }
 
+  scalar DateTime
+
   extend type Query {
-    journeys: [Journey!]!
+    journeys(status: JourneyStatus): [Journey!]!
     journey(id: ID!, idType: IdType): Journey
   }
 
@@ -78,11 +87,29 @@ const typeDefs = gql`
 `
 
 const resolvers: JourneyModule.Resolvers = {
+  Journey: {
+    status: (journey) => {
+      return journey.publishedAt === null ? 'draft' : 'published'
+    }
+  },
   Query: {
-    async journeys(_, __, { db }) {
-      return await db.journey.findMany({
-        where: { published: true }
-      })
+    async journeys(_, { status }, { db }) {
+      switch (status) {
+        case 'published':
+          return await db.journey.findMany({
+            where: {
+              publishedAt: { not: null }
+            }
+          })
+        case 'draft':
+          return await db.journey.findMany({
+            where: {
+              publishedAt: null
+            }
+          })
+        default:
+          return await db.journey.findMany()
+      }
     },
     async journey(_parent, { id, idType }, { db }) {
       if (idType === 'slug') {
@@ -100,8 +127,9 @@ const resolvers: JourneyModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
       try {
-        return await db.journey.create({
+        const journey = await db.journey.create({
           data: {
             id: id as string | undefined,
             title,
@@ -112,6 +140,14 @@ const resolvers: JourneyModule.Resolvers = {
             slug: slugify(slug ?? title, { remove: /[*+~.()'"!:@#]/g })
           }
         })
+        await db.userJourney.create({
+          data: {
+            userId,
+            journeyId: journey.id,
+            role: 'owner'
+          }
+        })
+        return journey
       } catch (e) {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -128,6 +164,19 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyUpdate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId,
+            journeyId: input.id
+          }
+        }
+      })
+
+      if (!includes(['owner', 'editor'], actor?.role))
+        throw new AuthenticationError('User is not owner or editor of journey')
+
       try {
         if (input.slug != null) {
           input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
@@ -158,10 +207,23 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyPublish(_parent, { id }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId,
+            journeyId: id
+          }
+        }
+      })
+
+      if (actor?.role !== 'owner')
+        throw new AuthenticationError('User is not owner of journey')
+
       return await db.journey.update({
         where: { id },
         data: {
-          published: true
+          publishedAt: new Date()
         }
       })
     }

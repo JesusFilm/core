@@ -1,6 +1,5 @@
-import { ReactElement } from 'react'
-import { Box, Button, Container, Typography } from '@mui/material'
-import Link from 'next/link'
+import { ReactElement, useEffect } from 'react'
+import { Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
 import { gql } from '@apollo/client'
@@ -10,27 +9,36 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
+import { JourneyList } from '../../src/components/'
+import { UseFirebase } from '../../src/libs/firebaseClient'
+import { useRouter } from 'next/router'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
+  const { logOut, user, loading } = UseFirebase()
+  const router = useRouter()
+
+  useEffect(() => {
+    // prevent user from accessing this page if they are not logged in
+    if (loading === false && user == null) {
+      void router.push('/')
+    }
+  }, [user, router, loading])
+
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+      {/* Next Steps Header */}
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
-          Journeys List
+          Journeys
         </Typography>
-        {journeys.map(({ id, title, slug }) => (
-          <Box key={id} my={2}>
-            <Link href={`/journeys/${slug}`} passHref>
-              <Button variant="contained" fullWidth>
-                {title}
-              </Button>
-            </Link>
-          </Box>
-        ))}
+        <JourneyList journeys={journeys} />
+        <Button variant="contained" onClick={() => logOut()}>
+          SignOut
+        </Button>
       </Container>
     </ThemeProvider>
   )
@@ -44,9 +52,11 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
           journeys {
             id
             title
+            description
             slug
             themeName
             themeMode
+            locale
           }
         }
       `

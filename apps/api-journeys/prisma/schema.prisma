@@ -36,17 +36,18 @@ model User {
 }
 
 model Journey {
-  id                  String        @id @default(uuid())
-  title               String
-  published           Boolean       @default(false)
-  blocks              Block[]
-  locale              String        @default("en-US")
-  themeMode           ThemeMode     @default(light)
-  themeName           ThemeName     @default(base)
-  description         String?
+  id        String     @id @default(uuid())
+  title     String
+  blocks    Block[]
+  locale    String     @default("en-US")
+  themeMode ThemeMode  @default(light)
+  themeName ThemeName  @default(base)
+  description String?
   primaryImageBlockId String?
-  primaryImageBlock   Block?        @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
-  slug                String        @unique
+  primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
+  slug      String    @unique
+  createdAt DateTime  @default(now())   
+  publishedAt DateTime?
   UserJourney         UserJourney[] @relation("Journey")
 }
 

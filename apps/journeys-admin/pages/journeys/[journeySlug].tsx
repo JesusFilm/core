@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
@@ -8,12 +8,24 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
+import { UseFirebase } from '../../src/libs/firebaseClient/'
+import { useRouter } from 'next/router'
 
 interface SingleJourneyPageProps {
   journey: Journey
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+  const { user, loading } = UseFirebase()
+  const router = useRouter()
+
+  useEffect(() => {
+    // prevent user from accessing this page if they are not logged in
+    if (loading === false && user == null) {
+      void router.push('/')
+    }
+  }, [user, router, loading])
+
   return (
     <>
       <Head>
@@ -31,6 +43,9 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           Single Journey Page
         </Typography>
         <Typography variant={'h6'}>{journey.title}</Typography>
+        <Typography variant={'h6'}>{journey.status}</Typography>
+        <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
+        <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
       </Box>
     </>
   )
@@ -46,6 +61,9 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             id
             title
             description
+            status
+            createdAt
+            publishedAt
             primaryImageBlock {
               src
             }

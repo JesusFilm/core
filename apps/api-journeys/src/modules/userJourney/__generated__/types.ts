@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace UserJourneyModule {
   interface DefinedFields {
     UserJourney: 'userId' | 'journeyId' | 'role';
-    Mutation: 'userJourneyCreate' | 'userJourneyUpdate';
+    Mutation: 'userJourneyCreate' | 'userJourneyUpdate' | 'userJourneyPromote' | 'userJourneyRemove';
     Journey: 'usersJourneys';
     User: 'usersJourneys';
   };
@@ -12,17 +12,23 @@ export namespace UserJourneyModule {
   interface DefinedEnumValues {
     UserJourneyRole: 'inviteRequested' | 'editor' | 'owner';
     UserJourneyRoleForUpdates: 'inviteRequested' | 'editor';
+    UserJourneyPromote: 'editor' | 'owner';
   };
   
   interface DefinedInputFields {
     UserJourneyCreateInput: 'userId' | 'journeyId' | 'role';
     UserJourneyUpdateInput: 'userId' | 'journeyId' | 'role';
+    UserJourneyPromoteInput: 'userId' | 'journeyId' | 'role';
+    UserJourneyRemoveInput: 'userId' | 'journeyId' | 'role';
   };
   
   export type UserJourneyRole = DefinedEnumValues['UserJourneyRole'];
   export type UserJourneyRoleForUpdates = DefinedEnumValues['UserJourneyRoleForUpdates'];
+  export type UserJourneyPromote = DefinedEnumValues['UserJourneyPromote'];
   export type UserJourneyCreateInput = Pick<Types.UserJourneyCreateInput, DefinedInputFields['UserJourneyCreateInput']>;
   export type UserJourneyUpdateInput = Pick<Types.UserJourneyUpdateInput, DefinedInputFields['UserJourneyUpdateInput']>;
+  export type UserJourneyPromoteInput = Pick<Types.UserJourneyPromoteInput, DefinedInputFields['UserJourneyPromoteInput']>;
+  export type UserJourneyRemoveInput = Pick<Types.UserJourneyRemoveInput, DefinedInputFields['UserJourneyRemoveInput']>;
   export type Journey = Types.Journey;
   export type UserJourney = Pick<Types.UserJourney, DefinedFields['UserJourney']>;
   export type User = Types.User;
@@ -62,6 +68,8 @@ export namespace UserJourneyModule {
       '*'?: gm.Middleware[];
       userJourneyCreate?: gm.Middleware[];
       userJourneyUpdate?: gm.Middleware[];
+      userJourneyPromote?: gm.Middleware[];
+      userJourneyRemove?: gm.Middleware[];
     };
   };
 }

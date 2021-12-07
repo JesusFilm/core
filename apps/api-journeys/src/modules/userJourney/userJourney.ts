@@ -2,6 +2,8 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { UserJourneyModule } from './__generated__/types'
 import { AuthenticationError } from 'apollo-server-errors'
+import { PrismaPromise, PrismaClient } from '.prisma/api-journeys-client'
+import { UserJourney } from '../../__generated__/types'
 
 const typeDefs = gql`
   enum UserJourneyRole {
@@ -15,6 +17,11 @@ const typeDefs = gql`
     editor
   }
 
+  enum UserJourneyPromote {
+    editor
+    owner
+  }
+
   input UserJourneyCreateInput {
     userId: ID!
     journeyId: ID!
@@ -22,6 +29,18 @@ const typeDefs = gql`
   }
 
   input UserJourneyUpdateInput {
+    userId: ID!
+    journeyId: ID!
+    role: UserJourneyRoleForUpdates!
+  }
+
+  input UserJourneyPromoteInput {
+    userId: ID!
+    journeyId: ID!
+    role: UserJourneyPromote!
+  }
+
+  input UserJourneyRemoveInput {
     userId: ID!
     journeyId: ID!
     role: UserJourneyRoleForUpdates!
@@ -44,6 +63,8 @@ const typeDefs = gql`
   extend type Mutation {
     userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
     userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
+    userJourneyPromote(input: UserJourneyPromoteInput!): UserJourney!
+    userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
   }
 `
 
@@ -69,6 +90,7 @@ const resolvers: UserJourneyModule.Resolvers = {
     }
   },
   Mutation: {
+    // should be a mutation that invites a user not a mutation that creates a user journey
     async userJourneyCreate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
@@ -111,6 +133,91 @@ const resolvers: UserJourneyModule.Resolvers = {
           role: input.role
         }
       })
+    },
+    async userJourneyRemove(_parent, { input }, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
+
+      // can only remove user if you are the journey's owner.
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId: userId,
+            journeyId: input.journeyId
+          }
+        }
+      })
+
+      if (actor === null || actor?.role !== 'owner')
+        throw new AuthenticationError(
+          'You do not own this journey so you cannot remove users'
+        )
+
+      if (input.role === (actor.role as UserJourneyModule.UserJourneyRole))
+        throw new AuthenticationError(
+          'Owners cannot remove themselves from their journey'
+        )
+
+      return await db.userJourney.delete({
+        where: {
+          uniqueUserJourney: {
+            userId: input.userId,
+            journeyId: input.journeyId
+          }
+        }
+      })
+    },
+    async userJourneyPromote(_parent, { input }, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
+
+      // can only promote an editor to owner if you are the journey's owner.
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId: userId,
+            journeyId: input.journeyId
+          }
+        }
+      })
+
+      if (actor === null || actor?.role !== 'owner')
+        throw new AuthenticationError(
+          'You do not own this journey so you cannot change roles'
+        )
+
+      // needs to be done in a transaction
+      return await db.$transaction(
+        async (
+          db: PrismaClient
+        ): Promise<Prisma.Prisma__UserJourneyClient<UserJourney>> => {
+          await db.userJourney.update({
+            where: {
+              uniqueUserJourney: {
+                userId: actor.userId,
+                journeyId: actor.journeyId
+              }
+            },
+            data: {
+              role: 'editor'
+            }
+          })
+
+          const newOwner = db.userJourney.update({
+            where: {
+              uniqueUserJourney: {
+                userId: input.userId,
+                journeyId: input.journeyId
+              }
+            },
+            data: {
+              role: 'owner'
+            }
+          })
+
+          return newOwner
+        }
+      )
     }
   }
 }
