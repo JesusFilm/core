@@ -17,7 +17,10 @@ import { MockedProvider } from '@apollo/client/testing'
 const EditorStory = {
   ...journeysAdminConfig,
   component: Editor,
-  title: 'Journeys-Admin/Editor'
+  title: 'Journeys-Admin/Editor',
+  parameters: {
+    layout: 'fullscreen'
+  }
 }
 
 const blocks: GetJourneyForEdit_journey_blocks[] = [

@@ -20,6 +20,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
 
   return (
     <>
+      <>Editor</>
       <TopBar />
       <Canvas onSelect={handleSelect} selected={selectedStep} steps={steps} />
       <Tabs />

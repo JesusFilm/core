@@ -3,7 +3,7 @@ import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
   it('should render the element', () => {
-    const { getByText } = render(<ControlPanel />)
+    const { getByText } = render(<ControlPanel steps={[]} />)
     expect(getByText('ControlPanel')).toBeInTheDocument()
   })
 })
