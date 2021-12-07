@@ -12,12 +12,15 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Button
+  Button,
+  Link,
+  Typography
 } from '@mui/material'
 import InsertLinkIcon from '@mui/icons-material/InsertLink'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import EditIcon from '@mui/icons-material/Edit'
 
 export interface ShareSectionProps {
   slug: string
@@ -66,10 +69,13 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
   return (
     <Box>
       {width > theme.breakpoints.values.md ? (
-        <Box sx={{ display: 'flex' }}>
+        <>
+          <Typography variant="h6" gutterBottom>
+            Journey URL
+          </Typography>
           <TextField
             id="filled-basic"
-            label="Journey URL"
+            hiddenLabel
             variant="standard"
             value={journeyLink}
             InputProps={{
@@ -83,15 +89,29 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
             }}
             sx={{ width: '334px' }}
           />
+          <Box sx={{ display: 'flex' }}>
+            <Button
+              startIcon={<EditIcon />}
+              sx={{ pl: 5, color: theme.palette.primary.main }}
+            >
+              <Link
+                href="journey/edit/UPDATE_THIS"
+                color="inherit"
+                underline="none"
+              >
+                Edit
+              </Link>
+            </Button>
 
-          <Button
-            onClick={handleCopyLink}
-            startIcon={<ContentCopyIcon />}
-            sx={{ pl: 5, color: '#C52D3A' }}
-          >
-            Copy
-          </Button>
-        </Box>
+            <Button
+              onClick={handleCopyLink}
+              startIcon={<ContentCopyIcon />}
+              sx={{ color: theme.palette.primary.main }}
+            >
+              Copy
+            </Button>
+          </Box>
+        </>
       ) : (
         <Box sx={{ display: 'flex' }}>
           <TextField
