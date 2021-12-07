@@ -396,7 +396,8 @@ const Template: Story = () => (
         id: 'journeyId',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
-        title: 'my journey',
+        title: 'NUA Journey: Ep.3 – Decision',
+        slug: 'nua-journey-ep-3-decision',
         description: 'my cool journey',
         blocks
       }}

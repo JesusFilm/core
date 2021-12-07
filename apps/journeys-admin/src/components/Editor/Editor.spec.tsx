@@ -12,6 +12,7 @@ describe('Editor', () => {
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           title: 'my journey',
+          slug: 'my-journey',
           description: 'my cool journey',
           blocks: []
         }}
