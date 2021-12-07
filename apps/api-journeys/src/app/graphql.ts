@@ -132,6 +132,26 @@ export enum VideoResponseStateEnum {
     FINISHED = "FINISHED"
 }
 
+export class CardBlockCreateInput {
+    id?: Nullable<string>;
+    parentBlockId?: Nullable<string>;
+    type?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
+    coverBlockId?: Nullable<string>;
+    fullscreen?: Nullable<boolean>;
+    themeMode?: Nullable<ThemeMode>;
+    themeName?: Nullable<ThemeName>;
+}
+
+export class CardBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
+    coverBlockId?: Nullable<string>;
+    fullscreen?: Nullable<boolean>;
+    themeMode?: Nullable<ThemeMode>;
+    themeName?: Nullable<ThemeName>;
+}
+
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId?: Nullable<string>;
@@ -140,18 +160,31 @@ export class ImageBlockCreateInput {
     alt: string;
 }
 
+export class StepBlockCreatInput {
+    id?: Nullable<string>;
+    type?: Nullable<string>;
+    nextBlockId?: Nullable<string>;
+    locked?: Nullable<boolean>;
+    parentBlockId?: Nullable<string>;
+}
+
+export class StepBlockUpdateInput {
+    nextBlockId?: Nullable<string>;
+    locked?: Nullable<boolean>;
+    parentBlockId?: Nullable<string>;
+}
+
 export class JourneyCreateInput {
     id?: Nullable<string>;
-    title: string;
+    title?: Nullable<string>;
     locale?: Nullable<string>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
-    slug: string;
+    slug?: Nullable<string>;
 }
 
 export class JourneyUpdateInput {
-    id: string;
     title?: Nullable<string>;
     locale?: Nullable<string>;
     themeMode?: Nullable<ThemeMode>;
@@ -403,11 +436,19 @@ export class VideoResponse implements Response {
 }
 
 export abstract class IMutation {
+    abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
+
+    abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;
+
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
+
+    abstract stepBlockCreate(input: StepBlockCreatInput): StepBlock | Promise<StepBlock>;
+
+    abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
-    abstract journeyUpdate(input: JourneyUpdateInput): Journey | Promise<Journey>;
+    abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 

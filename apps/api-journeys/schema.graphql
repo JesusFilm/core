@@ -169,6 +169,28 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
+input CardBlockCreateInput {
+  id: ID
+  parentBlockId: ID
+
+  """ type is overwritten by the API """
+  type: String
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput {
+  parentBlockId: ID
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
 enum GridDirection {
   columnReverse
   column
@@ -280,6 +302,22 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
+input StepBlockCreatInput {
+  id: ID
+
+  """ type is overwritten by the API """
+  type: String
+  nextBlockId: ID
+  locked: Boolean
+  parentBlockId: ID
+}
+
+input StepBlockUpdateInput {
+  nextBlockId: ID
+  locked: Boolean
+  parentBlockId: ID
+}
+
 enum TypographyVariant {
   h1
   h2
@@ -388,7 +426,7 @@ input JourneyCreateInput {
   (Provided for optimistic mutation result matching)
   """
   id: ID
-  title: String!
+  title: String
   locale: String
   themeMode: ThemeMode
   themeName: ThemeName
@@ -398,11 +436,10 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
   """
-  slug: String!
+  slug: String
 }
 
 input JourneyUpdateInput {
-  id: ID!
   title: String
   locale: String
   themeMode: ThemeMode
@@ -489,9 +526,13 @@ type VideoResponse implements Response {
 }
 
 extend type Mutation {
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  stepBlockCreate(input: StepBlockCreatInput!): StepBlock!
+  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
   journeyCreate(input: JourneyCreateInput!): Journey!
-  journeyUpdate(input: JourneyUpdateInput!): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!

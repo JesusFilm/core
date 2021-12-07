@@ -119,7 +119,7 @@ export async function nua9(): Promise<void> {
     locked: false,
     parentOrder: 1
   })
-  await db.collection('block').update(step1._key, { nextBlockId: step2._key })
+  await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -159,7 +159,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 2
   })
-  await db.collection('block').update(step2._key, { nextBlockId: questionStep._key })
+  await db.collection('blocks').update(step2._key, { nextBlockId: questionStep._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -254,7 +254,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 3
   })
-  await db.collection('block').update(questionStep._key, { nextBlockId: stepPrayer1._key })
+  await db.collection('blocks').update(questionStep._key, { nextBlockId: stepPrayer1._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -323,7 +323,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 4
   })
-  await db.collection('block').update(stepPrayer1._key, { nextBlockId: stepPrayer2._key })
+  await db.collection('blocks').update(stepPrayer1._key, { nextBlockId: stepPrayer2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -398,7 +398,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 5
   })
-  await db.collection('block').update(stepPrayer2._key, { nextBlockId: stepPrayer3._key })
+  await db.collection('blocks').update(stepPrayer2._key, { nextBlockId: stepPrayer3._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -473,7 +473,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 6
   })
-  await db.collection('block').update(stepPrayer3._key, { nextBlockId: stepPrayer4._key })
+  await db.collection('blocks').update(stepPrayer3._key, { nextBlockId: stepPrayer4._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -578,7 +578,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 7
   })
-  await db.collection('block').update(stepPrayer3._key, { nextBlockId: stepIAlreadyHave._key })
+  await db.collection('blocks').update(stepPrayer3._key, { nextBlockId: stepIAlreadyHave._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -657,7 +657,7 @@ export async function nua9(): Promise<void> {
     locked: false,  
     parentOrder: 8
   })
-  await db.collection('block').update(stepIAlreadyHave._key, { nextBlockId: stepIAlreadyHave2._key })
+  await db.collection('blocks').update(stepIAlreadyHave._key, { nextBlockId: stepIAlreadyHave2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -761,7 +761,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 9
   })
-  await db.collection('block').update(stepIAlreadyHave2._key, { nextBlockId: stepNoThanks._key })
+  await db.collection('blocks').update(stepIAlreadyHave2._key, { nextBlockId: stepNoThanks._key })
   
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -840,7 +840,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 10
   })
-  await db.collection('block').update(stepNoThanks._key, { nextBlockId: stepNoThanks2._key })
+  await db.collection('blocks').update(stepNoThanks._key, { nextBlockId: stepNoThanks2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -944,7 +944,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 11
   })
-  await db.collection('block').update(stepNoThanks2._key, { nextBlockId: stepNotSure._key })
+  await db.collection('blocks').update(stepNoThanks2._key, { nextBlockId: stepNotSure._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1023,7 +1023,7 @@ export async function nua9(): Promise<void> {
     locked: false,    
     parentOrder: 12
   })
-  await db.collection('block').update(stepNotSure._key, { nextBlockId: stepNotSure2._key })
+  await db.collection('blocks').update(stepNotSure._key, { nextBlockId: stepNotSure2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1127,7 +1127,7 @@ export async function nua9(): Promise<void> {
     locked: false,
     parentOrder: 13
   })
-  await db.collection('block').update(stepNotSure2._key, { nextBlockId: lastStep._key })
+  await db.collection('blocks').update(stepNotSure2._key, { nextBlockId: lastStep._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,

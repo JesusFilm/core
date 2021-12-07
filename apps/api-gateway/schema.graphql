@@ -91,6 +91,28 @@ type CardBlock implements Block {
   type: String!
 }
 
+input CardBlockCreateInput {
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  id: ID
+  parentBlockId: ID
+  themeMode: ThemeMode
+  themeName: ThemeName
+
+  """ type is overwritten by the API """
+  type: String
+}
+
+input CardBlockUpdateInput {
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  parentBlockId: ID
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
 """DateTime custom scalar"""
 scalar DateTime
 
@@ -247,10 +269,10 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
   """
-  slug: String!
+  slug: String
   themeMode: ThemeMode
   themeName: ThemeName
-  title: String!
+  title: String
 }
 
 enum JourneyStatus {
@@ -260,7 +282,6 @@ enum JourneyStatus {
 
 input JourneyUpdateInput {
   description: String
-  id: ID!
   locale: String
   primaryImageBlockId: ID
   slug: String
@@ -276,12 +297,16 @@ type LinkAction implements Action {
 }
 
 type Mutation {
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
+  cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
-  journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  stepBlockCreate(input: StepBlockCreatInput!): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -402,6 +427,22 @@ type StepBlock implements Block {
   nextBlockId: ID
   parentBlockId: ID
   type: String!
+}
+
+input StepBlockCreatInput {
+  id: ID
+  locked: Boolean
+  nextBlockId: ID
+  parentBlockId: ID
+
+  """ type is overwritten by the API """
+  type: String
+}
+
+input StepBlockUpdateInput {
+  locked: Boolean
+  nextBlockId: ID
+  parentBlockId: ID
 }
 
 enum ThemeMode {

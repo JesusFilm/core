@@ -29,3 +29,29 @@ type CardBlock implements Block {
   """
   themeName: ThemeName
 }
+
+input CardBlockCreateInput {
+  id: ID
+  parentBlockId: ID
+  """ type is overwritten by the API """
+  type: String
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput {
+  parentBlockId: ID
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+extend type Mutation {
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock!
+}

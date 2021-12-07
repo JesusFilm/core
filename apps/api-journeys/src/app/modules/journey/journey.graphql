@@ -33,7 +33,7 @@
     (Provided for optimistic mutation result matching)
     """
     id: ID
-    title: String!
+    title: String
     locale: String
     themeMode: ThemeMode
     themeName: ThemeName
@@ -42,11 +42,10 @@
     Slug should be unique amongst all journeys
     (server will throw BAD_USER_INPUT error if not)
     """
-    slug: String!
+    slug: String
   }
 
   input JourneyUpdateInput {
-    id: ID!
     title: String
     locale: String
     themeMode: ThemeMode
@@ -58,7 +57,7 @@
 
   extend type Mutation {
     journeyCreate(input: JourneyCreateInput!): Journey!
-    journeyUpdate(input: JourneyUpdateInput!): Journey!
+    journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
     journeyPublish(id: ID!): Journey
   }
 

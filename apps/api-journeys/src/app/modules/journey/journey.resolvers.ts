@@ -7,15 +7,12 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { Block, IdType, ImageBlock, Journey, JourneyCreateInput, JourneyStatus, JourneyUpdateInput } from '../../graphql'
-import { BlockMiddleware, IdAsKey, KeyAsId, Omit } from '../../lib/decorators'
+import { BlockMiddleware, IdAsKey, KeyAsId } from '../../lib/decorators'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from './journey.service'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../../lib/auth/auth.guard'
-
-const omitFields = ['status']
-
 
 function resolveStatus(journey: Journey): Journey {
   journey.status = journey.publishedAt == null
@@ -49,7 +46,6 @@ export class JourneyResolvers {
   @Mutation()
   @UseGuards(new AuthGuard())
   @IdAsKey()
-  @Omit(omitFields)
   async createJourney(@Args('input') input: JourneyCreateInput): Promise<Journey> {
     if (input.slug != null) 
       input.slug = slugify(input.slug ?? input.title, { remove: /[*+~.()'"!:@#]/g })
@@ -58,18 +54,16 @@ export class JourneyResolvers {
 
   @Mutation()
   @UseGuards(new AuthGuard())
-  @IdAsKey()
-  @Omit(omitFields)
-  async journeyUpdate(@Args('input') input: JourneyUpdateInput): Promise<Journey> {
+  async journeyUpdate(@Args('id') id: string, @Args('input') input: JourneyUpdateInput): Promise<Journey> {
     if (input.slug != null) 
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
-    return await this.journeyservice.update(input.id, input)
+    return await this.journeyservice.update(id, input)
   }
 
   @Mutation()
   @UseGuards(new AuthGuard())
   async journeyPublish(@Args('id') id: string): Promise<Journey> {    
-    return await this.journeyservice.update(id, { publishedAt: new Date() })
+    return await this.journeyservice.update(id, { publishedAt: new Date().toISOString() })
   }
 
   @ResolveField('blocks')

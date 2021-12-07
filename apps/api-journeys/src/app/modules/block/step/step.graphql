@@ -15,3 +15,23 @@ type StepBlock implements Block {
   locked: Boolean!
   parentBlockId: ID
 }
+
+input StepBlockCreatInput {
+  id: ID
+  """ type is overwritten by the API """
+  type: String
+  nextBlockId: ID
+  locked: Boolean
+  parentBlockId: ID
+}
+
+input StepBlockUpdateInput {
+  nextBlockId: ID
+  locked: Boolean
+  parentBlockId: ID
+}
+
+extend type Mutation {
+  stepBlockCreate(input: StepBlockCreatInput!): StepBlock!
+  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
+}

@@ -9,8 +9,8 @@ import { JourneyService } from './journey.service'
 
 describe('Journey', () => {
   let resolver: JourneyResolvers, service: JourneyService
-  const publishedAt = new Date('2021-11-19T12:34:56.647Z')
-  const createdAt = new Date('2021-11-19T12:34:56.647Z')
+  const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
+  const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
   const journey = {
     _key: "1",
@@ -51,7 +51,6 @@ describe('Journey', () => {
   }
 
   const journeyupdate = {
-    id: "1",
     title: 'published',
     locale: 'en-US',
     themeMode: ThemeMode.light,
@@ -166,13 +165,17 @@ describe('Journey', () => {
 
   describe('updateJourney', () => {
     it('updates a Journey', async () => {
-      expect(resolver.journeyUpdate(journeyupdate)).resolves.toEqual(journeyresponse)
+      resolver.journeyUpdate("1", journeyupdate)
+      expect(service.update).toHaveBeenCalledWith("1", journeyupdate)
     })
   })
 
   describe('publishJourney', () => {
     it('publishJourney a Journey', async () => {
-      expect(resolver.journeyUpdate(journeyupdate)).resolves.toEqual(journeyresponse)
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      resolver.journeyPublish("1")      
+      expect(service.update).toHaveBeenCalledWith("1", { publishedAt: '2021-12-07T03:22:41.135Z'})
     })
   })
 
