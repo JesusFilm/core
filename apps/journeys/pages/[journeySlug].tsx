@@ -72,7 +72,6 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       ${VIDEO_FIELDS}
       ${VIDEO_TRIGGER_FIELDS}
       query GetJourney($id: ID!) {
-        # slug might have to be string
         journey(id: $id, idType: slug) {
           id
           themeName

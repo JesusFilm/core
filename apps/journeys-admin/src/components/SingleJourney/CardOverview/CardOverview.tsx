@@ -2,15 +2,21 @@ import { ReactElement } from 'react'
 import { Button, Box, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 
+import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { CardPreview } from '../../CardPreview'
+import { TreeBlock } from '@core/journeys/ui'
+
 export interface CardOverviewProps {
   slug: string
+  blocks?: Array<TreeBlock<StepBlock>>
 }
 
-const CardOverview = ({ slug }: CardOverviewProps): ReactElement => {
+const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
   return (
     <Box>
       <Typography variant="h4">Cards</Typography>
-      {/* <StoryCards /> goes here */}
+      {blocks != null && <CardPreview steps={blocks} />}
+
       <Button
         variant="contained"
         startIcon={<EditIcon />}
