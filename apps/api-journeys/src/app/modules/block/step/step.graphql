@@ -16,10 +16,11 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
-input StepBlockCreatInput {
+input StepBlockCreateInput {
   id: ID
   """ type is overwritten by the API """
   type: String
+  journeyId: ID!
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
@@ -32,6 +33,6 @@ input StepBlockUpdateInput {
 }
 
 extend type Mutation {
-  stepBlockCreate(input: StepBlockCreatInput!): StepBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
 }

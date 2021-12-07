@@ -134,6 +134,7 @@ export enum VideoResponseStateEnum {
 
 export class CardBlockCreateInput {
     id?: Nullable<string>;
+    journeyId: string;
     parentBlockId?: Nullable<string>;
     type?: Nullable<string>;
     backgroundColor?: Nullable<string>;
@@ -154,15 +155,24 @@ export class CardBlockUpdateInput {
 
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
+    type?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     journeyId: string;
     src: string;
     alt: string;
 }
 
-export class StepBlockCreatInput {
+export class ImageBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    journeyId?: Nullable<string>;
+    src?: Nullable<string>;
+    alt?: Nullable<string>;
+}
+
+export class StepBlockCreateInput {
     id?: Nullable<string>;
     type?: Nullable<string>;
+    journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     parentBlockId?: Nullable<string>;
@@ -172,6 +182,39 @@ export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     parentBlockId?: Nullable<string>;
+}
+
+export class VideoContentInput {
+    mediaComponentId?: Nullable<string>;
+    languageId?: Nullable<string>;
+    src?: Nullable<string>;
+}
+
+export class VideoBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    type?: Nullable<string>;
+    title: string;
+    startAt?: Nullable<number>;
+    endAt?: Nullable<number>;
+    description?: Nullable<string>;
+    muted?: Nullable<boolean>;
+    autoplay?: Nullable<boolean>;
+    videoContent: VideoContentInput;
+    posterBlockId?: Nullable<string>;
+}
+
+export class VideoBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    title?: Nullable<string>;
+    startAt?: Nullable<number>;
+    endAt?: Nullable<number>;
+    description?: Nullable<string>;
+    muted?: Nullable<boolean>;
+    autoplay?: Nullable<boolean>;
+    videoContent?: Nullable<VideoContentInput>;
+    posterBlockId?: Nullable<string>;
 }
 
 export class JourneyCreateInput {
@@ -442,9 +485,15 @@ export abstract class IMutation {
 
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
-    abstract stepBlockCreate(input: StepBlockCreatInput): StepBlock | Promise<StepBlock>;
+    abstract imageBlockUpdate(id: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+
+    abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+
+    abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
+
+    abstract videoBlockUpdate(id: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 

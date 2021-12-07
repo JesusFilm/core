@@ -18,6 +18,24 @@ describe('Step', () => {
     nextBlockId: "4"
   }
 
+  const blockUpdate = {
+    journeyId: "2",
+    parentBlockId: "3",
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: "4"
+  }
+
+  const blockCreateResponse = {
+    journeyId: "2",
+    type: 'StepBlock',
+    parentBlockId: "3",
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: "4"
+  }
+
+
   const blockresponse = {
     id: "1",
     journeyId: "2",
@@ -61,15 +79,15 @@ describe('Step', () => {
 
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
-      stepBlockResolver.stepBlockCreate(blockresponse)
-      expect(service.save).toHaveBeenCalledWith(block)
+      stepBlockResolver.stepBlockCreate(blockUpdate)
+      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })
 
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
-      stepBlockResolver.stepBlockUpdate(block._key, blockresponse)
-      expect(service.update).toHaveBeenCalledWith(block._key, block)
+      stepBlockResolver.stepBlockUpdate(block._key, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })
   })
 })

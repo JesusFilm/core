@@ -1,14 +1,3 @@
-input ImageBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID
-  journeyId: ID!
-  src: String!
-  alt: String!
-}
-
 type ImageBlock implements Block {
   id: ID!
   type: String!
@@ -24,8 +13,29 @@ type ImageBlock implements Block {
   blurhash: String!
 }
 
+input ImageBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  """ type is overwritten by the API """
+  type: String
+  parentBlockId: ID
+  journeyId: ID!
+  src: String!
+  alt: String!
+}
+
+input ImageBlockUpdateInput {
+  parentBlockId: ID
+  journeyId: ID
+  src: String
+  alt: String
+}
+
 extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!): ImageBlock!
 }
 
 extend type Journey {

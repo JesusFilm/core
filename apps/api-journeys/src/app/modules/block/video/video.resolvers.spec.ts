@@ -3,12 +3,38 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
+import { VideoBlockResolvers } from './video.resolvers'
 
 describe('VideoContentResolvers', () => {
-  let resolver: BlockResolvers
+  let blockResolver: BlockResolvers, videoBlockResolver: VideoBlockResolvers, service: BlockService
 
   const block1 = {
     _key: "1",
+    journeyId: "2",
+    type: 'VideoBlock',
+    parentBlockId: "3",
+    parentOrder: 1,
+    videoContent: {
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529'
+    },
+    title: 'title',
+    posterBlockId: 'posterBlockId'
+  }
+
+  const blockUpdate = {    
+    journeyId: "2",    
+    parentBlockId: "3",
+    parentOrder: 1,
+    videoContent: {
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529'
+    },
+    title: 'title',
+    posterBlockId: 'posterBlockId'
+  }
+
+  const blockCreateResponse = {
     journeyId: "2",
     type: 'VideoBlock',
     parentBlockId: "3",
@@ -73,10 +99,10 @@ describe('VideoContentResolvers', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockservice]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns VideoBlock with Arclight', async () => {
-      expect(await resolver.block("1")).toEqual(block1response)
+      expect(await blockResolver.block("1")).toEqual(block1response)
     })
   })
 
@@ -91,10 +117,42 @@ describe('VideoContentResolvers', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockservice]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns VideoBlock', async () => {
-      expect(await resolver.block("1")).toEqual(block2response)
+      expect(await blockResolver.block("1")).toEqual(block2response)
     })
-  })  
+  })
+  
+  describe('Create Update', () => {
+    beforeEach(async () => {
+      const blockservice = {
+        provide: BlockService,
+        useFactory: () => ({
+          save: jest.fn(input => input),
+          update: jest.fn(input => input)
+        })
+      }
+         
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [BlockResolvers, blockservice, VideoBlockResolvers]
+      }).compile()
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
+      videoBlockResolver = module.get<VideoBlockResolvers>(VideoBlockResolvers)
+      service = await module.resolve(BlockService)
+    })
+    describe('videoBlockCreate', () => {
+      it('creates a VideoBlock', async () => {
+        videoBlockResolver.videoBlockCreate(blockUpdate)
+        expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
+      })
+    })
+
+    describe('videoBlockUpdate', () => {
+      it('updates a VideoBlock', async () => {
+        videoBlockResolver.videoBlockUpdate("1", blockUpdate)
+        expect(service.update).toHaveBeenCalledWith("1", blockUpdate)
+      })
+    })
+  })
 })

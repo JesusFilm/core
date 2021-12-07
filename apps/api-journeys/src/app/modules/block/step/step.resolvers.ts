@@ -4,7 +4,7 @@ import {
   Mutation,
   Resolver,
 } from '@nestjs/graphql'
-import { StepBlock, StepBlockCreatInput, StepBlockUpdateInput } from '../../../graphql'
+import { StepBlock, StepBlockCreateInput, StepBlockUpdateInput } from '../../../graphql'
 import { IdAsKey } from '../../../lib/decorators'
 import { AuthGuard } from '../../../lib/auth/auth.guard'
 import { BlockService } from '../block.service'
@@ -15,7 +15,7 @@ export class StepBlockResolvers {
   @Mutation()
   @IdAsKey()
   @UseGuards(new AuthGuard())
-  async stepBlockCreate(@Args('input') input: StepBlockCreatInput): Promise<StepBlock> {
+  async stepBlockCreate(@Args('input') input: StepBlockCreateInput): Promise<StepBlock> {
     input.type = 'StepBlock'
     return await this.blockservice.save(input)
   }

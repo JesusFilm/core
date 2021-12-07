@@ -2,8 +2,13 @@
 import { flow, has, omit } from 'lodash'
 import { Block, VideoArclight, VideoBlock } from '../graphql'
 
-const idAsKey = (obj): any => has(obj, "id") ? omit({ ...obj, _key: obj.id }, ['id']) : obj
-const keyAsId = (obj): any => has(obj, "_key") ? omit({ ...obj, id: obj._key }, ['_key']) : obj
+const idAsKey = (obj): any => has(obj, "id") && obj.id != null
+  ? omit({ ...obj, _key: obj.id }, ['id'])
+  : omit(obj, ['id'])
+
+const keyAsId = (obj): any => has(obj, "_key") 
+  ? omit({ ...obj, id: obj._key }, ['_key']) 
+  : obj
 
 export function IdAsKey() {
   return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {

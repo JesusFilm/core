@@ -1,34 +1,32 @@
 
    
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
-import { BlockService } from '../block.service';
+import { BlockService } from '../block.service'
 
-describe('GridContainer', () => {
+describe('GridItem', () => {
   let resolver: BlockResolvers
 
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'GridContainerBlock',
+    type: 'GridItemBlock',
     parentBlockId: "3",
     parentOrder: 2,
-    spacing: 3,
-    direction: 'row',
-    justifyContent: 'flexStart',
-    alignItems: 'center'
-  };
+    xl: 6,
+    lg: 6,
+    sm: 6
+  }
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'GridContainerBlock',
+    type: 'GridItemBlock',
     parentBlockId: "3",
     parentOrder: 2,
-    spacing: 3,
-    direction: 'row',
-    justifyContent: 'flexStart',
-    alignItems: 'center'
-  };
+    xl: 6,
+    lg: 6,
+    sm: 6
+  }
   
   const blockservice = {
     provide: BlockService,
@@ -36,22 +34,22 @@ describe('GridContainer', () => {
       get: jest.fn(() =>  block),
       getAll: jest.fn(() => [block, block])
     })
-  };
+  }
 
  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [BlockResolvers, blockservice]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers);
+    resolver = module.get<BlockResolvers>(BlockResolvers)
   })
 
   it('should be defined', () => {
-    expect(resolver).toBeDefined();
-  });
+    expect(resolver).toBeDefined()
+  })
 
-  describe('GridContainerBlock', () => {
-    it('returns GridContainerBlock', async () => {
+  describe('GridItemBlock', () => {
+    it('returns GridItemBlock', async () => {
       expect(resolver.block("1")).resolves.toEqual(blockresponse)
       expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
     })

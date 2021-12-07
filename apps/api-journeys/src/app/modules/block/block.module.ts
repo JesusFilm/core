@@ -3,19 +3,21 @@ import { Module } from '@nestjs/common'
 import { DatabaseModule } from '../../lib/database/database.module'
 import { BlockService } from './block.service'
 import { BlockResolvers } from './block.resolvers'
-import { VideoModule } from './video/video.module'
 import { ImageBlockResolvers } from './image/image.resolvers'
 import { StepBlockResolvers } from './step/step.resolvers'
 import { CardBlockResolvers } from './card/card.resolvers'
+import { VideoBlockResolvers, VideoContentResolvers } from './video/video.resolvers'
 
 @Module({
-  imports: [DatabaseModule, VideoModule],
+  imports: [DatabaseModule],
   providers: [
     BlockService,
     BlockResolvers,
     CardBlockResolvers,
     ImageBlockResolvers,
-    StepBlockResolvers
+    StepBlockResolvers,
+    VideoBlockResolvers,
+    VideoContentResolvers
   ],
   exports: [BlockService],
 })

@@ -19,6 +19,29 @@ describe('Card', () => {
     themeName: ThemeName.base,
     fullscreen: true
   }
+
+  const blockUpdate = {
+    journeyId: "2",
+    parentBlockId: "3",
+    parentOrder: 0,
+    backgroundColor: '#FFF',
+    coverBlockId: "4",
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    fullscreen: true
+  }
+
+  const blockCreateResponse = {
+    journeyId: "2",
+    type: 'CardBlock',
+    parentBlockId: "3",
+    parentOrder: 0,
+    backgroundColor: '#FFF',
+    coverBlockId: "4",
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    fullscreen: true
+  }
   
   const blockresponse = {
     id: "1",
@@ -66,15 +89,15 @@ describe('Card', () => {
 
   describe('cardBlockCreate', () => {
     it('creates a CardBlock', async () => {
-      cardBlockResolver.cardBlockCreate(blockresponse)
-      expect(service.save).toHaveBeenCalledWith(block)
+      cardBlockResolver.cardBlockCreate(blockUpdate)
+      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })
 
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
-      cardBlockResolver.cardBlockUpdate(block._key, blockresponse)
-      expect(service.update).toHaveBeenCalledWith(block._key, block)
+      cardBlockResolver.cardBlockUpdate(block._key, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })
   })
 })

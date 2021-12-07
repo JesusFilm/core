@@ -32,6 +32,7 @@ type CardBlock implements Block {
 
 input CardBlockCreateInput {
   id: ID
+  journeyId: ID!
   parentBlockId: ID
   """ type is overwritten by the API """
   type: String

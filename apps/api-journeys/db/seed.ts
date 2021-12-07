@@ -10,9 +10,9 @@ const db = new Database({ url: process.env.DATABASE_URL })
 
 async function main(): Promise<void> {
   try {
-    await db.createCollection('journeys')
-    await db.createCollection('blocks')
-    await db.createCollection('responses')
+    await db.createCollection('journeys', { keyOptions: { type: 'uuid' }})
+    await db.createCollection('blocks', { keyOptions: { type: 'uuid' }})
+    await db.createCollection('responses', { keyOptions: { type: 'uuid' }})
   } catch {}
   await nua1()
   await nua2()
