@@ -12,6 +12,7 @@ import {
 import { JourneyList } from '../../src/components/'
 import { UseFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
+import { InviteUserModal } from '../../src/components/Modal'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -20,6 +21,7 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   const { logOut, user, loading } = UseFirebase()
   const router = useRouter()
+  console.log(user)
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
@@ -39,6 +41,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
         <Button variant="contained" onClick={() => logOut()}>
           SignOut
         </Button>
+        <InviteUserModal />
       </Container>
     </ThemeProvider>
   )
