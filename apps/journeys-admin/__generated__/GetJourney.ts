@@ -9,11 +9,6 @@ import { JourneyStatus } from "./globalTypes";
 // GraphQL query operation: GetJourney
 // ====================================================
 
-export interface GetJourney_journey_primaryImageBlock {
-  __typename: "ImageBlock";
-  src: string;
-}
-
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -22,7 +17,6 @@ export interface GetJourney_journey {
   status: JourneyStatus;
   createdAt: any;
   publishedAt: any | null;
-  primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
 }
 
 export interface GetJourney {
