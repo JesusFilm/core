@@ -6,7 +6,7 @@ export const user1: AccessAvatar = {
   lastName: 'Person',
   image: 'https://source.unsplash.com/random/300x300',
   email: 'amin@email.com',
-  role: Role.inviteRequested
+  role: Role.editor
 }
 
 export const user2: AccessAvatar = {
@@ -39,7 +39,7 @@ export const user5: AccessAvatar = {
   lastName: 'Clegg',
   image: 'https://source.unsplash.com/random/302x301',
   email: 'jan@email.com',
-  role: Role.inviteRequested
+  role: Role.editor
 }
 
 export const user6: AccessAvatar = {
@@ -48,5 +48,5 @@ export const user6: AccessAvatar = {
   lastName: 'Graham',
   image: 'https://source.unsplash.com/random/301x302',
   email: 'grahamDrake@email.com',
-  role: Role.inviteRequested
+  role: Role.editor
 }

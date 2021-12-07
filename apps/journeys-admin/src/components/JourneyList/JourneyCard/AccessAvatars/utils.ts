@@ -23,8 +23,5 @@ export function createFallbackLetter(user: AccessAvatar): string | null {
 export function orderAvatars(users: AccessAvatar[]): AccessAvatar[] {
   const owners = users.filter((user) => user.role === Role.owner)
   const editors = users.filter((user) => user.role === Role.editor)
-  const inviteRequests = users.filter(
-    (user) => user.role === Role.inviteRequested
-  )
-  return owners.concat(editors).concat(inviteRequests)
+  return owners.concat(editors)
 }

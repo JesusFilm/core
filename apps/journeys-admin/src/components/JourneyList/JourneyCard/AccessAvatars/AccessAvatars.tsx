@@ -14,7 +14,6 @@ export interface AccessAvatar {
 }
 
 export enum Role {
-  inviteRequested = 'inviteRequested',
   editor = 'editor',
   owner = 'owner'
 }

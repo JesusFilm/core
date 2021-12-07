@@ -48,7 +48,7 @@ describe('utils', () => {
   describe('orderAvatars', () => {
     it('should return the avatars ordered by role', () => {
       const unordered = [user1, user2, user3]
-      const ordered = [user3, user2, user1]
+      const ordered = [user3, user1, user2]
       expect(orderAvatars(unordered)).toEqual(ordered)
     })
   })
