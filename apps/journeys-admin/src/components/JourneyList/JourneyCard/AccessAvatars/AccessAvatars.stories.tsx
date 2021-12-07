@@ -10,7 +10,9 @@ const AccessAvatarsDemo = {
   title: 'Journeys-Admin/JourneyList/JourneyCard/AccessAvatar'
 }
 
-const Template: Story = ({ ...args }) => <AccessAvatars users={[]} {...args} />
+const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
+  <AccessAvatars {...args} />
+)
 
 export const Single: Story<AccessAvatarsProps> = Template.bind({})
 Single.args = {
