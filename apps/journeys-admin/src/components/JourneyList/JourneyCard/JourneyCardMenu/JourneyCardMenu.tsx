@@ -1,11 +1,31 @@
 import { ReactElement, useState } from 'react'
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemText,
+  ListItemIcon,
+  Link
+} from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import EditIcon from '@mui/icons-material/Edit'
+import PeopleIcon from '@mui/icons-material/People'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
-// Pass journeyID and slug to JourneyCardMenu
+export interface JourneyCardMenuProps {
+  status: JourneyStatus
+  slug: string
+  forceMenu?: boolean
+}
 
-const JourneyCardMenu = (): ReactElement => {
+const JourneyCardMenu = ({
+  status,
+  slug,
+  forceMenu // this is only used for storybook snapshots
+}: JourneyCardMenuProps): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
+  const open = forceMenu === true ? true : Boolean(anchorEl)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -14,31 +34,22 @@ const JourneyCardMenu = (): ReactElement => {
     setAnchorEl(null)
   }
 
-  const handleEdit = (): void => {
-    // trigger LinkAction to Edit Card page Tatai makes
-  }
-  const handleDuplicate = (): void => {
-    // trigger the duplicate journey mutation based on journey.id
-  }
-  const handleChangeAccess = (): void => {
-    // trigger the change access modal that John / Gavin build
-  }
-  const handleCopyUrl = (): void => {
-    // get journey.slug and save to client clipboard
-  }
-
   return (
     <div>
       <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
       >
-        ...
+        <MoreVertIcon />
       </IconButton>
       <Menu
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
         id="journey-actions"
         anchorEl={anchorEl}
         open={open}
@@ -47,10 +58,43 @@ const JourneyCardMenu = (): ReactElement => {
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <MenuItem onClick={handleEdit}>Edit</MenuItem>
-        <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
-        <MenuItem onClick={handleChangeAccess}>Change Access</MenuItem>
-        <MenuItem onClick={handleCopyUrl}>Copy URL</MenuItem>
+        <Link href={`/journeys/${slug}/edit`} underline="none">
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
+        </Link>
+
+        {/* update link */}
+        <Link href={`/journeys/${slug}/access`} underline="none">
+          <MenuItem>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText>Change Access</ListItemText>
+          </MenuItem>
+        </Link>
+
+        {status === JourneyStatus.draft ? (
+          <MenuItem disabled>
+            <ListItemIcon>
+              <VisibilityIcon />
+            </ListItemIcon>
+            <ListItemText>Preview</ListItemText>
+          </MenuItem>
+        ) : (
+          <Link href={`/journeys/${slug}/preview`} underline="none">
+            {/* update link */}
+            <MenuItem>
+              <ListItemIcon>
+                <VisibilityIcon />
+              </ListItemIcon>
+              <ListItemText>Preview</ListItemText>
+            </MenuItem>
+          </Link>
+        )}
       </Menu>
     </div>
   )

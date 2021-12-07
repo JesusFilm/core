@@ -91,7 +91,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           }}
         />
         <Box sx={{ marginLeft: 'auto' }}>
-          <JourneyCardMenu />
+          <JourneyCardMenu status={journey.status} slug={journey.slug} />
         </Box>
       </Box>
     </Card>
