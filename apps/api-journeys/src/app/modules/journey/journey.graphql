@@ -7,6 +7,9 @@
     themeName: ThemeName!
     description: String
     slug: String!
+    publishedAt: DateTime
+    createdAt: DateTime!
+    status: JourneyStatus!
   }
 
   enum IdType {
@@ -14,8 +17,13 @@
     slug
   }
 
+  enum JourneyStatus {
+    draft
+    published
+  }
+
   extend type Query {
-    journeys: [Journey!]!
+    journeys(status: JourneyStatus): [Journey!]!
     journey(id: ID!, idType: IdType): Journey
   }
 

@@ -7,6 +7,50 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum IconName {
+    PlayArrowRounded = "PlayArrowRounded",
+    TranslateRounded = "TranslateRounded",
+    CheckCircleRounded = "CheckCircleRounded",
+    RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
+    FormatQuoteRounded = "FormatQuoteRounded",
+    LockOpenRounded = "LockOpenRounded",
+    ArrowForwardRounded = "ArrowForwardRounded",
+    ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
+    LiveTvRounded = "LiveTvRounded",
+    MenuBookRounded = "MenuBookRounded",
+    ChevronRightRounded = "ChevronRightRounded",
+    BeenhereRounded = "BeenhereRounded",
+    SendRounded = "SendRounded",
+    SubscriptionsRounded = "SubscriptionsRounded",
+    ContactSupportRounded = "ContactSupportRounded"
+}
+
+export enum IconColor {
+    primary = "primary",
+    secondary = "secondary",
+    action = "action",
+    error = "error",
+    disabled = "disabled",
+    inherit = "inherit"
+}
+
+export enum IconSize {
+    sm = "sm",
+    md = "md",
+    lg = "lg",
+    xl = "xl",
+    inherit = "inherit"
+}
+
+export enum ThemeMode {
+    dark = "dark",
+    light = "light"
+}
+
+export enum ThemeName {
+    base = "base"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained"
@@ -72,59 +116,20 @@ export enum TypographyAlign {
     right = "right"
 }
 
-export enum IconName {
-    PlayArrowRounded = "PlayArrowRounded",
-    TranslateRounded = "TranslateRounded",
-    CheckCircleRounded = "CheckCircleRounded",
-    RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
-    FormatQuoteRounded = "FormatQuoteRounded",
-    LockOpenRounded = "LockOpenRounded",
-    ArrowForwardRounded = "ArrowForwardRounded",
-    ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
-    LiveTvRounded = "LiveTvRounded",
-    MenuBookRounded = "MenuBookRounded",
-    ChevronRightRounded = "ChevronRightRounded",
-    BeenhereRounded = "BeenhereRounded",
-    SendRounded = "SendRounded",
-    SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
-}
-
-export enum IconColor {
-    primary = "primary",
-    secondary = "secondary",
-    action = "action",
-    error = "error",
-    disabled = "disabled",
-    inherit = "inherit"
-}
-
-export enum IconSize {
-    sm = "sm",
-    md = "md",
-    lg = "lg",
-    xl = "xl",
-    inherit = "inherit"
-}
-
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
+}
+
+export enum JourneyStatus {
+    draft = "draft",
+    published = "published"
 }
 
 export enum VideoResponseStateEnum {
     PLAYING = "PLAYING",
     PAUSED = "PAUSED",
     FINISHED = "FINISHED"
-}
-
-export enum ThemeMode {
-    dark = "dark",
-    light = "light"
-}
-
-export enum ThemeName {
-    base = "base"
 }
 
 export class ImageBlockCreateInput {
@@ -199,6 +204,12 @@ export interface Response {
     type: string;
 }
 
+export class Icon {
+    name: IconName;
+    color?: Nullable<IconColor>;
+    size?: Nullable<IconSize>;
+}
+
 export class NavigateAction implements Action {
     gtmEventName?: Nullable<string>;
 }
@@ -231,6 +242,9 @@ export class Journey {
     themeName: ThemeName;
     description?: Nullable<string>;
     slug: string;
+    publishedAt?: Nullable<DateTime>;
+    createdAt: DateTime;
+    status: JourneyStatus;
 }
 
 export class ButtonBlock implements Block {
@@ -362,12 +376,6 @@ export class VideoTriggerBlock implements Block {
     action?: Nullable<Action>;
 }
 
-export class Icon {
-    name: IconName;
-    color?: Nullable<IconColor>;
-    size?: Nullable<IconSize>;
-}
-
 export class RadioQuestionResponse implements Response {
     id: string;
     userId: string;
@@ -411,9 +419,10 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
-    abstract journeys(): Journey[] | Promise<Journey[]>;
+    abstract journeys(status?: Nullable<JourneyStatus>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 }
 
+export type DateTime = String;
 type Nullable<T> = T | null;

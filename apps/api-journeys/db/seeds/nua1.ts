@@ -1,6 +1,7 @@
+import { ThemeMode, ThemeName } from '../../src/app/graphql'
 import { aql, Database } from 'arangojs'
 
-const db = new Database({ url: 'arangodb://arangodb:8529' })
+const db = new Database({ url: process.env.DATABASE_URL })
 
 export async function nua1(): Promise<void> {
   const slug = 'fact-or-fiction'
@@ -18,11 +19,12 @@ export async function nua1(): Promise<void> {
   const journey = await db.collection('journeys').save({
     _key: "1",
     title: 'Fact or Fiction',
-    published: true,
     locale: 'en-US',
-    themeMode: 'light',
-    themeName: 'base',
-    slug: 'fact-or-fiction'
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    slug: 'fact-or-fiction',
+    createdAt: new Date('2031-12-25T12:34:56.647Z'),
+    publishedAt: new Date('2031-12-25T12:34:56.647Z')
   })
 
   // first step
@@ -37,8 +39,8 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step1._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: false,
     parentOrder: 0
   })
@@ -169,8 +171,8 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step3._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: false,
     parentOrder: 0
   })
@@ -275,8 +277,8 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step5._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: false,
     parentOrder: 0
   })
@@ -355,8 +357,8 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step6._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: true,
     parentOrder: 0
   })

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 
-import { BaseService } from '../database/base.service'
+import { BaseService } from '../../lib/database/base.service'
 import { DocumentCollection } from 'arangojs/collection'
 import { Journey } from '../../graphql'
 
@@ -10,7 +10,15 @@ export class JourneyService extends BaseService {
   async getAllPublishedJourneys(): Promise<Journey[]> {
     const rst = await this.db.query(aql`
     FOR journey IN ${this.collection}
-      FILTER journey.published == true
+      FILTER journey.publishedAt != null
+      RETURN journey`)
+    return await rst.all()
+  }
+
+  async getAllDraftJourneys(): Promise<Journey[]> {
+    const rst = await this.db.query(aql`
+    FOR journey IN ${this.collection}
+      FILTER journey.publishedAt == null
       RETURN journey`)
     return await rst.all()
   }

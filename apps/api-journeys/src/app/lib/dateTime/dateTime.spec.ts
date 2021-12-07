@@ -19,7 +19,7 @@ describe('DateTime', () => {
 
   describe('DateTime', () => {
     it('returns DateTime string', async () => {
-      expect(service.serialize(new Date(testDate))).toEqual(testDate)
+      expect(service.serialize(testDate)).toEqual(testDate)
     })
   })
 })

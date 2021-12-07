@@ -1,3 +1,57 @@
+"""DateTime custom scalar"""
+scalar DateTime
+
+"""IconName is equivalent to the icons found in @mui/icons-material"""
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+type Icon {
+  name: IconName!
+  color: IconColor
+  size: IconSize
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
 interface Action {
   gtmEventName: String
 }
@@ -44,6 +98,9 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  status: JourneyStatus!
 }
 
 enum ButtonVariant {
@@ -315,53 +372,14 @@ type VideoTriggerBlock implements Block {
   action: Action
 }
 
-scalar DateTime
-
-"""IconName is equivalent to the icons found in @mui/icons-material"""
-enum IconName {
-  PlayArrowRounded
-  TranslateRounded
-  CheckCircleRounded
-  RadioButtonUncheckedRounded
-  FormatQuoteRounded
-  LockOpenRounded
-  ArrowForwardRounded
-  ChatBubbleOutlineRounded
-  LiveTvRounded
-  MenuBookRounded
-  ChevronRightRounded
-  BeenhereRounded
-  SendRounded
-  SubscriptionsRounded
-  ContactSupportRounded
-}
-
-enum IconColor {
-  primary
-  secondary
-  action
-  error
-  disabled
-  inherit
-}
-
-enum IconSize {
-  sm
-  md
-  lg
-  xl
-  inherit
-}
-
-type Icon {
-  name: IconName!
-  color: IconColor
-  size: IconSize
-}
-
 enum IdType {
   databaseId
   slug
+}
+
+enum JourneyStatus {
+  draft
+  published
 }
 
 input JourneyCreateInput {
@@ -470,15 +488,6 @@ type VideoResponse implements Response {
   block: VideoBlock
 }
 
-enum ThemeMode {
-  dark
-  light
-}
-
-enum ThemeName {
-  base
-}
-
 extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   journeyCreate(input: JourneyCreateInput!): Journey!
@@ -490,6 +499,6 @@ extend type Mutation {
 }
 
 extend type Query {
-  journeys: [Journey!]!
+  journeys(status: JourneyStatus): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }

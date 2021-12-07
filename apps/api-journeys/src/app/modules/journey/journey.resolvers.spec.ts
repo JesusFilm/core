@@ -1,14 +1,16 @@
 
    
 import { Test, TestingModule } from '@nestjs/testing'
-import { ThemeMode, ThemeName } from '../../graphql'
+import { JourneyStatus, ThemeMode, ThemeName } from '../../graphql'
 import { BlockResolvers } from '../block/block.resolvers'
 import { BlockService } from '../block/block.service'
 import { JourneyResolvers } from './journey.resolvers'
 import { JourneyService } from './journey.service'
 
 describe('Journey', () => {
-  let resolver: JourneyResolvers
+  let resolver: JourneyResolvers, service: JourneyService
+  const publishedAt = new Date('2021-11-19T12:34:56.647Z')
+  const createdAt = new Date('2021-11-19T12:34:56.647Z')
 
   const journey = {
     _key: "1",
@@ -19,7 +21,9 @@ describe('Journey', () => {
     themeName: ThemeName.base,
     description: null,
     primaryImageBlockId: "2",
-    slug: 'published-slug'
+    slug: 'published-slug', 
+    publishedAt,
+    createdAt,    
   }
 
   const block = {
@@ -67,6 +71,24 @@ describe('Journey', () => {
     description: null,
     primaryImageBlockId: "2",
     slug: 'published-slug',
+    createdAt,
+    publishedAt,
+    status: JourneyStatus.published
+  }
+
+  const draftJourneyResponse = {
+    id: "1",
+    title: 'unpublished',
+    published: true,
+    locale: 'en-US',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: "2",
+    slug: 'published-slug',
+    createdAt,
+    publishedAt,
+    status: JourneyStatus.draft
   }
   
   const journeyservice = {
@@ -74,6 +96,7 @@ describe('Journey', () => {
     useFactory: () => ({
       getBySlug: jest.fn(() =>  journey),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
+      getAllDraftJourneys: jest.fn(() => [draftJourneyResponse, draftJourneyResponse]),
       save: jest.fn(() => journey),
       update: jest.fn(() => journey)
     })
@@ -91,16 +114,34 @@ describe('Journey', () => {
       providers: [JourneyResolvers, journeyservice, blockservice, BlockResolvers]
     }).compile()
     resolver = module.get<JourneyResolvers>(JourneyResolvers)
+    service = module.get<JourneyService>(JourneyService)
   })
 
   it('should be defined', () => {
     expect(resolver).toBeDefined()
   })
 
-  describe('Journey', () => {
+  describe('published Journey', () => {
     it('returns Journey', async () => {
       expect(resolver.journey("1")).resolves.toEqual(journeyresponse)
-      expect(resolver.journeys()).resolves.toEqual([journeyresponse, journeyresponse])
+      expect(resolver.journeys(JourneyStatus.published)).resolves.toEqual([journeyresponse, journeyresponse])
+    })
+
+    it('should get published journeys', async () => {
+      await resolver.journeys(JourneyStatus.published)
+      expect(service.getAllPublishedJourneys).toHaveBeenCalled()
+    })
+  })
+
+  
+  describe('draft Journey', () => {
+    it('returns Journey', async () => {
+      expect(resolver.journeys(JourneyStatus.draft)).resolves.toEqual([draftJourneyResponse, draftJourneyResponse])
+    })
+
+    it('should get draft journeys', async () => {
+      await resolver.journeys(JourneyStatus.draft)
+      expect(service.getAllDraftJourneys).toHaveBeenCalled()
     })
   })
 

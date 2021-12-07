@@ -1,6 +1,7 @@
+import { ThemeMode, ThemeName } from '../..//src/app/graphql'
 import { aql, Database } from 'arangojs'
 
-const db = new Database({ url: 'arangodb://arangodb:8529' })
+const db = new Database({ url: process.env.DATABASE_URL })
 
 export async function nua8(): Promise<void> {
   const slug = 'whats-jesus-got-to-do-with-me'
@@ -15,14 +16,16 @@ export async function nua8(): Promise<void> {
         FILTER journey.slug == ${slug}
         REMOVE journey IN journeys`)
 
+
   const journey = await db.collection('journeys').save({
     _key: "3",
     title: "What's Jesus Got to Do With Me",
-    published: true,
     locale: 'en-US',
-    themeMode: 'light',
-    themeName: 'base',
-    slug: slug
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    slug: slug,
+    createdAt: new Date('2031-12-25T12:34:56.647Z'),
+    publishedAt: new Date('2031-12-25T12:34:56.647Z')
   })
 
   // first step
@@ -37,8 +40,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step1._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: false,
     parentOrder: 0
   })
@@ -163,8 +166,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step3._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: false,
     parentOrder: 0
   })
@@ -219,7 +222,7 @@ export async function nua8(): Promise<void> {
       gtmEventName: 'click',
       blockId: step4._key
     },
-    parentOrder: 1
+    parentOrder: 0
   }, {
     journeyId: journey._key,
     type: 'RadioOptionBlock',
@@ -229,7 +232,7 @@ export async function nua8(): Promise<void> {
       gtmEventName: 'click',
       blockId: step4._key
     },
-    parentOrder: 2
+    parentOrder: 1
   }])
 
   const video1 = await db.collection('blocks').save({
@@ -269,8 +272,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step5._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: false,
     parentOrder: 0
   })
@@ -381,8 +384,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     type: 'CardBlock',
     parentBlockId: step7._key,
-    themeMode: 'dark',
-    themeName: 'base',
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
     fullscreen: true,
     parentOrder: 0
   })

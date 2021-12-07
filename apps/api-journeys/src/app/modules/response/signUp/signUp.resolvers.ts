@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { SignUpResponse, SignUpResponseCreateInput } from '../../../graphql'
 import { IdAsKey } from '../../../lib/decorators'
-import { AuthGuard } from '../../auth/auth.guard'
+import { AuthGuard } from '../../../lib/auth/auth.guard'
 import { ResponseService } from '../response.service'
 
 @Resolver('Response')

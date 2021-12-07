@@ -3,7 +3,6 @@
   "projects": {
     "api-gateway": "apps/api-gateway",
     "api-journeys": "apps/api-journeys",
-    "api-journeys-postgres": "apps/api-journeys-postgres",
     "journeys": "apps/journeys",
     "journeys-admin": "apps/journeys-admin",
     "journeys-admin-e2e": "apps/journeys-admin-e2e",

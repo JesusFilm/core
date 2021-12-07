@@ -10,8 +10,8 @@ export class DateTimeScalar implements CustomScalar<string, Date> {
     return new Date(value) // value from the client
   }
 
-  serialize(value: Date): string {
-    return value.toISOString()
+  serialize(value: string): string {
+    return new Date(value).toISOString()
   }
 
   parseLiteral(ast: ValueNode): Date | null {

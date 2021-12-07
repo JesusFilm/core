@@ -91,6 +91,7 @@ type CardBlock implements Block {
   type: String!
 }
 
+"""DateTime custom scalar"""
 scalar DateTime
 
 enum GridAlignItems {
@@ -223,6 +224,7 @@ type Journey
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
+  published: Boolean! @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
@@ -327,6 +329,7 @@ type RadioQuestionResponse implements Response {
   block: RadioQuestionBlock
   id: ID!
   radioOptionBlockId: ID!
+  type: String!
   userId: ID!
 }
 
@@ -338,10 +341,14 @@ input RadioQuestionResponseCreateInput {
   """
   id: ID
   radioOptionBlockId: ID!
+
+  """type is set by the api"""
+  type: String
 }
 
 interface Response {
   id: ID!
+  type: String!
   userId: ID!
 }
 
@@ -359,6 +366,7 @@ type SignUpResponse implements Response {
   email: String!
   id: ID!
   name: String!
+  type: String!
   userId: ID!
 }
 
@@ -371,6 +379,9 @@ input SignUpResponseCreateInput {
   """
   id: ID
   name: String!
+
+  """type is set by the api"""
+  type: String
 }
 
 type StepBlock implements Block {
@@ -482,6 +493,7 @@ type VideoResponse implements Response {
   id: ID!
   position: Int
   state: VideoResponseStateEnum!
+  type: String!
   userId: ID!
 }
 
@@ -494,6 +506,9 @@ input VideoResponseCreateInput {
   id: ID
   position: Float
   state: VideoResponseStateEnum!
+
+  """type is set by the api"""
+  type: String
 }
 
 enum VideoResponseStateEnum {

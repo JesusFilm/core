@@ -9,6 +9,6 @@ definitionsFactory.generate({
   outputAs: 'class',
   watch: true,
   customScalarTypeMapping: {
-    DateTime: 'Date'
+    DateTime: 'String'
   }
 })
