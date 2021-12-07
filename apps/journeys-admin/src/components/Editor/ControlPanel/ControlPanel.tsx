@@ -1,5 +1,11 @@
 import { Box, Tabs, Tab } from '@mui/material'
-import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  SyntheticEvent,
+  useEffect,
+  useState
+} from 'react'
 import { Attributes } from '../ControlPanel/Attributes'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
@@ -58,10 +64,13 @@ export function ControlPanel({
     setValue(newValue)
   }
 
+  useEffect(() => {
+    setSelectedBlock(selectedStep)
+  }, [selectedStep])
+
   const handleNavigationSelect = (step: TreeBlock<StepBlock>): void => {
     setValue(1)
     onSelectStep(step)
-    setSelectedBlock(step)
   }
 
   return (

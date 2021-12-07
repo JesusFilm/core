@@ -15,16 +15,18 @@ export function Editor({ journey }: EditorProps): ReactElement {
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
     steps[0]
   )
-  const handleSelect = (step): void => setSelectedStep(step)
 
   return (
     <>
-      <>Editor</>
       <TopBar />
-      <Canvas onSelect={handleSelect} selected={selectedStep} steps={steps} />
-      <ControlPanel
-        onSelect={handleSelect}
+      <Canvas
+        onSelect={setSelectedStep}
         selected={selectedStep}
+        steps={steps}
+      />
+      <ControlPanel
+        onSelectStep={setSelectedStep}
+        selectedStep={selectedStep}
         steps={steps}
       />
     </>

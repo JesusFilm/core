@@ -17,6 +17,6 @@ describe('Editor', () => {
         }}
       />
     )
-    expect(getByText('Editor')).toBeInTheDocument()
+    expect(getByText('Cards')).toBeInTheDocument()
   })
 })

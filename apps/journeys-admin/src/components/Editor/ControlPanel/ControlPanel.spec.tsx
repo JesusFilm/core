@@ -21,17 +21,32 @@ describe('ControlPanel', () => {
       nextBlockId: null,
       children: []
     }
-    const { getByTestId, getByText, getByRole } = render(
-      <ControlPanel steps={[step1, step2]} />
+    const setSelectedStep = jest.fn()
+    const { getByTestId, getByText, getByRole, rerender } = render(
+      <ControlPanel steps={[step1, step2]} onSelectStep={setSelectedStep} />
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).toBeDisabled()
     fireEvent.click(getByTestId('step-step1.id'))
+    expect(setSelectedStep).toHaveBeenCalledWith(step1)
+    rerender(
+      <ControlPanel
+        steps={[step1, step2]}
+        selectedStep={step1}
+        onSelectStep={setSelectedStep}
+      />
+    )
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
-    fireEvent.click(getByTestId('step-step2.id'))
+    rerender(
+      <ControlPanel
+        steps={[step1, step2]}
+        selectedStep={step2}
+        onSelectStep={setSelectedStep}
+      />
+    )
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
   })
 })
