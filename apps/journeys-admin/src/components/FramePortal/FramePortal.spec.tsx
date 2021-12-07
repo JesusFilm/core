@@ -20,5 +20,8 @@ describe('FramePortal', () => {
     expect(
       iframe.contentDocument?.body.getElementsByTagName('p')[0]
     ).toHaveStyle('font-family: sans-serif')
+    expect(iframe.contentDocument?.body).toHaveStyle(
+      'background-color: transparent'
+    )
   })
 })
