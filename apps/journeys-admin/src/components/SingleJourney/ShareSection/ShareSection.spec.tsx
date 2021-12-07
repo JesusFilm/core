@@ -11,7 +11,7 @@ describe('JourneyShare', () => {
     const { getByRole } = render(<ShareSection slug={'my-journey'} />)
     expect(getByRole('textbox')).toHaveAttribute(
       'value',
-      '/journeys/my-journey'
+      'https://your.nextstep.is/my-journey'
     )
   })
 
@@ -41,7 +41,7 @@ describe('JourneyShare', () => {
 
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        '/journeys/my-journey'
+        'https://your.nextstep.is/my-journey'
       )
       expect(getByText('Link Copied')).toBeInTheDocument()
     })

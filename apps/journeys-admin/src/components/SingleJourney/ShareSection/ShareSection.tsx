@@ -28,8 +28,9 @@ export interface ShareSectionProps {
 }
 
 const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
-  const journeyLink = `/journeys/${slug}` // update this
-  const journeyEditLink = `/journeys/${slug}/edit` // update this
+  const journeyLink = `https://your.nextstep.is/${slug}`
+  const journeyEditLink = `/journeys/${slug}/edit`
+
   const [showAlert, setShowAlert] = useState(false)
   const theme = useTheme()
   const [width, setWidth] = useState(window.innerWidth)
@@ -77,6 +78,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
             id="filled-basic"
             hiddenLabel
             variant="filled"
+            fullWidth
             value={journeyLink}
             InputProps={{
               startAdornment: (
@@ -87,7 +89,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
                 </InputAdornment>
               )
             }}
-            sx={{ width: '334px' }}
+            // sx={{ width: '334px' }}
           />
           <Box sx={{ display: 'flex' }}>
             <Button
@@ -114,6 +116,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
             id="filled-basic"
             label="Journey URL"
             variant="filled"
+            fullWidth
             value={journeyLink}
             InputProps={{
               startAdornment: (
@@ -124,7 +127,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
                 </InputAdornment>
               )
             }}
-            sx={{ width: '262px' }}
+            // sx={{ width: '262px' }}
           />
 
           <IconButton
