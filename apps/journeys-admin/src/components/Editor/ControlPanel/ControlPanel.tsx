@@ -38,12 +38,17 @@ function a11yProps(index: number): { id: string; 'aria-controls': string } {
 }
 
 interface ControlPanelProps {
+  onSelectStep: (card: TreeBlock<StepBlock>) => void
+  selectedStep?: TreeBlock<StepBlock>
   steps: Array<TreeBlock<StepBlock>>
 }
 
-export function ControlPanel({ steps }: ControlPanelProps): ReactElement {
+export function ControlPanel({
+  steps,
+  selectedStep,
+  onSelectStep
+}: ControlPanelProps): ReactElement {
   const [value, setValue] = useState(0)
-  const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>()
   const [selectedBlock, setSelectedBlock] = useState<TreeBlock>()
 
   const handleChange = (
@@ -55,7 +60,7 @@ export function ControlPanel({ steps }: ControlPanelProps): ReactElement {
 
   const handleNavigationSelect = (step: TreeBlock<StepBlock>): void => {
     setValue(1)
-    setSelectedStep(step)
+    onSelectStep(step)
     setSelectedBlock(step)
   }
 
