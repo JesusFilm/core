@@ -1,7 +1,8 @@
 export { handleAction } from './action'
 export { journeyUiConfig, simpleComponentConfig } from './storybook/config'
 export { StoryCard } from './storybook/containers'
-export { default as transformer, TreeBlock } from './transformer'
+export { transformer, BLOCK_FIELDS } from './transformer'
+export type { TreeBlock } from './transformer'
 export {
   useBlocks,
   nextActiveBlock,

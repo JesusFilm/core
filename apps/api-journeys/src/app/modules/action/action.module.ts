@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '../database/database.module'
+import { DatabaseModule } from '../../lib/database/database.module'
 import { JourneyService } from '../journey/journey.service'
 import { ActionResolver } from './action.resolvers'
 import { NavigateToJourneyActionResolver } from './navigateToJournney/navigateToJourney.resolvers'

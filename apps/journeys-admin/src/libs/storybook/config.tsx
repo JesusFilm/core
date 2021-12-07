@@ -1,16 +1,20 @@
 import { sharedUiConfig } from '@core/shared/ui'
 
 // Must set parameters at component level for shared-storybook stories to work
-export const journeyAdminConfig = {
-  ...sharedUiConfig
+export const journeysAdminConfig = {
+  ...sharedUiConfig,
+  parameters: {
+    ...sharedUiConfig.parameters,
+    theme: 'light'
+  }
 }
 
 // Simple components are not responsive, simplify VR testing
 export const simpleComponentConfig = {
   parameters: {
-    ...journeyAdminConfig.parameters,
+    ...journeysAdminConfig.parameters,
     chromatic: {
-      ...journeyAdminConfig.parameters.chromatic,
+      ...journeysAdminConfig.parameters.chromatic,
       viewports: [1200]
     }
   }

@@ -7,5 +7,8 @@ definitionsFactory.generate({
   typePaths: [join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql')],
   path: join(process.cwd(), 'apps/api-journeys/src/app/graphql.ts'),
   outputAs: 'class',
-  watch: true
+  watch: true,
+  customScalarTypeMapping: {
+    DateTime: 'Date'
+  }
 })

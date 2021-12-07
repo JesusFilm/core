@@ -5,15 +5,15 @@ import { handleAction } from '../../../libs/action'
 import { ReactElement, useEffect, useState } from 'react'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
-export interface TriggerProps extends TreeBlock<VideoTriggerFields> {
+export interface VideoTriggerProps extends TreeBlock<VideoTriggerFields> {
   player?: videojs.Player
 }
 
-export function Trigger({
+export function VideoTrigger({
   player,
   action,
   triggerStart
-}: TriggerProps): ReactElement {
+}: VideoTriggerProps): ReactElement {
   const router = useRouter()
   const [triggered, setTriggered] = useState(false)
 

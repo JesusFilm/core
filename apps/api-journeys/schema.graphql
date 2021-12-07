@@ -178,15 +178,6 @@ type ImageBlock implements Block {
   blurhash: String!
 }
 
-input RadioQuestionResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-}
-
 type RadioOptionBlock implements Block {
   id: ID!
   type: String!
@@ -203,23 +194,6 @@ type RadioQuestionBlock implements Block {
   description: String
 }
 
-type RadioQuestionResponse implements Response {
-  id: ID!
-  userId: ID!
-  radioOptionBlockId: ID!
-  block: RadioQuestionBlock
-}
-
-input SignUpResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  name: String!
-  email: String!
-}
-
 type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
@@ -227,14 +201,6 @@ type SignUpBlock implements Block {
   action: Action
   submitIcon: Icon
   submitLabel: String
-}
-
-type SignUpResponse implements Response {
-  id: ID!
-  userId: ID!
-  name: String!
-  email: String!
-  block: SignUpBlock
 }
 
 type StepBlock implements Block {
@@ -294,22 +260,6 @@ type TypographyBlock implements Block {
   align: TypographyAlign
 }
 
-enum VideoResponseStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
-}
-
-input VideoResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  state: VideoResponseStateEnum!
-  position: Float
-}
-
 interface VideoContent {
   src: String!
 }
@@ -348,14 +298,6 @@ type VideoBlock implements Block {
   posterBlockId: ID
 }
 
-type VideoResponse implements Response {
-  id: ID!
-  userId: ID!
-  state: VideoResponseStateEnum!
-  position: Int
-  block: VideoBlock
-}
-
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -372,6 +314,8 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
   action: Action
 }
+
+scalar DateTime
 
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
@@ -450,9 +394,80 @@ input JourneyUpdateInput {
   slug: String
 }
 
+input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """type is set by the api"""
+  type: String
+  radioOptionBlockId: ID!
+}
+
+type RadioQuestionResponse implements Response {
+  id: ID!
+  userId: ID!
+  type: String!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
 interface Response {
   id: ID!
   userId: ID!
+  type: String!
+}
+
+input SignUpResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """type is set by the api"""
+  type: String
+  name: String!
+  email: String!
+}
+
+type SignUpResponse implements Response {
+  id: ID!
+  userId: ID!
+  type: String!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+enum VideoResponseStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """type is set by the api"""
+  type: String
+  state: VideoResponseStateEnum!
+  position: Float
+}
+
+type VideoResponse implements Response {
+  id: ID!
+  userId: ID!
+  type: String!
+  state: VideoResponseStateEnum!
+  position: Int
+  block: VideoBlock
 }
 
 enum ThemeMode {
@@ -466,12 +481,12 @@ enum ThemeName {
 
 extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
+  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
 extend type Query {

@@ -7,7 +7,7 @@ import {
 import { ImageBlock, ImageBlockCreateInput } from '../../../graphql'
 import { UserInputError } from 'apollo-server-errors'
 import { IdAsKey } from '../../../lib/decorators'
-import { AuthGuard } from '../../auth/auth.guard'
+import { AuthGuard } from '../../../lib/auth/auth.guard'
 import { BlockService } from '../block.service'
 import { encode } from 'blurhash'
 import { createCanvas, loadImage, Image } from 'canvas'

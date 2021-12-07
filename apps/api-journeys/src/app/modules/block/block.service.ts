@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 
-import { BaseService } from '../database/base.service'
+import { BaseService } from '../../lib/database/base.service'
 import { DocumentCollection } from 'arangojs/collection'
 import { Block, Journey } from '../../graphql'
 

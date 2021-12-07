@@ -1,8 +1,8 @@
 
    
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
-import { BlockService } from '../block.service';
+import { BlockService } from '../block.service'
 
 describe('Button', () => {
   let resolver: BlockResolvers
@@ -32,7 +32,7 @@ describe('Button', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     }
-  };
+  }
   const blockresponse = {
     id: "1",
     journeyId: "2",
@@ -58,7 +58,7 @@ describe('Button', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     }
-  };
+  }
   
   const blockservice = {
     provide: BlockService,
@@ -66,19 +66,19 @@ describe('Button', () => {
       get: jest.fn(() =>  block),
       getAll: jest.fn(() => [block, block])
     })
-  };
+  }
 
  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [BlockResolvers, blockservice]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers);
+    resolver = module.get<BlockResolvers>(BlockResolvers)
   })
 
   it('should be defined', () => {
-    expect(resolver).toBeDefined();
-  });
+    expect(resolver).toBeDefined()
+  })
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
