@@ -68,6 +68,16 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
           }`}</Avatar>
         </Tooltip>
       )}
+      {/* <Avatar
+        sx={{
+          color: '#C52D3A',
+          backgroundColor: '#C52D3A',
+          width: '5px',
+          height: '5px'
+        }}
+      >
+        .
+      </Avatar> */}
     </AvatarGroup>
   )
 }
