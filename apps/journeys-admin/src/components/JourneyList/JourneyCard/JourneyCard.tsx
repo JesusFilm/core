@@ -25,7 +25,6 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
   return (
     <Card sx={{ borderRadius: '0px', px: 6, py: 4 }} variant="outlined">
-      <AccessAvatars {...AccessAvatarsProps} />
       <Typography
         variant="subtitle1"
         sx={{
@@ -54,6 +53,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       </Typography>
 
       <Box sx={{ display: 'flex' }}>
+        <AccessAvatars {...AccessAvatarsProps} />
         {journey.status === 'draft' ? (
           <Chip
             label={'Draft'}

@@ -27,8 +27,8 @@ OverFlowAvatars.args = {
   users: [user1, user2, user3, user4, user5]
 }
 
-export const FallbackNoImage: Story<AccessAvatarsProps> = Template.bind({})
-FallbackNoImage.args = {
+export const NoImage: Story<AccessAvatarsProps> = Template.bind({})
+NoImage.args = {
   users: [
     { ...user1, image: undefined },
     { ...user2, image: undefined },
@@ -37,8 +37,8 @@ FallbackNoImage.args = {
 }
 
 // display user without first name. should display their email in the tooltip
-export const FallbackNoFirstName: Story<AccessAvatarsProps> = Template.bind({})
-FallbackNoFirstName.args = {
+export const NoFirstname: Story<AccessAvatarsProps> = Template.bind({})
+NoFirstname.args = {
   users: [
     { ...user1, firstName: undefined },
     { ...user2, firstName: undefined },
@@ -49,10 +49,8 @@ FallbackNoFirstName.args = {
 
 // display user without first name or image, should display email in the tooltip
 // and first letter of email as the fallback image
-export const FallbackNoNameOrImage: Story<AccessAvatarsProps> = Template.bind(
-  {}
-)
-FallbackNoNameOrImage.args = {
+export const NoEmailFirstname: Story<AccessAvatarsProps> = Template.bind({})
+NoEmailFirstname.args = {
   users: [
     { ...user1, firstName: undefined, image: undefined },
     { ...user2, firstName: undefined, image: undefined },
@@ -63,9 +61,8 @@ FallbackNoNameOrImage.args = {
 
 // display user without first name/email/image, should display generic avatar icon with
 // "No name or email available for this user" as tooltip
-export const FallbackNoNameEmailOrImage: Story<AccessAvatarsProps> =
-  Template.bind({})
-FallbackNoNameEmailOrImage.args = {
+export const NoDetails: Story<AccessAvatarsProps> = Template.bind({})
+NoDetails.args = {
   users: [
     { ...user1, firstName: undefined, email: undefined, image: undefined },
     { ...user2, firstName: undefined, email: undefined, image: undefined },
