@@ -52,7 +52,7 @@ const SingleJourneyMenu = ({
     UpdateJourneyFields.TITLE
   )
 
-  const open = forceOpen || Boolean(anchorEl)
+  const open = forceOpen ?? Boolean(anchorEl)
 
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
