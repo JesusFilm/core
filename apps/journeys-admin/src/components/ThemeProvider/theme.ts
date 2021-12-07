@@ -21,11 +21,15 @@ export const theme = createTheme({
     },
     h6: {
       fontFamily: "'Montserrat', sans-serif"
+    },
+    subtitle1: {
+      fontFamily: "'Montserrat', sans-serif"
     }
   },
   palette: {
     background: {
-      default: '#EFEFEF'
+      default: '#EFEFEF',
+      paper: '#FFFFFF'
     },
     primary: {
       main: '#B62D1C'
@@ -33,7 +37,8 @@ export const theme = createTheme({
     text: {
       primary: '#30313D',
       secondary: '#6D6F81'
-    }
+    },
+    divider: '#DCDDE5'
   },
   components: {
     MuiButton: {
@@ -51,6 +56,22 @@ export const theme = createTheme({
           fontWeight: 'bold',
           textTransform: 'none'
         }
+      }
+    },
+    MuiAppBar: {
+      defaultProps: {
+        elevation: 0
+      },
+      styleOverrides: {
+        colorDefault: {
+          backgroundColor: '#FFFFFF',
+          borderBottom: '1px solid #DCDDE5'
+        }
+      }
+    },
+    MuiToolbar: {
+      defaultProps: {
+        variant: 'dense'
       }
     }
   }

@@ -18,7 +18,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
 
   return (
     <>
-      <TopBar />
+      <TopBar title={journey.title} slug={journey.slug} />
       <Canvas
         onSelect={setSelectedStep}
         selected={selectedStep}

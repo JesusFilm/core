@@ -8,7 +8,7 @@ const TopBarStory = {
   title: 'Journeys-Admin/Editor/TopBar'
 }
 
-const Template: Story = () => <TopBar />
+const Template: Story = () => <TopBar title="NUA Journey: Ep.3 - Decision" />
 
 export const Default = Template.bind({})
 
