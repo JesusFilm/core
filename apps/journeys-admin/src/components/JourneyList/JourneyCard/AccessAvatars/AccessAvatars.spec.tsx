@@ -60,12 +60,10 @@ describe('AccessAvatars', () => {
     const { getByRole, getByText } = render(
       <AccessAvatars users={props.users} />
     )
-    expect(getByText('+4')).toBeInTheDocument()
-    fireEvent.focus(getByText('+4'))
+    expect(getByText('+2')).toBeInTheDocument()
+    fireEvent.focus(getByText('+2'))
     await waitFor(() => {
       expect(getByRole('tooltip')).toBeInTheDocument()
-      expect(getByText('Effie Lowe')).toBeInTheDocument()
-      expect(getByText('Amin Person')).toBeInTheDocument()
       expect(getByText('Janelle Clegg')).toBeInTheDocument()
       expect(getByText('Drake Graham')).toBeInTheDocument()
     })
