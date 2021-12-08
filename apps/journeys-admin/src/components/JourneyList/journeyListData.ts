@@ -9,5 +9,5 @@ export const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
-  locale: 'en_US'
+  locale: 'en_US',
 }

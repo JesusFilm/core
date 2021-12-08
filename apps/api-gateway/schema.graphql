@@ -455,6 +455,7 @@ input UserCreateInput {
   id: ID
   imageUrl: String
   lastName: String
+  requestInviteToJourneyId: String
 }
 
 type UserJourney {

@@ -14,12 +14,13 @@ import {
 } from '@mui/material'
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
 // import { InviteUserModalFields as User } from '../../../__generated__/InviteUserModalFields'
-import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../__generated__/GetJourney'
+import { GetJourney_journey_usersJourneys as UsersJourneys, GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyRemove } from '../../../__generated__/UserJourneyRemove'
 
 interface InviteUserModalProps {
   // users: User[]
+  journey: Journey
   usersJourneys: UsersJourneys[] | undefined
 }
 
@@ -33,12 +34,12 @@ export const USER_JOURNEY = gql`
 `
 
 export const InviteUserModal = ({
-  usersJourneys
+  usersJourneys,
+  journey
 }: InviteUserModalProps): ReactElement => {
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
-
   // TODO: create a mutation library to better handle the mutations
 
   return (
@@ -66,7 +67,7 @@ export const InviteUserModal = ({
             <FormControl fullWidth>
               {/* This is where the invite link goes */}
               <FilledInput
-                placeholder="this is where the invite link goes"
+                value={`https://nextsteps.is/journeys/${journey.slug}/invite`}
                 startAdornment={<LinkRounded />}
                 endAdornment={<ContentCopyRounded />}
                 disableUnderline

@@ -10,6 +10,7 @@ const typeDefs = gql`
     lastName: String
     email: String
     imageUrl: String
+    requestInviteToJourneyId: String
   }
 
   type User @key(fields: "id") {
@@ -65,10 +66,10 @@ const resolvers: UserModule.Resolvers = {
   Mutation: {
     async userCreate(
       _parent,
-      { input: { id, firstName, lastName, email, imageUrl } },
+      { input: { id, firstName, lastName, email, imageUrl, requestInviteToJourneyId } },
       { db }
     ) {
-      return await db.user.create({
+      const user = await db.user.create({
         data: {
           id: id as string,
           firstName: firstName as string,
@@ -77,6 +78,16 @@ const resolvers: UserModule.Resolvers = {
           imageUrl: imageUrl as string
         }
       })
+      if (requestInviteToJourneyId !== null && requestInviteToJourneyId !== undefined) {
+        await db.userJourney.create({
+          data: {
+            userId: user.id,
+            journeyId: requestInviteToJourneyId,
+            role: "inviteRequested"
+          }
+        })      
+      }
+      return user
     }
   }
 }

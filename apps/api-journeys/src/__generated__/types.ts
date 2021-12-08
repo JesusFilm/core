@@ -507,6 +507,7 @@ export type UserCreateInput = {
   id?: Maybe<Scalars['ID']>;
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
+  requestInviteToJourneyId?: Maybe<Scalars['String']>;
 };
 
 export type UserJourney = {
