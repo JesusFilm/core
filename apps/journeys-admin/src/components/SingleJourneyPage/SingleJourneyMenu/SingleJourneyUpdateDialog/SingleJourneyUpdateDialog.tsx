@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { useMutation } from '@apollo/client'
+import { useMutation, gql } from '@apollo/client'
 import {
   Box,
   Button,
@@ -15,8 +15,18 @@ import {
   JourneyUpdate_journeyUpdate as UpdatedJourney
 } from '../../../../../__generated__/JourneyUpdate'
 import { useBreakpoints } from '@core/shared/ui'
-import { UpdateJourneyFields, JOURNEY_UPDATE } from '../SingleJourneyMenu'
+import { UpdateJourneyFields } from '../SingleJourneyMenu'
 import { GET_JOURNEY } from '../../../../../pages/journeys/[journeySlug]'
+
+export const JOURNEY_UPDATE = gql`
+  mutation JourneyUpdate($input: JourneyUpdateInput!) {
+    journeyUpdate(input: $input) {
+      id
+      title
+      description
+    }
+  }
+`
 
 interface SingleJourneyUpdateDialogProps {
   field: UpdateJourneyFields

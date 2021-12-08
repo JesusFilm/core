@@ -1,1 +1,1 @@
-export { default } from './SingleJourneyPage'
+export { default as SingleJourney } from './SingleJourneyPage'

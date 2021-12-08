@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import moment from 'moment'
 import { Box, Typography } from '@mui/material'
 import JourneysAppBar from '../JourneysAppBar'
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -25,7 +25,7 @@ const SingleJourneyPage = ({
         <Typography variant={'h3'}>{journey.title}</Typography>
         <Typography variant={'body2'}>{journey.description}</Typography>
         <Typography variant={'caption'} data-testid={'status'}>
-          {journey.status[0].toUpperCase() + journey.status.slice(1)}
+          {journey.status.charAt(0).toUpperCase() + journey.status.slice(1)}
         </Typography>
         <Typography variant={'caption'}>{journey.locale}</Typography>
       </Box>

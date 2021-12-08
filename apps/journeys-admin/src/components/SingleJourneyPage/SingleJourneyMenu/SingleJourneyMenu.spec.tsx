@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import SingleJourneyMenu, { JOURNEY_UPDATE } from '.'
+import SingleJourneyMenu, { JOURNEY_PUBLISH } from './SingleJourneyMenu'
 import {
   defaultJourney,
   publishedJourney
@@ -17,10 +16,7 @@ describe('SingleJourneyMenu', () => {
   it('should open menu on click', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={defaultJourney}
-          slug={defaultJourney.slug}
-        />
+        <SingleJourneyMenu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -34,10 +30,7 @@ describe('SingleJourneyMenu', () => {
   it('should not preview if journey is draft', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={defaultJourney}
-          slug={defaultJourney.slug}
-        />
+        <SingleJourneyMenu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -53,10 +46,7 @@ describe('SingleJourneyMenu', () => {
   it('should preview if journey is published', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={publishedJourney}
-          slug={publishedJourney.slug}
-        />
+        <SingleJourneyMenu journey={publishedJourney} />
       </MockedProvider>
     )
 
@@ -66,7 +56,10 @@ describe('SingleJourneyMenu', () => {
 
     const link = getByRole('link', { name: 'Preview' })
 
-    expect(link).toHaveAttribute('href', 'https://www.google.com/')
+    expect(link).toHaveAttribute(
+      'href',
+      `http://your.nextstep.is/${publishedJourney.slug}`
+    )
   })
 
   it.skip('should publish journey', async () => {
@@ -75,34 +68,18 @@ describe('SingleJourneyMenu', () => {
         mocks={[
           {
             request: {
-              query: JOURNEY_UPDATE,
-              variables: {
-                input: {
-                  id: defaultJourney.id,
-                  title: 'Journey',
-                  description: ' Description',
-                  status: JourneyStatus.published
-                }
-              }
+              query: JOURNEY_PUBLISH,
+              variables: { id: defaultJourney.id }
             },
             result: {
               data: {
-                journeyUpdate: {
-                  id: defaultJourney.id,
-                  __typename: 'Journey',
-                  title: 'Journey',
-                  description: ' Description',
-                  status: JourneyStatus.published
-                }
+                journeyPublish: { id: defaultJourney.id, __typename: 'Journey' }
               }
             }
           }
         ]}
       >
-        <SingleJourneyMenu
-          journey={defaultJourney}
-          slug={defaultJourney.slug}
-        />
+        <SingleJourneyMenu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -120,10 +97,7 @@ describe('SingleJourneyMenu', () => {
   it('should not publish if journey is published', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={publishedJourney}
-          slug={publishedJourney.slug}
-        />
+        <SingleJourneyMenu journey={publishedJourney} />
       </MockedProvider>
     )
 
@@ -139,10 +113,7 @@ describe('SingleJourneyMenu', () => {
   it('should handle edit journey title', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={defaultJourney}
-          slug={defaultJourney.slug}
-        />
+        <SingleJourneyMenu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -161,10 +132,7 @@ describe('SingleJourneyMenu', () => {
   it('should handle edit journey description', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={defaultJourney}
-          slug={defaultJourney.slug}
-        />
+        <SingleJourneyMenu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -190,10 +158,7 @@ describe('SingleJourneyMenu', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu
-          journey={defaultJourney}
-          slug={defaultJourney.slug}
-        />
+        <SingleJourneyMenu journey={defaultJourney} />
       </MockedProvider>
     )
 

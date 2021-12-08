@@ -1,1 +1,1 @@
-export { default } from './SingleJourneyUpdateDialog'
+export { default, JOURNEY_UPDATE } from './SingleJourneyUpdateDialog'

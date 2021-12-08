@@ -1,9 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import SingleJourneyUpdateDialog from '.'
-import { JOURNEY_UPDATE, UpdateJourneyFields } from '../SingleJourneyMenu'
+import SingleJourneyUpdateDialog, { JOURNEY_UPDATE } from '.'
+import { UpdateJourneyFields } from '../SingleJourneyMenu'
 import { defaultJourney } from '../../../JourneyList/journeyListData'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 const onClose = jest.fn()
 const onSuccessTitle = jest.fn()
@@ -60,8 +59,7 @@ describe('SingleJourneyUpdateDialog', () => {
     const updatedJourney = {
       id: defaultJourney.id,
       title: 'New Journey',
-      description: 'Description',
-      status: JourneyStatus.published
+      description: 'Description'
     }
 
     const { getByRole } = render(
@@ -113,8 +111,7 @@ describe('SingleJourneyUpdateDialog', () => {
     const updatedJourney = {
       id: defaultJourney.id,
       title: 'Journey',
-      description: 'New Description',
-      status: JourneyStatus.published
+      description: 'New Description'
     }
 
     const { getByRole } = render(

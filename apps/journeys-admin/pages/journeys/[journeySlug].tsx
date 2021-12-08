@@ -7,6 +7,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
+import { SingleJourney } from '../../src/components/SingleJourneyPage'
 
 export const GET_JOURNEY = gql`
   query GetJourney($id: ID!) {
@@ -28,23 +29,22 @@ interface SingleJourneyPageProps {
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
-  // const { data } = useQuery(GET_JOURNEY, {
-  //   variables: { id: journey.slug }
-  // })
+  const { data } = useQuery(GET_JOURNEY, {
+    variables: { id: journey.slug }
+  })
 
-  // const updatedJourney = data !== undefined ? data.journey : journey
-  const updatedJourney = journey
+  const updatedJourney = data !== undefined ? data.journey : journey
 
   return (
     <>
       <Head>
         <title>{updatedJourney.title}</title>
-        <meta property="og:title" content={journey.title} />
-        {journey.description != null && (
-          <meta name="description" content={journey.description} />
+        <meta property="og:title" content={updatedJourney.title} />
+        {updatedJourney.description != null && (
+          <meta name="description" content={updatedJourney.description} />
         )}
       </Head>
-      <SingleJourneyPage journey={updatedJourney} />
+      <SingleJourney journey={updatedJourney} />
     </>
   )
 }

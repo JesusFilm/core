@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../../JourneyList/journeyListData'
-import SingleJourneyMenu, { JOURNEY_UPDATE } from './SingleJourneyMenu'
+import SingleJourneyMenu, { JOURNEY_PUBLISH } from './SingleJourneyMenu'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { SingleJourneyMenuProps } from '.'
 
@@ -17,25 +17,12 @@ const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
     mocks={[
       {
         request: {
-          query: JOURNEY_UPDATE,
-          variables: {
-            input: {
-              id: defaultJourney.id,
-              title: 'Journey',
-              description: ' Description',
-              status: JourneyStatus.published
-            }
-          }
+          query: JOURNEY_PUBLISH,
+          variables: { id: defaultJourney.id }
         },
         result: {
           data: {
-            journeyUpdate: {
-              id: defaultJourney.id,
-              __typename: 'Journey',
-              title: 'Journey',
-              description: ' Description',
-              status: JourneyStatus.published
-            }
+            journeyPublish: { id: defaultJourney.id, __typename: 'Journey' }
           }
         }
       }

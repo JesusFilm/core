@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../../JourneyList/journeyListData'
-import SingleJourneyUpdateDialog from './SingleJourneyUpdateDialog'
-import { JOURNEY_UPDATE, UpdateJourneyFields } from '../SingleJourneyMenu'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import SingleJourneyUpdateDialog, {
+  JOURNEY_UPDATE
+} from './SingleJourneyUpdateDialog'
+import { UpdateJourneyFields } from '../SingleJourneyMenu'
 
 const TestStory = {
   ...journeysAdminConfig,
@@ -26,8 +27,7 @@ const Template: Story = () => {
               input: {
                 id: defaultJourney.id,
                 title: 'New Journey',
-                description: 'Description',
-                status: JourneyStatus.published
+                description: 'Description'
               }
             }
           },
@@ -37,8 +37,7 @@ const Template: Story = () => {
                 id: defaultJourney.id,
                 __typename: 'Journey',
                 title: 'New Journey',
-                description: 'Description',
-                status: JourneyStatus.published
+                description: 'Description'
               }
             }
           }
@@ -49,7 +48,9 @@ const Template: Story = () => {
         field={UpdateJourneyFields.TITLE}
         open={open}
         onClose={() => setOpen(false)}
-        onSuccess={() => {}}
+        onSuccess={() => {
+          console.log('SUCCESS')
+        }}
         journey={{ ...defaultJourney }}
       />
     </MockedProvider>
@@ -71,8 +72,7 @@ const DescriptionTemplate: Story = () => {
               input: {
                 id: defaultJourney.id,
                 title: 'Journey',
-                description: 'New Description',
-                status: JourneyStatus.published
+                description: 'New Description'
               }
             }
           },
@@ -82,8 +82,7 @@ const DescriptionTemplate: Story = () => {
                 id: defaultJourney.id,
                 __typename: 'Journey',
                 title: 'Journey',
-                description: 'New Description',
-                status: JourneyStatus.published
+                description: 'New Description'
               }
             }
           }
@@ -94,7 +93,9 @@ const DescriptionTemplate: Story = () => {
         field={UpdateJourneyFields.DESCRIPTION}
         open={open}
         onClose={() => setOpen(false)}
-        onSuccess={() => {}}
+        onSuccess={() => {
+          console.log('SUCCESS')
+        }}
         journey={{ ...defaultJourney }}
       />
     </MockedProvider>

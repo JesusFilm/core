@@ -1,9 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import {
-  JourneyUpdate,
-  JourneyUpdate_journeyUpdate as UpdatedJourney
-} from '../../../../__generated__/JourneyUpdate'
+import { JourneyUpdate_journeyUpdate as UpdatedJourney } from '../../../../__generated__/JourneyUpdate'
+import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GET_JOURNEY } from '../../../../pages/journeys/[journeySlug]'
 import {
   Alert,
@@ -17,36 +15,31 @@ import {
 import SingleJourneyUpdateDialog from './SingleJourneyUpdateDialog'
 import { MoreVert, CheckCircleRounded } from '@mui/icons-material'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
-export const JOURNEY_UPDATE = gql`
-  mutation JourneyUpdate($input: JourneyUpdateInput!) {
-    journeyUpdate(input: $input) {
+export const JOURNEY_PUBLISH = gql`
+  mutation JourneyPublish($id: ID!) {
+    journeyPublish(id: $id) {
       id
-      title
-      description
-      status
     }
   }
 `
 
 export enum UpdateJourneyFields {
   TITLE = 'title',
-  DESCRIPTION = 'description',
-  STATUS = 'status'
+  DESCRIPTION = 'description'
 }
 
 export interface SingleJourneyMenuProps {
-  journey: UpdatedJourney
-  slug: string
+  journey: Journey
   forceOpen?: boolean
 }
 
 const SingleJourneyMenu = ({
   journey,
-  slug,
   forceOpen
 }: SingleJourneyMenuProps): ReactElement => {
-  const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE, {
+  const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH, {
     refetchQueries: [
       GET_JOURNEY, // DocumentNode object parsed with gql
       'GetJourney' // Query name
@@ -80,13 +73,10 @@ const SingleJourneyMenu = ({
   }
 
   const handlePublish = async (): Promise<void> => {
-    await journeyUpdate({
-      variables: { input: { ...journey, status: JourneyStatus.published } },
+    await journeyPublish({
+      variables: { id: journey.id },
       optimisticResponse: {
-        journeyUpdate: {
-          ...journey,
-          status: JourneyStatus.published
-        }
+        journeyPublish: { id: journey.id, __typename: 'Journey' }
       }
     })
   }
@@ -108,7 +98,7 @@ const SingleJourneyMenu = ({
   }
 
   const handleCopyLink = async (): Promise<void> => {
-    await navigator.clipboard.writeText(`your.nextstep.is/${slug}`)
+    await navigator.clipboard.writeText(`your.nextstep.is/${journey.slug}`)
     setShowAlert(true)
   }
 
@@ -145,7 +135,10 @@ const SingleJourneyMenu = ({
         }}
       >
         <MenuItem disabled={journey.status === JourneyStatus.draft}>
-          <Link href={'https://www.google.com/'} underline="none">
+          <Link
+            href={`http://your.nextstep.is/${journey.slug}`}
+            underline="none"
+          >
             Preview
           </Link>
         </MenuItem>
@@ -160,7 +153,7 @@ const SingleJourneyMenu = ({
         <MenuItem onClick={handleUpdateAccess}>Access</MenuItem>
         <Divider />
         <MenuItem>
-          <Link href={`/journeys/${slug}/edit`} underline="none">
+          <Link href={`/journeys/${journey.slug}/edit`} underline="none">
             Edit Cards
           </Link>
         </MenuItem>
@@ -170,7 +163,11 @@ const SingleJourneyMenu = ({
       <SingleJourneyUpdateDialog
         open={showDialog}
         field={updateField}
-        journey={journey}
+        journey={{
+          id: journey.id,
+          title: journey.title,
+          description: journey.description
+        }}
         onClose={() => setShowDialog(false)}
         onSuccess={handleUpdateSuccess}
       />
