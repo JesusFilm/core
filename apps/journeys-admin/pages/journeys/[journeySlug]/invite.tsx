@@ -2,26 +2,33 @@ import { ReactElement, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
-import client from '../../src/libs/client'
+import client from '../../../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
-} from '../../__generated__/GetJourney'
-import { Typography, Box } from '@mui/material'
-import { UseFirebase } from '../../src/libs/firebaseClient/'
+} from '../../../__generated__/GetJourney'
+import { Typography, Box, Button } from '@mui/material'
+import { UseFirebase } from '../../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
-import {
-  InviteUserModal,
-  INVITE_USER_MODAL_FIELDS
-} from '../../src/components/InviteUserModal'
+import { INVITE_USER_MODAL_FIELDS } from '../../../src/components/InviteUserModal'
 
-interface SingleJourneyPageProps {
+
+interface JourneyInvitePageProps {
   journey: Journey
 }
 
-function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
   const { user, loading } = UseFirebase()
   const router = useRouter()
+
+ if (user == null) {
+  try {
+    localStorage.setItem('pendingInviteRequest', journey.id);
+  } catch(e) {
+    console.log('on server')
+  }
+ }
+
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
@@ -43,20 +50,14 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         )}
       </Head>
       <Box sx={{ m: 10 }}>
-        <Typography variant={'h2'} sx={{ mb: 4 }}>
-          Single Journey Page
-        </Typography>
-        <Typography variant={'h6'}>{journey.title}</Typography>
-        <Typography variant={'h6'}>{journey.status}</Typography>
-        <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
-        <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
-        <InviteUserModal usersJourneys={journey.usersJourneys != null ? journey.usersJourneys : undefined} journey={journey} />
+        <Typography variant={'h6'}>You have been invited to {journey.title}</Typography>
+        <Button>Accept invite</Button>
       </Box>
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
+export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
       query: gql`
@@ -102,4 +103,4 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
     }
   }
 
-export default SingleJourneyPage
+export default JourneyInvitePage

@@ -14,12 +14,13 @@ import {
 } from '@mui/material'
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
 // import { InviteUserModalFields as User } from '../../../__generated__/InviteUserModalFields'
-import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../__generated__/GetJourney'
+import { GetJourney_journey_usersJourneys as UsersJourneys, GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyRemove } from '../../../__generated__/UserJourneyRemove'
 
 interface InviteUserModalProps {
   // users: User[]
+  journey: Journey
   usersJourneys: UsersJourneys[] | undefined
 }
 
@@ -34,7 +35,8 @@ export const USER_JOURNEY = gql`
 `
 
 export const InviteUserModal = ({
-  usersJourneys
+  usersJourneys,
+  journey
 }: InviteUserModalProps): ReactElement => {
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
@@ -91,7 +93,7 @@ export const InviteUserModal = ({
             <FormControl fullWidth>
               {/* This is where the invite link goes */}
               <FilledInput
-                placeholder="this is where the invite link goes"
+                value={`https://nextsteps.is/journeys/${journey.slug}/invite`}
                 startAdornment={<LinkRounded />}
                 endAdornment={<ContentCopyRounded />}
                 disableUnderline
@@ -118,9 +120,8 @@ export const InviteUserModal = ({
                   >
                     <Avatar src={userJourney.user?.imageUrl as string} />
                     <Box ml={2}>
-                      <Typography variant={'body2'}>{`${
-                        userJourney.user?.firstName as string
-                      } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
+                        } ${userJourney.user?.lastName as string}`}</Typography>
                       <Typography variant={'caption'}>
                         {userJourney.user?.email}
                       </Typography>
@@ -162,9 +163,8 @@ export const InviteUserModal = ({
                   >
                     <Avatar src={userJourney.user?.imageUrl as string} />
                     <Box ml={2}>
-                      <Typography variant={'body2'}>{`${
-                        userJourney.user?.firstName as string
-                      } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
+                        } ${userJourney.user?.lastName as string}`}</Typography>
                       <Typography variant={'caption'}>
                         {userJourney.user?.email}
                       </Typography>

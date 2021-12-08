@@ -32,6 +32,12 @@ export function SignIn(): ReactElement {
     email?: string,
     imageUrl?: string
   ): void => {
+    let requestInviteToJourneyId;
+    try {
+      requestInviteToJourneyId = localStorage.getItem('pendingInviteRequest');
+    } catch(e) {
+      console.log('on server')
+    }
     void userCreate({
       variables: {
         input: {
@@ -39,7 +45,8 @@ export function SignIn(): ReactElement {
           firstName,
           lastName,
           email,
-          imageUrl
+          imageUrl,
+          requestInviteToJourneyId
         },
         optimisticResponse: {
           userCreate: {
