@@ -39,6 +39,7 @@ export interface GetJourney_journey {
   status: JourneyStatus;
   createdAt: any;
   publishedAt: any | null;
+  slug: string;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   usersJourneys: GetJourney_journey_usersJourneys[] | null;
 }

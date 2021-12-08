@@ -32,10 +32,10 @@ export function SignIn(): ReactElement {
     email?: string,
     imageUrl?: string
   ): void => {
-    let requestInviteToJourneyId;
+    let requestInviteToJourneyId
     try {
-      requestInviteToJourneyId = localStorage.getItem('pendingInviteRequest');
-    } catch(e) {
+      requestInviteToJourneyId = localStorage.getItem('pendingInviteRequest')
+    } catch (e) {
       console.log('on server')
     }
     void userCreate({

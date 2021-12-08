@@ -66,7 +66,16 @@ const resolvers: UserModule.Resolvers = {
   Mutation: {
     async userCreate(
       _parent,
-      { input: { id, firstName, lastName, email, imageUrl, requestInviteToJourneyId } },
+      {
+        input: {
+          id,
+          firstName,
+          lastName,
+          email,
+          imageUrl,
+          requestInviteToJourneyId
+        }
+      },
       { db }
     ) {
       const user = await db.user.create({
@@ -78,14 +87,17 @@ const resolvers: UserModule.Resolvers = {
           imageUrl: imageUrl as string
         }
       })
-      if (requestInviteToJourneyId !== null && requestInviteToJourneyId !== undefined) {
+      if (
+        requestInviteToJourneyId !== null &&
+        requestInviteToJourneyId !== undefined
+      ) {
         await db.userJourney.create({
           data: {
             userId: user.id,
             journeyId: requestInviteToJourneyId,
-            role: "inviteRequested"
+            role: 'inviteRequested'
           }
-        })      
+        })
       }
       return user
     }

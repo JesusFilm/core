@@ -38,6 +38,7 @@ export interface UserCreateInput {
   id?: string | null;
   imageUrl?: string | null;
   lastName?: string | null;
+  requestInviteToJourneyId?: string | null;
 }
 
 export interface UserJourneyRemoveInput {

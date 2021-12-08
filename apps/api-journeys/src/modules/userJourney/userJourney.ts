@@ -130,7 +130,7 @@ const resolvers: UserJourneyModule.Resolvers = {
           }
         },
         data: {
-          role: input.role
+          role: 'editor'
         }
       })
     },

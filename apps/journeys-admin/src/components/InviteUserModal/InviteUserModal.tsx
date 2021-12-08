@@ -13,26 +13,17 @@ import {
   InputLabel
 } from '@mui/material'
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
-// import { InviteUserModalFields as User } from '../../../__generated__/InviteUserModalFields'
-import { GetJourney_journey_usersJourneys as UsersJourneys, GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { useMutation, gql } from '@apollo/client'
-import { UserJourneyRemove } from '../../../__generated__/UserJourneyRemove'
+import {
+  GetJourney_journey_usersJourneys as UsersJourneys,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
+import { RemoveUser } from './RemoveUser'
 
 interface InviteUserModalProps {
   // users: User[]
   journey: Journey
   usersJourneys: UsersJourneys[] | undefined
 }
-
-export const USER_JOURNEY = gql`
-  mutation UserJourneyRemove($input: UserJourneyRemoveInput!) {
-    userJourneyRemove(input: $input) {
-      userId
-      journeyId
-      role
-    }
-  }
-`
 
 export const InviteUserModal = ({
   usersJourneys,
@@ -41,32 +32,6 @@ export const InviteUserModal = ({
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
-  const [userJourneyRemove] = useMutation<UserJourneyRemove>(USER_JOURNEY)
-
-  // TODO: create a mutation library to better handle the mutations
-
-  const handleRemoveUser = (
-    userId: string,
-    journeyId: string,
-    role: string
-  ): void => {
-    void userJourneyRemove({
-      variables: {
-        input: {
-          userId,
-          journeyId,
-          role
-        },
-        optimisticResponse: {
-          userJourneyRemove: {
-            userId,
-            journeyId,
-            role
-          }
-        }
-      }
-    })
-  }
 
   return (
     <>
@@ -120,8 +85,9 @@ export const InviteUserModal = ({
                   >
                     <Avatar src={userJourney.user?.imageUrl as string} />
                     <Box ml={2}>
-                      <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
-                        } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'body2'}>{`${
+                        userJourney.user?.firstName as string
+                      } ${userJourney.user?.lastName as string}`}</Typography>
                       <Typography variant={'caption'}>
                         {userJourney.user?.email}
                       </Typography>
@@ -131,17 +97,7 @@ export const InviteUserModal = ({
                       <Select variant="standard" disableUnderline>
                         <MenuItem>Approve</MenuItem>
                         <Divider />
-                        <MenuItem
-                          onClick={() =>
-                            handleRemoveUser(
-                              userJourney.userId,
-                              userJourney.journeyId,
-                              userJourney.role
-                            )
-                          }
-                        >
-                          Remove
-                        </MenuItem>
+                        <RemoveUser usersJourneys={userJourney} />
                       </Select>
                     </FormControl>
                   </Box>
@@ -163,8 +119,9 @@ export const InviteUserModal = ({
                   >
                     <Avatar src={userJourney.user?.imageUrl as string} />
                     <Box ml={2}>
-                      <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
-                        } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'body2'}>{`${
+                        userJourney.user?.firstName as string
+                      } ${userJourney.user?.lastName as string}`}</Typography>
                       <Typography variant={'caption'}>
                         {userJourney.user?.email}
                       </Typography>
@@ -174,17 +131,7 @@ export const InviteUserModal = ({
                       <Select variant="standard" disableUnderline>
                         <MenuItem>Approve</MenuItem>
                         <Divider />
-                        <MenuItem
-                          onClick={() =>
-                            handleRemoveUser(
-                              userJourney.userId,
-                              userJourney.journeyId,
-                              userJourney.role
-                            )
-                          }
-                        >
-                          Remove
-                        </MenuItem>
+                        <RemoveUser usersJourneys={userJourney} />
                       </Select>
                     </FormControl>
                   </Box>

@@ -50,7 +50,12 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
-        <InviteUserModal usersJourneys={journey.usersJourneys != null ? journey.usersJourneys : undefined} journey={journey} />
+        <InviteUserModal
+          usersJourneys={
+            journey.usersJourneys != null ? journey.usersJourneys : undefined
+          }
+          journey={journey}
+        />
       </Box>
     </>
   )

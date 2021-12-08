@@ -12,7 +12,6 @@ import { UseFirebase } from '../../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import { INVITE_USER_MODAL_FIELDS } from '../../../src/components/InviteUserModal'
 
-
 interface JourneyInvitePageProps {
   journey: Journey
 }
@@ -21,14 +20,13 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
   const { user, loading } = UseFirebase()
   const router = useRouter()
 
- if (user == null) {
-  try {
-    localStorage.setItem('pendingInviteRequest', journey.id);
-  } catch(e) {
-    console.log('on server')
+  if (user == null) {
+    try {
+      localStorage.setItem('pendingInviteRequest', journey.id)
+    } catch (e) {
+      console.log('on server')
+    }
   }
- }
-
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
@@ -50,57 +48,59 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
         )}
       </Head>
       <Box sx={{ m: 10 }}>
-        <Typography variant={'h6'}>You have been invited to {journey.title}</Typography>
+        <Typography variant={'h6'}>
+          You have been invited to {journey.title}
+        </Typography>
         <Button>Accept invite</Button>
       </Box>
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
-  async (context) => {
-    const { data } = await client.query<GetJourney>({
-      query: gql`
-        ${INVITE_USER_MODAL_FIELDS}
-        query GetJourney($id: ID!) {
-          journey(id: $id, idType: slug) {
-            id
-            title
-            description
-            status
-            createdAt
-            publishedAt
-            slug
-            primaryImageBlock {
-              src
-            }
-            usersJourneys {
-              userId
-              journeyId
-              role
-              user {
-                ...InviteUserModalFields
-              }
-            }
-          }
-        }
-      `,
-      variables: {
-        id: context.query.journeySlug
-      }
-    })
+// export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
+//   async (context) => {
+//     const { data } = await client.query<GetJourney>({
+//       query: gql`
+//         ${INVITE_USER_MODAL_FIELDS}
+//         query GetJourney($id: ID!) {
+//           journey(id: $id, idType: slug) {
+//             id
+//             title
+//             description
+//             status
+//             createdAt
+//             publishedAt
+//             slug
+//             primaryImageBlock {
+//               src
+//             }
+//             usersJourneys {
+//               userId
+//               journeyId
+//               role
+//               user {
+//                 ...InviteUserModalFields
+//               }
+//             }
+//           }
+//         }
+//       `,
+//       variables: {
+//         id: context.query.journeySlug
+//       }
+//     })
 
-    if (data.journey === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journey: data.journey
-        }
-      }
-    }
-  }
+//     if (data.journey === null) {
+//       return {
+//         notFound: true
+//       }
+//     } else {
+//       return {
+//         props: {
+//           journey: data.journey
+//         }
+//       }
+//     }
+//   }
 
 export default JourneyInvitePage
