@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import {
   Box,
   Button,
@@ -10,45 +10,37 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { JourneyUpdate } from '../../../../../__generated__/JourneyUpdate'
-import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import {
+  JourneyUpdate,
+  JourneyUpdate_journeyUpdate as UpdatedJourney
+} from '../../../../../__generated__/JourneyUpdate'
 import { useBreakpoints } from '@core/shared/ui'
+import { UpdateJourneyFields, JOURNEY_UPDATE } from '../SingleJourneyMenu'
 import { GET_JOURNEY } from '../../../../../pages/journeys/[journeySlug]'
-
-export const JOURNEY_UPDATE = gql`
-  mutation JourneyUpdate($input: JourneyUpdateInput!) {
-    journeyUpdate(input: $input) {
-      id
-      title
-      description
-    }
-  }
-`
-export enum UpdateJourneyFields {
-  TITLE = 'title',
-  DESCRIPTION = 'description'
-}
 
 interface SingleJourneyUpdateDialogProps {
   field: UpdateJourneyFields
   open: boolean
-  journey: Journey
+  journey: Omit<UpdatedJourney, '__typename'>
   onClose: () => void
+  onSuccess: (value: UpdatedJourney) => void
 }
 
 const SingleJourneyUpdateDialog = ({
   field,
   open,
   journey,
-  onClose
+  onClose,
+  onSuccess
 }: SingleJourneyUpdateDialogProps): ReactElement => {
-  const breakpoints = useBreakpoints()
   const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE, {
     refetchQueries: [
       GET_JOURNEY, // DocumentNode object parsed with gql
       'GetJourney' // Query name
     ]
   })
+
+  const breakpoints = useBreakpoints()
   const [value, setValue] = useState(
     journey !== undefined ? journey[field] : ''
   )
@@ -60,35 +52,31 @@ const SingleJourneyUpdateDialog = ({
   const handleSubmit = async (event): Promise<void> => {
     event.preventDefault()
 
-    const updateValue =
+    const updatedJourney =
       field === UpdateJourneyFields.TITLE
-        ? { title: value as string, description: journey.description }
-        : { title: journey.title, description: value }
+        ? { ...journey, title: value as string }
+        : field === UpdateJourneyFields.DESCRIPTION
+        ? { ...journey, description: value }
+        : journey
 
     await journeyUpdate({
-      variables: { input: { id: journey.id, ...updateValue } },
+      variables: { input: updatedJourney },
       optimisticResponse: {
-        journeyUpdate: {
-          id: journey.id,
-          __typename: 'Journey',
-          ...updateValue
-        }
+        journeyUpdate: { __typename: 'Journey', ...updatedJourney }
       }
-      // TODO: Set server error responses when available
-    })
-
-    handleClose()
+    }).then(() => onSuccess({ __typename: 'Journey', ...updatedJourney }))
   }
 
   const handleClose = (): void => {
     onClose()
   }
 
+  // TODO: Extract out when adding validation
   const updateForm = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
-          <FormLabel component="legend">
+          <FormLabel component="legend" aria-label={`dialog-update-${field}`}>
             <Typography
               variant={'subtitle2'}
               gutterBottom
@@ -127,8 +115,7 @@ const SingleJourneyUpdateDialog = ({
           id={'update-journey-dialog'}
           open={open}
           onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          aria-labelledby={`dialog-update-${field}`}
         >
           {updateForm()}
         </Dialog>

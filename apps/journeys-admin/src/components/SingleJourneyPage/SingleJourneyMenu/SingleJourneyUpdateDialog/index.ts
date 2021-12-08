@@ -1,5 +1,1 @@
-export {
-  default,
-  UpdateJourneyFields,
-  JOURNEY_UPDATE
-} from './SingleJourneyUpdateDialog'
+export { default } from './SingleJourneyUpdateDialog'

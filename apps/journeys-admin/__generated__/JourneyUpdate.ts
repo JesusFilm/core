@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyUpdateInput } from "./globalTypes";
+import { JourneyUpdateInput, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: JourneyUpdate
@@ -14,6 +14,7 @@ export interface JourneyUpdate_journeyUpdate {
   id: string;
   title: string;
   description: string | null;
+  status: JourneyStatus;
 }
 
 export interface JourneyUpdate {

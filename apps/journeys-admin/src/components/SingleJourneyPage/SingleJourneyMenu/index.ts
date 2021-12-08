@@ -1,5 +1,5 @@
-export {
-  default,
-  JOURNEY_STATUS_UPDATE,
+export { default } from './SingleJourneyMenu'
+export type {
+  JOURNEY_UPDATE,
   SingleJourneyMenuProps
 } from './SingleJourneyMenu'

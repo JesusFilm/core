@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../../JourneyList/journeyListData'
-import SingleJourneyMenu, { JOURNEY_STATUS_UPDATE } from './SingleJourneyMenu'
+import SingleJourneyMenu, { JOURNEY_UPDATE } from './SingleJourneyMenu'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { SingleJourneyMenuProps } from '.'
 
@@ -17,9 +17,12 @@ const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
     mocks={[
       {
         request: {
-          query: JOURNEY_STATUS_UPDATE,
+          query: JOURNEY_UPDATE,
           variables: {
             input: {
+              id: defaultJourney.id,
+              title: 'Journey',
+              description: ' Description',
               status: JourneyStatus.published
             }
           }
@@ -27,7 +30,10 @@ const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
         result: {
           data: {
             journeyUpdate: {
+              id: defaultJourney.id,
               __typename: 'Journey',
+              title: 'Journey',
+              description: ' Description',
               status: JourneyStatus.published
             }
           }
@@ -35,7 +41,6 @@ const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
       }
     ]}
   >
-    {/* Make this open after refactoring with Nav bar */}
     <SingleJourneyMenu {...args} />
   </MockedProvider>
 )

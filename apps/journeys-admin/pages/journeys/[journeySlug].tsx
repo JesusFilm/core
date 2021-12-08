@@ -28,11 +28,12 @@ interface SingleJourneyPageProps {
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
-  const { data } = useQuery(GET_JOURNEY, {
-    variables: { id: journey.slug }
-  })
+  // const { data } = useQuery(GET_JOURNEY, {
+  //   variables: { id: journey.slug }
+  // })
 
-  const updatedJourney = data !== undefined ? data.journey : journey
+  // const updatedJourney = data !== undefined ? data.journey : journey
+  const updatedJourney = journey
 
   return (
     <>

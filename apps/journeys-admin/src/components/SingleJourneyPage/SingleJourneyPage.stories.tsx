@@ -3,6 +3,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import SingleJourneyPage from './SingleJourneyPage'
 import { defaultJourney } from '../JourneyList/journeyListData'
+import { JOURNEY_UPDATE } from './SingleJourneyMenu/SingleJourneyMenu'
+import { JourneyStatus } from '../../../__generated__/globalTypes'
 
 const SingleJourneyPageDemo = {
   ...journeysAdminConfig,
@@ -15,7 +17,34 @@ const SingleJourneyPageDemo = {
 }
 
 const Template: Story = () => (
-  <MockedProvider mocks={[]}>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: JOURNEY_UPDATE,
+          variables: {
+            input: {
+              id: defaultJourney.id,
+              title: 'Journey',
+              description: ' Description',
+              status: JourneyStatus.published
+            }
+          }
+        },
+        result: {
+          data: {
+            journeyUpdate: {
+              id: defaultJourney.id,
+              __typename: 'Journey',
+              title: 'Journey',
+              description: ' Description',
+              status: JourneyStatus.published
+            }
+          }
+        }
+      }
+    ]}
+  >
     <SingleJourneyPage journey={defaultJourney} />
   </MockedProvider>
 )

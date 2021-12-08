@@ -18,3 +18,11 @@ export const defaultJourney: Journey = {
   publishedAt: null,
   status: JourneyStatus.draft
 }
+
+export const publishedJourney: Journey = {
+  ...defaultJourney,
+  title: 'Published Journey Heading',
+  description: 'a published journey',
+  publishedAt: new Date('2021-12-19T12:34:56.647Z'),
+  status: JourneyStatus.published
+}
