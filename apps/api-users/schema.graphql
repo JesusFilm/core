@@ -1,0 +1,62 @@
+input UserCreateInput {
+  id: ID
+  firstName: String
+  lastName: String
+  email: String
+  imageUrl: String
+}
+
+type User @key(fields: "id") {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  imageUrl: String
+  usersJourneys: [UserJourney!]
+}
+
+type UserJourney {
+  user: User
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+enum UserJourneyRoleForUpdates {
+  inviteRequested
+  editor
+}
+
+input UserJourneyCreateInput {
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole
+}
+
+input UserJourneyUpdateInput {
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRoleForUpdates!
+}
+
+extend type Query {
+  me: User
+  users: [User!]!
+  user(id: ID!): User
+}
+
+extend type Mutation {
+  userCreate(input: UserCreateInput!): User!
+  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
+  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
+}
+
+extend type Journey {
+  usersJourneys: [UserJourney!]
+}

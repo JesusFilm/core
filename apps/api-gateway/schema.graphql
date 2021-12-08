@@ -234,6 +234,7 @@ scalar join__FieldSet
 
 enum join__Graph {
   JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
+  USERS @join__graph(name: "users" url: "http://127.0.0.1:4002/graphql")
 }
 
 type Journey
@@ -253,6 +254,7 @@ type Journey
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
+  usersJourneys: [UserJourney!] @join__field(graph: USERS)
 }
 
 input JourneyCreateInput {
@@ -307,6 +309,9 @@ type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreatInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
+  userCreate(input: UserCreateInput!): User! @join__field(graph: USERS)
+  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney! @join__field(graph: USERS)
+  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: USERS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -332,6 +337,9 @@ type NavigateToJourneyAction implements Action {
 type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
+  me: User @join__field(graph: USERS)
+  user(id: ID!): User @join__field(graph: USERS)
+  users: [User!]! @join__field(graph: USERS)
 }
 
 type RadioOptionBlock implements Block {
@@ -489,6 +497,56 @@ enum TypographyVariant {
   overline
   subtitle1
   subtitle2
+}
+
+type User
+  @join__owner(graph: USERS)
+  @join__type(graph: USERS, key: "id")
+{
+  email: String @join__field(graph: USERS)
+  firstName: String @join__field(graph: USERS)
+  id: ID! @join__field(graph: USERS)
+  imageUrl: String @join__field(graph: USERS)
+  lastName: String @join__field(graph: USERS)
+  usersJourneys: [UserJourney!] @join__field(graph: USERS)
+}
+
+input UserCreateInput {
+  email: String
+  firstName: String
+  id: ID
+  imageUrl: String
+  lastName: String
+}
+
+type UserJourney {
+  journeyId: ID!
+  role: UserJourneyRole!
+  user: User
+  userId: ID!
+}
+
+input UserJourneyCreateInput {
+  journeyId: ID!
+  role: UserJourneyRole
+  userId: ID!
+}
+
+enum UserJourneyRole {
+  editor
+  inviteRequested
+  owner
+}
+
+enum UserJourneyRoleForUpdates {
+  editor
+  inviteRequested
+}
+
+input UserJourneyUpdateInput {
+  journeyId: ID!
+  role: UserJourneyRoleForUpdates!
+  userId: ID!
 }
 
 type VideoArclight implements VideoContent {

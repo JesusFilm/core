@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '../../lib/database/database.module'
+import { DatabaseModule } from '@core/nest/database'
 import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { JourneyService } from '../journey/journey.service'
 import { ActionResolver } from './action.resolvers'

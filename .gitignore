@@ -42,3 +42,6 @@ Thumbs.db
 #local .env files
 .env*local
 
+# nx fluff
+migrations.json
+

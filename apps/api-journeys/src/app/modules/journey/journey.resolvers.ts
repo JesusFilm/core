@@ -7,12 +7,13 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { Block, IdType, ImageBlock, Journey, JourneyCreateInput, JourneyStatus, JourneyUpdateInput } from '../../graphql'
-import { BlockMiddleware, IdAsKey, KeyAsId } from '../../lib/decorators'
+import { BlockMiddleware } from '../../lib/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from './journey.service'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
-import { AuthGuard } from '../../lib/auth/auth.guard'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 
 function resolveStatus(journey: Journey): Journey {
   journey.status = journey.publishedAt == null
@@ -44,7 +45,7 @@ export class JourneyResolvers {
   }
 
   @Mutation()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
   @IdAsKey()
   async createJourney(@Args('input') input: JourneyCreateInput): Promise<Journey> {
     if (input.slug != null) 
@@ -53,7 +54,7 @@ export class JourneyResolvers {
   }
 
   @Mutation()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
   async journeyUpdate(@Args('id') id: string, @Args('input') input: JourneyUpdateInput): Promise<Journey> {
     if (input.slug != null) 
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
@@ -61,7 +62,7 @@ export class JourneyResolvers {
   }
 
   @Mutation()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
   async journeyPublish(@Args('id') id: string): Promise<Journey> {    
     return await this.journeyservice.update(id, { publishedAt: new Date().toISOString() })
   }

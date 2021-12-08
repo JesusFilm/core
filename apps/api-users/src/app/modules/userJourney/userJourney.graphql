@@ -1,0 +1,41 @@
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+enum UserJourneyRoleForUpdates {
+  inviteRequested
+  editor
+}
+
+input UserJourneyCreateInput {
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole
+}
+
+input UserJourneyUpdateInput {
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRoleForUpdates!
+}
+
+extend type Journey {
+  usersJourneys: [UserJourney!]
+}
+
+extend type User {
+  usersJourneys: [UserJourney!]
+}
+
+type UserJourney {
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+}
+
+extend type Mutation {
+  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
+  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
+}

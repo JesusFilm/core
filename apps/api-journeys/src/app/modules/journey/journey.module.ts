@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 
-import { DatabaseModule } from '../../lib/database/database.module'
+import { DatabaseModule } from '@core/nest/database'
 import { JourneyService } from './journey.service'
 import { JourneyResolvers } from './journey.resolvers'
 import { BlockService } from '../block/block.service'

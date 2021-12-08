@@ -7,7 +7,8 @@ import {
   Resolver,
 } from '@nestjs/graphql'
 import { Block } from '../../graphql'
-import { BlockMiddleware, KeyAsId } from '../../lib/decorators'
+import { BlockMiddleware } from '../../lib/decorators'
+import { KeyAsId } from '@core/nest/decorators'
 import { BlockService } from './block.service'
 
 @Resolver('Block')

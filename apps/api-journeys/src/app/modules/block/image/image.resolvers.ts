@@ -6,8 +6,8 @@ import {
 } from '@nestjs/graphql'
 import { ImageBlock, ImageBlockCreateInput, ImageBlockUpdateInput } from '../../../graphql'
 import { UserInputError } from 'apollo-server-errors'
-import { IdAsKey } from '../../../lib/decorators'
-import { AuthGuard } from '../../../lib/auth/auth.guard'
+import { IdAsKey } from '@core/nest/decorators'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { BlockService } from '../block.service'
 import { encode } from 'blurhash'
 import { createCanvas, loadImage, Image } from 'canvas'
@@ -48,8 +48,8 @@ async function handleImage(input): Promise<ImageBlockCreateInput | ImageBlockUpd
 export class ImageBlockResolvers {
   constructor(private readonly blockservice: BlockService) { }
   @Mutation()
-  @IdAsKey()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
+  @IdAsKey()  
   async imageBlockCreate(@Args('input') input: ImageBlockCreateInput): Promise<ImageBlock>{
     input.type = 'ImageBlock'   
     const block = await handleImage(input)    
@@ -57,7 +57,7 @@ export class ImageBlockResolvers {
   }
 
   @Mutation()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
   async imageBlockUpdate(@Args('id') id: string, @Args('input') input: ImageBlockUpdateInput): Promise<ImageBlock>{
     const block = await handleImage(input)
     return await this.blockservice.update(id, block)

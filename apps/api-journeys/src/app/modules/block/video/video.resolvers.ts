@@ -6,8 +6,8 @@ import {
   Resolver,
 } from '@nestjs/graphql'
 import { VideoBlock, VideoBlockCreateInput, VideoBlockUpdateInput, VideoContent, VideoContentInput } from '../../../graphql'
-import { AuthGuard } from '../../../lib/auth/auth.guard'
-import { IdAsKey } from '../../../lib/decorators'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { IdAsKey } from '@core/nest/decorators'
 import { BlockService } from '../block.service'
 import { UseGuards } from '@nestjs/common'
 
@@ -29,8 +29,8 @@ export class VideoContentResolvers {
 export class VideoBlockResolvers {
   constructor(private readonly blockservice: BlockService) { }
   @Mutation()
-  @IdAsKey()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
+  @IdAsKey()  
   async videoBlockCreate(@Args('input') input: VideoBlockCreateInput): Promise<VideoBlock> {
     input.type = 'VideoBlock'
     if (checkVideoContentInput(input?.videoContent))
@@ -39,7 +39,7 @@ export class VideoBlockResolvers {
   }
 
   @Mutation()
-  @UseGuards(new AuthGuard())
+  @UseGuards(GqlAuthGuard)
   async videoBlockUpdate(@Args('id') id: string, @Args('input') input: VideoBlockUpdateInput): Promise<VideoBlock> {
     return await this.blockservice.update(id, input)
   }
