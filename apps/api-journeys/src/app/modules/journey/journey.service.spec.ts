@@ -3,7 +3,7 @@ import { JourneyService } from './journey.service'
 import { ThemeMode, ThemeName } from '../../graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockCollectionSaveResult, mockDbQueryResult } from '../../../test/dbMock'
+import { mockCollectionSaveResult, mockDbQueryResult } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 
 describe('JourneyService', () => {

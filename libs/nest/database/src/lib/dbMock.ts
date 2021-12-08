@@ -12,7 +12,14 @@ export const mockDbQueryResult = async (db, result: any[]): Promise<ArrayCursor>
 
 export const mockCollectionSaveResult = async (collection: DocumentCollection, result: any): Promise<DocumentMetadata & { new?: Document }> => await Promise.resolve({
     _key: result._key,
-    _id: `${collection.name}`,
+    _id: `${collection.name}/${result._key}`,
     _rev: "1",
     new: result
+})
+
+export const mockCollectionRemoveResult = async (collection: DocumentCollection, result: any): Promise<DocumentMetadata & { new?: Document }> => await Promise.resolve({
+    _key: result._key,
+    _id: `${collection.name}/${result._key}`,
+    _rev: "1",
+    old: result
 })

@@ -7,15 +7,10 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum UserJourneyRole {
+export enum UserJourneyRoles {
     inviteRequested = "inviteRequested",
     editor = "editor",
     owner = "owner"
-}
-
-export enum UserJourneyRoleForUpdates {
-    inviteRequested = "inviteRequested",
-    editor = "editor"
 }
 
 export class UserCreateInput {
@@ -27,15 +22,14 @@ export class UserCreateInput {
 }
 
 export class UserJourneyCreateInput {
+    id?: Nullable<string>;
     userId: string;
     journeyId: string;
-    role?: Nullable<UserJourneyRole>;
+    role?: Nullable<UserJourneyRoles>;
 }
 
 export class UserJourneyUpdateInput {
-    userId: string;
-    journeyId: string;
-    role: UserJourneyRoleForUpdates;
+    role?: Nullable<UserJourneyRoles>;
 }
 
 export class User {
@@ -49,9 +43,10 @@ export class User {
 
 export class UserJourney {
     user?: Nullable<User>;
+    ID: string;
     userId: string;
     journeyId: string;
-    role: UserJourneyRole;
+    role: UserJourneyRoles;
 }
 
 export abstract class IQuery {
@@ -67,7 +62,9 @@ export abstract class IMutation {
 
     abstract userJourneyCreate(input: UserJourneyCreateInput): UserJourney | Promise<UserJourney>;
 
-    abstract userJourneyUpdate(input: UserJourneyUpdateInput): UserJourney | Promise<UserJourney>;
+    abstract userJourneyUpdate(id: string, input: UserJourneyUpdateInput): UserJourney | Promise<UserJourney>;
+
+    abstract userJourneyRemove(id: string): UserJourney | Promise<UserJourney>;
 }
 
 export class Journey {

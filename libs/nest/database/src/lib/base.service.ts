@@ -38,6 +38,11 @@ export abstract class BaseService {
     return result.new
   }
 
+  async remove<T>(_key: string): Promise<T> {
+    const result = await this.collection.remove(_key, { returnOld: true })
+    return result.old
+  }
+
   async count(): Promise<number> {
     const result = await this.collection.count()
     return result.count

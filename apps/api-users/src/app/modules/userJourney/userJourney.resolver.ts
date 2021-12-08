@@ -1,20 +1,29 @@
-import { Args, Resolver, Query } from '@nestjs/graphql'
+import { Args, Resolver, Mutation } from '@nestjs/graphql'
 import { UserJourneyService } from './userJourney.service'
-import { KeyAsId } from '@core/nest/decorators'
-import { User } from '../../graphql'
+import { IdAsKey } from '@core/nest/decorators'
+import { UserJourney, UserJourneyCreateInput, UserJourneyUpdateInput } from '../../graphql'
+import { UseGuards } from '@nestjs/common'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
   constructor(private readonly userJourneyService: UserJourneyService) { }
-  @Query()
-  @KeyAsId()
-  async userJourneys(): Promise<User[]> {
-    return await this.userJourneyService.getAll()
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  @IdAsKey()
+  async userJourneyCreate(@Args('input') input: UserJourneyCreateInput): Promise<UserJourney> {
+    return await this.userJourneyService.save(input)
   }
 
-  @Query()
-  @KeyAsId()
-  async userJourney(@Args('id') _key: string): Promise<User> {
-    return await this.userJourneyService.get(_key)
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async userJourneyUpdate(@Args('id') id: string, @Args('input') input: UserJourneyUpdateInput): Promise<UserJourney> {
+    return await this.userJourneyService.update(id, input)
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async userJourneyRemove(@Args('id') id: string): Promise<UserJourney> {
+    return this.userJourneyService.remove(id)
   }
 }

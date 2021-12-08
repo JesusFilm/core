@@ -1,5 +1,5 @@
 
-import { flow, has, omit } from 'lodash'
+import { flow, has } from 'lodash'
 import { Block, VideoArclight, VideoBlock } from '../graphql'
 
 const arcLightVideoSrc = (obj: VideoBlock): Block => {
@@ -19,18 +19,6 @@ export function BlockMiddleware() {
       return Array.isArray(result)
         ? result.map(blockMiddleWares)
         : blockMiddleWares(result)
-    }
-  }
-}
-
-export function Omit(omitFields: string[]) {
-  return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
-    const childFunction = descriptor.value
-    descriptor.value = async function (...args: any | any[]) {
-      args = Array.isArray(args)
-        ? args.map((r) => omit(r, omitFields))
-        : omit(args, omitFields)
-      return childFunction.apply(this, args)
     }
   }
 }

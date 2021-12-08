@@ -311,7 +311,8 @@ type Mutation {
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
   userCreate(input: UserCreateInput!): User! @join__field(graph: USERS)
   userJourneyCreate(input: UserJourneyCreateInput!): UserJourney! @join__field(graph: USERS)
-  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: USERS)
+  userJourneyRemove(id: ID!): UserJourney! @join__field(graph: USERS)
+  userJourneyUpdate(id: ID!, input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: USERS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -520,33 +521,28 @@ input UserCreateInput {
 }
 
 type UserJourney {
+  ID: ID!
   journeyId: ID!
-  role: UserJourneyRole!
+  role: UserJourneyRoles!
   user: User
   userId: ID!
 }
 
 input UserJourneyCreateInput {
+  id: ID
   journeyId: ID!
-  role: UserJourneyRole
+  role: UserJourneyRoles
   userId: ID!
 }
 
-enum UserJourneyRole {
+enum UserJourneyRoles {
   editor
   inviteRequested
   owner
 }
 
-enum UserJourneyRoleForUpdates {
-  editor
-  inviteRequested
-}
-
 input UserJourneyUpdateInput {
-  journeyId: ID!
-  role: UserJourneyRoleForUpdates!
-  userId: ID!
+  role: UserJourneyRoles
 }
 
 type VideoArclight implements VideoContent {

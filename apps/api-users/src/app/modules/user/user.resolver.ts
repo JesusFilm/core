@@ -35,6 +35,7 @@ export class UserResolver {
   }
 
   @Mutation()
+  @UseGuards(GqlAuthGuard)
   @IdAsKey()
   async userCreate(@Args('input') input: UserCreateInput): Promise<User> {
     return await this.userService.save(input)

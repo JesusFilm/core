@@ -1,24 +1,18 @@
-enum UserJourneyRole {
+enum UserJourneyRoles {
   inviteRequested
   editor
   owner
 }
 
-enum UserJourneyRoleForUpdates {
-  inviteRequested
-  editor
-}
-
 input UserJourneyCreateInput {
+  id: ID
   userId: ID!
   journeyId: ID!
-  role: UserJourneyRole
+  role: UserJourneyRoles
 }
 
 input UserJourneyUpdateInput {
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRoleForUpdates!
+  role: UserJourneyRoles
 }
 
 extend type Journey {
@@ -30,12 +24,14 @@ extend type User {
 }
 
 type UserJourney {
+  ID: ID!
   userId: ID!
   journeyId: ID!
-  role: UserJourneyRole!
+  role: UserJourneyRoles!
 }
 
 extend type Mutation {
   userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
-  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
+  userJourneyUpdate(id: ID!, input: UserJourneyUpdateInput!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
 }
