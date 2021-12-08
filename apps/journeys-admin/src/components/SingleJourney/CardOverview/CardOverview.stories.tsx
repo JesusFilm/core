@@ -24,4 +24,9 @@ Default.args = {
   blocks: steps
 }
 
+export const NoCards = Template.bind({})
+NoCards.args = {
+  slug: 'my-journey'
+}
+
 export default CardOverviewDemo as Meta
