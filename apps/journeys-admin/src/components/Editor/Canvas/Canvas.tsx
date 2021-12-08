@@ -73,7 +73,7 @@ export function Canvas({
             <Box
               data-testid={`step-${step.id}`}
               sx={{
-                borderRadius: 4,
+                borderRadius: 5,
                 transition: '0.2s all ease-out 0.1s',
                 position: 'relative',
                 overflow: 'hidden',
@@ -82,7 +82,8 @@ export function Canvas({
                     ? `3px solid ${theme.palette.primary.main}`
                     : `3px solid ${theme.palette.background.default}`,
                 transform:
-                  step.id === selected?.id ? 'scaleY(1)' : 'scaleY(0.9)'
+                  step.id === selected?.id ? 'scaleY(1)' : 'scaleY(0.9)',
+                height: 536
               }}
               onClick={() => onSelect?.(step)}
             >
@@ -104,7 +105,7 @@ export function Canvas({
                   themeName={ThemeName.base}
                   themeMode={ThemeMode.light}
                 >
-                  <Box sx={{ p: 4, height: '100%' }}>
+                  <Box sx={{ p: 1, height: '100%' }}>
                     <BlockRenderer {...step} />
                   </Box>
                 </ThemeProvider>
