@@ -21,6 +21,12 @@ export enum ThemeName {
   base = "base",
 }
 
+export enum UserJourneyRole {
+  editor = "editor",
+  inviteRequested = "inviteRequested",
+  owner = "owner",
+}
+
 export interface UserCreateInput {
   email?: string | null;
   firstName?: string | null;

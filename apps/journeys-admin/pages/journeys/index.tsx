@@ -12,7 +12,6 @@ import {
 import { JourneyList } from '../../src/components/'
 import { UseFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
-import { InviteUserModal } from '../../src/components/Modal'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -41,7 +40,6 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
         <Button variant="contained" onClick={() => logOut()}>
           SignOut
         </Button>
-        <InviteUserModal />
       </Container>
     </ThemeProvider>
   )

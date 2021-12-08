@@ -10,6 +10,7 @@ import {
 import { Typography, Box } from '@mui/material'
 import { UseFirebase } from '../../src/libs/firebaseClient/'
 import { useRouter } from 'next/router'
+import { InviteUserModal, INVITE_USER_MODAL_FIELDS } from '../../src/components/InviteUserModal'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -46,6 +47,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
+        <InviteUserModal usersJourneys={journey.usersJourneys != null ? journey.usersJourneys : undefined} />
       </Box>
     </>
   )
@@ -55,8 +57,8 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
       query: gql`
+        ${INVITE_USER_MODAL_FIELDS}
         query GetJourney($id: ID!) {
-          # slug might have to be string
           journey(id: $id, idType: slug) {
             id
             title
@@ -66,6 +68,14 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             publishedAt
             primaryImageBlock {
               src
+            }
+            usersJourneys {
+              userId
+              journeyId
+              role
+              user {
+                ...InviteUserModalFields
+              }
             }
           }
         }

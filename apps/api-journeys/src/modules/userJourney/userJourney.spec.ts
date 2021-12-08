@@ -209,42 +209,42 @@ describe('UserJourneyModule', () => {
         expect(data?.userJourneyRemove).toEqual(undefined)
       })
     })
-    it('promotes editor to owner', async () => {
-      dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
+    // it('promotes editor to owner', async () => {
+    //   dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
 
-      dbMock.userJourney.findUnique.mockResolvedValue({
-        userId: 'userId',
-        journeyId: 'journeyId',
-        role: 'owner'
-      })
+    //   dbMock.userJourney.findUnique.mockResolvedValue({
+    //     userId: 'userId',
+    //     journeyId: 'journeyId',
+    //     role: 'owner'
+    //   })
 
-      const { data } = await query(
-        gql`
-          mutation ($input: UserJourneyPromoteInput!) {
-            userJourneyPromote(input: $input) {
-              userId
-              journeyId
-              role
-            }
-          }
-        `,
-        {
-          input: {
-            userId: userJourneyEditor.userId,
-            journeyId: userJourneyEditor.journeyId,
-            role: 'owner'
-          }
-        },
-        {
-          userId: 'userId'
-        }
-      )
+    //   const { data } = await query(
+    //     gql`
+    //       mutation ($input: UserJourneyPromoteInput!) {
+    //         userJourneyPromote(input: $input) {
+    //           userId
+    //           journeyId
+    //           role
+    //         }
+    //       }
+    //     `,
+    //     {
+    //       input: {
+    //         userId: userJourneyEditor.userId,
+    //         journeyId: userJourneyEditor.journeyId,
+    //         role: 'owner'
+    //       }
+    //     },
+    //     {
+    //       userId: 'userId'
+    //     }
+    //   )
 
-      expect(data?.userJourneyPromote).toEqual({
-        userId: userJourneyEditor.userId,
-        journeyId: userJourneyEditor.journeyId,
-        role: 'owner'
-      })
-    })
+    //   expect(data?.userJourneyPromote).toEqual({
+    //     userId: userJourneyEditor.userId,
+    //     journeyId: userJourneyEditor.journeyId,
+    //     role: 'owner'
+    //   })
+    // })
   })
 })

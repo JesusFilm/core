@@ -2,8 +2,8 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { UserJourneyModule } from './__generated__/types'
 import { AuthenticationError } from 'apollo-server-errors'
-import { PrismaPromise, PrismaClient } from '.prisma/api-journeys-client'
-import { UserJourney } from '../../__generated__/types'
+// import { PrismaPromise, PrismaClient } from '.prisma/api-journeys-client'
+// import { UserJourney } from '../../__generated__/types'
 
 const typeDefs = gql`
   enum UserJourneyRole {
@@ -166,59 +166,59 @@ const resolvers: UserJourneyModule.Resolvers = {
           }
         }
       })
-    },
-    async userJourneyPromote(_parent, { input }, { db, userId }) {
-      if (userId == null)
-        throw new AuthenticationError('No user token provided')
-
-      // can only promote an editor to owner if you are the journey's owner.
-      const actor = await db.userJourney.findUnique({
-        where: {
-          uniqueUserJourney: {
-            userId: userId,
-            journeyId: input.journeyId
-          }
-        }
-      })
-
-      if (actor === null || actor?.role !== 'owner')
-        throw new AuthenticationError(
-          'You do not own this journey so you cannot change roles'
-        )
-
-      // needs to be done in a transaction
-      return await db.$transaction(
-        async (
-          db: PrismaClient
-        ): Promise<Prisma.Prisma__UserJourneyClient<UserJourney>> => {
-          await db.userJourney.update({
-            where: {
-              uniqueUserJourney: {
-                userId: actor.userId,
-                journeyId: actor.journeyId
-              }
-            },
-            data: {
-              role: 'editor'
-            }
-          })
-
-          const newOwner = db.userJourney.update({
-            where: {
-              uniqueUserJourney: {
-                userId: input.userId,
-                journeyId: input.journeyId
-              }
-            },
-            data: {
-              role: 'owner'
-            }
-          })
-
-          return newOwner
-        }
-      )
     }
+    // async userJourneyPromote(_parent, { input }, { db, userId }) {
+    //   if (userId == null)
+    //     throw new AuthenticationError('No user token provided')
+
+    //   // can only promote an editor to owner if you are the journey's owner.
+    //   const actor = await db.userJourney.findUnique({
+    //     where: {
+    //       uniqueUserJourney: {
+    //         userId: userId,
+    //         journeyId: input.journeyId
+    //       }
+    //     }
+    //   })
+
+    //   if (actor === null || actor?.role !== 'owner')
+    //     throw new AuthenticationError(
+    //       'You do not own this journey so you cannot change roles'
+    //     )
+
+    //   // needs to be done in a transaction
+    //   return await db.$transaction(
+    //     async (
+    //       db: PrismaClient
+    //     ): Promise<Prisma.Prisma__UserJourneyClient<UserJourney>> => {
+    //       await db.userJourney.update({
+    //         where: {
+    //           uniqueUserJourney: {
+    //             userId: actor.userId,
+    //             journeyId: actor.journeyId
+    //           }
+    //         },
+    //         data: {
+    //           role: 'editor'
+    //         }
+    //       })
+
+    //       const newOwner = db.userJourney.update({
+    //         where: {
+    //           uniqueUserJourney: {
+    //             userId: input.userId,
+    //             journeyId: input.journeyId
+    //           }
+    //         },
+    //         data: {
+    //           role: 'owner'
+    //         }
+    //       })
+
+    //       return newOwner
+    //     }
+    //   )
+    // }
   }
 }
 
