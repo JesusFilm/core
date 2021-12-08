@@ -29,7 +29,10 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
       ? blocks.filter((block) => block.__typename === 'StepBlock').length
       : 0
 
-  if (blocks != null && stepBlockLength > 1) {
+  const text =
+    stepBlockLength === 1 ? 'card in this journey' : 'cards in this journey'
+
+  if (blocks != null && stepBlockLength >= 1) {
     return (
       <>
         <CardPreview steps={blocks} />
@@ -39,8 +42,8 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
           sx={{ pt: 2, flex: 1, textAlign: 'center' }}
         >
           {width > theme.breakpoints.values.md
-            ? `${stepBlockLength} cards in this journey`
-            : `${stepBlockLength} cards`}
+            ? `${stepBlockLength} ${text}`
+            : `${stepBlockLength} ${text}`}
         </Typography>
 
         <Button

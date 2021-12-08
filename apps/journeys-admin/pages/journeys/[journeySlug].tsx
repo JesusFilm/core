@@ -38,14 +38,14 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
 
-        {journey.blocks != null ? (
-          <CardOverview
-            slug={journey.slug}
-            blocks={transformer(journey.blocks) as Array<TreeBlock<StepBlock>>}
-          />
-        ) : (
-          <CardOverview slug={journey.slug} />
-        )}
+        <CardOverview
+          slug={journey.slug}
+          blocks={
+            journey.blocks != null
+              ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
+              : undefined
+          }
+        />
       </Box>
     </>
   )
