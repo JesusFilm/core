@@ -3,6 +3,7 @@ import { journeysAdminConfig } from '../../../../libs/storybook'
 import { Attributes } from '.'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
+import { EditorProvider } from '../../Context'
 
 const AttributesStory = {
   ...journeysAdminConfig,
@@ -32,7 +33,11 @@ export const Default: Story = () => {
     ]
   }
 
-  return <Attributes selected={selected} />
+  return (
+    <EditorProvider>
+      <Attributes selected={selected} />
+    </EditorProvider>
+  )
 }
 
 export default AttributesStory as Meta
