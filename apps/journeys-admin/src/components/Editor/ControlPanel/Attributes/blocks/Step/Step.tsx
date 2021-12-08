@@ -14,6 +14,7 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 }
 
 export function Step({
+  id,
   locked,
   nextBlockId
 }: TreeBlock<StepBlock>): ReactElement {
@@ -28,6 +29,7 @@ export function Step({
 
   return (
     <Attribute
+      id={`${id}-next-block`}
       icon={locked ? <LockIcon /> : <LockOpenIcon />}
       name="Next Card"
       value={

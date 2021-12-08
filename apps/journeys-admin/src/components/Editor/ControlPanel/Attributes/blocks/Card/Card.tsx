@@ -16,6 +16,7 @@ import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Paper, Box } from '@mui/material'
 
 export function Card({
+  id,
   backgroundColor,
   fullscreen,
   themeMode,
@@ -29,6 +30,7 @@ export function Card({
   return (
     <>
       <Attribute
+        id={`${id}-background-color`}
         icon={
           <Paper sx={{ borderRadius: 1000, overflow: 'hidden' }}>
             <Box
@@ -50,6 +52,7 @@ export function Card({
       />
       {coverBlock?.__typename === 'ImageBlock' && (
         <Attribute
+          id={`${id}-cover-block`}
           icon={<ImageIcon />}
           name="Background"
           value={coverBlock.src.substring(
@@ -61,6 +64,7 @@ export function Card({
       )}
       {coverBlock?.__typename === 'VideoBlock' && (
         <Attribute
+          id={`${id}-cover-block`}
           icon={<Videocam />}
           name="Background"
           value={coverBlock.title}
@@ -69,6 +73,7 @@ export function Card({
       )}
       {coverBlock == null && (
         <Attribute
+          id={`${id}-cover-block`}
           icon={<ImageIcon />}
           name="Background"
           value="None"
@@ -77,6 +82,7 @@ export function Card({
       )}
       <Attribute
         icon={<Palette />}
+        id={`${id}-theme-mode`}
         name="Style"
         value={
           themeMode == null
@@ -89,6 +95,7 @@ export function Card({
       />
       <Attribute
         icon={<VerticalSplit />}
+        id={`${id}-fullscreen`}
         name="Layout"
         value={fullscreen ? 'Expanded' : 'Contained'}
         description="Content Appearance"

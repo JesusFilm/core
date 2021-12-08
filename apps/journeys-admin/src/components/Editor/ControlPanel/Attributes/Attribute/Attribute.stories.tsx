@@ -2,6 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Attribute } from '.'
 import { Palette } from '@mui/icons-material'
+import { EditorProvider } from '../../../Context'
 
 const AttributesStory = {
   ...journeysAdminConfig,
@@ -11,12 +12,29 @@ const AttributesStory = {
 
 export const Default: Story = () => {
   return (
-    <Attribute
-      icon={<Palette />}
-      name="Style"
-      value={'Dark'}
-      description="Card Styling"
-    />
+    <EditorProvider>
+      <Attribute
+        id="custom-id"
+        icon={<Palette />}
+        name="Style"
+        value={'Dark'}
+        description="Card Styling"
+      />
+    </EditorProvider>
+  )
+}
+
+export const Selected: Story = () => {
+  return (
+    <EditorProvider initialState={{ selectedAttributeId: 'custom-id' }}>
+      <Attribute
+        id="custom-id"
+        icon={<Palette />}
+        name="Style"
+        value={'Dark'}
+        description="Card Styling"
+      />
+    </EditorProvider>
   )
 }
 

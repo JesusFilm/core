@@ -12,6 +12,7 @@ interface EditorState {
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
+  selectedAttributeId?: string
 }
 
 interface SetSelectedStepAction {
@@ -24,7 +25,15 @@ interface SetSelectedBlockAction {
   block?: TreeBlock
 }
 
-type EditorAction = SetSelectedStepAction | SetSelectedBlockAction
+interface SetSelectedAttributeIdAction {
+  type: 'SetSelectedAttributeIdAction'
+  id?: string
+}
+
+type EditorAction =
+  | SetSelectedStepAction
+  | SetSelectedBlockAction
+  | SetSelectedAttributeIdAction
 
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
@@ -32,6 +41,8 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
       return { ...state, selectedStep: action.step, selectedBlock: action.step }
     case 'SetSelectedBlockAction':
       return { ...state, selectedBlock: action.block }
+    case 'SetSelectedAttributeIdAction':
+      return { ...state, selectedAttributeId: action.id }
   }
 }
 
