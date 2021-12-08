@@ -6,6 +6,8 @@ import { TopBar } from './TopBar'
 import { transformer, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { EditorProvider } from './Context'
+import { Drawer, DRAWER_WIDTH } from './Drawer'
+import { Box } from '@mui/material'
 
 interface EditorProps {
   journey: Journey
@@ -18,8 +20,11 @@ export function Editor({ journey }: EditorProps): ReactElement {
     <>
       <EditorProvider initialState={{ steps }}>
         <TopBar title={journey.title} slug={journey.slug} />
-        <Canvas />
-        <ControlPanel />
+        <Box sx={{ marginRight: { sm: `${DRAWER_WIDTH}px` } }}>
+          <Canvas />
+          <ControlPanel />
+        </Box>
+        <Drawer />
       </EditorProvider>
     </>
   )

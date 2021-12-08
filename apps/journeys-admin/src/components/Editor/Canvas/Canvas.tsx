@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Theme, useMediaQuery } from '@mui/material'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { BlockRenderer } from '@core/journeys/ui'
 import { FramePortal } from '../../FramePortal'
@@ -7,11 +7,16 @@ import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { EditorContext } from '../Context'
+import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
+
+const EDGE_SLIDE_WIDTH = 24
+const MIN_SPACE_BETWEEN = 16
 
 export function Canvas(): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [spaceBetween, setSpaceBetween] = useState(16)
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
     state: { steps, selectedStep },
     dispatch
@@ -25,12 +30,15 @@ export function Canvas(): ReactElement {
 
   useEffect(() => {
     const setSpaceBetweenOnResize = (): void => {
-      const EDGE_SLIDE_WIDTH = 24
-      const MIN_SPACE_BETWEEN = 16
       const spaceBetween = Math.max(
         MIN_SPACE_BETWEEN,
-        (window.innerWidth - 362 - EDGE_SLIDE_WIDTH * 2) / 2
+        (window.innerWidth -
+          Number(smUp) * DRAWER_WIDTH -
+          362 -
+          EDGE_SLIDE_WIDTH * 2) /
+          2
       )
+
       setSpaceBetween(spaceBetween)
     }
 
@@ -39,7 +47,7 @@ export function Canvas(): ReactElement {
 
     window.addEventListener('resize', setSpaceBetweenOnResize)
     return () => window.removeEventListener('resize', setSpaceBetweenOnResize)
-  }, [])
+  }, [smUp])
 
   return (
     <Box

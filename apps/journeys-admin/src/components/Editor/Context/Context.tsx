@@ -13,6 +13,8 @@ interface EditorState {
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
   selectedAttributeId?: string
+  drawerTitle?: string
+  drawerChildren?: ReactNode
 }
 
 interface SetSelectedStepAction {
@@ -30,10 +32,17 @@ interface SetSelectedAttributeIdAction {
   id?: string
 }
 
+interface SetDrawerPropsAction {
+  type: 'SetDrawerPropsAction'
+  title?: string
+  children?: ReactNode
+}
+
 type EditorAction =
   | SetSelectedStepAction
   | SetSelectedBlockAction
   | SetSelectedAttributeIdAction
+  | SetDrawerPropsAction
 
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
@@ -43,6 +52,12 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
       return { ...state, selectedBlock: action.block }
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.id }
+    case 'SetDrawerPropsAction':
+      return {
+        ...state,
+        drawerTitle: action.title,
+        drawerChildren: action.children
+      }
   }
 }
 
