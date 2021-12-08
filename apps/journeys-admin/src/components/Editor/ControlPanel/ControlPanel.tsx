@@ -3,13 +3,14 @@ import {
   ReactElement,
   ReactNode,
   SyntheticEvent,
-  useEffect,
+  useContext,
   useState
 } from 'react'
 import { Attributes } from '../ControlPanel/Attributes'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { CardPreview } from '../../CardPreview'
+import { Context } from '../Context'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -43,19 +44,12 @@ function a11yProps(index: number): { id: string; 'aria-controls': string } {
   }
 }
 
-interface ControlPanelProps {
-  onSelectStep: (card: TreeBlock<StepBlock>) => void
-  selectedStep?: TreeBlock<StepBlock>
-  steps: Array<TreeBlock<StepBlock>>
-}
-
-export function ControlPanel({
-  steps,
-  selectedStep,
-  onSelectStep
-}: ControlPanelProps): ReactElement {
+export function ControlPanel(): ReactElement {
   const [value, setValue] = useState(0)
-  const [selectedBlock, setSelectedBlock] = useState<TreeBlock>()
+  const {
+    state: { steps, selectedBlock, selectedStep },
+    dispatch
+  } = useContext(Context)
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -64,13 +58,9 @@ export function ControlPanel({
     setValue(newValue)
   }
 
-  useEffect(() => {
-    setSelectedBlock(selectedStep)
-  }, [selectedStep])
-
-  const handleNavigationSelect = (step: TreeBlock<StepBlock>): void => {
+  const handleSelectStep = (step: TreeBlock<StepBlock>): void => {
     setValue(1)
-    onSelectStep(step)
+    dispatch({ type: 'SetSelectedStepAction', step })
   }
 
   return (
@@ -95,7 +85,7 @@ export function ControlPanel({
       <TabPanel value={value} index={0}>
         <CardPreview
           selected={selectedStep}
-          onSelect={handleNavigationSelect}
+          onSelect={handleSelectStep}
           steps={steps}
         />
       </TabPanel>

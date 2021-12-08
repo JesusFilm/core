@@ -2,6 +2,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { ControlPanel } from '../ControlPanel'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
+import { Provider } from '../Context'
 
 describe('ControlPanel', () => {
   it('should render the element', () => {
@@ -21,32 +22,19 @@ describe('ControlPanel', () => {
       nextBlockId: null,
       children: []
     }
-    const setSelectedStep = jest.fn()
-    const { getByTestId, getByText, getByRole, rerender } = render(
-      <ControlPanel steps={[step1, step2]} onSelectStep={setSelectedStep} />
+    const { getByTestId, getByText, getByRole } = render(
+      <Provider initialState={{ steps: [step1, step2] }}>
+        <ControlPanel />
+      </Provider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).toBeDisabled()
     fireEvent.click(getByTestId('step-step1.id'))
-    expect(setSelectedStep).toHaveBeenCalledWith(step1)
-    rerender(
-      <ControlPanel
-        steps={[step1, step2]}
-        selectedStep={step1}
-        onSelectStep={setSelectedStep}
-      />
-    )
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
-    rerender(
-      <ControlPanel
-        steps={[step1, step2]}
-        selectedStep={step2}
-        onSelectStep={setSelectedStep}
-      />
-    )
+    fireEvent.click(getByTestId('step-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
   })
 })

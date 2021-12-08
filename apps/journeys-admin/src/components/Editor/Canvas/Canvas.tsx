@@ -1,33 +1,27 @@
 import { Box } from '@mui/material'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
-import { ReactElement, useEffect, useState } from 'react'
-import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
+import { ReactElement, useContext, useEffect, useState } from 'react'
+import { BlockRenderer } from '@core/journeys/ui'
 import { FramePortal } from '../../FramePortal'
 import { ThemeProvider } from '@core/shared/ui'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { Context } from '../Context'
 import 'swiper/swiper.min.css'
 
-export interface CanvasProps {
-  onSelect?: (card: TreeBlock<StepBlock>) => void
-  selected?: TreeBlock<StepBlock>
-  steps: Array<TreeBlock<StepBlock>>
-}
-
-export function Canvas({
-  steps,
-  selected,
-  onSelect
-}: CanvasProps): ReactElement {
+export function Canvas(): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [spaceBetween, setSpaceBetween] = useState(16)
+  const {
+    state: { steps, selectedStep },
+    dispatch
+  } = useContext(Context)
 
   useEffect(() => {
-    if (swiper != null && selected != null) {
-      swiper.slideTo(steps.findIndex(({ id }) => id === selected.id))
+    if (swiper != null && selectedStep != null) {
+      swiper.slideTo(steps.findIndex(({ id }) => id === selectedStep.id))
     }
-  }, [steps, swiper, selected])
+  }, [steps, swiper, selectedStep])
 
   useEffect(() => {
     const setSpaceBetweenOnResize = (): void => {
@@ -66,7 +60,12 @@ export function Canvas({
         spaceBetween={spaceBetween}
         centeredSlides={true}
         onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={(swiper) => onSelect?.(steps[swiper.activeIndex])}
+        onSlideChange={(swiper) =>
+          dispatch({
+            type: 'SetSelectedStepAction',
+            step: steps[swiper.activeIndex]
+          })
+        }
       >
         {steps.map((step) => (
           <SwiperSlide key={step.id} style={{ width: 362 }}>
@@ -78,14 +77,14 @@ export function Canvas({
                 position: 'relative',
                 overflow: 'hidden',
                 border: (theme) =>
-                  step.id === selected?.id
+                  step.id === selectedStep?.id
                     ? `3px solid ${theme.palette.primary.main}`
                     : `3px solid ${theme.palette.background.default}`,
                 transform:
-                  step.id === selected?.id ? 'scaleY(1)' : 'scaleY(0.9)',
+                  step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
                 height: 536
               }}
-              onClick={() => onSelect?.(step)}
+              onClick={() => dispatch({ type: 'SetSelectedStepAction' , step })}
             >
               <Box
                 sx={{
@@ -97,7 +96,7 @@ export function Canvas({
                   zIndex: 1,
                   transition: '0.2s opacity ease-out 0.1s',
                   backgroundColor: (theme) => theme.palette.background.default,
-                  opacity: step.id === selected?.id ? 0 : 1
+                  opacity: step.id === selectedStep?.id ? 0 : 1
                 }}
               />
               <FramePortal width={356} height={536}>
