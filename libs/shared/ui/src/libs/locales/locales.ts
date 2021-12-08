@@ -1,7 +1,10 @@
+import { localesData } from './localesData'
+
 interface Locale {
   locale: string
-  language: string
-  region: string
+  nativeName: string
+  englishName: string
+  region?: string
 }
 
 interface SelectOption {
@@ -9,28 +12,17 @@ interface SelectOption {
   label: string
 }
 
-export const locales: { [key: string]: Locale } = {
-  'en-US': {
-    locale: 'en-US',
-    language: 'English',
-    region: 'United States'
-  },
-  'en-NZ': {
-    locale: 'en-NZ',
-    language: 'English',
-    region: 'New Zealand'
-  }
-}
+export const locales: { [key: string]: Locale } = localesData
 
 export const getLocaleOptions = (): SelectOption[] =>
   Object.keys(locales).map((locale) => getLocaleOption(locale))
 
 export const getLocaleOption = (locale: string): SelectOption => {
   const l = locales[locale] ?? locales['en-US']
-  return { value: l.locale, label: getLocaleLabel(l) }
+  return { value: l.locale, label: getEnglishLocaleLabel(l) }
 }
 
 // This may vary for different languages in future
-export const getLocaleLabel = (l: Locale): string => {
-  return `${l.language} (${l.locale.split('-')[1]})`
+export const getEnglishLocaleLabel = (l: Locale): string => {
+  return `${l.englishName} (${l.locale.split('-')[1]})`
 }
