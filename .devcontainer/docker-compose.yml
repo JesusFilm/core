@@ -25,17 +25,6 @@ services:
       PGPASSWORD: postgres
       PGUSER: postgres
       PGDATABASE: postgres
-  db:
-    image: postgres:latest
-    restart: unless-stopped
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
   arangodb:
     image: arangodb/arangodb
     volumes:
@@ -45,5 +34,4 @@ services:
     ports:
       - 8529:8529
 volumes:
-  postgres-data:
   arango-data:
