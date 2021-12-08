@@ -4,6 +4,11 @@ const db = new Database({ url: process.env.DATABASE_URL })
 
 export async function user1(): Promise<void> {
   await db.query(aql`
+  FOR journey in userJourneys
+      FILTER journey.userId == "1"      
+      REMOVE journey IN userJourneys`)
+
+  await db.query(aql`
     FOR user in users
       FILTER user.email == 'yo@fake.com'
       REMOVE user IN users`)

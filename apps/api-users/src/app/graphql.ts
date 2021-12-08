@@ -43,7 +43,7 @@ export class User {
 
 export class UserJourney {
     user?: Nullable<User>;
-    ID: string;
+    id: string;
     userId: string;
     journeyId: string;
     role: UserJourneyRoles;

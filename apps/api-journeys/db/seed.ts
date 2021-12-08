@@ -10,10 +10,12 @@ const db = new Database({ url: process.env.DATABASE_URL })
 
 async function main(): Promise<void> {
   try {
-    await db.createCollection('journeys', { keyOptions: { type: 'uuid' }})
-    await db.createCollection('blocks', { keyOptions: { type: 'uuid' }})
+    await (await db.createCollection('journeys', { keyOptions: { type: 'uuid' }}))
+    await (await db.createCollection('blocks', { keyOptions: { type: 'uuid' }}))
     await db.createCollection('responses', { keyOptions: { type: 'uuid' }})
   } catch {}
+  await db.collection('journeys').ensureIndex({ type: 'persistent', fields: ['slug'], name: 'slug', unique: true, })
+  await db.collection('blocks').ensureIndex({ type: 'persistent', fields: ['journeyId'], name: 'journeyId' })
   await nua1()
   await nua2()
   await nua8()

@@ -24,7 +24,7 @@ extend type User {
 }
 
 type UserJourney {
-  ID: ID!
+  id: ID!
   userId: ID!
   journeyId: ID!
   role: UserJourneyRoles!
