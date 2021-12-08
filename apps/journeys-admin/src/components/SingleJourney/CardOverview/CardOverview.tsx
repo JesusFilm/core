@@ -1,7 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { Button, Typography, useTheme } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import AddIcon from '@mui/icons-material/Add'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
@@ -62,27 +61,9 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
     )
   } else {
     return (
-      <>
-        <Typography variant="h6" sx={{ pt: 2, flex: 1, textAlign: 'center' }}>
-          No cards in this journey
-        </Typography>
-
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          sx={{
-            backgroundColor: theme.palette.primary.main,
-            borderRadius: '20px',
-            position: 'absolute',
-            bottom: '12px',
-            right: '17px'
-          }}
-          // TODO: update link
-          href={`/journeys/${slug}/create_PLACEHOLDER`}
-        >
-          Add
-        </Button>
-      </>
+      <Typography variant="h6" sx={{ pt: 2, flex: 1, textAlign: 'center' }}>
+        No cards in this journey
+      </Typography>
     )
   }
 }

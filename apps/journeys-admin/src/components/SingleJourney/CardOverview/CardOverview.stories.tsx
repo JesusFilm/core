@@ -29,4 +29,10 @@ NoCards.args = {
   slug: 'my-journey'
 }
 
+export const ManyCards = Template.bind({})
+ManyCards.args = {
+  slug: 'my-journey',
+  blocks: steps.concat(steps).concat(steps)
+}
+
 export default CardOverviewDemo as Meta
