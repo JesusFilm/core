@@ -14,6 +14,8 @@ describe('JourneySort', () => {
     )
 
     const button = getByRole('button');
+    const buttonSpan = button.querySelector('span');
+    console.log("Button Span: ",buttonSpan?.textContent);
    // console.log(button);
     expect(button).toBeInTheDocument();
 
@@ -24,6 +26,12 @@ describe('JourneySort', () => {
     fireEvent.click(button);
     // Check radio option default value is "CREATED_AT"
     expect(getByDisplayValue('Date Created')).toBeChecked();
+
+    const applyButton = getByText('Apply');
+    expect(applyButton).toBeInTheDocument();
+    fireEvent.click(applyButton);
+    const buttonSpanNew = button.querySelector('span');
+    console.log("Button Span after: ",buttonSpanNew?.textContent);
   })
 
   it('should sort by name', () => {
@@ -96,7 +104,7 @@ describe('JourneySort', () => {
   })
 
   it('should not set sort value on cancel button click', () => {
-    render(
+    const {getByText, getByLabelText} = render(
       <JourneySort
         sortBy={SortBy.UNDEFINED}
         setSortBy={() => {
@@ -105,13 +113,24 @@ describe('JourneySort', () => {
         open={true}
       />
     )
+    const dateCreatedLabel = getByLabelText("Date Created");
+    fireEvent.click(dateCreatedLabel);
+    const applyButton = getByText('Apply');
+    fireEvent.click(applyButton);
     // Check handle submit not called
     // Check Popover / Drawers not open
-    // Check Chip label has changed
+
+    // click cancel
+    const cancelButton = getByText('Cancel');
+    fireEvent.click(cancelButton);
+    
+
+    // Check Chip label is "Sort By"
+     expect(getByText('Sort B', {selector: 'span'})).toBeInTheDocument();
   })
 
   it('should not set sort value on close', () => {
-    render(
+    const {getByText} = render(
       <JourneySort
         sortBy={SortBy.UNDEFINED}
         setSortBy={() => {
@@ -122,6 +141,8 @@ describe('JourneySort', () => {
     )
     // Check handle submit is called correctly
     // Check Popover / Drawers not open
-    // Check Chip label has changed
+     // get popover by id,  check it's aria-expanded
+    // Check Chip label has not changed
+    expect(getByText('Sort By', {selector: 'span'})).toBeInTheDocument();
   })
 })

@@ -4,7 +4,7 @@ import {
   useEffect,
   useRef,
   MouseEvent,
-  FormEvent
+  ChangeEvent
 } from 'react'
 import {
   Box,
@@ -38,8 +38,6 @@ const JourneySort = ({
   open
 }: JourneySortProps): ReactElement => {
   const [showSortBy, setShowSortBy] = useState(open ?? false)
-  const [value, setValue] = useState(sortBy)
-  const [defaultSortbyValue, setDefaultSortByValue] = useState(SortBy.CREATED_AT)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
   const chipRef = useRef(null)
@@ -58,49 +56,43 @@ const JourneySort = ({
     setShowSortBy(false)
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (event: ChangeEvent<HTMLInputElement>): void => {
     event.preventDefault()
-    setSortBy(value)
-    setDefaultSortByValue(value);
+    setSortBy(event.currentTarget.value as SortBy)
     handleClose()
   }
 
   const sortByForm = (): ReactElement => (
     <Box sx={{ p: 4 }}>
-      <form onSubmit={handleSubmit}>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">Sort By</FormLabel>
-          <RadioGroup
-            aria-label="sort-by-options"
-            defaultValue={defaultSortbyValue}
-            name="sort-by-buttons-group"
-            onChange={(e) => setValue(e.currentTarget.value as SortBy)}
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Sort By</FormLabel>
+        <RadioGroup
+          aria-label="sort-by-options"
+          defaultValue={sortBy === SortBy.UNDEFINED ? SortBy.CREATED_AT : sortBy}
+          name="sort-by-buttons-group"
+          onChange={handleSubmit}
+        >
+          <FormControlLabel
+            value={SortBy.CREATED_AT}
+            control={<Radio />}
+            label={SortBy.CREATED_AT}
+          />
+          <FormControlLabel
+            value={SortBy.TITLE}
+            control={<Radio />}
+            label={SortBy.TITLE}
+          />
+        </RadioGroup>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Button
+            sx={{ mt: 1, mr: 1 }}
+            onClick={() => setShowSortBy(false)}
+            variant="text"
           >
-            <FormControlLabel
-              value={SortBy.CREATED_AT}
-              control={<Radio />}
-              label={SortBy.CREATED_AT}
-            />
-            <FormControlLabel
-              value={SortBy.TITLE}
-              control={<Radio />}
-              label={SortBy.TITLE}
-            />
-          </RadioGroup>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Button
-              sx={{ mt: 1, mr: 1 }}
-              onClick={() => setShowSortBy(false)}
-              variant="text"
-            >
-              Cancel
-            </Button>
-            <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="text">
-              Apply
-            </Button>
-          </Box>
-        </FormControl>
-      </form>
+            Cancel
+          </Button>
+        </Box>
+      </FormControl>
     </Box>
   )
 
