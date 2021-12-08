@@ -15,11 +15,22 @@ import {
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
 // import { InviteUserModalFields as User } from '../../../__generated__/InviteUserModalFields'
 import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../__generated__/GetJourney'
+import { useMutation, gql } from '@apollo/client'
+import { UserJourneyRemove } from '../../../__generated__/UserJourneyRemove'
 
 interface InviteUserModalProps {
   // users: User[]
   usersJourneys: UsersJourneys[] | undefined
 }
+
+export const USER_JOURNEY = gql`
+  mutation UserJourneyRemove($input: UserJourneyRemoveInput!) {
+    userJourneyRemove(input: $input) {
+      userId
+      journeyId
+    }
+  }
+`
 
 export const InviteUserModal = ({
   usersJourneys
@@ -28,7 +39,7 @@ export const InviteUserModal = ({
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
 
-  // TODO: create a mutation library to handle this
+  // TODO: create a mutation library to better handle the mutations
 
   return (
     <>
@@ -65,6 +76,37 @@ export const InviteUserModal = ({
               Anyone with this link can see journey and ask for editing rights.
               You can accept or reject every request
             </Typography>
+            <Divider sx={{ my: 2 }} />
+
+            {/* Lists out all the Requested Editing Rights */}
+            <Typography variant={'body1'} gutterBottom>
+              Requested Editing Rights
+            </Typography>
+            {usersJourneys?.map((userJourney) => (
+              userJourney.role === 'editor' && <Box
+                key={userJourney.user?.id}
+                display="flex"
+                alignItems="center"
+                sx={{ mt: 2, display: 'flex', flexDirection: 'row' }}
+              >
+                <Avatar src={userJourney.user?.imageUrl as string} />
+                <Box ml={2}>
+                  <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
+                    } ${userJourney.user?.lastName as string}`}</Typography>
+                  <Typography variant={'caption'}>
+                    {userJourney.user?.email}
+                  </Typography>
+                </Box>
+                <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
+                  <InputLabel>Manage</InputLabel>
+                  <Select variant="standard" disableUnderline>
+                    <MenuItem>Approve</MenuItem>
+                    <Divider />
+                    <MenuItem>Remove</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            ))}
 
             {/* Lists out all the users with access */}
             <Divider sx={{ my: 2 }} />
