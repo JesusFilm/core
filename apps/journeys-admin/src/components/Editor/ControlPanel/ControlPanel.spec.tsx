@@ -2,7 +2,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { ControlPanel } from '../ControlPanel'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
-import { Provider } from '../Context'
+import { EditorProvider } from '../Context'
 
 describe('ControlPanel', () => {
   it('should render the element', () => {
@@ -23,12 +23,11 @@ describe('ControlPanel', () => {
       children: []
     }
     const { getByTestId, getByText, getByRole } = render(
-      <Provider initialState={{ steps: [step1, step2] }}>
+      <EditorProvider initialState={{ steps: [step1, step2] }}>
         <ControlPanel />
-      </Provider>
+      </EditorProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
-    expect(getByRole('tab', { name: 'Properties' })).toBeDisabled()
     fireEvent.click(getByTestId('step-step1.id'))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()

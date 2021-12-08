@@ -10,7 +10,7 @@ import { Attributes } from '../ControlPanel/Attributes'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { CardPreview } from '../../CardPreview'
-import { Context } from '../Context'
+import { EditorContext } from '../Context'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -49,7 +49,7 @@ export function ControlPanel(): ReactElement {
   const {
     state: { steps, selectedBlock, selectedStep },
     dispatch
-  } = useContext(Context)
+  } = useContext(EditorContext)
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,

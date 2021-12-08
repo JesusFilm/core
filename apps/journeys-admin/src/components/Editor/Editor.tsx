@@ -5,7 +5,7 @@ import { ControlPanel } from './ControlPanel'
 import { TopBar } from './TopBar'
 import { transformer, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { Provider } from './Context'
+import { EditorProvider } from './Context'
 
 interface EditorProps {
   journey: Journey
@@ -16,17 +16,11 @@ export function Editor({ journey }: EditorProps): ReactElement {
 
   return (
     <>
-      <Provider
-        initialState={{
-          steps,
-          selectedStep: steps[0],
-          selectedBlock: steps[0]
-        }}
-      >
+      <EditorProvider initialState={{ steps }}>
         <TopBar title={journey.title} slug={journey.slug} />
         <Canvas />
         <ControlPanel />
-      </Provider>
+      </EditorProvider>
     </>
   )
 }

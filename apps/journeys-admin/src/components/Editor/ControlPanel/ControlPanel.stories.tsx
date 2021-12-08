@@ -3,7 +3,6 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 import { ControlPanel } from '.'
 import { TreeBlock } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   ButtonColor,
@@ -13,6 +12,7 @@ import {
   IconSize,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
+import { EditorProvider } from '../Context'
 
 const ControlPanelStory = {
   ...journeysAdminConfig,
@@ -437,14 +437,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 const Template: Story = () => {
-  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
-      <ControlPanel
-        onSelectStep={(step) => setSelectedStep(step)}
-        selectedStep={selected}
-        steps={steps}
-      />
+      <EditorProvider initialState={{ steps }}>
+        <ControlPanel />
+      </EditorProvider>
     </MockedProvider>
   )
 }

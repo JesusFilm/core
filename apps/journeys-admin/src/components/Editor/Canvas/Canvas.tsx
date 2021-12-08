@@ -6,7 +6,7 @@ import { ThemeProvider } from '@core/shared/ui'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Context } from '../Context'
+import { EditorContext } from '../Context'
 import 'swiper/swiper.min.css'
 
 export function Canvas(): ReactElement {
@@ -15,7 +15,7 @@ export function Canvas(): ReactElement {
   const {
     state: { steps, selectedStep },
     dispatch
-  } = useContext(Context)
+  } = useContext(EditorContext)
 
   useEffect(() => {
     if (swiper != null && selectedStep != null) {
@@ -84,7 +84,7 @@ export function Canvas(): ReactElement {
                   step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
                 height: 536
               }}
-              onClick={() => dispatch({ type: 'SetSelectedStepAction' , step })}
+              onClick={() => dispatch({ type: 'SetSelectedStepAction', step })}
             >
               <Box
                 sx={{

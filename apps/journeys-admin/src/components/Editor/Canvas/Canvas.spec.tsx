@@ -3,7 +3,7 @@ import { Canvas } from '.'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { ThemeProvider } from '../../ThemeProvider'
-import { Provider } from '../Context'
+import { EditorProvider } from '../Context'
 
 describe('Canvas', () => {
   it('should show border around selected', () => {
@@ -25,9 +25,13 @@ describe('Canvas', () => {
     }
     const { getByTestId } = render(
       <ThemeProvider>
-        <Provider initialState={{ steps: [step0, step1] }}>
+        <EditorProvider
+          initialState={{
+            steps: [step0, step1]
+          }}
+        >
           <Canvas />
-        </Provider>
+        </EditorProvider>
       </ThemeProvider>
     )
     fireEvent.click(getByTestId('step-step0.id'))

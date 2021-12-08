@@ -2,7 +2,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
 import { Step } from '.'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
-import { Provider } from '../../../../Context'
+import { EditorProvider } from '../../../../Context'
 
 describe('Step', () => {
   it('shows default messages', () => {
@@ -50,9 +50,9 @@ describe('Step', () => {
       children: []
     }
     const { getByText } = render(
-      <Provider initialState={{ steps: [step1, step2] }}>
+      <EditorProvider initialState={{ steps: [step1, step2] }}>
         <Step {...step1} />
-      </Provider>
+      </EditorProvider>
     )
     expect(getByText('Untitled')).toBeInTheDocument()
   })
@@ -98,9 +98,9 @@ describe('Step', () => {
       ]
     }
     const { getByText } = render(
-      <Provider initialState={{ steps: [step1, step2] }}>
+      <EditorProvider initialState={{ steps: [step1, step2] }}>
         <Step {...step1} />
-      </Provider>
+      </EditorProvider>
     )
     expect(getByText('my Title')).toBeInTheDocument()
   })

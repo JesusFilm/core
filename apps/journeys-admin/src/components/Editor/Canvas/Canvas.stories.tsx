@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Canvas } from '.'
-import { useState } from 'react'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
@@ -13,6 +12,7 @@ import {
   IconSize,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
+import { EditorProvider } from '../Context'
 
 const CanvasStory = {
   ...journeysAdminConfig,
@@ -436,14 +436,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 const Template: Story = () => {
-  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
-      <Canvas
-        onSelect={(step) => setSelectedStep(step)}
-        selected={selected}
-        steps={steps}
-      />
+      <EditorProvider initialState={{ steps }}>
+        <Canvas />
+      </EditorProvider>
     </MockedProvider>
   )
 }

@@ -8,7 +8,7 @@ import {
   useReducer
 } from 'react'
 
-interface State {
+interface EditorState {
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
@@ -24,9 +24,9 @@ interface SetSelectedBlockAction {
   block?: TreeBlock
 }
 
-export type Action = SetSelectedStepAction | SetSelectedBlockAction
+type EditorAction = SetSelectedStepAction | SetSelectedBlockAction
 
-const reducer = (state: State, action: Action): State => {
+const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
       return { ...state, selectedStep: action.step, selectedBlock: action.step }
@@ -35,9 +35,9 @@ const reducer = (state: State, action: Action): State => {
   }
 }
 
-export const Context = createContext<{
-  state: State
-  dispatch: Dispatch<Action>
+export const EditorContext = createContext<{
+  state: EditorState
+  dispatch: Dispatch<EditorAction>
 }>({
   state: { steps: [] },
   dispatch: () => null
@@ -45,16 +45,23 @@ export const Context = createContext<{
 
 interface EditorProviderProps {
   children: ReactNode
-  initialState?: Partial<State>
+  initialState?: Partial<EditorState>
 }
 
-export const Provider = ({
+export function EditorProvider({
   children,
   initialState
-}: EditorProviderProps): ReactElement => {
-  const [state, dispatch] = useReducer(reducer, { steps: [], ...initialState })
+}: EditorProviderProps): ReactElement {
+  const [state, dispatch] = useReducer(reducer, {
+    steps: [],
+    selectedStep: initialState?.steps?.[0],
+    selectedBlock: initialState?.steps?.[0],
+    ...initialState
+  })
 
   return (
-    <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
+    <EditorContext.Provider value={{ state, dispatch }}>
+      {children}
+    </EditorContext.Provider>
   )
 }
