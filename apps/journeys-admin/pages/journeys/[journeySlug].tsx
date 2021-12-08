@@ -76,8 +76,6 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
       }
     })
 
-    console.log(data.journey?.blocks)
-
     if (data.journey === null) {
       return {
         notFound: true
