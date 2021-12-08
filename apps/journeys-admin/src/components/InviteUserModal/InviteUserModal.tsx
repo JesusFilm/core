@@ -28,6 +28,7 @@ export const USER_JOURNEY = gql`
     userJourneyRemove(input: $input) {
       userId
       journeyId
+      role
     }
   }
 `
@@ -38,8 +39,32 @@ export const InviteUserModal = ({
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
+  const [userJourneyRemove] = useMutation<UserJourneyRemove>(USER_JOURNEY)
 
   // TODO: create a mutation library to better handle the mutations
+
+  const handleRemoveUser = (
+    userId: string,
+    journeyId: string,
+    role: string
+  ): void => {
+    void userJourneyRemove({
+      variables: {
+        input: {
+          userId,
+          journeyId,
+          role
+        },
+        optimisticResponse: {
+          userJourneyRemove: {
+            userId,
+            journeyId,
+            role
+          }
+        }
+      }
+    })
+  }
 
   return (
     <>
@@ -82,61 +107,89 @@ export const InviteUserModal = ({
             <Typography variant={'body1'} gutterBottom>
               Requested Editing Rights
             </Typography>
-            {usersJourneys?.map((userJourney) => (
-              userJourney.role === 'editor' && <Box
-                key={userJourney.user?.id}
-                display="flex"
-                alignItems="center"
-                sx={{ mt: 2, display: 'flex', flexDirection: 'row' }}
-              >
-                <Avatar src={userJourney.user?.imageUrl as string} />
-                <Box ml={2}>
-                  <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
-                    } ${userJourney.user?.lastName as string}`}</Typography>
-                  <Typography variant={'caption'}>
-                    {userJourney.user?.email}
-                  </Typography>
-                </Box>
-                <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
-                  <InputLabel>Manage</InputLabel>
-                  <Select variant="standard" disableUnderline>
-                    <MenuItem>Approve</MenuItem>
-                    <Divider />
-                    <MenuItem>Remove</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            ))}
+            {usersJourneys?.map(
+              (userJourney) =>
+                userJourney.role === 'inviteRequested' && (
+                  <Box
+                    key={userJourney.user?.id}
+                    display="flex"
+                    alignItems="center"
+                    sx={{ mt: 2, display: 'flex', flexDirection: 'row' }}
+                  >
+                    <Avatar src={userJourney.user?.imageUrl as string} />
+                    <Box ml={2}>
+                      <Typography variant={'body2'}>{`${
+                        userJourney.user?.firstName as string
+                      } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'caption'}>
+                        {userJourney.user?.email}
+                      </Typography>
+                    </Box>
+                    <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
+                      <InputLabel>Manage</InputLabel>
+                      <Select variant="standard" disableUnderline>
+                        <MenuItem>Approve</MenuItem>
+                        <Divider />
+                        <MenuItem
+                          onClick={() =>
+                            handleRemoveUser(
+                              userJourney.userId,
+                              userJourney.journeyId,
+                              userJourney.role
+                            )
+                          }
+                        >
+                          Remove
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                )
+            )}
 
             {/* Lists out all the users with access */}
             <Divider sx={{ my: 2 }} />
             <Typography variant={'body1'} gutterBottom>
               Users With Access
             </Typography>
-            {usersJourneys?.map((userJourney) => (
-              userJourney.role !== 'inviteRequested' && <Box
-                key={userJourney.user?.id}
-                display="flex"
-                alignItems="center"
-              >
-                <Avatar src={userJourney.user?.imageUrl as string} />
-                <Box ml={2}>
-                  <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
-                    } ${userJourney.user?.lastName as string}`}</Typography>
-                  <Typography variant={'caption'}>
-                    {userJourney.user?.email}
-                  </Typography>
-                </Box>
-                <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
-                  <InputLabel>{userJourney.role}</InputLabel>
-                  <Select variant="standard" disableUnderline>
-                    <MenuItem>Approve</MenuItem>
-                    <Divider />
-                    <MenuItem>Remove</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            ))}
+            {usersJourneys?.map(
+              (userJourney) =>
+                userJourney.role !== 'inviteRequested' && (
+                  <Box
+                    key={userJourney.user?.id}
+                    display="flex"
+                    alignItems="center"
+                  >
+                    <Avatar src={userJourney.user?.imageUrl as string} />
+                    <Box ml={2}>
+                      <Typography variant={'body2'}>{`${
+                        userJourney.user?.firstName as string
+                      } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'caption'}>
+                        {userJourney.user?.email}
+                      </Typography>
+                    </Box>
+                    <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
+                      <InputLabel>{userJourney.role}</InputLabel>
+                      <Select variant="standard" disableUnderline>
+                        <MenuItem>Approve</MenuItem>
+                        <Divider />
+                        <MenuItem
+                          onClick={() =>
+                            handleRemoveUser(
+                              userJourney.userId,
+                              userJourney.journeyId,
+                              userJourney.role
+                            )
+                          }
+                        >
+                          Remove
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                )
+            )}
           </Box>
         </Box>
       </Modal>

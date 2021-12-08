@@ -20,7 +20,7 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   const { logOut, user, loading } = UseFirebase()
   const router = useRouter()
-  console.log(user)
+  if (user != null) console.log(user.displayName)
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in

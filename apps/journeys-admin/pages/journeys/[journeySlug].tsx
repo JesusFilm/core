@@ -10,7 +10,10 @@ import {
 import { Typography, Box } from '@mui/material'
 import { UseFirebase } from '../../src/libs/firebaseClient/'
 import { useRouter } from 'next/router'
-import { InviteUserModal, INVITE_USER_MODAL_FIELDS } from '../../src/components/InviteUserModal'
+import {
+  InviteUserModal,
+  INVITE_USER_MODAL_FIELDS
+} from '../../src/components/InviteUserModal'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -47,7 +50,11 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
-        <InviteUserModal usersJourneys={journey.usersJourneys != null ? journey.usersJourneys : undefined} />
+        <InviteUserModal
+          usersJourneys={
+            journey.usersJourneys != null ? journey.usersJourneys : undefined
+          }
+        />
       </Box>
     </>
   )

@@ -44,7 +44,7 @@ model Journey {
   themeName ThemeName  @default(base)
   description String?
   primaryImageBlockId String?
-  primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id])
+  primaryImageBlock Block?    @relation("PrimaryImageJourney", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
   slug      String    @unique
   createdAt DateTime  @default(now())   
   publishedAt DateTime?
@@ -53,9 +53,9 @@ model Journey {
 
 model UserJourney {
   userId    String
-  user      User            @relation("User", fields: [userId], references: [id])
+  user      User            @relation("User", fields: [userId], references: [id], onDelete: Cascade)
   journeyId String
-  journey   Journey         @relation("Journey", fields: [journeyId], references: [id])
+  journey   Journey         @relation("Journey", fields: [journeyId], references: [id], onDelete: Cascade)
   role      UserJourneyRole @default(inviteRequested)
 
   @@unique([userId, journeyId], name: "uniqueUserJourney")
@@ -79,9 +79,9 @@ enum BlockType {
 model Block {
   id                  String     @id @default(uuid())
   blockType           BlockType  @default(StepBlock)
-  journey             Journey    @relation(fields: [journeyId], references: [id])
+  journey             Journey    @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   journeyId           String
-  parentBlock         Block?     @relation("BlockChildren", fields: [parentBlockId], references: [id])
+  parentBlock         Block?     @relation("BlockChildren", fields: [parentBlockId], references: [id], onDelete: Cascade)
   parentBlockId       String?
   childBlocks         Block[]    @relation("BlockChildren")
   primaryImageJourney Journey?   @relation("PrimaryImageJourney")
@@ -100,7 +100,7 @@ model Response {
   id         String       @id @default(uuid())
   type       ResponseType
   userId     String
-  block      Block        @relation(fields: [blockId], references: [id])
+  block      Block        @relation(fields: [blockId], references: [id], onDelete: Cascade)
   blockId    String
   extraAttrs Json
 }
