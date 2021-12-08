@@ -1,5 +1,4 @@
 import { Box, Stack } from '@mui/material'
-// import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { ReactElement } from 'react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
