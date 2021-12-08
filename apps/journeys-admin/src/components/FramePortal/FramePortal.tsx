@@ -30,6 +30,10 @@ function Content({ children, document }: ContentProps): ReactElement {
     [document]
   )
 
+  useEffect(() => {
+    document.body.style.backgroundColor = 'transparent'
+  }, [document])
+
   return <CacheProvider value={cache}>{children}</CacheProvider>
 }
 
