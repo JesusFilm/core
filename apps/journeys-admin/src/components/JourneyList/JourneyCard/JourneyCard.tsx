@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Chip, Typography, Box, Link } from '@mui/material'
+import { Card, Typography, Box, Link, Grid } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -35,7 +35,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         </Typography>
 
         <Typography
-          variant="body2"
+          variant="caption"
           sx={{
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -50,48 +50,44 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       </Link>
 
       <Box sx={{ display: 'flex' }}>
-        {journey.status === 'draft' ? (
-          <Chip
-            label={'Draft'}
-            icon={<EditIcon style={{ color: '#F0720C' }} />}
-            sx={{
-              height: '42px',
-              width: 'auto',
-              borderRadius: '18px',
-              fontSize: '17px',
-              backgroundColor: 'white',
-              ml: 4
-            }}
-          />
-        ) : (
-          <Chip
-            label={'Published'}
-            icon={<CheckCircleIcon style={{ color: '#3AA74A' }} />}
-            sx={{
-              height: '42px',
-              width: 'auto',
-              borderRadius: '18px',
-              fontSize: '17px',
-              backgroundColor: 'white',
-              ml: 4
-            }}
-          />
-        )}
-        {/* Locale formatting does not currently work for every locale */}
-        <Chip
-          label={`${journey.locale
-            .substring(0, 2)
-            .toUpperCase()} (${journey.locale.substring(3)})`}
-          icon={<TranslateIcon />}
-          sx={{
-            height: '42px',
-            width: 'auto',
-            borderRadius: '18px',
-            fontSize: '17px',
-            backgroundColor: 'white',
-            ml: 4
-          }}
-        />
+        <Grid container>
+          <Grid item>
+            {journey.status === 'draft' ? (
+              <EditIcon
+                sx={{
+                  color: '#F0720C',
+                  pr: '6px'
+                }}
+              />
+            ) : (
+              <CheckCircleIcon
+                sx={{
+                  color: '#3AA74A',
+                  pr: '6px'
+                }}
+              />
+            )}
+          </Grid>
+          <Grid item>
+            <Typography variant="caption" sx={{ pr: 3 }}>
+              Draft
+            </Typography>
+          </Grid>
+          {/* Use locale helpers once its completed */}
+          <Grid item>
+            <TranslateIcon
+              sx={{
+                pr: '6px'
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <Typography variant="caption">{`${journey.locale
+              .substring(0, 2)
+              .toUpperCase()} (${journey.locale.substring(3)})`}</Typography>
+          </Grid>
+        </Grid>
+
         <Box sx={{ marginLeft: 'auto' }}>
           <JourneyCardMenu status={journey.status} slug={journey.slug} />
         </Box>
