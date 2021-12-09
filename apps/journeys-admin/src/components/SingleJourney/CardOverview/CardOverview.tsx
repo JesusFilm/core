@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Button, Typography, useTheme } from '@mui/material'
+import { Typography, Fab } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
@@ -13,7 +13,6 @@ export interface CardOverviewProps {
 }
 
 const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
-  const theme = useTheme()
   const breakpoints = useBreakpoints()
 
   const stepBlockLength =
@@ -36,20 +35,20 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
           {breakpoints.md ? `${cardNumber} in this journey` : `${cardNumber}`}
         </Typography>
 
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
+        <Fab
+          variant="extended"
+          size="medium"
           sx={{
-            backgroundColor: theme.palette.primary.main,
-            borderRadius: '20px',
             position: 'absolute',
             bottom: '12px',
             right: '17px'
           }}
+          color="primary"
           href={`/journeys/${slug}/edit`}
         >
+          <EditIcon sx={{ mr: 1 }} />
           Edit
-        </Button>
+        </Fab>
       </>
     )
   } else {
