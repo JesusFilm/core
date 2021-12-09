@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import CardOverview from '.'
 import { steps } from './CardOverviewData'
+import { CardOverviewProps } from './CardOverview'
 
 const CardOverviewDemo = {
   ...journeysAdminConfig,
@@ -11,7 +12,7 @@ const CardOverviewDemo = {
   title: 'Journeys-Admin/SingleJourney/CardOverview'
 }
 
-const Template: Story = ({ ...args }) => (
+const Template: Story<Omit<CardOverviewProps, 'slug'>> = ({ ...args }) => (
   <MockedProvider>
     <CardOverview slug={'my-journey'} {...args} />
   </MockedProvider>

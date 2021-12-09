@@ -9,7 +9,7 @@ import { useBreakpoints } from '@core/shared/ui'
 
 export interface CardOverviewProps {
   slug: string
-  blocks?: Array<TreeBlock<StepBlock>>
+  blocks: Array<TreeBlock<StepBlock>>
 }
 
 const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
@@ -23,7 +23,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
       ? `${stepBlockLength} card`
       : `${stepBlockLength} cards`
 
-  if (blocks != null && stepBlockLength >= 1) {
+  if (stepBlockLength >= 1) {
     return (
       <>
         <CardPreview steps={blocks} />

@@ -19,6 +19,7 @@ interface SingleJourneyPageProps {
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+  const blocks = journey.blocks != null ? transformer(journey.blocks) : []
   return (
     <>
       <Head>
@@ -40,11 +41,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
 
         <CardOverview
           slug={journey.slug}
-          blocks={
-            journey.blocks != null
-              ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
-              : undefined
-          }
+          blocks={blocks as Array<TreeBlock<StepBlock>>}
         />
       </Box>
     </>

@@ -6,7 +6,9 @@ import { steps, oneStep } from './CardOverviewData'
 
 describe('CardOverview', () => {
   it('should render description for no cards', () => {
-    const { getByText } = render(<CardOverview slug={'my-journey'} />)
+    const { getByText } = render(
+      <CardOverview slug={'my-journey'} blocks={[]} />
+    )
     expect(getByText('No cards in this journey')).toBeInTheDocument()
   })
   it('should have edit button when cards are present', () => {
