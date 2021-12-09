@@ -39,6 +39,11 @@ const typeDefs = gql`
     role: UserJourneyRoleForUpdates!
   }
 
+  input UserJourneyRequestInput {
+    userId: ID!
+    journeyId: ID!
+  }
+
   extend type Journey {
     usersJourneys: [UserJourney!]
   }
@@ -58,6 +63,7 @@ const typeDefs = gql`
     userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
     userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
     userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
+    userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
   }
 `
 
@@ -83,7 +89,6 @@ const resolvers: UserJourneyModule.Resolvers = {
     }
   },
   Mutation: {
-    // should be a mutation that invites a user not a mutation that creates a user journey
     async userJourneyCreate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
@@ -93,6 +98,18 @@ const resolvers: UserJourneyModule.Resolvers = {
           userId: input.userId,
           journeyId: input.journeyId,
           role: input.role as UserJourneyModule.UserJourneyRole
+        }
+      })
+    },
+    async userJourneyRequest(_parent, { input }, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('No user token provided')
+
+      return await db.userJourney.create({
+        data: {
+          userId: input.userId,
+          journeyId: input.journeyId,
+          role: 'inviteRequested'
         }
       })
     },

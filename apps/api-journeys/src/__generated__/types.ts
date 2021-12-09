@@ -258,6 +258,7 @@ export type Mutation = {
   userJourneyCreate: UserJourney;
   userJourneyPromote: UserJourney;
   userJourneyRemove: UserJourney;
+  userJourneyRequest: UserJourney;
   userJourneyUpdate: UserJourney;
   videoResponseCreate: VideoResponse;
 };
@@ -310,6 +311,11 @@ export type MutationUserJourneyPromoteArgs = {
 
 export type MutationUserJourneyRemoveArgs = {
   input: UserJourneyRemoveInput;
+};
+
+
+export type MutationUserJourneyRequestArgs = {
+  input: UserJourneyRequestInput;
 };
 
 
@@ -534,6 +540,11 @@ export type UserJourneyRemoveInput = {
   userId: Scalars['ID'];
 };
 
+export type UserJourneyRequestInput = {
+  journeyId: Scalars['ID'];
+  userId: Scalars['ID'];
+};
+
 export type UserJourneyRole =
   | 'editor'
   | 'inviteRequested'
@@ -748,6 +759,7 @@ export type ResolversTypes = {
   UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyPromote: UserJourneyPromote;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
+  UserJourneyRequestInput: UserJourneyRequestInput;
   UserJourneyRole: UserJourneyRole;
   UserJourneyRoleForUpdates: UserJourneyRoleForUpdates;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
@@ -802,6 +814,7 @@ export type ResolversParentTypes = {
   UserJourney: UserJourneyType;
   UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
+  UserJourneyRequestInput: UserJourneyRequestInput;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
@@ -923,6 +936,7 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   userJourneyCreate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyCreateArgs, 'input'>>;
   userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'input'>>;
   userJourneyRemove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRemoveArgs, 'input'>>;
+  userJourneyRequest?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRequestArgs, 'input'>>;
   userJourneyUpdate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyUpdateArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };

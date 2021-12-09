@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
-import { gql } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Head from 'next/head'
 import client from '../../../src/libs/client'
 import {
@@ -10,15 +10,27 @@ import {
 import { Typography, Box, Button } from '@mui/material'
 import { UseFirebase } from '../../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
+import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 import { INVITE_USER_MODAL_FIELDS } from '../../../src/components/InviteUserModal'
 
 interface JourneyInvitePageProps {
   journey: Journey
 }
 
+export const USER_JOURNEY_REQUEST = gql`
+  mutation UserJourneyRequest($input: UserJourneyRequestInput!) {
+    userJourneyRequest(input: $input) {
+      userId
+      journeyId
+    }
+  }
+`
+
 function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
   const { user, loading } = UseFirebase()
   const router = useRouter()
+  const [userJourneyRequest] =
+    useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)
 
   if (user == null) {
     try {
@@ -26,6 +38,27 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
     } catch (e) {
       console.log('on server')
     }
+  }
+
+  const handleClick = (userId: string, journeyId: string): void => {
+    void userJourneyRequest({
+      variables: {
+        input: {
+          userId,
+          journeyId
+        },
+        optimisticResponse: {
+          userJourneyRequest: {
+            userId: userId,
+            journeyId: journeyId
+          }
+        }
+      }
+    })
+
+    localStorage.removeItem('pendingInviteRequest')
+    // TODO: - add a success message or redirect to a success page
+    void router.push(`/journeys`)
   }
 
   useEffect(() => {
@@ -49,58 +82,60 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
       </Head>
       <Box sx={{ m: 10 }}>
         <Typography variant={'h6'}>
-          You have been invited to {journey.title}
+          You need access for {journey.title}
         </Typography>
-        <Button>Accept invite</Button>
+        <Button
+          variant={'contained'}
+          onClick={() => handleClick(user?.uid, journey.id)}
+        >
+          Request Access
+        </Button>
       </Box>
     </>
   )
 }
 
-// export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
-//   async (context) => {
-//     const { data } = await client.query<GetJourney>({
-//       query: gql`
-//         ${INVITE_USER_MODAL_FIELDS}
-//         query GetJourney($id: ID!) {
-//           journey(id: $id, idType: slug) {
-//             id
-//             title
-//             description
-//             status
-//             createdAt
-//             publishedAt
-//             slug
-//             primaryImageBlock {
-//               src
-//             }
-//             usersJourneys {
-//               userId
-//               journeyId
-//               role
-//               user {
-//                 ...InviteUserModalFields
-//               }
-//             }
-//           }
-//         }
-//       `,
-//       variables: {
-//         id: context.query.journeySlug
-//       }
-//     })
+export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
+  async (context) => {
+    const { data } = await client.query<GetJourney>({
+      query: gql`
+        ${INVITE_USER_MODAL_FIELDS}
+        query GetJourneyForRequest($id: ID!) {
+          journey(id: $id, idType: slug) {
+            id
+            title
+            description
+            createdAt
+            primaryImageBlock {
+              src
+            }
+            usersJourneys {
+              userId
+              journeyId
+              role
+              user {
+                ...InviteUserModalFields
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        id: context.query.journeySlug
+      }
+    })
 
-//     if (data.journey === null) {
-//       return {
-//         notFound: true
-//       }
-//     } else {
-//       return {
-//         props: {
-//           journey: data.journey
-//         }
-//       }
-//     }
-//   }
+    if (data.journey === null) {
+      return {
+        notFound: true
+      }
+    } else {
+      return {
+        props: {
+          journey: data.journey
+        }
+      }
+    }
+  }
 
 export default JourneyInvitePage

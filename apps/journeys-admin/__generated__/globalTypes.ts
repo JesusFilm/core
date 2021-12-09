@@ -97,37 +97,6 @@ export enum ThemeName {
   base = "base",
 }
 
-export enum UserJourneyRole {
-  editor = "editor",
-  inviteRequested = "inviteRequested",
-  owner = "owner",
-}
-
-export enum UserJourneyRoleForUpdates {
-  editor = "editor",
-  inviteRequested = "inviteRequested",
-}
-
-export interface UserCreateInput {
-  email?: string | null;
-  firstName?: string | null;
-  id?: string | null;
-  imageUrl?: string | null;
-  lastName?: string | null;
-  requestInviteToJourneyId?: string | null;
-}
-
-export interface UserJourneyRemoveInput {
-  journeyId: string;
-  role: UserJourneyRoleForUpdates;
-  userId: string;
-}
-
-export interface UserJourneyUpdateInput {
-  journeyId: string;
-  userId: string;
-}
-
 export enum TypographyAlign {
   center = "center",
   left = "left",
@@ -155,6 +124,17 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum UserJourneyRole {
+  editor = "editor",
+  inviteRequested = "inviteRequested",
+  owner = "owner",
+}
+
+export enum UserJourneyRoleForUpdates {
+  editor = "editor",
+  inviteRequested = "inviteRequested",
+}
+
 export enum VideoResponseStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
@@ -172,6 +152,31 @@ export interface SignUpResponseCreateInput {
   email: string;
   id?: string | null;
   name: string;
+}
+
+export interface UserCreateInput {
+  email?: string | null;
+  firstName?: string | null;
+  id?: string | null;
+  imageUrl?: string | null;
+  lastName?: string | null;
+  requestInviteToJourneyId?: string | null;
+}
+
+export interface UserJourneyRemoveInput {
+  journeyId: string;
+  role: UserJourneyRoleForUpdates;
+  userId: string;
+}
+
+export interface UserJourneyRequestInput {
+  journeyId: string;
+  userId: string;
+}
+
+export interface UserJourneyUpdateInput {
+  journeyId: string;
+  userId: string;
 }
 
 export interface VideoResponseCreateInput {

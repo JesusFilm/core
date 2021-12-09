@@ -87,18 +87,18 @@ const resolvers: UserModule.Resolvers = {
           imageUrl: imageUrl as string
         }
       })
-      if (
-        requestInviteToJourneyId !== null &&
-        requestInviteToJourneyId !== undefined
-      ) {
-        await db.userJourney.create({
-          data: {
-            userId: user.id,
-            journeyId: requestInviteToJourneyId,
-            role: 'inviteRequested'
-          }
-        })
-      }
+      // if (
+      //   requestInviteToJourneyId !== null &&
+      //   requestInviteToJourneyId !== undefined
+      // ) {
+      //   await db.userJourney.create({
+      //     data: {
+      //       userId: user.id,
+      //       journeyId: requestInviteToJourneyId,
+      //       role: 'inviteRequested'
+      //     }
+      //   })
+      // }
       return user
     }
   }

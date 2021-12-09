@@ -252,6 +252,7 @@ extend type Mutation {
   userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
+  userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
@@ -447,6 +448,11 @@ input UserJourneyRemoveInput {
   userId: ID!
   journeyId: ID!
   role: UserJourneyRoleForUpdates!
+}
+
+input UserJourneyRequestInput {
+  userId: ID!
+  journeyId: ID!
 }
 
 enum UserJourneyRole {

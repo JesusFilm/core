@@ -1,6 +1,6 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
-import { firebaseClient } from '../../libs/firebaseClient'
+import { firebaseClient, UseFirebase } from '../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
@@ -24,6 +24,16 @@ export function SignIn(): ReactElement {
   const router = useRouter()
   const auth = getAuth(firebaseClient)
   const [userCreate] = useMutation<UserCreate>(USER_CREATE)
+  const { user, loading } = UseFirebase()
+
+  useEffect(() => {
+    // if user is logged in, redirect to home
+    if (loading === false && user != null) {
+      void router.push('/journeys')
+    }
+
+    // TODO: should we handle redirecting the user to the invite page if they have a pending invite?
+  }, [loading, user, router])
 
   const handleAuthResponse = (
     id: string,
