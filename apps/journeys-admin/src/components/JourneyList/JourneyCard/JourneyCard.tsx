@@ -19,7 +19,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
       : moment(journey.createdAt).format('MMM Do, YYYY')
 
   return (
-    <Card sx={{ borderRadius: '0px', px: 6, py: 4 }} variant="outlined">
+    <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
       <Typography
         variant="subtitle1"
         sx={{
