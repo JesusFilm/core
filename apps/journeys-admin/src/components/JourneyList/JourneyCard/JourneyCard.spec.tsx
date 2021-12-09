@@ -44,4 +44,10 @@ describe('JourneyCard', () => {
     const { getAllByText } = render(<JourneyCard journey={defaultJourney} />)
     expect(getAllByText('Draft')[0]).toBeInTheDocument()
   })
+
+  it('should render card with correct link', () => {
+    const { getByRole } = render(<JourneyCard journey={defaultJourney} />)
+
+    expect(getByRole('link')).toHaveAttribute('href', '/journeys/default')
+  })
 })

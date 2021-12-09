@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Chip, Typography, Box } from '@mui/material'
+import { Card, Chip, Typography, Box, Link } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -20,32 +20,34 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
   return (
     <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
-      <Typography
-        variant="subtitle1"
-        sx={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden'
-        }}
-        gutterBottom
-      >
-        {journey.title}
-      </Typography>
+      <Link href={`/journeys/${journey.slug}`} underline="none">
+        <Typography
+          variant="subtitle1"
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+          gutterBottom
+        >
+          {journey.title}
+        </Typography>
 
-      <Typography
-        variant="body2"
-        sx={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden'
-        }}
-        gutterBottom
-      >
-        {date}
-        {journey.description !== null && ` - ${journey.description}`}
-      </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+          gutterBottom
+        >
+          {date}
+          {journey.description !== null && ` - ${journey.description}`}
+        </Typography>
+      </Link>
 
       <Box sx={{ display: 'flex' }}>
         {journey.status === 'draft' ? (
