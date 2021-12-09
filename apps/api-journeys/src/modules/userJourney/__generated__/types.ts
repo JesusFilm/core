@@ -17,8 +17,7 @@ export namespace UserJourneyModule {
   
   interface DefinedInputFields {
     UserJourneyCreateInput: 'userId' | 'journeyId' | 'role';
-    UserJourneyUpdateInput: 'userId' | 'journeyId' | 'role';
-    UserJourneyPromoteInput: 'userId' | 'journeyId' | 'role';
+    UserJourneyUpdateInput: 'userId' | 'journeyId';
     UserJourneyRemoveInput: 'userId' | 'journeyId' | 'role';
   };
   
@@ -27,7 +26,6 @@ export namespace UserJourneyModule {
   export type UserJourneyPromote = DefinedEnumValues['UserJourneyPromote'];
   export type UserJourneyCreateInput = Pick<Types.UserJourneyCreateInput, DefinedInputFields['UserJourneyCreateInput']>;
   export type UserJourneyUpdateInput = Pick<Types.UserJourneyUpdateInput, DefinedInputFields['UserJourneyUpdateInput']>;
-  export type UserJourneyPromoteInput = Pick<Types.UserJourneyPromoteInput, DefinedInputFields['UserJourneyPromoteInput']>;
   export type UserJourneyRemoveInput = Pick<Types.UserJourneyRemoveInput, DefinedInputFields['UserJourneyRemoveInput']>;
   export type Journey = Types.Journey;
   export type UserJourney = Pick<Types.UserJourney, DefinedFields['UserJourney']>;

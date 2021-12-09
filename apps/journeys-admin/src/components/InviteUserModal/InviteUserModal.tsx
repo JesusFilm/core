@@ -18,9 +18,9 @@ import {
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
 import { RemoveUser } from './RemoveUser'
+import { ApproveUser } from './ApproveUser'
 
 interface InviteUserModalProps {
-  // users: User[]
   journey: Journey
   usersJourneys: UsersJourneys[] | undefined
 }
@@ -56,7 +56,6 @@ export const InviteUserModal = ({
             </Typography>
             <Divider sx={{ mt: 2, mb: 3 }} />
             <FormControl fullWidth>
-              {/* This is where the invite link goes */}
               <FilledInput
                 value={`https://nextsteps.is/journeys/${journey.slug}/invite`}
                 startAdornment={<LinkRounded />}
@@ -95,7 +94,7 @@ export const InviteUserModal = ({
                     <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
                       <InputLabel>Manage</InputLabel>
                       <Select variant="standard" disableUnderline>
-                        <MenuItem>Approve</MenuItem>
+                        <ApproveUser usersJourneys={userJourney} />
                         <Divider />
                         <RemoveUser usersJourneys={userJourney} />
                       </Select>

@@ -250,7 +250,7 @@ extend type Mutation {
   userCreate(input: UserCreateInput!): User!
   userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
   userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
-  userJourneyPromote(input: UserJourneyPromoteInput!): UserJourney!
+  userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
@@ -443,12 +443,6 @@ enum UserJourneyPromote {
   owner
 }
 
-input UserJourneyPromoteInput {
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyPromote!
-}
-
 input UserJourneyRemoveInput {
   userId: ID!
   journeyId: ID!
@@ -469,7 +463,6 @@ enum UserJourneyRoleForUpdates {
 input UserJourneyUpdateInput {
   userId: ID!
   journeyId: ID!
-  role: UserJourneyRoleForUpdates!
 }
 
 type VideoArclight implements VideoContent {

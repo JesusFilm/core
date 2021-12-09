@@ -47,6 +47,11 @@ export interface UserJourneyRemoveInput {
   userId: string;
 }
 
+export interface UserJourneyUpdateInput {
+  journeyId: string;
+  userId: string;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

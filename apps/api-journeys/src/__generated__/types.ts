@@ -304,7 +304,7 @@ export type MutationUserJourneyCreateArgs = {
 
 
 export type MutationUserJourneyPromoteArgs = {
-  input: UserJourneyPromoteInput;
+  input: UserJourneyUpdateInput;
 };
 
 
@@ -528,12 +528,6 @@ export type UserJourneyPromote =
   | 'editor'
   | 'owner';
 
-export type UserJourneyPromoteInput = {
-  journeyId: Scalars['ID'];
-  role: UserJourneyPromote;
-  userId: Scalars['ID'];
-};
-
 export type UserJourneyRemoveInput = {
   journeyId: Scalars['ID'];
   role: UserJourneyRoleForUpdates;
@@ -551,7 +545,6 @@ export type UserJourneyRoleForUpdates =
 
 export type UserJourneyUpdateInput = {
   journeyId: Scalars['ID'];
-  role: UserJourneyRoleForUpdates;
   userId: Scalars['ID'];
 };
 
@@ -754,7 +747,6 @@ export type ResolversTypes = {
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
   UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyPromote: UserJourneyPromote;
-  UserJourneyPromoteInput: UserJourneyPromoteInput;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyRole: UserJourneyRole;
   UserJourneyRoleForUpdates: UserJourneyRoleForUpdates;
@@ -809,7 +801,6 @@ export type ResolversParentTypes = {
   UserCreateInput: UserCreateInput;
   UserJourney: UserJourneyType;
   UserJourneyCreateInput: UserJourneyCreateInput;
-  UserJourneyPromoteInput: UserJourneyPromoteInput;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: VideoArclight;
