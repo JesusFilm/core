@@ -9,7 +9,6 @@ import {
   FilledInput,
   FormControl,
   Select,
-  MenuItem,
   InputLabel
 } from '@mui/material'
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
@@ -19,6 +18,7 @@ import {
 } from '../../../__generated__/GetJourney'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
+import { PromoteUser } from './PromoteUser'
 
 interface InviteUserModalProps {
   journey: Journey
@@ -35,6 +35,8 @@ export const InviteUserModal = ({
 
   return (
     <>
+      {/* Button to be removed and it's functionalities when merged to journeys single journey */}
+      {/* This modal should be progamatically called from journeys single journey */}
       <Button variant="contained" onClick={handleOpen}>
         Invite
       </Button>
@@ -61,6 +63,7 @@ export const InviteUserModal = ({
                 startAdornment={<LinkRounded />}
                 endAdornment={<ContentCopyRounded />}
                 disableUnderline
+                hiddenLabel
               />
             </FormControl>
             <Typography variant={'caption'}>
@@ -128,7 +131,7 @@ export const InviteUserModal = ({
                     <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
                       <InputLabel>{userJourney.role}</InputLabel>
                       <Select variant="standard" disableUnderline>
-                        <MenuItem>Approve</MenuItem>
+                        <PromoteUser usersJourneys={userJourney} />
                         <Divider />
                         <RemoveUser usersJourneys={userJourney} />
                       </Select>

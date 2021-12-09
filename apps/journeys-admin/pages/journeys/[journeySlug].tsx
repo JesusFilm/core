@@ -29,16 +29,22 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
     if (loading === false && user == null) {
       void router.push('/')
     }
-    if (user == null || journey.usersJourneys == null || journey.usersJourneys.length === 0 ) {
+    if (
+      user == null ||
+      journey.usersJourneys == null ||
+      journey.usersJourneys.length === 0
+    ) {
       setCurrentUsersJourney(null)
     } else {
-      const userJourneys = journey.usersJourneys?.filter(userJourney => userJourney.userId === user.uid)
+      const userJourneys = journey.usersJourneys?.filter(
+        (userJourney) => userJourney.userId === user.uid
+      )
       if (userJourneys.length > 0) {
         setCurrentUsersJourney(userJourneys[0])
       }
     }
   }, [user, router, loading, journey.usersJourneys])
-  
+
   return (
     <>
       <Head>
@@ -56,17 +62,20 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>Created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>Published: {journey.publishedAt}</Typography>
-        {currentUsersJourney?.role === "inviteRequested" 
-          ? "Your invite is pending" : currentUsersJourney?.role === "editor"
-          ? "You can edit" : currentUsersJourney !== null
-          ? 
-            <InviteUserModal
-          usersJourneys={
-            journey.usersJourneys != null ? journey.usersJourneys : undefined
-          }
-          journey={journey}
-        />
-        : "You don't have permission to do things" }
+        {currentUsersJourney?.role === 'inviteRequested' ? (
+          'Your invite is pending'
+        ) : currentUsersJourney?.role === 'editor' ? (
+          'You can edit'
+        ) : currentUsersJourney !== null ? (
+          <InviteUserModal
+            usersJourneys={
+              journey.usersJourneys != null ? journey.usersJourneys : undefined
+            }
+            journey={journey}
+          />
+        ) : (
+          "You don't have permission to do things"
+        )}
       </Box>
     </>
   )

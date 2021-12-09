@@ -9,6 +9,7 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
   output   = "../../../node_modules/.prisma/api-journeys-client"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 enum ThemeMode {
