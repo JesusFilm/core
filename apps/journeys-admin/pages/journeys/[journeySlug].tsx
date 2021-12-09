@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
@@ -22,14 +22,23 @@ interface SingleJourneyPageProps {
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
   const { user, loading } = UseFirebase()
   const router = useRouter()
+  const [currentUsersJourney, setCurrentUsersJourney] = useState(null)
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
     if (loading === false && user == null) {
       void router.push('/')
     }
-  }, [user, router, loading])
-
+    if (user == null || journey.usersJourneys == null || journey.usersJourneys.length === 0 ) {
+      setCurrentUsersJourney(null)
+    } else {
+      const userJourneys = journey.usersJourneys?.filter(userJourney => userJourney.userId === user.uid)
+      if (userJourneys.length > 0) {
+        setCurrentUsersJourney(userJourneys[0])
+      }
+    }
+  }, [user, router, loading, journey.usersJourneys])
+  
   return (
     <>
       <Head>
@@ -43,19 +52,21 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         )}
       </Head>
       <Box sx={{ m: 10 }}>
-        <Typography variant={'h2'} sx={{ mb: 4 }}>
-          Single Journey Page
-        </Typography>
-        <Typography variant={'h6'}>{journey.title}</Typography>
+        <Typography variant={'h2'}>{journey.title}</Typography>
         <Typography variant={'h6'}>{journey.status}</Typography>
-        <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
-        <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
-        <InviteUserModal
+        <Typography variant={'h6'}>Created: {journey.createdAt}</Typography>
+        <Typography variant={'h6'}>Published: {journey.publishedAt}</Typography>
+        {currentUsersJourney?.role === "inviteRequested" 
+          ? "Your invite is pending" : currentUsersJourney?.role === "editor"
+          ? "You can edit" : currentUsersJourney !== null
+          ? 
+            <InviteUserModal
           usersJourneys={
             journey.usersJourneys != null ? journey.usersJourneys : undefined
           }
           journey={journey}
         />
+        : "You don't have permission to do things" }
       </Box>
     </>
   )

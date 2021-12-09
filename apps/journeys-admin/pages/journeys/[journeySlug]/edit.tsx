@@ -23,10 +23,7 @@ function SingleJourneyEditPage({
         <title>{journey.title}</title>
       </Head>
       <Box sx={{ m: 10 }}>
-        <Typography variant={'h2'} sx={{ mb: 4 }}>
-          Single Journey Page
-        </Typography>
-        <Typography variant={'h6'}>{journey.title}</Typography>
+        <Typography variant={'h2'}>Edit {journey.title}</Typography>
       </Box>
     </>
   )
