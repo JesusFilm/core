@@ -53,7 +53,7 @@ export const theme = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          fontWeight: 'bold',
+          fontFamily: "'Montserrat', sans-serif",
           textTransform: 'none'
         }
       }
