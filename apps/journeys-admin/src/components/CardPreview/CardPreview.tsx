@@ -20,7 +20,7 @@ export function CardPreview({
   return (
     <Stack
       direction="row"
-      spacing={4}
+      spacing={1}
       sx={{
         overflowX: 'auto',
         py: 5,
@@ -35,9 +35,9 @@ export function CardPreview({
             borderRadius: 2,
             transition: '0.2s border-color ease-out',
             position: 'relative',
-            maxWidth: 89,
-            minWidth: 89,
-            height: 134,
+            maxWidth: 99,
+            minWidth: 99,
+            height: 150,
             boxSizing: 'content-box',
             overflow: 'hidden',
             border: (theme) =>
@@ -59,7 +59,7 @@ export function CardPreview({
           />
           <Box
             sx={{
-              transform: 'scale(0.25)',
+              transform: 'scale(0.28)',
               transformOrigin: 'top left'
             }}
           >
