@@ -1,57 +1,107 @@
-import { ReactElement, useContext, useState } from 'react'
-import { AppBar, Drawer as MuiDrawer, Toolbar, Typography } from '@mui/material'
+import { ReactElement, ReactNode, useContext } from 'react'
+import {
+  AppBar,
+  Drawer as MuiDrawer,
+  IconButton,
+  Theme,
+  Toolbar,
+  Typography
+} from '@mui/material'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { EditorContext } from '../Context'
+import { Close } from '@mui/icons-material'
 
 export const DRAWER_WIDTH = 328
 
+interface DrawerContentProps {
+  title?: string
+  children?: ReactNode
+  handleDrawerToggle: () => void
+}
+
+function DrawerContent({
+  title,
+  children,
+  handleDrawerToggle
+}: DrawerContentProps): ReactElement {
+  return (
+    <>
+      <AppBar position="static" color="default">
+        <Toolbar>
+          <Typography
+            variant="subtitle1"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
+            {title}
+          </Typography>
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+            edge="end"
+          >
+            <Close />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      {children}
+    </>
+  )
+}
+
 export function Drawer(): ReactElement {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
-    state: { drawerTitle, drawerChildren }
+    state: {
+      drawerTitle: title,
+      drawerChildren: children,
+      drawerMobileOpen: mobileOpen
+    },
+    dispatch
   } = useContext(EditorContext)
 
   const handleDrawerToggle = (): void => {
-    setMobileOpen(!mobileOpen)
+    dispatch({
+      type: 'SetDrawerMobileOpenAction',
+      mobileOpen: !mobileOpen
+    })
   }
 
-  return (
+  return smUp ? (
+    <MuiDrawer
+      anchor="right"
+      variant="permanent"
+      sx={{
+        display: { xs: 'none', sm: 'block' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: DRAWER_WIDTH
+        }
+      }}
+      ModalProps={{
+        keepMounted: true
+      }}
+      open
+    >
+      <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
+        {children}
+      </DrawerContent>
+    </MuiDrawer>
+  ) : (
     <>
       <MuiDrawer
         anchor="bottom"
         variant="temporary"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true // Better open performance on mobile.
-        }}
         sx={{
           display: { xs: 'block', sm: 'none' }
         }}
       >
-        {drawerChildren}
-      </MuiDrawer>
-      <MuiDrawer
-        anchor="right"
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH }
-        }}
-        open
-      >
-        <AppBar position="static" color="default">
-          <Toolbar>
-            <Typography
-              variant="subtitle1"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
-              {drawerTitle}
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        {drawerChildren}
+        <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
+          {children}
+        </DrawerContent>
       </MuiDrawer>
     </>
   )

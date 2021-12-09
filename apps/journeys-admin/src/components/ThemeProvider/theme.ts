@@ -72,6 +72,12 @@ export const theme = createTheme({
     MuiToolbar: {
       defaultProps: {
         variant: 'dense'
+      },
+      styleOverrides: {
+        dense: {
+          paddingLeft: 24,
+          paddingRight: 24
+        }
       }
     }
   }

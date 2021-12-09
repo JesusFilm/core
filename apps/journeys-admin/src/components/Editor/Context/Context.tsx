@@ -15,6 +15,7 @@ interface EditorState {
   selectedAttributeId?: string
   drawerTitle?: string
   drawerChildren?: ReactNode
+  drawerMobileOpen: boolean
 }
 
 interface SetSelectedStepAction {
@@ -36,6 +37,12 @@ interface SetDrawerPropsAction {
   type: 'SetDrawerPropsAction'
   title?: string
   children?: ReactNode
+  mobileOpen?: boolean
+}
+
+interface SetDrawerMobileOpenAction {
+  type: 'SetDrawerMobileOpenAction'
+  mobileOpen: boolean
 }
 
 type EditorAction =
@@ -43,6 +50,7 @@ type EditorAction =
   | SetSelectedBlockAction
   | SetSelectedAttributeIdAction
   | SetDrawerPropsAction
+  | SetDrawerMobileOpenAction
 
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
@@ -56,7 +64,14 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
       return {
         ...state,
         drawerTitle: action.title,
-        drawerChildren: action.children
+        drawerChildren: action.children,
+        drawerMobileOpen:
+          action.mobileOpen != null ? action.mobileOpen : state.drawerMobileOpen
+      }
+    case 'SetDrawerMobileOpenAction':
+      return {
+        ...state,
+        drawerMobileOpen: action.mobileOpen
       }
   }
 }
@@ -65,7 +80,7 @@ export const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
-  state: { steps: [] },
+  state: { steps: [], drawerMobileOpen: false },
   dispatch: () => null
 })
 
@@ -82,6 +97,7 @@ export function EditorProvider({
     steps: [],
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
+    drawerMobileOpen: false,
     ...initialState
   })
 
