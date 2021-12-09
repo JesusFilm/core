@@ -25,7 +25,7 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
           }}
         >
           {journeys.map((journey) => (
-            <Box key={journey.id}>
+            <Box key={journey.id} aria-label="journey-card">
               <Link underline="none" href={`/journeys/${journey.slug}`}>
                 {/* The link will override cardMenu */}
                 <JourneyCard journey={journey} />

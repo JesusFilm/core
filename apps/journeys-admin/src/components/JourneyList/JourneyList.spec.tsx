@@ -1,11 +1,16 @@
 import { render } from '@testing-library/react'
 import JourneyList from './JourneyList'
-import { defaultJourney } from './journeyListData'
+import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 
 describe('JourneyList', () => {
   it('should render all journeys', () => {
-    render(<JourneyList journeys={[defaultJourney]} />)
-    // check number of journeys in list is correct
-    // check id and order or journeys
+    const { getAllByRole } = render(
+      <JourneyList journeys={[defaultJourney, publishedJourney, oldJourney]} />
+    )
+    expect(getAllByRole('heading').length).toBe(3)
+  })
+  it('should render text when there are no journeys', () => {
+    const { getByText } = render(<JourneyList journeys={[]} />)
+    expect(getByText('No journeys')).toBeInTheDocument()
   })
 })
