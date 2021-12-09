@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Card, Typography } from '@mui/material'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import JourneyCard from './JourneyCard'
@@ -12,24 +12,24 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
   // const theme = useTheme()
   const breakpoints = useBreakpoints()
   const border = breakpoints.md ? 3 : 0
+  let padding = '1px'
   return (
     <>
       {journeys.length > 0 ? (
-        <Box
+        <Card
           sx={{
-            borderRadius: border,
-            outline: 'solid',
-            outlineColor: '#DEDFE0', // theme.palette.surface.dark
-            outlineWidth: 1,
-            overflow: 'hidden'
+            borderRadius: border
           }}
         >
-          {journeys.map((journey) => (
-            <Box key={journey.id}>
-              <JourneyCard journey={journey} />
-            </Box>
-          ))}
-        </Box>
+          {journeys.map((journey, i) => {
+            padding = i === journeys.length - 1 ? '0px' : '1px'
+            return (
+              <Box key={journey.id} sx={{ pb: padding }}>
+                <JourneyCard journey={journey} />
+              </Box>
+            )
+          })}
+        </Card>
       ) : (
         <Typography variant="h6" sx={{ textAlign: 'center' }}>
           No journeys
