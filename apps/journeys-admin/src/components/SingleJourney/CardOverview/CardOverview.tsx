@@ -23,41 +23,38 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
       ? `${stepBlockLength} card`
       : `${stepBlockLength} cards`
 
-  if (stepBlockLength >= 1) {
-    return (
-      <>
-        <CardPreview steps={blocks} />
+  return (
+    <>
+      {stepBlockLength > 0 && (
+        <>
+          <CardPreview steps={blocks} />
 
-        <Typography
-          variant="body1"
-          sx={{ pt: 2, flex: 1, textAlign: 'center' }}
-        >
-          {breakpoints.md ? `${cardNumber} in this journey` : `${cardNumber}`}
-        </Typography>
-
-        <Fab
-          variant="extended"
-          size="medium"
-          sx={{
-            position: 'absolute',
-            bottom: '12px',
-            right: '17px'
-          }}
-          color="primary"
-          href={`/journeys/${slug}/edit`}
-        >
-          <EditIcon sx={{ mr: 1 }} />
-          Edit
-        </Fab>
-      </>
-    )
-  } else {
-    return (
-      <Typography variant="h6" sx={{ pt: 2, flex: 1, textAlign: 'center' }}>
-        No cards in this journey
+          <Fab
+            variant="extended"
+            size="medium"
+            sx={{
+              position: 'absolute',
+              bottom: '12px',
+              right: '17px'
+            }}
+            color="primary"
+            href={`/journeys/${slug}/edit`}
+          >
+            <EditIcon sx={{ mr: 1 }} />
+            Edit
+          </Fab>
+        </>
+      )}
+      <Typography variant="body1" sx={{ pt: 2, flex: 1, textAlign: 'center' }}>
+        {stepBlockLength > 0
+          ? breakpoints.md
+            ? `${cardNumber} in this journey`
+            : `${cardNumber}`
+          : 'No cards in this journey'}
       </Typography>
-    )
-  }
+      :
+    </>
+  )
 }
 
 export default CardOverview
