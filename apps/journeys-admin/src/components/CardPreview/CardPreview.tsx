@@ -35,9 +35,9 @@ export function CardPreview({
             borderRadius: 2,
             transition: '0.2s border-color ease-out',
             position: 'relative',
-            maxWidth: 99,
-            minWidth: 99,
-            height: 150,
+            maxWidth: 95,
+            minWidth: 95,
+            height: 140,
             boxSizing: 'content-box',
             overflow: 'hidden',
             border: (theme) =>
@@ -59,11 +59,11 @@ export function CardPreview({
           />
           <Box
             sx={{
-              transform: 'scale(0.28)',
+              transform: 'scale(0.25)',
               transformOrigin: 'top left'
             }}
           >
-            <FramePortal width={356} height={536}>
+            <FramePortal width={380} height={560}>
               <ThemeProvider
                 themeName={ThemeName.base}
                 themeMode={ThemeMode.light}
