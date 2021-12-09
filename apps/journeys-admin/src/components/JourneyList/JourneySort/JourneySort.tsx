@@ -68,7 +68,9 @@ const JourneySort = ({
         <FormLabel component="legend">Sort By</FormLabel>
         <RadioGroup
           aria-label="sort-by-options"
-          defaultValue={sortBy === SortBy.UNDEFINED ? SortBy.CREATED_AT : sortBy}
+          defaultValue={
+            sortBy === SortBy.UNDEFINED ? SortBy.CREATED_AT : sortBy
+          }
           name="sort-by-buttons-group"
           onChange={handleSubmit}
         >

@@ -1,148 +1,88 @@
 import { render, fireEvent } from '@testing-library/react'
 import { SortBy } from '.'
 import JourneySort from './JourneySort'
+import { useState, ReactElement } from 'react'
+
+export const JourneySortMock = (): ReactElement => {
+  const [sortBy, setSortBy] = useState(SortBy.UNDEFINED)
+  return <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
+}
 
 describe('JourneySort', () => {
   it('should sort by date created by default', () => {
-    const {getByRole, getByText, getByDisplayValue} = render(
-      <JourneySort
-        sortBy={SortBy.UNDEFINED}
-        setSortBy={() => {
-          console.log()
-        }}
-      />
-    )
-
-    const button = getByRole('button');
-    const buttonSpan = button.querySelector('span');
-    console.log("Button Span: ",buttonSpan?.textContent);
-   // console.log(button);
-    expect(button).toBeInTheDocument();
-
-    // Check Chip label is "Sort By"
-    expect(getByText('Sort By')).toBeInTheDocument();
-
-    // fireEvent click Chip
-    fireEvent.click(button);
+    const { getByRole, getByDisplayValue } = render(<JourneySortMock />)
+    // Check chip label is "Sort By"
+    const button = getByRole('button')
+    const buttonSpan = button.querySelector('span')
+    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
+    expect(buttonSpan?.textContent).toBe('Sort By')
+    // open the sortBy form
+    fireEvent.click(button)
     // Check radio option default value is "CREATED_AT"
-    expect(getByDisplayValue('Date Created')).toBeChecked();
-
-    const applyButton = getByText('Apply');
-    expect(applyButton).toBeInTheDocument();
-    fireEvent.click(applyButton);
-    const buttonSpanNew = button.querySelector('span');
-    console.log("Button Span after: ",buttonSpanNew?.textContent);
+    expect(getByDisplayValue('Date Created')).toBeChecked()
   })
 
-  it('should sort by name', () => {
-    const { getByLabelText, getByText} = render(
-      <JourneySort
-        sortBy={SortBy.UNDEFINED}
-        setSortBy={() => {
-          console.log()
-        }}
-        open={true}
-      />
-    )
-     const nameLabel = getByLabelText("Name");
-     expect(nameLabel).not.toBeChecked();
+  it('should sort by name', async () => {
+    const { getByRole, getByLabelText } = render(<JourneySortMock />)
+    // open the sort form
+    fireEvent.click(getByRole('button'))
 
-    // fireEvent change to name
-    fireEvent.click(nameLabel);
-    expect(nameLabel).toBeChecked();
-    // fireEvent click to apply button
-    const applyButton = getByText('Apply');
-    expect(applyButton).toBeInTheDocument();
-    fireEvent.click(applyButton);
-
-
-    // Check handle submit is called correctly
-
-    // expect(JourneySort.handleSubmit).toHaveBeenCalled(); 
-  
-    // click cancel to close form
-    const cancelButton = getByText('Cancel');
-    fireEvent.click(cancelButton);
-    // Check Chip label has changed
-    expect(getByText('Name')).toBeInTheDocument();
-
+    const nameLabel = getByLabelText('Name')
+    expect(nameLabel).not.toBeChecked()
+    fireEvent.click(nameLabel)
+    expect(nameLabel).toBeChecked()
+    // Check Chip label has changed to Name
+    const button = getByRole('button')
+    const buttonSpan = button.querySelector('span')
+    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
+    expect(buttonSpan?.textContent).toBe('Name')
   })
 
   it('should sort by date created', () => {
-    const { getByLabelText, getByText} = render(
-      <JourneySort
-        sortBy={SortBy.UNDEFINED}
-        setSortBy={() => {
-          console.log()
-        }}
-        open={true}
-      />
-    )
-    // fireEvent change value to dateCreated - see that handleSubmit not called
-    const dateCreatedLabel = getByLabelText("Date Created");
-    fireEvent.click(dateCreatedLabel);
-    expect(dateCreatedLabel).toBeChecked();
+    const { getByRole, getByLabelText } = render(<JourneySortMock />)
+    // open the sort form
+    fireEvent.click(getByRole('button'))
+    // fireEvent change value to dateCreated
+    const dateCreatedLabel = getByLabelText('Date Created')
+    fireEvent.click(dateCreatedLabel)
+    expect(dateCreatedLabel).toBeChecked()
 
-    const nameLabel = getByLabelText("Name");
-    expect(nameLabel).not.toBeChecked();
+    const nameLabel = getByLabelText('Name')
+    expect(nameLabel).not.toBeChecked()
     // fireEvent change to name then dateCreated
-    fireEvent.click(nameLabel);
-    expect(nameLabel).toBeChecked();
-    fireEvent.click(dateCreatedLabel);
-    expect(dateCreatedLabel).toBeChecked();
-    // fireEvent click to apply button
-    const applyButton = getByText('Apply');
-    fireEvent.click(applyButton);
+    fireEvent.click(nameLabel)
+    expect(nameLabel).toBeChecked()
+    fireEvent.click(dateCreatedLabel)
+    expect(dateCreatedLabel).toBeChecked()
 
-    // Check handle submit is called correctly
-
-    // click cancel to close form
-    const cancelButton = getByText('Cancel');
-    fireEvent.click(cancelButton);
-    // Check Chip label has changed
-    expect(getByText('Date Created')).toBeInTheDocument();
+    // Check Chip label is now "Date Created"
+    const button = getByRole('button')
+    const buttonSpan = button.querySelector('span')
+    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
+    expect(buttonSpan?.textContent).toBe('Date Created')
   })
 
   it('should not set sort value on cancel button click', () => {
-    const {getByText, getByLabelText} = render(
-      <JourneySort
-        sortBy={SortBy.UNDEFINED}
-        setSortBy={() => {
-          console.log()
-        }}
-        open={true}
-      />
-    )
-    const dateCreatedLabel = getByLabelText("Date Created");
-    fireEvent.click(dateCreatedLabel);
-    const applyButton = getByText('Apply');
-    fireEvent.click(applyButton);
-    // Check handle submit not called
-    // Check Popover / Drawers not open
+    const { getByText, getByRole, queryByRole } = render(<JourneySortMock />)
+    // open the sort form
+    fireEvent.click(getByRole('button'))
+
+    // Check that drawer has opened
+    const drawer = getByRole('presentation')
+    expect(drawer).toHaveAttribute('id', 'journeys-sort-drawer')
+    expect(drawer).toBeInTheDocument()
 
     // click cancel
-    const cancelButton = getByText('Cancel');
-    fireEvent.click(cancelButton);
-    
+    const cancelButton = getByText('Cancel')
+    fireEvent.click(cancelButton)
 
-    // Check Chip label is "Sort By"
-     expect(getByText('Sort B', {selector: 'span'})).toBeInTheDocument();
-  })
+    // Since it's closed, the journeys-sort-drawer will now have aria-hidden=true property, so queryByRole will return null
+    expect(queryByRole('presentation')).toBeNull()
 
-  it('should not set sort value on close', () => {
-    const {getByText} = render(
-      <JourneySort
-        sortBy={SortBy.UNDEFINED}
-        setSortBy={() => {
-          console.log()
-        }}
-        open={true}
-      />
-    )
-    // Check handle submit is called correctly
-    // Check Popover / Drawers not open
-     // get popover by id,  check it's aria-expanded
-    // Check Chip label has not changed
-    expect(getByText('Sort By', {selector: 'span'})).toBeInTheDocument();
+    // Check Chip label is still "Sort By"
+    const button = getByRole('button')
+    const buttonSpan = button.querySelector('span')
+    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
+    expect(buttonSpan?.textContent).toBe('Sort By')
   })
 })
