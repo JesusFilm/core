@@ -23,6 +23,9 @@ Default.args = {
 }
 
 export const NoCards = Template.bind({})
+Default.args = {
+  blocks: []
+}
 
 export const ManyCards = Template.bind({})
 ManyCards.args = {
