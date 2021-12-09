@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Box, Typography, Link } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import JourneyCard from './JourneyCard'
@@ -25,11 +25,8 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
           }}
         >
           {journeys.map((journey) => (
-            <Box key={journey.id} aria-label="journey-card">
-              <Link underline="none" href={`/journeys/${journey.slug}`}>
-                {/* The link will override cardMenu */}
-                <JourneyCard journey={journey} />
-              </Link>
+            <Box key={journey.id}>
+              <JourneyCard journey={journey} />
             </Box>
           ))}
         </Box>
@@ -38,7 +35,6 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
           No journeys
         </Typography>
       )}
-      {/* Remove this once we link journey cards to the Single Journey page */}
     </>
   )
 }
