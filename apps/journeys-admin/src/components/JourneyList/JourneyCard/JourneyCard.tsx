@@ -49,7 +49,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         </Typography>
       </Link>
 
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Grid container>
           <Grid item>
             {journey.status === 'draft' ? (
