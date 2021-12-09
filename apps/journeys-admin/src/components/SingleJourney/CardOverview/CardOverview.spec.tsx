@@ -9,22 +9,22 @@ describe('CardOverview', () => {
     const { getByText } = render(<CardOverview slug={'my-journey'} />)
     expect(getByText('No cards in this journey')).toBeInTheDocument()
   })
-  it('should have edit button', () => {
+  it('should have edit button when cards are present', () => {
     const { getByRole } = renderWithApolloClient(
       <CardOverview slug={'my-journey'} blocks={steps} />
     )
     expect(getByRole('link', { name: 'Edit' })).toBeInTheDocument()
   })
-  it('should have text on how many cards present in journey', () => {
+  it('should have for multiple cards', () => {
     const { getByText } = renderWithApolloClient(
       <CardOverview slug={'my-journey'} blocks={steps} />
     )
-    expect(getByText('5 cards in this journey')).toBeInTheDocument()
+    expect(getByText('5 cards')).toBeInTheDocument()
   })
-  it('should have text describe a singular card', () => {
+  it('should redner description for 1 card', () => {
     const { getByText } = renderWithApolloClient(
       <CardOverview slug={'my-journey'} blocks={oneStep} />
     )
-    expect(getByText('1 card in this journey')).toBeInTheDocument()
+    expect(getByText('1 card')).toBeInTheDocument()
   })
 })

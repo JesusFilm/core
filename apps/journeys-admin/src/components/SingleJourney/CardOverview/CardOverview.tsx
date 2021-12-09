@@ -1,10 +1,11 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { Button, Typography, useTheme } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
 import { TreeBlock } from '@core/journeys/ui'
+import { useBreakpoints } from '@core/shared/ui'
 
 export interface CardOverviewProps {
   slug: string
@@ -13,24 +14,15 @@ export interface CardOverviewProps {
 
 const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
   const theme = useTheme()
-  const [width, setWidth] = useState(window.innerWidth)
-
-  useEffect(() => {
-    const updateWidth = (): void => {
-      setWidth(window.innerWidth)
-    }
-
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
-  }, [])
+  const breakpoints = useBreakpoints()
 
   const stepBlockLength =
-    blocks != null
-      ? blocks.filter((block) => block.__typename === 'StepBlock').length
-      : 0
+    blocks?.filter((block) => block.__typename === 'StepBlock').length ?? 0
 
-  const text =
-    stepBlockLength === 1 ? 'card in this journey' : 'cards in this journey'
+  const cardNumber =
+    stepBlockLength === 1
+      ? `${stepBlockLength} card`
+      : `${stepBlockLength} cards`
 
   if (blocks != null && stepBlockLength >= 1) {
     return (
@@ -41,9 +33,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
           variant="body1"
           sx={{ pt: 2, flex: 1, textAlign: 'center' }}
         >
-          {width > theme.breakpoints.values.md
-            ? `${stepBlockLength} ${text}`
-            : `${stepBlockLength} ${text}`}
+          {breakpoints.md ? `${cardNumber} in this journey` : `${cardNumber}`}
         </Typography>
 
         <Button

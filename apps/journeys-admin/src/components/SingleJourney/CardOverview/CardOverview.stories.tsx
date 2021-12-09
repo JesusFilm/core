@@ -3,7 +3,6 @@ import { MockedProvider } from '@apollo/client/testing'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
 import CardOverview from '.'
-import { CardOverviewProps } from './CardOverview'
 import { steps } from './CardOverviewData'
 
 const CardOverviewDemo = {
@@ -12,26 +11,21 @@ const CardOverviewDemo = {
   title: 'Journeys-Admin/SingleJourney/CardOverview'
 }
 
-const Template: Story<CardOverviewProps> = ({ ...args }) => (
+const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <CardOverview {...args} />
+    <CardOverview slug={'my-journey'} {...args} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  slug: 'my-journey',
   blocks: steps
 }
 
 export const NoCards = Template.bind({})
-NoCards.args = {
-  slug: 'my-journey'
-}
 
 export const ManyCards = Template.bind({})
 ManyCards.args = {
-  slug: 'my-journey',
   blocks: steps.concat(steps).concat(steps)
 }
 
