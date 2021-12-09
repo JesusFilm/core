@@ -1,5 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui'
-import { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import {
   GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
   GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
@@ -14,6 +14,11 @@ import {
 } from '@mui/icons-material'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Paper, Box } from '@mui/material'
+import { EditorContext } from '../../../../Context'
+import { BackgroundColor } from './BackgroundColor'
+import { CardStyling } from './CardStyling'
+import { ContentAppearance } from './ContentAppearance'
+import { BackgroundMedia } from './BackgroundMedia'
 
 export function Card({
   id,
@@ -26,6 +31,16 @@ export function Card({
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
+  const { dispatch } = useContext(EditorContext)
+
+  const handleBackgroundMediaClick = (): void => {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Background Media Property',
+      mobileOpen: true,
+      children: <BackgroundMedia id={id} coverBlock={coverBlock} />
+    })
+  }
 
   return (
     <>
@@ -49,6 +64,16 @@ export function Card({
         name="Color"
         value={backgroundColor?.toUpperCase() ?? 'None'}
         description="Background Color"
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Background Color Properties',
+            mobileOpen: true,
+            children: (
+              <BackgroundColor id={id} backgroundColor={backgroundColor} />
+            )
+          })
+        }}
       />
       {coverBlock?.__typename === 'ImageBlock' && (
         <Attribute
@@ -60,6 +85,7 @@ export function Card({
             coverBlock.src.length
           )}
           description="Background Image"
+          onClick={handleBackgroundMediaClick}
         />
       )}
       {coverBlock?.__typename === 'VideoBlock' && (
@@ -69,6 +95,7 @@ export function Card({
           name="Background"
           value={coverBlock.title}
           description="Background Video"
+          onClick={handleBackgroundMediaClick}
         />
       )}
       {coverBlock == null && (
@@ -78,6 +105,7 @@ export function Card({
           name="Background"
           value="None"
           description="Background Media"
+          onClick={handleBackgroundMediaClick}
         />
       )}
       <Attribute
@@ -92,6 +120,14 @@ export function Card({
             : 'Dark'
         }
         description="Card Styling"
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Card Style Property',
+            mobileOpen: true,
+            children: <CardStyling id={id} themeMode={themeMode} />
+          })
+        }}
       />
       <Attribute
         icon={<VerticalSplit />}
@@ -99,6 +135,14 @@ export function Card({
         name="Layout"
         value={fullscreen ? 'Expanded' : 'Contained'}
         description="Content Appearance"
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Card Layout Property',
+            mobileOpen: true,
+            children: <ContentAppearance id={id} fullscreen={fullscreen} />
+          })
+        }}
       />
     </>
   )

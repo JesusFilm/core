@@ -21,6 +21,7 @@ describe('Attribute', () => {
   })
 
   it('selects attribute', () => {
+    const handleClick = jest.fn()
     const { getByRole, baseElement } = render(
       <ThemeProvider>
         <EditorProvider>
@@ -30,6 +31,7 @@ describe('Attribute', () => {
             name="name"
             value="value"
             description="description"
+            onClick={handleClick}
           />
         </EditorProvider>
       </ThemeProvider>
@@ -38,6 +40,7 @@ describe('Attribute', () => {
       'border-color: #dcdde5'
     )
     fireEvent.click(getByRole('button'))
+    expect(handleClick).toHaveBeenCalled()
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
       'border-color: #b62d1c'
     )
