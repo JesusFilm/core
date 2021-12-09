@@ -254,6 +254,37 @@ describe('JourneyModule', () => {
         })
       })
 
+      it('allocates an owner role to the user', async () => {
+        dbMock.journey.create.mockResolvedValue(draftJourney)
+
+        await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
+
+        expect(dbMock.userJourney.create).toBeCalledWith({
+          data: {
+            userId: 'userId',
+            journeyId: draftJourney.id,
+            role: 'owner'
+          }
+        })
+      })
+
       it('throws an error on create without authentication', async () => {
         const { errors } = await query(
           gql`
@@ -304,37 +335,6 @@ describe('JourneyModule', () => {
           }
         )
         expect(errors?.[0].extensions?.code).toEqual('BAD_USER_INPUT')
-      })
-
-      it('allocates an owner role to the user', async () => {
-        dbMock.journey.create.mockResolvedValue(draftJourney)
-
-        await query(
-          gql`
-            mutation ($input: JourneyCreateInput!) {
-              journeyCreate(input: $input) {
-                id
-              }
-            }
-          `,
-          {
-            input: {
-              title: 'my journey',
-              slug: 'my-journey'
-            }
-          },
-          {
-            userId: 'userId'
-          }
-        )
-
-        expect(dbMock.userJourney.create).toBeCalledWith({
-          data: {
-            userId: 'userId',
-            journeyId: draftJourney.id,
-            role: 'owner'
-          }
-        })
       })
     })
 

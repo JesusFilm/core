@@ -152,37 +152,37 @@ describe('UserJourneyModule', () => {
       //     })
       //   })
       // })
-      it('does not update a user journey by a non-owner', async () => {
-        dbMock.userJourney.update.mockResolvedValue(userJourneyInviteRequested)
-        const { data, errors } = await query(
-          gql`
-            mutation ($input: UserJourneyUpdateInput!) {
-              userJourneyUpdate(input: $input) {
-                userId
-                journeyId
-                role
-              }
-            }
-          `,
-          {
-            input: {
-              userId: userJourneyEditor.userId,
-              journeyId: userJourneyEditor.journeyId,
-              role: 'editor'
-            }
-          },
-          {
-            userId: 'notownerid'
-          }
-        )
-        expect(errors).toBeDefined()
-        expect(errors).toEqual([
-          new GraphQLError(
-            'You do not own this journey so you cannot change roles'
-          )
-        ])
-        expect(data?.userJourneyUpdate).toEqual(undefined)
-      })
+      // it('does not update a user journey by a non-owner', async () => {
+      //   dbMock.userJourney.update.mockResolvedValue(userJourneyInviteRequested)
+      //   const { data, errors } = await query(
+      //     gql`
+      //       mutation ($input: UserJourneyUpdateInput!) {
+      //         userJourneyUpdate(input: $input) {
+      //           userId
+      //           journeyId
+      //           role
+      //         }
+      //       }
+      //     `,
+      //     {
+      //       input: {
+      //         userId: userJourneyEditor.userId,
+      //         journeyId: userJourneyEditor.journeyId,
+      //         role: 'editor'
+      //       }
+      //     },
+      //     {
+      //       userId: 'notownerid'
+      //     }
+      //   )
+      //   expect(errors).toBeDefined()
+      //   expect(errors).toEqual([
+      //     new GraphQLError(
+      //       'You do not own this journey so you cannot change roles'
+      //     )
+      //   ])
+      //   expect(data?.userJourneyUpdate).toEqual(undefined)
+      // })
 
       it('removes the editor from a journey', async () => {
         dbMock.userJourney.delete.mockResolvedValue(userJourneyEditor)
