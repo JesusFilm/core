@@ -39,6 +39,7 @@ export function Attribute({
 
   return (
     <Box
+      data-testid={id}
       sx={{
         maxWidth: 150
       }}

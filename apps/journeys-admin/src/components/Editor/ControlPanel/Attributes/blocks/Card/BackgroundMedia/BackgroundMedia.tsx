@@ -4,6 +4,7 @@ import {
   GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
   GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourneyForEdit'
+import { Box } from '@mui/material'
 
 interface BackgroundMediaProps {
   id: string
@@ -14,5 +15,9 @@ export function BackgroundMedia({
   id,
   coverBlock
 }: BackgroundMediaProps): ReactElement {
-  return <>{id} BackgroundMedia</>
+  return (
+    <>
+      <Box sx={{ px: 6, py: 4 }}>Source</Box>
+    </>
+  )
 }

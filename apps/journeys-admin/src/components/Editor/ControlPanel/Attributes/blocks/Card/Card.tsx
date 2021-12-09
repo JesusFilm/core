@@ -17,7 +17,7 @@ import { Paper, Box } from '@mui/material'
 import { EditorContext } from '../../../../Context'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'
-import { ContentAppearance } from './ContentAppearance'
+import { CardLayout } from './CardLayout'
 import { BackgroundMedia } from './BackgroundMedia'
 
 export function Card({
@@ -140,7 +140,7 @@ export function Card({
             type: 'SetDrawerPropsAction',
             title: 'Card Layout Property',
             mobileOpen: true,
-            children: <ContentAppearance id={id} fullscreen={fullscreen} />
+            children: <CardLayout id={id} fullscreen={fullscreen} />
           })
         }}
       />

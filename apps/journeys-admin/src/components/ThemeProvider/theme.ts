@@ -75,8 +75,8 @@ export const theme = createTheme({
       },
       styleOverrides: {
         dense: {
-          paddingLeft: 24,
-          paddingRight: 24
+          paddingLeft: '24px !important',
+          paddingRight: '24 !important'
         }
       }
     }
