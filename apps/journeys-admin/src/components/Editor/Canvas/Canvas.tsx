@@ -86,8 +86,8 @@ export function Canvas(): ReactElement {
                 overflow: 'hidden',
                 border: (theme) =>
                   step.id === selectedStep?.id
-                    ? `3px solid ${theme.palette.primary.main}`
-                    : `3px solid ${theme.palette.background.default}`,
+                    ? `2px solid ${theme.palette.primary.main}`
+                    : `2px solid ${theme.palette.background.default}`,
                 transform:
                   step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
                 height: 536

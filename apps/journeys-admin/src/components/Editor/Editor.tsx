@@ -17,15 +17,33 @@ export function Editor({ journey }: EditorProps): ReactElement {
   const steps = transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>
 
   return (
-    <>
-      <EditorProvider initialState={{ steps }}>
+    <EditorProvider initialState={{ steps }}>
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100vh',
+          flexDirection: 'column',
+          marginRight: { sm: `${DRAWER_WIDTH}px` }
+        }}
+      >
         <TopBar title={journey.title} slug={journey.slug} />
-        <Box sx={{ marginRight: { sm: `${DRAWER_WIDTH}px` } }}>
-          <Canvas />
-          <ControlPanel />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexGrow: 1,
+            overflow: 'auto',
+            borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+            backgroundColor: (theme) => theme.palette.background.paper
+          }}
+        >
+          <Box sx={{ my: 'auto' }}>
+            <Canvas />
+          </Box>
         </Box>
-        <Drawer />
-      </EditorProvider>
-    </>
+        <ControlPanel />
+      </Box>
+      <Drawer />
+    </EditorProvider>
   )
 }
