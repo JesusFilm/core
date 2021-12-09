@@ -2,7 +2,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import JourneysAppBar, { JourneysAppBarProps } from '.'
-import { JOURNEY_STATUS_UPDATE } from '../SingleJourneyPage/SingleJourneyMenu'
+import { JOURNEY_PUBLISH } from '../SingleJourneyPage/SingleJourneyMenu'
 import { defaultJourney } from '../JourneyList/journeyListData'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 
@@ -17,7 +17,7 @@ const Template: Story<JourneysAppBarProps> = ({ ...args }) => (
     mocks={[
       {
         request: {
-          query: JOURNEY_STATUS_UPDATE,
+          query: JOURNEY_PUBLISH,
           variables: {
             input: {
               status: JourneyStatus.published
