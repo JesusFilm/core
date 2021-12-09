@@ -36,7 +36,7 @@ export function Card({
   const handleBackgroundMediaClick = (): void => {
     dispatch({
       type: 'SetDrawerPropsAction',
-      title: 'Background Media Property',
+      title: 'Background Media Properties',
       mobileOpen: true,
       children: <BackgroundMedia id={id} coverBlock={coverBlock} />
     })
