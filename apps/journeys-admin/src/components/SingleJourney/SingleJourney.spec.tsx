@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import SingleJourneyPage from './SingleJourneyPage'
+import SingleJourney from './SingleJourney'
 import { publishedJourney } from '../JourneyList/journeyListData'
 
-describe('SingleJourneyPage', () => {
+describe('SingleJourney', () => {
   it('should render Single Journey Page', () => {
     render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyPage journey={publishedJourney} />
+        <SingleJourney journey={publishedJourney} />
       </MockedProvider>
     )
 

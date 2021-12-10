@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import SingleJourneyPage from './SingleJourneyPage'
+import SingleJourney from './SingleJourney'
 import { defaultJourney } from '../JourneyList/journeyListData'
 import { JOURNEY_PUBLISH } from './SingleJourneyMenu'
 
-const SingleJourneyPageDemo = {
+const SingleJourneyDemo = {
   ...journeysAdminConfig,
-  component: SingleJourneyPage,
-  title: 'Journeys-Admin/SingleJourneyPage',
+  component: SingleJourney,
+  title: 'Journeys-Admin/SingleJourney',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -31,10 +31,10 @@ const Template: Story = () => (
       }
     ]}
   >
-    <SingleJourneyPage journey={defaultJourney} />
+    <SingleJourney journey={defaultJourney} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
 
-export default SingleJourneyPageDemo as Meta
+export default SingleJourneyDemo as Meta

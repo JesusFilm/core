@@ -9,7 +9,7 @@ import { SingleJourneyMenuProps } from '.'
 const TestStory = {
   ...journeysAdminConfig,
   component: SingleJourneyMenu,
-  title: 'Journeys-Admin/SingleJourneyPage/SingleJourneyMenu'
+  title: 'Journeys-Admin/SingleJourney/SingleJourneyMenu'
 }
 
 const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (

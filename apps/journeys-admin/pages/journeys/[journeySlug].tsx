@@ -7,7 +7,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { SingleJourney } from '../../src/components/SingleJourneyPage'
+import { SingleJourney } from '../../src/components/SingleJourney'
 
 interface SingleJourneyPageProps {
   journey: Journey

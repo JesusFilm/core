@@ -4,13 +4,11 @@ import { Box, Typography } from '@mui/material'
 import JourneysAppBar from '../JourneysAppBar'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-interface SingleJourneyPageProps {
+interface SingleJourneyProps {
   journey: Journey
 }
 
-const SingleJourneyPage = ({
-  journey
-}: SingleJourneyPageProps): ReactElement => {
+const SingleJourney = ({ journey }: SingleJourneyProps): ReactElement => {
   // TODO: Extract out into seperate utils helper
   const date =
     moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
@@ -33,4 +31,4 @@ const SingleJourneyPage = ({
   )
 }
 
-export default SingleJourneyPage
+export default SingleJourney

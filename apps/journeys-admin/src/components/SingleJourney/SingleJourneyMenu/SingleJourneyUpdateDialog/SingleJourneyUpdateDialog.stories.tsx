@@ -11,7 +11,7 @@ import { UpdateJourneyFields } from '../SingleJourneyMenu'
 const TestStory = {
   ...journeysAdminConfig,
   component: SingleJourneyUpdateDialog,
-  title: 'Journeys-Admin/SingleJourneyPage/SingleJourneyUpdateDialog'
+  title: 'Journeys-Admin/SingleJourney/SingleJourneyUpdateDialog'
 }
 
 const Template: Story = () => {
