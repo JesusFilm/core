@@ -332,6 +332,7 @@ export type GetJourneyForEdit_journey_blocks = GetJourneyForEdit_journey_blocks_
 export interface GetJourneyForEdit_journey {
   __typename: "Journey";
   id: string;
+  slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
   title: string;
