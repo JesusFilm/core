@@ -9,7 +9,9 @@ import {
   FilledInput,
   FormControl,
   Select,
-  InputLabel
+  InputLabel,
+  Snackbar,
+  Fade
 } from '@mui/material'
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
 import {
@@ -32,6 +34,21 @@ export const InviteUserModal = ({
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
+  // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
+  const inviteLink = `${window.location.origin}/journeys/${journey.slug}/invite`
+  const [showAlert, setShowAlert] = useState(false)
+
+  const handleCopyLinkOpen = async (): Promise<void> => {
+    await navigator.clipboard.writeText(inviteLink)
+    setShowAlert(true)
+  }
+
+  const handleCopyLinkClose = (reason?: string): void => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setShowAlert(false)
+  }
 
   return (
     <>
@@ -59,9 +76,22 @@ export const InviteUserModal = ({
             <Divider sx={{ mt: 2, mb: 3 }} />
             <FormControl fullWidth>
               <FilledInput
-                value={`https://nextsteps.is/journeys/${journey.slug}/invite`}
+                value={inviteLink}
                 startAdornment={<LinkRounded />}
-                endAdornment={<ContentCopyRounded />}
+                endAdornment={
+                  <>
+                    <ContentCopyRounded onClick={handleCopyLinkOpen} />
+
+                    <Snackbar
+                      open={showAlert}
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                      TransitionComponent={Fade}
+                      autoHideDuration={3000}
+                      onClose={handleCopyLinkClose}
+                      message={'Link copied to clipboard'}
+                    />
+                  </>
+                }
                 disableUnderline
                 hiddenLabel
               />

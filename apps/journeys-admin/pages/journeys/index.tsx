@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
@@ -20,6 +20,7 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   const { logOut, user, loading } = UseFirebase()
   const router = useRouter()
+  const [journeysToShow, setJourneysToShow] = useState<Journey[]>([])
   if (user != null) console.log(user.displayName)
 
   useEffect(() => {
@@ -27,7 +28,16 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
     if (loading === false && user == null) {
       void router.push('/')
     }
-  }, [user, router, loading])
+
+    // get all journeys user has access to
+    const accessibleJourneys = journeys.filter((journey) => {
+      return journey.usersJourneys?.find((userJourney) => {
+        return userJourney?.userId === user?.uid
+      })
+    })
+
+    setJourneysToShow(accessibleJourneys)
+  }, [user, router, loading, journeys])
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
@@ -36,7 +46,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys
         </Typography>
-        <JourneyList journeys={journeys} />
+        <JourneyList journeys={journeysToShow} />
         <Button variant="contained" onClick={() => logOut()}>
           SignOut
         </Button>
@@ -58,6 +68,10 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
             themeName
             themeMode
             locale
+            usersJourneys {
+              userId
+              journeyId
+            }
           }
         }
       `
