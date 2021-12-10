@@ -16,7 +16,6 @@ import {
 } from '../../../../../__generated__/JourneyUpdate'
 import { useBreakpoints } from '@core/shared/ui'
 import { UpdateJourneyFields } from '../SingleJourneyMenu'
-import { GET_JOURNEY } from '../../../../../pages/journeys/[journeySlug]'
 
 export const JOURNEY_UPDATE = gql`
   mutation JourneyUpdate($input: JourneyUpdateInput!) {
@@ -43,12 +42,7 @@ const SingleJourneyUpdateDialog = ({
   onClose,
   onSuccess
 }: SingleJourneyUpdateDialogProps): ReactElement => {
-  const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE, {
-    refetchQueries: [
-      GET_JOURNEY, // DocumentNode object parsed with gql
-      'GetJourney' // Query name
-    ]
-  })
+  const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE)
 
   const breakpoints = useBreakpoints()
   const [value, setValue] = useState(

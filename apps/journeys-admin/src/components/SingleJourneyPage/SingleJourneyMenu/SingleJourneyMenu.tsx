@@ -1,8 +1,5 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import { JourneyUpdate_journeyUpdate as UpdatedJourney } from '../../../../__generated__/JourneyUpdate'
-import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { GET_JOURNEY } from '../../../../pages/journeys/[journeySlug]'
 import {
   Alert,
   Divider,
@@ -12,10 +9,12 @@ import {
   MenuItem,
   Snackbar
 } from '@mui/material'
-import SingleJourneyUpdateDialog from './SingleJourneyUpdateDialog'
 import { MoreVert, CheckCircleRounded } from '@mui/icons-material'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyUpdate_journeyUpdate as UpdatedJourney } from '../../../../__generated__/JourneyUpdate'
+import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import SingleJourneyUpdateDialog from './SingleJourneyUpdateDialog'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -39,13 +38,7 @@ const SingleJourneyMenu = ({
   journey,
   forceOpen
 }: SingleJourneyMenuProps): ReactElement => {
-  const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH, {
-    refetchQueries: [
-      GET_JOURNEY, // DocumentNode object parsed with gql
-      'GetJourney' // Query name
-    ]
-  })
-
+  const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showDialog, setShowDialog] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
