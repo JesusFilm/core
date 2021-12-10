@@ -64,7 +64,7 @@ const JourneySort = ({
 
   const sortByForm = (): ReactElement => (
     <Box sx={{ p: 4 }}>
-      <FormControl component="fieldset">
+      <FormControl component="fieldset" fullWidth>
         <FormLabel component="legend">Sort By</FormLabel>
         <RadioGroup
           aria-label="sort-by-options"
@@ -85,7 +85,13 @@ const JourneySort = ({
             label={SortBy.TITLE}
           />
         </RadioGroup>
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-end'
+          }}
+        >
           <Button
             sx={{ mt: 1, mr: 1 }}
             onClick={() => setShowSortBy(false)}
