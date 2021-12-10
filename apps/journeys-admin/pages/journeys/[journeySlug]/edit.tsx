@@ -7,8 +7,8 @@ import {
   GetJourneyForEdit,
   GetJourneyForEdit_journey as Journey
 } from '../../../__generated__/GetJourneyForEdit'
-import { Typography, Box } from '@mui/material'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
+import { Editor } from '../../../src/components/Editor'
 
 interface SingleJourneyEditPageProps {
   journey: Journey
@@ -22,12 +22,7 @@ function SingleJourneyEditPage({
       <Head>
         <title>{journey.title}</title>
       </Head>
-      <Box sx={{ m: 10 }}>
-        <Typography variant={'h2'} sx={{ mb: 4 }}>
-          Single Journey Page
-        </Typography>
-        <Typography variant={'h6'}>{journey.title}</Typography>
-      </Box>
+      <Editor journey={journey} />
     </>
   )
 }
@@ -40,6 +35,7 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyEditPageProps> 
         query GetJourneyForEdit($id: ID!) {
           journey(id: $id, idType: slug) {
             id
+            slug
             themeName
             themeMode
             title
