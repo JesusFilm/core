@@ -81,6 +81,10 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:api-journeys
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:api-journeys
 
+      # - name: Get affected app seed
+      #   run: echo "::set-output name=apps::$(nx affected:apps plain --files apps/api-journeys/db/seed.ts)"
+      #   id: affected-apps 
+
   # build-and-deploy:
   #   environment: Production
   #   env:
