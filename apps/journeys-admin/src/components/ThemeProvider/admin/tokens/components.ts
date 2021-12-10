@@ -1,6 +1,6 @@
 import { ThemeOptions } from '@mui/material'
 
-export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
+export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
     MuiButton: {
       styleOverrides: {

@@ -7,7 +7,7 @@ declare module '@mui/material' {
   }
 }
 
-export const baseTypography: Pick<ThemeOptions, 'typography'> = {
+export const adminTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
     fontFamily: [
       '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'

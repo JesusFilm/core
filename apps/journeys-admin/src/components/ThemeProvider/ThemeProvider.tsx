@@ -6,7 +6,6 @@ interface ThemeProviderProps {
   children?: ReactNode
 }
 
-// TODO: Cooldown Use shared/ui ThemeProvider?
 export function ThemeProvider({ children }: ThemeProviderProps): ReactElement {
   return (
     <MuiThemeProvider theme={adminLight}>

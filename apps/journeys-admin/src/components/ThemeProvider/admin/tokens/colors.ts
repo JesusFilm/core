@@ -12,7 +12,7 @@ const palette = {
   0: '#FFFFFF'
 }
 
-export const baseColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
+export const adminColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'light',
     background: { default: '#FFFFFF', paper: '#EFEFEF' },
