@@ -1,0 +1,6 @@
+Type: AWS::IAM::InstanceProfile
+Properties:
+  InstanceProfileName: apollo-gateway-instance-iam-profile-${opt:env}
+  Path: /
+  Roles:
+    - core-apollo-gateway

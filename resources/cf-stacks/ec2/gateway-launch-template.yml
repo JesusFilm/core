@@ -1,0 +1,33 @@
+Type: AWS::EC2::LaunchTemplate
+DependsOn: ApolloGatewayIAMProfile
+Properties:
+  LaunchTemplateName: apollo-gateway-ec2-launch-${opt:env}
+  LaunchTemplateData:
+    ImageId: ami-0c2b8ca1dad447f8a
+    InstanceType: t2.small
+    KeyName: jfmprod
+    IamInstanceProfile:
+      Name: !Ref ApolloGatewayIAMProfile
+    NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        SubnetId: subnet-955371f9
+        DeviceIndex: 0
+        Groups:
+          - !Ref ApolloGatewaySecurityGroup
+    UserData: !Base64 |
+      #!/bin/bash -ex
+      # version 1.12
+      export NVM_DIR="/.nvm"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+      . $NVM_DIR/nvm.sh
+      nvm install node
+      npm install -g npm
+      npm install -g pm2
+      mkdir -p /opt/apollo-gateway/apps/api-gateway
+      aws s3 cp s3://core-apollo-gateway-${opt:env}/ /opt/apollo-gateway/ --include "*" --recursive
+      mv /opt/apollo-gateway/schema.graphql /opt/apollo-gateway/apps/api-gateway
+      cd /opt/apollo-gateway
+      npm install --only=prod --legacy-peer-deps
+      pm2 start main.js
+      pm2 save
+      /opt/aws/bin/cfn-signal --exit-code 0 --resource ApolloGatewayInstance --region ${opt:region} --stack ark-core-journeys-${opt:env}

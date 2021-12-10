@@ -1,0 +1,8 @@
+Type: AWS::ElasticLoadBalancingV2::TargetGroup
+Properties:
+  VpcId: ${self:custom.aws.vpc-id}
+  Protocol: HTTP
+  Port: 4000
+  Targets:
+    - Id: !Ref ApolloGatewayInstance
+      Port: 4000

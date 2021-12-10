@@ -49,6 +49,16 @@
         "parallel": true
       }
     },
+    "deploy": {
+      "executor": "@ns3/nx-serverless:deploy",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "apps/api-journeys/.serverless"
+      }
+    },
+    "remove": {
+      "executor": "@ns3/nx-serverless:remove"
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

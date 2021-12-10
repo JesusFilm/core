@@ -1,0 +1,12 @@
+Type: AWS::ElasticLoadBalancingV2::Listener
+Properties:
+  LoadBalancerArn: !Ref ApolloGatewayLoadBalancer
+  Port: 443
+  Protocol: HTTPS
+  DefaultActions:
+    - Type: forward
+      ForwardConfig:
+        TargetGroups:
+          - TargetGroupArn: !Ref ApolloGatewayTargetGroup
+  Certificates:
+    - CertificateArn: ${self:custom.aws.gateway-ssl-cert-arn}

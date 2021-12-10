@@ -1,0 +1,59 @@
+service: api-users
+useDotenv: true
+plugins:
+  - serverless-bundle
+  - serverless-offline
+  - serverless-stack-output
+
+custom:
+  output:
+    handler: ../../output.handler
+    file: ../../journeys-output.json
+  stage: ${opt:env}
+  bundle:
+    linting: false
+    externals:
+      - canvas
+    tsConfig: "tsconfig.app.json"
+    forceExclude:
+      - "_http_common"
+  serverless-offline:
+    httpPort: 4002
+    noPrependStageInUrl: true
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${self:custom.stage}
+  endpointType: regional
+  timeout: 20
+  lambdaHashingVersion: 20201221 # removes deprecation warning (remove in serverless v3)
+  apiGateway:
+    shouldStartNameWithService: true # removes deprecation warning (remove in serverless v3)
+  environment:
+    APP_ENV: ${self:custom.stage}
+    IS_PRODUCTION: "${file(./src/environments/config.${self:custom.stage}.json):is_production}"
+    DATABASE_URL: ${env:DATABASE_URL}
+
+functions:
+  journeys:
+    handler: src/main.handler
+    vpc:
+      securityGroupIds:
+        - sg-09be37cc196b4b4c6
+      subnetIds:
+        - subnet-955371f9
+        - subnet-5fec2a05
+    events:
+      - http:
+          method: GET
+          path: /users
+          cors:
+            origin: "*"
+            headers: "*"
+      - http:
+          method: POST
+          path: /users
+          cors:
+            origin: "*"
+            headers: "*"

@@ -1,0 +1,16 @@
+Type: AWS::EC2::SecurityGroup
+Properties:
+  GroupDescription: Security group for Apollo Gateway Load Balancer
+  VpcId: ${self:custom.aws.vpc-id}
+  SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: "443"
+      ToPort: "443"
+      CidrIp: "0.0.0.0/0"
+    - IpProtocol: tcp
+      FromPort: "80"
+      ToPort: "80"
+      CidrIp: "0.0.0.0/0"
+  Tags:
+    - Key: "Name"
+      Value: "apollo-gateway-lb-${opt:env}"

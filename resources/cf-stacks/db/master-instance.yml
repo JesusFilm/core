@@ -1,0 +1,12 @@
+Type: AWS::RDS::DBInstance
+Properties:
+  CopyTagsToSnapshot: true
+  DBInstanceClass: db.t3.medium
+  DBInstanceIdentifier: core-journeys-master-${opt:env}
+  DBClusterIdentifier: !Ref CoreDBCluster
+  Engine: aurora-postgresql
+
+  DBParameterGroupName: !Ref DBInstanceParamGroup
+  AutoMinorVersionUpgrade: true
+  DBSubnetGroupName: !Ref DBSubnetGroup
+  PubliclyAccessible: true
