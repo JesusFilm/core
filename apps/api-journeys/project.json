@@ -10,7 +10,8 @@
         "outputPath": "dist/apps/api-journeys",
         "main": "apps/api-journeys/src/main.ts",
         "tsConfig": "apps/api-journeys/tsconfig.app.json",
-        "assets": ["apps/api-journeys/src/assets"]
+        "assets": ["apps/api-journeys/src/assets"],
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
