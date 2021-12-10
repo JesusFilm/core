@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
-import { Typography, Fab } from '@mui/material'
+import { Typography, Fab, Card, Box } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
@@ -25,7 +26,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
 
   return (
     <>
-      {stepBlockLength > 0 && (
+      {stepBlockLength > 0 ? (
         <>
           <CardPreview steps={blocks} />
 
@@ -44,15 +45,46 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
             Edit
           </Fab>
         </>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mt: 6,
+            mb: 8
+          }}
+        >
+          <Card
+            variant="outlined"
+            sx={{
+              width: '89px',
+              height: '134px'
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                pt: 11
+              }}
+            >
+              <AddToPhotosIcon color="primary" />
+              <Typography variant="subtitle2" align="center">
+                Add a Card
+              </Typography>
+            </Box>
+          </Card>
+        </Box>
       )}
-      <Typography variant="body1" sx={{ pt: 2, flex: 1, textAlign: 'center' }}>
+      <Typography variant="body1" sx={{ pt: 2, textAlign: 'center' }}>
         {stepBlockLength > 0
           ? breakpoints.md
             ? `${cardNumber} in this journey`
             : `${cardNumber}`
-          : 'No cards in this journey'}
+          : 'No cards'}
       </Typography>
-      :
     </>
   )
 }
