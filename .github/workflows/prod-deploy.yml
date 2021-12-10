@@ -2,22 +2,16 @@ name: Prod Merge
 on:
   push:
     branches:
-      - main
+      # - main
+      - arangodb-cloud-deploy
 jobs:
-  build-and-deploy:
+  api-journeys: 
     environment: Production
     env:
       ENV_SUFFIX: prod
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
@@ -37,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: node-modules-main
+          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: NPM Install
         run: npm install
@@ -49,110 +43,193 @@ jobs:
         run: echo "::set-output name=apps::$(nx affected:apps plain)"
         id: affected-apps  
 
-      - name: Install Serverless
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: npm install -g serverless
-
       - name: Install Rover
         if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
         run: npm install -g @apollo/rover
 
-      - name: Build Apollo API Gateway
-        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
+      - name: Build api-journeys
+        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
         uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build
-          projects: api-gateway
-
-      - name: Prep Apollo API Gateway assets
-        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')        
-        run: |
-          aws s3 cp dist/apps/api-gateway/main.js s3://core-apollo-gateway-$ENV_SUFFIX/
-          aws s3 cp package.json s3://core-apollo-gateway-$ENV_SUFFIX/
-          aws s3 cp apps/api-gateway/schema.graphql s3://core-apollo-gateway-$ENV_SUFFIX/
-          aws s3 cp apps/api-gateway/.env s3://core-apollo-gateway-$ENV_SUFFIX/
-
-      - name: Build Lambda security group name
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: |
-          echo "LAMBDA_GROUP_NAME=ark-journey-lambda-$ENV_SUFFIX" >> $GITHUB_ENV
-
-      - name: Deploy/Update Infrastructure
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        uses: mansagroup/nrwl-nx-action@v2
-        with:
-          targets: deploy
-          projects: infrastructure
-          args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME --region $AWS_DEFAULT_REGION --dbuser $DB_USER --dbpassword $DB_PASSWORD
-
-      - name: Set ENV Vars Based on Infrastructure Output
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: |
-          echo "LAMBDA_SECURITY_GROUP_ID=$( jq -r '.LambdaSecurityGroupId' infrastructure-output.json )" >> $GITHUB_ENV
-          echo "DATABASE_URL=postgresql://$( jq -r '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
-          echo "GATEWAY_INSTANCE_IP=$( jq -r '.ApolloGatewayInstanceIp' infrastructure-output.json )" >> $GITHUB_ENV
-
-      - name: Prisma Generate api-journeys
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        uses: mansagroup/nrwl-nx-action@v2
-        with:
-          targets: generate-prisma
           projects: api-journeys
-
-      - name: Deploy api-journeys
+      
+      - name: Configure AWS credentials
         if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          targets: deploy        
-          projects: api-journeys
-          args: --env $ENV_SUFFIX
-
-      - name: Get api-journeys endpoint
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      
+      - name: Login to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: jesusfilm
+          IMAGE_TAG: 1.0
         run: |
-          echo "JOURNEYS_API_ENDPOINT=$( jq -r '.ServiceEndpoint' journeys-output.json )/journeys" >> $GITHUB_ENV
+          # Build a docker container and push it to ECR 
+          docker build -t api-journeys . -f dist/apps/api-journeys/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:api-journeys
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:api-journeys
 
-      - name: Get Github action IP
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        id: ip
-        uses: haythem/public-ip@v1.2
+  # build-and-deploy:
+  #   environment: Production
+  #   env:
+  #     ENV_SUFFIX: prod
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  #     APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+  #     AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+  #     DB_USER: ${{ secrets.DB_USER }}
+  #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-      - name: Allow Github Actions Access to Postgres
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: aws ec2 authorize-security-group-ingress --group-id $LAMBDA_SECURITY_GROUP_ID --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+  #   runs-on: ubuntu-latest
 
-      - name: Prisma Migrations api-journeys
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
+  #   steps:
+  #     - name: Checkout current branch
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 1
 
-      - name: Seed DB
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: npx prisma db seed --preview-feature --schema apps/api-journeys/prisma/schema.prisma
+  #     - name: Derive appropriate SHAs for base and head for `nx affected` commands
+  #       uses: nrwl/nx-set-shas@v2
 
-      - name: Publish Apollo Graph
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: rover subgraph publish ark-weave-journeys@current --name journeys --schema apps/api-journeys/schema.graphql --routing-url $JOURNEYS_API_ENDPOINT
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "16"
+  #         cache: "npm"
 
-      - name: Setup SSH for Gateway access
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$AWS_SSH_KEY" > ~/.ssh/gateway.key
-          chmod 600 ~/.ssh/gateway.key
-          cat >>~/.ssh/config <<END
-          Host gateway
-            HostName $GATEWAY_INSTANCE_IP
-            User ec2-user
-            IdentityFile ~/.ssh/gateway.key
-            StrictHostKeyChecking no
-          END
+  #     - name: Cache Node Modules
+  #       id: cache-node-modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: node_modules
+  #         key: node-modules-main
 
-      - name: Update Apollo Gateway schema to proper API Gateway URL
-        if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-        run: ssh gateway "sudo sed -i 's|http://127.0.0.1:4001/graphql|$JOURNEYS_API_ENDPOINT|g' /opt/apollo-gateway/apps/api-gateway/schema.graphql"
+  #     - name: NPM Install
+  #       run: npm install
+      
+  #     - name: nx Install
+  #       run: npm install -g nx
 
-      - name: Restart Apollo Gateway
-        run: ssh gateway "sudo -- sh -c '. /.nvm/nvm.sh; \cp -r /etc/.pm2 ~; pkill pm2; pkill node; pm2 resurrect; pm2 start 0'"
+  #     - name: Get affected apps
+  #       run: echo "::set-output name=apps::$(nx affected:apps plain)"
+  #       id: affected-apps  
 
-      # Cleanup / remove Github access to postgres.
-      - name: Remove Github Actions Access to Postgres
-        run: aws ec2 revoke-security-group-ingress --group-id $LAMBDA_SECURITY_GROUP_ID --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+  #     - name: Install Serverless
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: npm install -g serverless
+
+  #     - name: Install Rover
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: npm install -g @apollo/rover
+
+  #     - name: Build Apollo API Gateway
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
+  #       uses: mansagroup/nrwl-nx-action@v2
+  #       with:
+  #         targets: build
+  #         projects: api-gateway
+
+  #     - name: Prep Apollo API Gateway assets
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-gateway')        
+  #       run: |
+  #         aws s3 cp dist/apps/api-gateway/main.js s3://core-apollo-gateway-$ENV_SUFFIX/
+  #         aws s3 cp package.json s3://core-apollo-gateway-$ENV_SUFFIX/
+  #         aws s3 cp apps/api-gateway/schema.graphql s3://core-apollo-gateway-$ENV_SUFFIX/
+  #         aws s3 cp apps/api-gateway/.env s3://core-apollo-gateway-$ENV_SUFFIX/
+
+  #     - name: Build Lambda security group name
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: |
+  #         echo "LAMBDA_GROUP_NAME=ark-journey-lambda-$ENV_SUFFIX" >> $GITHUB_ENV
+
+  #     - name: Deploy/Update Infrastructure
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       uses: mansagroup/nrwl-nx-action@v2
+  #       with:
+  #         targets: deploy
+  #         projects: infrastructure
+  #         args: --config resources/cf-stacks/serverless.yml --env $ENV_SUFFIX --lambda-group-name $LAMBDA_GROUP_NAME --region $AWS_DEFAULT_REGION --dbuser $DB_USER --dbpassword $DB_PASSWORD
+
+  #     - name: Set ENV Vars Based on Infrastructure Output
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: |
+  #         echo "LAMBDA_SECURITY_GROUP_ID=$( jq -r '.LambdaSecurityGroupId' infrastructure-output.json )" >> $GITHUB_ENV
+  #         echo "DATABASE_URL=postgresql://$( jq -r '.ConnectionString' infrastructure-output.json )" >> $GITHUB_ENV
+  #         echo "GATEWAY_INSTANCE_IP=$( jq -r '.ApolloGatewayInstanceIp' infrastructure-output.json )" >> $GITHUB_ENV
+
+  #     - name: Prisma Generate api-journeys
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       uses: mansagroup/nrwl-nx-action@v2
+  #       with:
+  #         targets: generate-prisma
+  #         projects: api-journeys
+
+  #     - name: Deploy api-journeys
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       uses: mansagroup/nrwl-nx-action@v2
+  #       with:
+  #         targets: deploy        
+  #         projects: api-journeys
+  #         args: --env $ENV_SUFFIX
+
+  #     - name: Get api-journeys endpoint
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: |
+  #         echo "JOURNEYS_API_ENDPOINT=$( jq -r '.ServiceEndpoint' journeys-output.json )/journeys" >> $GITHUB_ENV
+
+  #     - name: Get Github action IP
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       id: ip
+  #       uses: haythem/public-ip@v1.2
+
+  #     - name: Allow Github Actions Access to Postgres
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: aws ec2 authorize-security-group-ingress --group-id $LAMBDA_SECURITY_GROUP_ID --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+  #     - name: Prisma Migrations api-journeys
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: npx prisma migrate deploy --schema apps/api-journeys/prisma/schema.prisma
+
+  #     - name: Seed DB
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: npx prisma db seed --preview-feature --schema apps/api-journeys/prisma/schema.prisma
+
+  #     - name: Publish Apollo Graph
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: rover subgraph publish ark-weave-journeys@current --name journeys --schema apps/api-journeys/schema.graphql --routing-url $JOURNEYS_API_ENDPOINT
+
+  #     - name: Setup SSH for Gateway access
+  #       run: |
+  #         mkdir -p ~/.ssh/
+  #         echo "$AWS_SSH_KEY" > ~/.ssh/gateway.key
+  #         chmod 600 ~/.ssh/gateway.key
+  #         cat >>~/.ssh/config <<END
+  #         Host gateway
+  #           HostName $GATEWAY_INSTANCE_IP
+  #           User ec2-user
+  #           IdentityFile ~/.ssh/gateway.key
+  #           StrictHostKeyChecking no
+  #         END
+
+  #     - name: Update Apollo Gateway schema to proper API Gateway URL
+  #       if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+  #       run: ssh gateway "sudo sed -i 's|http://127.0.0.1:4001/graphql|$JOURNEYS_API_ENDPOINT|g' /opt/apollo-gateway/apps/api-gateway/schema.graphql"
+
+  #     - name: Restart Apollo Gateway
+  #       run: ssh gateway "sudo -- sh -c '. /.nvm/nvm.sh; \cp -r /etc/.pm2 ~; pkill pm2; pkill node; pm2 resurrect; pm2 start 0'"
+
+  #     # Cleanup / remove Github access to postgres.
+  #     - name: Remove Github Actions Access to Postgres
+  #       run: aws ec2 revoke-security-group-ingress --group-id $LAMBDA_SECURITY_GROUP_ID --protocol tcp --port 5432 --cidr ${{ steps.ip.outputs.ipv4 }}/32
