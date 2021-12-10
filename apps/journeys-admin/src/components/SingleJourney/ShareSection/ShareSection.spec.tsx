@@ -16,8 +16,12 @@ describe('JourneyShare', () => {
   })
 
   it('should have correct url for the edit button', () => {
-    const { getByText } = render(<ShareSection slug={'my-journey'} />)
-    expect(getByText('Edit')).toHaveAttribute(
+    const { getByRole, getAllByRole } = render(
+      <ShareSection slug={'my-journey'} />
+    )
+    console.log(getAllByRole('button'))
+    fireEvent.click(getAllByRole('button')[1])
+    expect(getByRole('link')).toHaveAttribute(
       'href',
       '/journeys/my-journey/edit'
     )
@@ -34,10 +38,11 @@ describe('JourneyShare', () => {
 
     jest.spyOn(navigator.clipboard, 'writeText')
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getAllByRole, getByText } = render(
       <ShareSection slug={'my-journey'} />
     )
-    fireEvent.click(getByRole('button', { name: 'Copy' }))
+    fireEvent.click(getAllByRole('button')[1])
+    fireEvent.click(getByRole('menuitem', { name: 'Copy' }))
 
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
