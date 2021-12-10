@@ -20,7 +20,7 @@ export function CardPreview({
   return (
     <Stack
       direction="row"
-      spacing={4}
+      spacing={1}
       sx={{
         overflowX: 'auto',
         py: 5,
@@ -35,9 +35,9 @@ export function CardPreview({
             borderRadius: 2,
             transition: '0.2s border-color ease-out',
             position: 'relative',
-            maxWidth: 89,
-            minWidth: 89,
-            height: 134,
+            maxWidth: 95,
+            minWidth: 95,
+            height: 140,
             boxSizing: 'content-box',
             overflow: 'hidden',
             border: (theme) =>
@@ -63,7 +63,7 @@ export function CardPreview({
               transformOrigin: 'top left'
             }}
           >
-            <FramePortal width={356} height={536}>
+            <FramePortal width={380} height={560}>
               <ThemeProvider
                 themeName={ThemeName.base}
                 themeMode={ThemeMode.light}
