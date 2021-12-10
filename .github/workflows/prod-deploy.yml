@@ -76,7 +76,7 @@ jobs:
           IMAGE_TAG: 1.0
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t api-journeys . -f dist/apps/api-journeys/Dockerfile
+          docker build -t api-journeys . -f apps/api-journeys/Dockerfile
           echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:api-journeys
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:api-journeys
