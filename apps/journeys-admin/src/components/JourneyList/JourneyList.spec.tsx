@@ -10,7 +10,12 @@ describe('JourneyList', () => {
     expect(getAllByRole('heading').length).toBe(3)
   })
   it('should render text when there are no journeys', () => {
-    const { getByText } = render(<JourneyList journeys={[]} />)
-    expect(getByText('No journeys')).toBeInTheDocument()
+    const { getByText, getByRole } = render(<JourneyList journeys={[]} />)
+
+    expect(getByText('No journeys to display.')).toBeInTheDocument()
+    expect(
+      getByText('Create a journey, then find it here.')
+    ).toBeInTheDocument()
+    expect(getByRole('button')).toHaveTextContent('Create a Journey')
   })
 })
