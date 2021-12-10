@@ -3,7 +3,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import SingleJourneyMenu from '../SingleJourney/SingleJourneyMenu'
+import Menu from '../SingleJourney/Menu'
 
 export interface JourneysAppBarProps {
   journey?: Journey
@@ -37,7 +37,7 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
                   Journey
                 </Typography>
               </Box>
-              <SingleJourneyMenu journey={journey} />
+              <Menu journey={journey} />
             </>
           ) : (
             <Typography variant="h4" component="div" sx={{ ml: 4 }}>

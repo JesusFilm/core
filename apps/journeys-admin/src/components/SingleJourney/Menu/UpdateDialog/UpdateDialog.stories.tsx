@@ -3,15 +3,13 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../../JourneyList/journeyListData'
-import SingleJourneyUpdateDialog, {
-  JOURNEY_UPDATE
-} from './SingleJourneyUpdateDialog'
-import { UpdateJourneyFields } from '../SingleJourneyMenu'
+import UpdateDialog, { JOURNEY_UPDATE } from './UpdateDialog'
+import { UpdateJourneyFields } from '../Menu'
 
 const TestStory = {
   ...journeysAdminConfig,
-  component: SingleJourneyUpdateDialog,
-  title: 'Journeys-Admin/SingleJourney/SingleJourneyUpdateDialog'
+  component: UpdateDialog,
+  title: 'Journeys-Admin/SingleJourney/UpdateDialog'
 }
 
 const Template: Story = () => {
@@ -44,7 +42,7 @@ const Template: Story = () => {
         }
       ]}
     >
-      <SingleJourneyUpdateDialog
+      <UpdateDialog
         field={UpdateJourneyFields.TITLE}
         open={open}
         onClose={() => setOpen(false)}
@@ -89,7 +87,7 @@ const DescriptionTemplate: Story = () => {
         }
       ]}
     >
-      <SingleJourneyUpdateDialog
+      <UpdateDialog
         field={UpdateJourneyFields.DESCRIPTION}
         open={open}
         onClose={() => setOpen(false)}

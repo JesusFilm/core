@@ -1,18 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import SingleJourneyUpdateDialog, { JOURNEY_UPDATE } from '.'
-import { UpdateJourneyFields } from '../SingleJourneyMenu'
+import UpdateDialog, { JOURNEY_UPDATE } from '.'
+import { UpdateJourneyFields } from '../Menu'
 import { defaultJourney } from '../../../JourneyList/journeyListData'
 
 const onClose = jest.fn()
 const onSuccessTitle = jest.fn()
 const onSuccessDescription = jest.fn()
 
-describe('SingleJourneyUpdateDialog', () => {
+describe('SingleJourney/UpdateDialog', () => {
   it('should not set journey title on close', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyUpdateDialog
+        <UpdateDialog
           field={UpdateJourneyFields.TITLE}
           open
           journey={defaultJourney}
@@ -35,7 +35,7 @@ describe('SingleJourneyUpdateDialog', () => {
   it('should not set journey description on close', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyUpdateDialog
+        <UpdateDialog
           field={UpdateJourneyFields.DESCRIPTION}
           open
           journey={defaultJourney}
@@ -83,7 +83,7 @@ describe('SingleJourneyUpdateDialog', () => {
           }
         ]}
       >
-        <SingleJourneyUpdateDialog
+        <UpdateDialog
           field={UpdateJourneyFields.TITLE}
           open
           journey={updatedJourney}
@@ -135,7 +135,7 @@ describe('SingleJourneyUpdateDialog', () => {
           }
         ]}
       >
-        <SingleJourneyUpdateDialog
+        <UpdateDialog
           field={UpdateJourneyFields.DESCRIPTION}
           open
           journey={updatedJourney}

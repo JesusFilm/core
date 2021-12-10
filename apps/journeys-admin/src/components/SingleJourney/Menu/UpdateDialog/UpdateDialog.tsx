@@ -15,7 +15,7 @@ import {
   JourneyUpdate_journeyUpdate as UpdatedJourney
 } from '../../../../../__generated__/JourneyUpdate'
 import { useBreakpoints } from '@core/shared/ui'
-import { UpdateJourneyFields } from '../SingleJourneyMenu'
+import { UpdateJourneyFields } from '../Menu'
 
 export const JOURNEY_UPDATE = gql`
   mutation JourneyUpdate($input: JourneyUpdateInput!) {
@@ -27,7 +27,7 @@ export const JOURNEY_UPDATE = gql`
   }
 `
 
-interface SingleJourneyUpdateDialogProps {
+interface UpdateDialogProps {
   field: UpdateJourneyFields
   open: boolean
   journey: Omit<UpdatedJourney, '__typename'>
@@ -35,13 +35,13 @@ interface SingleJourneyUpdateDialogProps {
   onSuccess: (value: UpdatedJourney) => void
 }
 
-const SingleJourneyUpdateDialog = ({
+const UpdateDialog = ({
   field,
   open,
   journey,
   onClose,
   onSuccess
-}: SingleJourneyUpdateDialogProps): ReactElement => {
+}: UpdateDialogProps): ReactElement => {
   const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE)
 
   const breakpoints = useBreakpoints()
@@ -137,4 +137,4 @@ const SingleJourneyUpdateDialog = ({
   )
 }
 
-export default SingleJourneyUpdateDialog
+export default UpdateDialog

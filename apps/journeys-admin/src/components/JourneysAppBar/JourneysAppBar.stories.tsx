@@ -2,7 +2,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import JourneysAppBar, { JourneysAppBarProps } from '.'
-import { JOURNEY_PUBLISH } from '../SingleJourney/SingleJourneyMenu'
+import { JOURNEY_PUBLISH } from '../SingleJourney/Menu'
 import { defaultJourney } from '../JourneyList/journeyListData'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 

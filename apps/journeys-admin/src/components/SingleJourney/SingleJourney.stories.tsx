@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import SingleJourney from './SingleJourney'
 import { defaultJourney } from '../JourneyList/journeyListData'
-import { JOURNEY_PUBLISH } from './SingleJourneyMenu'
+import { JOURNEY_PUBLISH } from './Menu'
 
 const SingleJourneyDemo = {
   ...journeysAdminConfig,

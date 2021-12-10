@@ -2,17 +2,17 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../../JourneyList/journeyListData'
-import SingleJourneyMenu, { JOURNEY_PUBLISH } from './SingleJourneyMenu'
+import Menu, { JOURNEY_PUBLISH } from './Menu'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { SingleJourneyMenuProps } from '.'
+import { MenuProps } from '.'
 
 const TestStory = {
   ...journeysAdminConfig,
-  component: SingleJourneyMenu,
-  title: 'Journeys-Admin/SingleJourney/SingleJourneyMenu'
+  component: Menu,
+  title: 'Journeys-Admin/SingleJourney/Menu'
 }
 
-const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
+const Template: Story<MenuProps> = ({ ...args }) => (
   <MockedProvider
     mocks={[
       {
@@ -28,7 +28,7 @@ const Template: Story<SingleJourneyMenuProps> = ({ ...args }) => (
       }
     ]}
   >
-    <SingleJourneyMenu {...args} />
+    <Menu {...args} />
   </MockedProvider>
 )
 

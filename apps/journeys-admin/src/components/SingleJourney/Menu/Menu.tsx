@@ -5,7 +5,7 @@ import {
   Divider,
   IconButton,
   Link,
-  Menu,
+  Menu as MuiMenu,
   MenuItem,
   Snackbar
 } from '@mui/material'
@@ -14,7 +14,7 @@ import { JourneyUpdate_journeyUpdate as UpdatedJourney } from '../../../../__gen
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import SingleJourneyUpdateDialog from './SingleJourneyUpdateDialog'
+import UpdateDialog from './UpdateDialog'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -29,15 +29,12 @@ export enum UpdateJourneyFields {
   DESCRIPTION = 'description'
 }
 
-export interface SingleJourneyMenuProps {
+export interface MenuProps {
   journey: Journey
   forceOpen?: boolean
 }
 
-const SingleJourneyMenu = ({
-  journey,
-  forceOpen
-}: SingleJourneyMenuProps): ReactElement => {
+const Menu = ({ journey, forceOpen }: MenuProps): ReactElement => {
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showDialog, setShowDialog] = useState(false)
@@ -110,7 +107,7 @@ const SingleJourneyMenu = ({
       >
         <MoreVert />
       </IconButton>
-      <Menu
+      <MuiMenu
         id="single-journey-actions"
         anchorEl={anchorEl}
         open={openMenu}
@@ -152,8 +149,8 @@ const SingleJourneyMenu = ({
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleCopyLink}>Copy Link</MenuItem>
-      </Menu>
-      <SingleJourneyUpdateDialog
+      </MuiMenu>
+      <UpdateDialog
         open={showDialog}
         field={updateField}
         journey={{
@@ -188,4 +185,4 @@ const SingleJourneyMenu = ({
   )
 }
 
-export default SingleJourneyMenu
+export default Menu

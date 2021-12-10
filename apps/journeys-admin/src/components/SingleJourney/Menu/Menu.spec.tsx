@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import SingleJourneyMenu, { JOURNEY_PUBLISH } from './SingleJourneyMenu'
+import Menu, { JOURNEY_PUBLISH } from './Menu'
 import {
   defaultJourney,
   publishedJourney
@@ -12,11 +12,11 @@ Object.assign(navigator, {
   }
 })
 
-describe('SingleJourneyMenu', () => {
+describe('SingleJourney/Menu', () => {
   it('should open menu on click', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={defaultJourney} />
+        <Menu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -30,7 +30,7 @@ describe('SingleJourneyMenu', () => {
   it('should not preview if journey is draft', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={defaultJourney} />
+        <Menu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -46,7 +46,7 @@ describe('SingleJourneyMenu', () => {
   it('should preview if journey is published', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={publishedJourney} />
+        <Menu journey={publishedJourney} />
       </MockedProvider>
     )
 
@@ -79,7 +79,7 @@ describe('SingleJourneyMenu', () => {
           }
         ]}
       >
-        <SingleJourneyMenu journey={defaultJourney} />
+        <Menu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -97,7 +97,7 @@ describe('SingleJourneyMenu', () => {
   it('should not publish if journey is published', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={publishedJourney} />
+        <Menu journey={publishedJourney} />
       </MockedProvider>
     )
 
@@ -113,7 +113,7 @@ describe('SingleJourneyMenu', () => {
   it('should handle edit journey title', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={defaultJourney} />
+        <Menu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -132,7 +132,7 @@ describe('SingleJourneyMenu', () => {
   it('should handle edit journey description', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={defaultJourney} />
+        <Menu journey={defaultJourney} />
       </MockedProvider>
     )
 
@@ -150,7 +150,7 @@ describe('SingleJourneyMenu', () => {
   })
 
   it.skip('should handle changing journey access', () => {
-    // const { getAllByText } = render(<SingleJourneyMenu />)
+    // const { getAllByText } = render(<Menu />)
     // check correct action triggered
   })
   it('should handle copy url', async () => {
@@ -158,7 +158,7 @@ describe('SingleJourneyMenu', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[]}>
-        <SingleJourneyMenu journey={defaultJourney} />
+        <Menu journey={defaultJourney} />
       </MockedProvider>
     )
 
