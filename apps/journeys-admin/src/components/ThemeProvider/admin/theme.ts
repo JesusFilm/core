@@ -1,14 +1,14 @@
 import { createTheme } from '@mui/material'
 import { adminColorsLight } from './tokens/colors'
 import { adminComponents } from './tokens/components'
-import { baseSpacing } from '../../../../../../libs/shared/ui/src/libs/themes/base/tokens/spacing'
+import { adminSpacing } from './tokens/spacing'
 import { adminTypography } from './tokens/typography'
 
 export const adminTheme = {
-  ...baseSpacing,
-  ...adminTypography,
+  ...adminColorsLight,
   ...adminComponents,
-  ...adminColorsLight
+  ...adminTypography,
+  ...adminSpacing
 }
 
 // admin only available in light mode
