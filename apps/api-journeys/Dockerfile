@@ -1,10 +1,10 @@
-FROM node:lts-alpine
+FROM node:14-alpine
 WORKDIR /app
 COPY ./dist/apps/api-journeys .
-ENV PORT=4001
-EXPOSE ${PORT}
+EXPOSE 4001
 RUN apk add --no-cache python3 make g++
 RUN npm install --production
+RUN apk del .gyp
 # dependencies that nestjs needs
-RUN npm install reflect-metadata tslib rxjs
+RUN npm install tslib
 CMD node ./main.js
