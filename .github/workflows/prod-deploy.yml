@@ -35,10 +35,10 @@ jobs:
           restore-keys: node-modules-
 
       - name: NPM Install
-        run: npm install
+        run: npm install --silent
       
       - name: nx Install
-        run: npm install -g nx
+        run: npm install -g nx --silent
 
       # - name: Get affected apps
       #   run: echo "::set-output name=apps::$(nx affected:apps plain)"
@@ -46,7 +46,7 @@ jobs:
 
       # - name: Install Rover
       #   if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
-      #   run: npm install -g @apollo/rover
+      #   run: npm install -g @apollo/rover --silent
 
       - name: Build api-journeys
         # if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
