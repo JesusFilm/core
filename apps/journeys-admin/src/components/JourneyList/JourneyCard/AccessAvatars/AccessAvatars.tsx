@@ -63,21 +63,12 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
             )
           })}
         >
-          <Avatar alt="overflow avatar">{`+${
-            users.slice(avatarsShown).length
-          }`}</Avatar>
+          <Avatar
+            sx={{ backgroundColor: theme.palette.primary.main }}
+            alt="overflow avatar"
+          >{`+${users.slice(avatarsShown).length}`}</Avatar>
         </Tooltip>
       )}
-      {/* <Avatar
-        sx={{
-          color: '#C52D3A',
-          backgroundColor: '#C52D3A',
-          width: '5px',
-          height: '5px'
-        }}
-      >
-        .
-      </Avatar> */}
     </AvatarGroup>
   )
 }
