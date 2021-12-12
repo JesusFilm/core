@@ -35,11 +35,11 @@ describe('Attribute', () => {
       </ThemeProvider>
     )
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
-      'border-color: #dcdde5'
+      'border-color: #dedfe0'
     )
     fireEvent.click(getByRole('button'))
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
-      'border-color: #b62d1c'
+      'border-color: #c52d3a'
     )
   })
 })
