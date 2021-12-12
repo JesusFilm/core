@@ -9,7 +9,7 @@ describe('CardOverview', () => {
     const { getByText } = render(
       <CardOverview slug={'my-journey'} blocks={[]} />
     )
-    expect(getByText('No cards in this journey')).toBeInTheDocument()
+    expect(getByText('No cards')).toBeInTheDocument()
   })
   it('should have edit button when cards are present', () => {
     const { getByRole } = render(
@@ -34,5 +34,13 @@ describe('CardOverview', () => {
       </MockedProvider>
     )
     expect(getByText('1 card')).toBeInTheDocument()
+  })
+  it('should render a card to add a card if there are no cards in the journey', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <CardOverview slug={'my-journey'} blocks={[]} />
+      </MockedProvider>
+    )
+    expect(getByText('Add a Card')).toBeInTheDocument()
   })
 })
