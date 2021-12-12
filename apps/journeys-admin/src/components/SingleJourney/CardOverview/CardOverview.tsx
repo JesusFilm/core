@@ -35,7 +35,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
             size="medium"
             sx={{
               position: 'absolute',
-              bottom: '12px',
+              bottom: 3,
               right: '17px'
             }}
             color="primary"
