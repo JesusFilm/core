@@ -71,7 +71,16 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
               }}
             >
               <AddToPhotosIcon color="primary" />
-              <Typography variant="subtitle2" align="center">
+              <Typography
+                align="center"
+                sx={{
+                  fontFamily: 'Open Sans',
+                  fontWeight: '400px',
+                  lineHeight: 4,
+                  fontSize: '12px',
+                  color: 'text.secondary'
+                }}
+              >
                 Add a Card
               </Typography>
             </Box>
