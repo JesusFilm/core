@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { renderWithApolloClient } from '../../../../test/testingLibrary'
+import { MockedProvider } from '@apollo/client/testing'
 
 import CardOverview from './CardOverview'
 import { steps, oneStep } from './CardOverviewData'
@@ -12,20 +12,26 @@ describe('CardOverview', () => {
     expect(getByText('No cards in this journey')).toBeInTheDocument()
   })
   it('should have edit button when cards are present', () => {
-    const { getByRole } = renderWithApolloClient(
-      <CardOverview slug={'my-journey'} blocks={steps} />
+    const { getByRole } = render(
+      <MockedProvider>
+        <CardOverview slug={'my-journey'} blocks={steps} />
+      </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toBeInTheDocument()
   })
   it('should have for multiple cards', () => {
-    const { getByText } = renderWithApolloClient(
-      <CardOverview slug={'my-journey'} blocks={steps} />
+    const { getByText } = render(
+      <MockedProvider>
+        <CardOverview slug={'my-journey'} blocks={steps} />
+      </MockedProvider>
     )
     expect(getByText('5 cards')).toBeInTheDocument()
   })
   it('should redner description for 1 card', () => {
-    const { getByText } = renderWithApolloClient(
-      <CardOverview slug={'my-journey'} blocks={oneStep} />
+    const { getByText } = render(
+      <MockedProvider>
+        <CardOverview slug={'my-journey'} blocks={oneStep} />
+      </MockedProvider>
     )
     expect(getByText('1 card')).toBeInTheDocument()
   })
