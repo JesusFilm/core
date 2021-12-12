@@ -35,7 +35,7 @@ describe('CardOverview', () => {
     )
     expect(getByText('1 card')).toBeInTheDocument()
   })
-  it('should render a card to add a card if there are no cards in the journey', () => {
+  it('should add a card when no cards are present', () => {
     const { getByText } = render(
       <MockedProvider>
         <CardOverview slug={'my-journey'} blocks={[]} />
