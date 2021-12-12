@@ -64,7 +64,7 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
     <Box>
       {breakpoints.sm ? (
         <>
-          <Typography variant="subtitle2" gutterBottom sx={{ pl: 6 }}>
+          <Typography variant="subtitle2" sx={{ pl: 6 }}>
             Journey URL
           </Typography>
           <TextField
@@ -82,12 +82,17 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
                 </InputAdornment>
               )
             }}
-            sx={{ p: 6 }}
+            sx={{ px: 6, pt: 6 }}
           />
           <Box sx={{ display: 'flex', pl: 6 }}>
             <Button
               startIcon={<EditIcon />}
-              sx={{ color: theme.palette.primary.main }}
+              sx={{
+                color: theme.palette.primary.main,
+                fontWeight: 600,
+                fontSize: '14px',
+                lineHeight: 4
+              }}
             >
               <Link href={journeyEditLink} color="inherit" underline="none">
                 Edit
@@ -97,7 +102,13 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
             <Button
               onClick={handleCopyLink}
               startIcon={<ContentCopyIcon />}
-              sx={{ color: theme.palette.primary.main, pl: 7 }}
+              sx={{
+                color: theme.palette.primary.main,
+                pl: 7,
+                fontWeight: 600,
+                fontSize: '14px',
+                lineHeight: 4
+              }}
             >
               Copy
             </Button>
