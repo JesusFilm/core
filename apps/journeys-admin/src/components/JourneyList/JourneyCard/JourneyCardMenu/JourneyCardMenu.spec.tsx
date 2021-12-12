@@ -36,9 +36,6 @@ describe('JourneyCardMenu', () => {
       '/journeys/published-journey/edit'
     )
   })
-  it('should handle changing journey access should show modal', () => {
-    // TODO
-  })
   it('should handle preview', () => {
     const { getByRole } = render(
       <JourneyCardMenu

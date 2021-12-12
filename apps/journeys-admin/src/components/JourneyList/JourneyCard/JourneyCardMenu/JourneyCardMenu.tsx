@@ -34,10 +34,6 @@ const JourneyCardMenu = ({
     setAnchorEl(null)
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
-    // show modal
-  }
-
   return (
     <div>
       <IconButton
@@ -71,7 +67,7 @@ const JourneyCardMenu = ({
           </MenuItem>
         </Link>
 
-        <MenuItem onClick={handleClick}>
+        <MenuItem>
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
