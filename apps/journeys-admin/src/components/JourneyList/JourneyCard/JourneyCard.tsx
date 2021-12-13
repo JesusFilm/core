@@ -70,10 +70,9 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           </Grid>
           <Grid item>
             <Typography variant="caption" sx={{ pr: 3 }}>
-              {journey.status.charAt(0).toUpperCase() + journey.status.slice(1)}
+              {journey.status}
             </Typography>
           </Grid>
-          {/* Use locale helpers once its completed */}
           <Grid item>
             <TranslateIcon
               sx={{
