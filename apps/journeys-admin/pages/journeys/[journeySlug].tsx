@@ -62,6 +62,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>Created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>Published: {journey.publishedAt}</Typography>
+        {console.log(journey)}
         {currentUsersJourney?.role === 'inviteRequested' ? (
           'Your invite is pending'
         ) : currentUsersJourney?.role === 'editor' ? (
