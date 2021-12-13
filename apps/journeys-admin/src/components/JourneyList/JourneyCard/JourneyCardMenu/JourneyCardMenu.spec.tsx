@@ -31,7 +31,7 @@ describe('JourneyCardMenu', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
       'href',
       '/journeys/published-journey/edit'
     )
@@ -44,9 +44,9 @@ describe('JourneyCardMenu', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Preview' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      'https://your.NextStep.is/published-journey'
+      'https://your.nextstep.is/published-journey'
     )
   })
 

@@ -4,9 +4,9 @@ import {
   Menu,
   MenuItem,
   ListItemText,
-  ListItemIcon,
-  Link
+  ListItemIcon
 } from '@mui/material'
+import Link from 'next/link'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import EditIcon from '@mui/icons-material/Edit'
 import PeopleIcon from '@mui/icons-material/People'
@@ -58,7 +58,7 @@ const JourneyCardMenu = ({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}/edit`} underline="none" color="inherit">
+        <Link href={`/journeys/${slug}/edit`} passHref>
           <MenuItem>
             <ListItemIcon>
               <EditIcon />
@@ -82,11 +82,7 @@ const JourneyCardMenu = ({
             <ListItemText>Preview</ListItemText>
           </MenuItem>
         ) : (
-          <Link
-            href={`https://your.NextStep.is/${slug}`}
-            underline="none"
-            color="inherit"
-          >
+          <Link href={`https://your.nextstep.is/${slug}`} passHref>
             <MenuItem>
               <ListItemIcon>
                 <VisibilityIcon />
