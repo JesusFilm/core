@@ -22,7 +22,7 @@ describe('CardOverview', () => {
       '/journeys/my-journey/edit'
     )
   })
-  it('should have for multiple cards', () => {
+  it('should render cards', () => {
     const { getByText } = render(
       <MockedProvider>
         <CardOverview slug={'my-journey'} blocks={steps} />
@@ -30,7 +30,7 @@ describe('CardOverview', () => {
     )
     expect(getByText('5 cards')).toBeInTheDocument()
   })
-  it('should redner description for 1 card', () => {
+  it('should render description for 1 card', () => {
     const { getByText } = render(
       <MockedProvider>
         <CardOverview slug={'my-journey'} blocks={oneStep} />
