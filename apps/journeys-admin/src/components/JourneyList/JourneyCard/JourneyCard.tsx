@@ -23,7 +23,13 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
   return (
     <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
       <Link href={`/journeys/${journey.slug}`} underline="none">
-        <Typography variant="subtitle1" component="div" noWrap gutterBottom>
+        <Typography
+          variant="subtitle1"
+          component="div"
+          noWrap
+          gutterBottom
+          sx={{ color: theme.palette.secondary.main }}
+        >
           {journey.title}
         </Typography>
 
@@ -31,7 +37,8 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           variant="caption"
           noWrap
           sx={{
-            display: 'block'
+            display: 'block',
+            color: theme.palette.secondary.main
           }}
           gutterBottom
         >
