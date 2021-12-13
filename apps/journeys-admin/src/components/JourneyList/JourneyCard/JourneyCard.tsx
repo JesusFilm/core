@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Typography, Box, Link, Grid, useTheme } from '@mui/material'
+import { Card, Typography, Box, Link, Grid } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -13,8 +13,6 @@ interface JourneyCardProps {
 }
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
-  const theme = useTheme()
-
   const date =
     moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
       ? moment(journey.createdAt).format('MMM Do')
@@ -28,7 +26,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           component="div"
           noWrap
           gutterBottom
-          sx={{ color: theme.palette.secondary.main }}
+          sx={{ color: (theme) => theme.palette.secondary.main }}
         >
           {journey.title}
         </Typography>
@@ -38,7 +36,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
           noWrap
           sx={{
             display: 'block',
-            color: theme.palette.secondary.main
+            color: (theme) => theme.palette.secondary.main
           }}
           gutterBottom
         >
@@ -53,14 +51,14 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             {journey.status === 'draft' ? (
               <EditIcon
                 sx={{
-                  color: theme.palette.warning.main,
+                  color: (theme) => theme.palette.warning.main,
                   pr: '6px'
                 }}
               />
             ) : (
               <CheckCircleIcon
                 sx={{
-                  color: theme.palette.success.main,
+                  color: (theme) => theme.palette.success.main,
                   pr: '6px'
                 }}
               />
