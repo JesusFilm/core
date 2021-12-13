@@ -58,7 +58,7 @@ const JourneyCardMenu = ({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}/edit`} underline="none">
+        <Link href={`/journeys/${slug}/edit`} underline="none" color="inherit">
           <MenuItem>
             <ListItemIcon>
               <EditIcon />
@@ -82,7 +82,11 @@ const JourneyCardMenu = ({
             <ListItemText>Preview</ListItemText>
           </MenuItem>
         ) : (
-          <Link href={`https://your.NextStep.is/${slug}`} underline="none">
+          <Link
+            href={`https://your.NextStep.is/${slug}`}
+            underline="none"
+            color="inherit"
+          >
             <MenuItem>
               <ListItemIcon>
                 <VisibilityIcon />
