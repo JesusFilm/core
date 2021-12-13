@@ -18,7 +18,7 @@ interface JourneysListPageProps {
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  const { logOut, user, loading } = UseFirebase()
+  const { logOut, user, loading, error } = UseFirebase()
   const router = useRouter()
   const [journeysToShow, setJourneysToShow] = useState<Journey[]>([])
   if (user != null) console.log(user.displayName)
@@ -46,6 +46,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys
         </Typography>
+        {console.log(error)}
         <JourneyList journeys={journeysToShow} />
         <Button variant="contained" onClick={() => logOut()}>
           SignOut

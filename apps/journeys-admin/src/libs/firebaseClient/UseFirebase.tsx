@@ -7,12 +7,13 @@ interface UseFirebaseProps {
   logOut: () => void
   user
   loading
+  error
 }
 
 export const UseFirebase = (): UseFirebaseProps => {
   const router = useRouter()
   const auth = getAuth(firebaseClient)
-  const [user, loading] = useAuthState(auth)
+  const [user, loading, error] = useAuthState(auth)
 
   const logOut = async (): Promise<void> => {
     void signOut(auth)
@@ -27,6 +28,7 @@ export const UseFirebase = (): UseFirebaseProps => {
   return {
     logOut,
     user,
-    loading
+    loading,
+    error
   }
 }
