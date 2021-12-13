@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Typography, Box, Link, Grid } from '@mui/material'
+import { Card, Typography, Box, Link, Grid, useTheme } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -13,6 +13,8 @@ interface JourneyCardProps {
 }
 
 const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
+  const theme = useTheme()
+
   const date =
     moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
       ? moment(journey.createdAt).format('MMM Do')
@@ -21,26 +23,15 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
   return (
     <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
       <Link href={`/journeys/${journey.slug}`} underline="none">
-        <Typography
-          variant="subtitle1"
-          sx={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}
-          gutterBottom
-        >
+        <Typography variant="subtitle1" component="div" noWrap gutterBottom>
           {journey.title}
         </Typography>
 
         <Typography
           variant="caption"
+          noWrap
           sx={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
+            display: 'block'
           }}
           gutterBottom
         >
@@ -55,21 +46,24 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
             {journey.status === 'draft' ? (
               <EditIcon
                 sx={{
-                  color: '#F0720C',
+                  color: theme.palette.warning.main,
                   pr: '6px'
                 }}
               />
             ) : (
               <CheckCircleIcon
                 sx={{
-                  color: '#3AA74A',
+                  color: theme.palette.success.main,
                   pr: '6px'
                 }}
               />
             )}
           </Grid>
           <Grid item>
-            <Typography variant="caption" sx={{ pr: 3 }}>
+            <Typography
+              variant="caption"
+              sx={{ pr: 3, textTransform: 'capitalize' }}
+            >
               {journey.status}
             </Typography>
           </Grid>

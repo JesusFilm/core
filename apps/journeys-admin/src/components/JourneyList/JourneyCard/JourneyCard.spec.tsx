@@ -22,11 +22,6 @@ describe('JourneyCard', () => {
     expect(getByText('Nov 19th - a published journey')).toBeInTheDocument()
   })
 
-  it('should render the published status', () => {
-    const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('Published')[0]).toBeInTheDocument()
-  })
-
   it('should render the locale captialized', () => {
     const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
     expect(getAllByText('EN (US)')[0]).toBeInTheDocument()
@@ -40,12 +35,8 @@ describe('JourneyCard', () => {
       )[0]
     ).toBeInTheDocument()
   })
-  it('should render the draft status', () => {
-    const { getAllByText } = render(<JourneyCard journey={defaultJourney} />)
-    expect(getAllByText('Draft')[0]).toBeInTheDocument()
-  })
 
-  it('should render card with correct link', () => {
+  it('should have correct link on card', () => {
     const { getByRole } = render(<JourneyCard journey={defaultJourney} />)
 
     expect(getByRole('link')).toHaveAttribute('href', '/journeys/default')
