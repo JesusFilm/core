@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material'
+import { palette } from './colors'
 
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
@@ -25,8 +26,9 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       styleOverrides: {
         colorDefault: {
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #DCDDE5'
+          backgroundColor: palette[0],
+          borderBottom: '1px solid',
+          borderBottomColor: palette[200]
         }
       }
     },

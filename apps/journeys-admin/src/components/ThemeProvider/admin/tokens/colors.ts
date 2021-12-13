@@ -1,6 +1,6 @@
 import { ThemeOptions } from '@mui/material/styles'
 
-const palette = {
+export const palette = {
   error: '#B62D1C',
   success: '#3AA74A',
   warning: '#F0720C',
