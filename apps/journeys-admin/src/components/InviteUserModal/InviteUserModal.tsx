@@ -120,8 +120,9 @@ export const InviteUserModal = ({
                   >
                     <Avatar src={userJourney.user?.imageUrl as string} />
                     <Box ml={2}>
-                      <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
-                        } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'body2'}>{`${
+                        userJourney.user?.firstName as string
+                      } ${userJourney.user?.lastName as string}`}</Typography>
                       <Typography variant={'caption'}>
                         {userJourney.user?.email}
                       </Typography>
@@ -153,8 +154,9 @@ export const InviteUserModal = ({
                   >
                     <Avatar src={userJourney.user?.imageUrl as string} />
                     <Box ml={2}>
-                      <Typography variant={'body2'}>{`${userJourney.user?.firstName as string
-                        } ${userJourney.user?.lastName as string}`}</Typography>
+                      <Typography variant={'body2'}>{`${
+                        userJourney.user?.firstName as string
+                      } ${userJourney.user?.lastName as string}`}</Typography>
                       <Typography variant={'caption'}>
                         {userJourney.user?.email}
                       </Typography>

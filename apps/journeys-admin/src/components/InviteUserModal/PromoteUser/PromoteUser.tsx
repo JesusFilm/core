@@ -31,7 +31,7 @@ export const PromoteUser = ({
           journeyId
         },
         optimisticResponse: {
-          userJourneyRemove: {
+          userJourneyPromote: {
             userId,
             journeyId
           }

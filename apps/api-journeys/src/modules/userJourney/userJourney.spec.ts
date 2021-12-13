@@ -9,6 +9,7 @@ import { DocumentNode, ExecutionResult, GraphQLError } from 'graphql'
 describe('UserJourneyModule', () => {
   let app,
     user,
+    userEditor,
     userInvited,
     journey,
     userJourneyEditor,
@@ -20,6 +21,13 @@ describe('UserJourneyModule', () => {
       schemaBuilder
     })
     user = {
+      id: uuidv4(),
+      firstName: 'fo',
+      lastName: 'sho',
+      email: 'tho@no.co',
+      imageUrl: 'po'
+    }
+    userEditor = {
       id: uuidv4(),
       firstName: 'fo',
       lastName: 'sho',
@@ -46,7 +54,7 @@ describe('UserJourneyModule', () => {
     }
 
     userJourneyEditor = {
-      userId: user.id,
+      userId: userEditor.id,
       journeyId: journey.id,
       role: 'editor'
     }
@@ -116,135 +124,270 @@ describe('UserJourneyModule', () => {
         })
       })
 
-      // describe('userJourney', () => {
-      //   it('updates a user journey with journey owner', async () => {
-      //     dbMock.journey.create.mockResolvedValue(journey)
-      //     dbMock.user.create.mockResolvedValue(user)
-      //     dbMock.user.create.mockResolvedValue(userInvited)
-      //     dbMock.userJourney.create.mockResolvedValue(userJourneyOwner)
-      //     dbMock.userJourney.create.mockResolvedValue(userJourneyInviteRequested)
+      describe('Invites a user', () => {
+        it('invites a user to a journey', async () => {
+          dbMock.userJourney.create.mockResolvedValue(
+            userJourneyInviteRequested
+          )
 
-      //     const { data } = await query(
-      //       gql`
-      //         mutation ($input: UserJourneyUpdateInput!) {
-      //           userJourneyUpdate(input: $input) {
-      //             userId
-      //             journeyId
-      //             role
-      //           }
-      //         }
-      //       `,
-      //       {
-      //         input: {
-      //           userId: userJourneyInviteRequested.userId,
-      //           journeyId: userJourneyInviteRequested.journeyId,
-      //           role: 'editor'
-      //         }
-      //       },
-      //       {
-      //         userId: userJourneyOwner.userId
-      //       }
-      //     )
-      //     expect(data?.userJourneyUpdate).toEqual({
-      //       userId: userJourneyInviteRequested.userId,
-      //       journeyId: userJourneyInviteRequested.journeyId,
-      //       role: 'editor'
-      //     })
-      //   })
-      // })
-      // it('does not update a user journey by a non-owner', async () => {
-      //   dbMock.userJourney.update.mockResolvedValue(userJourneyInviteRequested)
-      //   const { data, errors } = await query(
-      //     gql`
-      //       mutation ($input: UserJourneyUpdateInput!) {
-      //         userJourneyUpdate(input: $input) {
-      //           userId
-      //           journeyId
-      //           role
-      //         }
-      //       }
-      //     `,
-      //     {
-      //       input: {
-      //         userId: userJourneyEditor.userId,
-      //         journeyId: userJourneyEditor.journeyId,
-      //         role: 'editor'
-      //       }
-      //     },
-      //     {
-      //       userId: 'notownerid'
-      //     }
-      //   )
-      //   expect(errors).toBeDefined()
-      //   expect(errors).toEqual([
-      //     new GraphQLError(
-      //       'You do not own this journey so you cannot change roles'
-      //     )
-      //   ])
-      //   expect(data?.userJourneyUpdate).toEqual(undefined)
-      // })
+          await query(
+            gql`
+              mutation ($input: UserJourneyRequestInput!) {
+                userJourneyRequest(input: $input) {
+                  userId
+                  journeyId
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyInviteRequested.userId,
+                journeyId: userJourneyInviteRequested.journeyId
+              }
+            },
+            {
+              userId: user.id
+            }
+          )
 
-      it('removes the editor from a journey', async () => {
-        dbMock.userJourney.delete.mockResolvedValue(userJourneyEditor)
+          expect(dbMock.userJourney.create).toBeCalledWith({
+            data: {
+              userId: userJourneyInviteRequested.userId,
+              journeyId: userJourneyInviteRequested.journeyId,
+              role: 'inviteRequested'
+            }
+          })
+        })
+      })
 
-        const { data } = await query(
-          gql`
-            mutation ($input: UserJourneyRemoveInput!) {
-              userJourneyRemove(input: $input) {
-                userId
-                journeyId
+      describe('User Journey Promote to Editor', () => {
+        it('updates the user journey role to be editor with journey owner access', async () => {
+          dbMock.userJourney.update.mockResolvedValue(
+            userJourneyInviteRequested
+          )
+          dbMock.userJourney.findUnique.mockResolvedValue(userJourneyOwner)
+
+          const { data } = await query(
+            gql`
+              mutation ($input: UserJourneyUpdateInput!) {
+                userJourneyUpdate(input: $input) {
+                  userId
+                  journeyId
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyInviteRequested.userId,
+                journeyId: userJourneyInviteRequested.journeyId
+              }
+            },
+            {
+              userId: userJourneyOwner.userId
+            }
+          )
+
+          expect(data?.userJourneyUpdate).toEqual({
+            userId: userJourneyInviteRequested.userId,
+            journeyId: userJourneyInviteRequested.journeyId
+          })
+          expect(dbMock.userJourney.update).toBeCalledWith({
+            where: {
+              uniqueUserJourney: {
+                userId: userJourneyInviteRequested.userId,
+                journeyId: userJourneyInviteRequested.journeyId
+              }
+            },
+            data: {
+              role: 'editor'
+            }
+          })
+        })
+        it('does not update a user journey by a non-owner', async () => {
+          dbMock.userJourney.update.mockResolvedValue(
+            userJourneyInviteRequested
+          )
+          dbMock.userJourney.findUnique.mockResolvedValue(userJourneyEditor)
+
+          const { data, errors } = await query(
+            gql`
+              mutation ($input: UserJourneyUpdateInput!) {
+                userJourneyUpdate(input: $input) {
+                  userId
+                  journeyId
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId
+              }
+            },
+            {
+              userId: userJourneyEditor.userId
+            }
+          )
+          expect(errors).toBeDefined()
+          expect(errors).toEqual([
+            new GraphQLError(
+              'You do not own this journey so you cannot change roles'
+            )
+          ])
+          expect(data?.userJourneyUpdate).toEqual(undefined)
+        })
+      })
+
+      describe('User Journey Remove', () => {
+        it('removes the editor from a journey with journey owner access', async () => {
+          dbMock.userJourney.delete.mockResolvedValue(userJourneyEditor)
+          dbMock.userJourney.findUnique.mockResolvedValue(userJourneyOwner)
+
+          await query(
+            gql`
+              mutation ($input: UserJourneyRemoveInput!) {
+                userJourneyRemove(input: $input) {
+                  userId
+                  journeyId
+                  role
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId,
+                role: userJourneyEditor.role
+              }
+            },
+            {
+              userId: userJourneyOwner.userId
+            }
+          )
+          expect(dbMock.userJourney.delete).toBeCalledWith({
+            where: {
+              uniqueUserJourney: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId
               }
             }
-          `,
-          {
-            input: {
-              userId: userJourneyEditor.id,
-              journeyId: userJourneyEditor.id
+          })
+        })
+        it('does not remove the editor from a journey with non-owner access', async () => {
+          dbMock.userJourney.delete.mockResolvedValue(userJourneyEditor)
+
+          const { data, errors } = await query(
+            gql`
+              mutation ($input: UserJourneyRemoveInput!) {
+                userJourneyRemove(input: $input) {
+                  userId
+                  journeyId
+                  role
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId,
+                role: userJourneyEditor.role
+              }
+            },
+            {
+              userId: 'notOwnerId'
             }
-          },
-          {
-            userId: user.id
-          }
-        )
-        expect(data?.userJourneyRemove).toEqual(undefined)
+          )
+
+          expect(errors).toBeDefined()
+          expect(errors).toEqual([
+            new GraphQLError(
+              'You do not own this journey so you cannot remove users'
+            )
+          ])
+          expect(data?.userJourneyRemove).toEqual(undefined)
+        })
+      })
+
+      describe('User Journey Promote', () => {
+        it('promotes editor to owner', async () => {
+          dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
+          dbMock.userJourney.findUnique.mockResolvedValue(userJourneyOwner)
+
+          await query(
+            gql`
+              mutation ($input: UserJourneyUpdateInput!) {
+                userJourneyPromote(input: $input) {
+                  userId
+                  journeyId
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId
+              }
+            },
+            {
+              userId: userJourneyOwner.userId
+            }
+          )
+
+          expect(dbMock.userJourney.update).toBeCalledWith({
+            where: {
+              uniqueUserJourney: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId
+              }
+            },
+            data: {
+              role: 'owner'
+            }
+          })
+          expect(dbMock.userJourney.update).toBeCalledWith({
+            where: {
+              uniqueUserJourney: {
+                userId: userJourneyOwner.userId,
+                journeyId: userJourneyOwner.journeyId
+              }
+            },
+            data: {
+              role: 'editor'
+            }
+          })
+        })
+        it('does not promote editor to owner with non-owner access', async () => {
+          dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
+
+          const { data, errors } = await query(
+            gql`
+              mutation ($input: UserJourneyUpdateInput!) {
+                userJourneyPromote(input: $input) {
+                  userId
+                  journeyId
+                }
+              }
+            `,
+            {
+              input: {
+                userId: userJourneyEditor.userId,
+                journeyId: userJourneyEditor.journeyId
+              }
+            },
+            {
+              userId: 'notOwnerId'
+            }
+          )
+
+          expect(errors).toBeDefined()
+          expect(errors).toEqual([
+            new GraphQLError(
+              'You do not own this journey so you cannot change roles'
+            )
+          ])
+          expect(data?.userJourneyPromote).toEqual(undefined)
+        })
       })
     })
-    // it('promotes editor to owner', async () => {
-    //   dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
-
-    //   dbMock.userJourney.findUnique.mockResolvedValue({
-    //     userId: 'userId',
-    //     journeyId: 'journeyId',
-    //     role: 'owner'
-    //   })
-
-    //   const { data } = await query(
-    //     gql`
-    //       mutation ($input: UserJourneyPromoteInput!) {
-    //         userJourneyPromote(input: $input) {
-    //           userId
-    //           journeyId
-    //           role
-    //         }
-    //       }
-    //     `,
-    //     {
-    //       input: {
-    //         userId: userJourneyEditor.userId,
-    //         journeyId: userJourneyEditor.journeyId,
-    //         role: 'owner'
-    //       }
-    //     },
-    //     {
-    //       userId: 'userId'
-    //     }
-    //   )
-
-    //   expect(data?.userJourneyPromote).toEqual({
-    //     userId: userJourneyEditor.userId,
-    //     journeyId: userJourneyEditor.journeyId,
-    //     role: 'owner'
-    //   })
-    // })
   })
 })
