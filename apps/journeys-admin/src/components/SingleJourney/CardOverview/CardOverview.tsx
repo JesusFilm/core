@@ -36,7 +36,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
             sx={{
               position: 'absolute',
               bottom: 3,
-              right: '17px'
+              right: 4
             }}
             color="primary"
             href={`/journeys/${slug}/edit`}
@@ -71,16 +71,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
               }}
             >
               <AddToPhotosIcon color="primary" />
-              <Typography
-                align="center"
-                sx={{
-                  fontFamily: 'Open Sans',
-                  fontWeight: '400px',
-                  lineHeight: 4,
-                  fontSize: '12px',
-                  color: 'text.secondary'
-                }}
-              >
+              <Typography align="center" variant="body2">
                 Add a Card
               </Typography>
             </Box>
