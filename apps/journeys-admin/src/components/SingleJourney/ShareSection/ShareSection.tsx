@@ -7,7 +7,6 @@ import {
   Alert,
   Snackbar,
   Fade,
-  useTheme,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -37,7 +36,6 @@ export function ShareSection({
   const breakpoints = useBreakpoints()
 
   const [showAlert, setShowAlert] = useState(false)
-  const theme = useTheme()
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
@@ -88,25 +86,25 @@ export function ShareSection({
             sx={{ px: 6, pt: 6 }}
           />
           <Box sx={{ display: 'flex', pl: 6 }}>
-            <Button
-              startIcon={<EditIcon />}
-              sx={{
-                color: theme.palette.primary.main,
-                fontWeight: 600,
-                fontSize: '14px',
-                lineHeight: 4
-              }}
-            >
-              <Link href={journeyEditLink} passHref>
+            <Link href={journeyEditLink} passHref>
+              <Button
+                startIcon={<EditIcon />}
+                sx={{
+                  color: (theme) => theme.palette.primary.main,
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  lineHeight: 4
+                }}
+              >
                 Edit
-              </Link>
-            </Button>
+              </Button>
+            </Link>
 
             <Button
               onClick={handleCopyLink}
               startIcon={<ContentCopyIcon />}
               sx={{
-                color: theme.palette.primary.main,
+                color: (theme) => theme.palette.primary.main,
                 pl: 7,
                 fontWeight: 600,
                 fontSize: '14px',
