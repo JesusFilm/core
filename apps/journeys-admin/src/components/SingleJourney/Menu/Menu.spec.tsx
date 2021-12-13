@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import Menu, { JOURNEY_PUBLISH } from './Menu'
+import Menu from './Menu'
 import {
   defaultJourney,
   publishedJourney
@@ -62,38 +62,6 @@ describe('SingleJourney/Menu', () => {
     )
   })
 
-  it.skip('should publish journey', async () => {
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_PUBLISH,
-              variables: { id: defaultJourney.id }
-            },
-            result: {
-              data: {
-                journeyPublish: { id: defaultJourney.id, __typename: 'Journey' }
-              }
-            }
-          }
-        ]}
-      >
-        <Menu journey={defaultJourney} />
-      </MockedProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-
-    const menuItem = getByRole('menuitem', { name: 'Publish' })
-    fireEvent.click(menuItem)
-
-    await waitFor(() => {
-      // TODO: Update UI
-    })
-  })
-
   it('should not publish if journey is published', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
@@ -149,10 +117,6 @@ describe('SingleJourney/Menu', () => {
     expect(form).toBeInTheDocument()
   })
 
-  it.skip('should handle changing journey access', () => {
-    // const { getAllByText } = render(<Menu />)
-    // check correct action triggered
-  })
   it('should handle copy url', async () => {
     jest.spyOn(navigator.clipboard, 'writeText')
 
@@ -173,8 +137,7 @@ describe('SingleJourney/Menu', () => {
     )
 
     await waitFor(() => {
-      const alert = getByText('Link Copied')
-      expect(alert).toBeInTheDocument()
+      expect(getByText('Link Copied')).toBeInTheDocument()
     })
   })
 })

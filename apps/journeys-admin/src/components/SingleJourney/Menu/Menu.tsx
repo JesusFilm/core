@@ -100,6 +100,7 @@ const Menu = ({ journey, forceOpen }: MenuProps): ReactElement => {
     <>
       <IconButton
         id="single-journey-actions"
+        edge="end"
         aria-controls="single-journey-actions"
         aria-haspopup="true"
         aria-expanded={openMenu ? 'true' : undefined}
