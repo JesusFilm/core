@@ -17,7 +17,10 @@ describe('CardOverview', () => {
         <CardOverview slug={'my-journey'} blocks={steps} />
       </MockedProvider>
     )
-    expect(getByRole('link', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
+      'href',
+      '/journeys/my-journey/edit'
+    )
   })
   it('should have for multiple cards', () => {
     const { getByText } = render(
