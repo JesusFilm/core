@@ -1,22 +1,22 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
-import JourneyShare, { ShareSectionProps } from './ShareSection'
+import { ShareSection, ShareSectionProps } from './ShareSection'
 
 const JourneyShareDemo = {
   ...journeysAdminConfig,
-  component: JourneyShare,
+  component: ShareSection,
   title: 'Journeys-Admin/SingleJourney/ShareSection'
 }
 
 const Template: Story<ShareSectionProps> = ({ ...args }) => (
-  <JourneyShare {...args} />
+  <ShareSection {...args} />
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  slug: 'journey-slug'
-  // forceMenu: true
+  slug: 'journey-slug',
+  forceMenu: true
 }
 
 export default JourneyShareDemo as Meta

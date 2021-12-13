@@ -28,7 +28,10 @@ export interface ShareSectionProps {
   forceMenu?: boolean // used only for storybook testing
 }
 
-const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
+export function ShareSection({
+  slug,
+  forceMenu
+}: ShareSectionProps): ReactElement {
   const journeyLink = `https://your.nextstep.is/${slug}`
   const journeyEditLink = `/journeys/${slug}/edit`
   const breakpoints = useBreakpoints()
@@ -200,5 +203,3 @@ const ShareSection = ({ slug, forceMenu }: ShareSectionProps): ReactElement => {
     </Box>
   )
 }
-
-export default ShareSection

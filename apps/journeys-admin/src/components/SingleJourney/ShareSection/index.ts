@@ -1,1 +1,1 @@
-export { default } from './ShareSection'
+export { ShareSection } from './ShareSection'

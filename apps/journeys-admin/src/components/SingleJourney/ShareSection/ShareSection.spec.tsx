@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import ShareSection from '.'
+import { ShareSection } from '.'
 
-describe('JourneyShare', () => {
+describe('ShareSection', () => {
   it('should render with the heading', () => {
     const { getByText } = render(<ShareSection slug={'my-journey'} />)
     expect(getByText('Journey URL')).toBeInTheDocument()
@@ -19,7 +19,6 @@ describe('JourneyShare', () => {
     const { getByRole, getAllByRole } = render(
       <ShareSection slug={'my-journey'} />
     )
-    console.log(getAllByRole('button'))
     fireEvent.click(getAllByRole('button')[1])
     expect(getByRole('link')).toHaveAttribute(
       'href',
@@ -48,7 +47,7 @@ describe('JourneyShare', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
         'https://your.nextstep.is/my-journey'
       )
-      expect(getByText('Link Copied')).toBeInTheDocument()
     })
+    expect(getByText('Link Copied')).toBeInTheDocument()
   })
 })
