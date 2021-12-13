@@ -5,7 +5,8 @@ import Head from 'next/head'
 import client from '../../src/libs/client'
 import {
   GetJourney,
-  GetJourney_journey as Journey
+  GetJourney_journey as Journey,
+  GetJourney_journey_usersJourneys as UsersJourneys
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
 import { UseFirebase } from '../../src/libs/firebaseClient/'
@@ -22,7 +23,7 @@ interface SingleJourneyPageProps {
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
   const { user, loading } = UseFirebase()
   const router = useRouter()
-  const [currentUsersJourney, setCurrentUsersJourney] = useState(null)
+  const [currentUsersJourney, setCurrentUsersJourney] = useState<UsersJourneys | null>()
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in

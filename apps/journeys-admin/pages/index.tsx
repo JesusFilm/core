@@ -9,7 +9,7 @@ function Dashboard(): ReactElement {
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
-          Dashboard
+          Sign In
         </Typography>
         <SignIn />
       </Container>
