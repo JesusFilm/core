@@ -20,7 +20,7 @@ describe('ShareSection', () => {
       <ShareSection slug={'my-journey'} />
     )
     fireEvent.click(getAllByRole('button')[1])
-    expect(getByRole('link')).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
       'href',
       '/journeys/my-journey/edit'
     )

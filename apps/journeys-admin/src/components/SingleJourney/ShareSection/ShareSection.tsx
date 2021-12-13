@@ -13,9 +13,9 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
-  Link,
   Typography
 } from '@mui/material'
+import Link from 'next/link'
 import InsertLinkIcon from '@mui/icons-material/InsertLink'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -97,7 +97,7 @@ export function ShareSection({
                 lineHeight: 4
               }}
             >
-              <Link href={journeyEditLink} color="inherit" underline="none">
+              <Link href={journeyEditLink} passHref>
                 Edit
               </Link>
             </Button>
@@ -160,7 +160,7 @@ export function ShareSection({
               horizontal: 'right'
             }}
           >
-            <Link href={journeyEditLink} color="inherit" underline="none">
+            <Link href={journeyEditLink} passHref>
               <MenuItem>
                 <ListItemIcon>
                   <EditIcon />
