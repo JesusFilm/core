@@ -3,12 +3,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { JourneyDetails } from './JourneyDetails'
 import { JourneyProvider } from '../../Context'
-import { defaultJourney, publishedJourney } from '../../singleJourneyData'
+import { defaultJourney, publishedJourney } from '../../data'
 
 const JourneyDetailsStory = {
   ...simpleComponentConfig,
   component: JourneyDetails,
-  title: 'Journeys-Admin/SingleJourney/JourneyDetails'
+  title: 'Journeys-Admin/JourneyView/Properties/JourneyDetails'
 }
 
 const Template: Story = ({ ...args }) => (

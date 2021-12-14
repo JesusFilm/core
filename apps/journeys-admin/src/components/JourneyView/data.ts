@@ -1,6 +1,6 @@
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
-import { steps } from './CardOverview/cardOverviewData'
+import { steps } from './CardView/data'
 
 export const defaultJourney: Journey = {
   __typename: 'Journey',

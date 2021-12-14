@@ -2,13 +2,13 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { TitleDialog, JOURNEY_TITLE_UPDATE } from './TitleDialog'
-import { defaultJourney } from '../../singleJourneyData'
+import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
+import { defaultJourney } from '../../data'
 
-const TitleDialogStory = {
+const DescriptionDialogStory = {
   ...journeysAdminConfig,
-  component: TitleDialog,
-  title: 'Journeys-Admin/SingleJourney/Menu/TitleDialog'
+  component: DescriptionDialog,
+  title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog'
 }
 
 const Template: Story = () => {
@@ -19,11 +19,11 @@ const Template: Story = () => {
       mocks={[
         {
           request: {
-            query: JOURNEY_TITLE_UPDATE,
+            query: JOURNEY_DESC_UPDATE,
             variables: {
               input: {
                 id: defaultJourney.id,
-                title: 'New Journey'
+                description: 'New Description'
               }
             }
           },
@@ -32,18 +32,18 @@ const Template: Story = () => {
               journeyUpdate: {
                 id: defaultJourney.id,
                 __typename: 'Journey',
-                title: 'New Journey'
+                description: 'New Description'
               }
             }
           }
         }
       ]}
     >
-      <TitleDialog open={open} onClose={() => setOpen(false)} />
+      <DescriptionDialog open={open} onClose={() => setOpen(false)} />
     </MockedProvider>
   )
 }
 
-export const Title = Template.bind({})
+export const Default = Template.bind({})
 
-export default TitleDialogStory as Meta
+export default DescriptionDialogStory as Meta

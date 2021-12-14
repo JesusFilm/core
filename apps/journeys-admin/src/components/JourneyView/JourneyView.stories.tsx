@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { SingleJourney } from './SingleJourney'
-import { defaultJourney, publishedJourney } from './singleJourneyData'
+import { JourneyView } from './JourneyView'
+import { defaultJourney, publishedJourney } from './data'
 import { JourneyProvider } from './Context'
 
-const SingleJourneyStory = {
+const JourneyViewStory = {
   ...journeysAdminConfig,
-  component: SingleJourney,
-  title: 'Journeys-Admin/SingleJourney',
+  component: JourneyView,
+  title: 'Journeys-Admin/JourneyView',
   parameters: {
     layout: 'fullscreen'
   }
@@ -17,7 +17,7 @@ const SingleJourneyStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <JourneyProvider value={args.journey}>
-      <SingleJourney />
+      <JourneyView />
     </JourneyProvider>
   </MockedProvider>
 )
@@ -32,4 +32,4 @@ Published.args = {
   journey: publishedJourney
 }
 
-export default SingleJourneyStory as Meta
+export default JourneyViewStory as Meta

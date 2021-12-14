@@ -1,18 +1,18 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { CardOverview, CardOverviewProps } from './CardOverview'
-import { steps } from './cardOverviewData'
+import { CardView, CardViewProps } from './CardView'
+import { steps } from './data'
 
-const CardOverviewDemo = {
+const CardViewDemo = {
   ...journeysAdminConfig,
-  component: CardOverview,
-  title: 'Journeys-Admin/SingleJourney/CardOverview'
+  component: CardView,
+  title: 'Journeys-Admin/JourneyView/CardView'
 }
 
-const Template: Story<Omit<CardOverviewProps, 'slug'>> = ({ ...args }) => (
+const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
   <MockedProvider>
-    <CardOverview slug={'my-journey'} {...args} />
+    <CardView slug={'my-journey'} {...args} />
   </MockedProvider>
 )
 
@@ -31,4 +31,4 @@ ManyCards.args = {
   blocks: steps.concat(steps).concat(steps)
 }
 
-export default CardOverviewDemo as Meta
+export default CardViewDemo as Meta

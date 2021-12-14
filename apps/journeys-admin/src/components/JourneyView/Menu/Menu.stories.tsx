@@ -4,13 +4,13 @@ import { simpleComponentConfig } from '../../../libs/storybook'
 
 import { Menu, JOURNEY_PUBLISH } from './Menu'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { defaultJourney } from '../singleJourneyData'
+import { defaultJourney } from '../data'
 import { JourneyProvider } from '../Context'
 
 const MenuStory = {
   ...simpleComponentConfig,
   component: Menu,
-  title: 'Journeys-Admin/SingleJourney/Menu'
+  title: 'Journeys-Admin/JourneyView/Menu'
 }
 
 const Template: Story = ({ ...args }) => (

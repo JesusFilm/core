@@ -3,12 +3,12 @@ import { Box, Divider, Typography } from '@mui/material'
 import { JourneysAppBar } from '../JourneysAppBar'
 import { Properties } from './Properties'
 import { JourneyContext } from './Context'
-import { CardOverview } from './CardOverview'
+import { CardView } from './CardView'
 import { useBreakpoints } from '@core/shared/ui'
 import { TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 
-export function SingleJourney(): ReactElement {
+export function JourneyView(): ReactElement {
   const journey = useContext(JourneyContext)
   const breakpoints = useBreakpoints()
   const blocks = journey.blocks != null ? journey.blocks : []
@@ -22,7 +22,7 @@ export function SingleJourney(): ReactElement {
       </Box>
       <Divider />
       <Properties />
-      <CardOverview
+      <CardView
         slug={journey.slug}
         blocks={blocks as Array<TreeBlock<StepBlock>>}
       />

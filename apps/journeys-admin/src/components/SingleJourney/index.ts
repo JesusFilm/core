@@ -1,1 +1,0 @@
-export { SingleJourney } from './SingleJourney'

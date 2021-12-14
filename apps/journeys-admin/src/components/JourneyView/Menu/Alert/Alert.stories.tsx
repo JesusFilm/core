@@ -6,7 +6,7 @@ import { Alert, AlertProps } from './Alert'
 const AlertStory = {
   ...simpleComponentConfig,
   component: Alert,
-  title: 'Journeys-Admin/SingleJourney/Menu/Alert'
+  title: 'Journeys-Admin/JourneyView/Menu/Alert'
 }
 
 const Template: Story<AlertProps> = ({ ...args }) => (

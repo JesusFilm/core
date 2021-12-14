@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../Context'
-import { defaultJourney, publishedJourney } from '../singleJourneyData'
+import { defaultJourney, publishedJourney } from '../data'
 import { Menu } from './Menu'
 
 Object.assign(navigator, {
@@ -22,7 +22,7 @@ const MenuMock = ({ journey }: { journey: Journey }): ReactElement => {
   )
 }
 
-describe('SingleJourney/Menu', () => {
+describe('JourneyView/Menu', () => {
   it('should open menu on click', () => {
     const { getByRole } = render(<MenuMock journey={defaultJourney} />)
 

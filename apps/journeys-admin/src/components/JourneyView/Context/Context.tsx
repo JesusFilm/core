@@ -1,6 +1,6 @@
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { createContext, ReactElement, ReactNode } from 'react'
-import { defaultJourney } from '../singleJourneyData'
+import { defaultJourney } from '../data'
 
 export const JourneyContext = createContext<Journey>(defaultJourney)
 

@@ -6,17 +6,17 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { SingleJourney, JourneyProvider } from '../../src/components'
+import { JourneyProvider, JourneyView } from '../../src/components'
 
 import client from '../../src/libs/client'
 
 import { BLOCK_FIELDS } from '@core/journeys/ui'
 
-interface SingleJourneyPageProps {
+interface JourneyViewPageProps {
   journey: Journey
 }
 
-function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
   return (
     <>
       <Head>
@@ -27,13 +27,13 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         )}
       </Head>
       <JourneyProvider value={journey}>
-        <SingleJourney />
+        <JourneyView />
       </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
+export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
       query: gql`
@@ -73,4 +73,4 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
     }
   }
 
-export default SingleJourneyPage
+export default JourneyViewPage

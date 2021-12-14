@@ -6,7 +6,7 @@ import { Properties } from './Properties'
 const PropertiesStory = {
   ...journeysAdminConfig,
   component: Properties,
-  title: 'Journeys-Admin/SingleJourney/Properties',
+  title: 'Journeys-Admin/JourneyView/Properties',
   parameters: {
     layout: 'fullscreen'
   }

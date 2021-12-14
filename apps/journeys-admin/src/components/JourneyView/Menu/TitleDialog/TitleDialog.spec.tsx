@@ -1,31 +1,31 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
-import { defaultJourney } from '../../singleJourneyData'
+import { TitleDialog, JOURNEY_TITLE_UPDATE } from '.'
+import { defaultJourney } from '../../data'
 
 const onClose = jest.fn()
 
-describe('SingleJourney/DescriptionDialog', () => {
-  it('should not set journey description on close', () => {
+describe('JourneyView/Menu/TitleDialog', () => {
+  it('should not set journey title on close', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <DescriptionDialog open onClose={onClose} />
+        <TitleDialog open onClose={onClose} />
       </MockedProvider>
     )
 
-    const description = getByRole('textbox')
+    const title = getByRole('textbox')
     const cancel = getByRole('button', { name: 'Cancel' })
 
-    fireEvent.change(description, { target: { value: 'New Description' } })
+    fireEvent.change(title, { target: { value: 'New Journey' } })
     fireEvent.click(cancel)
 
     expect(onClose).toBeCalled()
   })
 
-  it('should update journey description on submit', async () => {
+  it('should update journey title on submit', async () => {
     const updatedJourney = {
       id: defaultJourney.id,
-      description: 'New Description'
+      title: 'New Journey'
     }
 
     const { getByRole, getByText } = render(
@@ -33,7 +33,7 @@ describe('SingleJourney/DescriptionDialog', () => {
         mocks={[
           {
             request: {
-              query: JOURNEY_DESC_UPDATE,
+              query: JOURNEY_TITLE_UPDATE,
               variables: {
                 input: updatedJourney
               }
@@ -49,18 +49,18 @@ describe('SingleJourney/DescriptionDialog', () => {
           }
         ]}
       >
-        <DescriptionDialog open onClose={onClose} />
+        <TitleDialog open onClose={onClose} />
       </MockedProvider>
     )
 
-    const description = getByRole('textbox')
+    const title = getByRole('textbox')
     const submit = getByRole('button', { name: 'Save' })
 
-    fireEvent.change(description, { target: { value: 'New Description' } })
+    fireEvent.change(title, { target: { value: 'New Journey' } })
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(getByText('Description updated successfully')).toBeInTheDocument()
+      expect(getByText('Title updated successfully')).toBeInTheDocument()
     })
   })
 })
