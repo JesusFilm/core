@@ -14,12 +14,12 @@ describe('JourneyCard', () => {
 
   it('should render the formatted  date', () => {
     const { getByText } = render(<JourneyCard journey={defaultJourney} />)
-    expect(getByText('Nov 19th')).toBeInTheDocument()
+    expect(getByText('January 1')).toBeInTheDocument()
   })
 
   it('should render the description with the dash', () => {
     const { getByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getByText('Nov 19th - a published journey')).toBeInTheDocument()
+    expect(getByText('January 1 - a published journey')).toBeInTheDocument()
   })
 
   it('should render the locale captialized', () => {
@@ -31,7 +31,7 @@ describe('JourneyCard', () => {
     const { getByText } = render(<JourneyCard journey={oldJourney} />)
     expect(
       getByText(
-        'Nov 19th, 2020 - Journey created before the current year should also show the year in the date'
+        'November 19, 2020 - Journey created before the current year should also show the year in the date'
       )
     ).toBeInTheDocument()
   })

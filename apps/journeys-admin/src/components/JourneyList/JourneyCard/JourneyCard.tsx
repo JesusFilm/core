@@ -16,8 +16,8 @@ interface JourneyCardProps {
 export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
   const date = parseISO(journey.createdAt)
   const formattedDate = intlFormat(date, {
-    month: 'long',
     day: 'numeric',
+    month: 'long',
     year: isThisYear(date) ? undefined : 'numeric'
   })
 
