@@ -1,16 +1,29 @@
 import { Story, Meta } from '@storybook/react'
-
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import JourneyCardMenu from './JourneyCardMenu'
+import JourneyCardMenu, { JourneyCardMenuProps } from './JourneyCardMenu'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
-const TestStory = {
+const JoruneyCardMenuDemo = {
   ...journeysAdminConfig,
   component: JourneyCardMenu,
-  title: 'Journeys-Admin/JourneyList/JourneyCard/JourneyCardMenu'
+  title: 'Journeys-Admin/JourneyList/JourneyCard/Menu'
 }
 
-const Template: Story = () => <JourneyCardMenu />
+const Template: Story<JourneyCardMenuProps> = ({ ...args }) => (
+  <JourneyCardMenu {...args} />
+)
 
-export const StoryComponent = Template.bind({})
+export const Draft = Template.bind({})
+Draft.args = {
+  status: JourneyStatus.draft,
+  slug: 'draft-journey',
+  forceMenu: true
+}
+export const Published = Template.bind({})
+Published.args = {
+  status: JourneyStatus.published,
+  slug: 'published-journey',
+  forceMenu: true
+}
 
-export default TestStory as Meta
+export default JoruneyCardMenuDemo as Meta

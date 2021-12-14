@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus } from "./globalTypes";
-
 // ====================================================
 // GraphQL query operation: GetJourneys
 // ====================================================
@@ -18,8 +16,4 @@ export interface GetJourneys_journeys {
 
 export interface GetJourneys {
   journeys: GetJourneys_journeys[];
-}
-
-export interface GetJourneysVariables {
-  status?: JourneyStatus | null;
 }
