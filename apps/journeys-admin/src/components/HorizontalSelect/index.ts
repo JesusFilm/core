@@ -1,1 +1,1 @@
-export { HorizontalSelect } f./HorizontalSelectntalSelect'
+export { HorizontalSelect } from './HorizontalSelect'

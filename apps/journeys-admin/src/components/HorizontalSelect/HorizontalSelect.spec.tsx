@@ -1,39 +1,30 @@
 import { render, fireEvent } from '@testing-library/react'
-import { CardPreview } from '.'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
-import { TreeBlock } from '@core/journeys/ui'
+import { HorizontalSelect } from '.'
+import { Box } from '@mui/material'
 
-describe('CardPreview', () => {
-  it('should call onSelect when step is clicked on', () => {
-    const onSelect = jest.fn()
-    const step: TreeBlock<StepBlock> = {
-      id: 'step.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      locked: false,
-      nextBlockId: null,
-      children: []
-    }
-    const { getByTestId } = render(
-      <CardPreview onSelect={onSelect} steps={[step]} />
+describe('HorizontalSelect', () => {
+  it('should call onChange when step is clicked on', () => {
+    const onChange = jest.fn()
+    const { getByText } = render(
+      <HorizontalSelect onChange={onChange}>
+        <Box id="step1.id">Option 1</Box>
+        <Box id="step2.id">Option 2</Box>
+      </HorizontalSelect>
     )
-    fireEvent.click(getByTestId('step-step.id'))
-    expect(onSelect).toHaveBeenCalledWith(step)
+    fireEvent.click(getByText('Option 1'))
+    expect(onChange).toHaveBeenCalledWith('step1.id')
   })
 
   it('should show border around selected', () => {
-    const onSelect = jest.fn()
-    const step: TreeBlock<StepBlock> = {
-      id: 'step.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      locked: false,
-      nextBlockId: null,
-      children: []
-    }
-    const { getByTestId } = render(
-      <CardPreview onSelect={onSelect} steps={[step]} selected={step} />
+    const onChange = jest.fn()
+    const { getByText } = render(
+      <HorizontalSelect onChange={onChange} id="step1.id">
+        <Box id="step1.id">Option 1</Box>
+        <Box id="step2.id">Option 2</Box>
+      </HorizontalSelect>
     )
-    expect(getByTestId('step-step.id')).toHaveStyle('border: 3px solid #1976d2')
+    expect(getByText('Option 1').parentElement).toHaveStyle(
+      'border: 3px solid #1976d2'
+    )
   })
 })
