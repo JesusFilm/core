@@ -26,9 +26,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       styleOverrides: {
         colorDefault: {
-          backgroundColor: palette[0],
-          borderBottom: '1px solid',
-          borderBottomColor: palette[200]
+          backgroundColor: palette[0]
         }
       }
     },
