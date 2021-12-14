@@ -24,7 +24,7 @@ describe('JourneyCard', () => {
 
   it('should render the locale captialized', () => {
     const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('EN (US)')[0]).toBeInTheDocument()
+    expect(getAllByText('en-US')[0]).toBeInTheDocument()
   })
 
   it('should render the formated date with year if journey is created before the current year', () => {

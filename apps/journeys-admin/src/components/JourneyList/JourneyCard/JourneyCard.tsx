@@ -81,9 +81,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             />
           </Grid>
           <Grid item>
-            <Typography variant="caption">{`${journey.locale
-              .substring(0, 2)
-              .toUpperCase()} (${journey.locale.substring(3)})`}</Typography>
+            <Typography variant="caption">{journey.locale}</Typography>
           </Grid>
         </Grid>
 
