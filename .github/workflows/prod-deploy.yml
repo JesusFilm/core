@@ -9,7 +9,6 @@ jobs:
     environment: Production
     env:
       ENV_SUFFIX: prod
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ECR_REPOSITORY: jfp-api-journeys
       KUBE_NAMESPACE: api
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
@@ -86,21 +85,29 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # - name: Get affected app seed
-      #   run: echo "::set-output name=apps::$(nx affected:apps plain --files apps/api-journeys/db/seed.ts)"
-      #   id: affected-apps 
-
       - name: Deploy to Kubernetes cluster                                                                            
         uses: kodermax/kubectl-aws-eks@master                                                                         
         env:                                                                                                     
           RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         with:                                                                                                         
-          args: set image deployment/api-journeys $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }} -n $KUBE_NAMESPACE
+          args: set image deployment/api-journeys $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }} 
       
       - name: Verify Kubernetes deployment                               
         uses: kodermax/kubectl-aws-eks@master                            
         with:                                                            
-          args: rollout status deploy api-journeys -n $KUBE_NAMESPACE
+          args: rollout status deploy api-journeys
+          
+      - name: Get affected app seed
+        run: echo "::set-output name=dbs::$(nx affected:apps plain --files apps/api-journeys/db/seed.ts)"
+        id: affected-dbs
+
+      - name: Seed Database
+        if: contains(steps.affected-dbs.outputs.dbs, 'api-journeys')
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: seed
+          projects: api-journeys
+
 
   # build-and-deploy:
   #   environment: Production
