@@ -26,16 +26,6 @@
         }
       }
     },
-    "deploy": {
-      "builder": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          "nx build api-gateway",
-          "buildah bud -f ./apps/api-gateway/Dockerfile . -t api-gateway -o dist/images"
-        ],
-        "parallel": false
-      }
-    },
     "serve": {
       "executor": "@nrwl/node:execute",
       "options": {

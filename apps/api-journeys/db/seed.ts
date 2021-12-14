@@ -7,6 +7,7 @@ import { nua8 } from './seeds/nua8'
 import { nua9 } from './seeds/nua9'
 
 const db = new Database({ url: process.env.DATABASE_URL })
+db.useBasicAuth(process.env.DATABASE_USER, process.env.DATABASE_PASS)
 
 async function main(): Promise<void> {
   try {

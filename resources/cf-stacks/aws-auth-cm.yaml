@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::894231352815:role/ArangoDB-stack-NodeInstanceRole-122SOS0BGF1KH
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+    - rolearn: arn:aws:iam::894231352815:role/API-stack-NodeInstanceRole-1B8Q7E90YLC4C
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+  mapUsers: | 
+    - userarn: arn:aws:iam::894231352815:user/JfmGithubUser 
+      username: JfmGithubUser 
+      groups: 
+        - system:masters

@@ -10,7 +10,14 @@ jobs:
     env:
       ENV_SUFFIX: prod
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+      AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}      
+      ECR_REPOSITORY: jfp-api-journeys
+      KUBE_NAMESPACE: api
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      IMAGE_TAG: ${{ github.sha }}
+      DATABASE_URL: ${{ secrets.ARANGODB_URL }}
+      DATABASE_USER: ${{ secrets.ARANGODB_USER }}
+      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -73,11 +80,9 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: jfp-api-journeys
-          IMAGE_TAG: ${{ github.sha }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/api-journeys/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/api-journeys/Dockerfile --build_arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS
           echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
@@ -85,6 +90,18 @@ jobs:
       # - name: Get affected app seed
       #   run: echo "::set-output name=apps::$(nx affected:apps plain --files apps/api-journeys/db/seed.ts)"
       #   id: affected-apps 
+
+      - name: Deploy to Kubernetes cluster                                                                            
+        uses: kodermax/kubectl-aws-eks@master                                                                         
+        env:                                                                                                     
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        with:                                                                                                         
+          args: set image deployment/api-journeys api-journeys=${{ env.RELEASE_IMAGE }} --record -n $KUBE_NAMESPACE
+      
+      - name: Verify Kubernetes deployment                               
+        uses: kodermax/kubectl-aws-eks@master                            
+        with:                                                            
+          args: rollout status deploy api-journeys -n $KUBE_NAMESPACE
 
   # build-and-deploy:
   #   environment: Production
