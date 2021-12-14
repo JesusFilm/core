@@ -2,5 +2,7 @@ apiVersion: "database.arangodb.com/v1alpha"
 kind: "ArangoDeployment"
 metadata:
   name: "single-server"
+  labels:
+    type: "db"
 spec:
   mode: Single

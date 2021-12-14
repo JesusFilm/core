@@ -102,7 +102,7 @@ jobs:
         id: affected-dbs
 
       - name: Seed Database
-        if: contains(steps.affected-dbs.outputs.dbs, 'api-journeys')
+        # if: contains(steps.affected-dbs.outputs.dbs, 'api-journeys')
         uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: seed
