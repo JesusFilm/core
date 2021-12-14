@@ -13,7 +13,7 @@ interface JourneyCardProps {
   journey: Journey
 }
 
-const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
+export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
   const date =
     moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
       ? moment(journey.createdAt).format('MMM Do')
@@ -94,5 +94,3 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
     </Card>
   )
 }
-
-export default JourneyCard
