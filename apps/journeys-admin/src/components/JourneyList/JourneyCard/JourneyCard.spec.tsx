@@ -36,9 +36,12 @@ describe('JourneyCard', () => {
     ).toBeInTheDocument()
   })
 
-  it('should have correct link on card', () => {
-    const { getByRole } = render(<JourneyCard journey={defaultJourney} />)
+  it('should have correct link on title', () => {
+    const { getByText } = render(<JourneyCard journey={defaultJourney} />)
 
-    expect(getByRole('link')).toHaveAttribute('href', '/journeys/default')
+    expect(getByText('Default Journey Heading')).toHaveAttribute(
+      'href',
+      '/journeys/default'
+    )
   })
 })

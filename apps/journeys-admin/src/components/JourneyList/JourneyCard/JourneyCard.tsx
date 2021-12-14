@@ -1,7 +1,8 @@
 import { ReactElement } from 'react'
 import moment from 'moment'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Typography, Box, Link, Grid } from '@mui/material'
+import { Card, Typography, Box, Grid } from '@mui/material'
+import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
@@ -20,7 +21,7 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
 
   return (
     <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
-      <Link href={`/journeys/${journey.slug}`} underline="none">
+      <Link href={`/journeys/${journey.slug}`} passHref>
         <Typography
           variant="subtitle1"
           component="div"
@@ -30,20 +31,20 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
         >
           {journey.title}
         </Typography>
-
-        <Typography
-          variant="caption"
-          noWrap
-          sx={{
-            display: 'block',
-            color: (theme) => theme.palette.secondary.main
-          }}
-          gutterBottom
-        >
-          {date}
-          {journey.description !== null && ` - ${journey.description}`}
-        </Typography>
       </Link>
+
+      <Typography
+        variant="caption"
+        noWrap
+        sx={{
+          display: 'block',
+          color: (theme) => theme.palette.secondary.main
+        }}
+        gutterBottom
+      >
+        {date}
+        {journey.description !== null && ` - ${journey.description}`}
+      </Typography>
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Grid container>
