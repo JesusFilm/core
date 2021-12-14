@@ -2,39 +2,34 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import SingleJourney from './SingleJourney'
-import { defaultJourney } from '../JourneyList/journeyListData'
-import { JOURNEY_PUBLISH } from './Menu'
+import { defaultJourney, publishedJourney } from './singleJourneyData'
+import { JourneyProvider } from './Context'
 
 const SingleJourneyDemo = {
   ...journeysAdminConfig,
   component: SingleJourney,
   title: 'Journeys-Admin/SingleJourney',
   parameters: {
-    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: Story = () => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: JOURNEY_PUBLISH,
-          variables: { id: defaultJourney.id }
-        },
-        result: {
-          data: {
-            journeyUpdate: { id: defaultJourney.id, __typename: 'Journey' }
-          }
-        }
-      }
-    ]}
-  >
-    <SingleJourney />
+const Template: Story = ({ ...args }) => (
+  <MockedProvider>
+    <JourneyProvider value={args.journey}>
+      <SingleJourney />
+    </JourneyProvider>
   </MockedProvider>
 )
 
-export const Default = Template.bind({})
+export const Draft = Template.bind({})
+Draft.args = {
+  journey: defaultJourney
+}
+
+export const Published = Template.bind({})
+Published.args = {
+  journey: publishedJourney
+}
 
 export default SingleJourneyDemo as Meta

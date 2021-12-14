@@ -37,7 +37,9 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         dense: {
           paddingLeft: 24,
-          paddingRight: 24
+          paddingRight: 24,
+          borderBottom: '1px solid',
+          borderColor: palette[200]
         }
       }
     }

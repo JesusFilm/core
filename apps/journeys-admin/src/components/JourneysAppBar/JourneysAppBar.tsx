@@ -1,15 +1,18 @@
 import { ReactElement } from 'react'
-import { AppBar, Divider, IconButton, Toolbar, Typography } from '@mui/material'
+import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import Menu from '../SingleJourney/Menu'
+import { useBreakpoints } from '@core/shared/ui'
 
 export interface JourneysAppBarProps {
   journey?: Journey
 }
 
 const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
+  const breakpoints = useBreakpoints()
+
   return (
     <AppBar
       position="fixed"
@@ -17,7 +20,7 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
       sx={{ display: 'flex', flexDirection: 'row' }}
     >
       {journey !== undefined ? (
-        <Toolbar sx={{ flexGrow: 1, mr: '328px' }}>
+        <Toolbar sx={{ flexGrow: 1, mr: breakpoints.md ? '328px' : 0 }}>
           <Link href={`/journeys`} passHref>
             <IconButton edge="start" aria-label="back to journeys">
               <ChevronLeftRounded />
@@ -40,7 +43,6 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
           </Typography>
         </Toolbar>
       )}
-      <Divider />
     </AppBar>
   )
 }
