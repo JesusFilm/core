@@ -89,12 +89,12 @@ export function ShareSection({
             <Link href={journeyEditLink} passHref>
               <Button
                 startIcon={<EditIcon />}
-                sx={{
-                  color: (theme) => theme.palette.primary.main,
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  lineHeight: 4
-                }}
+                // sx={{
+                //   color: (theme) => theme.palette.primary.main,
+                //   fontWeight: 600,
+                //   fontSize: '14px',
+                //   lineHeight: 4
+                // }}
               >
                 Edit
               </Button>
@@ -103,13 +103,13 @@ export function ShareSection({
             <Button
               onClick={handleCopyLink}
               startIcon={<ContentCopyIcon />}
-              sx={{
-                color: (theme) => theme.palette.primary.main,
-                pl: 7,
-                fontWeight: 600,
-                fontSize: '14px',
-                lineHeight: 4
-              }}
+              // sx={{
+              //   color: (theme) => theme.palette.primary.main,
+              //   pl: 7,
+              //   fontWeight: 600,
+              //   fontSize: '14px',
+              //   lineHeight: 4
+              // }}
             >
               Copy
             </Button>
@@ -191,7 +191,7 @@ export function ShareSection({
           sx={{
             width: '286px',
             color: 'white',
-            backgroundColor: '#26262E',
+            backgroundColor: (theme) => theme.palette.secondary.main,
             borderRadius: '2px'
           }}
         >
