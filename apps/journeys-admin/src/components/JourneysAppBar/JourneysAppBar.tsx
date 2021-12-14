@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import * as React from 'react'
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'

@@ -2,19 +2,24 @@ import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
-import client from '../../src/libs/client'
+import { Typography, Box } from '@mui/material'
+
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { Typography, Box } from '@mui/material'
+import { BlockFields_StepBlock as StepBlock } from '../../__generated__/BlockFields'
+import client from '../../src/libs/client'
 import JourneysAppBar from '../../src/components/JourneysAppBar'
+import CardOverview from '../../src/components/SingleJourney/CardOverview'
+import { transformer, BLOCK_FIELDS, TreeBlock } from '@core/journeys/ui'
 
 interface SingleJourneyPageProps {
   journey: Journey
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+  const blocks = journey.blocks != null ? transformer(journey.blocks) : []
   return (
     <>
       <Head>
@@ -33,6 +38,11 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
+
+        <CardOverview
+          slug={journey.slug}
+          blocks={blocks as Array<TreeBlock<StepBlock>>}
+        />
       </Box>
     </>
   )
@@ -42,15 +52,19 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
       query: gql`
+        ${BLOCK_FIELDS}
         query GetJourney($id: ID!) {
-          # slug might have to be string
           journey(id: $id, idType: slug) {
             id
+            slug
             title
             description
             status
             createdAt
             publishedAt
+            blocks {
+              ...BlockFields
+            }
           }
         }
       `,
