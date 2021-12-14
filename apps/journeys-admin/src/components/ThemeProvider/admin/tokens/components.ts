@@ -8,7 +8,8 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 600,
           fontSize: '14px',
-          lineHeight: 4
+          lineHeight: 4,
+          borderRadius: '40px'
         }
       }
     },

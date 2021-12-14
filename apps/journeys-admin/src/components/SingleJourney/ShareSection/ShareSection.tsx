@@ -62,12 +62,10 @@ export function ShareSection({
   }
 
   return (
-    <Box>
+    <Box sx={{ px: 2, py: 3 }}>
       {breakpoints.sm ? (
         <>
-          <Typography variant="subtitle2" sx={{ pl: 6 }}>
-            Journey URL
-          </Typography>
+          <Typography variant="subtitle2">Journey URL</Typography>
           <TextField
             id="filled-basic"
             hiddenLabel
@@ -83,40 +81,27 @@ export function ShareSection({
                 </InputAdornment>
               )
             }}
-            sx={{ px: 6, pt: 6 }}
+            sx={{ pt: 6 }}
           />
-          <Box sx={{ display: 'flex', pl: 6 }}>
+          <Box sx={{ display: 'flex' }}>
             <Link href={journeyEditLink} passHref>
               <Button
                 startIcon={<EditIcon />}
-                // sx={{
-                //   color: (theme) => theme.palette.primary.main,
-                //   fontWeight: 600,
-                //   fontSize: '14px',
-                //   lineHeight: 4
-                // }}
+                sx={{
+                  mr: 8
+                }}
               >
                 Edit
               </Button>
             </Link>
 
-            <Button
-              onClick={handleCopyLink}
-              startIcon={<ContentCopyIcon />}
-              // sx={{
-              //   color: (theme) => theme.palette.primary.main,
-              //   pl: 7,
-              //   fontWeight: 600,
-              //   fontSize: '14px',
-              //   lineHeight: 4
-              // }}
-            >
+            <Button onClick={handleCopyLink} startIcon={<ContentCopyIcon />}>
               Copy
             </Button>
           </Box>
         </>
       ) : (
-        <Box sx={{ display: 'flex', pl: 6 }}>
+        <Box sx={{ display: 'flex' }}>
           <TextField
             id="filled-basic"
             label="Journey URL"
@@ -140,7 +125,7 @@ export function ShareSection({
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleOpenMenu}
-            sx={{ pl: 3, pr: 6 }}
+            sx={{ pl: 3 }}
           >
             <MoreHorizIcon />
           </IconButton>
@@ -187,10 +172,10 @@ export function ShareSection({
         <Alert
           icon={false}
           severity="success"
-          action={<CheckCircleIcon sx={{ color: '#5EA10A' }} />}
+          action={<CheckCircleIcon color="success" />}
           sx={{
             width: '286px',
-            color: 'white',
+            color: (theme) => theme.palette.primary.contrastText,
             backgroundColor: (theme) => theme.palette.secondary.main,
             borderRadius: '2px'
           }}
