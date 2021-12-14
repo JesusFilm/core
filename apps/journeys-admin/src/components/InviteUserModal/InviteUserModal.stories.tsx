@@ -26,8 +26,8 @@ const usersJourneys: UserJourney[] = [
     user: {
       __typename: 'User',
       id: '1',
-      email: 'drew@drew.com',
-      firstName: 'drew',
+      email: 'drew.drew@drew.com',
+      firstName: 'drewster',
       lastName: 'drew',
       imageUrl: ''
     }
@@ -36,13 +36,13 @@ const usersJourneys: UserJourney[] = [
     __typename: 'UserJourney',
     userId: '2',
     journeyId: '1234',
-    role: UserJourneyRole.editor,
+    role: UserJourneyRole.inviteRequested,
     user: {
       __typename: 'User',
       id: '2',
-      email: 'josh@fake.com',
-      firstName: 'Josh',
-      lastName: 'Fake',
+      email: 'drew2.drew@drew.com',
+      firstName: 'drewster2',
+      lastName: 'drew',
       imageUrl: ''
     }
   },
@@ -50,10 +50,38 @@ const usersJourneys: UserJourney[] = [
     __typename: 'UserJourney',
     userId: '3',
     journeyId: '1234',
-    role: UserJourneyRole.owner,
+    role: UserJourneyRole.editor,
     user: {
       __typename: 'User',
       id: '3',
+      email: 'josh.fake@fake.com',
+      firstName: 'Joshua',
+      lastName: 'Fake',
+      imageUrl: ''
+    }
+  },
+  {
+    __typename: 'UserJourney',
+    userId: '4',
+    journeyId: '1234',
+    role: UserJourneyRole.editor,
+    user: {
+      __typename: 'User',
+      id: '4',
+      email: 'josh2.fake@fake.com',
+      firstName: 'Joshua2',
+      lastName: 'Fake',
+      imageUrl: ''
+    }
+  },
+  {
+    __typename: 'UserJourney',
+    userId: '5',
+    journeyId: '1234',
+    role: UserJourneyRole.owner,
+    user: {
+      __typename: 'User',
+      id: '5',
       email: 'john.geronimo@tandem.org.nz',
       firstName: 'John',
       lastName: 'Geronimo',

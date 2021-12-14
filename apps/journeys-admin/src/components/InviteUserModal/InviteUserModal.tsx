@@ -8,13 +8,17 @@ import {
   Divider,
   FilledInput,
   FormControl,
-  Select,
   Snackbar,
   Fade,
   useTheme,
-  InputLabel
+  Menu
 } from '@mui/material'
-import { CloseRounded, ContentCopyRounded, LinkRounded } from '@mui/icons-material'
+import {
+  ArrowDropDown,
+  CloseRounded,
+  ContentCopyRounded,
+  LinkRounded
+} from '@mui/icons-material'
 import {
   GetJourney_journey_usersJourneys as UsersJourneys,
   GetJourney_journey as Journey
@@ -71,39 +75,37 @@ export const InviteUserModal = ({
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: '100%',
-            maxWidth: {
-              xs: 200,
-              sm: 300,
-              md: 320,
-              lg: 376
-            },
+            maxWidth: 376,
             bgcolor: 'background.paper'
           }}
         >
           <Box
             sx={{
-              mx: 3,
-              my: 1,
+              mx: 6,
+              my: 4,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
             }}
           >
             <Typography variant={'subtitle1'}>Invite Other Editors</Typography>
-            <CloseRounded onClick={handleClose} sx={{ '&:hover': { cursor: 'pointer' } }} />
+            <CloseRounded
+              onClick={handleClose}
+              sx={{ '&:hover': { cursor: 'pointer' } }}
+            />
           </Box>
           <Divider />
-          <Box p={3}>
+          <Box p={6} pb={10}>
             <FormControl fullWidth>
               <FilledInput
                 value={inviteLink}
                 sx={{ fontSize: theme.typography.body1.fontSize }}
-                startAdornment={<LinkRounded sx={{ mr: 1 }} />}
+                startAdornment={<LinkRounded sx={{ mr: 2 }} />}
                 endAdornment={
                   <>
                     <ContentCopyRounded
                       onClick={handleCopyLinkOpen}
-                      sx={{ ml: 1, '&:hover': { cursor: 'pointer' } }}
+                      sx={{ ml: 3, '&:hover': { cursor: 'pointer' } }}
                     />
 
                     <Snackbar
@@ -120,13 +122,13 @@ export const InviteUserModal = ({
                 hiddenLabel
               />
             </FormControl>
-            <Box ml={2}>
+            <Box ml={4} mb={4}>
               <Typography variant={'caption'}>
                 Anyone with this link can see journey and ask for editing
                 rights. You can accept or reject every request.
               </Typography>
             </Box>
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 4 }} />
 
             {/* Lists out all the Requested Editing Rights */}
             <Typography variant={'body1'} gutterBottom>
@@ -140,7 +142,7 @@ export const InviteUserModal = ({
             )}
 
             {/* Lists out all the users with access */}
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 4 }} />
             <Typography variant={'body1'} gutterBottom>
               Users With Access
             </Typography>
@@ -162,19 +164,27 @@ interface UsersProps {
 }
 
 export const Users = ({ userJourney }: UsersProps): ReactElement => {
+  const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
+    setAnchorEl(event.currentTarget)
+    setOpen(true)
+  }
+  const handleClose = (): void => setOpen(false)
+
   return (
     <Box
       key={userJourney.user?.id}
       sx={{
         display: 'flex',
         alignItems: 'center',
-        pt: 1
+        pt: 2
       }}
     >
       <Avatar src={userJourney.user?.imageUrl as string} />
       <Box
         sx={{
-          ml: 2,
+          ml: 4,
           overflow: 'hidden'
         }}
       >
@@ -184,7 +194,7 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
             ${userJourney.user?.lastName as string}
           `}
         </Typography>
-        <Typography variant={'caption'}>{userJourney.user?.email}</Typography>
+        <Typography variant="caption">{userJourney.user?.email}</Typography>
       </Box>
       <Box
         sx={{
@@ -194,16 +204,31 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
           justifyContent: 'flex-end'
         }}
       >
-        <InputLabel
-          disableAnimation
-          shrink={false}
-          focused={false}
+        <Box
+          onClick={handleClick}
+          sx={{
+            display: 'flex',
+            '&:hover': { cursor: 'pointer' },
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}
         >
-          {userJourney.role === 'inviteRequested'
-            ? 'Manage'
-            : userJourney.role.replace(/^\w/, (c) => c.toUpperCase())}
-        </InputLabel>
-        <Select variant="standard" disableUnderline>
+          <Typography variant={'body2'}>
+            {userJourney.role === 'inviteRequested'
+              ? 'Manage'
+              : userJourney.role.replace(/^\w/, (c) => c.toUpperCase())}
+          </Typography>
+          <ArrowDropDown fontSize={'medium'} sx={{ pl: 1 }} />
+        </Box>
+        <Menu
+          id="demo-customized-menu"
+          MenuListProps={{
+            'aria-labelledby': 'demo-customized-button'
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+        >
           {userJourney.role === 'inviteRequested' ? (
             <ApproveUser usersJourneys={userJourney} />
           ) : (
@@ -211,7 +236,7 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
           )}
           <Divider />
           <RemoveUser usersJourneys={userJourney} />
-        </Select>
+        </Menu>
       </Box>
     </Box>
   )
