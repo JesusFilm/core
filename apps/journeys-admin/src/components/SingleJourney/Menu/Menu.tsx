@@ -1,20 +1,19 @@
 import { ReactElement, useState, useContext } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
-  Alert,
   Divider,
   IconButton,
   Link,
   Menu as MuiMenu,
-  MenuItem,
-  Snackbar
+  MenuItem
 } from '@mui/material'
-import { MoreVert, CheckCircleRounded } from '@mui/icons-material'
-import { JourneyUpdate_journeyUpdate as UpdatedJourney } from '../../../../__generated__/JourneyUpdate'
+import { MoreVert } from '@mui/icons-material'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import UpdateDialog from './UpdateDialog'
+import { TitleDialog } from './TitleDialog'
 import { JourneyContext } from '../Context'
+import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
+import { Alert } from './Alert'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -24,11 +23,6 @@ export const JOURNEY_PUBLISH = gql`
   }
 `
 
-export enum UpdateJourneyFields {
-  TITLE = 'title',
-  DESCRIPTION = 'description'
-}
-
 export interface MenuProps {
   forceOpen?: boolean
 }
@@ -37,11 +31,9 @@ const Menu = ({ forceOpen }: MenuProps): ReactElement => {
   const journey = useContext(JourneyContext)
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [showDialog, setShowDialog] = useState(false)
-  const [showAlert, setShowAlert] = useState(false)
-  const [updateField, setUpdateField] = useState<UpdateJourneyFields>(
-    UpdateJourneyFields.TITLE
-  )
+  const [showTitleDialog, setShowTitleDialog] = useState(false)
+  const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
+  const [showLinkAlert, setShowLinkAlert] = useState(false)
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
 
@@ -50,16 +42,6 @@ const Menu = ({ forceOpen }: MenuProps): ReactElement => {
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
-  }
-
-  const handleCloseAlert = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ): void => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setShowAlert(false)
   }
 
   const handlePublish = async (): Promise<void> => {
@@ -72,24 +54,18 @@ const Menu = ({ forceOpen }: MenuProps): ReactElement => {
   }
 
   const handleUpdateTitle = (): void => {
-    setUpdateField(UpdateJourneyFields.TITLE)
-    setShowDialog(true)
+    setShowTitleDialog(true)
     setAnchorEl(null)
   }
 
   const handleUpdateDescription = (): void => {
-    setUpdateField(UpdateJourneyFields.DESCRIPTION)
-    setShowDialog(true)
+    setShowDescriptionDialog(true)
     setAnchorEl(null)
   }
 
   const handleCopyLink = async (): Promise<void> => {
     await navigator.clipboard.writeText(`your.nextstep.is/${journey.slug}`)
-    setShowAlert(true)
-  }
-
-  const handleUpdateSuccess = (updatedJourney: UpdatedJourney): void => {
-    setShowDialog(false)
+    setShowLinkAlert(true)
   }
 
   return (
@@ -147,37 +123,19 @@ const Menu = ({ forceOpen }: MenuProps): ReactElement => {
         <Divider />
         <MenuItem onClick={handleCopyLink}>Copy Link</MenuItem>
       </MuiMenu>
-      <UpdateDialog
-        open={showDialog}
-        field={updateField}
-        journey={{
-          id: journey.id,
-          title: journey.title,
-          description: journey.description
-        }}
-        onClose={() => setShowDialog(false)}
-        onSuccess={handleUpdateSuccess}
+      <TitleDialog
+        open={showTitleDialog}
+        onClose={() => setShowTitleDialog(false)}
       />
-      <Snackbar
-        open={showAlert}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        autoHideDuration={5000}
-        onClose={handleCloseAlert}
-      >
-        <Alert
-          icon={false}
-          severity="success"
-          action={<CheckCircleRounded sx={{ color: '#5EA10A' }} />}
-          sx={{
-            width: '286px',
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '2px'
-          }}
-        >
-          Link Copied
-        </Alert>
-      </Snackbar>
+      <DescriptionDialog
+        open={showDescriptionDialog}
+        onClose={() => setShowDescriptionDialog(false)}
+      />
+      <Alert
+        open={showLinkAlert}
+        setOpen={setShowLinkAlert}
+        message={'Link Copied'}
+      />
     </>
   )
 }

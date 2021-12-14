@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
   Box,
@@ -10,87 +10,72 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import {
-  JourneyUpdate,
-  JourneyUpdate_journeyUpdate as UpdatedJourney
-} from '../../../../../__generated__/JourneyUpdate'
+import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { useBreakpoints } from '@core/shared/ui'
-import { UpdateJourneyFields } from '../Menu'
+import { Alert } from '../Alert'
+import { JourneyContext } from '../../Context'
 
-export const JOURNEY_UPDATE = gql`
-  mutation JourneyUpdate($input: JourneyUpdateInput!) {
+export const JOURNEY_DESC_UPDATE = gql`
+  mutation JourneyDescUpdate($input: JourneyUpdateInput!) {
     journeyUpdate(input: $input) {
       id
-      title
       description
     }
   }
 `
 
-interface UpdateDialogProps {
-  field: UpdateJourneyFields
+interface DescriptionDialogProps {
   open: boolean
-  journey: Omit<UpdatedJourney, '__typename'>
   onClose: () => void
-  onSuccess: (value: UpdatedJourney) => void
 }
 
-const UpdateDialog = ({
-  field,
+export function DescriptionDialog({
   open,
-  journey,
-  onClose,
-  onSuccess
-}: UpdateDialogProps): ReactElement => {
-  const [journeyUpdate] = useMutation<JourneyUpdate>(JOURNEY_UPDATE)
+  onClose
+}: DescriptionDialogProps): ReactElement {
+  const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
+  const journey = useContext(JourneyContext)
 
   const breakpoints = useBreakpoints()
   const [value, setValue] = useState(
-    journey !== undefined ? journey[field] : ''
+    journey !== undefined ? journey.description : ''
   )
-
-  useEffect(() => {
-    setValue(journey[field])
-  }, [journey, field])
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
 
   const handleSubmit = async (event): Promise<void> => {
     event.preventDefault()
 
-    const updatedJourney =
-      field === UpdateJourneyFields.TITLE
-        ? { ...journey, title: value as string }
-        : field === UpdateJourneyFields.DESCRIPTION
-        ? { ...journey, description: value }
-        : journey
+    const updatedJourney = { id: journey.id, description: value }
 
     await journeyUpdate({
       variables: { input: updatedJourney },
       optimisticResponse: {
         journeyUpdate: { __typename: 'Journey', ...updatedJourney }
       }
-    }).then(() => onSuccess({ __typename: 'Journey', ...updatedJourney }))
+    }).then(() => setShowSuccessAlert(true))
   }
 
   const handleClose = (): void => {
     onClose()
   }
 
-  // TODO: Extract out when adding validation
   const updateForm = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
-          <FormLabel component="legend" aria-label={`dialog-update-${field}`}>
-            <Typography
-              variant={'subtitle2'}
-              gutterBottom
-            >{`Update ${field}`}</Typography>
+          <FormLabel
+            component="legend"
+            aria-label={'dialog-update-description'}
+          >
+            <Typography variant={'subtitle2'} gutterBottom>
+              {'Update Description'}
+            </Typography>
           </FormLabel>
           <TextField
             value={value}
-            multiline={field === UpdateJourneyFields.DESCRIPTION}
-            rows={field === UpdateJourneyFields.DESCRIPTION ? 3 : 1}
-            maxRows={field === UpdateJourneyFields.DESCRIPTION ? 3 : 1}
+            multiline
+            variant="filled"
+            rows={3}
             onChange={(e) => setValue(e.currentTarget.value)}
           />
           <Box
@@ -119,7 +104,7 @@ const UpdateDialog = ({
           id={'update-journey-dialog'}
           open={open}
           onClose={handleClose}
-          aria-labelledby={`dialog-update-${field}`}
+          aria-labelledby={`dialog-update-description`}
         >
           {updateForm()}
         </Dialog>
@@ -133,8 +118,11 @@ const UpdateDialog = ({
           {updateForm()}
         </Drawer>
       )}
+      <Alert
+        open={showSuccessAlert}
+        setOpen={setShowSuccessAlert}
+        message={'Description updated successfully'}
+      />
     </>
   )
 }
-
-export default UpdateDialog
