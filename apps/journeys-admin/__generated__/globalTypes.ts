@@ -141,6 +141,16 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface JourneyCreateInput {
+  description?: string | null;
+  id?: string | null;
+  locale?: string | null;
+  slug: string;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+  title: string;
+}
+
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;

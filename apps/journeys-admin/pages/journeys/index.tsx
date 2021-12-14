@@ -12,16 +12,16 @@ import {
 import { JourneyList } from '../../src/components/'
 import { UseFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 interface JourneysListPageProps {
   journeys: Journey[]
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  const { logOut, user, loading, error } = UseFirebase()
+  const { logOut, user, loading } = UseFirebase()
   const router = useRouter()
   const [journeysToShow, setJourneysToShow] = useState<Journey[]>([])
-  if (user != null) console.log(user.displayName)
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
@@ -46,11 +46,15 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys
         </Typography>
-        {console.log(error)}
         <JourneyList journeys={journeysToShow} />
         <Button variant="contained" onClick={() => logOut()}>
-          SignOut
+          Sign Out
         </Button>
+        <Link href={`/journeys/new`} passHref>
+          <Button variant="contained" fullWidth>
+            New Journey
+          </Button>
+        </Link>
       </Container>
     </ThemeProvider>
   )

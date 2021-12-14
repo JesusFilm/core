@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect, useRef } from 'react'
 import {
   Button,
   Modal,
@@ -42,11 +42,15 @@ export const InviteUserModal = ({
   const theme = useTheme()
 
   // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
-  const inviteLink = `${window.location.origin}/journeys/${journey.slug}/invite`
   const [showAlert, setShowAlert] = useState(false)
+  const inviteLinkRef = useRef<string>()
+
+  useEffect(() => {
+    inviteLinkRef.current = `${window.location.origin}/journeys/${journey.slug}/invite`
+  })
 
   const handleCopyLinkOpen = async (): Promise<void> => {
-    await navigator.clipboard.writeText(inviteLink)
+    await navigator.clipboard.writeText(inviteLinkRef.current ?? '')
     setShowAlert(true)
   }
 
@@ -65,7 +69,7 @@ export const InviteUserModal = ({
       {/* Button to be removed and it's functionalities when merged to journeys single journey */}
       {/* This modal should be progamatically called from journeys single journey */}
       <Button variant="contained" onClick={handleOpen}>
-        Invite
+        Manage Users
       </Button>
       <Modal open={open} onClose={handleClose}>
         <Box
@@ -98,7 +102,7 @@ export const InviteUserModal = ({
           <Box p={6} pb={10}>
             <FormControl fullWidth>
               <FilledInput
-                value={inviteLink}
+                value={inviteLinkRef.current}
                 sx={{ fontSize: theme.typography.body1.fontSize }}
                 startAdornment={<LinkRounded sx={{ mr: 2 }} />}
                 endAdornment={
