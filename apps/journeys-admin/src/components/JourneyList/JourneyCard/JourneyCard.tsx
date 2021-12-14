@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import moment from 'moment'
+import { format, parseISO, isThisYear } from 'date-fns'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { Card, Typography, Box, Grid } from '@mui/material'
 import Link from 'next/link'
@@ -14,10 +14,10 @@ interface JourneyCardProps {
 }
 
 export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
-  const date =
-    moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
-      ? moment(journey.createdAt).format('MMM Do')
-      : moment(journey.createdAt).format('MMM Do, YYYY')
+  const date = parseISO(journey.createdAt)
+  const formattedDate = isThisYear(date)
+    ? format(date, 'MMM do')
+    : format(date, 'MMM do, yyyy')
 
   return (
     <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
@@ -42,7 +42,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         }}
         gutterBottom
       >
-        {date}
+        {formattedDate}
         {journey.description !== null && ` - ${journey.description}`}
       </Typography>
 
