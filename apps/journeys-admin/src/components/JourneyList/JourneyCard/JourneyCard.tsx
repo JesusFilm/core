@@ -29,7 +29,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           component="div"
           noWrap
           gutterBottom
-          sx={{ color: (theme) => theme.palette.secondary.main }}
+          sx={{ color: 'secondary.main' }}
         >
           {journey.title}
         </Typography>
@@ -40,7 +40,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         noWrap
         sx={{
           display: 'block',
-          color: (theme) => theme.palette.secondary.main
+          color: 'secondary.main'
         }}
         gutterBottom
       >
