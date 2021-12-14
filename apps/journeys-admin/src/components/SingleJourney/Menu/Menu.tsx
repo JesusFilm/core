@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
   Alert,
@@ -12,9 +12,9 @@ import {
 import { MoreVert, CheckCircleRounded } from '@mui/icons-material'
 import { JourneyUpdate_journeyUpdate as UpdatedJourney } from '../../../../__generated__/JourneyUpdate'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import UpdateDialog from './UpdateDialog'
+import { JourneyContext } from '../Context'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -30,11 +30,11 @@ export enum UpdateJourneyFields {
 }
 
 export interface MenuProps {
-  journey: Journey
   forceOpen?: boolean
 }
 
-const Menu = ({ journey, forceOpen }: MenuProps): ReactElement => {
+const Menu = ({ forceOpen }: MenuProps): ReactElement => {
+  const journey = useContext(JourneyContext)
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showDialog, setShowDialog] = useState(false)
