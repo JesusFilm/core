@@ -4,7 +4,8 @@ import {
   Menu,
   MenuItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  Typography
 } from '@mui/material'
 import Link from 'next/link'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
@@ -59,35 +60,51 @@ export function JourneyCardMenu({
         }}
       >
         <Link href={`/journeys/${slug}/edit`} passHref>
-          <MenuItem>
+          <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
-              <EditIcon />
+              <EditIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText>Edit</ListItemText>
+            <ListItemText>
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Edit
+              </Typography>
+            </ListItemText>
           </MenuItem>
         </Link>
 
-        <MenuItem>
+        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
           <ListItemIcon>
-            <PeopleIcon />
+            <PeopleIcon color="secondary" />
           </ListItemIcon>
-          <ListItemText>Access</ListItemText>
+          <ListItemText>
+            <Typography variant="body1" sx={{ pl: 2 }}>
+              Access
+            </Typography>
+          </ListItemText>
         </MenuItem>
 
         {status === JourneyStatus.draft ? (
-          <MenuItem disabled>
+          <MenuItem disabled sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
-              <VisibilityIcon />
+              <VisibilityIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText>Preview</ListItemText>
+            <ListItemText>
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Preview
+              </Typography>
+            </ListItemText>
           </MenuItem>
         ) : (
           <Link href={`https://your.nextstep.is/${slug}`} passHref>
-            <MenuItem>
+            <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
               <ListItemIcon>
-                <VisibilityIcon />
+                <VisibilityIcon color="secondary" />
               </ListItemIcon>
-              <ListItemText>Preview</ListItemText>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Preview
+                </Typography>
+              </ListItemText>
             </MenuItem>
           </Link>
         )}
