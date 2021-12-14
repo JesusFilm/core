@@ -1,10 +1,11 @@
-import { Box, Stack } from '@mui/material'
+import { Box } from '@mui/material'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { ReactElement } from 'react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
 import { FramePortal } from '../FramePortal'
 import { ThemeProvider } from '@core/shared/ui'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+import { HorizontalSelect } from '../HorizontalSelect'
 
 export interface CardPreviewProps {
   onSelect?: (card: TreeBlock<StepBlock>) => void
@@ -17,46 +18,22 @@ export function CardPreview({
   selected,
   onSelect
 }: CardPreviewProps): ReactElement {
+  const handleChange = (selectedId: string): void => {
+    const selectedStep = steps.find(({ id }) => id === selectedId)
+    selectedStep != null && onSelect?.(selectedStep)
+  }
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{
-        overflowX: 'auto',
-        py: 5,
-        px: 6
-      }}
-    >
+    <HorizontalSelect onChange={handleChange} id={selected?.id}>
       {steps.map((step) => (
         <Box
+          id={step.id}
           key={step.id}
           data-testid={`step-${step.id}`}
           sx={{
-            borderRadius: 2,
-            transition: '0.2s border-color ease-out',
-            position: 'relative',
-            maxWidth: 95,
-            minWidth: 95,
-            height: 140,
-            boxSizing: 'content-box',
-            overflow: 'hidden',
-            border: (theme) =>
-              selected?.id === step.id
-                ? `3px solid ${theme.palette.primary.main} `
-                : `3px solid ${theme.palette.background.default}`
+            width: 95,
+            height: 140
           }}
-          onClick={() => onSelect?.(step)}
         >
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              zIndex: 1
-            }}
-          />
           <Box
             sx={{
               transform: 'scale(0.25)',
@@ -76,6 +53,6 @@ export function CardPreview({
           </Box>
         </Box>
       ))}
-    </Stack>
+    </HorizontalSelect>
   )
 }
