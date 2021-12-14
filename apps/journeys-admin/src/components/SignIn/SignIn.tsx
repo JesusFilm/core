@@ -73,7 +73,6 @@ export function SignIn(): ReactElement {
 
   const uiConfig = {
     signInFlow: 'popup',
-    signInSuccessUrl: '/journeys',
     signInOptions: [
       {
         provider: firebase.auth.EmailAuthProvider.PROVIDER_ID

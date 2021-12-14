@@ -9,9 +9,10 @@ import {
   FilledInput,
   FormControl,
   Select,
-  InputLabel,
   Snackbar,
-  Fade
+  Fade,
+  useTheme,
+  InputLabel
 } from '@mui/material'
 import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
 import {
@@ -34,6 +35,8 @@ export const InviteUserModal = ({
   const [open, setOpen] = useState(false)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
+  const theme = useTheme()
+
   // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
   const inviteLink = `${window.location.origin}/journeys/${journey.slug}/invite`
   const [showAlert, setShowAlert] = useState(false)
@@ -67,23 +70,37 @@ export const InviteUserModal = ({
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 376,
-            bgcolor: 'background.paper',
-            p: 4
+            width: '100%',
+            maxWidth: {
+              xs: 200,
+              sm: 300,
+              md: 320,
+              lg: 376
+            },
+            bgcolor: 'background.paper'
           }}
         >
-          <Box>
-            <Typography variant={'subtitle1'} gutterBottom>
-              Invite Other Editors
-            </Typography>
-            <Divider sx={{ mt: 2, mb: 3 }} />
+          <Box
+            sx={{
+              mx: 3,
+              my: 1
+            }}
+          >
+            <Typography variant={'subtitle1'}>Invite Other Editors</Typography>
+          </Box>
+          <Divider />
+          <Box p={3}>
             <FormControl fullWidth>
               <FilledInput
                 value={inviteLink}
-                startAdornment={<LinkRounded />}
+                sx={{ fontSize: theme.typography.body1.fontSize }}
+                startAdornment={<LinkRounded sx={{ mr: 1 }} />}
                 endAdornment={
                   <>
-                    <ContentCopyRounded onClick={handleCopyLinkOpen} />
+                    <ContentCopyRounded
+                      onClick={handleCopyLinkOpen}
+                      sx={{ ml: 1, '&:hover': { cursor: 'pointer' } }}
+                    />
 
                     <Snackbar
                       open={showAlert}
@@ -99,10 +116,12 @@ export const InviteUserModal = ({
                 hiddenLabel
               />
             </FormControl>
-            <Typography variant={'caption'}>
-              Anyone with this link can see journey and ask for editing rights.
-              You can accept or reject every request
-            </Typography>
+            <Box ml={2}>
+              <Typography variant={'caption'}>
+                Anyone with this link can see journey and ask for editing
+                rights. You can accept or reject every request.
+              </Typography>
+            </Box>
             <Divider sx={{ my: 2 }} />
 
             {/* Lists out all the Requested Editing Rights */}
@@ -112,30 +131,7 @@ export const InviteUserModal = ({
             {usersJourneys?.map(
               (userJourney) =>
                 userJourney.role === 'inviteRequested' && (
-                  <Box
-                    key={userJourney.user?.id}
-                    display="flex"
-                    alignItems="center"
-                    sx={{ mt: 2, display: 'flex', flexDirection: 'row' }}
-                  >
-                    <Avatar src={userJourney.user?.imageUrl as string} />
-                    <Box ml={2}>
-                      <Typography variant={'body2'}>{`${
-                        userJourney.user?.firstName as string
-                      } ${userJourney.user?.lastName as string}`}</Typography>
-                      <Typography variant={'caption'}>
-                        {userJourney.user?.email}
-                      </Typography>
-                    </Box>
-                    <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
-                      <InputLabel>Manage</InputLabel>
-                      <Select variant="standard" disableUnderline>
-                        <ApproveUser usersJourneys={userJourney} />
-                        <Divider />
-                        <RemoveUser usersJourneys={userJourney} />
-                      </Select>
-                    </FormControl>
-                  </Box>
+                  <Users userJourney={userJourney} />
                 )
             )}
 
@@ -147,34 +143,73 @@ export const InviteUserModal = ({
             {usersJourneys?.map(
               (userJourney) =>
                 userJourney.role !== 'inviteRequested' && (
-                  <Box
-                    key={userJourney.user?.id}
-                    display="flex"
-                    alignItems="center"
-                  >
-                    <Avatar src={userJourney.user?.imageUrl as string} />
-                    <Box ml={2}>
-                      <Typography variant={'body2'}>{`${
-                        userJourney.user?.firstName as string
-                      } ${userJourney.user?.lastName as string}`}</Typography>
-                      <Typography variant={'caption'}>
-                        {userJourney.user?.email}
-                      </Typography>
-                    </Box>
-                    <FormControl fullWidth sx={{ maxWidth: 93, width: 93 }}>
-                      <InputLabel>{userJourney.role}</InputLabel>
-                      <Select variant="standard" disableUnderline>
-                        <PromoteUser usersJourneys={userJourney} />
-                        <Divider />
-                        <RemoveUser usersJourneys={userJourney} />
-                      </Select>
-                    </FormControl>
-                  </Box>
+                  <Users userJourney={userJourney} />
                 )
             )}
           </Box>
         </Box>
       </Modal>
     </>
+  )
+}
+
+interface UsersProps {
+  userJourney: UsersJourneys
+}
+
+export const Users = ({ userJourney }: UsersProps): ReactElement => {
+  return (
+    <Box
+      key={userJourney.user?.id}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        pt: 1
+      }}
+    >
+      <Avatar src={userJourney.user?.imageUrl as string} />
+      <Box
+        sx={{
+          ml: 2,
+          overflow: 'hidden'
+        }}
+      >
+        <Typography variant={'body2'}>
+          {`
+            ${userJourney.user?.firstName as string} 
+            ${userJourney.user?.lastName as string}
+          `}
+        </Typography>
+        <Typography variant={'caption'}>{userJourney.user?.email}</Typography>
+      </Box>
+      <Box
+        sx={{
+          ml: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end'
+        }}
+      >
+        <InputLabel
+          disableAnimation
+          shrink={false}
+          focused={false}
+          sx={{ pr: 0.2 }}
+        >
+          {userJourney.role === 'inviteRequested'
+            ? 'Manage'
+            : userJourney.role.replace(/^\w/, (c) => c.toUpperCase())}
+        </InputLabel>
+        <Select variant="standard" disableUnderline>
+          {userJourney.role === 'inviteRequested' ? (
+            <ApproveUser usersJourneys={userJourney} />
+          ) : (
+            <PromoteUser usersJourneys={userJourney} />
+          )}
+          <Divider />
+          <RemoveUser usersJourneys={userJourney} />
+        </Select>
+      </Box>
+    </Box>
   )
 }

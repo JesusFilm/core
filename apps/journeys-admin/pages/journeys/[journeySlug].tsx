@@ -23,7 +23,8 @@ interface SingleJourneyPageProps {
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
   const { user, loading } = UseFirebase()
   const router = useRouter()
-  const [currentUsersJourney, setCurrentUsersJourney] = useState<UsersJourneys | null>()
+  const [currentUsersJourney, setCurrentUsersJourney] =
+    useState<UsersJourneys | null>()
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
@@ -63,11 +64,10 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         <Typography variant={'h6'}>{journey.status}</Typography>
         <Typography variant={'h6'}>Created: {journey.createdAt}</Typography>
         <Typography variant={'h6'}>Published: {journey.publishedAt}</Typography>
-        {console.log(journey)}
         {currentUsersJourney?.role === 'inviteRequested' ? (
-          'Your invite is pending'
+          <Typography variant={'h6'}>Your invite is pending</Typography>
         ) : currentUsersJourney?.role === 'editor' ? (
-          'You can edit'
+          <Typography variant="h6">You are an editor</Typography>
         ) : currentUsersJourney !== null ? (
           <InviteUserModal
             usersJourneys={
