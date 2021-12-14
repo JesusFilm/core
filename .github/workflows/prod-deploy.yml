@@ -95,7 +95,7 @@ jobs:
         env:                                                                                                     
           RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         with:                                                                                                         
-          args: set image deployment/api-journeys api-journeys=${{ env.RELEASE_IMAGE }} -n $KUBE_NAMESPACE
+          args: set image deployment/api-journeys $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }} -n $KUBE_NAMESPACE
       
       - name: Verify Kubernetes deployment                               
         uses: kodermax/kubectl-aws-eks@master                            
