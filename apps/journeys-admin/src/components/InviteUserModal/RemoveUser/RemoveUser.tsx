@@ -3,6 +3,7 @@ import { MenuItem } from '@mui/material'
 import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
+import { RemoveCircleRounded } from '@mui/icons-material'
 
 interface RemoveUserProps {
   usersJourneys: UsersJourneys
@@ -56,7 +57,9 @@ export const RemoveUser = ({
           usersJourneys.role
         )
       }
+      sx={{ mr: 2 }}
     >
+      <RemoveCircleRounded sx={{ mr: 2 }} />
       Remove
     </MenuItem>
   )

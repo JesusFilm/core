@@ -14,7 +14,7 @@ import {
   useTheme,
   InputLabel
 } from '@mui/material'
-import { ContentCopyRounded, LinkRounded } from '@mui/icons-material'
+import { CloseRounded, ContentCopyRounded, LinkRounded } from '@mui/icons-material'
 import {
   GetJourney_journey_usersJourneys as UsersJourneys,
   GetJourney_journey as Journey
@@ -83,10 +83,14 @@ export const InviteUserModal = ({
           <Box
             sx={{
               mx: 3,
-              my: 1
+              my: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }}
           >
             <Typography variant={'subtitle1'}>Invite Other Editors</Typography>
+            <CloseRounded onClick={handleClose} sx={{ '&:hover': { cursor: 'pointer' } }} />
           </Box>
           <Divider />
           <Box p={3}>
@@ -194,7 +198,6 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
           disableAnimation
           shrink={false}
           focused={false}
-          sx={{ pr: 0.2 }}
         >
           {userJourney.role === 'inviteRequested'
             ? 'Manage'
