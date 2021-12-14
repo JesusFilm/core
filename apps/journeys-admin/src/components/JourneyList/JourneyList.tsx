@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Box, Card, Typography, Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-
 import { useBreakpoints } from '@core/shared/ui'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import JourneyCard from './JourneyCard'
@@ -13,11 +12,6 @@ export interface JourneysListProps {
 const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
   const breakpoints = useBreakpoints()
   const border = breakpoints.md ? 3 : 0
-  let padding = '1px'
-
-  function handleAdd(): void {
-    // TODO: navigate to add journey page
-  }
 
   return (
     <>
@@ -28,9 +22,16 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
           }}
         >
           {journeys.map((journey, i) => {
-            padding = i === journeys.length - 1 ? '0px' : '1px'
             return (
-              <Box key={journey.id} sx={{ pb: padding }}>
+              <Box
+                key={journey.id}
+                sx={{
+                  pb: '1px',
+                  '& .last-child': {
+                    pb: 0
+                  }
+                }}
+              >
                 <JourneyCard journey={journey} />
               </Box>
             )
@@ -54,7 +55,6 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
               width: '250px',
               alignSelf: 'center'
             }}
-            onClick={handleAdd}
           >
             Create a Journey
           </Button>
