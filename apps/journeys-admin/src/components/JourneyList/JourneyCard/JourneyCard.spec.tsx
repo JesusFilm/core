@@ -8,8 +8,8 @@ import {
 
 describe('JourneyCard', () => {
   it('should render the title', () => {
-    const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('Published Journey Heading')[0]).toBeInTheDocument()
+    const { getByText } = render(<JourneyCard journey={publishedJourney} />)
+    expect(getByText('Published Journey Heading')).toBeInTheDocument()
   })
 
   it('should render the formatted  date', () => {
@@ -23,16 +23,16 @@ describe('JourneyCard', () => {
   })
 
   it('should render the locale captialized', () => {
-    const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('en-US')[0]).toBeInTheDocument()
+    const { getByText } = render(<JourneyCard journey={publishedJourney} />)
+    expect(getByText('en-US')).toBeInTheDocument()
   })
 
   it('should render the formated date with year if journey is created before the current year', () => {
-    const { getAllByText } = render(<JourneyCard journey={oldJourney} />)
+    const { getByText } = render(<JourneyCard journey={oldJourney} />)
     expect(
-      getAllByText(
+      getByText(
         'Nov 19th, 2020 - Journey created before the current year should also show the year in the date'
-      )[0]
+      )
     ).toBeInTheDocument()
   })
 
