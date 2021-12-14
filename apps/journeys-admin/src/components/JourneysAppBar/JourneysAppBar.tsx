@@ -2,15 +2,14 @@ import { ReactElement } from 'react'
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import Menu from '../SingleJourney/Menu'
+import { Menu } from '../SingleJourney/Menu'
 import { useBreakpoints } from '@core/shared/ui'
 
 export interface JourneysAppBarProps {
-  journey?: Journey
+  variant: 'list' | 'view'
 }
 
-const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
+export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
   const breakpoints = useBreakpoints()
 
   return (
@@ -19,26 +18,33 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
       color="default"
       sx={{ display: 'flex', flexDirection: 'row' }}
     >
-      {journey !== undefined ? (
+      {variant === 'view' ? (
         <Toolbar sx={{ flexGrow: 1, mr: breakpoints.md ? '328px' : 0 }}>
           <Link href={`/journeys`} passHref>
-            <IconButton edge="start" aria-label="back to journeys">
+            <IconButton
+              aria-label="back to journeys"
+              edge="start"
+              size="large"
+              color="inherit"
+              sx={{ mr: 2 }}
+            >
               <ChevronLeftRounded />
             </IconButton>
           </Link>
           <Typography
             variant="subtitle1"
             component="div"
+            noWrap
             sx={{ ml: 2, flexGrow: 1 }}
           >
             Journey Details
           </Typography>
 
-          <Menu journey={journey} />
+          <Menu />
         </Toolbar>
       ) : (
-        <Toolbar>
-          <Typography variant="subtitle1" component="div" sx={{ ml: 1 }}>
+        <Toolbar sx={{ flexGrow: 1 }}>
+          <Typography variant="subtitle1" component="div" noWrap sx={{ ml: 1 }}>
             Journeys
           </Typography>
         </Toolbar>
@@ -46,5 +52,3 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
     </AppBar>
   )
 }
-
-export default JourneysAppBar

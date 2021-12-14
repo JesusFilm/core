@@ -36,6 +36,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       styleOverrides: {
         dense: {
+          maxHeight: 48,
           paddingLeft: 24,
           paddingRight: 24,
           borderBottom: '1px solid',

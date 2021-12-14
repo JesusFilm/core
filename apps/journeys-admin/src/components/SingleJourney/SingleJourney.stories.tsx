@@ -1,11 +1,11 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import SingleJourney from './SingleJourney'
+import { SingleJourney } from './SingleJourney'
 import { defaultJourney, publishedJourney } from './singleJourneyData'
 import { JourneyProvider } from './Context'
 
-const SingleJourneyDemo = {
+const SingleJourneyStory = {
   ...journeysAdminConfig,
   component: SingleJourney,
   title: 'Journeys-Admin/SingleJourney',
@@ -32,4 +32,4 @@ Published.args = {
   journey: publishedJourney
 }
 
-export default SingleJourneyDemo as Meta
+export default SingleJourneyStory as Meta

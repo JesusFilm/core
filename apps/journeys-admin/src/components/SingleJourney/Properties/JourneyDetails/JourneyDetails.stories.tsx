@@ -1,12 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 import { JourneyDetails } from './JourneyDetails'
 import { JourneyProvider } from '../../Context'
 import { defaultJourney, publishedJourney } from '../../singleJourneyData'
 
 const JourneyDetailsStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: JourneyDetails,
   title: 'Journeys-Admin/SingleJourney/JourneyDetails'
 }

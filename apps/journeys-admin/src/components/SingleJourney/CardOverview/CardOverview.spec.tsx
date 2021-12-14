@@ -1,8 +1,7 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-
-import CardOverview from './CardOverview'
-import { steps, oneStep } from './CardOverviewData'
+import { CardOverview } from './CardOverview'
+import { steps, oneStep } from './cardOverviewData'
 
 describe('CardOverview', () => {
   it('should render description for no cards', () => {

@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '../../../libs/storybook'
 
-import Menu, { JOURNEY_PUBLISH } from './Menu'
+import { Menu, JOURNEY_PUBLISH } from './Menu'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../singleJourneyData'
 import { JourneyProvider } from '../Context'
 
 const MenuStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Menu,
   title: 'Journeys-Admin/SingleJourney/Menu'
 }

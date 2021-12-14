@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../Context'
 import { defaultJourney, publishedJourney } from '../singleJourneyData'
-import Menu from './Menu'
+import { Menu } from './Menu'
 
 Object.assign(navigator, {
   clipboard: {

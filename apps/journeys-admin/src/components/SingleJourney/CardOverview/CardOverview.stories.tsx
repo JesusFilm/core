@@ -1,10 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-
 import { journeysAdminConfig } from '../../../libs/storybook'
-import CardOverview from '.'
-import { steps } from './CardOverviewData'
-import { CardOverviewProps } from './CardOverview'
+import { CardOverview, CardOverviewProps } from './CardOverview'
+import { steps } from './cardOverviewData'
 
 const CardOverviewDemo = {
   ...journeysAdminConfig,

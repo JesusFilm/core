@@ -27,7 +27,7 @@ export interface MenuProps {
   forceOpen?: boolean
 }
 
-const Menu = ({ forceOpen }: MenuProps): ReactElement => {
+export function Menu({ forceOpen }: MenuProps): ReactElement {
   const journey = useContext(JourneyContext)
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -139,5 +139,3 @@ const Menu = ({ forceOpen }: MenuProps): ReactElement => {
     </>
   )
 }
-
-export default Menu

@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 import { Alert, AlertProps } from './Alert'
 
 const AlertStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Alert,
   title: 'Journeys-Admin/SingleJourney/Menu/Alert'
 }

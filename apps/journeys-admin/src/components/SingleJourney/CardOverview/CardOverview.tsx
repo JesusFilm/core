@@ -13,7 +13,10 @@ export interface CardOverviewProps {
   blocks: Array<TreeBlock<StepBlock>>
 }
 
-const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
+export function CardOverview({
+  slug,
+  blocks
+}: CardOverviewProps): ReactElement {
   const breakpoints = useBreakpoints()
 
   const stepBlockLength =
@@ -88,5 +91,3 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
     </>
   )
 }
-
-export default CardOverview

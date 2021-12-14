@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Properties } from './Properties'
 
-const TestStory = {
+const PropertiesStory = {
   ...journeysAdminConfig,
   component: Properties,
   title: 'Journeys-Admin/SingleJourney/Properties',
@@ -20,4 +20,4 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 
-export default TestStory as Meta
+export default PropertiesStory as Meta
