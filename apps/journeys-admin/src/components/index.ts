@@ -1,3 +1,5 @@
 export { default as JourneyList } from './JourneyList'
 export { ThemeProvider } from './ThemeProvider'
 export { FramePortal } from './FramePortal'
+export { SingleJourney } from './SingleJourney'
+export { JourneyProvider } from './SingleJourney/Context'
