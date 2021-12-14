@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { format, parseISO, isThisYear } from 'date-fns'
+import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { Card, Typography, Box, Grid } from '@mui/material'
 import Link from 'next/link'
@@ -15,9 +15,11 @@ interface JourneyCardProps {
 
 export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
   const date = parseISO(journey.createdAt)
-  const formattedDate = isThisYear(date)
-    ? format(date, 'MMM do')
-    : format(date, 'MMM do, yyyy')
+  const formattedDate = intlFormat(date, {
+    month: 'long',
+    day: 'numeric',
+    year: isThisYear(date) ? undefined : 'numeric'
+  })
 
   return (
     <Card sx={{ borderRadius: 0, px: 6, py: 4 }}>
