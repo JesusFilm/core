@@ -82,7 +82,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/api-journeys/Dockerfile --build_arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/api-journeys/Dockerfile --build-arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS
           echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
