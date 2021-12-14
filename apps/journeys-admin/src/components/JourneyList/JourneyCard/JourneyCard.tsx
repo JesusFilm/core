@@ -20,7 +20,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
     : format(date, 'MMM do, yyyy')
 
   return (
-    <Card sx={{ borderRadius: '0px', px: 6, py: 4 }}>
+    <Card sx={{ borderRadius: 0, px: 6, py: 4 }}>
       <Link href={`/journeys/${journey.slug}`} passHref>
         <Typography
           variant="subtitle1"
@@ -51,16 +51,16 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           <Grid item>
             {journey.status === 'draft' ? (
               <EditIcon
+                color="warning"
                 sx={{
-                  color: (theme) => theme.palette.warning.main,
-                  pr: '6px'
+                  pr: 2
                 }}
               />
             ) : (
               <CheckCircleIcon
+                color="success"
                 sx={{
-                  color: (theme) => theme.palette.success.main,
-                  pr: '6px'
+                  pr: 2
                 }}
               />
             )}
@@ -68,7 +68,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           <Grid item>
             <Typography
               variant="caption"
-              sx={{ pr: 3, textTransform: 'capitalize' }}
+              sx={{ pr: 4, textTransform: 'capitalize' }}
             >
               {journey.status}
             </Typography>
@@ -76,7 +76,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           <Grid item>
             <TranslateIcon
               sx={{
-                pr: '6px'
+                pr: 2
               }}
             />
           </Grid>
