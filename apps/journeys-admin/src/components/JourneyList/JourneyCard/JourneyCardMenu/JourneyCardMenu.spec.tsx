@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import JourneyCardMenu from '.'
+import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
   it('should open menu on click', () => {

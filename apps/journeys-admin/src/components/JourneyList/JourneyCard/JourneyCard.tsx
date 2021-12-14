@@ -6,7 +6,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 
-import JourneyCardMenu from './JourneyCardMenu'
+import { JourneyCardMenu } from './JourneyCardMenu'
 
 interface JourneyCardProps {
   journey: Journey

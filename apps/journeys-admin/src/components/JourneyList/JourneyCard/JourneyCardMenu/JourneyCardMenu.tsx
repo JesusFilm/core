@@ -19,11 +19,11 @@ export interface JourneyCardMenuProps {
   forceMenu?: boolean
 }
 
-const JourneyCardMenu = ({
+export function JourneyCardMenu({
   status,
   slug,
   forceMenu // this is only used for storybook snapshots
-}: JourneyCardMenuProps): ReactElement => {
+}: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
 
@@ -95,5 +95,3 @@ const JourneyCardMenu = ({
     </div>
   )
 }
-
-export default JourneyCardMenu
