@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
-import JourneyList, { JourneysListProps } from './JourneyList'
+import { JourneyList, JourneysListProps } from './JourneyList'
 import {
   defaultJourney,
   oldJourney,

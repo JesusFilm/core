@@ -9,7 +9,7 @@ export interface JourneysListProps {
   journeys: Journey[]
 }
 
-const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
+export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   const breakpoints = useBreakpoints()
   const border = breakpoints.md ? 3 : 0
 
@@ -63,5 +63,3 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
     </>
   )
 }
-
-export default JourneyList

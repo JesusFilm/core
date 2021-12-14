@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import JourneyList from './JourneyList'
+import { JourneyList } from '.'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 
 describe('JourneyList', () => {
