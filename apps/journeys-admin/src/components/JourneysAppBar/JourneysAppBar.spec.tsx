@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { defaultJourney } from '../SingleJourney/SingleJourneyData'
+import { defaultJourney } from '../SingleJourney/singleJourneyData'
 import JourneysAppBar from '.'
 
 describe('JourneysAppBar', () => {

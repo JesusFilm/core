@@ -6,7 +6,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { SingleJourney } from '../../src/components/SingleJourney'
+import { SingleJourney, JourneyProvider } from '../../src/components'
 import { BlockFields_StepBlock as StepBlock } from '../../__generated__/BlockFields'
 import client from '../../src/libs/client'
 import CardOverview from '../../src/components/SingleJourney/CardOverview'
@@ -18,6 +18,7 @@ interface SingleJourneyPageProps {
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
   const blocks = journey.blocks != null ? transformer(journey.blocks) : []
+
   return (
     <>
       <Head>
@@ -27,11 +28,13 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta name="description" content={journey.description} />
         )}
       </Head>
-      <SingleJourney journey={journey} />
-      <CardOverview
-        slug={journey.slug}
-        blocks={blocks as Array<TreeBlock<StepBlock>>}
-      />
+      <JourneyProvider value={journey}>
+        <SingleJourney />
+        <CardOverview
+          slug={journey.slug}
+          blocks={blocks as Array<TreeBlock<StepBlock>>}
+        />
+      </JourneyProvider>
     </>
   )
 }

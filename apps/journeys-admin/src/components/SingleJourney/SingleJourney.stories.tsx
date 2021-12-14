@@ -31,7 +31,7 @@ const Template: Story = () => (
       }
     ]}
   >
-    <SingleJourney journey={defaultJourney} />
+    <SingleJourney />
   </MockedProvider>
 )
 

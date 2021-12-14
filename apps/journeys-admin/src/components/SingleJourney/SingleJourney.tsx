@@ -1,13 +1,12 @@
-import { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Box, Typography } from '@mui/material'
 import JourneysAppBar from '../JourneysAppBar'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+// import Properties from './Properties'
+import { JourneyContext } from './Context'
 
-interface SingleJourneyProps {
-  journey: Journey
-}
+const SingleJourney = (): ReactElement => {
+  const journey = useContext(JourneyContext)
 
-const SingleJourney = ({ journey }: SingleJourneyProps): ReactElement => {
   return (
     <>
       <JourneysAppBar journey={journey} />
@@ -15,6 +14,7 @@ const SingleJourney = ({ journey }: SingleJourneyProps): ReactElement => {
         <Typography variant={'h4'}>{journey.title}</Typography>
         <Typography variant={'body1'}>{journey.description}</Typography>
       </Box>
+      {/* <Properties journey={journey} /> */}
     </>
   )
 }
