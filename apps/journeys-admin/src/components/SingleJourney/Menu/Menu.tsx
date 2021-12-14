@@ -83,10 +83,6 @@ const Menu = ({ journey, forceOpen }: MenuProps): ReactElement => {
     setAnchorEl(null)
   }
 
-  const handleUpdateAccess = (): void => {
-    // trigger auth dialog
-  }
-
   const handleCopyLink = async (): Promise<void> => {
     await navigator.clipboard.writeText(`your.nextstep.is/${journey.slug}`)
     setShowAlert(true)
@@ -141,7 +137,7 @@ const Menu = ({ journey, forceOpen }: MenuProps): ReactElement => {
         </MenuItem>
         <MenuItem onClick={handleUpdateTitle}>Title</MenuItem>
         <MenuItem onClick={handleUpdateDescription}>Description</MenuItem>
-        <MenuItem onClick={handleUpdateAccess}>Access</MenuItem>
+
         <Divider />
         <MenuItem>
           <Link href={`/journeys/${journey.slug}/edit`} underline="none">
