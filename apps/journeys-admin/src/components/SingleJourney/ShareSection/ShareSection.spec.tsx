@@ -15,17 +15,6 @@ describe('ShareSection', () => {
     )
   })
 
-  it('should have correct url for the edit button', () => {
-    const { getByRole, getAllByRole } = render(
-      <ShareSection slug={'my-journey'} />
-    )
-    fireEvent.click(getAllByRole('button')[1])
-    expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
-      'href',
-      '/journeys/my-journey/edit'
-    )
-  })
-
   it('should handle copy link on icon click', async () => {
     Object.assign(navigator, {
       clipboard: {

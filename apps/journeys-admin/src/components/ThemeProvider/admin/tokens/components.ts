@@ -6,10 +6,12 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         root: {
           fontFamily: "'Montserrat', sans-serif",
-          fontWeight: 600,
+          fontWeight: 'bold',
+          borderRadius: 40
+        },
+        sizeSmall: {
           fontSize: '14px',
-          lineHeight: 4,
-          borderRadius: '40px'
+          fontWeight: 'normal'
         }
       }
     },

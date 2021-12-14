@@ -12,14 +12,13 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
-  Typography
+  Typography,
+  Stack
 } from '@mui/material'
-import Link from 'next/link'
 import InsertLinkIcon from '@mui/icons-material/InsertLink'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import EditIcon from '@mui/icons-material/Edit'
 import { useBreakpoints } from '@core/shared/ui'
 
 export interface ShareSectionProps {
@@ -32,7 +31,6 @@ export function ShareSection({
   forceMenu
 }: ShareSectionProps): ReactElement {
   const journeyLink = `https://your.nextstep.is/${slug}`
-  const journeyEditLink = `/journeys/${slug}/edit`
   const breakpoints = useBreakpoints()
 
   const [showAlert, setShowAlert] = useState(false)
@@ -64,7 +62,7 @@ export function ShareSection({
   return (
     <Box sx={{ px: 2, py: 3 }}>
       {breakpoints.sm ? (
-        <>
+        <Stack spacing={6} direction="column">
           <Typography variant="subtitle2">Journey URL</Typography>
           <TextField
             id="filled-basic"
@@ -81,25 +79,17 @@ export function ShareSection({
                 </InputAdornment>
               )
             }}
-            sx={{ pt: 6 }}
           />
-          <Box sx={{ display: 'flex' }}>
-            <Link href={journeyEditLink} passHref>
-              <Button
-                startIcon={<EditIcon />}
-                sx={{
-                  mr: 8
-                }}
-              >
-                Edit
-              </Button>
-            </Link>
-
-            <Button onClick={handleCopyLink} startIcon={<ContentCopyIcon />}>
+          <Stack spacing={8} direction="row">
+            <Button
+              size="small"
+              onClick={handleCopyLink}
+              startIcon={<ContentCopyIcon />}
+            >
               Copy
             </Button>
-          </Box>
-        </>
+          </Stack>
+        </Stack>
       ) : (
         <Box sx={{ display: 'flex' }}>
           <TextField
@@ -143,15 +133,6 @@ export function ShareSection({
               horizontal: 'right'
             }}
           >
-            <Link href={journeyEditLink} passHref>
-              <MenuItem>
-                <ListItemIcon>
-                  <EditIcon />
-                </ListItemIcon>
-                <ListItemText>Edit</ListItemText>
-              </MenuItem>
-            </Link>
-
             <MenuItem onClick={handleCopyLink}>
               <ListItemIcon>
                 <ContentCopyIcon />
