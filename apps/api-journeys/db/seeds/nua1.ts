@@ -1,7 +1,8 @@
 import { ThemeMode, ThemeName } from '../../src/app/graphql'
-import { aql, Database } from 'arangojs'
+import { aql } from 'arangojs'
+import { ArangoDB } from '../db'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 export async function nua1(): Promise<void> {
   const slug = 'fact-or-fiction'

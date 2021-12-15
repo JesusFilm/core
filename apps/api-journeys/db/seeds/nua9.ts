@@ -1,8 +1,9 @@
 import { ThemeMode, ThemeName } from '../../src/app/graphql'
-import { aql, Database } from 'arangojs'
+import { aql } from 'arangojs'
 import { v4 as uuidv4 } from 'uuid'
+import { ArangoDB } from '../db'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 export async function nua9(): Promise<void> {
   const slug = 'descision'

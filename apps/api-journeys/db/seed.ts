@@ -1,13 +1,10 @@
-import { Database } from 'arangojs'
-
-
+import { ArangoDB } from './db'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
 import { nua8 } from './seeds/nua8'
 import { nua9 } from './seeds/nua9'
 
-const db = new Database({ url: process.env.DATABASE_URL })
-db.useBasicAuth(process.env.DATABASE_USER, process.env.DATABASE_PASS)
+const db = ArangoDB()
 
 async function main(): Promise<void> {
   try {

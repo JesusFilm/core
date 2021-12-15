@@ -1,6 +1,7 @@
-import { aql, Database } from 'arangojs'
+import { ArangoDB } from '../db'
+import { aql } from 'arangojs'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 export async function user1(): Promise<void> {
   await db.query(aql`

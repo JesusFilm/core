@@ -1,9 +1,10 @@
-FROM node:lts-alpine
+ARG GOOGLE_APPLICATION_JSON
+FROM node:14-alpine
+ENV GOOGLE_APPLICATION_JSON=$GOOGLE_APPLICATION_JSON
 WORKDIR /app
 COPY ./dist/apps/api-gateway .
-ENV PORT=4000
-EXPOSE ${PORT}
+EXPOSE 4000
 RUN npm install --production
-# # dependencies that nestjs needs
-# RUN npm install reflect-metadata tslib rxjs @nestjs/platform-express
+# dependencies that apollo federation needs
+RUN npm install apollo-server-express
 CMD node ./main.js

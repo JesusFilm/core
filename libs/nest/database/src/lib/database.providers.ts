@@ -1,5 +1,4 @@
-import { Database } from 'arangojs'
-
+import { Database } from "arangojs"
 
 export const databaseProviders = [
   {

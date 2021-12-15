@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-journeys-stage
+  labels:
+    app: api-journeys-stage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-journeys-stage
+  template:
+    metadata:
+      labels:
+        app: api-journeys-stage
+    spec:
+      containers:
+      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:340cd757c41256d87c4e9623692cb57db89d4956
+        imagePullPolicy: IfNotPresent
+        name: jfp-api-journeys

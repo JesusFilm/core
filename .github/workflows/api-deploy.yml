@@ -1,0 +1,116 @@
+name: Prod Merge
+on:
+  push:
+    branches:
+      - main
+      - stage
+      - arangodb-cloud-deploy
+jobs:
+  api-journeys: 
+    uses: JesusFilm/core/.github/api-deploy-worker.yml@arangodb-cloud-deploy
+    with:
+      name: api-journeys
+      repository: jfp-api-journeys
+  api-users:
+    uses: JesusFilm/core/.github/api-deploy-worker.yml@arangodb-cloud-deploy
+    with:
+      name: api-users
+      repository: jfp-api-users
+  # api-gateway:
+  #   uses: JesusFilm/core/.github/api-deploy-worker.yml@arangodb-cloud-deploy
+  #   with:
+  #     name: api-gateway
+  #     repository: jfp-api-gateway
+
+    # runs-on: ubuntu-latest
+    # steps:      
+
+    #   - name: Checkout current branch
+    #     uses: actions/checkout@v2
+    #     with:
+    #       fetch-depth: 1
+
+    #   - name: Derive appropriate SHAs for base and head for `nx affected` commands
+    #     uses: nrwl/nx-set-shas@v2
+
+    #   - uses: actions/setup-node@v2
+    #     with:
+    #       node-version: "16"
+    #       cache: "npm"
+
+    #   - name: Cache Node Modules
+    #     id: cache-node-modules
+    #     uses: actions/cache@v2
+    #     with:
+    #       path: node_modules
+    #       key: node-modules-${{ hashFiles('package-lock.json') }}
+    #       restore-keys: node-modules-
+
+    #   - name: NPM Install
+    #     run: npm install --silent
+      
+    #   - name: nx Install
+    #     run: npm install -g nx --silent
+
+    #   - name: Get affected apps
+    #     run: echo "::set-output name=apps::$(nx affected:apps plain)"
+    #     id: affected-apps  
+
+    #   - name: Build api-journeys
+    #     if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+    #     uses: mansagroup/nrwl-nx-action@v2
+    #     with:
+    #       targets: build
+    #       projects: api-journeys
+      
+    #   - name: Configure AWS credentials
+    #     if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+    #     uses: aws-actions/configure-aws-credentials@v1
+    #     with:
+    #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #       aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      
+    #   - name: Login to Amazon ECR
+    #     if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+    #     id: login-ecr
+    #     uses: aws-actions/amazon-ecr-login@v1
+
+    #   - name: Build, tag, and push the image to Amazon ECR
+    #     if: contains(steps.affected-apps.outputs.apps, 'api-journeys')
+    #     id: build-image
+    #     env:
+    #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    #     run: |
+    #       # Build a docker container and push it to ECR 
+    #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/api-journeys/Dockerfile --build-arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS
+    #       echo "Pushing image to ECR..."
+    #       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    #       echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    #   - name: Deploy to Kubernetes cluster                            
+    #     if: contains(steps.affected-apps.outputs.apps, 'api-journeys')                                                
+    #     uses: kodermax/kubectl-aws-eks@master                                                                         
+    #     env:                                                                                                     
+    #       RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+    #     with:                                                                                                         
+    #       args: set image deployment/api-journeys $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }} 
+      
+    #   - name: Verify Kubernetes deployment  
+    #     if: contains(steps.affected-apps.outputs.apps, 'api-journeys')                             
+    #     uses: kodermax/kubectl-aws-eks@master                            
+    #     with:                                                            
+    #       args: rollout status deploy api-journeys
+          
+    #   - name: Get affected app seed
+    #     run: echo "::set-output name=dbs::$(nx affected:apps plain --files apps/api-journeys/db/seed.ts)"
+    #     id: affected-dbs
+
+    #   - name: Seed Database
+    #     if: contains(steps.affected-dbs.outputs.dbs, 'api-journeys')
+    #     uses: mansagroup/nrwl-nx-action@v2
+    #     with:
+    #       targets: seed
+    #       projects: api-journeys
+
+

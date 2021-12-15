@@ -1,8 +1,10 @@
 apiVersion: "database.arangodb.com/v1alpha"
 kind: "ArangoDeployment"
 metadata:
-  name: "single-server"
+  name: "arango-prod"
   labels:
     type: "db"
 spec:
   mode: Single
+  tls:
+    caSecretName: None
