@@ -7,12 +7,12 @@ on:
       - arangodb-cloud-deploy
 jobs:
   api-journeys: 
-    uses: JesusFilm/core/.github/api-deploy-worker.yml@arangodb-cloud-deploy
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@arangodb-cloud-deploy
     with:
       name: api-journeys
       repository: jfp-api-journeys
   api-users:
-    uses: JesusFilm/core/.github/api-deploy-worker.yml@arangodb-cloud-deploy
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@arangodb-cloud-deploy
     with:
       name: api-users
       repository: jfp-api-users
