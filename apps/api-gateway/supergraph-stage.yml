@@ -1,0 +1,9 @@
+subgraphs:
+  journeys:
+    routing_url: http://10.100.209.143:4001/graphql
+    schema:
+      file: ../../dist/api-gateway/api-journeys-schema.graphql
+  users:
+    routing_url: http://10.100.220.79:4002/graphql
+    schema:
+      file: ../../dist/api-gateway/api-users-schema.graphql

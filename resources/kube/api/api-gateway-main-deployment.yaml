@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-users-main
+  name: api-gateway-main
   labels:
-    app: api-users-main
+    app: api-gateway-main
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-users-main
+      app: api-gateway-main
   template:
     metadata:
       labels:
-        app: api-users-main
+        app: api-gateway-main
     spec:
       containers:
       - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:a4680843785509343e2185af0a62a915a908f7a1
         imagePullPolicy: IfNotPresent
-        name: jfp-api-users
+        name: jfp-api-gateway
         ports:
-          - containerPort: 4002
+          - containerPort: 4000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-users-main
+  name: api-gateway-main
 spec:
   selector:
-    app: api-users-main
+    app: api-gateway-main
   ports:
-    - port: 4002
-  type: LoadBalancer  
+    - port: 4000
+  type: LoadBalancer
