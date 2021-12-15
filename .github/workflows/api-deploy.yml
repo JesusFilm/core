@@ -11,6 +11,14 @@ jobs:
     with:
       name: api-journeys
       repository: jfp-api-journeys
+    secrets:
+      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
+      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
+      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@arangodb-cloud-deploy
     with:
