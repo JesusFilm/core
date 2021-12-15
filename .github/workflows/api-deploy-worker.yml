@@ -9,9 +9,21 @@ on:
       repository:
         required: true
         type: string
-    # secrets:
-      # envPAT:
-      #   required: true
+    secrets:
+      ARANGODB_URL:
+        required: true
+      ARANGODB_USER:
+        required: true
+      ARANGODB_PASS:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_DEFAULT_REGION:
+        required: true
+      KUBE_CONFIG_DATA:
+        required: true
 
 jobs:
   build-and-deploy: 
