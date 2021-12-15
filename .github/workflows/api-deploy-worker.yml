@@ -9,9 +9,9 @@ on:
       repository:
         required: true
         type: string
-    secrets:
-      envPAT:
-        required: true
+    # secrets:
+      # envPAT:
+      #   required: true
 
 jobs:
   build-and-deploy: 
