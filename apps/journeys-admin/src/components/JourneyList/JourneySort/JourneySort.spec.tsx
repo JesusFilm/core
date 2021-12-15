@@ -8,81 +8,42 @@ export const JourneySortMock = (): ReactElement => {
   return <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
 }
 
-describe('JourneySort', () => {
+describe('JourneyList/JourneySort', () => {
   it('should sort by date created by default', () => {
     const { getByRole, getByDisplayValue } = render(<JourneySortMock />)
-    // Check chip label is "Sort By"
-    const button = getByRole('button')
-    const buttonSpan = button.querySelector('span')
-    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
-    expect(buttonSpan?.textContent).toBe('Sort By')
-    // open the sortBy form
-    fireEvent.click(button)
-    // Check radio option default value is "CREATED_AT"
+
+    fireEvent.click(getByRole('button', { name: 'Sort By' }))
+
     expect(getByDisplayValue('Date Created')).toBeChecked()
   })
 
   it('should sort by name', async () => {
     const { getByRole, getByLabelText } = render(<JourneySortMock />)
-    // open the sort form
-    fireEvent.click(getByRole('button'))
 
-    const nameLabel = getByLabelText('Name')
-    expect(nameLabel).not.toBeChecked()
-    fireEvent.click(nameLabel)
-    expect(nameLabel).toBeChecked()
-    // Check Chip label has changed to Name
-    const button = getByRole('button')
-    const buttonSpan = button.querySelector('span')
-    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
-    expect(buttonSpan?.textContent).toBe('Name')
+    fireEvent.click(getByRole('button', { name: 'Sort By' }))
+    fireEvent.click(getByLabelText('Name'))
+
+    expect(getByRole('button', { name: 'Name' })).toBeInTheDocument()
   })
 
   it('should sort by date created', () => {
     const { getByRole, getByLabelText } = render(<JourneySortMock />)
-    // open the sort form
-    fireEvent.click(getByRole('button'))
-    // fireEvent change value to dateCreated
-    const dateCreatedLabel = getByLabelText('Date Created')
-    fireEvent.click(dateCreatedLabel)
-    expect(dateCreatedLabel).toBeChecked()
 
-    const nameLabel = getByLabelText('Name')
-    expect(nameLabel).not.toBeChecked()
-    // fireEvent change to name then dateCreated
-    fireEvent.click(nameLabel)
-    expect(nameLabel).toBeChecked()
-    fireEvent.click(dateCreatedLabel)
-    expect(dateCreatedLabel).toBeChecked()
+    fireEvent.click(getByRole('button', { name: 'Sort By' }))
+    fireEvent.click(getByLabelText('Name'))
+    fireEvent.click(getByLabelText('Date Created'))
 
-    // Check Chip label is now "Date Created"
-    const button = getByRole('button')
-    const buttonSpan = button.querySelector('span')
-    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
-    expect(buttonSpan?.textContent).toBe('Date Created')
+    const updatedButton = getByRole('button', { name: 'Date Created' })
+    expect(updatedButton).toBeInTheDocument()
   })
 
   it('should not set sort value on cancel button click', () => {
-    const { getByText, getByRole, queryByRole } = render(<JourneySortMock />)
-    // open the sort form
-    fireEvent.click(getByRole('button'))
+    const { getByText, getByRole } = render(<JourneySortMock />)
+    const button = getByRole('button', { name: 'Sort By' })
 
-    // Check that drawer has opened
-    const drawer = getByRole('presentation')
-    expect(drawer).toHaveAttribute('id', 'journeys-sort-drawer')
-    expect(drawer).toBeInTheDocument()
+    fireEvent.click(button)
+    fireEvent.click(getByText('Cancel'))
 
-    // click cancel
-    const cancelButton = getByText('Cancel')
-    fireEvent.click(cancelButton)
-
-    // Since it's closed, the journeys-sort-drawer will now have aria-hidden=true property, so queryByRole will return null
-    expect(queryByRole('presentation')).toBeNull()
-
-    // Check Chip label is still "Sort By"
-    const button = getByRole('button')
-    const buttonSpan = button.querySelector('span')
-    expect(buttonSpan).toHaveClass('MuiChip-label') // confirming that the button is the chip
-    expect(buttonSpan?.textContent).toBe('Sort By')
+    expect(button).toBeInTheDocument()
   })
 })

@@ -9,7 +9,7 @@ import {
   publishedJourney
 } from './journeyListData'
 
-const TestStory = {
+const JourneyListStory = {
   ...journeysAdminConfig,
   component: JourneyList,
   title: 'Journeys-Admin/JourneyList'
@@ -19,9 +19,9 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
   <JourneyList {...args} />
 )
 
-export const DefaultJourneyList = Template.bind({})
-DefaultJourneyList.args = {
+export const Default = Template.bind({})
+Default.args = {
   journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
 }
 
-export default TestStory as Meta
+export default JourneyListStory as Meta

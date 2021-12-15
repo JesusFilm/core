@@ -22,8 +22,13 @@ import { useBreakpoints } from '@core/shared/ui'
 
 export enum SortBy {
   UNDEFINED = 'undefined',
-  CREATED_AT = 'Date Created',
-  TITLE = 'Name'
+  CREATED_AT = 'createdAt',
+  TITLE = 'title'
+}
+
+const sortByLabel = {
+  createdAt: 'Date Created',
+  title: 'Name'
 }
 
 interface JourneySortProps {
@@ -77,12 +82,12 @@ const JourneySort = ({
           <FormControlLabel
             value={SortBy.CREATED_AT}
             control={<Radio />}
-            label={SortBy.CREATED_AT}
+            label={sortByLabel.createdAt}
           />
           <FormControlLabel
             value={SortBy.TITLE}
             control={<Radio />}
-            label={SortBy.TITLE}
+            label={sortByLabel.title}
           />
         </RadioGroup>
         <Box
@@ -107,7 +112,7 @@ const JourneySort = ({
   return (
     <>
       <Chip
-        label={sortBy === SortBy.UNDEFINED ? 'Sort By' : sortBy}
+        label={sortBy === SortBy.UNDEFINED ? 'Sort By' : sortByLabel[sortBy]}
         onClick={handleClick}
         ref={chipRef}
       />
