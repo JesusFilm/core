@@ -35,7 +35,7 @@ jobs:
 
   api-gateway:
     needs: [api-journeys, api-users]
-    uses: JesusFilm/core/.github/api-gateway-worker.yml@arangodb-cloud-deploy
+    uses: JesusFilm/core/.github/workflows/api-gateway-worker.yml@arangodb-cloud-deploy
     with:
       name: api-gateway
       repository: jfp-api-gateway
