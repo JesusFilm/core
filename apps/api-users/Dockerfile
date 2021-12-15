@@ -7,7 +7,7 @@ ENV DATABASE_PASS=$DATABASE_PASS
 ENV DATABASE_URL=$DATABASE_URL
 WORKDIR /app
 COPY ./dist/apps/api-users .
-EXPOSE 4001
+EXPOSE 4002
 # RUN apk add --no-cache python3 make g++
 RUN npm install --production --silent
 # dependencies that nestjs needs

@@ -1,7 +1,0 @@
-Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-Properties:
-  Name: apollo-gateway-lb-${opt:env}
-  Scheme: internet-facing
-  SecurityGroups:
-    - !Ref ApolloGatewayLBSecurityGroup
-  Subnets: ${self:custom.aws.public-subnets}

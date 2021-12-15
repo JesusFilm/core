@@ -15,6 +15,6 @@ spec:
         app: api-users-main
     spec:
       containers:
-      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:340cd757c41256d87c4e9623692cb57db89d4956
+      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:a4680843785509343e2185af0a62a915a908f7a1
         imagePullPolicy: IfNotPresent
         name: jfp-api-users

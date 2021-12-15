@@ -1,8 +1,0 @@
-Type: AWS::EC2::SecurityGroupIngress
-DependsOn: LambdaSecurityGroup
-Properties:
-  GroupId: !Ref LambdaSecurityGroup
-  SourceSecurityGroupId: !Ref LambdaSecurityGroup
-  IpProtocol: tcp
-  FromPort: ${self:custom.dbparams.port}
-  ToPort: ${self:custom.dbparams.port}
