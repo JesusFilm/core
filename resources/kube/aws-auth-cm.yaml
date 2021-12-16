@@ -10,7 +10,7 @@ data:
       groups:
         - system:bootstrappers
         - system:nodes
-    - rolearn: arn:aws:iam::894231352815:role/API-stack-NodeInstanceRole-1B8Q7E90YLC4C
+    - rolearn: arn:aws:iam::894231352815:role/API-stack-NodeInstanceRole-IMDVGKB84EPX
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers

@@ -20,6 +20,8 @@ spec:
         name: jfp-api-gateway
         ports:
           - containerPort: 4000
+      nodeSelector:
+        type: api
 ---
 apiVersion: v1
 kind: Service

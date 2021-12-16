@@ -36,7 +36,7 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
       DATABASE_URL: ${{ secrets.ARANGODB_URL }}
       DATABASE_USER: ${{ secrets.ARANGODB_USER }}
-      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}      
+      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -94,7 +94,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/${{ inputs.name }}/Dockerfile --build-arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/${{ inputs.name }}/Dockerfile --build-arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS --build-arg DATABASE_DB=$ENV_SUFFIX
           echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

@@ -4,6 +4,7 @@ metadata:
   name: api-journeys-main
   labels:
     app: api-journeys-main
+    type: api
 spec:
   replicas: 1
   selector:
@@ -20,6 +21,8 @@ spec:
         name: jfp-api-journeys
         ports:
           - containerPort: 4001
+      nodeSelector:
+        type: api
 ---
 apiVersion: v1
 kind: Service

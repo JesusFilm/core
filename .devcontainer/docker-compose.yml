@@ -22,10 +22,6 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
     environment:
       KUBECONFIG: /workspaces/core/.kube/config
-  # buildah: 
-  #   image: 'quay.io/buildah/stable'
-  #    volumes:
-  #     - ..:/workspace:delegated
   arangodb:
     image: arangodb/arangodb
     volumes:
