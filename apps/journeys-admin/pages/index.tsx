@@ -6,7 +6,6 @@ import Image from 'next/image'
 import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
 
 function Dashboard(): ReactElement {
-
   const handleFeedbackSupport = (): void => {
     const subject = 'Support/Feedback Request'
     window.location.assign(`mailto:support@nextstep.is?Subject=${subject}`)
