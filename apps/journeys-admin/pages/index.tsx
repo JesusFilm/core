@@ -1,13 +1,11 @@
 import { ReactElement } from 'react'
-import { Box, Typography, useTheme } from '@mui/material'
-import { ThemeProvider } from '@core/shared/ui'
-import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+import { Box, Typography } from '@mui/material'
+import { ThemeProvider } from '../src/components/ThemeProvider'
 import { SignIn } from '../src/components/SignIn'
 import Image from 'next/image'
 import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
 
 function Dashboard(): ReactElement {
-  const theme = useTheme()
 
   const handleFeedbackSupport = (): void => {
     const subject = 'Support/Feedback Request'
@@ -15,7 +13,7 @@ function Dashboard(): ReactElement {
   }
 
   return (
-    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+    <ThemeProvider>
       <Box
         sx={{
           display: 'flex',
@@ -37,7 +35,7 @@ function Dashboard(): ReactElement {
         <SignIn />
         <Typography
           variant={'body2'}
-          sx={{ mt: 20, color: theme.palette.primary.main, cursor: 'pointer' }}
+          sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
           onClick={handleFeedbackSupport}
         >
           Feedback & Support

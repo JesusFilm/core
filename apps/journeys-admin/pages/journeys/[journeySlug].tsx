@@ -15,8 +15,7 @@ import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS
 } from '../../src/components/InviteUserModal'
-import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '../../src/components/ThemeProvider'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -61,7 +60,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta property="og:image" content={journey.primaryImageBlock.src} />
         )}
       </Head>
-      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+      <ThemeProvider>
         <Box sx={{ m: 10 }}>
           <Typography variant={'h2'}>{journey.title}</Typography>
           <Typography variant={'h6'}>{journey.status}</Typography>

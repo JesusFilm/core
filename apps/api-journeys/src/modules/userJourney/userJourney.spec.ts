@@ -310,8 +310,9 @@ describe('UserJourneyModule', () => {
 
       describe('User Journey Promote', () => {
         it('promotes editor to owner', async () => {
-          dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
           dbMock.userJourney.findUnique.mockResolvedValue(userJourneyOwner)
+          dbMock.userJourney.update.mockResolvedValue(userJourneyEditor)
+          dbMock.userJourney.update.mockResolvedValue(userJourneyOwner)
 
           await query(
             gql`
