@@ -65,22 +65,22 @@ jobs:
 
       - name: Build api-journeys-main schema 
         # if: ${{ github.ref_name }} == 'main'
-        run: rover subgraph introspect http://abbe4d922d0064b0cad3e5210b400e04-147650932.us-east-2.elb.amazonaws.com:4001/graphql > dist/api-gateway/api-journeys-schema.graphql
+        run: rover subgraph introspect http://abbe4d922d0064b0cad3e5210b400e04-147650932.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
 
       - name: Build api-journeys-stage schema 
         if: ${{ github.ref_name }} == 'stage'
-        run: rover subgraph introspect http://abbe4d922d0064b0cad3e5210b400e04-147650932.us-east-2.elb.amazonaws.com:4001/graphql > dist/api-gateway/api-journeys-schema.graphql
+        run: rover subgraph introspect http://abbe4d922d0064b0cad3e5210b400e04-147650932.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
 
       - name: Build api-users-main schema 
         # if: ${{ github.ref_name }} == 'main'
-        run: rover subgraph introspect http://a6be4f32b97b443c3b9ed90904039ec8-774709470.us-east-2.elb.amazonaws.com:4002/graphql > dist/api-gateway/api-users-schema.graphql
+        run: rover subgraph introspect http://a6be4f32b97b443c3b9ed90904039ec8-774709470.us-east-2.elb.amazonaws.com:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
       - name: Build api-journeys-stage schema 
         if: ${{ github.ref_name }} == 'stage'
-        run: rover subgraph introspect http://ae060f35594ed4da686c52fdd5cb0684-570415076.us-east-2.elb.amazonaws.com:4002/graphql > dist/api-gateway/api-users-schema.graphql
+        run: rover subgraph introspect http://ae060f35594ed4da686c52fdd5cb0684-570415076.us-east-2.elb.amazonaws.com:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
       - name: Build api-gateway schema
-        run: rover supergraph compose --config apps/api-gateway/supergraph-$ENV_SUFFIX.yml > dist/api-gateway/schema.graphql
+        run: rover supergraph compose --config apps/api-gateway/supergraph-$ENV_SUFFIX.yml > dist/apps/api-gateway/schema.graphql
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -99,7 +99,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/${{ inputs.name }}/Dockerfile --build-arg DATABASE_URL=$DATABASE_URL --build-arg DATABASE_USER=$DATABASE_USER --build-arg DATABASE_PASS=$DATABASE_PASS
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
