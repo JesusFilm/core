@@ -63,11 +63,6 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
       <ThemeProvider>
         <Box sx={{ m: 10 }}>
           <Typography variant={'h2'}>{journey.title}</Typography>
-          <Typography variant={'h6'}>{journey.status}</Typography>
-          <Typography variant={'h6'}>Created: {journey.createdAt}</Typography>
-          <Typography variant={'h6'}>
-            Published: {journey.publishedAt}
-          </Typography>
           {currentUsersJourney?.role === 'inviteRequested' ? (
             <Typography variant={'h6'}>Your invite is pending</Typography>
           ) : currentUsersJourney?.role === 'editor' ? (
@@ -82,7 +77,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
               journey={journey}
             />
           ) : (
-            "You don't have permission to do things"
+            'Sorry, you have no access to the requested journey.'
           )}
         </Box>
       </ThemeProvider>

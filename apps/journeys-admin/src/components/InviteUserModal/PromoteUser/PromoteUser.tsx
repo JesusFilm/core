@@ -7,6 +7,7 @@ import { NewReleasesRounded } from '@mui/icons-material'
 
 interface PromoteUserProps {
   usersJourneys: UsersJourneys
+  handleClose: (event: React.MouseEvent<HTMLElement>) => void
 }
 
 export const USER_JOURNEY_PROMOTE = gql`
@@ -19,12 +20,17 @@ export const USER_JOURNEY_PROMOTE = gql`
 `
 
 export const PromoteUser = ({
-  usersJourneys
+  usersJourneys,
+  handleClose
 }: PromoteUserProps): ReactElement => {
   const [userJourneyPromote] =
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 
-  const handlePromoteUser = (userId: string, journeyId: string): void => {
+  const handlePromoteUser = (
+    userId: string,
+    journeyId: string,
+    e: React.MouseEvent<HTMLElement>
+  ): void => {
     void userJourneyPromote({
       variables: {
         input: {
@@ -39,12 +45,13 @@ export const PromoteUser = ({
         }
       }
     })
+    void handleClose(e)
   }
 
   return (
     <MenuItem
-      onClick={() =>
-        handlePromoteUser(usersJourneys.userId, usersJourneys.journeyId)
+      onClick={(e) =>
+        handlePromoteUser(usersJourneys.userId, usersJourneys.journeyId, e)
       }
     >
       <NewReleasesRounded sx={{ mr: 2 }} />

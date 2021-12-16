@@ -136,9 +136,9 @@ export const InviteUserModal = ({
               Requested Editing Rights
             </Typography>
             {usersJourneys?.map(
-              (userJourney) =>
+              (userJourney, i) =>
                 userJourney.role === 'inviteRequested' && (
-                  <Users userJourney={userJourney} />
+                  <Users key={i} userJourney={userJourney} />
                 )
             )}
 
@@ -148,9 +148,9 @@ export const InviteUserModal = ({
               Users With Access
             </Typography>
             {usersJourneys?.map(
-              (userJourney) =>
+              (userJourney, i) =>
                 userJourney.role !== 'inviteRequested' && (
-                  <Users userJourney={userJourney} />
+                  <Users key={i} userJourney={userJourney} />
                 )
             )}
           </Box>
@@ -171,8 +171,9 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
     setAnchorEl(event.currentTarget)
     setOpen(true)
   }
-  const handleClose = (): void => setOpen(false)
-
+  const handleClose = (event: React.MouseEvent<HTMLElement>): void => {
+    setOpen(false)
+  }
   return (
     <Box
       key={userJourney.user?.id}
@@ -219,7 +220,11 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
               ? 'Manage'
               : userJourney.role.replace(/^\w/, (c) => c.toUpperCase())}
           </Typography>
-          <ArrowDropDown fontSize={'medium'} sx={{ pl: 1 }} />
+          {userJourney.role === 'owner' ? (
+            ''
+          ) : (
+            <ArrowDropDown fontSize={'medium'} sx={{ pl: 1 }} />
+          )}
         </Box>
         <Menu
           id="demo-customized-menu"
@@ -231,12 +236,18 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
           onClose={handleClose}
         >
           {userJourney.role === 'inviteRequested' ? (
-            <ApproveUser usersJourneys={userJourney} />
+            <ApproveUser
+              usersJourneys={userJourney}
+              handleClose={handleClose}
+            />
           ) : (
-            <PromoteUser usersJourneys={userJourney} />
+            <PromoteUser
+              usersJourneys={userJourney}
+              handleClose={handleClose}
+            />
           )}
           <Divider />
-          <RemoveUser usersJourneys={userJourney} />
+          <RemoveUser usersJourneys={userJourney} handleClose={handleClose} />
         </Menu>
       </Box>
     </Box>
