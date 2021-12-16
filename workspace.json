@@ -1,7 +1,6 @@
 {
   "version": 2,
   "projects": {
-    "infrastructure": "resources/cf-stacks",
     "api-gateway": "apps/api-gateway",
     "api-journeys": "apps/api-journeys",
     "api-users": "apps/api-users",
