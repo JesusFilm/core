@@ -10,7 +10,7 @@ export namespace UserModule {
   };
   
   interface DefinedInputFields {
-    UserCreateInput: 'id' | 'firstName' | 'lastName' | 'email' | 'imageUrl' | 'requestInviteToJourneyId';
+    UserCreateInput: 'firstName' | 'lastName' | 'email' | 'imageUrl';
   };
   
   export type UserCreateInput = Pick<Types.UserCreateInput, DefinedInputFields['UserCreateInput']>;

@@ -92,7 +92,6 @@ describe('UserModule', () => {
         gql`
           mutation ($input: UserCreateInput!) {
             userCreate(input: $input) {
-              id
               firstName
               lastName
               email
@@ -102,7 +101,6 @@ describe('UserModule', () => {
         `,
         {
           input: {
-            id: user.id,
             firstName: 'fo',
             lastName: 'sho',
             email: 'tho@no.co',
@@ -114,11 +112,19 @@ describe('UserModule', () => {
         }
       )
       expect(data?.userCreate).toEqual({
-        id: user.id,
         firstName: 'fo',
         lastName: 'sho',
         email: 'tho@no.co',
         imageUrl: 'po'
+      })
+      expect(dbMock.user.create).toBeCalledWith({
+        data: {
+          id: 'userId',
+          firstName: 'fo',
+          lastName: 'sho',
+          email: 'tho@no.co',
+          imageUrl: 'po'
+        }
       })
     })
   })

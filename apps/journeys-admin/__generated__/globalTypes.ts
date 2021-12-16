@@ -167,10 +167,8 @@ export interface SignUpResponseCreateInput {
 export interface UserCreateInput {
   email?: string | null;
   firstName?: string | null;
-  id?: string | null;
   imageUrl?: string | null;
   lastName?: string | null;
-  requestInviteToJourneyId?: string | null;
 }
 
 export interface UserJourneyRemoveInput {

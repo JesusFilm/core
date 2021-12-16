@@ -11,7 +11,6 @@ import { UserCreateInput } from "./globalTypes";
 
 export interface UserCreate_userCreate {
   __typename: "User";
-  id: string;
   firstName: string | null;
   lastName: string | null;
   email: string | null;

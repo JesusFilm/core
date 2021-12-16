@@ -453,10 +453,8 @@ type User
 input UserCreateInput {
   email: String
   firstName: String
-  id: ID
   imageUrl: String
   lastName: String
-  requestInviteToJourneyId: String
 }
 
 type UserJourney {

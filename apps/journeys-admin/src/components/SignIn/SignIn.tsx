@@ -11,7 +11,6 @@ import { UserCreate } from '../../../__generated__/UserCreate'
 export const USER_CREATE = gql`
   mutation UserCreate($input: UserCreateInput!) {
     userCreate(input: $input) {
-      id
       firstName
       lastName
       email
@@ -36,31 +35,21 @@ export function SignIn(): ReactElement {
   }, [loading, user, router])
 
   const handleAuthResponse = (
-    id: string,
     firstName?: string,
     lastName?: string,
     email?: string,
     imageUrl?: string
   ): void => {
-    let requestInviteToJourneyId
-    try {
-      requestInviteToJourneyId = localStorage.getItem('pendingInviteRequest')
-    } catch (e) {
-      console.log('on server')
-    }
     void userCreate({
       variables: {
         input: {
-          id,
           firstName,
           lastName,
           email,
-          imageUrl,
-          requestInviteToJourneyId
+          imageUrl
         },
         optimisticResponse: {
           userCreate: {
-            id: id,
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -100,13 +89,7 @@ export function SignIn(): ReactElement {
         const imageUrl =
           response.user.photoURL != null ? response.user.photoURL : ''
 
-        handleAuthResponse(
-          response.user.uid,
-          firstName,
-          lastName,
-          response.user.email,
-          imageUrl
-        )
+        handleAuthResponse(firstName, lastName, response.user.email, imageUrl)
 
         return false
       }

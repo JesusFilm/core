@@ -5,12 +5,10 @@ import { UserModule } from './__generated__/types'
 
 const typeDefs = gql`
   input UserCreateInput {
-    id: ID
     firstName: String
     lastName: String
     email: String
     imageUrl: String
-    requestInviteToJourneyId: String
   }
 
   type User @key(fields: "id") {
@@ -66,23 +64,26 @@ const resolvers: UserModule.Resolvers = {
   Mutation: {
     async userCreate(
       _parent,
-      { input: { id, firstName, lastName, email, imageUrl } },
-      { db }
+      { input: { firstName, lastName, email, imageUrl } },
+      { db, userId }
     ) {
-      const checkUser = await db.user.findUnique({
+      if (userId == null) throw new AuthenticationError('You must be logged in')
+
+      const user = await db.user.findUnique({
         where: {
-          id: id as string
+          id: userId
         }
       })
 
-      if (id === checkUser?.id)
-        throw new AuthenticationError(
-          'User already exists and will not be created'
-        )
+      if (user != null) {
+        return user
+      }
 
+      // are all of these properties required?
+      // it's making us do a type check
       return await db.user.create({
         data: {
-          id: id as string,
+          id: userId,
           firstName: firstName as string,
           lastName: lastName as string,
           email: email as string,

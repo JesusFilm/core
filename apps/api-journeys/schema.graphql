@@ -418,12 +418,10 @@ type User @key(fields: "id") {
 }
 
 input UserCreateInput {
-  id: ID
   firstName: String
   lastName: String
   email: String
   imageUrl: String
-  requestInviteToJourneyId: String
 }
 
 type UserJourney {
