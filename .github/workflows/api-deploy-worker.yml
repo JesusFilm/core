@@ -121,7 +121,7 @@ jobs:
         if: contains(steps.affected-dbs.outputs.dbs, ${{ inputs.name }})
         uses: mansagroup/nrwl-nx-action@v2
         env:
-          DATABASE_DB: $ENV_SUFFIX
+          DATABASE_DB: ${{ env.$ENV_SUFFIX }}
         with:
           targets: seed
           projects: ${{ inputs.name }}
