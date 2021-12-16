@@ -108,8 +108,7 @@ export function SignIn(): ReactElement {
           imageUrl
         )
 
-        void router.push('/journeys')
-        return true
+        return false
       }
     }
   }

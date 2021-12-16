@@ -22,13 +22,9 @@ function JourneyNew(): ReactElement {
   const router = useRouter()
   const [journeyCreate] = useMutation<JourneyCreate>(NEW_JOURNEY)
   const UUID = uuidv4()
-  const [title, setTitle] = useState("")
+  const [title, setTitle] = useState('')
 
-  const handleClick = (
-    id: string,
-    title: string,
-    slug: string
-  ): void => {
+  const handleClick = (id: string, title: string, slug: string): void => {
     void journeyCreate({
       variables: {
         input: {
@@ -60,10 +56,18 @@ function JourneyNew(): ReactElement {
         <Typography variant={'h6'}>Create your Journey</Typography>
         <form>
           <FormControl>
-            <Input name="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <Input
+              name="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </FormControl>
-          <br /><br />
-          <Button variant={'contained'} onClick={() => handleClick(UUID, title, UUID)}>
+          <br />
+          <br />
+          <Button
+            variant={'contained'}
+            onClick={() => handleClick(UUID, title, UUID)}
+          >
             Create
           </Button>
         </form>

@@ -93,10 +93,7 @@ export const InviteUserModal = ({
             }}
           >
             <Typography variant={'subtitle1'}>Invite Other Editors</Typography>
-            <CloseRounded
-              onClick={handleClose}
-              sx={{ '&:hover': { cursor: 'pointer' } }}
-            />
+            <CloseRounded onClick={handleClose} sx={{ cursor: 'pointer' }} />
           </Box>
           <Divider />
           <Box p={6} pb={10}>
@@ -109,7 +106,7 @@ export const InviteUserModal = ({
                   <>
                     <ContentCopyRounded
                       onClick={handleCopyLinkOpen}
-                      sx={{ ml: 3, '&:hover': { cursor: 'pointer' } }}
+                      sx={{ ml: 3, cursor: 'pointer' }}
                     />
 
                     <Snackbar
@@ -212,7 +209,7 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
           onClick={handleClick}
           sx={{
             display: 'flex',
-            '&:hover': { cursor: 'pointer' },
+            cursor: 'pointer',
             flexDirection: 'row',
             alignItems: 'center'
           }}
