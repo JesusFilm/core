@@ -64,6 +64,7 @@ jobs:
         with:
           targets: build
           projects: ${{ inputs.name }}
+          args: --configuration="production"
 
       - name: Build api-journeys-main schema 
         # if: ${{ github.ref_name }} == 'main'

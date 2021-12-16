@@ -25,12 +25,5 @@ curl -LO https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
 chmod 775 kubectl
 sudo mv kubectl /usr/local/bin
 
-# install helm
-# curl -LO https://get.helm.sh/helm-v3.7.2-linux-amd64.tar.gz
-# tar xzf helm-v3.7.2-linux-amd64.tar.gz
-# sudo mv linux-amd64/helm /usr/local/bin
-# rm -rf linux-amd64
-# rm helm-v3.7.2-linux-amd64.tar.gz
-
 # install all dependencies
 npm i
