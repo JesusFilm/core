@@ -48,11 +48,11 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            color="primary"
+            size="medium"
             sx={{
-              borderRadius: 3,
               mt: 3,
-              width: '250px',
+              // borderRadius: 3,
+              // width: '250px',
               alignSelf: 'center'
             }}
           >
