@@ -16,7 +16,7 @@ spec:
         app: api-journeys-stage
     spec:
       containers:
-      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:a4680843785509343e2185af0a62a915a908f7a1
+      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:435929f62a05a83dd0b38aba755da47bf5a81f99
         imagePullPolicy: IfNotPresent
         name: jfp-api-journeys
         ports:
