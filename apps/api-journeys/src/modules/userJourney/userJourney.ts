@@ -196,8 +196,14 @@ const resolvers: UserJourneyModule.Resolvers = {
           'You do not own this journey so you cannot change roles'
         )
 
-      if (actor.role === 'owner' && actor.journeyId === input.journeyId)
-        throw new Error("You're already the owner of this journey")
+      if (
+        actor.role === 'owner' &&
+        actor.journeyId === input.journeyId &&
+        actor.userId === input.userId
+      )
+        throw new AuthenticationError(
+          'You are already the owner of this journey'
+        )
 
       const newOwner = await db.userJourney.update({
         where: {

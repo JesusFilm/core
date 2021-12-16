@@ -38,7 +38,7 @@ export const ApproveUser = ({
           journeyId
         },
         optimisticResponse: {
-          userJourneyRemove: {
+          userJourneyApprove: {
             userId,
             journeyId
           }
