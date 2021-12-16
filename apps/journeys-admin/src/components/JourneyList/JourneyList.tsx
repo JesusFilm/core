@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import JourneySort, { SortBy } from './JourneySort'
 import JourneyCard from './JourneyCard'
+import JourneysAppBar from '../JourneysAppBar'
 
 export interface JourneysListProps {
   journeys: Journey[]
@@ -24,19 +25,21 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
 
   return (
     <>
+      <JourneysAppBar />
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          mb: 6
+          mx: 6,
+          mt: 10
         }}
       >
         <Typography variant={'h3'}>All Journeys</Typography>
         <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
       </Box>
       {/* Remove this once we link journey cards to the Single Journey page */}
-      <Box data-testid="journey-list">
+      <Box sx={{ p: 6 }} data-testid="journey-list">
         {journeys.map((journey) => (
           <Box key={journey.id} data-testid={'journey-card'}>
             <Link href={`/journeys/${journey.slug}`} passHref>

@@ -12,7 +12,10 @@ import {
 const JourneyListStory = {
   ...journeysAdminConfig,
   component: JourneyList,
-  title: 'Journeys-Admin/JourneyList'
+  title: 'Journeys-Admin/JourneyList',
+  parameters: {
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
