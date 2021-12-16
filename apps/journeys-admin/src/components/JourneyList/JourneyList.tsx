@@ -51,8 +51,6 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
             size="medium"
             sx={{
               mt: 3,
-              // borderRadius: 3,
-              // width: '250px',
               alignSelf: 'center'
             }}
           >
