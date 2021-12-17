@@ -16,20 +16,15 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   return (
     <>
       {journeys.length > 0 ? (
-        <Card
-          sx={{
-            borderRadius: border
-          }}
-        >
+        <Card variant="outlined" sx={{ borderRadius: border }}>
           {journeys.map((journey, i) => {
             return (
               <Box
                 key={journey.id}
                 sx={{
-                  pb: '1px',
-                  '& .last-child': {
-                    pb: 0
-                  }
+                  '&:first-child': { borderTop: 'none' },
+                  borderTop: 1,
+                  borderColor: 'divider'
                 }}
               >
                 <JourneyCard journey={journey} />
