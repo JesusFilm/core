@@ -16,11 +16,14 @@ spec:
         app: api-users-main
     spec:
       containers:
-      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:435929f62a05a83dd0b38aba755da47bf5a81f99
+      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:c33fe910f485803718fa8d656d85816755247078
         imagePullPolicy: IfNotPresent
         name: jfp-api-users
         ports:
           - containerPort: 4002
+        envFrom:
+        - secretRef:
+            name: main-db
       nodeSelector:
         type: api
 ---

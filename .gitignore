@@ -49,3 +49,6 @@ migrations.json
 .serverless
 .webpack
 >>>>>>> origin/deploy-stage
+
+# kube secrets
+/resources/kube/secrets
