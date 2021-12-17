@@ -13,7 +13,7 @@ const Template: Story<JourneysAppBarProps> = ({ ...args }) => (
   <JourneysAppBar {...args} />
 )
 
-export const Default = Template.bind({})
+export const JourneyList = Template.bind({})
 
 export const SingleJourney = Template.bind({})
 SingleJourney.args = { journey: defaultJourney }
