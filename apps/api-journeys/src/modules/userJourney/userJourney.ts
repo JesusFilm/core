@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { UserJourneyModule } from './__generated__/types'
 import { AuthenticationError } from 'apollo-server-errors'
+import { includes } from 'lodash'
 // import { PrismaPromise, PrismaClient } from '.prisma/api-journeys-client'
 // import { UserJourney } from '../../__generated__/types'
 
@@ -163,7 +164,7 @@ const resolvers: UserJourneyModule.Resolvers = {
           'You do not own this journey so you cannot remove users'
         )
 
-      if (input.role === (actor.role as UserJourneyModule.UserJourneyRole))
+      if (!includes(['inviteRequested', 'editor', null], input.role))
         throw new AuthenticationError(
           'Owners cannot remove themselves from their journey'
         )
@@ -201,9 +202,7 @@ const resolvers: UserJourneyModule.Resolvers = {
         actor.journeyId === input.journeyId &&
         actor.userId === input.userId
       )
-        throw new AuthenticationError(
-          'You are already the owner of this journey'
-        )
+        return actor
 
       const newOwner = await db.userJourney.update({
         where: {

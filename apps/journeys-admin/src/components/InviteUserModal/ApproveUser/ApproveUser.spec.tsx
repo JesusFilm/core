@@ -21,6 +21,7 @@ const userJourney: UserJourney = {
 
 describe('Approve button', () => {
   it('should hanlde onClick', () => {
+    const handleClose = jest.fn()
     const { getByText } = renderWithApolloClient(
       <MockedProvider
         mocks={[
@@ -46,7 +47,7 @@ describe('Approve button', () => {
           }
         ]}
       >
-        <ApproveUser usersJourneys={userJourney} />
+        <ApproveUser usersJourneys={userJourney} handleClose={handleClose} />
       </MockedProvider>
     )
     expect(getByText('Approve')).toBeInTheDocument()

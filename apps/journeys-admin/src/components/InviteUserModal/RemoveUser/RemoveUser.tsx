@@ -7,7 +7,7 @@ import { RemoveCircleRounded } from '@mui/icons-material'
 
 interface RemoveUserProps {
   usersJourneys: UsersJourneys
-  handleClose: (event: React.MouseEvent<HTMLElement>) => void
+  handleClose: (result) => void
 }
 
 export const USER_JOURNEY_REMOVE = gql`
@@ -27,13 +27,12 @@ export const RemoveUser = ({
   const [userJourneyRemove] =
     useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
 
-  const handleRemoveUser = (
+  const handleRemoveUser = async (
     userId: string,
     journeyId: string,
-    role: string,
-    e: React.MouseEvent<HTMLElement>
-  ): void => {
-    void userJourneyRemove({
+    role: string
+  ): Promise<void> => {
+    const result = await userJourneyRemove({
       variables: {
         input: {
           userId,
@@ -49,17 +48,16 @@ export const RemoveUser = ({
         }
       }
     })
-    void handleClose(e)
+    void handleClose(result)
   }
 
   return (
     <MenuItem
-      onClick={(e) =>
-        handleRemoveUser(
+      onClick={async (e) =>
+        await handleRemoveUser(
           usersJourneys.userId,
           usersJourneys.journeyId,
-          usersJourneys.role,
-          e
+          usersJourneys.role
         )
       }
       sx={{ mr: 2 }}

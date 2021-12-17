@@ -167,13 +167,17 @@ interface UsersProps {
 export const Users = ({ userJourney }: UsersProps): ReactElement => {
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
     setOpen(true)
   }
-  const handleClose = (event: React.MouseEvent<HTMLElement>): void => {
+
+  const handleClose = (result): void => {
+    console.log(result)
     setOpen(false)
   }
+
   return (
     <Box
       key={userJourney.user?.id}

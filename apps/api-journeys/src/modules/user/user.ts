@@ -75,9 +75,7 @@ const resolvers: UserModule.Resolvers = {
         }
       })
 
-      if (user != null) {
-        return user
-      }
+      if (user != null) return user
 
       // are all of these properties required?
       // it's making us do a type check

@@ -7,7 +7,7 @@ import { BeenhereRounded } from '@mui/icons-material'
 
 interface ApproveUserProps {
   usersJourneys: UsersJourneys
-  handleClose: (event: React.MouseEvent<HTMLElement>) => void
+  handleClose: (result) => void
 }
 
 export const USER_JOURNEY_APPROVE = gql`
@@ -26,12 +26,11 @@ export const ApproveUser = ({
   const [userJourneyApprove] =
     useMutation<UserJourneyUpdate>(USER_JOURNEY_APPROVE)
 
-  const handleApproveUser = (
+  const handleApproveUser = async (
     userId: string,
-    journeyId: string,
-    e: React.MouseEvent<HTMLElement>
-  ): void => {
-    void userJourneyApprove({
+    journeyId: string
+  ): Promise<void> => {
+    const result = await userJourneyApprove({
       variables: {
         input: {
           userId,
@@ -45,13 +44,13 @@ export const ApproveUser = ({
         }
       }
     })
-    void handleClose(e)
+    void handleClose(result)
   }
 
   return (
     <MenuItem
-      onClick={(e) =>
-        handleApproveUser(usersJourneys.userId, usersJourneys.journeyId, e)
+      onClick={async (e) =>
+        await handleApproveUser(usersJourneys.userId, usersJourneys.journeyId)
       }
     >
       <BeenhereRounded sx={{ mr: 2 }} />
