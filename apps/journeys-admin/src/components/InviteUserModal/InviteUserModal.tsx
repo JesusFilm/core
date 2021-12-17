@@ -26,6 +26,7 @@ import {
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
+import { UserJourneyRemove_userJourneyRemove } from '../../../__generated__/UserJourneyRemove'
 
 interface InviteUserModalProps {
   journey: Journey
@@ -37,8 +38,20 @@ export const InviteUserModal = ({
   journey
 }: InviteUserModalProps): ReactElement => {
   const [open, setOpen] = useState(false)
+  const [uj, setUsersJourneys] = useState(usersJourneys)
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
+
+  const handleRemove = (
+    userJourneyRemove: UserJourneyRemove_userJourneyRemove
+  ): void => {
+    setUsersJourneys(
+      uj?.filter(
+        (userJourney) => userJourney.userId !== userJourneyRemove.userId
+      )
+    )
+  }
+
   const theme = useTheme()
 
   // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
@@ -135,10 +148,14 @@ export const InviteUserModal = ({
             <Typography variant={'body1'} gutterBottom>
               Requested Editing Rights
             </Typography>
-            {usersJourneys?.map(
+            {uj?.map(
               (userJourney, i) =>
                 userJourney.role === 'inviteRequested' && (
-                  <Users key={i} userJourney={userJourney} />
+                  <Users
+                    key={i}
+                    userJourney={userJourney}
+                    handleRemove={handleRemove}
+                  />
                 )
             )}
 
@@ -147,10 +164,14 @@ export const InviteUserModal = ({
             <Typography variant={'body1'} gutterBottom>
               Users With Access
             </Typography>
-            {usersJourneys?.map(
+            {uj?.map(
               (userJourney, i) =>
                 userJourney.role !== 'inviteRequested' && (
-                  <Users key={i} userJourney={userJourney} />
+                  <Users
+                    key={i}
+                    userJourney={userJourney}
+                    handleRemove={handleRemove}
+                  />
                 )
             )}
           </Box>
@@ -162,9 +183,13 @@ export const InviteUserModal = ({
 
 interface UsersProps {
   userJourney: UsersJourneys
+  handleRemove: (userJourneyRemove: UserJourneyRemove_userJourneyRemove) => void
 }
 
-export const Users = ({ userJourney }: UsersProps): ReactElement => {
+export const Users = ({
+  userJourney,
+  handleRemove
+}: UsersProps): ReactElement => {
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -174,8 +199,11 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
   }
 
   const handleClose = (result): void => {
-    console.log(result)
-    setOpen(false)
+    if (result.userJourneyRemove !== undefined) {
+      handleRemove(result.userJourneyRemove)
+    } else {
+      setOpen(false)
+    }
   }
 
   return (
@@ -251,7 +279,7 @@ export const Users = ({ userJourney }: UsersProps): ReactElement => {
             />
           )}
           <Divider />
-          <RemoveUser usersJourneys={userJourney} handleClose={handleClose} />
+          <RemoveUser usersJourneys={userJourney} handleRemove={handleClose} />
         </Menu>
       </Box>
     </Box>
