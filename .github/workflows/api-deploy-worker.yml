@@ -29,8 +29,7 @@ jobs:
   build-and-deploy: 
     environment: Production
     env:
-      # ENV_SUFFIX: ${{ github.ref_name }}
-      ENV_SUFFIX: main # for testing
+      ENV_SUFFIX: ${{ github.ref_name }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
