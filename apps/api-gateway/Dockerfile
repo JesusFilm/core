@@ -1,4 +1,4 @@
-FROM node:14-bullseye-slim
+FROM node:14-alpine
 WORKDIR /app
 COPY ./dist/apps/api-gateway .
 EXPOSE 4000

@@ -23,9 +23,7 @@ spec:
           - containerPort: 4002
         envFrom:
         - secretRef:
-            name: main-db
-      nodeSelector:
-        type: api
+            name: env-db-main
 ---
 apiVersion: v1
 kind: Service

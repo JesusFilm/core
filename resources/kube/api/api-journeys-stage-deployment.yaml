@@ -23,9 +23,7 @@ spec:
           - containerPort: 4001
         envFrom:
         - secretRef:
-            name: stage-db
-      nodeSelector:
-        type: api
+            name: env-db-stage
 ---
 apiVersion: v1
 kind: Service

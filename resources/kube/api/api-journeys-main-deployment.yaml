@@ -21,11 +21,9 @@ spec:
         name: jfp-api-journeys
         envFrom:
         - secretRef:
-            name: main-db
+            name: env-db-main
         ports:
           - containerPort: 4001
-      nodeSelector:
-        type: api
 ---
 apiVersion: v1
 kind: Service

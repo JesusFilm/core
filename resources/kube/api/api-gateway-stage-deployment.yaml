@@ -22,9 +22,7 @@ spec:
           - containerPort: 4000
         envFrom:
         - secretRef:
-            name: stage-firebase          
-      nodeSelector:
-        type: api
+            name: env-firebase-stage
 ---
 apiVersion: v1
 kind: Service

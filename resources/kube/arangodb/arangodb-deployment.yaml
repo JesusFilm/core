@@ -2,8 +2,6 @@ apiVersion: "database.arangodb.com/v1alpha"
 kind: "ArangoDeployment"
 metadata:
   name: "arangodb"
-  labels:
-    type: "db"
 spec:
   mode: Single
   tls:

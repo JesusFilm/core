@@ -22,9 +22,7 @@ spec:
           - containerPort: 4000
         envFrom:
         - secretRef:
-            name: main-firebase          
-      nodeSelector:
-        type: api
+            name: env-firebase-main          
 ---
 apiVersion: v1
 kind: Service
