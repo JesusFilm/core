@@ -13,9 +13,9 @@ const typeDefs = gql`
 
   type User @key(fields: "id") {
     id: ID!
-    firstName: String
+    firstName: String!
     lastName: String
-    email: String
+    email: String!
     imageUrl: String
   }
 

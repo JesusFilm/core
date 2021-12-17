@@ -29,10 +29,10 @@ enum UserJourneyRole {
 
 model User {
   id          String        @id
-  firstName   String
-  lastName    String
-  email       String
-  imageUrl    String
+  firstName   String        
+  lastName    String?       
+  email       String        
+  imageUrl    String?        
   UserJourney UserJourney[] @relation("User")
 }
 

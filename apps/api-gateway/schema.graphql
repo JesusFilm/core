@@ -442,8 +442,8 @@ type User
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
-  email: String @join__field(graph: JOURNEYS)
-  firstName: String @join__field(graph: JOURNEYS)
+  email: String! @join__field(graph: JOURNEYS)
+  firstName: String! @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   imageUrl: String @join__field(graph: JOURNEYS)
   lastName: String @join__field(graph: JOURNEYS)
