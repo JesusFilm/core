@@ -22,7 +22,10 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
   })
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: 0, px: 6, py: 4 }}>
+    <Card
+      variant="outlined"
+      sx={{ borderRadius: 0, px: 6, py: 4, border: 'none' }}
+    >
       <Link href={`/journeys/${journey.slug}`} passHref>
         <Typography
           variant="subtitle1"
