@@ -72,7 +72,7 @@ jobs:
 
       - name: Build api-journeys-stage schema 
         if: ${{ github.ref_name }} == 'stage'
-        run: rover subgraph introspect http://abbe4d922d0064b0cad3e5210b400e04-147650932.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
+        run: rover subgraph introspect http://a987a4231357740d8ae5e50b2199f0f0-1092155453.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
 
       - name: Build api-users-main schema 
         # if: ${{ github.ref_name }} == 'main'

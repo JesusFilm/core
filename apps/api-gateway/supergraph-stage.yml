@@ -1,9 +1,9 @@
 subgraphs:
   journeys:
-    routing_url: http://10.100.209.143:4001/graphql
+    routing_url: http://api-journeys-stage.svc.cluster.local:4001/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-journeys-schema.graphql
   users:
-    routing_url: http://10.100.220.79:4002/graphql
+    routing_url: http://api-users-stage.svc.cluster.local:4002/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-users-schema.graphql
