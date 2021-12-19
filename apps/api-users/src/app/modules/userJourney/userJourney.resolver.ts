@@ -24,6 +24,6 @@ export class UserJourneyResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async userJourneyRemove(@Args('id') id: string): Promise<UserJourney> {
-    return this.userJourneyService.remove(id)
+    return await this.userJourneyService.remove(id)
   }
 }
