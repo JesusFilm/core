@@ -10,19 +10,19 @@ export interface JourneysAppBarProps {
 
 const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
   return (
-    <Box sx={{ flexGrow: 1}}>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="static"
         elevation={1}
         sx={{
-          color: (theme) => theme.palette.text.primary,
-          backgroundColor: (theme) => theme.palette.background.default
+          color: 'secondary.dark',
+          backgroundColor: 'background.paper'
         }}
       >
-        <Toolbar sx={{px:3, height: 56}}>
+        <Toolbar sx={{ px: 3, height: 56 }}>
           {journey !== undefined && (
             <Link href={`/journeys`} passHref>
-              <IconButton sx={{mr: 1}}>
+              <IconButton sx={{ mr: 1 }}>
                 <ChevronLeftRounded />
               </IconButton>
             </Link>
