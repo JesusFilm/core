@@ -34,9 +34,9 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
             variant="extended"
             size="medium"
             sx={{
-              position: 'absolute',
-              bottom: 3,
-              right: 4
+              position: 'fixed',
+              bottom: '12px',
+              right: '16px'
             }}
             color="primary"
             href={`/journeys/${slug}/edit`}
