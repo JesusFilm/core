@@ -55,6 +55,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
         >
           <Card
             variant="outlined"
+            aria-label="add-card"
             sx={{
               width: '89px',
               height: '134px',
