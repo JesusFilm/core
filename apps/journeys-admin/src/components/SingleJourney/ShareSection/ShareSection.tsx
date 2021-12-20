@@ -152,12 +152,11 @@ export function ShareSection({
       >
         <Alert
           icon={false}
-          severity="success"
           action={<CheckCircleIcon color="success" />}
           sx={{
             width: '286px',
-            color: (theme) => theme.palette.primary.contrastText,
-            backgroundColor: (theme) => theme.palette.secondary.main,
+            color: 'primary.contrastText',
+            backgroundColor: 'secondary.dark',
             borderRadius: '2px'
           }}
         >
