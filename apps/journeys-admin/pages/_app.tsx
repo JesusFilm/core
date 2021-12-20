@@ -36,11 +36,6 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <style jsx global>{`
-        body {
-          margin: 0;
-        }
-      `}</style>
       <ApolloProvider client={client}>
         <Component {...pageProps} />
       </ApolloProvider>
