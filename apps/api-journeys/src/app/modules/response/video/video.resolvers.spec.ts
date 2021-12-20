@@ -39,7 +39,7 @@ describe('VideoResponse', () => {
     resolver = module.get<VideoResponseResolver>(VideoResponseResolver)
   })
 
-  describe('VideoResponse', () => {
+  describe('videoResponseCreate', () => {
     it('returns VideoResponse', async () => {
       expect(resolver.videoResponseCreate(response)).resolves.toEqual(responseresponse)      
     })

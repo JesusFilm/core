@@ -36,7 +36,7 @@ describe('RadioQuestion', () => {
     resolver = module.get<RadioQuestionResponseResolver>(RadioQuestionResponseResolver)
   })
 
-  describe('RadioQuestionResponse', () => {
+  describe('radioQuestionResponseCreate', () => {
     it('returns RadioQuestionResponse', async () => {
       expect(resolver.radioQuestionResponseCreate(response)).resolves.toEqual(responseresponse)      
     })
