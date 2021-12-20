@@ -67,7 +67,7 @@ export function JourneySort({
     handleClose()
   }
 
-  const sortByForm = (): ReactElement => (
+  const Form = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <FormControl component="fieldset" fullWidth>
         <FormLabel component="legend">Sort By</FormLabel>
@@ -127,7 +127,7 @@ export function JourneySort({
             horizontal: 'left'
           }}
         >
-          {sortByForm()}
+          <Form />
         </Popover>
       ) : (
         <Drawer
@@ -136,7 +136,7 @@ export function JourneySort({
           open={showSortBy}
           onClose={handleClose}
         >
-          {sortByForm()}
+          <Form />
         </Drawer>
       )}
     </>

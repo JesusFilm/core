@@ -58,36 +58,37 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
             </Box>
           )
         })}
+        {journeys.length === 0 && (
+          <Card
+            variant="outlined"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              pt: 20,
+              pb: 16,
+              borderRadius: border
+            }}
+          >
+            <Typography variant="subtitle1" align="center" gutterBottom>
+              No journeys to display.
+            </Typography>
+            <Typography variant="caption" align="center" gutterBottom>
+              Create a journey, then find it here.
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              size="medium"
+              sx={{
+                mt: 3,
+                alignSelf: 'center'
+              }}
+            >
+              Create a Journey
+            </Button>
+          </Card>
+        )}
       </Box>
-      ) : (
-      <Card
-        variant="outlined"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          pt: 20,
-          pb: 16,
-          borderRadius: border
-        }}
-      >
-        <Typography variant="subtitle1" align="center" gutterBottom>
-          No journeys to display.
-        </Typography>
-        <Typography variant="caption" align="center" gutterBottom>
-          Create a journey, then find it here.
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          size="medium"
-          sx={{
-            mt: 3,
-            alignSelf: 'center'
-          }}
-        >
-          Create a Journey
-        </Button>
-      </Card>
     </>
   )
 }

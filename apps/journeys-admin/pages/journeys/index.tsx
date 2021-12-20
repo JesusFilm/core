@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
 import { gql } from '@apollo/client'
