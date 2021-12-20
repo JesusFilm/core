@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { Card, Typography, Box, Grid } from '@mui/material'
+import { useBreakpoints } from '@core/shared/ui'
 import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
@@ -21,10 +22,30 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
     year: isThisYear(date) ? undefined : 'numeric'
   })
 
+  const breakpoints = useBreakpoints()
+  const border = breakpoints.sm ? 12 : 0
+
   return (
     <Card
+      aria-label="journey-card"
       variant="outlined"
-      sx={{ borderRadius: 0, px: 6, py: 4, border: 'none' }}
+      sx={{
+        px: 6,
+        py: 4,
+        borderRadius: 0,
+        borderColor: 'divider',
+        borderBottom: 'none',
+        '&:first-child': {
+          borderTopLeftRadius: border,
+          borderTopRightRadius: border
+        },
+        '&:last-child': {
+          borderBottomLeftRadius: border,
+          borderBottomRightRadius: border,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }
+      }}
     >
       <Link href={`/journeys/${journey.slug}`} passHref>
         <Typography

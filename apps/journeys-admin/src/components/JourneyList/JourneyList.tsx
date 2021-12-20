@@ -13,8 +13,6 @@ export interface JourneysListProps {
 
 export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   const breakpoints = useBreakpoints()
-  const border = breakpoints.sm ? 3 : 0
-
   const [sortBy, setSortBy] = useState(SortBy.UNDEFINED)
 
   if (sortBy === SortBy.TITLE) {
@@ -35,28 +33,16 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          mx: 6,
+          m: 6,
           mt: 10
         }}
       >
         <Typography variant={'h3'}>All Journeys</Typography>
         <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
       </Box>
-      <Box sx={{ p: 6 }} data-testid="journey-list">
+      <Box sx={{ m: breakpoints.md ? 6 : 0 }} data-testid="journey-list">
         {journeys.map((journey, i) => {
-          return (
-            <Box
-              key={journey.id}
-              aria-label="journey-card"
-              sx={{
-                '&:first-child': { borderTop: 'none' },
-                borderTop: 1,
-                borderColor: 'divider'
-              }}
-            >
-              <JourneyCard journey={journey} />
-            </Box>
-          )
+          return <JourneyCard key={journey.id} journey={journey} />
         })}
         {journeys.length === 0 && (
           <Card
@@ -66,7 +52,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
               flexDirection: 'column',
               pt: 20,
               pb: 16,
-              borderRadius: border
+              borderRadius: breakpoints.md ? 3 : 0
             }}
           >
             <Typography variant="subtitle1" align="center" gutterBottom>
