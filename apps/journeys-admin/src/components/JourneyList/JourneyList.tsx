@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { Box } from '@mui/material'
 import Link from 'next/link'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import JourneyCard from './JourneyCard'
+import { JourneyCard } from './JourneyCard'
 
 export interface JourneysListProps {
   journeys: Journey[]
