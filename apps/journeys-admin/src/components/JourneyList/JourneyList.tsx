@@ -35,6 +35,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
         </Card>
       ) : (
         <Card
+          variant="outlined"
           sx={{
             display: 'flex',
             flexDirection: 'column',

@@ -15,8 +15,6 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           fontSize: '15px',
           lineHeight: '18px',
           padding: '6px 12px',
-          width: '186px',
-          height: '38px',
           borderRadius: '12px',
           margin: '26px 0px'
         }
