@@ -6,7 +6,9 @@ import { TopBar } from './TopBar'
 import { transformer, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { EditorProvider } from './Context'
+import { Drawer, DRAWER_WIDTH } from './Drawer'
 import { Box } from '@mui/material'
+import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 
 interface EditorProps {
   journey: Journey
@@ -16,8 +18,21 @@ export function Editor({ journey }: EditorProps): ReactElement {
   const steps = transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>
 
   return (
-    <EditorProvider initialState={{ steps }}>
-      <Box sx={{ display: 'flex', height: '100vh', flexDirection: 'column' }}>
+    <EditorProvider
+      initialState={{
+        steps,
+        drawerTitle: 'Social Share Appearance',
+        drawerChildren: <SocialShareAppearance id={journey.id} />
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100vh',
+          flexDirection: 'column',
+          marginRight: { sm: `${DRAWER_WIDTH}px` }
+        }}
+      >
         <TopBar title={journey.title} slug={journey.slug} />
         <Box
           sx={{
@@ -35,6 +50,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
         </Box>
         <ControlPanel />
       </Box>
+      <Drawer />
     </EditorProvider>
   )
 }
