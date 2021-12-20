@@ -68,14 +68,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           ) : currentUsersJourney?.role === 'editor' ? (
             <Typography variant="h6">You are an editor</Typography>
           ) : currentUsersJourney !== null ? (
-            <InviteUserModal
-              usersJourneys={
-                journey.usersJourneys != null
-                  ? journey.usersJourneys
-                  : undefined
-              }
-              journey={journey}
-            />
+            <InviteUserModal journey={journey} />
           ) : (
             'Sorry, you have no access to the requested journey.'
           )}

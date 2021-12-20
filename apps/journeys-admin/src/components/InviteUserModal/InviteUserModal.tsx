@@ -11,7 +11,8 @@ import {
   Snackbar,
   Fade,
   useTheme,
-  Menu
+  Menu,
+  CircularProgress
 } from '@mui/material'
 import {
   ArrowDropDown,
@@ -27,32 +28,57 @@ import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
 import { UserJourneyRemove_userJourneyRemove } from '../../../__generated__/UserJourneyRemove'
+import { gql, useLazyQuery } from '@apollo/client'
 
 interface InviteUserModalProps {
   journey: Journey
-  usersJourneys: UsersJourneys[] | undefined
 }
 
+export const GET_USERS_JOURNEYS = gql`
+  query GetJourneyforInvitedUsers($journeyId: ID!) {
+    journey(id: $journeyId) {
+      usersJourneys {
+        userId
+        journeyId
+        role
+        user {
+          id
+          firstName
+          lastName
+          email
+          imageUrl
+        }
+      }
+    }
+  }
+`
+
 export const InviteUserModal = ({
-  usersJourneys,
   journey
 }: InviteUserModalProps): ReactElement => {
   const [open, setOpen] = useState(false)
-  const [uj, setUsersJourneys] = useState(usersJourneys)
-  const handleOpen = (): void => setOpen(true)
+  const [uj, setUsersJourneys] = useState<Journey>()
+  const theme = useTheme()
+  const [loadUsersJourneys, { loading, data }] = useLazyQuery(
+    GET_USERS_JOURNEYS,
+    { variables: { journeyId: journey.id } }
+  )
+  const handleOpen = (): void => {
+    setOpen(true)
+    loadUsersJourneys()
+  }
+
   const handleClose = (): void => setOpen(false)
 
   const handleRemove = (
     userJourneyRemove: UserJourneyRemove_userJourneyRemove
   ): void => {
-    setUsersJourneys(
-      uj?.filter(
-        (userJourney) => userJourney.userId !== userJourneyRemove.userId
-      )
-    )
+    // setUsersJourneys(
+    //   uj?.filter(
+    //     (userJourney) => userJourney.userId !== userJourneyRemove.userId
+    //   )
+    // )
   }
-
-  const theme = useTheme()
 
   // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
   const [showAlert, setShowAlert] = useState(false)
@@ -60,7 +86,11 @@ export const InviteUserModal = ({
 
   useEffect(() => {
     inviteLinkRef.current = `${window.location.origin}/journeys/${journey.slug}/invite`
-  })
+
+    if (!loading && data !== undefined) {
+      setUsersJourneys(data.journey)
+    }
+  }, [loading, data, uj, journey])
 
   const handleCopyLinkOpen = async (): Promise<void> => {
     await navigator.clipboard.writeText(inviteLinkRef.current ?? '')
@@ -77,119 +107,127 @@ export const InviteUserModal = ({
     setShowAlert(false)
   }
 
-  return (
-    <>
-      {/* Button to be removed and it's functionalities when merged to journeys single journey */}
-      {/* This modal should be progamatically called from journeys single journey */}
-      <Button variant="contained" onClick={handleOpen}>
-        Manage Users
-      </Button>
-      <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '100%',
-            maxWidth: 376,
-            bgcolor: 'background.paper'
-          }}
-        >
+  if (loading) {
+    return <CircularProgress />
+  } else
+    return (
+      <>
+        {/* Button to be removed and it's functionalities when merged to journeys single journey */}
+        {/* This modal should be progamatically called from journeys single journey */}
+        <Button variant="contained" onClick={handleOpen}>
+          Manage Users
+        </Button>
+        <Modal open={open} onClose={handleClose}>
           <Box
             sx={{
-              mx: 6,
-              my: 4,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '100%',
+              maxWidth: 376,
+              bgcolor: 'background.paper'
             }}
           >
-            <Typography variant={'subtitle1'}>Invite Other Editors</Typography>
-            <CloseRounded onClick={handleClose} sx={{ cursor: 'pointer' }} />
-          </Box>
-          <Divider />
-          <Box p={6} pb={10}>
-            <FormControl fullWidth>
-              <FilledInput
-                value={inviteLinkRef.current}
-                sx={{ fontSize: theme.typography.body1.fontSize }}
-                startAdornment={<LinkRounded sx={{ mr: 2 }} />}
-                endAdornment={
-                  <>
-                    <ContentCopyRounded
-                      onClick={handleCopyLinkOpen}
-                      sx={{ ml: 3, cursor: 'pointer' }}
-                    />
-
-                    <Snackbar
-                      open={showAlert}
-                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                      TransitionComponent={Fade}
-                      autoHideDuration={3000}
-                      onClose={handleCopyLinkClose}
-                      message={'Link copied to clipboard'}
-                    />
-                  </>
-                }
-                disableUnderline
-                hiddenLabel
-              />
-            </FormControl>
-            <Box ml={4} mb={4}>
-              <Typography variant={'caption'}>
-                Anyone with this link can see journey and ask for editing
-                rights. You can accept or reject every request.
+            <Box
+              sx={{
+                mx: 6,
+                my: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Typography variant={'subtitle1'}>
+                Invite Other Editors
               </Typography>
+              <CloseRounded onClick={handleClose} sx={{ cursor: 'pointer' }} />
             </Box>
-            <Divider sx={{ my: 4 }} />
+            <Divider />
+            <Box p={6} pb={10}>
+              <FormControl fullWidth>
+                <FilledInput
+                  value={inviteLinkRef.current}
+                  sx={{ fontSize: theme.typography.body1.fontSize }}
+                  startAdornment={<LinkRounded sx={{ mr: 2 }} />}
+                  endAdornment={
+                    <>
+                      <ContentCopyRounded
+                        onClick={handleCopyLinkOpen}
+                        sx={{ ml: 3, cursor: 'pointer' }}
+                      />
 
-            {/* Lists out all the Requested Editing Rights */}
-            <Typography variant={'body1'} gutterBottom>
-              Requested Editing Rights
-            </Typography>
-            {uj?.map(
-              (userJourney, i) =>
-                userJourney.role === 'inviteRequested' && (
-                  <Users
-                    key={i}
-                    userJourney={userJourney}
-                    handleRemove={handleRemove}
-                  />
-                )
-            )}
+                      <Snackbar
+                        open={showAlert}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right'
+                        }}
+                        TransitionComponent={Fade}
+                        autoHideDuration={3000}
+                        onClose={handleCopyLinkClose}
+                        message={'Link copied to clipboard'}
+                      />
+                    </>
+                  }
+                  disableUnderline
+                  hiddenLabel
+                />
+              </FormControl>
+              <Box ml={4} mb={4}>
+                <Typography variant={'caption'}>
+                  Anyone with this link can see journey and ask for editing
+                  rights. You can accept or reject every request.
+                </Typography>
+              </Box>
+              <Divider sx={{ my: 4 }} />
 
-            {/* Lists out all the users with access */}
-            <Divider sx={{ my: 4 }} />
-            <Typography variant={'body1'} gutterBottom>
-              Users With Access
-            </Typography>
-            {uj?.map(
-              (userJourney, i) =>
-                userJourney.role !== 'inviteRequested' && (
-                  <Users
-                    key={i}
-                    userJourney={userJourney}
-                    handleRemove={handleRemove}
-                  />
-                )
-            )}
+              {/* Lists out all the Requested Editing Rights */}
+              <Typography variant={'body1'} gutterBottom>
+                Requested Editing Rights
+              </Typography>
+              {uj?.usersJourneys?.map(
+                (userJourney, i) =>
+                  userJourney.role === 'inviteRequested' && (
+                    <UserAccess
+                      key={i}
+                      userJourney={userJourney}
+                      handleRemove={handleRemove}
+                    />
+                  )
+              )}
+
+              {/* Lists out all the users with access */}
+              <Divider sx={{ my: 4 }} />
+              <Typography variant={'body1'} gutterBottom>
+                Users With Access
+              </Typography>
+              {uj?.usersJourneys?.map(
+                (userJourney, i) =>
+                  userJourney.role !== 'inviteRequested' && (
+                    <UserAccess
+                      key={i}
+                      userJourney={userJourney}
+                      handleRemove={handleRemove}
+                    />
+                  )
+              )}
+            </Box>
           </Box>
-        </Box>
-      </Modal>
-    </>
-  )
+        </Modal>
+      </>
+    )
 }
 
-interface UsersProps {
+interface UserAccessProps {
   userJourney: UsersJourneys
   handleRemove: (userJourneyRemove: UserJourneyRemove_userJourneyRemove) => void
 }
 
-export const Users = ({
+export const UserAccess = ({
   userJourney,
   handleRemove
-}: UsersProps): ReactElement => {
+}: UserAccessProps): ReactElement => {
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 

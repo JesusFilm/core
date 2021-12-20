@@ -499,8 +499,8 @@ export type TypographyVariant =
 
 export type User = {
   __typename?: 'User';
-  email?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
+  email: Scalars['String'];
+  firstName: Scalars['String'];
   id: Scalars['ID'];
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
@@ -1033,8 +1033,8 @@ export type TypographyBlockResolvers<ContextType = GraphQLModules.Context, Paren
 };
 
 export type UserResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

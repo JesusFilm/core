@@ -10,8 +10,8 @@
 export interface InviteUserModalFields {
   __typename: "User";
   id: string;
-  firstName: string | null;
+  firstName: string;
   lastName: string | null;
-  email: string | null;
+  email: string;
   imageUrl: string | null;
 }

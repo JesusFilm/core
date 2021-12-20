@@ -17,9 +17,9 @@ export interface GetJourney_journey_primaryImageBlock {
 export interface GetJourney_journey_usersJourneys_user {
   __typename: "User";
   id: string;
-  firstName: string | null;
+  firstName: string;
   lastName: string | null;
-  email: string | null;
+  email: string;
   imageUrl: string | null;
 }
 
