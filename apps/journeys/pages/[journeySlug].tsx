@@ -29,7 +29,7 @@ interface JourneyPageProps {
   journey: Journey
 }
 
-export function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
       <Head>
@@ -142,3 +142,5 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
     }
   }
 }
+
+export default JourneyPage

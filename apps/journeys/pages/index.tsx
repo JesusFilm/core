@@ -15,7 +15,7 @@ interface JourneysPageProps {
   journeys: Journey[]
 }
 
-export function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
+function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
       <Container>
@@ -59,3 +59,5 @@ export const getServerSideProps: GetServerSideProps<JourneysPageProps> =
       }
     }
   }
+
+export default JourneysPage
