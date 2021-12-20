@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { ReactElement, useState } from 'react'
-import JourneySort, { SortBy } from '.'
+import { JourneySort, SortBy } from '.'
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 const JourneySortMock = (): ReactElement => {

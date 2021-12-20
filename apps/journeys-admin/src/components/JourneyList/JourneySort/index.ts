@@ -1,1 +1,1 @@
-export { default, SortBy } from './JourneySort'
+export { JourneySort, SortBy } from './JourneySort'

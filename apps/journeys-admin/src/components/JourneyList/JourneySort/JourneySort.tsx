@@ -37,11 +37,11 @@ interface JourneySortProps {
   open?: boolean // for testing
 }
 
-const JourneySort = ({
+export function JourneySort({
   sortBy,
   setSortBy,
   open
-}: JourneySortProps): ReactElement => {
+}: JourneySortProps): ReactElement {
   const [showSortBy, setShowSortBy] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
@@ -142,5 +142,3 @@ const JourneySort = ({
     </>
   )
 }
-
-export default JourneySort
