@@ -1,21 +1,26 @@
 import { journeysAdminConfig } from '../../libs/storybook'
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
 import { JourneysAppBar, JourneysAppBarProps } from '.'
-import { defaultJourney } from '../JourneyList/journeyListData'
 
 const JourneysAppBarDemo = {
   ...journeysAdminConfig,
   component: JourneysAppBar,
-  title: 'Journeys-Admin/JourneysAppBar'
+  title: 'Journeys-Admin/JourneysAppBar',
+  parameters: {
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story<JourneysAppBarProps> = ({ ...args }) => (
-  <JourneysAppBar {...args} />
+  <MockedProvider mocks={[]}>
+    <JourneysAppBar {...args} />
+  </MockedProvider>
 )
 
-export const JourneyList = Template.bind({})
+export const Default = Template.bind({})
 
 export const SingleJourney = Template.bind({})
-SingleJourney.args = { journey: defaultJourney }
+SingleJourney.args = { variant: 'view' }
 
 export default JourneysAppBarDemo as Meta

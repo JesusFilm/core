@@ -1,37 +1,51 @@
 import { ReactElement } from 'react'
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
+import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { useBreakpoints } from '@core/shared/ui'
 
 export interface JourneysAppBarProps {
-  journey?: Journey
+  variant: 'list' | 'view'
 }
 
-export function JourneysAppBar({ journey }: JourneysAppBarProps): ReactElement {
+export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
+  const breakpoints = useBreakpoints()
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="static"
-        elevation={1}
-        sx={{
-          color: 'secondary.dark',
-          backgroundColor: 'background.paper'
-        }}
-      >
-        <Toolbar sx={{ px: 3, height: 56 }}>
-          {journey !== undefined && (
-            <Link href={`/journeys`} passHref>
-              <IconButton sx={{ mr: 1 }}>
-                <ChevronLeftRounded />
-              </IconButton>
-            </Link>
-          )}
-          <Typography variant="subtitle1" component="div" sx={{ ml: 1 }}>
-            {journey !== undefined ? 'Journey Details' : 'Journeys'}
+    <AppBar
+      position="fixed"
+      color="default"
+      sx={{ display: 'flex', flexDirection: 'row' }}
+    >
+      {variant === 'view' ? (
+        <Toolbar sx={{ flexGrow: 1, mr: breakpoints.md ? '328px' : 0 }}>
+          <Link href={`/journeys`} passHref>
+            <IconButton
+              aria-label="back to journeys"
+              edge="start"
+              size="large"
+              color="inherit"
+              sx={{ mr: 2 }}
+            >
+              <ChevronLeftRounded />
+            </IconButton>
+          </Link>
+          <Typography
+            variant="subtitle1"
+            component="div"
+            noWrap
+            sx={{ ml: 2, flexGrow: 1 }}
+          >
+            Journey Details
           </Typography>
         </Toolbar>
-      </AppBar>
-    </Box>
+      ) : (
+        <Toolbar sx={{ flexGrow: 1 }}>
+          <Typography variant="subtitle1" component="div" noWrap sx={{ ml: 1 }}>
+            Journeys
+          </Typography>
+        </Toolbar>
+      )}
+    </AppBar>
   )
 }
