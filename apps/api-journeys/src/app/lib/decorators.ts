@@ -3,7 +3,7 @@ import { flow, has } from 'lodash'
 import { Block, VideoArclight, VideoBlock } from '../__generated__/graphql'
 
 const arcLightVideoSrc = (obj: VideoBlock): Block => {
-  if (obj?.type === 'VideoBlock' && has(obj.videoContent, 'mediaComponentId')) {
+  if (obj?.__typename === 'VideoBlock' && has(obj.videoContent, 'mediaComponentId')) {
     (obj.videoContent as VideoArclight).src = `https://arc.gt/hls/${(obj.videoContent as VideoArclight).mediaComponentId}/${(obj.videoContent as VideoArclight).languageId}`
   }
   return obj

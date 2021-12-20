@@ -11,7 +11,7 @@ describe('Step', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     parentBlockId: "3",
     parentOrder: 0,
     locked: true,
@@ -28,7 +28,7 @@ describe('Step', () => {
 
   const blockCreateResponse = {
     journeyId: "2",
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     parentBlockId: "3",
     parentOrder: 0,
     locked: true,
@@ -39,7 +39,7 @@ describe('Step', () => {
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     parentBlockId: "3",
     parentOrder: 0,
     locked: true,

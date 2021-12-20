@@ -11,12 +11,15 @@ import { BlockMiddleware } from '../../lib/decorators'
 import { KeyAsId } from '@core/nest/decorators'
 import { BlockService } from './block.service'
 
+interface DbBlock extends Block {
+  __typename: string
+}
 @Resolver('Block')
 export class BlockResolvers {
   constructor(private readonly blockService: BlockService) { }
   @ResolveField()
-  __resolveType(obj: Block): string {
-    return obj.type
+  __resolveType(obj: DbBlock): string {
+    return obj.__typename
   }
 
   @Query()

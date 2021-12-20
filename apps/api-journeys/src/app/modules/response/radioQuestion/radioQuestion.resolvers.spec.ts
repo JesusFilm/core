@@ -7,7 +7,7 @@ describe('RadioQuestion', () => {
 
   const response = {
     _key: "1",
-    type: 'RadioQuestionResponse',
+    __typename: 'RadioQuestionResponse',
     blockId: "2",
     userId: "3",
     radioOptionBlockId: "4"
@@ -15,7 +15,7 @@ describe('RadioQuestion', () => {
 
   const responseresponse = {
     id: "1",
-    type: 'RadioQuestionResponse',
+    __typename: 'RadioQuestionResponse',
     blockId: "2",
     userId: "3",
     radioOptionBlockId: "4"

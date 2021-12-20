@@ -11,7 +11,7 @@ describe('SignUp', () => {
     _key: "1",
     journeyId: "2",
     parentBlockId: "0",
-    type: 'SignUpBlock',
+    __typename: 'SignUpBlock',
     parentOrder: 2,
     action: {
       gtmEventName: 'gtmEventName',
@@ -28,7 +28,7 @@ describe('SignUp', () => {
     id: "1",
     journeyId: "2",
     parentBlockId: "0",
-    type: 'SignUpBlock',
+    __typename: 'SignUpBlock',
     parentOrder: 2,
     action: {
       gtmEventName: 'gtmEventName',

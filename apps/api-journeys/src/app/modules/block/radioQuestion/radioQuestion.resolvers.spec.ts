@@ -8,7 +8,7 @@ describe('RadioQuestion', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -22,7 +22,7 @@ describe('RadioQuestion', () => {
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',

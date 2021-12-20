@@ -11,7 +11,7 @@ describe('VideoContentResolvers', () => {
   const block1 = {
     _key: "1",
     journeyId: "2",
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: "3",
     parentOrder: 1,
     videoContent: {
@@ -36,7 +36,7 @@ describe('VideoContentResolvers', () => {
 
   const blockCreateResponse = {
     journeyId: "2",
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: "3",
     parentOrder: 1,
     videoContent: {
@@ -50,7 +50,7 @@ describe('VideoContentResolvers', () => {
   const block1response = {
     id: "1",
     journeyId: "2",
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: "3",
     parentOrder: 1,
     videoContent: {
@@ -65,7 +65,7 @@ describe('VideoContentResolvers', () => {
   const block2 = {
     _key: "1",
     journeyId: "2",
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: "3",
     parentOrder: 1,
     videoContent: {
@@ -78,7 +78,7 @@ describe('VideoContentResolvers', () => {
   const block2response = {
     id: "1",
     journeyId: "2",
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: "3",
     parentOrder: 1,
     videoContent: {

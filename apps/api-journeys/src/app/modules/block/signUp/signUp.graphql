@@ -1,7 +1,6 @@
 type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   action: Action
   submitIcon: Icon
   submitLabel: String

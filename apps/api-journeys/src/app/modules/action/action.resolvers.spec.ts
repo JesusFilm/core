@@ -11,7 +11,7 @@ describe('ActionResolvers', () => {
   const block1 = {
     _key: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -25,7 +25,7 @@ describe('ActionResolvers', () => {
   const block1response = {
     id: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -39,7 +39,7 @@ describe('ActionResolvers', () => {
   const block2 = {
     _key: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -53,7 +53,7 @@ describe('ActionResolvers', () => {
   const block2response = {
     id: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -67,7 +67,7 @@ describe('ActionResolvers', () => {
   const block3 = {
     _key: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -81,7 +81,7 @@ describe('ActionResolvers', () => {
   const block3response = {
     id: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -95,7 +95,7 @@ describe('ActionResolvers', () => {
   const block4 = {
     _key: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',
@@ -109,7 +109,7 @@ describe('ActionResolvers', () => {
   const block4response = {
     id: "1",
     journeyId: "2",
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: "3",
     parentOrder: 3,
     label: 'label',

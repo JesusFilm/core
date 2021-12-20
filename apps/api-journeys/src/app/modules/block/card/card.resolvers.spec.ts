@@ -10,7 +10,7 @@ describe('Card', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: "3",
     parentOrder: 0,
     backgroundColor: '#FFF',
@@ -33,7 +33,7 @@ describe('Card', () => {
 
   const blockCreateResponse = {
     journeyId: "2",
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: "3",
     parentOrder: 0,
     backgroundColor: '#FFF',
@@ -46,7 +46,7 @@ describe('Card', () => {
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: "3",
     parentOrder: 0,
     backgroundColor: '#FFF',

@@ -21,7 +21,6 @@ enum GridAlignItems {
 type GridContainerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!

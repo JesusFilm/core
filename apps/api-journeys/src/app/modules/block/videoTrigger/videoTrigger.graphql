@@ -5,7 +5,6 @@ to the next block at the designated time.
 type VideoTriggerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   """
   triggerStart sets the time as to when a video navigates to the next block,
   this is the number of seconds since the start of the video

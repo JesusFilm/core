@@ -19,7 +19,6 @@ enum ButtonSize {
 type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   label: String!
   variant: ButtonVariant
   color: ButtonColor

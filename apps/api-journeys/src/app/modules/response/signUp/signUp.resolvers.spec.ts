@@ -7,7 +7,7 @@ describe('SignUpResponse', () => {
 
   const response = {
     _key: "1",
-    type: 'SignUpResponse',
+    __typename: 'SignUpResponse',
     blockId: "2",
     userId: "3",
     name: 'Robert Smith',
@@ -16,7 +16,7 @@ describe('SignUpResponse', () => {
 
   const responseresponse ={
     id: "1",
-    type: 'SignUpResponse',
+    __typename: 'SignUpResponse',
     blockId: "2",
     userId: "3",
     name: 'Robert Smith',

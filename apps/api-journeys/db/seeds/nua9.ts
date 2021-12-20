@@ -31,7 +31,7 @@ export async function nua9(): Promise<void> {
   //   first step
   const step1 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,
     parentOrder: 0
   })
@@ -39,7 +39,7 @@ export async function nua9(): Promise<void> {
   const coverBlockId = uuidv4()
   const card1 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: step1._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -52,7 +52,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: coverBlockId,
     journeyId: journey._key,
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: card1._key,
     videoContent: {
       mediaComponentId: '5_0-NUA1001-0-0',
@@ -68,7 +68,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: posterBlockId,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: coverBlockId,
     src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'Can we trust the story of Jesus?',
@@ -80,7 +80,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: card1._key,
     content: 'TRUSTING JESUS',
     variant: 'h6',
@@ -91,7 +91,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: card1._key,
     content: 'Can I Know Him?',
     variant: 'h3',
@@ -102,7 +102,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: card1._key,
     content:
         'Jesus Christ loves you and wants to have a relationship with you. But how does it begin?',
@@ -115,7 +115,7 @@ export async function nua9(): Promise<void> {
   //   video step
   const step2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,
     parentOrder: 1
   })
@@ -123,7 +123,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: card1._key,
     label: 'Explore Now',
     variant: 'contained',
@@ -141,7 +141,7 @@ export async function nua9(): Promise<void> {
 
   const video = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'VideoBlock',
+    __typename: 'VideoBlock',
     parentBlockId: step2._key,
     videoContent: {
       mediaComponentId: '5_0-NUA1001-0-0',
@@ -155,7 +155,7 @@ export async function nua9(): Promise<void> {
   // question step!
   const questionStep = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 2
   })
@@ -163,7 +163,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'VideoTriggerBlock',
+    __typename: 'VideoTriggerBlock',
     parentBlockId: video._key,
     triggerStart: 166,
     action: {
@@ -175,7 +175,7 @@ export async function nua9(): Promise<void> {
   const image1Id = uuidv4()
   const card2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: questionStep._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -186,7 +186,7 @@ export async function nua9(): Promise<void> {
 
   const gridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: card2._key,
     spacing: 6,
     direction: 'row',
@@ -196,7 +196,7 @@ export async function nua9(): Promise<void> {
 
   const gridItemLeft = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: gridContainer._key,
     xl: 6,
     lg: 6,
@@ -206,7 +206,7 @@ export async function nua9(): Promise<void> {
 
   const gridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: gridContainer._key,
     xl: 6,
     lg: 6,
@@ -217,7 +217,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: image1Id,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: card2._key,
     src: 'https://images.unsplash.com/photo-1433324168539-154874446945?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'Who was this Jesus?',
@@ -229,7 +229,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: gridItemLeft._key,
     content: 'Would you like to follow Jesus Christ?',
     variant: 'h2',
@@ -240,7 +240,7 @@ export async function nua9(): Promise<void> {
 
   const question1 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'RadioQuestionBlock',
+    __typename: 'RadioQuestionBlock',
     parentBlockId: gridItemRight._key,
     label: '',
     parentOrder: 2
@@ -250,7 +250,7 @@ export async function nua9(): Promise<void> {
   //   First part of the prayer
   const stepPrayer1 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 3
   })
@@ -258,7 +258,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: question1._key,
     label: 'Yes I would',
     action: {
@@ -271,7 +271,7 @@ export async function nua9(): Promise<void> {
   const prayerImageId1 = uuidv4()
   const prayerCard1 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepPrayer1._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -283,7 +283,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: prayerImageId1,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: prayerCard1._key,
     src: 'https://images.unsplash.com/photo-1433324168539-154874446945?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -295,7 +295,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerCard1._key,
     content: '1/3',
     variant: 'h6',
@@ -306,7 +306,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerCard1._key,
     content:
         'Jesus, thank you for loving me, thank you for the worth you speak into my life by dying for my sin.',
@@ -319,7 +319,7 @@ export async function nua9(): Promise<void> {
   // Second part of the prayer
   const stepPrayer2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 4
   })
@@ -327,7 +327,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: prayerCard1._key,
     label: 'Next',
     variant: 'contained',
@@ -346,7 +346,7 @@ export async function nua9(): Promise<void> {
   const prayerImageId2 = uuidv4()
   const prayerCard2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepPrayer2._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -358,7 +358,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: prayerImageId2,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: prayerCard2._key,
     src: 'https://images.unsplash.com/photo-1504227488287-65981d97c2d6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -370,7 +370,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerCard2._key,
     content: '2/3',
     variant: 'h6',
@@ -381,7 +381,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerCard2._key,
     content:
         'I confess, that I need your forgiveness. I want to turn from living for myself and trust you to take the lead in my life,',
@@ -394,7 +394,7 @@ export async function nua9(): Promise<void> {
   // Third part of the prayer
   const stepPrayer3 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 5
   })
@@ -402,7 +402,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: prayerCard2._key,
     label: 'Next',
     variant: 'contained',
@@ -421,7 +421,7 @@ export async function nua9(): Promise<void> {
   const prayerImageId3 = uuidv4()
   const prayerCard3 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepPrayer3._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -433,7 +433,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: prayerImageId3,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: prayerCard3._key,
     src: 'https://images.unsplash.com/photo-1519373344801-14c1f9539c9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -445,7 +445,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerCard3._key,
     content: '3/3',
     variant: 'h6',
@@ -456,7 +456,7 @@ export async function nua9(): Promise<void> {
   
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerCard3._key,
     content:
         "I want to join life's adventure with you and become the person you made me to be.",
@@ -469,7 +469,7 @@ export async function nua9(): Promise<void> {
   // final part of the prayer
   const stepPrayer4 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 6
   })
@@ -477,7 +477,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: prayerCard3._key,
     label: 'Amen',
     variant: 'contained',
@@ -496,7 +496,7 @@ export async function nua9(): Promise<void> {
   const prayerImageId4 = uuidv4()
   const prayerCard4 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepPrayer4._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -508,7 +508,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: prayerImageId4,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: prayerCard4._key,
     src: 'https://images.unsplash.com/photo-1519373344801-14c1f9539c9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -520,7 +520,7 @@ export async function nua9(): Promise<void> {
 
   const prayerGridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: prayerCard4._key,
     spacing: 6,
     direction: 'row',
@@ -530,7 +530,7 @@ export async function nua9(): Promise<void> {
 
   const prayerGridItemLeft = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: prayerGridContainer._key,
     xl: 6,
     lg: 6,
@@ -540,7 +540,7 @@ export async function nua9(): Promise<void> {
 
   const prayerGridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: prayerGridContainer._key,
     xl: 6,
     lg: 6,
@@ -550,7 +550,7 @@ export async function nua9(): Promise<void> {
   
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerGridItemLeft._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
@@ -561,7 +561,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: prayerGridItemLeft._key,
     content:
         'Get printable card with three most important Bible verses every new Christian should know. ',
@@ -574,7 +574,7 @@ export async function nua9(): Promise<void> {
   //   I already have step/option
   const stepIAlreadyHave = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 7
   })
@@ -582,7 +582,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: question1._key,
     label: 'I already have',
     action: {
@@ -595,7 +595,7 @@ export async function nua9(): Promise<void> {
   const image2Id = uuidv4()
   const card3 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepIAlreadyHave._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -606,7 +606,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: card3._key,
     content: "THAT'S GREAT!",
     variant: 'overline',
@@ -617,7 +617,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: card3._key,
     content: 'Ever thought about telling a friend what this means to you?',
     variant: 'h5',
@@ -628,7 +628,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: card3._key,
     content: 'Sharing your story helps you grow with God and others.',
     variant: 'body1',
@@ -640,7 +640,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: image2Id,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: card3._key,
     src: 'https://images.unsplash.com/photo-1527819569483-f188a16975af?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Jesus In History',
@@ -653,7 +653,7 @@ export async function nua9(): Promise<void> {
   // I already have final card
   const stepIAlreadyHave2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,  
     parentOrder: 8
   })
@@ -661,7 +661,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: card3._key,
     label: 'Share Now',
     variant: 'contained',
@@ -680,7 +680,7 @@ export async function nua9(): Promise<void> {
   const alreadyImageId = uuidv4()
   const alreadyCard4 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepIAlreadyHave2._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -692,7 +692,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: alreadyImageId,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: alreadyCard4._key,
     src: 'https://images.unsplash.com/photo-1519373344801-14c1f9539c9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -704,7 +704,7 @@ export async function nua9(): Promise<void> {
   
   const alreadyGridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: alreadyCard4._key,
     spacing: 6,
     direction: 'row',
@@ -714,7 +714,7 @@ export async function nua9(): Promise<void> {
 
   const alreadyGridItemLeft = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: alreadyGridContainer._key,
     xl: 6,
     lg: 6,
@@ -724,7 +724,7 @@ export async function nua9(): Promise<void> {
   
   const alreadyGridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: alreadyGridContainer._key,
     xl: 6,
     lg: 6,
@@ -734,7 +734,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: alreadyGridItemLeft._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
@@ -745,7 +745,7 @@ export async function nua9(): Promise<void> {
   
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: alreadyGridItemLeft._key,
     content: 'Get a few tips by email on how to share your faith',
     variant: 'h4',
@@ -757,7 +757,7 @@ export async function nua9(): Promise<void> {
   //   No thanks step/option
   const stepNoThanks = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 9
   })
@@ -765,7 +765,7 @@ export async function nua9(): Promise<void> {
   
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: question1._key,
     label: 'No thanks',
     action: {
@@ -778,7 +778,7 @@ export async function nua9(): Promise<void> {
   const noThanksImageId = uuidv4()
   const noThanksCard = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepNoThanks._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -789,7 +789,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: noThanksCard._key,
     content: 'ALRIGHT!',
     variant: 'overline',
@@ -800,7 +800,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: noThanksCard._key,
     content: "It's awesome that you've looked into another perspective.",
     variant: 'h5',
@@ -811,7 +811,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: noThanksCard._key,
     content: "Don't stop here. Keep exploring and asking questions.",
     variant: 'body1',
@@ -823,7 +823,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: noThanksImageId,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: noThanksCard._key,
     src: 'https://images.unsplash.com/photo-1532200624530-cc3d3d0d636c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'No Thanks',
@@ -836,7 +836,7 @@ export async function nua9(): Promise<void> {
   // No thanks final card
   const stepNoThanks2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 10
   })
@@ -844,7 +844,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: noThanksCard._key,
     label: "What's Next?",
     variant: 'contained',
@@ -863,7 +863,7 @@ export async function nua9(): Promise<void> {
   const noThanksImageId2 = uuidv4()
   const noThanksCard2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepNoThanks2._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -875,7 +875,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: noThanksImageId2,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: noThanksCard2._key,
     src: 'https://images.unsplash.com/photo-1532200624530-cc3d3d0d636c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -887,7 +887,7 @@ export async function nua9(): Promise<void> {
 
   const noThanksGridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: noThanksCard2._key,
     spacing: 6,
     direction: 'row',
@@ -897,7 +897,7 @@ export async function nua9(): Promise<void> {
 
   const noThanksGridItemLeft = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: noThanksGridContainer._key,
     xl: 6,
     lg: 6,
@@ -907,7 +907,7 @@ export async function nua9(): Promise<void> {
 
   const noThanksGridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: noThanksGridContainer._key,
     xl: 6,
     lg: 6,
@@ -917,7 +917,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: noThanksGridItemLeft._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
@@ -928,7 +928,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: noThanksGridItemLeft._key,
     content: 'Get new released videos by email.',
     variant: 'h4',
@@ -940,7 +940,7 @@ export async function nua9(): Promise<void> {
   //   I'm not sure step/option
   const stepNotSure = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 11
   })
@@ -948,7 +948,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'RadioOptionBlock',
+    __typename: 'RadioOptionBlock',
     parentBlockId: question1._key,
     label: "I'm not sure",
     action: {
@@ -961,7 +961,7 @@ export async function nua9(): Promise<void> {
   const notSureImageId = uuidv4()
   const notSureCard = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepNotSure._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -972,7 +972,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: notSureCard._key,
     content: 'NOT SURE?',
     variant: 'overline',
@@ -983,7 +983,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: notSureCard._key,
     content: 'Making this commitment is a big deal, for sure.',
     variant: 'h5',
@@ -994,7 +994,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: notSureCard._key,
     content: 'God can answer your questions and help overcome worries.',
     variant: 'body1',
@@ -1006,7 +1006,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: notSureImageId,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: notSureCard._key,
     src: 'https://images.unsplash.com/photo-1585011070837-1bf8e294a858?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Not sure',
@@ -1019,7 +1019,7 @@ export async function nua9(): Promise<void> {
   // step I'm not sure final card
   const stepNotSure2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,    
     parentOrder: 12
   })
@@ -1027,7 +1027,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: notSureCard._key,
     label: "What's Next?",
     variant: 'contained',
@@ -1046,7 +1046,7 @@ export async function nua9(): Promise<void> {
   const notSureImageId2 = uuidv4()
   const notSureCard2 = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: stepNotSure2._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -1058,7 +1058,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: notSureImageId2,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: notSureCard2._key,
     src: 'https://images.unsplash.com/photo-1585011070837-1bf8e294a858?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Decision',
@@ -1070,7 +1070,7 @@ export async function nua9(): Promise<void> {
 
   const notSureGridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: notSureCard2._key,
     spacing: 6,
     direction: 'row',
@@ -1080,7 +1080,7 @@ export async function nua9(): Promise<void> {
 
   const notSureGridItemLeft = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: notSureGridContainer._key,
     xl: 6,
     lg: 6,
@@ -1090,7 +1090,7 @@ export async function nua9(): Promise<void> {
 
   const notSureGridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'GridItemBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: notSureGridContainer._key,
     xl: 6,
     lg: 6,
@@ -1100,7 +1100,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: notSureGridItemLeft._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
@@ -1111,7 +1111,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: notSureGridItemLeft._key,
     content: 'Get new released videos and ideas to explore your faith',
     variant: 'h4',
@@ -1123,7 +1123,7 @@ export async function nua9(): Promise<void> {
   // Very last card
   const lastStep = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'StepBlock',
+    __typename: 'StepBlock',
     locked: false,
     parentOrder: 13
   })
@@ -1131,7 +1131,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'SignUpBlock',
+    __typename: 'SignUpBlock',
     parentBlockId: prayerGridItemRight._key,
     submitLabel: 'Submit',
     submitIcon: {
@@ -1145,7 +1145,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'SignUpBlock',
+    __typename: 'SignUpBlock',
     parentBlockId: noThanksGridItemRight._key,
     submitLabel: 'Submit',
     submitIcon: {
@@ -1159,7 +1159,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'SignUpBlock',
+    __typename: 'SignUpBlock',
     parentBlockId: alreadyGridItemRight._key,
     submitLabel: 'Submit',
     submitIcon: {
@@ -1173,7 +1173,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'SignUpBlock',
+    __typename: 'SignUpBlock',
     parentBlockId: notSureGridItemRight._key,
     submitLabel: 'Submit',
     submitIcon: {
@@ -1188,7 +1188,7 @@ export async function nua9(): Promise<void> {
   const lastImageId = uuidv4()
   const lastCard = await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: lastStep._key,
     themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
@@ -1199,7 +1199,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: lastCard._key,
     content: 'THANK YOU!',
     variant: 'overline',
@@ -1210,7 +1210,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: lastCard._key,
     content: 'Check your email for requested materials and keep exploring.',
     variant: 'subtitle1',
@@ -1222,7 +1222,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     _key: lastImageId,
     journeyId: journey._key,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: lastCard._key,
     src: 'https://images.unsplash.com/photo-1585011070837-1bf8e294a858?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80',
     alt: 'Not sure',
@@ -1234,7 +1234,7 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: lastCard._key,
     label: 'Watch Other Videos',
     variant: 'contained',

@@ -7,7 +7,7 @@ import { IdAsKey } from '@core/nest/decorators'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
-@Resolver('Response')
+@Resolver('SignUpResponse')
 export class SignUpResponseResolver {
   constructor(private readonly responseService: ResponseService) { }
   @Mutation()
@@ -16,7 +16,7 @@ export class SignUpResponseResolver {
   async signUpResponseCreate(
     @Args('input') input: SignUpResponseCreateInput,      
   ): Promise<SignUpResponse> {
-    input.type = 'SignUpResponse'
+    // input.type = 'SignUpResponse'
     return await this.responseService.save(input)
   }
 }

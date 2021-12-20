@@ -10,7 +10,7 @@ describe('Button', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: "0",
     parentOrder: 1,
     label: 'label',
@@ -36,7 +36,7 @@ describe('Button', () => {
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'ButtonBlock',
+    __typename: 'ButtonBlock',
     parentBlockId: "0",
     parentOrder: 1,
     label: 'label',
