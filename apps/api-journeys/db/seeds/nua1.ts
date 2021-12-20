@@ -17,7 +17,7 @@ export async function nua1(): Promise<void> {
         REMOVE journey IN journeys`)
 
   const journey = await db.collection('journeys').save({
-    _key: "1",
+    _key: '1',
     title: 'Fact or Fiction',
     locale: 'en-US',
     themeMode: ThemeMode.light,
@@ -32,7 +32,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'StepBlock',
     locked: false,
-    parentOrder: 0,    
+    parentOrder: 0
   })
 
   const card1 = await db.collection('blocks').save({
@@ -60,7 +60,9 @@ export async function nua1(): Promise<void> {
     description:
       'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
   })
-  await db.collection('blocks').update(card1._key, { coverBlockId: coverblock._key })
+  await db
+    .collection('blocks')
+    .update(card1._key, { coverBlockId: coverblock._key })
 
   const poster = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -73,37 +75,43 @@ export async function nua1(): Promise<void> {
     blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
     parentOrder: 0
   })
-  await db.collection('blocks').update(coverblock._key, { posterBlockId: poster._key })
+  await db
+    .collection('blocks')
+    .update(coverblock._key, { posterBlockId: poster._key })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card1._key,
-    content: 'JESUS CHRIST:',
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 0
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card1._key,
-    content: 'Fact or Fiction',
-    variant: 'h2',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card1._key,
-    content:
-      'In this 5-minute video, explore the arguments for and against the Gospel accounts.',
-    variant: 'body1',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 2
-  }])
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card1._key,
+      content: 'JESUS CHRIST:',
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 0
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card1._key,
+      content: 'Fact or Fiction',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card1._key,
+      content:
+        'In this 5-minute video, explore the arguments for and against the Gospel accounts.',
+      variant: 'body1',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 2
+    }
+  ])
 
   // second step
   const step2 = await db.collection('blocks').save({
@@ -113,7 +121,6 @@ export async function nua1(): Promise<void> {
     parentOrder: 1
   })
   await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
-
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -151,7 +158,7 @@ export async function nua1(): Promise<void> {
   const step3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 2
   })
   await db.collection('blocks').update(step2._key, { nextBlockId: step3._key })
@@ -213,32 +220,35 @@ export async function nua1(): Promise<void> {
   const step4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 3
   })
   await db.collection('blocks').update(step3._key, { nextBlockId: step4._key })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question2._key,
-    label: 'Yes, it’s a true story 👍',
-    action: {
-      gtmEventName: 'click',
-      blockId: step4._key
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question2._key,
+      label: 'Yes, it’s a true story 👍',
+      action: {
+        gtmEventName: 'click',
+        blockId: step4._key
+      },
+      parentOrder: 1
     },
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question2._key,
-    label: 'No, it’s a fake fabrication 👎',
-    action: {
-      gtmEventName: 'click',
-      blockId: step4._key
-    },
-    parentOrder: 2
-  }])
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question2._key,
+      label: 'No, it’s a fake fabrication 👎',
+      action: {
+        gtmEventName: 'click',
+        blockId: step4._key
+      },
+      parentOrder: 2
+    }
+  ])
 
   const video1 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -257,7 +267,7 @@ export async function nua1(): Promise<void> {
   const step5 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 4
   })
   await db.collection('blocks').update(step4._key, { nextBlockId: step5._key })
@@ -283,35 +293,39 @@ export async function nua1(): Promise<void> {
     parentOrder: 0
   })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card5._key,
-    content: 'SOME FACTS...',
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card5._key,
-    content: 'Jesus in History',
-    variant: 'h2',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 2
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card5._key,
-    content:
-      'We have more accurate historical accounts for the story of Jesus than for Alexander the Great or Julius Caesar.',
-    variant: 'body1',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 3
-  }])
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card5._key,
+      content: 'SOME FACTS...',
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card5._key,
+      content: 'Jesus in History',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 2
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card5._key,
+      content:
+        'We have more accurate historical accounts for the story of Jesus than for Alexander the Great or Julius Caesar.',
+      variant: 'body1',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 3
+    }
+  ])
 
   const image2 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -324,7 +338,9 @@ export async function nua1(): Promise<void> {
     blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW',
     parentOrder: 0
   })
-  await db.collection('blocks').update(card5._key, { coverBlockId: image2._key })
+  await db
+    .collection('blocks')
+    .update(card5._key, { coverBlockId: image2._key })
 
   // sixth step
   const step6 = await db.collection('blocks').save({
@@ -392,7 +408,7 @@ export async function nua1(): Promise<void> {
     sm: 6,
     parentOrder: 1
   })
-  
+
   const image3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ImageBlock',
@@ -404,27 +420,32 @@ export async function nua1(): Promise<void> {
     blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW',
     parentOrder: 1
   })
-  await db.collection('blocks').update(card6._key, { coverBlockId: image3._key })
+  await db
+    .collection('blocks')
+    .update(card6._key, { coverBlockId: image3._key })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: gridItemLeft._key,
-    content: "IF IT'S TRUE...",
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 0
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: gridItemLeft._key,
-    content: 'Who was this Jesus?',
-    variant: 'h2',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
-  }])
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: gridItemLeft._key,
+      content: "IF IT'S TRUE...",
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 0
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: gridItemLeft._key,
+      content: 'Who was this Jesus?',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    }
+  ])
 
   const question4 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -434,45 +455,50 @@ export async function nua1(): Promise<void> {
     parentOrder: 2
   })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question4._key,
-    label: 'A great influencer',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "2"
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question4._key,
+      label: 'A great influencer',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '2'
+      },
+      parentOrder: 0
     },
-    parentOrder: 0
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question4._key,
-    label: 'The Son of God',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "2"
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question4._key,
+      label: 'The Son of God',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '2'
+      },
+      parentOrder: 2
     },
-    parentOrder: 2
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question4._key,
-    label: 'A popular prophet',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "2"
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question4._key,
+      label: 'A popular prophet',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '2'
+      },
+      parentOrder: 3
     },
-    parentOrder: 3
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question4._key,
-    label: 'A fake historical figure',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "2"
-    },
-    parentOrder: 4
-  }])
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question4._key,
+      label: 'A fake historical figure',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '2'
+      },
+      parentOrder: 4
+    }
+  ])
 }

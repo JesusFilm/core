@@ -2,17 +2,20 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { RadioQuestionResponse, RadioQuestionResponseCreateInput } from '../../../__generated__/graphql'
+import {
+  RadioQuestionResponse,
+  RadioQuestionResponseCreateInput
+} from '../../../__generated__/graphql'
 import { IdAsKey } from '@core/nest/decorators'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
 @Resolver('RadioQuestionResponse')
 export class RadioQuestionResponseResolver {
-  constructor(private readonly responseService: ResponseService) { }
+  constructor(private readonly responseService: ResponseService) {}
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @IdAsKey()  
+  @IdAsKey()
   async radioQuestionResponseCreate(
     @Args('input') input: RadioQuestionResponseCreateInput & { __typename }
   ): Promise<RadioQuestionResponse> {

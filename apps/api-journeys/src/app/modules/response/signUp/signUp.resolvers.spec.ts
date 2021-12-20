@@ -6,19 +6,19 @@ describe('SignUpResponse', () => {
   let resolver: SignUpResponseResolver
 
   const response = {
-    _key: "1",
+    _key: '1',
     __typename: 'SignUpResponse',
-    blockId: "2",
-    userId: "3",
+    blockId: '2',
+    userId: '3',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
   }
 
-  const responseresponse ={
-    id: "1",
+  const responseresponse = {
+    id: '1',
     __typename: 'SignUpResponse',
-    blockId: "2",
-    userId: "3",
+    blockId: '2',
+    userId: '3',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
   }
@@ -26,10 +26,9 @@ describe('SignUpResponse', () => {
   const responseService = {
     provide: ResponseService,
     useFactory: () => ({
-      save: jest.fn(() => response),      
+      save: jest.fn(() => response)
     })
   }
-
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,7 +39,9 @@ describe('SignUpResponse', () => {
 
   describe('SignUpResponse', () => {
     it('returns SignUpResponse', async () => {
-      expect(resolver.signUpResponseCreate(response)).resolves.toEqual(responseresponse)      
+      expect(await resolver.signUpResponseCreate(response)).toEqual(
+        responseresponse
+      )
     })
   })
 })

@@ -1,4 +1,11 @@
-import { Args, Resolver, Query, ResolveField, Parent, Mutation } from '@nestjs/graphql'
+import {
+  Args,
+  Resolver,
+  Query,
+  ResolveField,
+  Parent,
+  Mutation
+} from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { User, UserCreateInput, UserJourney } from '../../__generated__/graphql'
@@ -8,7 +15,10 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 
 @Resolver('User')
 export class UserResolver {
-  constructor(private readonly userService: UserService, private readonly userJourneyService: UserJourneyService) { }
+  constructor(
+    private readonly userService: UserService,
+    private readonly userJourneyService: UserJourneyService
+  ) {}
   @Query()
   @KeyAsId()
   async users(): Promise<User[]> {
@@ -23,7 +33,7 @@ export class UserResolver {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  @KeyAsId()  
+  @KeyAsId()
   async me(@CurrentUserId() userId: string): Promise<User> {
     return await this.userService.get(userId)
   }

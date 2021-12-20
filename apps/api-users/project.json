@@ -38,17 +38,20 @@
         "buildTarget": "api-users:build"
       }
     },
-  "serve": {
-    "executor": "@nrwl/workspace:run-commands",
-    "options": {
-      "commands": [{
-        "command": "nx serve-nowatch api-users"
-      }, {
-        "command": "npx ts-node apps/api-users/src/generate-typings.ts"
-      }],
-      "parallel": true
-    }
-  },
+    "serve": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve-nowatch api-users"
+          },
+          {
+            "command": "npx ts-node apps/api-users/src/generate-typings.ts"
+          }
+        ],
+        "parallel": true
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

@@ -16,7 +16,8 @@
     "nrwl.angular-console",
     "monotykamary.vscode-aql",
     "eamodio.gitlens",
-    "graphql.vscode-graphql"
+    "graphql.vscode-graphql",
+    "esbenp.prettier-vscode"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

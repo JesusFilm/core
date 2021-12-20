@@ -18,8 +18,8 @@ export async function nua9(): Promise<void> {
         REMOVE journey IN journeys`)
 
   const journey = await db.collection('journeys').save({
-    _key: "4",
-    title: "Decision",
+    _key: '4',
+    title: 'Decision',
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -105,7 +105,7 @@ export async function nua9(): Promise<void> {
     __typename: 'TypographyBlock',
     parentBlockId: card1._key,
     content:
-        'Jesus Christ loves you and wants to have a relationship with you. But how does it begin?',
+      'Jesus Christ loves you and wants to have a relationship with you. But how does it begin?',
     variant: 'body1',
     color: 'primary',
     align: 'left',
@@ -156,10 +156,12 @@ export async function nua9(): Promise<void> {
   const questionStep = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 2
   })
-  await db.collection('blocks').update(step2._key, { nextBlockId: questionStep._key })
+  await db
+    .collection('blocks')
+    .update(step2._key, { nextBlockId: questionStep._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -251,10 +253,12 @@ export async function nua9(): Promise<void> {
   const stepPrayer1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 3
   })
-  await db.collection('blocks').update(questionStep._key, { nextBlockId: stepPrayer1._key })
+  await db
+    .collection('blocks')
+    .update(questionStep._key, { nextBlockId: stepPrayer1._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -309,7 +313,7 @@ export async function nua9(): Promise<void> {
     __typename: 'TypographyBlock',
     parentBlockId: prayerCard1._key,
     content:
-        'Jesus, thank you for loving me, thank you for the worth you speak into my life by dying for my sin.',
+      'Jesus, thank you for loving me, thank you for the worth you speak into my life by dying for my sin.',
     variant: 'subtitle1',
     color: 'primary',
     align: 'left',
@@ -320,10 +324,12 @@ export async function nua9(): Promise<void> {
   const stepPrayer2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 4
   })
-  await db.collection('blocks').update(stepPrayer1._key, { nextBlockId: stepPrayer2._key })
+  await db
+    .collection('blocks')
+    .update(stepPrayer1._key, { nextBlockId: stepPrayer2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -384,7 +390,7 @@ export async function nua9(): Promise<void> {
     __typename: 'TypographyBlock',
     parentBlockId: prayerCard2._key,
     content:
-        'I confess, that I need your forgiveness. I want to turn from living for myself and trust you to take the lead in my life,',
+      'I confess, that I need your forgiveness. I want to turn from living for myself and trust you to take the lead in my life,',
     variant: 'subtitle1',
     color: 'primary',
     align: 'left',
@@ -395,10 +401,12 @@ export async function nua9(): Promise<void> {
   const stepPrayer3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 5
   })
-  await db.collection('blocks').update(stepPrayer2._key, { nextBlockId: stepPrayer3._key })
+  await db
+    .collection('blocks')
+    .update(stepPrayer2._key, { nextBlockId: stepPrayer3._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -453,13 +461,13 @@ export async function nua9(): Promise<void> {
     align: 'right',
     parentOrder: 1
   })
-  
+
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
     parentBlockId: prayerCard3._key,
     content:
-        "I want to join life's adventure with you and become the person you made me to be.",
+      "I want to join life's adventure with you and become the person you made me to be.",
     variant: 'subtitle1',
     color: 'primary',
     align: 'left',
@@ -470,10 +478,12 @@ export async function nua9(): Promise<void> {
   const stepPrayer4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 6
   })
-  await db.collection('blocks').update(stepPrayer3._key, { nextBlockId: stepPrayer4._key })
+  await db
+    .collection('blocks')
+    .update(stepPrayer3._key, { nextBlockId: stepPrayer4._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -502,7 +512,7 @@ export async function nua9(): Promise<void> {
     themeName: ThemeName.base,
     coverBlockId: prayerImageId4,
     fullscreen: true,
-    parentOrder: 0,
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -547,7 +557,7 @@ export async function nua9(): Promise<void> {
     sm: 6,
     parentOrder: 1
   })
-  
+
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
@@ -564,7 +574,7 @@ export async function nua9(): Promise<void> {
     __typename: 'TypographyBlock',
     parentBlockId: prayerGridItemLeft._key,
     content:
-        'Get printable card with three most important Bible verses every new Christian should know. ',
+      'Get printable card with three most important Bible verses every new Christian should know. ',
     variant: 'h5',
     color: 'primary',
     align: 'left',
@@ -575,10 +585,12 @@ export async function nua9(): Promise<void> {
   const stepIAlreadyHave = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 7
   })
-  await db.collection('blocks').update(stepPrayer3._key, { nextBlockId: stepIAlreadyHave._key })
+  await db
+    .collection('blocks')
+    .update(stepPrayer3._key, { nextBlockId: stepIAlreadyHave._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -654,10 +666,12 @@ export async function nua9(): Promise<void> {
   const stepIAlreadyHave2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,  
+    locked: false,
     parentOrder: 8
   })
-  await db.collection('blocks').update(stepIAlreadyHave._key, { nextBlockId: stepIAlreadyHave2._key })
+  await db
+    .collection('blocks')
+    .update(stepIAlreadyHave._key, { nextBlockId: stepIAlreadyHave2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -701,7 +715,7 @@ export async function nua9(): Promise<void> {
     blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH',
     parentOrder: 0
   })
-  
+
   const alreadyGridContainer = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'GridContainerBlock',
@@ -721,7 +735,7 @@ export async function nua9(): Promise<void> {
     sm: 6,
     parentOrder: 0
   })
-  
+
   const alreadyGridItemRight = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'GridItemBlock',
@@ -742,7 +756,7 @@ export async function nua9(): Promise<void> {
     align: 'left',
     parentOrder: 0
   })
-  
+
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
@@ -758,11 +772,13 @@ export async function nua9(): Promise<void> {
   const stepNoThanks = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 9
   })
-  await db.collection('blocks').update(stepIAlreadyHave2._key, { nextBlockId: stepNoThanks._key })
-  
+  await db
+    .collection('blocks')
+    .update(stepIAlreadyHave2._key, { nextBlockId: stepNoThanks._key })
+
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'RadioOptionBlock',
@@ -837,10 +853,12 @@ export async function nua9(): Promise<void> {
   const stepNoThanks2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 10
   })
-  await db.collection('blocks').update(stepNoThanks._key, { nextBlockId: stepNoThanks2._key })
+  await db
+    .collection('blocks')
+    .update(stepNoThanks._key, { nextBlockId: stepNoThanks2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -936,15 +954,17 @@ export async function nua9(): Promise<void> {
     align: 'left',
     parentOrder: 1
   })
-  
+
   //   I'm not sure step/option
   const stepNotSure = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 11
   })
-  await db.collection('blocks').update(stepNoThanks2._key, { nextBlockId: stepNotSure._key })
+  await db
+    .collection('blocks')
+    .update(stepNoThanks2._key, { nextBlockId: stepNotSure._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1002,7 +1022,7 @@ export async function nua9(): Promise<void> {
     align: 'left',
     parentOrder: 3
   })
-  
+
   await db.collection('blocks').save({
     _key: notSureImageId,
     journeyId: journey._key,
@@ -1020,10 +1040,12 @@ export async function nua9(): Promise<void> {
   const stepNotSure2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 12
   })
-  await db.collection('blocks').update(stepNotSure._key, { nextBlockId: stepNotSure2._key })
+  await db
+    .collection('blocks')
+    .update(stepNotSure._key, { nextBlockId: stepNotSure2._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1127,7 +1149,9 @@ export async function nua9(): Promise<void> {
     locked: false,
     parentOrder: 13
   })
-  await db.collection('blocks').update(stepNotSure2._key, { nextBlockId: lastStep._key })
+  await db
+    .collection('blocks')
+    .update(stepNotSure2._key, { nextBlockId: lastStep._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,

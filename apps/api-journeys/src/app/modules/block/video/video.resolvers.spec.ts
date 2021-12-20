@@ -1,18 +1,18 @@
-
-
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
 import { VideoBlockResolvers } from './video.resolvers'
 
 describe('VideoContentResolvers', () => {
-  let blockResolver: BlockResolvers, videoBlockResolver: VideoBlockResolvers, service: BlockService
+  let blockResolver: BlockResolvers,
+    videoBlockResolver: VideoBlockResolvers,
+    service: BlockService
 
   const block1 = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'VideoBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
@@ -22,9 +22,10 @@ describe('VideoContentResolvers', () => {
     posterBlockId: 'posterBlockId'
   }
 
-  const blockUpdate = {    
-    journeyId: "2",    
-    parentBlockId: "3",
+  const blockUpdate = {
+    __typename: '',
+    journeyId: '2',
+    parentBlockId: '3',
     parentOrder: 1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
@@ -35,9 +36,9 @@ describe('VideoContentResolvers', () => {
   }
 
   const blockCreateResponse = {
-    journeyId: "2",
+    journeyId: '2',
     __typename: 'VideoBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
@@ -48,41 +49,41 @@ describe('VideoContentResolvers', () => {
   }
 
   const block1response = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'VideoBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
       languageId: '529',
-      src:"https://arc.gt/hls/2_0-FallingPlates/529"
+      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     title: 'title',
     posterBlockId: 'posterBlockId'
   }
 
   const block2 = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'VideoBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 1,
     videoContent: {
-      src: "https://arc.gt/hls/2_0-FallingPlates/529"
+      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     title: 'title',
     posterBlockId: 'posterBlockId'
   }
 
   const block2response = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'VideoBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 1,
     videoContent: {
-      src: "https://arc.gt/hls/2_0-FallingPlates/529"
+      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     title: 'title',
     posterBlockId: 'posterBlockId'
@@ -102,7 +103,7 @@ describe('VideoContentResolvers', () => {
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns VideoBlock with Arclight', async () => {
-      expect(await blockResolver.block("1")).toEqual(block1response)
+      expect(await blockResolver.block('1')).toEqual(block1response)
     })
   })
 
@@ -120,20 +121,20 @@ describe('VideoContentResolvers', () => {
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns VideoBlock', async () => {
-      expect(await blockResolver.block("1")).toEqual(block2response)
+      expect(await blockResolver.block('1')).toEqual(block2response)
     })
   })
-  
+
   describe('Create Update', () => {
     beforeEach(async () => {
       const blockService = {
         provide: BlockService,
         useFactory: () => ({
-          save: jest.fn(input => input),
-          update: jest.fn(input => input)
+          save: jest.fn((input) => input),
+          update: jest.fn((input) => input)
         })
       }
-         
+
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockService, VideoBlockResolvers]
       }).compile()
@@ -143,15 +144,19 @@ describe('VideoContentResolvers', () => {
     })
     describe('videoBlockCreate', () => {
       it('creates a VideoBlock', async () => {
-        videoBlockResolver.videoBlockCreate(blockUpdate)
+        videoBlockResolver
+          .videoBlockCreate(blockUpdate)
+          .catch((err) => console.log(err))
         expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
       })
     })
 
     describe('videoBlockUpdate', () => {
       it('updates a VideoBlock', async () => {
-        videoBlockResolver.videoBlockUpdate("1", blockUpdate)
-        expect(service.update).toHaveBeenCalledWith("1", blockUpdate)
+        videoBlockResolver
+          .videoBlockUpdate('1', blockUpdate)
+          .catch((err) => console.log(err))
+        expect(service.update).toHaveBeenCalledWith('1', blockUpdate)
       })
     })
   })

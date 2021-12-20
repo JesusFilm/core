@@ -1,5 +1,3 @@
-
-   
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
@@ -8,10 +6,10 @@ describe('Button', () => {
   let resolver: BlockResolvers
 
   const block = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'ButtonBlock',
-    parentBlockId: "0",
+    parentBlockId: '0',
     parentOrder: 1,
     label: 'label',
     variant: 'contained',
@@ -34,10 +32,10 @@ describe('Button', () => {
     }
   }
   const blockresponse = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'ButtonBlock',
-    parentBlockId: "0",
+    parentBlockId: '0',
     parentOrder: 1,
     label: 'label',
     variant: 'contained',
@@ -59,16 +57,15 @@ describe('Button', () => {
       target: 'target'
     }
   }
-  
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() =>  block),
+      get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block])
     })
   }
 
- 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [BlockResolvers, blockService]
@@ -78,8 +75,8 @@ describe('Button', () => {
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-      expect(resolver.block("1")).resolves.toEqual(blockresponse)
-      expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockresponse)
+      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
     })
   })
 })

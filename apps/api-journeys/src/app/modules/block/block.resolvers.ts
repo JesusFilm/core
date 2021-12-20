@@ -1,11 +1,6 @@
 // Block resolver tests are in individual block type spec files
 
-import {
-  Args,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql'
+import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { Block } from '../../__generated__/graphql'
 import { BlockMiddleware } from '../../lib/decorators'
 import { KeyAsId } from '@core/nest/decorators'
@@ -16,7 +11,7 @@ interface DbBlock extends Block {
 }
 @Resolver('Block')
 export class BlockResolvers {
-  constructor(private readonly blockService: BlockService) { }
+  constructor(private readonly blockService: BlockService) {}
   @ResolveField()
   __resolveType(obj: DbBlock): string {
     return obj.__typename

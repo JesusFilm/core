@@ -8,7 +8,7 @@ describe('Step', () => {
   let resolver: UserResolver, service: UserService
 
   const user = {
-    _key: "1",
+    _key: '1',
     firstName: 'fo',
     lastName: 'sho',
     email: 'tho@no.co',
@@ -16,45 +16,43 @@ describe('Step', () => {
   }
 
   const userResponse = {
-    id: "1",
+    id: '1',
     firstName: 'fo',
     lastName: 'sho',
     email: 'tho@no.co',
     imageUrl: 'po'
   }
 
-
   const userJourney = {
-    _key: "1",
-    userId: "1",  
-    journeyId: "2",
+    _key: '1',
+    userId: '1',
+    journeyId: '2',
     role: UserJourneyRoles.editor
   }
-
 
   const userJourneyResponse = {
-    id: "1",
-    userId: "1",  
-    journeyId: "2",
+    id: '1',
+    userId: '1',
+    journeyId: '2',
     role: UserJourneyRoles.editor
   }
-  
+
   const userService = {
     provide: UserService,
     useFactory: () => ({
-      get: jest.fn(() =>  user),
+      get: jest.fn(() => user),
       getAll: jest.fn(() => [user, user]),
-      save: jest.fn(input => input),
+      save: jest.fn((input) => input)
     })
   }
 
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      forUser: jest.fn(() => [userJourney, userJourney]),
+      forUser: jest.fn(() => [userJourney, userJourney])
     })
   }
- 
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UserResolver, userService, userJourneyService]
@@ -65,21 +63,24 @@ describe('Step', () => {
 
   describe('User', () => {
     it('returns User', async () => {
-      expect(resolver.user("1")).resolves.toEqual(userResponse)
-      expect(resolver.users()).resolves.toEqual([userResponse, userResponse])
+      expect(await resolver.user('1')).toEqual(userResponse)
+      expect(await resolver.users()).toEqual([userResponse, userResponse])
     })
   })
 
   describe('UserCreate', () => {
     it('creates a User', async () => {
-      resolver.userCreate(userResponse)
+      resolver.userCreate(userResponse).catch((err) => console.log(err))
       expect(service.save).toHaveBeenCalledWith(user)
     })
   })
 
   describe('UsersJourneys', () => {
-    it('returns UsersJourneys', async () => {     
-      expect(await resolver.usersJourneys(userResponse)).toEqual([userJourneyResponse, userJourneyResponse])
+    it('returns UsersJourneys', async () => {
+      expect(await resolver.usersJourneys(userResponse)).toEqual([
+        userJourneyResponse,
+        userJourneyResponse
+      ])
     })
   })
 })

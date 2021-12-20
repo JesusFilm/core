@@ -7,6 +7,11 @@ import { NavigateToJourneyActionResolver } from './navigateToJournney/navigateTo
 
 @Module({
   imports: [DatabaseModule],
-  providers: [ActionResolver, JourneyService, NavigateToJourneyActionResolver, DateTimeScalar]
+  providers: [
+    ActionResolver,
+    JourneyService,
+    NavigateToJourneyActionResolver,
+    DateTimeScalar
+  ]
 })
-export class ActionModule { }
+export class ActionModule {}

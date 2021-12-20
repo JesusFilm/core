@@ -1,5 +1,3 @@
-
-
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../../block/block.resolvers'
 import { BlockService } from '../../block/block.service'
@@ -10,35 +8,35 @@ describe('ActionResolvers', () => {
   let resolver: NavigateToJourneyActionResolver, blockresolver: BlockResolvers
 
   const block = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      journeyId: "4"
+      journeyId: '4'
     }
   }
 
   const blockresponse = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      journeyId: "4"
+      journeyId: '4'
     }
   }
 
   const journey = {
-    _key: "4",
+    _key: '4',
     title: 'Fact or Fiction',
     published: true,
     locale: 'en-US',
@@ -48,7 +46,7 @@ describe('ActionResolvers', () => {
   }
 
   const journeyresponse = {
-    id: "4",
+    id: '4',
     title: 'Fact or Fiction',
     published: true,
     locale: 'en-US',
@@ -70,24 +68,28 @@ describe('ActionResolvers', () => {
     })
   }
 
-
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, NavigateToJourneyActionResolver, blockService, journeyService]
+      providers: [
+        BlockResolvers,
+        NavigateToJourneyActionResolver,
+        blockService,
+        journeyService
+      ]
     }).compile()
-    resolver = module.get<NavigateToJourneyActionResolver>(NavigateToJourneyActionResolver)
+    resolver = module.get<NavigateToJourneyActionResolver>(
+      NavigateToJourneyActionResolver
+    )
     blockresolver = module.get<BlockResolvers>(BlockResolvers)
   })
 
   describe('NavigateToJourneyAction', () => {
     it('returns NavigateToJourneyAction', async () => {
-      expect(blockresolver.block("1")).resolves.toEqual(blockresponse)
+      expect(await blockresolver.block('1')).toEqual(blockresponse)
     })
 
     it('returns Journey from action', async () => {
-      expect(resolver.journey(block.action)).resolves.toEqual(journeyresponse)
+      expect(await resolver.journey(block.action)).toEqual(journeyresponse)
     })
   })
-
 })

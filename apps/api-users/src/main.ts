@@ -19,4 +19,6 @@ async function bootstrap(): Promise<void> {
   )
 }
 
-bootstrap()
+bootstrap().catch((err) => {
+  console.log(err)
+})

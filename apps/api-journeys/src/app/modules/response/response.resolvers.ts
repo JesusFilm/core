@@ -9,7 +9,7 @@ interface DbResponse extends Response {
 }
 @Resolver('Response')
 export class ResponseResolver {
-  constructor(private readonly responseService: ResponseService) { }
+  constructor(private readonly responseService: ResponseService) {}
   @ResolveField()
   __resolveType(obj: DbResponse): string {
     return obj.__typename

@@ -7,7 +7,7 @@ import { User, UserJourney } from '../../__generated__/graphql'
 @Injectable()
 export class UserJourneyService extends BaseService {
   collection: DocumentCollection = this.db.collection('userJourneys')
-  
+
   async forUser(user: User): Promise<UserJourney[]> {
     const res = await this.db.query(aql`
       FOR j in ${this.collection}

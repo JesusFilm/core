@@ -1,5 +1,3 @@
-
-
 import { Test, TestingModule } from '@nestjs/testing'
 import { RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolvers } from '../block/block.resolvers'
@@ -9,117 +7,116 @@ describe('ActionResolvers', () => {
   let resolver: BlockResolvers
 
   const block1 = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      blockId: "4"
+      blockId: '4'
     }
   }
 
   const block1response = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      blockId: "4"
+      blockId: '4'
     }
   }
 
   const block2 = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      journeyId: "4"
+      journeyId: '4'
     }
   }
 
   const block2response = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      journeyId: "4"
+      journeyId: '4'
     }
   }
 
   const block3 = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      url: "https://google.com",
+      url: 'https://google.com'
     }
   }
 
   const block3response = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      url: "https://google.com"
+      url: 'https://google.com'
     }
   }
 
   const block4 = {
-    _key: "1",
-    journeyId: "2",
+    _key: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      url: "https://google.com",
+      url: 'https://google.com'
     }
   }
 
   const block4response = {
-    id: "1",
-    journeyId: "2",
+    id: '1',
+    journeyId: '2',
     __typename: 'RadioOptionBlock',
-    parentBlockId: "3",
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      url: "https://google.com"
+      url: 'https://google.com'
     }
   }
-
 
   describe('NavigateToBlockAction', () => {
     beforeEach(async () => {
@@ -135,8 +132,10 @@ describe('ActionResolvers', () => {
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block("1")).toEqual(block1response)
-      expect((await resolver.block("1") as RadioOptionBlock).action).toHaveProperty('blockId')
+      expect(await resolver.block('1')).toEqual(block1response)
+      expect(
+        ((await resolver.block('1')) as RadioOptionBlock).action
+      ).toHaveProperty('blockId')
     })
   })
 
@@ -154,8 +153,10 @@ describe('ActionResolvers', () => {
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block("1")).toEqual(block2response)
-      expect((await resolver.block("1") as RadioOptionBlock).action).toHaveProperty('journeyId')
+      expect(await resolver.block('1')).toEqual(block2response)
+      expect(
+        ((await resolver.block('1')) as RadioOptionBlock).action
+      ).toHaveProperty('journeyId')
     })
   })
 
@@ -173,8 +174,10 @@ describe('ActionResolvers', () => {
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns LinkAction', async () => {
-      expect(await resolver.block("1")).toEqual(block3response)
-      expect((await resolver.block("1") as RadioOptionBlock).action).toHaveProperty('url')
+      expect(await resolver.block('1')).toEqual(block3response)
+      expect(
+        ((await resolver.block('1')) as RadioOptionBlock).action
+      ).toHaveProperty('url')
     })
   })
 
@@ -192,7 +195,7 @@ describe('ActionResolvers', () => {
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns NavigateAction', async () => {
-      expect(await resolver.block("1")).toEqual(block4response)      
+      expect(await resolver.block('1')).toEqual(block4response)
     })
   })
 })

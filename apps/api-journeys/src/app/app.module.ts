@@ -13,10 +13,12 @@ import { ResponseModule } from './modules/response/response.module'
     JourneyModule,
     ResponseModule,
     GraphQLFederationModule.forRoot({
-      typePaths: [join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql')],
-      cors: true,      
-      context: ({ req }) => ({ headers: req.headers }),      
-    }),
+      typePaths: [
+        join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql')
+      ],
+      cors: true,
+      context: ({ req }) => ({ headers: req.headers })
+    })
   ]
 })
-export class AppModule { }
+export class AppModule {}

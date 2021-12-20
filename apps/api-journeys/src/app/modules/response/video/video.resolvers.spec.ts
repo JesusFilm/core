@@ -7,19 +7,19 @@ describe('VideoResponse', () => {
   let resolver: VideoResponseResolver
 
   const response = {
-    _key: "1",
+    _key: '1',
     __typename: 'VideoResponse',
-    blockId: "2",
-    userId: "3",
+    blockId: '2',
+    userId: '3',
     state: VideoResponseStateEnum.PLAYING,
     position: 30
   }
 
   const responseresponse = {
-    id: "1",
+    id: '1',
     __typename: 'VideoResponse',
-    blockId: "2",
-    userId: "3",
+    blockId: '2',
+    userId: '3',
     state: VideoResponseStateEnum.PLAYING,
     position: 30
   }
@@ -27,10 +27,9 @@ describe('VideoResponse', () => {
   const responseService = {
     provide: ResponseService,
     useFactory: () => ({
-      save: jest.fn(() => response),      
+      save: jest.fn(() => response)
     })
   }
-
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,7 +40,9 @@ describe('VideoResponse', () => {
 
   describe('videoResponseCreate', () => {
     it('returns VideoResponse', async () => {
-      expect(resolver.videoResponseCreate(response)).resolves.toEqual(responseresponse)      
+      expect(await resolver.videoResponseCreate(response)).toEqual(
+        responseresponse
+      )
     })
   })
 })

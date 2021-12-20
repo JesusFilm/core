@@ -15,9 +15,9 @@ export async function nua2(): Promise<void> {
     FOR journey in journeys
         FILTER journey.slug == ${slug}
         REMOVE journey IN journeys`)
-  
+
   const journey = await db.collection('journeys').save({
-    _key: "2",
+    _key: '2',
     title: 'What About The Resurrection?',
     locale: 'en-US',
     themeMode: ThemeMode.light,
@@ -32,7 +32,7 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     __typename: 'StepBlock',
     locked: false,
-    parentOrder: 0,    
+    parentOrder: 0
   })
 
   const card1 = await db.collection('blocks').save({
@@ -56,9 +56,11 @@ export async function nua2(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'What about the resurrection',
+    title: 'What about the resurrection'
   })
-  await db.collection('blocks').update(card1._key, { coverBlockId: coverblock._key })
+  await db
+    .collection('blocks')
+    .update(card1._key, { coverBlockId: coverblock._key })
 
   const poster = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -71,43 +73,49 @@ export async function nua2(): Promise<void> {
     blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
     parentOrder: 0
   })
-  await db.collection('blocks').update(coverblock._key, { posterBlockId: poster._key })
+  await db
+    .collection('blocks')
+    .update(coverblock._key, { posterBlockId: poster._key })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card1._key,
-    content: 'The Resurection',
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 0
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card1._key,
-    content: 'What About It?',
-    variant: 'h2',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card1._key,
-    content:
-      'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
-    variant: 'body1',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 2
-  }])
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card1._key,
+      content: 'The Resurection',
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 0
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card1._key,
+      content: 'What About It?',
+      variant: 'h2',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card1._key,
+      content:
+        'Jesus’ tomb was found empty three days after his death-what could have happened to the body?',
+      variant: 'body1',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 2
+    }
+  ])
 
   // second step
   const step2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 1
   })
   await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
@@ -139,14 +147,14 @@ export async function nua2(): Promise<void> {
       languageId: '529'
     },
     autoplay: true,
-    title: 'What About The Ressurection?',
+    title: 'What About The Ressurection?'
   })
 
   // third step
   const step3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 2
   })
   await db.collection('blocks').update(step2._key, { nextBlockId: step3._key })
@@ -208,42 +216,46 @@ export async function nua2(): Promise<void> {
   const step4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 3
   })
   await db.collection('blocks').update(step3._key, { nextBlockId: step4._key })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question2._key,
-    label: 'Someone stole it from the tomb',
-    action: {
-      gtmEventName: 'click',
-      blockId: step4._key
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question2._key,
+      label: 'Someone stole it from the tomb',
+      action: {
+        gtmEventName: 'click',
+        blockId: step4._key
+      },
+      parentOrder: 1
     },
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question2._key,
-    label: "He didn't really die",
-    action: {
-      gtmEventName: 'click',
-      blockId: step4._key
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question2._key,
+      label: "He didn't really die",
+      action: {
+        gtmEventName: 'click',
+        blockId: step4._key
+      },
+      parentOrder: 2
     },
-    parentOrder: 2
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question2._key,
-    label: "He actually rose from the dead",
-    action: {
-      gtmEventName: 'click',
-      blockId: step4._key
-    },
-    parentOrder: 3
-  }])
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question2._key,
+      label: 'He actually rose from the dead',
+      action: {
+        gtmEventName: 'click',
+        blockId: step4._key
+      },
+      parentOrder: 3
+    }
+  ])
 
   const video1 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -262,7 +274,7 @@ export async function nua2(): Promise<void> {
   const step5 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'StepBlock',
-    locked: false,    
+    locked: false,
     parentOrder: 4
   })
   await db.collection('blocks').update(step4._key, { nextBlockId: step5._key })
@@ -288,34 +300,39 @@ export async function nua2(): Promise<void> {
     parentOrder: 0
   })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card5._key,
-    content: 'A QUOTE',
-    variant: 'h6',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card5._key,
-    content: "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
-    variant: 'subtitle1',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 2
-  }, {
-    journeyId: journey._key,
-    __typename: 'TypographyBlock',
-    parentBlockId: card5._key,
-    content: '- The Bible, John 19:34',
-    variant: 'body1',
-    color: 'primary',
-    align: 'left',
-    parentOrder: 3
-  }])
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card5._key,
+      content: 'A QUOTE',
+      variant: 'h6',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 1
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card5._key,
+      content:
+        "...one of the soldiers pierced Jesus' side with a spear, bringing a sudden flow of blood and water.",
+      variant: 'subtitle1',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 2
+    },
+    {
+      journeyId: journey._key,
+      __typename: 'TypographyBlock',
+      parentBlockId: card5._key,
+      content: '- The Bible, John 19:34',
+      variant: 'body1',
+      color: 'primary',
+      align: 'left',
+      parentOrder: 3
+    }
+  ])
 
   const image2 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -328,7 +345,9 @@ export async function nua2(): Promise<void> {
     blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU',
     parentOrder: 0
   })
-  await db.collection('blocks').update(card5._key, { coverBlockId: image2._key })
+  await db
+    .collection('blocks')
+    .update(card5._key, { coverBlockId: image2._key })
 
   // sixth step
   const step6 = await db.collection('blocks').save({
@@ -411,7 +430,9 @@ export async function nua2(): Promise<void> {
     blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@',
     parentOrder: 1
   })
-  await db.collection('blocks').update(card7._key, { coverBlockId: image3._key })
+  await db
+    .collection('blocks')
+    .update(card7._key, { coverBlockId: image3._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -431,40 +452,44 @@ export async function nua2(): Promise<void> {
     label: 'What is Christianity to you?',
     action: {
       gtmEventName: 'click',
-      journeyId: "3"
+      journeyId: '3'
     },
     parentOrder: 2
   })
 
-  await db.collection('blocks').saveAll([{
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question5._key,
-    label: 'One of many ways to God',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "3"
+  await db.collection('blocks').saveAll([
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question5._key,
+      label: 'One of many ways to God',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '3'
+      },
+      parentOrder: 0
     },
-    parentOrder: 0
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question5._key,
-    label: 'One great lie...',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "3"
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question5._key,
+      label: 'One great lie...',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '3'
+      },
+      parentOrder: 1
     },
-    parentOrder: 1
-  }, {
-    journeyId: journey._key,
-    __typename: 'RadioOptionBlock',
-    parentBlockId: question5._key,
-    label: 'One true way to God',
-    action: {
-      gtmEventName: 'click',
-      journeyId: "3"
-    },
-    parentOrder: 2
-  }])
+    {
+      journeyId: journey._key,
+      __typename: 'RadioOptionBlock',
+      parentBlockId: question5._key,
+      label: 'One true way to God',
+      action: {
+        gtmEventName: 'click',
+        journeyId: '3'
+      },
+      parentOrder: 2
+    }
+  ])
 }
