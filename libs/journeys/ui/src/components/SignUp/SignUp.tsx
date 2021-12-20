@@ -10,7 +10,7 @@ import { TreeBlock, handleAction } from '../..'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
 import { Icon } from '../Icon'
-import TextField from './TextField'
+import { TextField } from './TextField'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
   mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
@@ -30,14 +30,14 @@ interface SignUpFormValues {
   email: string
 }
 
-export const SignUp = ({
+export function SignUp({
   id: blockId,
   uuid = uuidv4,
   submitIcon,
   // Use translated string when i18n is in
   submitLabel = 'Submit',
   action
-}: SignUpProps): ReactElement => {
+}: SignUpProps): ReactElement {
   const router = useRouter()
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
