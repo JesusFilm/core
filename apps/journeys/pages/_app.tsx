@@ -7,7 +7,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth'
 import { createApolloClient } from '../src/libs/client'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
-function CustomApp({ Component, pageProps }: AppProps): ReactElement {
+export function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
   const client = createApolloClient(user?.accessToken)
@@ -42,5 +42,3 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
     </>
   )
 }
-
-export default CustomApp

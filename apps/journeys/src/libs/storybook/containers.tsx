@@ -9,11 +9,11 @@ interface StoryCardProps {
   themeName?: ThemeName
 }
 
-export const StoryCard = ({
+export function StoryCard({
   children,
   themeMode,
   themeName
-}: StoryCardProps): ReactElement => {
+}: StoryCardProps): ReactElement {
   const Card = (
     <Paper
       sx={{

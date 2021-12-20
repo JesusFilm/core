@@ -4,7 +4,7 @@ export type TreeBlock<T = Block> = T & {
   children: TreeBlock[]
 }
 
-export default function transformer(data: Block[]): TreeBlock[] {
+export function transformer(data: Block[]): TreeBlock[] {
   const tree: TreeBlock[] = []
   const childrenOf: Record<string, TreeBlock[] | undefined> = {}
   data.forEach((item) => {

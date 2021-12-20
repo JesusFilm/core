@@ -1,4 +1,4 @@
-import transformer from '.'
+import { transformer } from '.'
 
 describe('transformer', () => {
   it('should change flat array into tree successfully', () => {

@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import Conductor from '../src/components/Conductor'
-import transformer from '../src/libs/transformer'
+import { Conductor } from '../src/components/Conductor'
+import { transformer } from '../src/libs/transformer'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
@@ -29,7 +29,7 @@ interface JourneyPageProps {
   journey: Journey
 }
 
-function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+export function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
       <Head>
@@ -142,5 +142,3 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
     }
   }
 }
-
-export default JourneyPage
