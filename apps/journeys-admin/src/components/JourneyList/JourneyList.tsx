@@ -3,7 +3,7 @@ import { Box, Card, Typography, Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useBreakpoints } from '@core/shared/ui'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import JourneyCard from './JourneyCard'
+import { JourneyCard } from './JourneyCard'
 
 export interface JourneysListProps {
   journeys: Journey[]

@@ -1,3 +1,5 @@
+import { formatISO, startOfYear } from 'date-fns'
+
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import {
   ThemeName,
@@ -14,7 +16,7 @@ export const defaultJourney: Journey = {
   themeMode: ThemeMode.light,
   slug: 'default',
   locale: 'en-US',
-  createdAt: new Date('2021-11-19T12:34:56.647Z'),
+  createdAt: formatISO(startOfYear(new Date())),
   publishedAt: null,
   status: JourneyStatus.draft
 }
@@ -24,8 +26,8 @@ export const oldJourney: Journey = {
   title: 'Old Journey Heading',
   description:
     'Journey created before the current year should also show the year in the date',
-  createdAt: new Date('2020-11-19T12:34:56.647Z'),
-  publishedAt: new Date('2020-12-19T12:34:56.647Z'),
+  createdAt: '2020-11-19T12:34:56.647Z',
+  publishedAt: '2020-12-19T12:34:56.647Z',
   status: JourneyStatus.published
 }
 
@@ -33,7 +35,7 @@ export const publishedJourney: Journey = {
   ...defaultJourney,
   title: 'Published Journey Heading',
   description: 'a published journey',
-  publishedAt: new Date('2021-12-19T12:34:56.647Z'),
+  publishedAt: formatISO(startOfYear(new Date())),
   status: JourneyStatus.published
 }
 
