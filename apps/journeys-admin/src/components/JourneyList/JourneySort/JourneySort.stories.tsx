@@ -16,7 +16,6 @@ const JourneySortDemo = {
 
 const Template: Story = () => <JourneySortMock />
 
-// Mobile Light is hidden in story - left as is since dark mode sufficiently captures scenario
 export const Default = Template.bind({})
 
 export default JourneySortDemo as Meta
