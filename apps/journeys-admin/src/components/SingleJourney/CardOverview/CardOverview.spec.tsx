@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-
-import CardOverview from './CardOverview'
+import { CardOverview } from '.'
 import { steps, oneStep } from './CardOverviewData'
 
 describe('CardOverview', () => {
@@ -9,7 +8,7 @@ describe('CardOverview', () => {
     const { getByText } = render(
       <CardOverview slug={'my-journey'} blocks={[]} />
     )
-    expect(getByText('No cards')).toBeInTheDocument()
+    expect(getByText('Select Empty Card to add')).toBeInTheDocument()
   })
   it('should have edit button when cards are present', () => {
     const { getByRole } = render(
@@ -39,11 +38,11 @@ describe('CardOverview', () => {
     expect(getByText('1 card')).toBeInTheDocument()
   })
   it('should add a card when no cards are present', () => {
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <MockedProvider>
         <CardOverview slug={'my-journey'} blocks={[]} />
       </MockedProvider>
     )
-    expect(getByText('Add a Card')).toBeInTheDocument()
+    expect(getByLabelText('add-card')).toBeInTheDocument()
   })
 })
