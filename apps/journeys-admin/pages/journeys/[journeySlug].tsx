@@ -10,7 +10,7 @@ import {
 } from '../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../__generated__/BlockFields'
 import client from '../../src/libs/client'
-import JourneysAppBar from '../../src/components/JourneysAppBar'
+import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 import CardOverview from '../../src/components/SingleJourney/CardOverview'
 import { transformer, BLOCK_FIELDS, TreeBlock } from '@core/journeys/ui'
 
@@ -29,7 +29,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta name="description" content={journey.description} />
         )}
       </Head>
-      <JourneysAppBar journey={journey} />
+      <JourneysAppBar variant={'view'} />
       <Box sx={{ m: 10 }}>
         <Typography variant={'h2'} sx={{ mb: 4 }}>
           Single Journey Page
