@@ -1,6 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import { SortBy } from '.'
-import JourneySort from './JourneySort'
+import { SortBy, JourneySort } from '.'
 import { useState, ReactElement } from 'react'
 
 export const JourneySortMock = (): ReactElement => {
