@@ -53,7 +53,9 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
 
     if (data.journeys === null) {
       return {
-        notFound: true
+        props: {
+          journeys: []
+        }
       }
     } else {
       return {
