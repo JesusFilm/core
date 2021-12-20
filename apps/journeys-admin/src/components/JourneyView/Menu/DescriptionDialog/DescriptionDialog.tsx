@@ -98,7 +98,6 @@ export function DescriptionDialog({
     <>
       {breakpoints.md ? (
         <Dialog
-          id="update-journey-dialog"
           open={open}
           onClose={handleClose}
           aria-labelledby={`dialog-update-description`}
@@ -106,12 +105,7 @@ export function DescriptionDialog({
           <Form />
         </Dialog>
       ) : (
-        <Drawer
-          id="update-journey-drawer"
-          anchor="bottom"
-          open={open}
-          onClose={handleClose}
-        >
+        <Drawer anchor="bottom" open={open} onClose={handleClose}>
           <Form />
         </Drawer>
       )}

@@ -91,7 +91,6 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     <>
       {breakpoints.md ? (
         <Dialog
-          id="update-journey-dialog"
           open={open}
           onClose={handleClose}
           aria-labelledby="dialog-update-title"
@@ -99,12 +98,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           <Form />
         </Dialog>
       ) : (
-        <Drawer
-          id="update-journey-drawer"
-          anchor="bottom"
-          open={open}
-          onClose={handleClose}
-        >
+        <Drawer anchor="bottom" open={open} onClose={handleClose}>
           <Form />
         </Drawer>
       )}

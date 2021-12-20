@@ -1,4 +1,4 @@
-import { isThisYear, parseISO, format } from 'date-fns'
+import { isThisYear, parseISO, intlFormat } from 'date-fns'
 import { ReactElement, useContext } from 'react'
 import { Box, Typography } from '@mui/material'
 import {
@@ -14,9 +14,11 @@ export function JourneyDetails(): ReactElement {
   const journey = useContext(JourneyContext)
 
   const date = parseISO(journey.createdAt)
-  const formattedDate = isThisYear(date)
-    ? format(date, 'MMM do')
-    : format(date, 'MMM do, yyyy')
+  const formattedDate = intlFormat(date, {
+    day: 'numeric',
+    month: 'long',
+    year: isThisYear(date) ? undefined : 'numeric'
+  })
 
   return (
     <>
@@ -26,12 +28,8 @@ export function JourneyDetails(): ReactElement {
         ) : (
           <EditRounded color="warning" fontSize="small" />
         )}
-        <Typography
-          variant="body2"
-          data-testid="status"
-          sx={{ textTransform: 'capitalize', ml: 2 }}
-        >
-          {journey.status}
+        <Typography variant="body2" data-testid="status" sx={{ ml: 2 }}>
+          {journey.status === JourneyStatus.published ? 'Published' : 'Draft'}
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
