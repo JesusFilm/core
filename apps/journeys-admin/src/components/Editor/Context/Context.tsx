@@ -65,8 +65,7 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
         ...state,
         drawerTitle: action.title,
         drawerChildren: action.children,
-        drawerMobileOpen:
-          action.mobileOpen != null ? action.mobileOpen : state.drawerMobileOpen
+        drawerMobileOpen: action.mobileOpen ?? state.drawerMobileOpen
       }
     case 'SetDrawerMobileOpenAction':
       return {
