@@ -12,7 +12,7 @@ const CardViewStory = {
 
 const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
   <MockedProvider>
-    <CardView slug={'my-journey'} {...args} />
+    <CardView slug="my-journey" {...args} />
   </MockedProvider>
 )
 

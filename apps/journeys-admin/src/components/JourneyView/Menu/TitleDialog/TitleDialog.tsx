@@ -58,9 +58,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
-          <FormLabel component="legend" aria-label={'dialog-update-title'}>
-            <Typography variant={'subtitle2'} gutterBottom>
-              {'Update Title'}
+          <FormLabel component="legend" aria-label="dialog-update-title">
+            <Typography variant="subtitle2" gutterBottom>
+              Update Title
             </Typography>
           </FormLabel>
           <TextField
@@ -91,17 +91,17 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     <>
       {breakpoints.md ? (
         <Dialog
-          id={'update-journey-dialog'}
+          id="update-journey-dialog"
           open={open}
           onClose={handleClose}
-          aria-labelledby={'dialog-update-title'}
+          aria-labelledby="dialog-update-title"
         >
           <Form />
         </Dialog>
       ) : (
         <Drawer
-          id={'update-journey-drawer'}
-          anchor={'bottom'}
+          id="update-journey-drawer"
+          anchor="bottom"
           open={open}
           onClose={handleClose}
         >
@@ -111,9 +111,8 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
       <Alert
         open={showSuccessAlert}
         setOpen={setShowSuccessAlert}
-        message={'Title updated successfully'}
+        message="Title updated successfully"
       />
     </>
   )
 }
-

@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Box, Drawer, Toolbar, Typography } from '@mui/material'
+import { Box, Divider, Drawer, Toolbar, Typography } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
 import { JourneyDetails } from './JourneyDetails'
 
@@ -18,8 +18,11 @@ export function Properties(): ReactElement {
       </Box>
     </Drawer>
   ) : (
-    <Box sx={{ p: 6, pt: 9, backgroundColor: 'background.paper' }}>
-      <JourneyDetails />
-    </Box>
+    <>
+      <Divider />
+      <Box sx={{ p: 6, pt: 9, backgroundColor: 'background.paper' }}>
+        <JourneyDetails />
+      </Box>
+    </>
   )
 }

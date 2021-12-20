@@ -23,7 +23,7 @@ export const JOURNEY_PUBLISH = gql`
   }
 `
 
-export interface MenuProps {
+interface MenuProps {
   forceOpen?: boolean
 }
 
@@ -134,7 +134,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
       <Alert
         open={showLinkAlert}
         setOpen={setShowLinkAlert}
-        message={'Link Copied'}
+        message="Link Copied"
       />
     </>
   )

@@ -18,7 +18,7 @@ describe('JourneyView/CardView', () => {
   it('should render cards', () => {
     const { getByText } = render(
       <MockedProvider>
-        <CardView slug={'my-journey'} blocks={steps} />
+        <CardView slug="my-journey" blocks={steps} />
       </MockedProvider>
     )
     expect(getByText('5 cards')).toBeInTheDocument()
@@ -26,7 +26,7 @@ describe('JourneyView/CardView', () => {
   it('should render description for 1 card', () => {
     const { getByText } = render(
       <MockedProvider>
-        <CardView slug={'my-journey'} blocks={oneStep} />
+        <CardView slug="my-journey" blocks={oneStep} />
       </MockedProvider>
     )
     expect(getByText('1 card')).toBeInTheDocument()
@@ -34,7 +34,7 @@ describe('JourneyView/CardView', () => {
   it('should add a card when no cards are present', () => {
     const { getByLabelText } = render(
       <MockedProvider>
-        <CardView slug={'my-journey'} blocks={[]} />
+        <CardView slug="my-journey" blocks={[]} />
       </MockedProvider>
     )
     expect(getByLabelText('add-card')).toBeInTheDocument()

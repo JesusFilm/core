@@ -63,11 +63,8 @@ export function DescriptionDialog({
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
-          <FormLabel
-            component="legend"
-            aria-label="dialog-update-description"
-          >
-            <Typography variant={'subtitle2'} gutterBottom>
+          <FormLabel component="legend" aria-label="dialog-update-description">
+            <Typography variant="subtitle2" gutterBottom>
               Update Description
             </Typography>
           </FormLabel>
@@ -101,7 +98,7 @@ export function DescriptionDialog({
     <>
       {breakpoints.md ? (
         <Dialog
-          id={'update-journey-dialog'}
+          id="update-journey-dialog"
           open={open}
           onClose={handleClose}
           aria-labelledby={`dialog-update-description`}
@@ -110,7 +107,7 @@ export function DescriptionDialog({
         </Dialog>
       ) : (
         <Drawer
-          id={'update-journey-drawer'}
+          id="update-journey-drawer"
           anchor="bottom"
           open={open}
           onClose={handleClose}
@@ -121,7 +118,7 @@ export function DescriptionDialog({
       <Alert
         open={showSuccessAlert}
         setOpen={setShowSuccessAlert}
-        message={'Description updated successfully'}
+        message="Description updated successfully"
       />
     </>
   )

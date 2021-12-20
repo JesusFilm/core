@@ -27,8 +27,8 @@ export function JourneyDetails(): ReactElement {
           <EditRounded color="warning" fontSize="small" />
         )}
         <Typography
-          variant={'body2'}
-          data-testid={'status'}
+          variant="body2"
+          data-testid="status"
           sx={{ textTransform: 'capitalize', ml: 2 }}
         >
           {journey.status}
@@ -37,8 +37,8 @@ export function JourneyDetails(): ReactElement {
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
         <EventRounded fontSize="small" />
         <Typography
-          variant={'body2'}
-          data-testid={'created-at-date'}
+          variant="body2"
+          data-testid="created-at-date"
           sx={{ ml: 2 }}
         >
           {formattedDate}
@@ -46,7 +46,7 @@ export function JourneyDetails(): ReactElement {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
         <TranslateRounded fontSize="small" />
-        <Typography variant={'body2'} data-testid={'locale'} sx={{ ml: 2 }}>
+        <Typography variant="body2" data-testid="locale" sx={{ ml: 2 }}>
           {journey.locale}
         </Typography>
       </Box>

@@ -3,12 +3,12 @@ import { ShareSection } from '.'
 
 describe('ShareSection', () => {
   it('should render with the heading', () => {
-    const { getByText } = render(<ShareSection slug={'my-journey'} />)
+    const { getByText } = render(<ShareSection slug="my-journey" />)
     expect(getByText('Journey URL')).toBeInTheDocument()
   })
 
   it('should, have the correct sharing url', () => {
-    const { getByRole } = render(<ShareSection slug={'my-journey'} />)
+    const { getByRole } = render(<ShareSection slug="my-journey" />)
     expect(getByRole('textbox')).toHaveAttribute(
       'value',
       'https://your.nextstep.is/my-journey'
@@ -27,7 +27,7 @@ describe('ShareSection', () => {
     jest.spyOn(navigator.clipboard, 'writeText')
 
     const { getByRole, getAllByRole, getByText } = render(
-      <ShareSection slug={'my-journey'} />
+      <ShareSection slug="my-journey" />
     )
     fireEvent.click(getAllByRole('button')[1])
     fireEvent.click(getByRole('menuitem', { name: 'Copy' }))
