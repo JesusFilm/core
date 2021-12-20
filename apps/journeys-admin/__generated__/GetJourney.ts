@@ -28,6 +28,7 @@ export interface GetJourney_journey {
 export interface GetJourney {
   journey: GetJourney_journey | null;
 }
+
 export interface GetJourneyVariables {
   id: string;
 }

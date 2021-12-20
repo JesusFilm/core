@@ -7,6 +7,7 @@ import { ThemeName, ThemeMode } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneys
+
 export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;

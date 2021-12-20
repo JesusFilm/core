@@ -38,6 +38,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
     </>
   )
 }
+
 export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
@@ -61,6 +62,7 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
         id: context.query.journeySlug
       }
     })
+
     if (data.journey === null) {
       return {
         notFound: true
@@ -73,4 +75,5 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
       }
     }
   }
+
 export default SingleJourneyPage
