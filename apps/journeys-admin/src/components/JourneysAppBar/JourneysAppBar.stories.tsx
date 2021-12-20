@@ -1,6 +1,6 @@
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Meta, Story } from '@storybook/react'
-import JourneysAppBar, { JourneysAppBarProps } from '.'
+import { JourneysAppBar, JourneysAppBarProps } from '.'
 import { defaultJourney } from '../JourneyList/journeyListData'
 
 const JourneysAppBarDemo = {

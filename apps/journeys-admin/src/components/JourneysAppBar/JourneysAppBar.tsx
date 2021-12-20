@@ -8,7 +8,7 @@ export interface JourneysAppBarProps {
   journey?: Journey
 }
 
-const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
+export function JourneysAppBar({ journey }: JourneysAppBarProps): ReactElement {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -35,5 +35,3 @@ const JourneysAppBar = ({ journey }: JourneysAppBarProps): ReactElement => {
     </Box>
   )
 }
-
-export default JourneysAppBar

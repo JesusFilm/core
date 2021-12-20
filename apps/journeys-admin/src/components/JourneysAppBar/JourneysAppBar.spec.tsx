@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { defaultJourney } from '../SingleJourney/SingleJourneyData'
-import JourneysAppBar from '.'
+import { JourneysAppBar } from '.'
 
 describe('JourneysAppBar', () => {
   it('should navigate back to journeys', () => {
