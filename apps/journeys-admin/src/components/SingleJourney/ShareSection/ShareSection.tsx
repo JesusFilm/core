@@ -128,10 +128,6 @@ export function ShareSection({
             MenuListProps={{
               'aria-labelledby': 'journey-actions'
             }}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
           >
             <MenuItem onClick={handleCopyLink}>
               <ListItemIcon>
