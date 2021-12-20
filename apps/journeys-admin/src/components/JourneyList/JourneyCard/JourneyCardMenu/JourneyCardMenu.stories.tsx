@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import JourneyCardMenu, { JourneyCardMenuProps } from './JourneyCardMenu'
+import { JourneyCardMenu, JourneyCardMenuProps } from './JourneyCardMenu'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 const JoruneyCardMenuDemo = {
