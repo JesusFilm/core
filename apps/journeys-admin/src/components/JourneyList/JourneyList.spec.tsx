@@ -42,6 +42,8 @@ describe('JourneyList', () => {
     expect(
       getByText('Create a journey, then find it here.')
     ).toBeInTheDocument()
-    expect(getByRole('button')).toHaveTextContent('Create a Journey')
+    expect(
+      getByRole('button', { name: 'Create a Journey' })
+    ).toBeInTheDocument()
   })
 })
