@@ -21,6 +21,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
             return (
               <Box
                 key={journey.id}
+                aria-label="journey-card"
                 sx={{
                   '&:first-child': { borderTop: 'none' },
                   borderTop: 1,

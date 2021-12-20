@@ -4,10 +4,10 @@ import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 
 describe('JourneyList', () => {
   it('should render all journeys', () => {
-    const { getAllByRole } = render(
+    const { getAllByLabelText } = render(
       <JourneyList journeys={[defaultJourney, publishedJourney, oldJourney]} />
     )
-    expect(getAllByRole('heading').length).toBe(3)
+    expect(getAllByLabelText('journey-card').length).toBe(3)
   })
   it('should render text when there are no journeys', () => {
     const { getByText, getByRole } = render(<JourneyList journeys={[]} />)
