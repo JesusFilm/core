@@ -249,7 +249,7 @@ extend type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   userCreate(input: UserCreateInput!): User!
   userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
-  userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
+  userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
   userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!

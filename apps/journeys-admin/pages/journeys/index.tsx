@@ -10,7 +10,7 @@ import {
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components/'
-import { UseFirebase } from '../../src/libs/firebaseClient'
+import { useFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { JourneysAppBar } from '../../src/components/JourneysAppBar'
@@ -20,7 +20,7 @@ interface JourneysListPageProps {
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  const { logOut, user, loading } = UseFirebase()
+  const { logOut, user, loading } = useFirebase()
   const router = useRouter()
   const [journeysToShow, setJourneysToShow] = useState<Journey[]>([])
 

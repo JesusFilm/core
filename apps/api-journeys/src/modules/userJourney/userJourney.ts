@@ -60,7 +60,7 @@ const typeDefs = gql`
 
   extend type Mutation {
     userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
-    userJourneyUpdate(input: UserJourneyUpdateInput!): UserJourney!
+    userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
     userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
     userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
     userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
@@ -94,18 +94,6 @@ const resolvers: UserJourneyModule.Resolvers = {
     }
   },
   Mutation: {
-    async userJourneyCreate(_parent, { input }, { db, userId }) {
-      if (userId == null)
-        throw new AuthenticationError('No user token provided')
-
-      return await db.userJourney.create({
-        data: {
-          userId: input.userId,
-          journeyId: input.journeyId,
-          role: input.role as UserJourneyModule.UserJourneyRole
-        }
-      })
-    },
     async userJourneyRequest(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
@@ -118,8 +106,7 @@ const resolvers: UserJourneyModule.Resolvers = {
         }
       })
     },
-    // update naming
-    async userJourneyUpdate(_parent, { input }, { db, userId }) {
+    async userJourneyApprove(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
 
@@ -171,7 +158,7 @@ const resolvers: UserJourneyModule.Resolvers = {
 
       if (!includes(['inviteRequested', 'editor', null], input.role))
         throw new AuthenticationError(
-          'Owners cannot remove themselves from their journey'
+          'you cannot remove yourself from this journey when you are an owner'
         )
 
       return await db.userJourney.delete({

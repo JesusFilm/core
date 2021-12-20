@@ -40,24 +40,6 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
-  const user = await prisma.user.create({
-    data: {
-      id: uuidv4(),
-      firstName: 'yo',
-      lastName: 'Fake',
-      email: 'yo@fake.com',
-      imageUrl:
-        'https://images.unsplash.com/photo-1633114127408-af671c774b39?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2340&q=80'
-    }
-  })
-
-  await prisma.userJourney.create({
-    data: {
-      userId: user.id,
-      journeyId: journey.id,
-      role: 'inviteRequested'
-    }
-  })
 
   const coverBlockId = uuidv4()
   const card1 = await prisma.block.create({

@@ -8,7 +8,7 @@ import {
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
 import { Typography, Box, Button } from '@mui/material'
-import { UseFirebase } from '../../../src/libs/firebaseClient'
+import { useFirebase } from '../../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 import { INVITE_USER_MODAL_FIELDS } from '../../../src/components/InviteUserModal'
@@ -27,7 +27,7 @@ export const USER_JOURNEY_REQUEST = gql`
 `
 
 function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
-  const { user, loading } = UseFirebase()
+  const { user, loading } = useFirebase()
   const router = useRouter()
   const [userJourneyRequest] =
     useMutation<UserJourneyRequest>(USER_JOURNEY_REQUEST)

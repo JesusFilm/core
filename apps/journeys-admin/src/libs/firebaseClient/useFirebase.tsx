@@ -3,14 +3,14 @@ import { firebaseClient } from './firebaseClient'
 import { useRouter } from 'next/router'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-interface UseFirebaseProps {
+interface UseFirebaseResponse {
   logOut: () => void
   user
   loading
   error
 }
 
-export const UseFirebase = (): UseFirebaseProps => {
+export const useFirebase = (): UseFirebaseResponse => {
   const router = useRouter()
   const auth = getAuth(firebaseClient)
   const [user, loading, error] = useAuthState(auth)

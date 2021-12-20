@@ -1,12 +1,12 @@
 import { useEffect, ReactElement } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { UseFirebase } from '../src/libs/firebaseClient'
+import { useFirebase } from '../src/libs/firebaseClient'
 import { ApolloProvider } from '@apollo/client'
 import { createApolloClient } from '../src/libs/client'
 
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
-  const { user } = UseFirebase()
+  const { user } = useFirebase()
   const client = createApolloClient(user?.accessToken)
 
   useEffect(() => {

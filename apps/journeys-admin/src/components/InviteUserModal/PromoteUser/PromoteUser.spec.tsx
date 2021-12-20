@@ -1,8 +1,8 @@
 import { PromoteUser, USER_JOURNEY_PROMOTE } from './PromoteUser'
-import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { GetJourney_journey_usersJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 
 const userJourney: UserJourney = {
   __typename: 'UserJourney',
@@ -21,7 +21,7 @@ const userJourney: UserJourney = {
 
 describe('Promote button', () => {
   it('should render promote button', () => {
-    const { getByText } = renderWithApolloClient(
+    const { getByText } = render(
       <MockedProvider
         mocks={[
           {

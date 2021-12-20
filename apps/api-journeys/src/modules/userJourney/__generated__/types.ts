@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace UserJourneyModule {
   interface DefinedFields {
     UserJourney: 'id' | 'userId' | 'journeyId' | 'role';
-    Mutation: 'userJourneyCreate' | 'userJourneyUpdate' | 'userJourneyPromote' | 'userJourneyRemove' | 'userJourneyRequest';
+    Mutation: 'userJourneyCreate' | 'userJourneyApprove' | 'userJourneyPromote' | 'userJourneyRemove' | 'userJourneyRequest';
     Journey: 'usersJourneys';
     User: 'usersJourneys';
   };
@@ -68,7 +68,7 @@ export namespace UserJourneyModule {
     Mutation?: {
       '*'?: gm.Middleware[];
       userJourneyCreate?: gm.Middleware[];
-      userJourneyUpdate?: gm.Middleware[];
+      userJourneyApprove?: gm.Middleware[];
       userJourneyPromote?: gm.Middleware[];
       userJourneyRemove?: gm.Middleware[];
       userJourneyRequest?: gm.Middleware[];

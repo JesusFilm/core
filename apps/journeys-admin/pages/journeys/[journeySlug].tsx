@@ -9,7 +9,7 @@ import {
   GetJourney_journey_usersJourneys as UsersJourneys
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
-import { UseFirebase } from '../../src/libs/firebaseClient/'
+import { useFirebase } from '../../src/libs/firebaseClient/'
 import { useRouter } from 'next/router'
 import {
   InviteUserModal,
@@ -22,7 +22,7 @@ interface SingleJourneyPageProps {
 }
 
 function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
-  const { user, loading } = UseFirebase()
+  const { user, loading } = useFirebase()
   const router = useRouter()
   const [currentUsersJourney, setCurrentUsersJourney] =
     useState<UsersJourneys | null>()

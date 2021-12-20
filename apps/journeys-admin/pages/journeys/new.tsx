@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import Head from 'next/head'
 import { Typography, Box, Button, FormControl, Input } from '@mui/material'
-import { UseFirebase } from '../../src/libs/firebaseClient'
+import { useFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import { JourneyCreate } from '../../__generated__/JourneyCreate'
 import { v4 as uuidv4 } from 'uuid'
@@ -18,7 +18,7 @@ export const NEW_JOURNEY = gql`
 `
 
 function JourneyNew(): ReactElement {
-  const { user, loading } = UseFirebase()
+  const { user, loading } = useFirebase()
   const router = useRouter()
   const [journeyCreate] = useMutation<JourneyCreate>(NEW_JOURNEY)
   const UUID = uuidv4()
