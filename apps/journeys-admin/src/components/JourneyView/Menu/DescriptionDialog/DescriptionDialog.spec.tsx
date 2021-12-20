@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
+import { JourneyProvider } from '../../Context'
 import { defaultJourney } from '../../data'
 
 const onClose = jest.fn()
@@ -9,7 +10,9 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
   it('should not set journey description on close', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <DescriptionDialog open onClose={onClose} />
+        <JourneyProvider value={defaultJourney}>
+          <DescriptionDialog open onClose={onClose} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -49,7 +52,9 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
           }
         ]}
       >
-        <DescriptionDialog open onClose={onClose} />
+        <JourneyProvider value={defaultJourney}>
+          <DescriptionDialog open onClose={onClose} />
+        </JourneyProvider>
       </MockedProvider>
     )
 

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext } from 'react'
+import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
   Divider,
@@ -11,7 +11,7 @@ import { MoreVert } from '@mui/icons-material'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { TitleDialog } from './TitleDialog'
-import { JourneyContext } from '../Context'
+import { useJourney } from '../Context'
 import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
 import { Alert } from './Alert'
 
@@ -28,7 +28,7 @@ interface MenuProps {
 }
 
 export function Menu({ forceOpen }: MenuProps): ReactElement {
-  const journey = useContext(JourneyContext)
+  const journey = useJourney()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)

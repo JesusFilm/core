@@ -1,1 +1,1 @@
-export { JourneyContext, JourneyProvider } from './Context'
+export { useJourney, JourneyProvider } from './Context'

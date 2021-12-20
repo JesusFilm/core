@@ -1,5 +1,5 @@
 import { isThisYear, parseISO, intlFormat } from 'date-fns'
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import { Box, Typography } from '@mui/material'
 import {
   CheckCircleRounded,
@@ -8,10 +8,10 @@ import {
   TranslateRounded
 } from '@mui/icons-material'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { JourneyContext } from '../../Context'
+import { useJourney } from '../../Context'
 
 export function JourneyDetails(): ReactElement {
-  const journey = useContext(JourneyContext)
+  const journey = useJourney()
 
   const date = parseISO(journey.createdAt)
   const formattedDate = intlFormat(date, {

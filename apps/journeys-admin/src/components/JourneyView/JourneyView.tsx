@@ -1,15 +1,15 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import { Box, Typography } from '@mui/material'
 import { JourneysAppBar } from '../JourneysAppBar'
 import { Properties } from './Properties'
-import { JourneyContext } from './Context'
+import { useJourney } from './Context'
 import { CardView } from './CardView'
 import { useBreakpoints } from '@core/shared/ui'
 import { transformer, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 
 export function JourneyView(): ReactElement {
-  const journey = useContext(JourneyContext)
+  const journey = useJourney()
   const breakpoints = useBreakpoints()
   const blocks = journey.blocks != null ? transformer(journey.blocks) : []
 

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext } from 'react'
+import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
   Box,
@@ -13,7 +13,7 @@ import {
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 import { useBreakpoints } from '@core/shared/ui'
 import { Alert } from '../Alert'
-import { JourneyContext } from '../../Context'
+import { useJourney } from '../../Context'
 
 export const JOURNEY_TITLE_UPDATE = gql`
   mutation JourneyTitleUpdate($input: JourneyUpdateInput!) {
@@ -31,7 +31,7 @@ interface TitleDialogProps {
 
 export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
-  const journey = useContext(JourneyContext)
+  const journey = useJourney()
 
   const breakpoints = useBreakpoints()
   const [value, setValue] = useState(journey !== undefined ? journey.title : '')

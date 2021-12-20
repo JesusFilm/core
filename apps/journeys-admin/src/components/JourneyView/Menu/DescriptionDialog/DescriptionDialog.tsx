@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext } from 'react'
+import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import {
   Box,
@@ -13,7 +13,7 @@ import {
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { useBreakpoints } from '@core/shared/ui'
 import { Alert } from '../Alert'
-import { JourneyContext } from '../../Context'
+import { useJourney } from '../../Context'
 
 export const JOURNEY_DESC_UPDATE = gql`
   mutation JourneyDescUpdate($input: JourneyUpdateInput!) {
@@ -34,7 +34,7 @@ export function DescriptionDialog({
   onClose
 }: DescriptionDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
-  const journey = useContext(JourneyContext)
+  const journey = useJourney()
 
   const breakpoints = useBreakpoints()
   const [value, setValue] = useState(

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { TitleDialog, JOURNEY_TITLE_UPDATE } from '.'
+import { JourneyProvider } from '../../Context'
 import { defaultJourney } from '../../data'
 
 const onClose = jest.fn()
@@ -9,7 +10,9 @@ describe('JourneyView/Menu/TitleDialog', () => {
   it('should not set journey title on close', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <TitleDialog open onClose={onClose} />
+        <JourneyProvider value={defaultJourney}>
+          <TitleDialog open onClose={onClose} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -49,7 +52,9 @@ describe('JourneyView/Menu/TitleDialog', () => {
           }
         ]}
       >
-        <TitleDialog open onClose={onClose} />
+        <JourneyProvider value={defaultJourney}>
+          <TitleDialog open onClose={onClose} />
+        </JourneyProvider>
       </MockedProvider>
     )
 

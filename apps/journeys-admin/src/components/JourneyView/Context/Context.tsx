@@ -1,8 +1,17 @@
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
-import { createContext, ReactElement, ReactNode } from 'react'
-import { defaultJourney } from '../data'
+import { createContext, ReactElement, ReactNode, useContext } from 'react'
 
-export const JourneyContext = createContext<Journey>(defaultJourney)
+// Must set initial context for useContext, but it will always be a journey
+// Else JourneyView page will not load
+const JourneyContext = createContext<Journey | undefined>(undefined)
+
+export function useJourney(): Journey {
+  const context = useContext(JourneyContext)
+  if (context === undefined) {
+    throw new Error('useJourney must be used within a JourneyProvider')
+  }
+  return context
+}
 
 interface JourneyProviderProps {
   children: ReactNode
