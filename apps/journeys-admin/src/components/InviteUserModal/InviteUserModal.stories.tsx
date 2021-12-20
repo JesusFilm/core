@@ -106,7 +106,7 @@ const journey: Journey = {
 
 const Template: Story = () => (
   <MockedProvider>
-    <InviteUserModal usersJourneys={usersJourneys} journey={journey} />
+    <InviteUserModal journey={journey} />
   </MockedProvider>
 )
 

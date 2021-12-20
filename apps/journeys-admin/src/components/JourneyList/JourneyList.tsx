@@ -11,8 +11,8 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
   return (
     <>
       {/* Remove this once we link journey cards to the Single Journey page */}
-      {journeys.map(({ id, title, slug }) => (
-        <Box key={id} my={2}>
+      {journeys.map(({ title, slug }) => (
+        <Box key={`slug-${slug}`} my={2}>
           <Link href={`/journeys/${slug}`} passHref>
             <Button variant="contained" fullWidth>
               {title}

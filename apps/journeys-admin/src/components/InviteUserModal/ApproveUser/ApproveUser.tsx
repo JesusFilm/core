@@ -21,7 +21,6 @@ export const USER_JOURNEY_APPROVE = gql`
 export const ApproveUser = ({
   usersJourneys
 }: ApproveUserProps): ReactElement => {
-  console.log(usersJourneys)
   const [userJourneyApprove] = useMutation<UserJourneyUpdate>(
     USER_JOURNEY_APPROVE,
     {

@@ -3,7 +3,6 @@ import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 
 export const defaultJourney: Journey = {
   __typename: 'Journey',
-  id: 'journey-id',
   title: 'Journey Heading',
   description: 'Description',
   themeName: ThemeName.base,
