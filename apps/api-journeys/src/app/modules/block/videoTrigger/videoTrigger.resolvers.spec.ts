@@ -10,7 +10,7 @@ describe('VideoTriggerBlock', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'VideoTriggerBlock',
+    __typename: 'VideoTriggerBlock',
     parentBlockId: "3",
     parentOrder: 0,
     extraAttrs: {
@@ -25,7 +25,7 @@ describe('VideoTriggerBlock', () => {
   const blockresponse =  {
     id: "1",
     journeyId: "2",
-    type: 'VideoTriggerBlock',
+    __typename: 'VideoTriggerBlock',
     parentBlockId: "3",
     parentOrder: 0,
     extraAttrs: {

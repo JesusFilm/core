@@ -28,7 +28,6 @@ enum TypographyAlign {
 type TypographyBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   content: String!
   variant: TypographyVariant
   color: TypographyColor

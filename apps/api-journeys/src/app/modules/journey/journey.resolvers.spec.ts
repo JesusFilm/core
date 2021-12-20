@@ -29,7 +29,7 @@ describe('Journey', () => {
   const block = {
     _key: "2",
     journeyId: "1",
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: "3",
     parentOrder: 2,
     src: 'https://source.unsplash.com/random/1920x1080',
@@ -41,7 +41,7 @@ describe('Journey', () => {
   const blockresponse = {
     id: "2",
     journeyId: "1",
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: "3",
     parentOrder: 2,
     src: 'https://source.unsplash.com/random/1920x1080',

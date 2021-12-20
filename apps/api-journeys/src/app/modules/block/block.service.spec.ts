@@ -26,7 +26,7 @@ describe('BlockService', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'CardBlock',
+    __typename: 'CardBlock',
     parentBlockId: "3",
     parentOrder: 0,
     backgroundColor: '#FFF',

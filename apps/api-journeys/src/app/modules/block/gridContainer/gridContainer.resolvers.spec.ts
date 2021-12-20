@@ -10,7 +10,7 @@ describe('GridContainer', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: "3",
     parentOrder: 2,
     spacing: 3,
@@ -21,7 +21,7 @@ describe('GridContainer', () => {
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'GridContainerBlock',
+    __typename: 'GridContainerBlock',
     parentBlockId: "3",
     parentOrder: 2,
     spacing: 3,

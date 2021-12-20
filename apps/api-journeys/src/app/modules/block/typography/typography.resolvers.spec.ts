@@ -10,7 +10,7 @@ describe('Typography', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: "3",
     parentOrder: 7,
     content: 'text',
@@ -22,7 +22,7 @@ describe('Typography', () => {
   const blockresponse =  {
     id: "1",
     journeyId: "2",
-    type: 'TypographyBlock',
+    __typename: 'TypographyBlock',
     parentBlockId: "3",
     parentOrder: 7,
     content: 'text',

@@ -136,7 +136,6 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    type?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
@@ -155,7 +154,6 @@ export class CardBlockUpdateInput {
 
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
-    type?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     journeyId: string;
     src: string;
@@ -171,7 +169,6 @@ export class ImageBlockUpdateInput {
 
 export class StepBlockCreateInput {
     id?: Nullable<string>;
-    type?: Nullable<string>;
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
@@ -194,7 +191,6 @@ export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    type?: Nullable<string>;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
@@ -240,14 +236,12 @@ export class JourneyUpdateInput {
 export class RadioQuestionResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    type?: Nullable<string>;
     radioOptionBlockId: string;
 }
 
 export class SignUpResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    type?: Nullable<string>;
     name: string;
     email: string;
 }
@@ -255,7 +249,6 @@ export class SignUpResponseCreateInput {
 export class VideoResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    type?: Nullable<string>;
     state: VideoResponseStateEnum;
     position?: Nullable<number>;
 }
@@ -266,7 +259,6 @@ export interface Action {
 
 export interface Block {
     id: string;
-    type: string;
     parentBlockId?: Nullable<string>;
 }
 
@@ -277,7 +269,6 @@ export interface VideoContent {
 export interface Response {
     id: string;
     userId: string;
-    type: string;
 }
 
 export class Icon {
@@ -333,7 +324,6 @@ export class ButtonBlock implements Block {
     __typename?: 'ButtonBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -347,7 +337,6 @@ export class CardBlock implements Block {
     __typename?: 'CardBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
@@ -359,7 +348,6 @@ export class GridContainerBlock implements Block {
     __typename?: 'GridContainerBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     spacing: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
@@ -379,7 +367,6 @@ export class GridItemBlock implements Block {
 export class ImageBlock implements Block {
     __typename?: 'ImageBlock';
     id: string;
-    type: string;
     parentBlockId?: Nullable<string>;
     src: string;
     width: number;
@@ -391,7 +378,6 @@ export class ImageBlock implements Block {
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
-    type: string;
     parentBlockId?: Nullable<string>;
     label: string;
     action?: Nullable<Action>;
@@ -400,7 +386,6 @@ export class RadioOptionBlock implements Block {
 export class RadioQuestionBlock implements Block {
     __typename?: 'RadioQuestionBlock';
     id: string;
-    type: string;
     parentBlockId?: Nullable<string>;
     label: string;
     description?: Nullable<string>;
@@ -410,7 +395,6 @@ export class SignUpBlock implements Block {
     __typename?: 'SignUpBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     action?: Nullable<Action>;
     submitIcon?: Nullable<Icon>;
     submitLabel?: Nullable<string>;
@@ -419,7 +403,6 @@ export class SignUpBlock implements Block {
 export class StepBlock implements Block {
     __typename?: 'StepBlock';
     id: string;
-    type: string;
     nextBlockId?: Nullable<string>;
     locked: boolean;
     parentBlockId?: Nullable<string>;
@@ -429,7 +412,6 @@ export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -452,7 +434,6 @@ export class VideoBlock implements Block {
     __typename?: 'VideoBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
@@ -467,7 +448,6 @@ export class VideoTriggerBlock implements Block {
     __typename?: 'VideoTriggerBlock';
     id: string;
     parentBlockId?: Nullable<string>;
-    type: string;
     triggerStart: number;
     action?: Nullable<Action>;
 }
@@ -476,7 +456,6 @@ export class RadioQuestionResponse implements Response {
     __typename?: 'RadioQuestionResponse';
     id: string;
     userId: string;
-    type: string;
     radioOptionBlockId: string;
     block?: Nullable<RadioQuestionBlock>;
 }
@@ -485,7 +464,6 @@ export class SignUpResponse implements Response {
     __typename?: 'SignUpResponse';
     id: string;
     userId: string;
-    type: string;
     name: string;
     email: string;
     block?: Nullable<SignUpBlock>;
@@ -495,7 +473,6 @@ export class VideoResponse implements Response {
     __typename?: 'VideoResponse';
     id: string;
     userId: string;
-    type: string;
     state: VideoResponseStateEnum;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;

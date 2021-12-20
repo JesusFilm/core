@@ -6,16 +6,16 @@ import { IdAsKey } from '@core/nest/decorators'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
-@Resolver('Response')
+@Resolver('VideoResponse')
 export class VideoResponseResolver {
   constructor(private readonly responseService: ResponseService) { }
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()
   async videoResponseCreate(
-    @Args('input') input: VideoResponseCreateInput
+    @Args('input') input: VideoResponseCreateInput & { __typename }
   ): Promise<VideoResponse> {
-    input.type = 'VideoResponse'
+    input.__typename = 'VideoResponse'    
     return await this.responseService.save(input)
   }
 }

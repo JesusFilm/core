@@ -8,7 +8,7 @@ describe('VideoResponse', () => {
 
   const response = {
     _key: "1",
-    type: 'VideoResponse',
+    __typename: 'VideoResponse',
     blockId: "2",
     userId: "3",
     state: VideoResponseStateEnum.PLAYING,
@@ -17,7 +17,7 @@ describe('VideoResponse', () => {
 
   const responseresponse = {
     id: "1",
-    type: 'VideoResponse',
+    __typename: 'VideoResponse',
     blockId: "2",
     userId: "3",
     state: VideoResponseStateEnum.PLAYING,

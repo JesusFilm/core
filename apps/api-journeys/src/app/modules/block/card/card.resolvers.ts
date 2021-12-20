@@ -15,8 +15,8 @@ export class CardBlockResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
-  async cardBlockCreate(@Args('input') input: CardBlockCreateInput): Promise<CardBlock> {
-    input.type = 'CardBlock'
+  async cardBlockCreate(@Args('input') input: CardBlockCreateInput & { __typename }): Promise<CardBlock> {
+    input.__typename = 'CardBlock'
     return await this.blockService.save(input)
   }
 

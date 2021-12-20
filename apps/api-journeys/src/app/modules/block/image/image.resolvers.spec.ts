@@ -12,7 +12,7 @@ describe('Image', () => {
   const block = {
     _key: "1",
     journeyId: "2",
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: "3",
     parentOrder: 2,
     src: 'https://source.unsplash.com/random/1920x1080',
@@ -23,7 +23,7 @@ describe('Image', () => {
   const blockresponse = {
     id: "1",
     journeyId: "2",
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     parentBlockId: "3",
     parentOrder: 2,
     src: 'https://source.unsplash.com/random/1920x1080',
@@ -51,7 +51,7 @@ describe('Image', () => {
     _key: input.id,
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
-    type: 'ImageBlock',
+    __typename: 'ImageBlock',
     src: input.src,
     alt: input.alt,
     width: 301,

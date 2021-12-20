@@ -1,6 +1,5 @@
 type StepBlock implements Block {
   id: ID!
-  type: String!
   """
   nextBlockId contains the preferred block to navigate to when a
   NavigateAction occurs or if the user manually tries to advance to the next
@@ -18,8 +17,6 @@ type StepBlock implements Block {
 
 input StepBlockCreateInput {
   id: ID
-  """ type is overwritten by the API """
-  type: String
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean

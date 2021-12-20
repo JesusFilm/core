@@ -15,8 +15,8 @@ export class StepBlockResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
-  async stepBlockCreate(@Args('input') input: StepBlockCreateInput): Promise<StepBlock> {
-    input.type = 'StepBlock'
+  async stepBlockCreate(@Args('input') input: StepBlockCreateInput & { __typename }): Promise<StepBlock> {
+    input.__typename = 'StepBlock'
     return await this.blockService.save(input)
   }
 

@@ -7,16 +7,16 @@ import { IdAsKey } from '@core/nest/decorators'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
-@Resolver('Response')
+@Resolver('RadioQuestionResponse')
 export class RadioQuestionResponseResolver {
   constructor(private readonly responseService: ResponseService) { }
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
   async radioQuestionResponseCreate(
-    @Args('input') input: RadioQuestionResponseCreateInput
+    @Args('input') input: RadioQuestionResponseCreateInput & { __typename }
   ): Promise<RadioQuestionResponse> {
-    input.type = 'RadioQuestionResponse'
+    input.__typename = 'RadioQuestionResponse'
     return await this.responseService.save(input)
   }
 }
