@@ -11,12 +11,12 @@ interface ThemeProviderProps {
   nested?: boolean
 }
 
-export const ThemeProvider = ({
+export function ThemeProvider({
   themeName,
   themeMode,
   children,
   nested
-}: ThemeProviderProps): ReactElement => {
+}: ThemeProviderProps): ReactElement {
   const theme = themes[themeName][themeMode]
 
   return (
