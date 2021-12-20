@@ -27,7 +27,6 @@ import {
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
-import { UserJourneyRemove_userJourneyRemove } from '../../../__generated__/UserJourneyRemove'
 import { gql, useLazyQuery } from '@apollo/client'
 
 interface InviteUserModalProps {
@@ -38,9 +37,10 @@ export const GET_USERS_JOURNEYS = gql`
   query GetJourneyforInvitedUsers($journeyId: ID!) {
     journey(id: $journeyId) {
       usersJourneys {
+        id
+        role
         userId
         journeyId
-        role
         user {
           id
           firstName
@@ -61,7 +61,7 @@ export const InviteUserModal = ({
   const theme = useTheme()
   const [loadUsersJourneys, { loading, data }] = useLazyQuery(
     GET_USERS_JOURNEYS,
-    { variables: { journeyId: journey.id } }
+    { variables: { journeyId: journey.id }, fetchPolicy: 'network-only' }
   )
   const handleOpen = (): void => {
     setOpen(true)
@@ -69,16 +69,6 @@ export const InviteUserModal = ({
   }
 
   const handleClose = (): void => setOpen(false)
-
-  const handleRemove = (
-    userJourneyRemove: UserJourneyRemove_userJourneyRemove
-  ): void => {
-    // setUsersJourneys(
-    //   uj?.filter(
-    //     (userJourney) => userJourney.userId !== userJourneyRemove.userId
-    //   )
-    // )
-  }
 
   // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
   const [showAlert, setShowAlert] = useState(false)
@@ -107,141 +97,122 @@ export const InviteUserModal = ({
     setShowAlert(false)
   }
 
-  if (loading) {
-    return <CircularProgress />
-  } else
-    return (
-      <>
-        {/* Button to be removed and it's functionalities when merged to journeys single journey */}
-        {/* This modal should be progamatically called from journeys single journey */}
-        <Button variant="contained" onClick={handleOpen}>
-          Manage Users
-        </Button>
-        <Modal open={open} onClose={handleClose}>
+  return (
+    <>
+      {/* Button to be removed and it's functionalities when merged to journeys single journey */}
+      {/* This modal should be progamatically called from journeys single journey */}
+      <Button variant="contained" onClick={handleOpen}>
+        Manage Users
+      </Button>
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '100%',
+            maxWidth: 376,
+            bgcolor: 'background.paper'
+          }}
+        >
           <Box
             sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '100%',
-              maxWidth: 376,
-              bgcolor: 'background.paper'
+              mx: 6,
+              my: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }}
           >
-            <Box
-              sx={{
-                mx: 6,
-                my: 4,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Typography variant={'subtitle1'}>
-                Invite Other Editors
-              </Typography>
-              <CloseRounded onClick={handleClose} sx={{ cursor: 'pointer' }} />
-            </Box>
-            <Divider />
-            <Box p={6} pb={10}>
-              <FormControl fullWidth>
-                <FilledInput
-                  value={inviteLinkRef.current}
-                  sx={{ fontSize: theme.typography.body1.fontSize }}
-                  startAdornment={<LinkRounded sx={{ mr: 2 }} />}
-                  endAdornment={
-                    <>
-                      <ContentCopyRounded
-                        onClick={handleCopyLinkOpen}
-                        sx={{ ml: 3, cursor: 'pointer' }}
-                      />
-
-                      <Snackbar
-                        open={showAlert}
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right'
-                        }}
-                        TransitionComponent={Fade}
-                        autoHideDuration={3000}
-                        onClose={handleCopyLinkClose}
-                        message={'Link copied to clipboard'}
-                      />
-                    </>
-                  }
-                  disableUnderline
-                  hiddenLabel
-                />
-              </FormControl>
-              <Box ml={4} mb={4}>
-                <Typography variant={'caption'}>
-                  Anyone with this link can see journey and ask for editing
-                  rights. You can accept or reject every request.
-                </Typography>
-              </Box>
-              <Divider sx={{ my: 4 }} />
-
-              {/* Lists out all the Requested Editing Rights */}
-              <Typography variant={'body1'} gutterBottom>
-                Requested Editing Rights
-              </Typography>
-              {uj?.usersJourneys?.map(
-                (userJourney, i) =>
-                  userJourney.role === 'inviteRequested' && (
-                    <UserAccess
-                      key={i}
-                      userJourney={userJourney}
-                      handleRemove={handleRemove}
-                    />
-                  )
-              )}
-
-              {/* Lists out all the users with access */}
-              <Divider sx={{ my: 4 }} />
-              <Typography variant={'body1'} gutterBottom>
-                Users With Access
-              </Typography>
-              {uj?.usersJourneys?.map(
-                (userJourney, i) =>
-                  userJourney.role !== 'inviteRequested' && (
-                    <UserAccess
-                      key={i}
-                      userJourney={userJourney}
-                      handleRemove={handleRemove}
-                    />
-                  )
-              )}
-            </Box>
+            <Typography variant={'subtitle1'}>Invite Other Editors</Typography>
+            <CloseRounded onClick={handleClose} sx={{ cursor: 'pointer' }} />
           </Box>
-        </Modal>
-      </>
-    )
+          <Divider />
+          <Box p={6} pb={10}>
+            <FormControl fullWidth>
+              <FilledInput
+                value={inviteLinkRef.current}
+                sx={{ fontSize: theme.typography.body1.fontSize }}
+                startAdornment={<LinkRounded sx={{ mr: 2 }} />}
+                endAdornment={
+                  <>
+                    <ContentCopyRounded
+                      onClick={handleCopyLinkOpen}
+                      sx={{ ml: 3, cursor: 'pointer' }}
+                    />
+
+                    <Snackbar
+                      open={showAlert}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right'
+                      }}
+                      TransitionComponent={Fade}
+                      autoHideDuration={3000}
+                      onClose={handleCopyLinkClose}
+                      message={'Link copied to clipboard'}
+                    />
+                  </>
+                }
+                disableUnderline
+                hiddenLabel
+              />
+            </FormControl>
+            <Box ml={4} mb={4}>
+              <Typography variant={'caption'}>
+                Anyone with this link can see journey and ask for editing
+                rights. You can accept or reject every request.
+              </Typography>
+            </Box>
+            <Divider sx={{ my: 4 }} />
+
+            {loading ? (
+              <CircularProgress />
+            ) : (
+              <>
+                {/* Lists out all the Requested Editing Rights */}
+                <Typography variant={'body1'} gutterBottom>
+                  Requested Editing Rights
+                </Typography>
+                {uj?.usersJourneys?.map(
+                  (userJourney, i) =>
+                    userJourney.role === 'inviteRequested' && (
+                      <UserAccess key={i} userJourney={userJourney} />
+                    )
+                )}
+
+                {/* Lists out all the users with access */}
+                <Divider sx={{ my: 4 }} />
+                <Typography variant={'body1'} gutterBottom>
+                  Users With Access
+                </Typography>
+                {uj?.usersJourneys?.map(
+                  (userJourney, i) =>
+                    userJourney.role !== 'inviteRequested' && (
+                      <UserAccess key={i} userJourney={userJourney} />
+                    )
+                )}
+              </>
+            )}
+          </Box>
+        </Box>
+      </Modal>
+    </>
+  )
 }
 
 interface UserAccessProps {
   userJourney: UsersJourneys
-  handleRemove: (userJourneyRemove: UserJourneyRemove_userJourneyRemove) => void
 }
 
-export const UserAccess = ({
-  userJourney,
-  handleRemove
-}: UserAccessProps): ReactElement => {
+export const UserAccess = ({ userJourney }: UserAccessProps): ReactElement => {
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
     setOpen(true)
-  }
-
-  const handleClose = (result): void => {
-    if (result.userJourneyRemove !== undefined) {
-      handleRemove(result.userJourneyRemove)
-    } else {
-      setOpen(false)
-    }
   }
 
   return (
@@ -303,21 +274,14 @@ export const UserAccess = ({
           }}
           anchorEl={anchorEl}
           open={open}
-          onClose={handleClose}
         >
           {userJourney.role === 'inviteRequested' ? (
-            <ApproveUser
-              usersJourneys={userJourney}
-              handleClose={handleClose}
-            />
+            <ApproveUser usersJourneys={userJourney} />
           ) : (
-            <PromoteUser
-              usersJourneys={userJourney}
-              handleClose={handleClose}
-            />
+            <PromoteUser usersJourneys={userJourney} />
           )}
           <Divider />
-          <RemoveUser usersJourneys={userJourney} handleRemove={handleClose} />
+          <RemoveUser usersJourneys={userJourney} />
         </Menu>
       </Box>
     </Box>

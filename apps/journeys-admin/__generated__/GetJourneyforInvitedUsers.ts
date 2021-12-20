@@ -20,15 +20,13 @@ export interface GetJourneyforInvitedUsers_journey_usersJourneys_user {
 
 export interface GetJourneyforInvitedUsers_journey_usersJourneys {
   __typename: "UserJourney";
-  userId: string;
-  journeyId: string;
+  id: string;
   role: UserJourneyRole;
   user: GetJourneyforInvitedUsers_journey_usersJourneys_user | null;
 }
 
 export interface GetJourneyforInvitedUsers_journey {
   __typename: "Journey";
-  slug: string;
   usersJourneys: GetJourneyforInvitedUsers_journey_usersJourneys[] | null;
 }
 

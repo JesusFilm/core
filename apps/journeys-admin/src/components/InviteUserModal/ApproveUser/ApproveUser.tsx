@@ -4,33 +4,36 @@ import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../_
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyUpdate } from '../../../../__generated__/UserJourneyUpdate'
 import { BeenhereRounded } from '@mui/icons-material'
+import { GET_USERS_JOURNEYS } from '../InviteUserModal'
 
 interface ApproveUserProps {
   usersJourneys: UsersJourneys
-  handleClose: (result) => void
 }
 
 export const USER_JOURNEY_APPROVE = gql`
   mutation UserJourneyUpdate($input: UserJourneyUpdateInput!) {
     userJourneyUpdate(input: $input) {
-      userId
-      journeyId
+      id
     }
   }
 `
 
 export const ApproveUser = ({
-  usersJourneys,
-  handleClose
+  usersJourneys
 }: ApproveUserProps): ReactElement => {
-  const [userJourneyApprove] =
-    useMutation<UserJourneyUpdate>(USER_JOURNEY_APPROVE)
+  console.log(usersJourneys)
+  const [userJourneyApprove] = useMutation<UserJourneyUpdate>(
+    USER_JOURNEY_APPROVE,
+    {
+      refetchQueries: [GET_USERS_JOURNEYS, 'UserJourneyUpdate']
+    }
+  )
 
   const handleApproveUser = async (
     userId: string,
     journeyId: string
   ): Promise<void> => {
-    const result = await userJourneyApprove({
+    await userJourneyApprove({
       variables: {
         input: {
           userId,
@@ -44,7 +47,6 @@ export const ApproveUser = ({
         }
       }
     })
-    void handleClose(result)
   }
 
   return (

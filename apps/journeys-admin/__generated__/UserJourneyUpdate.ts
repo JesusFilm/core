@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { UserJourneyUpdateInput } from "./globalTypes";
+import { UserJourneyUpdateInput, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UserJourneyUpdate
@@ -11,8 +11,10 @@ import { UserJourneyUpdateInput } from "./globalTypes";
 
 export interface UserJourneyUpdate_userJourneyUpdate {
   __typename: "UserJourney";
+  id: string;
   userId: string;
   journeyId: string;
+  role: UserJourneyRole;
 }
 
 export interface UserJourneyUpdate {

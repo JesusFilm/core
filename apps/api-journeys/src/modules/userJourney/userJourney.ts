@@ -3,8 +3,6 @@ import { createModule, gql } from 'graphql-modules'
 import { UserJourneyModule } from './__generated__/types'
 import { AuthenticationError } from 'apollo-server-errors'
 import { includes } from 'lodash'
-// import { PrismaPromise, PrismaClient } from '.prisma/api-journeys-client'
-// import { UserJourney } from '../../__generated__/types'
 
 const typeDefs = gql`
   enum UserJourneyRole {
@@ -54,6 +52,7 @@ const typeDefs = gql`
   }
 
   type UserJourney {
+    id: ID!
     userId: ID!
     journeyId: ID!
     role: UserJourneyRole!
@@ -87,6 +86,11 @@ const resolvers: UserJourneyModule.Resolvers = {
         }
       })
       return usersJourneys
+    }
+  },
+  UserJourney: {
+    id(userJourney) {
+      return `${userJourney.journeyId}:${userJourney.userId}`
     }
   },
   Mutation: {
@@ -228,41 +232,6 @@ const resolvers: UserJourneyModule.Resolvers = {
         }
       })
       return newOwner
-
-      // ideally done within a transaction but not sure how to do that with prisma
-      // there seems to be a typescript problem
-
-      // return await db.$transaction(
-      //   async (
-      //     db: PrismaClient
-      //   ): Promise<Prisma.Prisma__UserJourneyClient<UserJourney>> => {
-      //     await db.userJourney.update({
-      //       where: {
-      //         uniqueUserJourney: {
-      //           userId: actor.userId,
-      //           journeyId: actor.journeyId
-      //         }
-      //       },
-      //       data: {
-      //         role: 'editor'
-      //       }
-      //     })
-
-      //     const newOwner = db.userJourney.update({
-      //       where: {
-      //         uniqueUserJourney: {
-      //           userId: input.userId,
-      //           journeyId: input.journeyId
-      //         }
-      //       },
-      //       data: {
-      //         role: 'owner'
-      //       }
-      //     })
-
-      //     return newOwner
-      //   }
-      // )
     }
   }
 }

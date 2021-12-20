@@ -75,6 +75,10 @@ const typeDefs = gql`
     slug: String
   }
 
+  extend type UserJourney {
+    journey: Journey
+  }
+
   extend type Mutation {
     journeyCreate(input: JourneyCreateInput!): Journey!
     journeyUpdate(input: JourneyUpdateInput!): Journey!
@@ -87,6 +91,16 @@ const typeDefs = gql`
 `
 
 const resolvers: JourneyModule.Resolvers = {
+  UserJourney: {
+    async journey(userJourney, __, { db }) {
+      const journey = await db.journey.findUnique({
+        where: {
+          id: userJourney.journeyId
+        }
+      })
+      return journey
+    }
+  },
   Journey: {
     status: (journey) => {
       return journey.publishedAt === null ? 'draft' : 'published'

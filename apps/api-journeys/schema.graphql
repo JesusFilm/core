@@ -425,9 +425,11 @@ input UserCreateInput {
 }
 
 type UserJourney {
+  id: ID!
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
+  journey: Journey
   user: User
 }
 

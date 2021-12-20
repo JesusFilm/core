@@ -3,7 +3,7 @@ import * as Types from "../../../__generated__/types";
 import * as gm from "graphql-modules";
 export namespace UserJourneyModule {
   interface DefinedFields {
-    UserJourney: 'userId' | 'journeyId' | 'role';
+    UserJourney: 'id' | 'userId' | 'journeyId' | 'role';
     Mutation: 'userJourneyCreate' | 'userJourneyUpdate' | 'userJourneyPromote' | 'userJourneyRemove' | 'userJourneyRequest';
     Journey: 'usersJourneys';
     User: 'usersJourneys';
@@ -60,6 +60,7 @@ export namespace UserJourneyModule {
     };
     UserJourney?: {
       '*'?: gm.Middleware[];
+      id?: gm.Middleware[];
       userId?: gm.Middleware[];
       journeyId?: gm.Middleware[];
       role?: gm.Middleware[];

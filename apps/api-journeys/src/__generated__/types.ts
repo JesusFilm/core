@@ -516,6 +516,8 @@ export type UserCreateInput = {
 
 export type UserJourney = {
   __typename?: 'UserJourney';
+  id: Scalars['ID'];
+  journey?: Maybe<Journey>;
   journeyId: Scalars['ID'];
   role: UserJourneyRole;
   user?: Maybe<User>;
@@ -1043,6 +1045,8 @@ export type UserResolvers<ContextType = GraphQLModules.Context, ParentType exten
 };
 
 export type UserJourneyResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['UserJourney'] = ResolversParentTypes['UserJourney']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType>;
   journeyId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['UserJourneyRole'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
