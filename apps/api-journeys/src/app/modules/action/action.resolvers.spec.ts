@@ -1,7 +1,7 @@
 
 
 import { Test, TestingModule } from '@nestjs/testing'
-import { RadioOptionBlock } from '../../graphql'
+import { RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolvers } from '../block/block.resolvers'
 import { BlockService } from '../block/block.service'
 
@@ -123,14 +123,14 @@ describe('ActionResolvers', () => {
 
   describe('NavigateToBlockAction', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           get: jest.fn(() => block1)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice]
+        providers: [BlockResolvers, blockService]
       }).compile()
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
@@ -142,14 +142,14 @@ describe('ActionResolvers', () => {
 
   describe('NavigateToJourneyAction', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           get: jest.fn(() => block2)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice]
+        providers: [BlockResolvers, blockService]
       }).compile()
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
@@ -161,14 +161,14 @@ describe('ActionResolvers', () => {
 
   describe('LinkAction', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           get: jest.fn(() => block3)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice]
+        providers: [BlockResolvers, blockService]
       }).compile()
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })
@@ -180,14 +180,14 @@ describe('ActionResolvers', () => {
 
   describe('NavigateAction', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           get: jest.fn(() => block4)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice]
+        providers: [BlockResolvers, blockService]
       }).compile()
       resolver = module.get<BlockResolvers>(BlockResolvers)
     })

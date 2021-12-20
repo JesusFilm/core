@@ -6,7 +6,7 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { Block, IdType, ImageBlock, Journey, JourneyCreateInput, JourneyStatus, JourneyUpdateInput } from '../../graphql'
+import { Block, IdType, ImageBlock, Journey, JourneyCreateInput, JourneyStatus, JourneyUpdateInput } from '../../__generated__/graphql'
 import { BlockMiddleware } from '../../lib/decorators'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { BlockService } from '../block/block.service'
@@ -24,14 +24,14 @@ function resolveStatus(journey: Journey): Journey {
 
 @Resolver('Journey')
 export class JourneyResolvers {
-  constructor(private readonly journeyservice: JourneyService, private readonly blockService: BlockService) { }
+  constructor(private readonly journeyService: JourneyService, private readonly blockService: BlockService) { }
 
   @Query()
   @KeyAsId()
   async journeys(@Args('status') status: JourneyStatus): Promise<Journey[]> {
     const result = status === JourneyStatus.published
-      ? await this.journeyservice.getAllPublishedJourneys()
-      : await this.journeyservice.getAllDraftJourneys()
+      ? await this.journeyService.getAllPublishedJourneys()
+      : await this.journeyService.getAllDraftJourneys()
     return result.map(resolveStatus)
   }
 
@@ -39,8 +39,8 @@ export class JourneyResolvers {
   @KeyAsId()
   async journey(@Args('id') _key: string, @Args('idType') idType: IdType = IdType.slug): Promise<Journey> {
     const result: Journey = idType === IdType.slug
-      ? await this.journeyservice.getBySlug(_key)
-      : await this.journeyservice.get(_key)
+      ? await this.journeyService.getBySlug(_key)
+      : await this.journeyService.get(_key)
     return resolveStatus(result)
   }
 
@@ -50,7 +50,7 @@ export class JourneyResolvers {
   async createJourney(@Args('input') input: JourneyCreateInput): Promise<Journey> {
     if (input.slug != null) 
       input.slug = slugify(input.slug ?? input.title, { remove: /[*+~.()'"!:@#]/g })
-    return await this.journeyservice.save(input)
+    return await this.journeyService.save(input)
   }
 
   @Mutation()
@@ -58,13 +58,13 @@ export class JourneyResolvers {
   async journeyUpdate(@Args('id') id: string, @Args('input') input: JourneyUpdateInput): Promise<Journey> {
     if (input.slug != null) 
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
-    return await this.journeyservice.update(id, input)
+    return await this.journeyService.update(id, input)
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async journeyPublish(@Args('id') id: string): Promise<Journey> {    
-    return await this.journeyservice.update(id, { publishedAt: new Date().toISOString() })
+    return await this.journeyService.update(id, { publishedAt: new Date().toISOString() })
   }
 
   @ResolveField('blocks')

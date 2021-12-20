@@ -12,7 +12,7 @@ import { UserJourneyModule } from './modules/userJourney/userJourney.module'
     GraphQLFederationModule.forRoot({
       typePaths: [join(process.cwd(), 'apps/api-users/src/app/**/*.graphql')],
       cors: true,      
-      context: ({req}) => ({ headers: req.headers }),      
+      context: ({ req }) => ({ headers: req.headers }),      
     }),
   ]  
 })

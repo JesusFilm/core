@@ -90,14 +90,14 @@ describe('VideoContentResolvers', () => {
 
   describe('VideoBlock Arclight', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           get: jest.fn(() => block1)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice]
+        providers: [BlockResolvers, blockService]
       }).compile()
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
@@ -108,14 +108,14 @@ describe('VideoContentResolvers', () => {
 
   describe('VideoBlock', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           get: jest.fn(() => block2)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice]
+        providers: [BlockResolvers, blockService]
       }).compile()
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
@@ -126,7 +126,7 @@ describe('VideoContentResolvers', () => {
   
   describe('Create Update', () => {
     beforeEach(async () => {
-      const blockservice = {
+      const blockService = {
         provide: BlockService,
         useFactory: () => ({
           save: jest.fn(input => input),
@@ -135,7 +135,7 @@ describe('VideoContentResolvers', () => {
       }
          
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockservice, VideoBlockResolvers]
+        providers: [BlockResolvers, blockService, VideoBlockResolvers]
       }).compile()
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
       videoBlockResolver = module.get<VideoBlockResolvers>(VideoBlockResolvers)

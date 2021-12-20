@@ -57,13 +57,13 @@ describe('ActionResolvers', () => {
     slug: 'fact-or-fiction'
   }
 
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => block)
     })
   }
-  const journeyservice = {
+  const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
       get: jest.fn(() => journey)
@@ -74,15 +74,10 @@ describe('ActionResolvers', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, NavigateToJourneyActionResolver, blockservice, journeyservice]
+      providers: [BlockResolvers, NavigateToJourneyActionResolver, blockService, journeyService]
     }).compile()
     resolver = module.get<NavigateToJourneyActionResolver>(NavigateToJourneyActionResolver)
     blockresolver = module.get<BlockResolvers>(BlockResolvers)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
-    expect(blockresolver).toBeDefined()
   })
 
   describe('NavigateToJourneyAction', () => {

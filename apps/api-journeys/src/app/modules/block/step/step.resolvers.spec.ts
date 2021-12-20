@@ -46,7 +46,7 @@ describe('Step', () => {
     nextBlockId: "4"
   }
   
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() =>  block),
@@ -59,15 +59,11 @@ describe('Step', () => {
  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockservice, StepBlockResolvers]
+      providers: [BlockResolvers, blockService, StepBlockResolvers]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
     stepBlockResolver = module.get<StepBlockResolvers>(StepBlockResolvers)
     service = await module.resolve(BlockService)
-  })
-
-  it('should be defined', () => {
-    expect(blockResolver).toBeDefined()
   })
 
   describe('StepBlock', () => {

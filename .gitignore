@@ -33,7 +33,6 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-/.migrations.json
 
 # System Files
 .DS_Store
@@ -42,6 +41,5 @@ Thumbs.db
 #local .env files
 .env*local
 
-# nx fluff
+# nx generated files
 migrations.json
-

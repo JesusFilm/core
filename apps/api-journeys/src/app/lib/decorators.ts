@@ -1,6 +1,6 @@
 
 import { flow, has } from 'lodash'
-import { Block, VideoArclight, VideoBlock } from '../graphql'
+import { Block, VideoArclight, VideoBlock } from '../__generated__/graphql'
 
 const arcLightVideoSrc = (obj: VideoBlock): Block => {
   if (obj?.type === 'VideoBlock' && has(obj.videoContent, 'mediaComponentId')) {

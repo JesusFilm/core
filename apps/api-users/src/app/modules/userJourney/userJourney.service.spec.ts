@@ -4,7 +4,7 @@ import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockCollectionRemoveResult, mockCollectionSaveResult, mockDbQueryResult } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { UserJourneyRoles } from '../../graphql'
+import { UserJourneyRoles } from '../../__generated__/graphql'
 
 describe('UserJourneyService', () => {
   let service: UserJourneyService
@@ -21,10 +21,6 @@ describe('UserJourneyService', () => {
   })
   afterAll(() => {
     jest.resetAllMocks()
-  })
-
-  it('should be defined', () => {
-    expect(service).toBeDefined()
   })
 
   const userJourney = {

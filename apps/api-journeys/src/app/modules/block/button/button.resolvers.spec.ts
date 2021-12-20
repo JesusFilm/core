@@ -60,7 +60,7 @@ describe('Button', () => {
     }
   }
   
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() =>  block),
@@ -71,13 +71,9 @@ describe('Button', () => {
  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockservice]
+      providers: [BlockResolvers, blockService]
     }).compile()
     resolver = module.get<BlockResolvers>(BlockResolvers)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
   })
 
   describe('ButtonBlock', () => {

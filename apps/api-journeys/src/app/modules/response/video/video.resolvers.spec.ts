@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { VideoResponseStateEnum } from '../../../graphql'
+import { VideoResponseStateEnum } from '../../../__generated__/graphql'
 import { ResponseService } from '../response.service'
 import { VideoResponseResolver } from './video.resolvers'
 
@@ -24,7 +24,7 @@ describe('VideoResponse', () => {
     position: 30
   }
 
-  const responseservice = {
+  const responseService = {
     provide: ResponseService,
     useFactory: () => ({
       save: jest.fn(() => response),      
@@ -34,13 +34,9 @@ describe('VideoResponse', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoResponseResolver, responseservice]
+      providers: [VideoResponseResolver, responseService]
     }).compile()
     resolver = module.get<VideoResponseResolver>(VideoResponseResolver)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
   })
 
   describe('VideoResponse', () => {

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { JourneyService } from './journey.service'
-import { ThemeMode, ThemeName } from '../../graphql'
+import { ThemeMode, ThemeName } from '../../__generated__/graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockCollectionSaveResult, mockDbQueryResult } from '@core/nest/database'
@@ -21,10 +21,6 @@ describe('JourneyService', () => {
   })
   afterAll(() => {
     jest.resetAllMocks()
-  })
-
-  it('should be defined', () => {
-    expect(service).toBeDefined()
   })
 
   const journey = {

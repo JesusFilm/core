@@ -33,6 +33,7 @@ export class UserJourneyUpdateInput {
 }
 
 export class User {
+    __typename?: 'User';
     id: string;
     firstName?: Nullable<string>;
     lastName?: Nullable<string>;
@@ -42,6 +43,7 @@ export class User {
 }
 
 export class UserJourney {
+    __typename?: 'UserJourney';
     user?: Nullable<User>;
     id: string;
     userId: string;

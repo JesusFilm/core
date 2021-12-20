@@ -1,7 +1,7 @@
 
    
 import { Test, TestingModule } from '@nestjs/testing'
-import { ImageBlockCreateInput } from '../../../graphql'
+import { ImageBlockCreateInput } from '../../../__generated__/graphql'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
 import { ImageBlockResolvers } from './image.resolvers'
@@ -69,7 +69,7 @@ describe('Image', () => {
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() =>  block),
@@ -80,16 +80,11 @@ describe('Image', () => {
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockservice, ImageBlockResolvers]
+      providers: [BlockResolvers, blockService, ImageBlockResolvers]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
     resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers)
     service = await module.resolve(BlockService)
-  })
-
-  it('should be defined', () => {
-    expect(blockResolver).toBeDefined()
-    expect(blockResolver).toBeDefined()
   })
 
   describe('ImageBlock', () => {

@@ -1,4 +1,4 @@
-import { ThemeMode, ThemeName } from '../..//src/app/graphql'
+import { ThemeMode, ThemeName } from '../../src/app/__generated__/graphql'
 import { aql, Database } from 'arangojs'
 
 const db = new Database({ url: process.env.DATABASE_URL })

@@ -1,7 +1,7 @@
 import { Args, Resolver, Mutation } from '@nestjs/graphql'
 import { UserJourneyService } from './userJourney.service'
 import { IdAsKey } from '@core/nest/decorators'
-import { UserJourney, UserJourneyCreateInput, UserJourneyUpdateInput } from '../../graphql'
+import { UserJourney, UserJourneyCreateInput, UserJourneyUpdateInput } from '../../__generated__/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 

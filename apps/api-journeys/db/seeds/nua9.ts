@@ -1,4 +1,4 @@
-import { ThemeMode, ThemeName } from '../../src/app/graphql'
+import { ThemeMode, ThemeName } from '../../src/app/__generated__/graphql'
 import { aql, Database } from 'arangojs'
 import { v4 as uuidv4 } from 'uuid'
 

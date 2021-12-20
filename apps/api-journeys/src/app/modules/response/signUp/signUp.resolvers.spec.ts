@@ -23,7 +23,7 @@ describe('SignUpResponse', () => {
     email: 'robert.smith@jesusfilm.org'
   }
 
-  const responseservice = {
+  const responseService = {
     provide: ResponseService,
     useFactory: () => ({
       save: jest.fn(() => response),      
@@ -33,13 +33,9 @@ describe('SignUpResponse', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SignUpResponseResolver, responseservice]
+      providers: [SignUpResponseResolver, responseService]
     }).compile()
     resolver = module.get<SignUpResponseResolver>(SignUpResponseResolver)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
   })
 
   describe('SignUpResponse', () => {

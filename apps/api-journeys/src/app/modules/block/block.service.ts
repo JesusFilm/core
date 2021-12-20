@@ -3,7 +3,7 @@ import { aql } from 'arangojs'
 
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { Block, Journey } from '../../graphql'
+import { Block, Journey } from '../../__generated__/graphql'
 
 @Injectable()
 export class BlockService extends BaseService {

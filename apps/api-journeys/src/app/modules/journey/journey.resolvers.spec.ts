@@ -1,7 +1,7 @@
 
    
 import { Test, TestingModule } from '@nestjs/testing'
-import { JourneyStatus, ThemeMode, ThemeName } from '../../graphql'
+import { JourneyStatus, ThemeMode, ThemeName } from '../../__generated__/graphql'
 import { BlockResolvers } from '../block/block.resolvers'
 import { BlockService } from '../block/block.service'
 import { JourneyResolvers } from './journey.resolvers'
@@ -90,7 +90,7 @@ describe('Journey', () => {
     status: JourneyStatus.draft
   }
   
-  const journeyservice = {
+  const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
       getBySlug: jest.fn(() =>  journey),
@@ -100,7 +100,7 @@ describe('Journey', () => {
       update: jest.fn(() => journey)
     })
   }
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() =>  [block]),
@@ -110,14 +110,10 @@ describe('Journey', () => {
  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JourneyResolvers, journeyservice, blockservice, BlockResolvers]
+      providers: [JourneyResolvers, journeyService, blockService, BlockResolvers]
     }).compile()
     resolver = module.get<JourneyResolvers>(JourneyResolvers)
     service = module.get<JourneyService>(JourneyService)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
   })
 
   describe('published Journey', () => {

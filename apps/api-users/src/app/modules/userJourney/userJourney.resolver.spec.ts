@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserJourneyRoles } from '../../graphql'
+import { UserJourneyRoles } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
@@ -41,10 +41,6 @@ describe('Step', () => {
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
   })
 
   describe('userJourneyCreate', () => {

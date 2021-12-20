@@ -281,33 +281,39 @@ export interface Response {
 }
 
 export class Icon {
+    __typename?: 'Icon';
     name: IconName;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
 
 export class NavigateAction implements Action {
+    __typename?: 'NavigateAction';
     gtmEventName?: Nullable<string>;
 }
 
 export class NavigateToBlockAction implements Action {
+    __typename?: 'NavigateToBlockAction';
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
 
 export class NavigateToJourneyAction implements Action {
+    __typename?: 'NavigateToJourneyAction';
     gtmEventName?: Nullable<string>;
     journeyId: string;
     journey?: Nullable<Journey>;
 }
 
 export class LinkAction implements Action {
+    __typename?: 'LinkAction';
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
 }
 
 export class Journey {
+    __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
     id: string;
@@ -324,6 +330,7 @@ export class Journey {
 }
 
 export class ButtonBlock implements Block {
+    __typename?: 'ButtonBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -337,6 +344,7 @@ export class ButtonBlock implements Block {
 }
 
 export class CardBlock implements Block {
+    __typename?: 'CardBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -348,6 +356,7 @@ export class CardBlock implements Block {
 }
 
 export class GridContainerBlock implements Block {
+    __typename?: 'GridContainerBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -358,6 +367,7 @@ export class GridContainerBlock implements Block {
 }
 
 export class GridItemBlock implements Block {
+    __typename?: 'GridItemBlock';
     id: string;
     type: string;
     parentBlockId?: Nullable<string>;
@@ -367,6 +377,7 @@ export class GridItemBlock implements Block {
 }
 
 export class ImageBlock implements Block {
+    __typename?: 'ImageBlock';
     id: string;
     type: string;
     parentBlockId?: Nullable<string>;
@@ -378,6 +389,7 @@ export class ImageBlock implements Block {
 }
 
 export class RadioOptionBlock implements Block {
+    __typename?: 'RadioOptionBlock';
     id: string;
     type: string;
     parentBlockId?: Nullable<string>;
@@ -386,6 +398,7 @@ export class RadioOptionBlock implements Block {
 }
 
 export class RadioQuestionBlock implements Block {
+    __typename?: 'RadioQuestionBlock';
     id: string;
     type: string;
     parentBlockId?: Nullable<string>;
@@ -394,6 +407,7 @@ export class RadioQuestionBlock implements Block {
 }
 
 export class SignUpBlock implements Block {
+    __typename?: 'SignUpBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -403,6 +417,7 @@ export class SignUpBlock implements Block {
 }
 
 export class StepBlock implements Block {
+    __typename?: 'StepBlock';
     id: string;
     type: string;
     nextBlockId?: Nullable<string>;
@@ -411,6 +426,7 @@ export class StepBlock implements Block {
 }
 
 export class TypographyBlock implements Block {
+    __typename?: 'TypographyBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -421,16 +437,19 @@ export class TypographyBlock implements Block {
 }
 
 export class VideoArclight implements VideoContent {
+    __typename?: 'VideoArclight';
     mediaComponentId: string;
     languageId: string;
     src: string;
 }
 
 export class VideoGeneric implements VideoContent {
+    __typename?: 'VideoGeneric';
     src: string;
 }
 
 export class VideoBlock implements Block {
+    __typename?: 'VideoBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -445,6 +464,7 @@ export class VideoBlock implements Block {
 }
 
 export class VideoTriggerBlock implements Block {
+    __typename?: 'VideoTriggerBlock';
     id: string;
     parentBlockId?: Nullable<string>;
     type: string;
@@ -453,6 +473,7 @@ export class VideoTriggerBlock implements Block {
 }
 
 export class RadioQuestionResponse implements Response {
+    __typename?: 'RadioQuestionResponse';
     id: string;
     userId: string;
     type: string;
@@ -461,6 +482,7 @@ export class RadioQuestionResponse implements Response {
 }
 
 export class SignUpResponse implements Response {
+    __typename?: 'SignUpResponse';
     id: string;
     userId: string;
     type: string;
@@ -470,6 +492,7 @@ export class SignUpResponse implements Response {
 }
 
 export class VideoResponse implements Response {
+    __typename?: 'VideoResponse';
     id: string;
     userId: string;
     type: string;

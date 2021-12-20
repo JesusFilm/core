@@ -5,7 +5,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql'
-import { VideoBlock, VideoBlockCreateInput, VideoBlockUpdateInput, VideoContent, VideoContentInput } from '../../../graphql'
+import { VideoBlock, VideoBlockCreateInput, VideoBlockUpdateInput, VideoContent, VideoContentInput } from '../../../__generated__/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { IdAsKey } from '@core/nest/decorators'
 import { BlockService } from '../block.service'
@@ -27,20 +27,20 @@ export class VideoContentResolvers {
 
 @Resolver('VideoBlock')
 export class VideoBlockResolvers {
-  constructor(private readonly blockservice: BlockService) { }
+  constructor(private readonly blockService: BlockService) { }
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
   async videoBlockCreate(@Args('input') input: VideoBlockCreateInput): Promise<VideoBlock> {
     input.type = 'VideoBlock'
     if (checkVideoContentInput(input?.videoContent))
-      return await this.blockservice.save(input)
+      return await this.blockService.save(input)
     throw new UserInputError('VideoContentInput requires src or mediaComponentId and languageId values')
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async videoBlockUpdate(@Args('id') id: string, @Args('input') input: VideoBlockUpdateInput): Promise<VideoBlock> {
-    return await this.blockservice.update(id, input)
+    return await this.blockService.update(id, input)
   }
 }

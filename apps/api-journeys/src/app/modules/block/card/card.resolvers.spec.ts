@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ThemeMode, ThemeName } from '../../../graphql'
+import { ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
 import { CardBlockResolvers } from './card.resolvers'
@@ -56,7 +56,7 @@ describe('Card', () => {
     fullscreen: true
   }
   
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() =>  block),
@@ -69,15 +69,11 @@ describe('Card', () => {
  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockservice, CardBlockResolvers]
+      providers: [BlockResolvers, blockService, CardBlockResolvers]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
     cardBlockResolver = module.get<CardBlockResolvers>(CardBlockResolvers)
     service = await module.resolve(BlockService)
-  })
-
-  it('should be defined', () => {
-    expect(blockResolver).toBeDefined()
   })
 
   describe('CardBlock', () => {

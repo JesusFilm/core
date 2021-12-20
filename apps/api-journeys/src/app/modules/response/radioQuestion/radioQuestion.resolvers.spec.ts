@@ -21,7 +21,7 @@ describe('RadioQuestion', () => {
     radioOptionBlockId: "4"
   }
 
-  const responseservice = {
+  const responseService = {
     provide: ResponseService,
     useFactory: () => ({
       save: jest.fn(() => response),      
@@ -31,13 +31,9 @@ describe('RadioQuestion', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RadioQuestionResponseResolver, responseservice]
+      providers: [RadioQuestionResponseResolver, responseService]
     }).compile()
     resolver = module.get<RadioQuestionResponseResolver>(RadioQuestionResponseResolver)
-  })
-
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
   })
 
   describe('RadioQuestionResponse', () => {

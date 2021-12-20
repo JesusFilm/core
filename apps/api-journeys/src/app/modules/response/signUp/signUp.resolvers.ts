@@ -2,14 +2,14 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { SignUpResponse, SignUpResponseCreateInput } from '../../../graphql'
+import { SignUpResponse, SignUpResponseCreateInput } from '../../../__generated__/graphql'
 import { IdAsKey } from '@core/nest/decorators'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
 @Resolver('Response')
 export class SignUpResponseResolver {
-  constructor(private readonly responseservice: ResponseService) { }
+  constructor(private readonly responseService: ResponseService) { }
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
@@ -17,6 +17,6 @@ export class SignUpResponseResolver {
     @Args('input') input: SignUpResponseCreateInput,      
   ): Promise<SignUpResponse> {
     input.type = 'SignUpResponse'
-    return await this.responseservice.save(input)
+    return await this.responseService.save(input)
   }
 }
