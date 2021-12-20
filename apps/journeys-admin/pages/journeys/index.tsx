@@ -13,6 +13,7 @@ import { JourneyList } from '../../src/components/'
 import { UseFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -41,7 +42,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
 
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      {/* Next Steps Header */}
+      <JourneysAppBar variant={'list'} />
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys

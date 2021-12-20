@@ -5,6 +5,7 @@ import { Lock as LockIcon, LockOpen as LockOpenIcon } from '@mui/icons-material'
 import { Attribute } from '../..'
 import { EditorContext } from '../../../../Context'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/BlockFields'
+import { NextCard } from './NextCard'
 
 function flatten(children: TreeBlock[]): TreeBlock[] {
   return children.reduce(
@@ -15,11 +16,12 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 
 export function Step({
   id,
-  locked,
-  nextBlockId
+  nextBlockId,
+  locked
 }: TreeBlock<StepBlock>): ReactElement {
   const {
-    state: { steps }
+    state: { steps },
+    dispatch
   } = useContext(EditorContext)
   const nextBlock = steps.find(({ id }) => id === nextBlockId)
   const nextBlockDescendants = flatten(nextBlock?.children ?? [])
@@ -36,6 +38,16 @@ export function Step({
         nextBlock != null ? nextBlockHeading?.content ?? 'Untitled' : 'None'
       }
       description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
+      onClick={() => {
+        dispatch({
+          type: 'SetDrawerPropsAction',
+          title: 'Next Card Properties',
+          mobileOpen: true,
+          children: (
+            <NextCard id={id} nextBlockId={nextBlockId} locked={locked} />
+          )
+        })
+      }}
     />
   )
 }
