@@ -31,8 +31,8 @@ export class VideoBlockResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
-  async videoBlockCreate(@Args('input') input: VideoBlockCreateInput): Promise<VideoBlock> {
-    // input.type = 'VideoBlock'
+  async videoBlockCreate(@Args('input') input: VideoBlockCreateInput & { __typename }): Promise<VideoBlock> {
+    input.__typename = 'VideoBlock'
     if (checkVideoContentInput(input?.videoContent))
       return await this.blockService.save(input)
     throw new UserInputError('VideoContentInput requires src or mediaComponentId and languageId values')

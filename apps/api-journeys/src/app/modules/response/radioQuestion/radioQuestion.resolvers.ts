@@ -14,10 +14,9 @@ export class RadioQuestionResponseResolver {
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
   async radioQuestionResponseCreate(
-    @Args('input') input: RadioQuestionResponseCreateInput
+    @Args('input') input: RadioQuestionResponseCreateInput & { __typename }
   ): Promise<RadioQuestionResponse> {
-    // input.__typename = 'RadioQuestionResponse'
-    console.log(input)
+    input.__typename = 'RadioQuestionResponse'
     return await this.responseService.save(input)
   }
 }

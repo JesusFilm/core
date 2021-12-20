@@ -50,8 +50,8 @@ export class ImageBlockResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
-  async imageBlockCreate(@Args('input') input: ImageBlockCreateInput): Promise<ImageBlock>{
-    // input.type = 'ImageBlock'   
+  async imageBlockCreate(@Args('input') input: ImageBlockCreateInput & { __typename }): Promise<ImageBlock>{
+    input.__typename = 'ImageBlock'   
     const block = await handleImage(input)    
     return await this.blockService.save(block)
   }

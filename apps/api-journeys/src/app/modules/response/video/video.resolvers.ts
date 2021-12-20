@@ -13,9 +13,9 @@ export class VideoResponseResolver {
   @UseGuards(GqlAuthGuard)
   @IdAsKey()
   async videoResponseCreate(
-    @Args('input') input: VideoResponseCreateInput
+    @Args('input') input: VideoResponseCreateInput & { __typename }
   ): Promise<VideoResponse> {
-    // input.type = 'VideoResponse'
+    input.__typename = 'VideoResponse'    
     return await this.responseService.save(input)
   }
 }

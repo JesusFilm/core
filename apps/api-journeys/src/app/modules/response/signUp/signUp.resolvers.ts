@@ -14,9 +14,9 @@ export class SignUpResponseResolver {
   @UseGuards(GqlAuthGuard)
   @IdAsKey()  
   async signUpResponseCreate(
-    @Args('input') input: SignUpResponseCreateInput,      
+    @Args('input') input: SignUpResponseCreateInput & { __typename },      
   ): Promise<SignUpResponse> {
-    // input.type = 'SignUpResponse'
+    input.__typename = 'SignUpResponse'
     return await this.responseService.save(input)
   }
 }
