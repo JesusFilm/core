@@ -11,7 +11,7 @@ export interface JourneysListProps {
 
 export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   const breakpoints = useBreakpoints()
-  const border = breakpoints.md ? 3 : 0
+  const border = breakpoints.sm ? 3 : 0
 
   return (
     <>
@@ -33,7 +33,15 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
           })}
         </Card>
       ) : (
-        <Card sx={{ display: 'flex', flexDirection: 'column', pt: 20, pb: 16 }}>
+        <Card
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            pt: 20,
+            pb: 16,
+            borderRadius: border
+          }}
+        >
           <Typography variant="subtitle1" align="center" gutterBottom>
             No journeys to display.
           </Typography>
