@@ -1,8 +1,7 @@
 import { ReactElement } from 'react'
 import { Typography, Fab, Card, Box } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
-
+import AddIcon from '@mui/icons-material/Add'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
 import { TreeBlock } from '@core/journeys/ui'
@@ -58,23 +57,13 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
             variant="outlined"
             sx={{
               width: '89px',
-              height: '134px'
+              height: '134px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                pt: 11
-              }}
-            >
-              <AddToPhotosIcon color="primary" />
-              <Typography align="center" variant="body2">
-                Add a Card
-              </Typography>
-            </Box>
+            <AddIcon color="primary" />
           </Card>
         </Box>
       )}
@@ -83,7 +72,7 @@ const CardOverview = ({ slug, blocks }: CardOverviewProps): ReactElement => {
           ? breakpoints.md
             ? `${cardNumber} in this journey`
             : `${cardNumber}`
-          : 'No cards'}
+          : 'Select Empty Card to add'}
       </Typography>
     </>
   )
