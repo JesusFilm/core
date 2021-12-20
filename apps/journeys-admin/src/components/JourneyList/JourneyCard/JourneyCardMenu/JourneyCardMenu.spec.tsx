@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import JourneyCardMenu from '.'
+import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
   it('should open menu on click', () => {

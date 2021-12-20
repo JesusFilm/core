@@ -7,7 +7,7 @@ interface JourneysListProps {
   journeys: Journey[]
 }
 
-const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
+export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   return (
     <>
       {/* Remove this once we link journey cards to the Single Journey page */}
@@ -23,5 +23,3 @@ const JourneyList = ({ journeys }: JourneysListProps): ReactElement => {
     </>
   )
 }
-
-export default JourneyList

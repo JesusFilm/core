@@ -3,7 +3,7 @@ import { IconButton, Menu, MenuItem } from '@mui/material'
 
 // Pass journeyID and slug to JourneyCardMenu
 
-const JourneyCardMenu = (): ReactElement => {
+export function JourneyCardMenu(): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -56,5 +56,3 @@ const JourneyCardMenu = (): ReactElement => {
     </div>
   )
 }
-
-export default JourneyCardMenu

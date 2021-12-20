@@ -1,13 +1,13 @@
 import { ReactElement } from 'react'
 import { Card, Chip, Typography } from '@mui/material'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import JourneyCardMenu from './JourneyCardMenu'
+import { JourneyCardMenu } from './JourneyCardMenu'
 
 interface JourneyCardProps {
   journey: Journey
 }
 
-const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
+export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
   return (
     <Card>
       {/* Update according to wireframe */}
@@ -21,5 +21,3 @@ const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
     </Card>
   )
 }
-
-export default JourneyCard
