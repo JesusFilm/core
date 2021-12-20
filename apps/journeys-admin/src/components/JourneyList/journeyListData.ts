@@ -23,7 +23,7 @@ export const defaultJourney: Journey = {
 
 export const oldJourney: Journey = {
   ...defaultJourney,
-  title: 'A Old Journey Heading',
+  title: 'An Old Journey Heading',
   description:
     'Journey created before the current year should also show the year in the date',
   createdAt: '2020-11-19T12:34:56.647Z',
