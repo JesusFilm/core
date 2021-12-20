@@ -4,7 +4,6 @@ import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../_
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
 import { RemoveCircleRounded } from '@mui/icons-material'
-import { GET_USERS_JOURNEYS } from '../InviteUserModal'
 
 interface RemoveUserProps {
   usersJourneys: UsersJourneys
@@ -13,9 +12,13 @@ interface RemoveUserProps {
 export const USER_JOURNEY_REMOVE = gql`
   mutation UserJourneyRemove($input: UserJourneyRemoveInput!) {
     userJourneyRemove(input: $input) {
-      userId
-      journeyId
-      role
+      id
+      journey {
+        id
+        usersJourneys {
+          id
+        }
+      }
     }
   }
 `
@@ -23,12 +26,8 @@ export const USER_JOURNEY_REMOVE = gql`
 export const RemoveUser = ({
   usersJourneys
 }: RemoveUserProps): ReactElement => {
-  const [userJourneyRemove] = useMutation<UserJourneyRemove>(
-    USER_JOURNEY_REMOVE,
-    {
-      refetchQueries: [GET_USERS_JOURNEYS, 'UserJourneyRemove']
-    }
-  )
+  const [userJourneyRemove] =
+    useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
 
   const handleRemoveUser = async (
     userId: string,
@@ -55,7 +54,7 @@ export const RemoveUser = ({
 
   return (
     <MenuItem
-      onClick={async (e) =>
+      onClick={async () =>
         await handleRemoveUser(
           usersJourneys.userId,
           usersJourneys.journeyId,

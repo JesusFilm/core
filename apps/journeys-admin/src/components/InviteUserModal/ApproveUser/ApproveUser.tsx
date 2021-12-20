@@ -4,7 +4,6 @@ import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../_
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyUpdate } from '../../../../__generated__/UserJourneyUpdate'
 import { BeenhereRounded } from '@mui/icons-material'
-import { GET_USERS_JOURNEYS } from '../InviteUserModal'
 
 interface ApproveUserProps {
   usersJourneys: UsersJourneys
@@ -14,6 +13,7 @@ export const USER_JOURNEY_APPROVE = gql`
   mutation UserJourneyUpdate($input: UserJourneyUpdateInput!) {
     userJourneyUpdate(input: $input) {
       id
+      role
     }
   }
 `
@@ -21,12 +21,8 @@ export const USER_JOURNEY_APPROVE = gql`
 export const ApproveUser = ({
   usersJourneys
 }: ApproveUserProps): ReactElement => {
-  const [userJourneyApprove] = useMutation<UserJourneyUpdate>(
-    USER_JOURNEY_APPROVE,
-    {
-      refetchQueries: [GET_USERS_JOURNEYS, 'UserJourneyUpdate']
-    }
-  )
+  const [userJourneyApprove] =
+    useMutation<UserJourneyUpdate>(USER_JOURNEY_APPROVE)
 
   const handleApproveUser = async (
     userId: string,

@@ -118,6 +118,7 @@ const resolvers: UserJourneyModule.Resolvers = {
         }
       })
     },
+    // update naming
     async userJourneyUpdate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')

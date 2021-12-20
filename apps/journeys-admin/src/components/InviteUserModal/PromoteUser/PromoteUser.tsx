@@ -4,7 +4,6 @@ import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../_
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 import { NewReleasesRounded } from '@mui/icons-material'
-import { GET_USERS_JOURNEYS } from '../InviteUserModal'
 
 interface PromoteUserProps {
   usersJourneys: UsersJourneys
@@ -13,8 +12,14 @@ interface PromoteUserProps {
 export const USER_JOURNEY_PROMOTE = gql`
   mutation UserJourneyPromote($input: UserJourneyUpdateInput!) {
     userJourneyPromote(input: $input) {
-      userId
-      journeyId
+      id
+      role
+      journey {
+        id
+        usersJourneys {
+          id
+        }
+      }
     }
   }
 `
@@ -22,12 +27,8 @@ export const USER_JOURNEY_PROMOTE = gql`
 export const PromoteUser = ({
   usersJourneys
 }: PromoteUserProps): ReactElement => {
-  const [userJourneyPromote] = useMutation<UserJourneyPromote>(
-    USER_JOURNEY_PROMOTE,
-    {
-      refetchQueries: [GET_USERS_JOURNEYS, 'UserJourneyPromote']
-    }
-  )
+  const [userJourneyPromote] =
+    useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 
   const handlePromoteUser = async (
     userId: string,

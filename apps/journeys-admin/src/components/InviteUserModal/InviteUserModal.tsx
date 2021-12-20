@@ -12,7 +12,8 @@ import {
   Fade,
   useTheme,
   Menu,
-  CircularProgress
+  CircularProgress,
+  ClickAwayListener
 } from '@mui/material'
 import {
   ArrowDropDown,
@@ -36,6 +37,7 @@ interface InviteUserModalProps {
 export const GET_USERS_JOURNEYS = gql`
   query GetJourneyforInvitedUsers($journeyId: ID!) {
     journey(id: $journeyId) {
+      id
       usersJourneys {
         id
         role
@@ -247,26 +249,28 @@ export const UserAccess = ({ userJourney }: UserAccessProps): ReactElement => {
           justifyContent: 'flex-end'
         }}
       >
-        <Box
-          onClick={handleClick}
-          sx={{
-            display: 'flex',
-            cursor: 'pointer',
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}
-        >
-          <Typography variant={'body2'}>
-            {userJourney.role === 'inviteRequested'
-              ? 'Manage'
-              : userJourney.role.replace(/^\w/, (c) => c.toUpperCase())}
-          </Typography>
-          {userJourney.role === 'owner' ? (
-            ''
-          ) : (
-            <ArrowDropDown fontSize={'medium'} sx={{ pl: 1 }} />
-          )}
-        </Box>
+        <ClickAwayListener onClickAway={() => setOpen(false)}>
+          <Box
+            onClick={handleClick}
+            sx={{
+              display: 'flex',
+              cursor: 'pointer',
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <Typography variant={'body2'}>
+              {userJourney.role === 'inviteRequested'
+                ? 'Manage'
+                : userJourney.role.replace(/^\w/, (c) => c.toUpperCase())}
+            </Typography>
+            {userJourney.role === 'owner' ? (
+              ''
+            ) : (
+              <ArrowDropDown fontSize={'medium'} sx={{ pl: 1 }} />
+            )}
+          </Box>
+        </ClickAwayListener>
         <Menu
           id="demo-customized-menu"
           MenuListProps={{
