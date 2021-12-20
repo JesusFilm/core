@@ -1,18 +1,16 @@
 import { ReactElement, useState } from 'react'
 import { Box, Card, Typography, Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { useBreakpoints } from '@core/shared/ui'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneySort, SortBy } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
-import JourneysAppBar from '../JourneysAppBar'
+import { JourneysAppBar } from '../JourneysAppBar'
 
 export interface JourneysListProps {
   journeys: Journey[]
 }
 
 export function JourneyList({ journeys }: JourneysListProps): ReactElement {
-  const breakpoints = useBreakpoints()
   const [sortBy, setSortBy] = useState(SortBy.UNDEFINED)
 
   if (sortBy === SortBy.TITLE) {
@@ -27,20 +25,20 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <>
-      <JourneysAppBar />
+      <JourneysAppBar variant="list" />
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
           m: 6,
-          mt: 10
+          mt: { xs: 20, md: 24 }
         }}
       >
         <Typography variant="h3">All Journeys</Typography>
         <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
       </Box>
-      <Box sx={{ m: breakpoints.md ? 6 : 0 }} data-testid="journey-list">
+      <Box sx={{ m: { xs: 0, md: 6 } }} data-testid="journey-list">
         {journeys.map((journey, i) => {
           return <JourneyCard key={journey.id} journey={journey} />
         })}
@@ -52,7 +50,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
               flexDirection: 'column',
               pt: 20,
               pb: 16,
-              borderRadius: breakpoints.md ? 3 : 0
+              borderRadius: { xs: 0, md: 3 }
             }}
           >
             <Typography variant="subtitle1" align="center" gutterBottom>

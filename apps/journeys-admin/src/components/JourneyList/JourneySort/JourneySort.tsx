@@ -118,7 +118,6 @@ export function JourneySort({
       />
       {breakpoints.md ? (
         <Popover
-          id="journeys-sort-popover"
           open={showSortBy}
           anchorEl={anchorEl}
           onClose={handleClose}
@@ -130,12 +129,7 @@ export function JourneySort({
           <Form />
         </Popover>
       ) : (
-        <Drawer
-          id="journeys-sort-drawer"
-          anchor="bottom"
-          open={showSortBy}
-          onClose={handleClose}
-        >
+        <Drawer anchor="bottom" open={showSortBy} onClose={handleClose}>
           <Form />
         </Drawer>
       )}
