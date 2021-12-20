@@ -4,10 +4,6 @@ import { CardView } from './CardView'
 import { steps, oneStep } from './data'
 
 describe('JourneyView/CardView', () => {
-  it('should render description for no cards', () => {
-    const { getByText } = render(<CardView slug={'my-journey'} blocks={[]} />)
-    expect(getByText('No cards')).toBeInTheDocument()
-  })
   it('should have edit button when cards are present', () => {
     const { getByRole } = render(
       <MockedProvider>
@@ -36,11 +32,11 @@ describe('JourneyView/CardView', () => {
     expect(getByText('1 card')).toBeInTheDocument()
   })
   it('should add a card when no cards are present', () => {
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <MockedProvider>
         <CardView slug={'my-journey'} blocks={[]} />
       </MockedProvider>
     )
-    expect(getByText('Add a Card')).toBeInTheDocument()
+    expect(getByLabelText('add-card')).toBeInTheDocument()
   })
 })

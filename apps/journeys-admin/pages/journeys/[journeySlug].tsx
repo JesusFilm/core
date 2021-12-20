@@ -7,9 +7,7 @@ import {
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
 import { JourneyProvider, JourneyView } from '../../src/components'
-
 import client from '../../src/libs/client'
-
 import { BLOCK_FIELDS } from '@core/journeys/ui'
 
 interface JourneyViewPageProps {
