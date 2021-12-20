@@ -7,7 +7,7 @@ describe('JourneyView/CardView', () => {
   it('should have edit button when cards are present', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <CardView slug={'my-journey'} blocks={steps} />
+        <CardView slug="my-journey" blocks={steps} />
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(

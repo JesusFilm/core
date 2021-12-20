@@ -59,16 +59,16 @@ export function DescriptionDialog({
     onClose()
   }
 
-  const updateForm = (): ReactElement => (
+  const Form = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
           <FormLabel
             component="legend"
-            aria-label={'dialog-update-description'}
+            aria-label="dialog-update-description"
           >
             <Typography variant={'subtitle2'} gutterBottom>
-              {'Update Description'}
+              Update Description
             </Typography>
           </FormLabel>
           <TextField
@@ -106,16 +106,16 @@ export function DescriptionDialog({
           onClose={handleClose}
           aria-labelledby={`dialog-update-description`}
         >
-          {updateForm()}
+          <Form />
         </Dialog>
       ) : (
         <Drawer
           id={'update-journey-drawer'}
-          anchor={'bottom'}
+          anchor="bottom"
           open={open}
           onClose={handleClose}
         >
-          {updateForm()}
+          <Form />
         </Drawer>
       )}
       <Alert

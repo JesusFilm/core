@@ -4,7 +4,7 @@ import { journeysAdminConfig } from '../../../libs/storybook'
 import { CardView, CardViewProps } from './CardView'
 import { steps } from './data'
 
-const CardViewDemo = {
+const CardViewStory = {
   ...journeysAdminConfig,
   component: CardView,
   title: 'Journeys-Admin/JourneyView/CardView'
@@ -31,4 +31,4 @@ ManyCards.args = {
   blocks: steps.concat(steps).concat(steps)
 }
 
-export default CardViewDemo as Meta
+export default CardViewStory as Meta

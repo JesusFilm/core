@@ -54,7 +54,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     onClose()
   }
 
-  const updateForm = (): ReactElement => (
+  const Form = (): ReactElement => (
     <Box sx={{ p: 4 }}>
       <form onSubmit={handleSubmit}>
         <FormControl component="fieldset" sx={{ width: '100%' }}>
@@ -96,7 +96,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           onClose={handleClose}
           aria-labelledby={'dialog-update-title'}
         >
-          {updateForm()}
+          <Form />
         </Dialog>
       ) : (
         <Drawer
@@ -105,7 +105,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           open={open}
           onClose={handleClose}
         >
-          {updateForm()}
+          <Form />
         </Drawer>
       )}
       <Alert
@@ -117,4 +117,3 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   )
 }
 
-export default TitleDialog
