@@ -37,7 +37,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
           mt: 10
         }}
       >
-        <Typography variant={'h3'}>All Journeys</Typography>
+        <Typography variant="h3">All Journeys</Typography>
         <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
       </Box>
       <Box sx={{ m: breakpoints.md ? 6 : 0 }} data-testid="journey-list">
