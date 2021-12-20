@@ -10,7 +10,7 @@ import {
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components'
-import JourneysAppBar from '../../src/components/JourneysAppBar'
+import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -19,7 +19,7 @@ interface JourneysListPageProps {
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <JourneysAppBar />
+      <JourneysAppBar variant={'list'} />
       <Container sx={{ my: 10 }}>
         <Typography variant={'h1'} sx={{ mb: 8 }}>
           Journeys
