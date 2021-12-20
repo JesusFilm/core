@@ -1,0 +1,1 @@
+export { BackgroundMedia } from './BackgroundMedia'
