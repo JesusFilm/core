@@ -1,4 +1,4 @@
-import { ApproveUser, USER_JOURNEY_APPROVE } from './ApproveUser'
+import { PromoteUser, USER_JOURNEY_PROMOTE } from './PromoteUser'
 import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { GetJourney_journey_usersJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
@@ -19,14 +19,14 @@ const userJourney: UserJourney = {
   }
 }
 
-describe('Approve button', () => {
-  it('should render approve button', () => {
+describe('Promote button', () => {
+  it('should render promote button', () => {
     const { getByText } = renderWithApolloClient(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: USER_JOURNEY_APPROVE,
+              query: USER_JOURNEY_PROMOTE,
               variables: {
                 input: {
                   userId: '1',
@@ -46,9 +46,9 @@ describe('Approve button', () => {
           }
         ]}
       >
-        <ApproveUser usersJourneys={userJourney} />
+        <PromoteUser usersJourneys={userJourney} />
       </MockedProvider>
     )
-    expect(getByText('Approve')).toBeInTheDocument()
+    expect(getByText('Promote')).toBeInTheDocument()
   })
 })
