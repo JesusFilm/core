@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 import { defaultJourney } from '../../data'
+import { JourneyProvider } from '../../Context'
 
 const DescriptionDialogStory = {
   ...journeysAdminConfig,
@@ -39,7 +40,9 @@ const Template: Story = () => {
         }
       ]}
     >
-      <DescriptionDialog open={open} onClose={() => setOpen(false)} />
+      <JourneyProvider value={defaultJourney}>
+        <DescriptionDialog open={open} onClose={() => setOpen(false)} />
+      </JourneyProvider>
     </MockedProvider>
   )
 }

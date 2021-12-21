@@ -30,7 +30,7 @@ describe('ShareSection', () => {
       <ShareSection slug="my-journey" />
     )
     fireEvent.click(getAllByRole('button')[1])
-    fireEvent.click(getByRole('menuitem', { name: 'Copy' }))
+    fireEvent.click(getByRole('button', { name: 'Copy' }))
 
     await waitFor(() => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(

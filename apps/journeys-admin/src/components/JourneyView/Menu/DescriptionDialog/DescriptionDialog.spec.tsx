@@ -16,11 +16,10 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
       </MockedProvider>
     )
 
-    const description = getByRole('textbox')
-    const cancel = getByRole('button', { name: 'Cancel' })
-
-    fireEvent.change(description, { target: { value: 'New Description' } })
-    fireEvent.click(cancel)
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'New Description' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
     expect(onClose).toBeCalled()
   })
@@ -58,11 +57,10 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
       </MockedProvider>
     )
 
-    const description = getByRole('textbox')
-    const submit = getByRole('button', { name: 'Save' })
-
-    fireEvent.change(description, { target: { value: 'New Description' } })
-    fireEvent.click(submit)
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'New Description' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
       expect(getByText('Description updated successfully')).toBeInTheDocument()

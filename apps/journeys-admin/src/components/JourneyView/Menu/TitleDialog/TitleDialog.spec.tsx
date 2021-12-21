@@ -16,11 +16,8 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    const title = getByRole('textbox')
-    const cancel = getByRole('button', { name: 'Cancel' })
-
-    fireEvent.change(title, { target: { value: 'New Journey' } })
-    fireEvent.click(cancel)
+    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
     expect(onClose).toBeCalled()
   })
@@ -58,11 +55,8 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    const title = getByRole('textbox')
-    const submit = getByRole('button', { name: 'Save' })
-
-    fireEvent.change(title, { target: { value: 'New Journey' } })
-    fireEvent.click(submit)
+    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
       expect(getByText('Title updated successfully')).toBeInTheDocument()

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { TitleDialog, JOURNEY_TITLE_UPDATE } from './TitleDialog'
+import { JourneyProvider } from '../../Context'
 import { defaultJourney } from '../../data'
 
 const TitleDialogStory = {
@@ -39,7 +40,9 @@ const Template: Story = () => {
         }
       ]}
     >
-      <TitleDialog open={open} onClose={() => setOpen(false)} />
+      <JourneyProvider value={defaultJourney}>
+        <TitleDialog open={open} onClose={() => setOpen(false)} />
+      </JourneyProvider>
     </MockedProvider>
   )
 }

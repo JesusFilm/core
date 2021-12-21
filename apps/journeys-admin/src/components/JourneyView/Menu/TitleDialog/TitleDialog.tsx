@@ -47,7 +47,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
       optimisticResponse: {
         journeyUpdate: { __typename: 'Journey', ...updatedJourney }
       }
-    }).then(() => setShowSuccessAlert(true))
+    })
+
+    setShowSuccessAlert(true)
   }
 
   const handleClose = (): void => {
@@ -66,7 +68,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           <TextField
             value={value}
             variant="filled"
-            onChange={(e) => setValue(e.currentTarget.value)}
+            onChange={(e) => {
+              setValue(e.currentTarget.value)
+            }}
           />
           <Box
             sx={{
