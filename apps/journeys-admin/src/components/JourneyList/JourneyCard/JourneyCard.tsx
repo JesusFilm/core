@@ -1,7 +1,14 @@
 import { ReactElement } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Typography, Box, Grid } from '@mui/material'
+import {
+  Card,
+  Typography,
+  Grid,
+  CardActionArea,
+  CardContent,
+  CardActions
+} from '@mui/material'
 import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
@@ -25,8 +32,6 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
       aria-label="journey-card"
       variant="outlined"
       sx={{
-        px: 6,
-        py: 4,
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
@@ -43,73 +48,76 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
       }}
     >
       <Link href={`/journeys/${journey.slug}`} passHref>
-        <Typography
-          variant="subtitle1"
-          component="div"
-          noWrap
-          gutterBottom
-          sx={{ color: 'secondary.main' }}
-        >
-          {journey.title}
-        </Typography>
-      </Link>
-
-      <Typography
-        variant="caption"
-        noWrap
-        sx={{
-          display: 'block',
-          color: 'secondary.main'
-        }}
-        gutterBottom
-      >
-        {formattedDate}
-        {journey.description !== null && ` - ${journey.description}`}
-      </Typography>
-
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Grid container>
-          <Grid item>
-            {journey.status === 'draft' ? (
-              <EditIcon
-                color="warning"
-                sx={{
-                  pr: 2
-                }}
-              />
-            ) : (
-              <CheckCircleIcon
-                color="success"
-                sx={{
-                  pr: 2
-                }}
-              />
-            )}
-          </Grid>
-          <Grid item>
+        <CardActionArea>
+          <CardContent
+            sx={{
+              px: 6,
+              py: 4
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              component="div"
+              noWrap
+              gutterBottom
+              sx={{ color: 'secondary.main' }}
+            >
+              {journey.title}
+            </Typography>
             <Typography
               variant="caption"
-              sx={{ pr: 4, textTransform: 'capitalize' }}
-            >
-              {journey.status}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <TranslateIcon
+              noWrap
               sx={{
-                pr: 2
+                display: 'block',
+                color: 'secondary.main'
               }}
-            />
+            >
+              {formattedDate}
+              {journey.description !== null && ` - ${journey.description}`}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Link>
+      <CardActions
+        sx={{
+          px: 6,
+          pt: 0,
+          pb: 4
+        }}
+      >
+        <Grid container spacing={2}>
+          {journey.status === 'draft' ? (
+            <>
+              <Grid item>
+                <EditIcon color="warning" />
+              </Grid>
+              <Grid item>
+                <Typography variant="caption" sx={{ pr: 2 }}>
+                  Draft
+                </Typography>
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item>
+                <CheckCircleIcon color="success" />
+              </Grid>
+              <Grid item>
+                <Typography variant="caption" sx={{ pr: 2 }}>
+                  Published
+                </Typography>
+              </Grid>
+            </>
+          )}
+          <Grid item>
+            <TranslateIcon />
           </Grid>
           <Grid item>
             <Typography variant="caption">{journey.locale}</Typography>
           </Grid>
         </Grid>
-
-        <Box sx={{ marginLeft: 'auto' }}>
-          <JourneyCardMenu status={journey.status} slug={journey.slug} />
-        </Box>
-      </Box>
+        <JourneyCardMenu status={journey.status} slug={journey.slug} />
+      </CardActions>
     </Card>
   )
 }

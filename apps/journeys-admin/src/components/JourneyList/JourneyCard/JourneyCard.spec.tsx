@@ -39,9 +39,8 @@ describe('JourneyCard', () => {
   it('should have correct link on title', () => {
     const { getByText } = render(<JourneyCard journey={defaultJourney} />)
 
-    expect(getByText('Default Journey Heading')).toHaveAttribute(
-      'href',
-      '/journeys/default'
-    )
+    expect(
+      getByText('Default Journey Heading').parentElement?.parentElement
+    ).toHaveAttribute('href', '/journeys/default')
   })
 })
