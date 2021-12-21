@@ -5,15 +5,12 @@ import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
 import { useRouter } from 'next/router'
-import { useMutation, gql } from '@apollo/client'
-import { UserCreate } from '../../../__generated__/UserCreate'
+import { useLazyQuery, gql } from '@apollo/client'
 
-export const USER_CREATE = gql`
-  mutation UserCreate($input: UserCreateInput!) {
-    userCreate(input: $input) {
-      firstName
-      lastName
-      imageUrl
+export const ME = gql`
+  query Me {
+    me {
+      id
     }
   }
 `
@@ -21,8 +18,8 @@ export const USER_CREATE = gql`
 export function SignIn(): ReactElement {
   const router = useRouter()
   const auth = getAuth(firebaseClient)
-  const [userCreate] = useMutation<UserCreate>(USER_CREATE)
   const { user, loading } = useFirebase()
+  const [callMe] = useLazyQuery(ME)
 
   useEffect(() => {
     // if user is logged in, redirect to home
@@ -32,31 +29,6 @@ export function SignIn(): ReactElement {
 
     // TODO: should we handle redirecting the user to the invite page if they have a pending invite?
   }, [loading, user, router])
-
-  const handleAuthResponse = (
-    firstName?: string,
-    lastName?: string,
-    email?: string,
-    imageUrl?: string
-  ): void => {
-    void userCreate({
-      variables: {
-        input: {
-          firstName,
-          lastName,
-          imageUrl
-        },
-        optimisticResponse: {
-          userCreate: {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            imageUrl: imageUrl
-          }
-        }
-      }
-    })
-  }
 
   const uiConfig = {
     signInFlow: 'popup',
@@ -75,20 +47,8 @@ export function SignIn(): ReactElement {
       }
     ],
     callbacks: {
-      signInSuccessWithAuthResult: (response) => {
-        const firstName = response.user.displayName
-          .split(' ')
-          .slice(0, -1)
-          .join(' ')
-        const lastName = response.user.displayName
-          .split(' ')
-          .slice(-1)
-          .join(' ')
-        const imageUrl =
-          response.user.photoURL != null ? response.user.photoURL : ''
-
-        handleAuthResponse(firstName, lastName, response.user.email, imageUrl)
-
+      signInSuccessWithAuthResult: () => {
+        callMe()
         return false
       }
     }

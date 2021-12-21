@@ -21,12 +21,6 @@ const typeDefs = gql`
     owner
   }
 
-  input UserJourneyCreateInput {
-    userId: ID!
-    journeyId: ID!
-    role: UserJourneyRole
-  }
-
   input UserJourneyUpdateInput {
     userId: ID!
     journeyId: ID!
@@ -59,7 +53,6 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
     userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
     userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
     userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!

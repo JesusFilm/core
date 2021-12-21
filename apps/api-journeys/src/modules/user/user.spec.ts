@@ -4,10 +4,9 @@ import { userModule } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
 import { DocumentNode, ExecutionResult } from 'graphql'
-import { pick } from 'lodash'
 
 describe('UserModule', () => {
-  let app, user, userOwner
+  let app, user
 
   beforeEach(() => {
     app = testkit.testModule(userModule, {
@@ -20,13 +19,6 @@ describe('UserModule', () => {
       lastName: 'sho',
       email: 'tho@no.co',
       imageUrl: 'po'
-    }
-
-    userOwner = {
-      id: uuidv4(),
-      userId: user.id,
-      journeyId: 'journeyId',
-      role: 'owner'
     }
   })
 
@@ -45,99 +37,25 @@ describe('UserModule', () => {
     })
   }
 
-  describe('Query', () => {
-    describe('get user by id', () => {
-      it('returns user', async () => {
-        dbMock.user.findUnique.mockResolvedValue(user)
-        dbMock.userJourney.findUnique.mockResolvedValue(userOwner)
-        const { data } = await query(
-          gql`
-            query ($id: ID!) {
-              user(id: $id) {
-                id
-                firstName
-                lastName
-                email
-                imageUrl
-              }
-            }
-          `,
-          {
-            id: user.id
-          },
-          {
-            userId: userOwner.userId
-          }
-        )
-        expect(data?.user).toEqual(
-          pick(user, ['id', 'email', 'firstName', 'lastName', 'imageUrl'])
-        )
-      })
-    })
-
-    describe('list of users', () => {
-      it('returns all users', async () => {
-        dbMock.user.findMany.mockResolvedValue([user])
-        dbMock.userJourney.findUnique.mockResolvedValue(userOwner)
-        const { data } = await query(
-          gql`
-            query {
-              users {
-                id
-                firstName
-                lastName
-                email
-                imageUrl
-              }
-            }
-          `,
-          {
-            id: user.id
-          },
-          {
-            userId: userOwner.userId
-          }
-        )
-        expect(data?.users).toEqual([
-          pick(user, ['id', 'email', 'firstName', 'lastName', 'imageUrl'])
-        ])
-      })
-    })
-  })
-
   describe('Mutation', () => {
     it('creates a user', async () => {
       dbMock.user.create.mockResolvedValue(user)
-      dbMock.userJourney.findUnique.mockResolvedValue(userOwner)
-      const { data } = await query(
+
+      await query(
         gql`
           mutation ($input: UserCreateInput!) {
             userCreate(input: $input) {
-              firstName
-              lastName
-              email
-              imageUrl
+              id
             }
           }
         `,
         {
-          input: {
-            firstName: 'fo',
-            lastName: 'sho',
-            email: 'tho@no.co',
-            imageUrl: 'po'
-          }
+          id: user.id
         },
         {
           userId: 'userId'
         }
       )
-      expect(data?.userCreate).toEqual({
-        firstName: 'fo',
-        lastName: 'sho',
-        email: 'tho@no.co',
-        imageUrl: 'po'
-      })
       expect(dbMock.user.create).toBeCalledWith({
         data: {
           id: 'userId',

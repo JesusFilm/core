@@ -164,12 +164,6 @@ export interface SignUpResponseCreateInput {
   name: string;
 }
 
-export interface UserCreateInput {
-  firstName?: string | null;
-  imageUrl?: string | null;
-  lastName?: string | null;
-}
-
 export interface UserJourneyRemoveInput {
   journeyId: string;
   role: UserJourneyRoleForUpdates;

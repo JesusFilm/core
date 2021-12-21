@@ -247,8 +247,6 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  userCreate(input: UserCreateInput!): User!
-  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
   userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
@@ -279,8 +277,6 @@ extend type Query {
   journeys(status: JourneyStatus): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
   me: User
-  users: [User]
-  user(id: ID!): User
 }
 
 type RadioOptionBlock implements Block {
@@ -417,12 +413,6 @@ type User @key(fields: "id") {
   usersJourneys: [UserJourney!]
 }
 
-input UserCreateInput {
-  firstName: String
-  lastName: String
-  imageUrl: String
-}
-
 type UserJourney {
   id: ID!
   userId: ID!
@@ -430,12 +420,6 @@ type UserJourney {
   role: UserJourneyRole!
   journey: Journey
   user: User
-}
-
-input UserJourneyCreateInput {
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRole
 }
 
 enum UserJourneyPromote {

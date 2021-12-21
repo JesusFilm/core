@@ -4,7 +4,7 @@ import * as gm from "graphql-modules";
 export namespace UserJourneyModule {
   interface DefinedFields {
     UserJourney: 'id' | 'userId' | 'journeyId' | 'role';
-    Mutation: 'userJourneyCreate' | 'userJourneyApprove' | 'userJourneyPromote' | 'userJourneyRemove' | 'userJourneyRequest';
+    Mutation: 'userJourneyApprove' | 'userJourneyPromote' | 'userJourneyRemove' | 'userJourneyRequest';
     Journey: 'usersJourneys';
     User: 'usersJourneys';
   };
@@ -16,7 +16,6 @@ export namespace UserJourneyModule {
   };
   
   interface DefinedInputFields {
-    UserJourneyCreateInput: 'userId' | 'journeyId' | 'role';
     UserJourneyUpdateInput: 'userId' | 'journeyId';
     UserJourneyRemoveInput: 'userId' | 'journeyId' | 'role';
     UserJourneyRequestInput: 'userId' | 'journeyId';
@@ -25,7 +24,6 @@ export namespace UserJourneyModule {
   export type UserJourneyRole = DefinedEnumValues['UserJourneyRole'];
   export type UserJourneyRoleForUpdates = DefinedEnumValues['UserJourneyRoleForUpdates'];
   export type UserJourneyPromote = DefinedEnumValues['UserJourneyPromote'];
-  export type UserJourneyCreateInput = Pick<Types.UserJourneyCreateInput, DefinedInputFields['UserJourneyCreateInput']>;
   export type UserJourneyUpdateInput = Pick<Types.UserJourneyUpdateInput, DefinedInputFields['UserJourneyUpdateInput']>;
   export type UserJourneyRemoveInput = Pick<Types.UserJourneyRemoveInput, DefinedInputFields['UserJourneyRemoveInput']>;
   export type UserJourneyRequestInput = Pick<Types.UserJourneyRequestInput, DefinedInputFields['UserJourneyRequestInput']>;
@@ -67,7 +65,6 @@ export namespace UserJourneyModule {
     };
     Mutation?: {
       '*'?: gm.Middleware[];
-      userJourneyCreate?: gm.Middleware[];
       userJourneyApprove?: gm.Middleware[];
       userJourneyPromote?: gm.Middleware[];
       userJourneyRemove?: gm.Middleware[];
