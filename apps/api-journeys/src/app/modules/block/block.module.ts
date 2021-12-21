@@ -6,7 +6,11 @@ import { BlockResolvers } from './block.resolvers'
 import { ImageBlockResolvers } from './image/image.resolvers'
 import { StepBlockResolvers } from './step/step.resolvers'
 import { CardBlockResolvers } from './card/card.resolvers'
-import { VideoBlockResolvers, VideoContentResolvers } from './video/video.resolvers'
+import {
+  VideoArclightResolvers,
+  VideoBlockResolvers,
+  VideoContentResolvers
+} from './video/video.resolvers'
 
 @Module({
   imports: [DatabaseModule],
@@ -17,9 +21,9 @@ import { VideoBlockResolvers, VideoContentResolvers } from './video/video.resolv
     ImageBlockResolvers,
     StepBlockResolvers,
     VideoBlockResolvers,
-    VideoContentResolvers
+    VideoContentResolvers,
+    VideoArclightResolvers
   ],
-  exports: [BlockService],
+  exports: [BlockService]
 })
-export class BlockModule {
-}
+export class BlockModule {}

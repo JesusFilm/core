@@ -4,10 +4,6 @@ input SignUpResponseCreateInput {
   """
   id: ID
   blockId: ID!
-  """
-   type is set by the api
-  """
-  type: String
   name: String!
   email: String!
 }
@@ -15,7 +11,6 @@ input SignUpResponseCreateInput {
 type SignUpResponse implements Response {
   id: ID!
   userId: ID!
-  type: String!
   name: String!
   email: String!
   block: SignUpBlock

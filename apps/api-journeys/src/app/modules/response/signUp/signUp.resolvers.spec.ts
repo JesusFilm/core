@@ -6,45 +6,42 @@ describe('SignUpResponse', () => {
   let resolver: SignUpResponseResolver
 
   const response = {
-    _key: "1",
-    type: 'SignUpResponse',
-    blockId: "2",
-    userId: "3",
+    _key: '1',
+    __typename: 'SignUpResponse',
+    blockId: '2',
+    userId: '3',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
   }
 
-  const responseresponse ={
-    id: "1",
-    type: 'SignUpResponse',
-    blockId: "2",
-    userId: "3",
+  const responseresponse = {
+    id: '1',
+    __typename: 'SignUpResponse',
+    blockId: '2',
+    userId: '3',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
   }
 
-  const responseservice = {
+  const responseService = {
     provide: ResponseService,
     useFactory: () => ({
-      save: jest.fn(() => response),      
+      save: jest.fn(() => response)
     })
   }
 
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SignUpResponseResolver, responseservice]
+      providers: [SignUpResponseResolver, responseService]
     }).compile()
     resolver = module.get<SignUpResponseResolver>(SignUpResponseResolver)
   })
 
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
-  })
-
   describe('SignUpResponse', () => {
     it('returns SignUpResponse', async () => {
-      expect(resolver.signUpResponseCreate(response)).resolves.toEqual(responseresponse)      
+      expect(await resolver.signUpResponseCreate(response)).toEqual(
+        responseresponse
+      )
     })
   })
 })

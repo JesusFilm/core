@@ -17,7 +17,7 @@ type User @key(fields: "id") {
 
 type UserJourney {
   user: User
-  ID: ID!
+  id: ID!
   userId: ID!
   journeyId: ID!
   role: UserJourneyRoles!

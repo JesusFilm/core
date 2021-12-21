@@ -26,7 +26,6 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
 
 export const gateway = new ApolloGateway({
   ...config.gatewayConfig,
-
   buildService({ url }) {
     return new AuthenticatedDataSource({ url })
   }

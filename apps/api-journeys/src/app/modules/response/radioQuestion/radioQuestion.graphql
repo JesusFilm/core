@@ -4,17 +4,12 @@ input RadioQuestionResponseCreateInput {
   """
   id: ID
   blockId: ID!
-  """
-   type is set by the api
-  """
-  type: String
   radioOptionBlockId: ID!
 }
 
 type RadioQuestionResponse implements Response {
   id: ID!
   userId: ID!
-  type: String!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }

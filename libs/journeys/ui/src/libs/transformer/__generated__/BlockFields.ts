@@ -284,36 +284,36 @@ export interface BlockFields_VideoBlock {
   videoContent: BlockFields_VideoBlock_videoContent;
 }
 
-export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateAction {
+export interface BlockFields_VideoTriggerBlock_action_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
 }
 
-export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface BlockFields_VideoTriggerBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
+export interface BlockFields_VideoTriggerBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
+export interface BlockFields_VideoTriggerBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journey: BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
+  journey: BlockFields_VideoTriggerBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface BlockFields_VideoTriggerBlock_triggerAction_LinkAction {
+export interface BlockFields_VideoTriggerBlock_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
 }
 
-export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTriggerBlock_triggerAction_NavigateAction | BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | BlockFields_VideoTriggerBlock_triggerAction_LinkAction;
+export type BlockFields_VideoTriggerBlock_action = BlockFields_VideoTriggerBlock_action_NavigateAction | BlockFields_VideoTriggerBlock_action_NavigateToBlockAction | BlockFields_VideoTriggerBlock_action_NavigateToJourneyAction | BlockFields_VideoTriggerBlock_action_LinkAction;
 
 export interface BlockFields_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -324,7 +324,7 @@ export interface BlockFields_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
+  action: BlockFields_VideoTriggerBlock_action | null;
 }
 
 export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

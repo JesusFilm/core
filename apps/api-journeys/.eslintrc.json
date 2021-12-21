@@ -4,23 +4,14 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "indent": ["error", 2]
-      }
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
         "project": ["apps/api-journeys/tsconfig.*?.json"]
       },
-      "rules": {
-        "@typescript-eslint/no-floating-promises": "off",
-        "no-prototype-builtins": "off",
-        "no-return-await": "off",
-        "@typescript-eslint/indent": ["error", 2],
-        "indent": ["error", 2],
-        "@typescript-eslint/semi": "error"
-      }
+      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],

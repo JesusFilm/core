@@ -8,9 +8,10 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {
-        "indent": ["error", 2],
-      }
+      "parserOptions": {
+        "project": ["libs/nest/database/tsconfig.*?.json"]
+      },
+      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],

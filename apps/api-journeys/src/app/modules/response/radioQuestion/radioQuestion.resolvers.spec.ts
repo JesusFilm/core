@@ -6,43 +6,42 @@ describe('RadioQuestion', () => {
   let resolver: RadioQuestionResponseResolver
 
   const response = {
-    _key: "1",
-    type: 'RadioQuestionResponse',
-    blockId: "2",
-    userId: "3",
-    radioOptionBlockId: "4"
+    _key: '1',
+    __typename: 'RadioQuestionResponse',
+    blockId: '2',
+    userId: '3',
+    radioOptionBlockId: '4'
   }
 
   const responseresponse = {
-    id: "1",
-    type: 'RadioQuestionResponse',
-    blockId: "2",
-    userId: "3",
-    radioOptionBlockId: "4"
+    id: '1',
+    __typename: 'RadioQuestionResponse',
+    blockId: '2',
+    userId: '3',
+    radioOptionBlockId: '4'
   }
 
-  const responseservice = {
+  const responseService = {
     provide: ResponseService,
     useFactory: () => ({
-      save: jest.fn(() => response),      
+      save: jest.fn(() => response)
     })
   }
 
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RadioQuestionResponseResolver, responseservice]
+      providers: [RadioQuestionResponseResolver, responseService]
     }).compile()
-    resolver = module.get<RadioQuestionResponseResolver>(RadioQuestionResponseResolver)
+    resolver = module.get<RadioQuestionResponseResolver>(
+      RadioQuestionResponseResolver
+    )
   })
 
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
-  })
-
-  describe('RadioQuestionResponse', () => {
+  describe('radioQuestionResponseCreate', () => {
     it('returns RadioQuestionResponse', async () => {
-      expect(resolver.radioQuestionResponseCreate(response)).resolves.toEqual(responseresponse)      
+      expect(await resolver.radioQuestionResponseCreate(response)).toEqual(
+        responseresponse
+      )
     })
   })
 })

@@ -6,34 +6,34 @@ describe('RadioQuestion', () => {
   let resolver: BlockResolvers
 
   const block = {
-    _key: "1",
-    journeyId: "2",
-    type: 'RadioOptionBlock',
-    parentBlockId: "3",
+    _key: '1',
+    journeyId: '2',
+    __typename: 'RadioOptionBlock',
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      blockId: "4"
+      blockId: '4'
     }
   }
 
   const blockresponse = {
-    id: "1",
-    journeyId: "2",
-    type: 'RadioOptionBlock',
-    parentBlockId: "3",
+    id: '1',
+    journeyId: '2',
+    __typename: 'RadioOptionBlock',
+    parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
     description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
-      blockId: "4"
+      blockId: '4'
     }
   }
 
-  const blockservice = {
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => block),
@@ -41,22 +41,17 @@ describe('RadioQuestion', () => {
     })
   }
 
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockservice]
+      providers: [BlockResolvers, blockService]
     }).compile()
     resolver = module.get<BlockResolvers>(BlockResolvers)
   })
 
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
-  })
-
   describe('RadioQuestionBlock', () => {
     it('returns RadioQuestionBlock', async () => {
-      expect(resolver.block("1")).resolves.toEqual(blockresponse)
-      expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockresponse)
+      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
     })
   })
 })

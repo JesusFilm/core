@@ -1,6 +1,5 @@
 interface Block {
   id: ID!
-  type: String!
   parentBlockId: ID
 }
 

@@ -3,13 +3,16 @@ import { aql } from 'arangojs'
 
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { Block, Journey } from '../../graphql'
+import { Block, Journey } from '../../__generated__/graphql'
 
 @Injectable()
 export class BlockService extends BaseService {
   async forJourney(journey: Journey): Promise<Block[]> {
     const primaryImageBlockId = journey.primaryImageBlock?.id
-    const ignorePrimaryImageBlock = primaryImageBlockId !== null ? `AND block.id != ${primaryImageBlockId ?? 'null'}` : ''
+    const ignorePrimaryImageBlock =
+      primaryImageBlockId !== null
+        ? `AND block.id != ${primaryImageBlockId ?? 'null'}`
+        : ''
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
         FILTER block.journeyId == ${journey.id}

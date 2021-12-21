@@ -8,8 +8,13 @@ import { VideoResponseResolver } from './video/video.resolvers'
 
 @Module({
   imports: [DatabaseModule],
-  providers: [ResponseService, ResponseResolver, RadioQuestionResponseResolver, SignUpResponseResolver, VideoResponseResolver],
-  exports: [ResponseService],
+  providers: [
+    ResponseService,
+    ResponseResolver,
+    RadioQuestionResponseResolver,
+    SignUpResponseResolver,
+    VideoResponseResolver
+  ],
+  exports: [ResponseService]
 })
-export class ResponseModule {
-}
+export class ResponseModule {}

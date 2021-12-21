@@ -39,19 +39,22 @@
       }
     },
     "serve-nowatch": {
-        "executor": "@nrwl/node:execute",
-        "options": {
-          "buildTarget": "api-journeys:build"
-        }
-      },
+      "executor": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "api-journeys:build"
+      }
+    },
     "serve": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [{
-          "command": "nx serve-nowatch api-journeys"
-        }, {
-          "command": "npx ts-node apps/api-journeys/src/generate-typings.ts"
-        }],
+        "commands": [
+          {
+            "command": "nx serve-nowatch api-journeys"
+          },
+          {
+            "command": "npx ts-node apps/api-journeys/src/generate-typings.ts"
+          }
+        ],
         "parallel": true
       }
     },
@@ -84,7 +87,7 @@
             "with": "apps/api-journeys/src/environments/environment.testing.ts"
           }
         ]
-      }      
+      }
     },
     "generate-graphql": {
       "executor": "@nrwl/workspace:run-commands",

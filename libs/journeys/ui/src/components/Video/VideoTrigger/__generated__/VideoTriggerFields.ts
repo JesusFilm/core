@@ -7,36 +7,36 @@
 // GraphQL fragment: VideoTriggerFields
 // ====================================================
 
-export interface VideoTriggerFields_triggerAction_NavigateAction {
+export interface VideoTriggerFields_action_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
 }
 
-export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
+export interface VideoTriggerFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey {
+export interface VideoTriggerFields_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {
+export interface VideoTriggerFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journey: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey | null;
+  journey: VideoTriggerFields_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface VideoTriggerFields_triggerAction_LinkAction {
+export interface VideoTriggerFields_action_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
 }
 
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_NavigateToJourneyAction | VideoTriggerFields_triggerAction_LinkAction;
+export type VideoTriggerFields_action = VideoTriggerFields_action_NavigateAction | VideoTriggerFields_action_NavigateToBlockAction | VideoTriggerFields_action_NavigateToJourneyAction | VideoTriggerFields_action_LinkAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";
@@ -47,5 +47,5 @@ export interface VideoTriggerFields {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  action: VideoTriggerFields_triggerAction;
+  action: VideoTriggerFields_action | null;
 }

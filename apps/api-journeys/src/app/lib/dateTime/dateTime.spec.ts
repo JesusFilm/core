@@ -13,10 +13,6 @@ describe('DateTime', () => {
     service = await module.resolve(DateTimeScalar)
   })
 
-  it('should be defined', () => {
-    expect(service).toBeDefined()
-  })
-
   describe('DateTime', () => {
     it('returns DateTime string', async () => {
       expect(service.serialize(testDate)).toEqual(testDate)

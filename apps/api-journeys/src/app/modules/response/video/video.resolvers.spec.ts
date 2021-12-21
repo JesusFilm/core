@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { VideoResponseStateEnum } from '../../../graphql'
+import { VideoResponseStateEnum } from '../../../__generated__/graphql'
 import { ResponseService } from '../response.service'
 import { VideoResponseResolver } from './video.resolvers'
 
@@ -7,45 +7,42 @@ describe('VideoResponse', () => {
   let resolver: VideoResponseResolver
 
   const response = {
-    _key: "1",
-    type: 'VideoResponse',
-    blockId: "2",
-    userId: "3",
+    _key: '1',
+    __typename: 'VideoResponse',
+    blockId: '2',
+    userId: '3',
     state: VideoResponseStateEnum.PLAYING,
     position: 30
   }
 
   const responseresponse = {
-    id: "1",
-    type: 'VideoResponse',
-    blockId: "2",
-    userId: "3",
+    id: '1',
+    __typename: 'VideoResponse',
+    blockId: '2',
+    userId: '3',
     state: VideoResponseStateEnum.PLAYING,
     position: 30
   }
 
-  const responseservice = {
+  const responseService = {
     provide: ResponseService,
     useFactory: () => ({
-      save: jest.fn(() => response),      
+      save: jest.fn(() => response)
     })
   }
 
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoResponseResolver, responseservice]
+      providers: [VideoResponseResolver, responseService]
     }).compile()
     resolver = module.get<VideoResponseResolver>(VideoResponseResolver)
   })
 
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
-  })
-
-  describe('VideoResponse', () => {
+  describe('videoResponseCreate', () => {
     it('returns VideoResponse', async () => {
-      expect(resolver.videoResponseCreate(response)).resolves.toEqual(responseresponse)      
+      expect(await resolver.videoResponseCreate(response)).toEqual(
+        responseresponse
+      )
     })
   })
 })

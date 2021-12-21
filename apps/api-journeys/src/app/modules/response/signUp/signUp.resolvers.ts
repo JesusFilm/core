@@ -2,21 +2,24 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { SignUpResponse, SignUpResponseCreateInput } from '../../../graphql'
+import {
+  SignUpResponse,
+  SignUpResponseCreateInput
+} from '../../../__generated__/graphql'
 import { IdAsKey } from '@core/nest/decorators'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
-@Resolver('Response')
+@Resolver('SignUpResponse')
 export class SignUpResponseResolver {
-  constructor(private readonly responseservice: ResponseService) { }
+  constructor(private readonly responseService: ResponseService) {}
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @IdAsKey()  
+  @IdAsKey()
   async signUpResponseCreate(
-    @Args('input') input: SignUpResponseCreateInput,      
+    @Args('input') input: SignUpResponseCreateInput & { __typename }
   ): Promise<SignUpResponse> {
-    input.type = 'SignUpResponse'
-    return await this.responseservice.save(input)
+    input.__typename = 'SignUpResponse'
+    return await this.responseService.save(input)
   }
 }

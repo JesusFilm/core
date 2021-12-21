@@ -8,20 +8,30 @@ const db = ArangoDB()
 
 async function main(): Promise<void> {
   try {
-    await (await db.createCollection('journeys', { keyOptions: { type: 'uuid' }}))
-    await (await db.createCollection('blocks', { keyOptions: { type: 'uuid' }}))
-    await db.createCollection('responses', { keyOptions: { type: 'uuid' }})
+    await await db.createCollection('journeys', {
+      keyOptions: { type: 'uuid' }
+    })
+    await await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
+    await db.createCollection('responses', { keyOptions: { type: 'uuid' } })
   } catch {}
-  await db.collection('journeys').ensureIndex({ type: 'persistent', fields: ['slug'], name: 'slug', unique: true, })
-  await db.collection('blocks').ensureIndex({ type: 'persistent', fields: ['journeyId'], name: 'journeyId' })
+  await db.collection('journeys').ensureIndex({
+    type: 'persistent',
+    fields: ['slug'],
+    name: 'slug',
+    unique: true
+  })
+  await db.collection('blocks').ensureIndex({
+    type: 'persistent',
+    fields: ['journeyId'],
+    name: 'journeyId'
+  })
   await nua1()
   await nua2()
   await nua8()
   await nua9()
 }
 
-main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})

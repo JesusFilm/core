@@ -23,7 +23,6 @@ interface Action {
 interface Block {
   id: ID!
   parentBlockId: ID
-  type: String!
 }
 
 type ButtonBlock implements Block {
@@ -35,7 +34,6 @@ type ButtonBlock implements Block {
   parentBlockId: ID
   size: ButtonSize
   startIcon: Icon
-  type: String!
   variant: ButtonVariant
 }
 
@@ -88,7 +86,6 @@ type CardBlock implements Block {
   themeName from journey
   """
   themeName: ThemeName
-  type: String!
 }
 
 input CardBlockCreateInput {
@@ -96,12 +93,10 @@ input CardBlockCreateInput {
   coverBlockId: ID
   fullscreen: Boolean
   id: ID
+  journeyId: ID!
   parentBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
-
-  """ type is overwritten by the API """
-  type: String
 }
 
 input CardBlockUpdateInput {
@@ -130,7 +125,6 @@ type GridContainerBlock implements Block {
   justifyContent: GridJustifyContent!
   parentBlockId: ID
   spacing: Int!
-  type: String!
 }
 
 enum GridDirection {
@@ -145,7 +139,6 @@ type GridItemBlock implements Block {
   lg: Int!
   parentBlockId: ID
   sm: Int!
-  type: String!
   xl: Int!
 }
 
@@ -214,7 +207,6 @@ type ImageBlock implements Block {
   id: ID!
   parentBlockId: ID
   src: String!
-  type: String!
   width: Int!
 }
 
@@ -228,6 +220,13 @@ input ImageBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID
   src: String!
+}
+
+input ImageBlockUpdateInput {
+  alt: String
+  journeyId: ID
+  parentBlockId: ID
+  src: String
 }
 
 scalar join__FieldSet
@@ -302,17 +301,20 @@ type Mutation {
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
+  imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
-  stepBlockCreate(input: StepBlockCreatInput!): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
   userCreate(input: UserCreateInput!): User! @join__field(graph: USERS)
   userJourneyCreate(input: UserJourneyCreateInput!): UserJourney! @join__field(graph: USERS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: USERS)
   userJourneyUpdate(id: ID!, input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: USERS)
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -348,7 +350,6 @@ type RadioOptionBlock implements Block {
   id: ID!
   label: String!
   parentBlockId: ID
-  type: String!
 }
 
 type RadioQuestionBlock implements Block {
@@ -356,14 +357,12 @@ type RadioQuestionBlock implements Block {
   id: ID!
   label: String!
   parentBlockId: ID
-  type: String!
 }
 
 type RadioQuestionResponse implements Response {
   block: RadioQuestionBlock
   id: ID!
   radioOptionBlockId: ID!
-  type: String!
   userId: ID!
 }
 
@@ -375,14 +374,10 @@ input RadioQuestionResponseCreateInput {
   """
   id: ID
   radioOptionBlockId: ID!
-
-  """type is set by the api"""
-  type: String
 }
 
 interface Response {
   id: ID!
-  type: String!
   userId: ID!
 }
 
@@ -392,7 +387,6 @@ type SignUpBlock implements Block {
   parentBlockId: ID
   submitIcon: Icon
   submitLabel: String
-  type: String!
 }
 
 type SignUpResponse implements Response {
@@ -400,7 +394,6 @@ type SignUpResponse implements Response {
   email: String!
   id: ID!
   name: String!
-  type: String!
   userId: ID!
 }
 
@@ -413,9 +406,6 @@ input SignUpResponseCreateInput {
   """
   id: ID
   name: String!
-
-  """type is set by the api"""
-  type: String
 }
 
 type StepBlock implements Block {
@@ -435,17 +425,14 @@ type StepBlock implements Block {
   """
   nextBlockId: ID
   parentBlockId: ID
-  type: String!
 }
 
-input StepBlockCreatInput {
+input StepBlockCreateInput {
   id: ID
+  journeyId: ID!
   locked: Boolean
   nextBlockId: ID
   parentBlockId: ID
-
-  """ type is overwritten by the API """
-  type: String
 }
 
 input StepBlockUpdateInput {
@@ -475,7 +462,6 @@ type TypographyBlock implements Block {
   content: String!
   id: ID!
   parentBlockId: ID
-  type: String!
   variant: TypographyVariant
 }
 
@@ -521,7 +507,7 @@ input UserCreateInput {
 }
 
 type UserJourney {
-  ID: ID!
+  id: ID!
   journeyId: ID!
   role: UserJourneyRoles!
   user: User
@@ -571,12 +557,63 @@ type VideoBlock implements Block {
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
   title: String!
-  type: String!
   videoContent: VideoContent!
+}
+
+input VideoBlockCreateInput {
+  autoplay: Boolean
+  description: String
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  id: ID
+  journeyId: ID!
+  muted: Boolean
+  parentBlockId: ID
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+  title: String!
+  videoContent: VideoContentInput!
+}
+
+input VideoBlockUpdateInput {
+  autoplay: Boolean
+  description: String
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  muted: Boolean
+  parentBlockId: ID
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+  title: String
+  videoContent: VideoContentInput
 }
 
 interface VideoContent {
   src: String!
+}
+
+input VideoContentInput {
+  languageId: String
+  mediaComponentId: String
+  src: String
 }
 
 type VideoGeneric implements VideoContent {
@@ -588,7 +625,6 @@ type VideoResponse implements Response {
   id: ID!
   position: Int
   state: VideoResponseStateEnum!
-  type: String!
   userId: ID!
 }
 
@@ -601,9 +637,6 @@ input VideoResponseCreateInput {
   id: ID
   position: Float
   state: VideoResponseStateEnum!
-
-  """type is set by the api"""
-  type: String
 }
 
 enum VideoResponseStateEnum {
@@ -626,5 +659,4 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
-  type: String!
 }

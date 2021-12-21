@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { UserService } from './user.service'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockCollectionSaveResult, mockDbQueryResult } from '@core/nest/database'
+import {
+  mockCollectionSaveResult,
+  mockDbQueryResult
+} from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 
 describe('UserService', () => {
@@ -10,9 +13,13 @@ describe('UserService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, {
-        provide: 'DATABASE', useFactory: () => mockDeep<Database>()
-      }],
+      providers: [
+        UserService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
 
     service = module.get<UserService>(UserService)
@@ -22,12 +29,8 @@ describe('UserService', () => {
     jest.resetAllMocks()
   })
 
-  it('should be defined', () => {
-    expect(service).toBeDefined()
-  })
-
   const user = {
-    _key: "1",
+    _key: '1',
     firstName: 'fo',
     lastName: 'sho',
     email: 'tho@no.co',
@@ -36,8 +39,10 @@ describe('UserService', () => {
 
   describe('getAll', () => {
     beforeEach(() => {
-      (service.db as DeepMockProxy<Database>).query.mockReturnValue(mockDbQueryResult(service.db, [user, user]))
-    })  
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [user, user])
+      )
+    })
 
     it('should return an array of users', async () => {
       expect(await service.getAll()).toEqual([user, user])
@@ -46,18 +51,22 @@ describe('UserService', () => {
 
   describe('get', () => {
     beforeEach(() => {
-      (service.db as DeepMockProxy<Database>).query.mockReturnValue(mockDbQueryResult(service.db, [user]))
-    })  
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [user])
+      )
+    })
 
     it('should return a user', async () => {
-      expect(await service.get("1")).toEqual(user)
+      expect(await service.get('1')).toEqual(user)
     })
   })
 
   describe('save', () => {
     beforeEach(() => {
-      (service.collection as DeepMockProxy<DocumentCollection>).save.mockReturnValue(mockCollectionSaveResult(service.collection, user))
-    })  
+      ;(
+        service.collection as DeepMockProxy<DocumentCollection>
+      ).save.mockReturnValue(mockCollectionSaveResult(service.collection, user))
+    })
 
     it('should return a saved user', async () => {
       expect(await service.save(user)).toEqual(user)

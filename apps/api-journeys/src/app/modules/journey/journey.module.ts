@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common'
-
 import { DatabaseModule } from '@core/nest/database'
 import { JourneyService } from './journey.service'
 import { JourneyResolvers } from './journey.resolvers'
@@ -11,4 +10,4 @@ import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
   providers: [JourneyService, JourneyResolvers, BlockService, DateTimeScalar],
   exports: [JourneyService]
 })
-export class JourneyModule { }
+export class JourneyModule {}

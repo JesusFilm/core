@@ -1,7 +1,6 @@
 type CardBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   """
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
@@ -34,8 +33,6 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  """ type is overwritten by the API """
-  type: String
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean

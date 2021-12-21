@@ -1,6 +1,5 @@
 type ImageBlock implements Block {
   id: ID!
-  type: String!
   parentBlockId: ID
   src: String!
   width: Int!
@@ -18,8 +17,6 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  """ type is overwritten by the API """
-  type: String
   parentBlockId: ID
   journeyId: ID!
   src: String!

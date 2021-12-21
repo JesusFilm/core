@@ -1,5 +1,3 @@
-
-   
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
@@ -8,10 +6,10 @@ describe('Button', () => {
   let resolver: BlockResolvers
 
   const block = {
-    _key: "1",
-    journeyId: "2",
-    type: 'ButtonBlock',
-    parentBlockId: "0",
+    _key: '1',
+    journeyId: '2',
+    __typename: 'ButtonBlock',
+    parentBlockId: '0',
     parentOrder: 1,
     label: 'label',
     variant: 'contained',
@@ -34,10 +32,10 @@ describe('Button', () => {
     }
   }
   const blockresponse = {
-    id: "1",
-    journeyId: "2",
-    type: 'ButtonBlock',
-    parentBlockId: "0",
+    id: '1',
+    journeyId: '2',
+    __typename: 'ButtonBlock',
+    parentBlockId: '0',
     parentOrder: 1,
     label: 'label',
     variant: 'contained',
@@ -59,31 +57,26 @@ describe('Button', () => {
       target: 'target'
     }
   }
-  
-  const blockservice = {
+
+  const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() =>  block),
+      get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block])
     })
   }
 
- 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockservice]
+      providers: [BlockResolvers, blockService]
     }).compile()
     resolver = module.get<BlockResolvers>(BlockResolvers)
   })
 
-  it('should be defined', () => {
-    expect(resolver).toBeDefined()
-  })
-
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-      expect(resolver.block("1")).resolves.toEqual(blockresponse)
-      expect(resolver.blocks()).resolves.toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockresponse)
+      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
     })
   })
 })

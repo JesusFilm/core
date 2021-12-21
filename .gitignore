@@ -33,7 +33,6 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-/.migrations.json
 
 # System Files
 .DS_Store
@@ -42,13 +41,8 @@ Thumbs.db
 #local .env files
 .env*local
 
-# nx fluff
-migrations.json
-
-# Serverless
-.serverless
-.webpack
->>>>>>> origin/deploy-stage
-
 # kube secrets
 /resources/kube/secrets
+
+# nx generated files
+migrations.json

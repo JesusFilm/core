@@ -15,7 +15,6 @@ type VideoGeneric implements VideoContent {
 type VideoBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   title: String!
   """
   startAt dictates at which point of time the video should start playing
@@ -47,8 +46,6 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  """ type is overwritten by the API """
-  type: String
   title: String!
   """
   startAt dictates at which point of time the video should start playing
