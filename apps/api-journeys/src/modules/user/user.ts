@@ -37,7 +37,7 @@ const typeDefs = gql`
   extend type Query {
     me: User
     users: [User]
-    user(id: ID): User
+    user(id: ID!): User
   }
 
   extend type Mutation {

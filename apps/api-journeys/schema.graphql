@@ -280,7 +280,7 @@ extend type Query {
   journey(id: ID!, idType: IdType): Journey
   me: User
   users: [User]
-  user(id: ID): User
+  user(id: ID!): User
 }
 
 type RadioOptionBlock implements Block {

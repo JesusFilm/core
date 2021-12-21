@@ -357,7 +357,7 @@ export type Query = {
   journeys: Array<Journey>;
   me?: Maybe<User>;
   user?: Maybe<User>;
-  users: Array<User>;
+  users?: Maybe<Array<Maybe<User>>>;
 };
 
 
@@ -508,7 +508,6 @@ export type User = {
 };
 
 export type UserCreateInput = {
-  email?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
@@ -965,7 +964,7 @@ export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType exte
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneysArgs, never>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {

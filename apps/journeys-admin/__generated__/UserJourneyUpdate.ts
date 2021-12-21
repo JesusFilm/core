@@ -9,16 +9,14 @@ import { UserJourneyUpdateInput, UserJourneyRole } from "./globalTypes";
 // GraphQL mutation operation: UserJourneyUpdate
 // ====================================================
 
-export interface UserJourneyUpdate_userJourneyUpdate {
+export interface UserJourneyUpdate_userJourneyApprove {
   __typename: "UserJourney";
   id: string;
-  userId: string;
-  journeyId: string;
   role: UserJourneyRole;
 }
 
 export interface UserJourneyUpdate {
-  userJourneyUpdate: UserJourneyUpdate_userJourneyUpdate;
+  userJourneyApprove: UserJourneyUpdate_userJourneyApprove;
 }
 
 export interface UserJourneyUpdateVariables {

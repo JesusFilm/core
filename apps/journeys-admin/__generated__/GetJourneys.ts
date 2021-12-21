@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode } from "./globalTypes";
+import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneys
@@ -17,12 +17,16 @@ export interface GetJourneys_journeys_usersJourneys {
 
 export interface GetJourneys_journeys {
   __typename: "Journey";
+  id: string;
   title: string;
+  createdAt: any;
+  publishedAt: any | null;
   description: string | null;
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
   locale: string;
+  status: JourneyStatus;
   usersJourneys: GetJourneys_journeys_usersJourneys[] | null;
 }
 

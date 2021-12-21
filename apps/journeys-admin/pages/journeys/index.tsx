@@ -3,8 +3,6 @@ import { Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
 import { gql } from '@apollo/client'
-import { ThemeProvider } from '@core/shared/ui'
-import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
@@ -14,6 +12,8 @@ import { useFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { JourneysAppBar } from '../../src/components/JourneysAppBar'
+import { ThemeProvider } from '@core/shared/ui'
+import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -69,11 +69,14 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
           journeys {
             id
             title
+            createdAt
+            publishedAt
             description
             slug
             themeName
             themeMode
             locale
+            status
             usersJourneys {
               userId
               journeyId
@@ -85,7 +88,9 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
 
     if (data.journeys === null) {
       return {
-        notFound: true
+        props: {
+          journeys: []
+        }
       }
     } else {
       return {

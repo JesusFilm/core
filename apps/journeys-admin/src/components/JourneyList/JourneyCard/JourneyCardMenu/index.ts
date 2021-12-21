@@ -1,1 +1,1 @@
-export { default } from './JourneyCardMenu'
+export { JourneyCardMenu } from './JourneyCardMenu'

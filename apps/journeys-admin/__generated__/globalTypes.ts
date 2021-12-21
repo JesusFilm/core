@@ -165,7 +165,6 @@ export interface SignUpResponseCreateInput {
 }
 
 export interface UserCreateInput {
-  email?: string | null;
   firstName?: string | null;
   imageUrl?: string | null;
   lastName?: string | null;

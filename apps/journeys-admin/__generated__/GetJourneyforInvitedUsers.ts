@@ -22,11 +22,14 @@ export interface GetJourneyforInvitedUsers_journey_usersJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
+  userId: string;
+  journeyId: string;
   user: GetJourneyforInvitedUsers_journey_usersJourneys_user | null;
 }
 
 export interface GetJourneyforInvitedUsers_journey {
   __typename: "Journey";
+  id: string;
   usersJourneys: GetJourneyforInvitedUsers_journey_usersJourneys[] | null;
 }
 

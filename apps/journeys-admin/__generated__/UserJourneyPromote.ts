@@ -3,16 +3,28 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { UserJourneyUpdateInput } from "./globalTypes";
+import { UserJourneyUpdateInput, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: UserJourneyPromote
 // ====================================================
 
+export interface UserJourneyPromote_userJourneyPromote_journey_usersJourneys {
+  __typename: "UserJourney";
+  id: string;
+}
+
+export interface UserJourneyPromote_userJourneyPromote_journey {
+  __typename: "Journey";
+  id: string;
+  usersJourneys: UserJourneyPromote_userJourneyPromote_journey_usersJourneys[] | null;
+}
+
 export interface UserJourneyPromote_userJourneyPromote {
   __typename: "UserJourney";
-  userId: string;
-  journeyId: string;
+  id: string;
+  role: UserJourneyRole;
+  journey: UserJourneyPromote_userJourneyPromote_journey | null;
 }
 
 export interface UserJourneyPromote {

@@ -16,6 +16,7 @@ import {
   INVITE_USER_MODAL_FIELDS
 } from '../../src/components/InviteUserModal'
 import { ThemeProvider } from '../../src/components/ThemeProvider'
+import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface SingleJourneyPageProps {
   journey: Journey
@@ -56,11 +57,9 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
         {journey.description != null && (
           <meta name="description" content={journey.description} />
         )}
-        {journey.primaryImageBlock != null && (
-          <meta property="og:image" content={journey.primaryImageBlock.src} />
-        )}
       </Head>
       <ThemeProvider>
+        <JourneysAppBar variant="view" />
         <Box sx={{ m: 10 }}>
           <Typography variant={'h2'}>{journey.title}</Typography>
           {currentUsersJourney?.role === 'inviteRequested' ? (

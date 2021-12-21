@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { useFirebase } from '../src/libs/firebaseClient'
 import { ApolloProvider } from '@apollo/client'
 import { createApolloClient } from '../src/libs/client'
+import { ThemeProvider } from '../src/components'
 
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const { user } = useFirebase()
@@ -26,9 +27,11 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <ApolloProvider client={client}>
-        <Component {...pageProps} />
-      </ApolloProvider>
+      <ThemeProvider>
+        <ApolloProvider client={client}>
+          <Component {...pageProps} />
+        </ApolloProvider>
+      </ThemeProvider>
     </>
   )
 }

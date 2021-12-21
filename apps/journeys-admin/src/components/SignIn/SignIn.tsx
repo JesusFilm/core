@@ -13,7 +13,6 @@ export const USER_CREATE = gql`
     userCreate(input: $input) {
       firstName
       lastName
-      email
       imageUrl
     }
   }
@@ -45,7 +44,6 @@ export function SignIn(): ReactElement {
         input: {
           firstName,
           lastName,
-          email,
           imageUrl
         },
         optimisticResponse: {
