@@ -7,7 +7,7 @@ import { DocumentNode, ExecutionResult } from 'graphql'
 import { pick } from 'lodash'
 
 describe('UserModule', () => {
-  let app, user
+  let app, user, userOwner
 
   beforeEach(() => {
     app = testkit.testModule(userModule, {
@@ -20,6 +20,13 @@ describe('UserModule', () => {
       lastName: 'sho',
       email: 'tho@no.co',
       imageUrl: 'po'
+    }
+
+    userOwner = {
+      id: uuidv4(),
+      userId: user.id,
+      journeyId: 'journeyId',
+      role: 'owner'
     }
   })
 
@@ -42,6 +49,7 @@ describe('UserModule', () => {
     describe('get user by id', () => {
       it('returns user', async () => {
         dbMock.user.findUnique.mockResolvedValue(user)
+        dbMock.userJourney.findUnique.mockResolvedValue(userOwner)
         const { data } = await query(
           gql`
             query ($id: ID!) {
@@ -56,6 +64,9 @@ describe('UserModule', () => {
           `,
           {
             id: user.id
+          },
+          {
+            userId: userOwner.userId
           }
         )
         expect(data?.user).toEqual(
@@ -67,17 +78,26 @@ describe('UserModule', () => {
     describe('list of users', () => {
       it('returns all users', async () => {
         dbMock.user.findMany.mockResolvedValue([user])
-        const { data } = await query(gql`
-          query {
-            users {
-              id
-              firstName
-              lastName
-              email
-              imageUrl
+        dbMock.userJourney.findUnique.mockResolvedValue(userOwner)
+        const { data } = await query(
+          gql`
+            query {
+              users {
+                id
+                firstName
+                lastName
+                email
+                imageUrl
+              }
             }
+          `,
+          {
+            id: user.id
+          },
+          {
+            userId: userOwner.userId
           }
-        `)
+        )
         expect(data?.users).toEqual([
           pick(user, ['id', 'email', 'firstName', 'lastName', 'imageUrl'])
         ])
@@ -88,6 +108,7 @@ describe('UserModule', () => {
   describe('Mutation', () => {
     it('creates a user', async () => {
       dbMock.user.create.mockResolvedValue(user)
+      dbMock.userJourney.findUnique.mockResolvedValue(userOwner)
       const { data } = await query(
         gql`
           mutation ($input: UserCreateInput!) {
