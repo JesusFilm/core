@@ -6,7 +6,7 @@ import { ShareSection, ShareSectionProps } from './ShareSection'
 const JourneyShareDemo = {
   ...journeysAdminConfig,
   component: ShareSection,
-  title: 'Journeys-Admin/SingleJourney/ShareSection'
+  title: 'Journeys-Admin/JourneyView/ShareSection'
 }
 
 const Template: Story<ShareSectionProps> = ({ ...args }) => (

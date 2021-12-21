@@ -7,15 +7,12 @@ import { CardPreview } from '../../CardPreview'
 import { TreeBlock } from '@core/journeys/ui'
 import { useBreakpoints } from '@core/shared/ui'
 
-export interface CardOverviewProps {
+export interface CardViewProps {
   slug: string
   blocks: Array<TreeBlock<StepBlock>>
 }
 
-export function CardOverview({
-  slug,
-  blocks
-}: CardOverviewProps): ReactElement {
+export function CardView({ slug, blocks }: CardViewProps): ReactElement {
   const breakpoints = useBreakpoints()
 
   const stepBlockLength =

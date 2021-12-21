@@ -20,6 +20,7 @@ export const journeysAdminConfig = {
 
 // Simple components are not responsive, simplify VR testing
 export const simpleComponentConfig = {
+  ...journeysAdminConfig,
   parameters: {
     ...journeysAdminConfig.parameters,
     chromatic: {

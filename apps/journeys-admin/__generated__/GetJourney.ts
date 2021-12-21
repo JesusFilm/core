@@ -336,6 +336,7 @@ export interface GetJourney_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
+  locale: string;
   createdAt: any;
   publishedAt: any | null;
   blocks: GetJourney_journey_blocks[] | null;

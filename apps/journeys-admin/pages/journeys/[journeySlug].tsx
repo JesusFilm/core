@@ -2,23 +2,19 @@ import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
-import { Typography, Box } from '@mui/material'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { BlockFields_StepBlock as StepBlock } from '../../__generated__/BlockFields'
+import { JourneyProvider, JourneyView } from '../../src/components'
 import client from '../../src/libs/client'
-import { CardOverview } from '../../src/components/SingleJourney/CardOverview'
-import { transformer, BLOCK_FIELDS, TreeBlock } from '@core/journeys/ui'
-import { JourneysAppBar } from '../../src/components/JourneysAppBar'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
 
-interface SingleJourneyPageProps {
+interface JourneyViewPageProps {
   journey: Journey
 }
 
-function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
-  const blocks = journey.blocks != null ? transformer(journey.blocks) : []
+function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
   return (
     <>
       <Head>
@@ -28,26 +24,14 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta name="description" content={journey.description} />
         )}
       </Head>
-      <JourneysAppBar variant="view" />
-      <Box sx={{ m: 10 }}>
-        <Typography variant={'h2'} sx={{ mb: 4 }}>
-          Single Journey Page
-        </Typography>
-        <Typography variant={'h6'}>{journey.title}</Typography>
-        <Typography variant={'h6'}>{journey.status}</Typography>
-        <Typography variant={'h6'}>created: {journey.createdAt}</Typography>
-        <Typography variant={'h6'}>published: {journey.publishedAt}</Typography>
-
-        <CardOverview
-          slug={journey.slug}
-          blocks={blocks as Array<TreeBlock<StepBlock>>}
-        />
-      </Box>
+      <JourneyProvider value={journey}>
+        <JourneyView />
+      </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
+export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
       query: gql`
@@ -58,7 +42,9 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             slug
             title
             description
+            slug
             status
+            locale
             createdAt
             publishedAt
             blocks {
@@ -85,4 +71,4 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
     }
   }
 
-export default SingleJourneyPage
+export default JourneyViewPage
