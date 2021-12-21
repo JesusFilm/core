@@ -23,8 +23,25 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
 
   return (
     <Card
+      aria-label="journey-card"
       variant="outlined"
-      sx={{ borderRadius: 0, px: 6, py: 4, border: 'none' }}
+      sx={{
+        px: 6,
+        py: 4,
+        borderRadius: 0,
+        borderColor: 'divider',
+        borderBottom: 'none',
+        '&:first-child': {
+          borderTopLeftRadius: { xs: 0, md: 12 },
+          borderTopRightRadius: { xs: 0, md: 12 }
+        },
+        '&:last-child': {
+          borderBottomLeftRadius: { xs: 0, md: 12 },
+          borderBottomRightRadius: { xs: 0, md: 12 },
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }
+      }}
     >
       <Link href={`/journeys/${journey.slug}`} passHref>
         <Typography
