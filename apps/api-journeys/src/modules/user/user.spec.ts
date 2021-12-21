@@ -86,7 +86,7 @@ describe('UserModule', () => {
     it('checks if users already exists', async () => {
       dbMock.user.findUnique.mockResolvedValue(user)
 
-      await query(
+      const { data } = await query(
         gql`
           query {
             me {
@@ -108,6 +108,13 @@ describe('UserModule', () => {
         where: {
           id: user.id
         }
+      })
+      expect(data?.me).toEqual({
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        imageUrl: user.imageUrl
       })
     })
   })
