@@ -10,7 +10,7 @@ data:
       groups:
         - system:bootstrappers
         - system:nodes
-  mapUsers: | 
+  mapUsers: |
     - userarn: arn:aws:iam::894231352815:user/JfmGithubUser 
       username: JfmGithubUser 
       groups: 

@@ -16,14 +16,14 @@ spec:
         app: api-journeys-stage
     spec:
       containers:
-      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:c33fe910f485803718fa8d656d85816755247078
-        imagePullPolicy: IfNotPresent
-        name: jfp-api-journeys
-        ports:
-          - containerPort: 4001
-        envFrom:
-        - secretRef:
-            name: env-db-stage
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:c33fe910f485803718fa8d656d85816755247078
+          imagePullPolicy: IfNotPresent
+          name: jfp-api-journeys
+          ports:
+            - containerPort: 4001
+          envFrom:
+            - secretRef:
+                name: env-db-stage
 ---
 apiVersion: v1
 kind: Service
@@ -33,5 +33,5 @@ spec:
   selector:
     app: api-journeys-stage
   ports:
-    - port: 4001          
+    - port: 4001
   type: LoadBalancer

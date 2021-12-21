@@ -16,14 +16,14 @@ spec:
         app: api-users-stage
     spec:
       containers:
-      - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:c33fe910f485803718fa8d656d85816755247078
-        imagePullPolicy: IfNotPresent
-        name: jfp-api-users
-        ports:
-          - containerPort: 4002
-        envFrom:
-        - secretRef:
-            name: env-db-stage
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:c33fe910f485803718fa8d656d85816755247078
+          imagePullPolicy: IfNotPresent
+          name: jfp-api-users
+          ports:
+            - containerPort: 4002
+          envFrom:
+            - secretRef:
+                name: env-db-stage
 ---
 apiVersion: v1
 kind: Service

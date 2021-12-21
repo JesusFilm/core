@@ -1,7 +1,7 @@
-apiVersion: "database.arangodb.com/v1alpha"
-kind: "ArangoDeployment"
+apiVersion: 'database.arangodb.com/v1alpha'
+kind: 'ArangoDeployment'
 metadata:
-  name: "arangodb"
+  name: 'arangodb'
 spec:
   mode: Single
   tls:

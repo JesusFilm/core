@@ -10,12 +10,14 @@
         "outputPath": "dist/apps/api-journeys",
         "main": "apps/api-journeys/src/main.ts",
         "tsConfig": "apps/api-journeys/tsconfig.app.json",
-        "assets": ["apps/api-journeys/src/assets",
-        {
-          "glob": "**/*.graphql",
-          "input": "apps/api-journeys/src/app/",
-          "output": "./assets"
-          }],
+        "assets": [
+          "apps/api-journeys/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apps/api-journeys/src/app/",
+            "output": "./assets"
+          }
+        ],
         "generatePackageJson": true
       },
       "configurations": {
