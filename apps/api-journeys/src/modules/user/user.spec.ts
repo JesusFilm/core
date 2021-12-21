@@ -61,18 +61,53 @@ describe('UserModule', () => {
           query {
             me {
               id
+              firstName
+              lastName
+              email
+              imageUrl
             }
           }
         `,
+        {},
         {
           userId: user.id
         }
       )
+
       expect(firebaseClient.auth().getUser).toHaveBeenCalledWith(user.id)
       expect(data?.me).toEqual({
-        displayName: 'foo bar',
-        email: 'my@example.com',
-        photoURL: 'https://example.com/my-photo.jpg'
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        imageUrl: user.imageUrl
+      })
+    })
+    it('checks if users already exists', async () => {
+      dbMock.user.findUnique.mockResolvedValue(user)
+
+      await query(
+        gql`
+          query {
+            me {
+              id
+              firstName
+              lastName
+              email
+              imageUrl
+            }
+          }
+        `,
+        {},
+        {
+          userId: user.id
+        }
+      )
+
+      expect(dbMock.user.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: user.id
+        }
       })
     })
   })
