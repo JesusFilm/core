@@ -350,6 +350,7 @@ describe('JourneyModule', () => {
         dbMock.journey.update.mockResolvedValue(updatedJourney)
 
         dbMock.userJourney.findUnique.mockResolvedValue({
+          id: 'id',
           userId: 'userId',
           journeyId: updatedJourney.id,
           role: 'owner'
@@ -427,6 +428,7 @@ describe('JourneyModule', () => {
         })
 
         dbMock.userJourney.findUnique.mockResolvedValue({
+          id: 'id',
           userId: 'userId',
           journeyId: 'journeyId',
           role: 'owner'
@@ -469,6 +471,7 @@ describe('JourneyModule', () => {
         dbMock.journey.update.mockResolvedValue(publishedJourney)
 
         dbMock.userJourney.findUnique.mockResolvedValue({
+          id: 'id',
           userId: 'userId',
           journeyId: 'journeyId',
           role: 'owner'

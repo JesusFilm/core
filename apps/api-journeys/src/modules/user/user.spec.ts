@@ -4,6 +4,21 @@ import { userModule } from '..'
 import dbMock from '../../../tests/dbMock'
 import { v4 as uuidv4 } from 'uuid'
 import { DocumentNode, ExecutionResult } from 'graphql'
+import { firebaseClient } from '../../lib/firebaseClient'
+
+jest.mock('../../lib/firebaseClient', () => {
+  return {
+    __esModule: true,
+    firebaseClient: {
+      auth: jest.fn().mockReturnThis(),
+      getUser: jest.fn().mockResolvedValue({
+        displayName: 'foo bar',
+        email: 'my@example.com',
+        photoURL: 'https://example.com/my-photo.jpg'
+      })
+    }
+  }
+})
 
 describe('UserModule', () => {
   let app, user
@@ -37,33 +52,27 @@ describe('UserModule', () => {
     })
   }
 
-  describe('Mutation', () => {
+  describe('user', () => {
     it('creates a user', async () => {
       dbMock.user.create.mockResolvedValue(user)
 
-      await query(
+      const { data } = await query(
         gql`
-          mutation ($input: UserCreateInput!) {
-            userCreate(input: $input) {
+          query {
+            me {
               id
             }
           }
         `,
         {
-          id: user.id
-        },
-        {
-          userId: 'userId'
+          userId: user.id
         }
       )
-      expect(dbMock.user.create).toBeCalledWith({
-        data: {
-          id: 'userId',
-          firstName: 'fo',
-          lastName: 'sho',
-          email: 'tho@no.co',
-          imageUrl: 'po'
-        }
+      expect(firebaseClient.auth().getUser).toHaveBeenCalledWith(user.id)
+      expect(data?.me).toEqual({
+        displayName: 'foo bar',
+        email: 'my@example.com',
+        photoURL: 'https://example.com/my-photo.jpg'
       })
     })
   })

@@ -59,7 +59,7 @@ const resolvers: UserModule.Resolvers = {
           id,
           firstName,
           lastName,
-          email: email ?? '',
+          email,
           imageUrl
         }
       })
