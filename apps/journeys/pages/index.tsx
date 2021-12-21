@@ -1,10 +1,12 @@
 import { ReactElement } from 'react'
-import { Box, Button, Container } from '@mui/material'
-import { ThemeProvider } from '@core/shared/ui'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
-import client from '../src/libs/client'
 import { gql } from '@apollo/client'
+import client from '../src/libs/client'
+import { ThemeProvider } from '@core/shared/ui'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey

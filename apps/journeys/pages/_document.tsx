@@ -2,7 +2,7 @@ import { Children, ReactElement } from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@mui/styles'
 
-export class MyDocument extends Document {
+export default class MyDocument extends Document {
   render(): ReactElement {
     return (
       <Html lang="en">

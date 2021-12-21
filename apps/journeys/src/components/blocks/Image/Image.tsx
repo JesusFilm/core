@@ -3,7 +3,8 @@ import NextImage from 'next/image'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { SxProps } from '@mui/system'
-import { Theme, Box } from '@mui/material'
+import Box from '@mui/material/Box'
+import { Theme } from '@mui/material/styles'
 
 interface ImageProps extends TreeBlock<ImageBlock> {
   sx?: SxProps<Theme>
