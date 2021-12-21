@@ -1,1 +1,1 @@
-export { default } from './JourneyCard'
+export { JourneyCard } from './JourneyCard'
