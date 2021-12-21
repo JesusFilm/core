@@ -1,66 +1,66 @@
-  type Journey @key(fields: "id") {
-    id: ID!
-    published: Boolean!
-    title: String!
-    locale: String!
-    themeMode: ThemeMode!
-    themeName: ThemeName!
-    description: String
-    slug: String!
-    publishedAt: DateTime
-    createdAt: DateTime!
-    status: JourneyStatus!
-  }
+type Journey @key(fields: "id") {
+  id: ID!
+  published: Boolean!
+  title: String!
+  locale: String!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  description: String
+  slug: String!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  status: JourneyStatus!
+}
 
-  enum IdType {
-    databaseId
-    slug
-  }
+enum IdType {
+  databaseId
+  slug
+}
 
-  enum JourneyStatus {
-    draft
-    published
-  }
+enum JourneyStatus {
+  draft
+  published
+}
 
-  extend type Query {
-    journeys(status: JourneyStatus): [Journey!]!
-    journey(id: ID!, idType: IdType): Journey
-  }
+extend type Query {
+  journeys(status: JourneyStatus): [Journey!]!
+  journey(id: ID!, idType: IdType): Journey
+}
 
-  input JourneyCreateInput {
-    """
-    ID should be unique Response UUID
-    (Provided for optimistic mutation result matching)
-    """
-    id: ID
-    title: String
-    locale: String
-    themeMode: ThemeMode
-    themeName: ThemeName
-    description: String
-    """
-    Slug should be unique amongst all journeys
-    (server will throw BAD_USER_INPUT error if not)
-    """
-    slug: String
-  }
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID
+  (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  title: String
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String
+}
 
-  input JourneyUpdateInput {
-    title: String
-    locale: String
-    themeMode: ThemeMode
-    themeName: ThemeName
-    description: String
-    primaryImageBlockId: ID
-    slug: String
-  }
+input JourneyUpdateInput {
+  title: String
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  primaryImageBlockId: ID
+  slug: String
+}
 
-  extend type Mutation {
-    journeyCreate(input: JourneyCreateInput!): Journey!
-    journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
-    journeyPublish(id: ID!): Journey
-  }
+extend type Mutation {
+  journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  journeyPublish(id: ID!): Journey
+}
 
-  extend type NavigateToJourneyAction {
-    journey: Journey
-  }
+extend type NavigateToJourneyAction {
+  journey: Journey
+}

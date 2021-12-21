@@ -3,7 +3,10 @@ import { JourneyService } from './journey.service'
 import { ThemeMode, ThemeName } from '../../__generated__/graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockCollectionSaveResult, mockDbQueryResult } from '@core/nest/database'
+import {
+  mockCollectionSaveResult,
+  mockDbQueryResult
+} from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 
 describe('JourneyService', () => {
@@ -11,9 +14,13 @@ describe('JourneyService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JourneyService, {
-        provide: 'DATABASE', useFactory: () => mockDeep<Database>()
-      }],
+      providers: [
+        JourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
 
     service = module.get<JourneyService>(JourneyService)
@@ -24,7 +31,7 @@ describe('JourneyService', () => {
   })
 
   const journey = {
-    _key: "1",
+    _key: '1',
     title: 'published',
     published: true,
     locale: 'en-US',
@@ -37,8 +44,10 @@ describe('JourneyService', () => {
 
   describe('getAll', () => {
     beforeEach(() => {
-      (service.db as DeepMockProxy<Database>).query.mockReturnValue(mockDbQueryResult(service.db, [journey, journey]))
-    })  
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [journey, journey])
+      )
+    })
 
     it('should return an array of journeys', async () => {
       expect(await service.getAll()).toEqual([journey, journey])
@@ -47,28 +56,36 @@ describe('JourneyService', () => {
 
   describe('get', () => {
     beforeEach(() => {
-      (service.db as DeepMockProxy<Database>).query.mockReturnValue(mockDbQueryResult(service.db, [journey]))
-    })  
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [journey])
+      )
+    })
 
     it('should return a journey', async () => {
-      expect(await service.get("1")).toEqual(journey)
+      expect(await service.get('1')).toEqual(journey)
     })
   })
 
   describe('getBySlug', () => {
     beforeEach(() => {
-      (service.db as DeepMockProxy<Database>).query.mockReturnValue(mockDbQueryResult(service.db, [journey]))
-    })  
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [journey])
+      )
+    })
 
     it('should return a journey', async () => {
-      expect(await service.getBySlug("slug")).toEqual(journey)
+      expect(await service.getBySlug('slug')).toEqual(journey)
     })
   })
 
   describe('save', () => {
     beforeEach(() => {
-      (service.collection as DeepMockProxy<DocumentCollection>).save.mockReturnValue(mockCollectionSaveResult(service.collection, journey))
-    })  
+      ;(
+        service.collection as DeepMockProxy<DocumentCollection>
+      ).save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, journey)
+      )
+    })
 
     it('should return a saved journey', async () => {
       expect(await service.save(journey)).toEqual(journey)
@@ -77,8 +94,12 @@ describe('JourneyService', () => {
 
   describe('update', () => {
     beforeEach(() => {
-      (service.collection as DeepMockProxy<DocumentCollection>).update.mockReturnValue(mockCollectionSaveResult(service.collection, journey))
-    })  
+      ;(
+        service.collection as DeepMockProxy<DocumentCollection>
+      ).update.mockReturnValue(
+        mockCollectionSaveResult(service.collection, journey)
+      )
+    })
 
     it('should return a saved journey', async () => {
       expect(await service.update(journey._key, journey)).toEqual(journey)

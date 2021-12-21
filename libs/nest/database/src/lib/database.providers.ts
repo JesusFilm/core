@@ -1,6 +1,5 @@
 import { Database } from 'arangojs'
 
-
 export const databaseProviders = [
   {
     provide: 'DATABASE',
