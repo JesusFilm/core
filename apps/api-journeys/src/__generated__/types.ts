@@ -255,7 +255,6 @@ export type Mutation = {
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
   userJourneyApprove: UserJourney;
-  userJourneyCreate: UserJourney;
   userJourneyPromote: UserJourney;
   userJourneyRemove: UserJourney;
   userJourneyRequest: UserJourney;
@@ -295,11 +294,6 @@ export type MutationSignUpResponseCreateArgs = {
 
 export type MutationUserJourneyApproveArgs = {
   input: UserJourneyUpdateInput;
-};
-
-
-export type MutationUserJourneyCreateArgs = {
-  input: UserJourneyCreateInput;
 };
 
 
@@ -501,12 +495,6 @@ export type UserJourney = {
   journeyId: Scalars['ID'];
   role: UserJourneyRole;
   user?: Maybe<User>;
-  userId: Scalars['ID'];
-};
-
-export type UserJourneyCreateInput = {
-  journeyId: Scalars['ID'];
-  role?: Maybe<UserJourneyRole>;
   userId: Scalars['ID'];
 };
 
@@ -735,7 +723,6 @@ export type ResolversTypes = {
   TypographyVariant: TypographyVariant;
   User: ResolverTypeWrapper<UserType>;
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
-  UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyPromote: UserJourneyPromote;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyRequestInput: UserJourneyRequestInput;
@@ -790,7 +777,6 @@ export type ResolversParentTypes = {
   TypographyBlock: BlockType;
   User: UserType;
   UserJourney: UserJourneyType;
-  UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyRequestInput: UserJourneyRequestInput;
   UserJourneyUpdateInput: UserJourneyUpdateInput;
@@ -911,7 +897,6 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
   userJourneyApprove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyApproveArgs, 'input'>>;
-  userJourneyCreate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyCreateArgs, 'input'>>;
   userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'input'>>;
   userJourneyRemove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRemoveArgs, 'input'>>;
   userJourneyRequest?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRequestArgs, 'input'>>;

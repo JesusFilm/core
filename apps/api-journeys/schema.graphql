@@ -247,7 +247,6 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
   userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
   userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
@@ -421,12 +420,6 @@ type UserJourney {
   role: UserJourneyRole!
   journey: Journey
   user: User
-}
-
-input UserJourneyCreateInput {
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRole
 }
 
 enum UserJourneyPromote {
