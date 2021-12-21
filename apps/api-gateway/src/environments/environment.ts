@@ -4,9 +4,7 @@ import { readFileSync } from 'fs'
 export const config: EnvironmentConfig = {
   production: false,
   gatewayConfig: {
-    supergraphSdl: readFileSync(
-      './apps/api-gateway/schema.graphql'
-    ).toString()
+    supergraphSdl: readFileSync('./apps/api-gateway/schema.graphql').toString()
   },
   listenOptions: {
     port: 4000,
