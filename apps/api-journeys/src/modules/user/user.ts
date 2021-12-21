@@ -2,6 +2,18 @@ import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { AuthenticationError } from 'apollo-server-errors'
 import { UserModule } from './__generated__/types'
+import * as admin from 'firebase-admin'
+
+if (
+  process.env.GOOGLE_APPLICATION_JSON != null &&
+  process.env.GOOGLE_APPLICATION_JSON !== ''
+) {
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      JSON.parse(process.env.GOOGLE_APPLICATION_JSON)
+    )
+  })
+}
 
 const typeDefs = gql`
   input UserCreateInput {
@@ -75,13 +87,17 @@ const resolvers: UserModule.Resolvers = {
     ) {
       if (userId == null) throw new AuthenticationError('You must be logged in')
 
-      const user = await db.user.findUnique({
+      const auth = admin.auth();
+      const user = await auth.getUser(userId);
+      if (user.email !== email) throw new AuthenticationError('You must send an accurate email')
+
+      const existingUser = await db.user.findUnique({
         where: {
           id: userId
         }
       })
 
-      if (user != null) return user
+      if (existingUser != null) return existingUser
 
       return await db.user.create({
         data: {
