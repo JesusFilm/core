@@ -11,7 +11,7 @@ interface ApproveUserProps {
 
 export const USER_JOURNEY_APPROVE = gql`
   mutation UserJourneyUpdate($input: UserJourneyUpdateInput!) {
-    userJourneyUpdate(input: $input) {
+    userJourneyApprove(input: $input) {
       id
       role
     }
@@ -46,7 +46,7 @@ export const ApproveUser = ({
 
   return (
     <MenuItem
-      onClick={async (e) =>
+      onClick={async () =>
         await handleApproveUser(usersJourneys.userId, usersJourneys.journeyId)
       }
     >

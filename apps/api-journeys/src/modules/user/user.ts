@@ -25,8 +25,8 @@ const typeDefs = gql`
 
   extend type Query {
     me: User
-    users: [User!]!
-    user(id: ID!): User
+    users: [User]
+    user(id: ID): User
   }
 
   extend type Mutation {
@@ -46,10 +46,16 @@ const resolvers: UserModule.Resolvers = {
     }
   },
   Query: {
-    async users(_, __, { db }) {
+    async users(_, __, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('You must be logged in to view users')
+
       return await db.user.findMany({})
     },
-    async user(_parent, { id }, { db }) {
+    async user(_parent, { id }, { db, userId }) {
+      if (userId == null)
+        throw new AuthenticationError('You must be logged in to view this user')
+
       return await db.user.findUnique({ where: { id } })
     },
     async me(_parent, _, { db, userId }) {
@@ -80,10 +86,10 @@ const resolvers: UserModule.Resolvers = {
       return await db.user.create({
         data: {
           id: userId,
-          firstName: firstName as string,
-          lastName: lastName as string,
-          email: email as string,
-          imageUrl: imageUrl as string
+          firstName: firstName ?? '',
+          lastName,
+          email: email ?? '',
+          imageUrl
         }
       })
     }

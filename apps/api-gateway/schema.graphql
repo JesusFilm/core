@@ -307,8 +307,8 @@ type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
   me: User @join__field(graph: JOURNEYS)
-  user(id: ID!): User @join__field(graph: JOURNEYS)
-  users: [User!]! @join__field(graph: JOURNEYS)
+  user(id: ID): User @join__field(graph: JOURNEYS)
+  users: [User] @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {

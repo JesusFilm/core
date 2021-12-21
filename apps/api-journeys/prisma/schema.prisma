@@ -53,7 +53,7 @@ model Journey {
 }
 
 model UserJourney {
-  id        String          @id
+  id        String          @id @default(uuid())
   userId    String
   user      User            @relation("User", fields: [userId], references: [id], onDelete: Cascade)
   journeyId String
