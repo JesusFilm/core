@@ -1,11 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { ReactElement, useState } from 'react'
-import { JourneySort, SortBy } from '.'
+import { JourneySort, SortOrder } from '.'
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 const JourneySortMock = (): ReactElement => {
-  const [sortBy, setSortBy] = useState(SortBy.UNDEFINED)
-  return <JourneySort sortBy={sortBy} setSortBy={setSortBy} open={true} />
+  const [sortOrder, setSortOrder] = useState<SortOrder>()
+  return (
+    <JourneySort sortOrder={sortOrder} onChange={setSortOrder} open={true} />
+  )
 }
 
 const JourneySortDemo = {
