@@ -1,4 +1,3 @@
-import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect, useState } from 'react'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { useBlocks } from '../../libs/client/cache/blocks'
@@ -10,7 +9,7 @@ import { Box, IconButton, useTheme } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
-import { CardWrapper } from '../blocks/Card'
+import { BlockRenderer, CardWrapper } from '@core/journeys/ui'
 
 export interface ConductorProps {
   blocks: TreeBlock[]

@@ -2,9 +2,9 @@ import { ReactElement } from 'react'
 import { Button, useTheme } from '@mui/material'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { TreeBlock, handleAction } from '../../..'
 import { useRouter } from 'next/router'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
+import { handleAction, TreeBlock } from '../../../libs'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   className?: string

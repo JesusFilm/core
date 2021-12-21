@@ -1,6 +1,6 @@
 export { BlockRenderer } from './BlockRenderer'
 export { Button } from './Button'
-export { Card } from './Card'
+export { Card, CardWrapper, CardCover } from './Card'
 export { Image } from './Image'
 export { GridContainer } from './GridContainer'
 export { GridItem } from './GridContainer/GridItem'

@@ -2,6 +2,7 @@ export {
   BlockRenderer,
   Button,
   Card,
+  CardWrapper,
   Image,
   GridContainer,
   GridItem,
