@@ -3,7 +3,6 @@ import { createModule, gql } from 'graphql-modules'
 import { AuthenticationError } from 'apollo-server-errors'
 import { UserModule } from './__generated__/types'
 import { firebaseClient } from '../../lib/firebaseClient'
-import { getAuth } from 'firebase-admin/auth'
 
 const typeDefs = gql`
   type User @key(fields: "id") {
@@ -50,7 +49,7 @@ const resolvers: UserModule.Resolvers = {
         displayName,
         email,
         photoURL: imageUrl
-      } = await getAuth(firebaseClient).getUser(id)
+      } = await firebaseClient.auth().getUser(id)
 
       const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
       const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''

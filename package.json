@@ -49,7 +49,7 @@
     "express": "4.17.1",
     "fastify": "^3.20.2",
     "firebase": "^9.0.2",
-    "firebase-admin": "^10.0.1",
+    "firebase-admin": "^9.12.0",
     "formik": "^2.2.9",
     "graphql": "^15.5.3",
     "graphql-modules": "^1.4.4",
