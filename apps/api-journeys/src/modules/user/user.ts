@@ -19,7 +19,6 @@ const typeDefs = gql`
   input UserCreateInput {
     firstName: String
     lastName: String
-    email: String
     imageUrl: String
   }
 
@@ -82,14 +81,13 @@ const resolvers: UserModule.Resolvers = {
   Mutation: {
     async userCreate(
       _parent,
-      { input: { firstName, lastName, email, imageUrl } },
+      { input: { firstName, lastName, imageUrl } },
       { db, userId }
     ) {
       if (userId == null) throw new AuthenticationError('You must be logged in')
 
-      const auth = admin.auth();
-      const user = await auth.getUser(userId);
-      if (user.email !== email) throw new AuthenticationError('You must send an accurate email')
+      const auth = admin.auth()
+      const user = await auth.getUser(userId)
 
       const existingUser = await db.user.findUnique({
         where: {
@@ -104,7 +102,7 @@ const resolvers: UserModule.Resolvers = {
           id: userId,
           firstName: firstName ?? '',
           lastName,
-          email: email ?? '',
+          email: user.email ?? '',
           imageUrl
         }
       })

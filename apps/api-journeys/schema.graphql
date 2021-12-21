@@ -420,7 +420,6 @@ type User @key(fields: "id") {
 input UserCreateInput {
   firstName: String
   lastName: String
-  email: String
   imageUrl: String
 }
 
