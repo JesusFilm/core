@@ -2,26 +2,24 @@ import { ReactElement, useState } from 'react'
 import { Box, Card, Typography, Button } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
-import { JourneySort, SortBy } from './JourneySort'
+import { JourneySort, SortOrder } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
 import { JourneysAppBar } from '../JourneysAppBar'
+import { sortBy } from 'lodash'
 
 export interface JourneysListProps {
   journeys: Journey[]
 }
 
 export function JourneyList({ journeys }: JourneysListProps): ReactElement {
-  const [sortBy, setSortBy] = useState(SortBy.UNDEFINED)
+  const [sortOrder, setSortOrder] = useState<SortOrder>()
 
-  if (sortBy === SortBy.TITLE) {
-    journeys.sort((a, b) => {
-      return a.title.localeCompare(b.title)
-    })
-  } else {
-    journeys.sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    })
-  }
+  const sortedJourneys =
+    sortOrder === SortOrder.TITLE
+      ? sortBy(journeys, 'title')
+      : sortBy(journeys, ({ createdAt }) =>
+          new Date(createdAt).getTime()
+        ).reverse()
 
   return (
     <>
@@ -36,13 +34,13 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
         }}
       >
         <Typography variant="h3">All Journeys</Typography>
-        <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
+        <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
       </Box>
       <Box sx={{ m: { xs: 0, md: 6 } }} data-testid="journey-list">
-        {journeys.map((journey, i) => {
-          return <JourneyCard key={journey.id} journey={journey} />
-        })}
-        {journeys.length === 0 && (
+        {sortedJourneys.map((journey) => (
+          <JourneyCard key={journey.id} journey={journey} />
+        ))}
+        {sortedJourneys.length === 0 && (
           <Card
             variant="outlined"
             sx={{

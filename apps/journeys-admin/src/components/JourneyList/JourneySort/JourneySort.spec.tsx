@@ -1,10 +1,10 @@
 import { render, fireEvent } from '@testing-library/react'
-import { SortBy, JourneySort } from '.'
+import { SortOrder, JourneySort } from '.'
 import { useState, ReactElement } from 'react'
 
 export const JourneySortMock = (): ReactElement => {
-  const [sortBy, setSortBy] = useState(SortBy.UNDEFINED)
-  return <JourneySort sortBy={sortBy} setSortBy={setSortBy} />
+  const [sortOrder, setSortOrder] = useState<SortOrder>()
+  return <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
 }
 
 describe('JourneyList/JourneySort', () => {

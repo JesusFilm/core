@@ -6,6 +6,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import { ApolloProvider } from '@apollo/client'
 import { createApolloClient } from '../src/libs/client'
+import { ThemeProvider } from '../src/components'
 
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const auth = getAuth(firebaseClient)
@@ -36,14 +37,11 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <style jsx global>{`
-        body {
-          margin: 0;
-        }
-      `}</style>
-      <ApolloProvider client={client}>
-        <Component {...pageProps} />
-      </ApolloProvider>
+      <ThemeProvider>
+        <ApolloProvider client={client}>
+          <Component {...pageProps} />
+        </ApolloProvider>
+      </ThemeProvider>
     </>
   )
 }

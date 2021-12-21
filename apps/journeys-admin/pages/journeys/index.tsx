@@ -2,8 +2,6 @@ import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
 import { gql } from '@apollo/client'
-import { ThemeProvider } from '@core/shared/ui'
-import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
@@ -15,11 +13,7 @@ interface JourneysListPageProps {
 }
 
 function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
-  return (
-    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <JourneyList journeys={journeys} />
-    </ThemeProvider>
-  )
+  return <JourneyList journeys={journeys} />
 }
 
 export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =

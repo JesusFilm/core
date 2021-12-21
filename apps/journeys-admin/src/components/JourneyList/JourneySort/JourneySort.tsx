@@ -20,29 +20,28 @@ import {
 } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
 
-export enum SortBy {
-  UNDEFINED = 'undefined',
+export enum SortOrder {
   CREATED_AT = 'createdAt',
   TITLE = 'title'
 }
 
-const sortByLabel = {
+const sortOrderLabel = {
   createdAt: 'Date Created',
   title: 'Name'
 }
 
 interface JourneySortProps {
-  sortBy: SortBy
-  setSortBy: (value: SortBy) => void
+  sortOrder?: SortOrder
+  onChange: (value: SortOrder) => void
   open?: boolean // for testing
 }
 
 export function JourneySort({
-  sortBy,
-  setSortBy,
+  sortOrder,
+  onChange: handleChange,
   open
 }: JourneySortProps): ReactElement {
-  const [showSortBy, setShowSortBy] = useState(open ?? false)
+  const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
   const chipRef = useRef(null)
@@ -53,17 +52,17 @@ export function JourneySort({
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
-    setShowSortBy(true)
+    setShowSortOrder(true)
   }
 
   const handleClose = (): void => {
     setAnchorEl(null)
-    setShowSortBy(false)
+    setShowSortOrder(false)
   }
 
   const handleSubmit = (event: ChangeEvent<HTMLInputElement>): void => {
     event.preventDefault()
-    setSortBy(event.currentTarget.value as SortBy)
+    handleChange(event.currentTarget.value as SortOrder)
     handleClose()
   }
 
@@ -73,21 +72,19 @@ export function JourneySort({
         <FormLabel component="legend">Sort By</FormLabel>
         <RadioGroup
           aria-label="sort-by-options"
-          defaultValue={
-            sortBy === SortBy.UNDEFINED ? SortBy.CREATED_AT : sortBy
-          }
+          defaultValue={sortOrder ?? SortOrder.CREATED_AT}
           name="sort-by-buttons-group"
           onChange={handleSubmit}
         >
           <FormControlLabel
-            value={SortBy.CREATED_AT}
+            value={SortOrder.CREATED_AT}
             control={<Radio />}
-            label={sortByLabel.createdAt}
+            label={sortOrderLabel.createdAt}
           />
           <FormControlLabel
-            value={SortBy.TITLE}
+            value={SortOrder.TITLE}
             control={<Radio />}
-            label={sortByLabel.title}
+            label={sortOrderLabel.title}
           />
         </RadioGroup>
         <Box
@@ -99,7 +96,7 @@ export function JourneySort({
         >
           <Button
             sx={{ mt: 1, mr: 1 }}
-            onClick={() => setShowSortBy(false)}
+            onClick={() => setShowSortOrder(false)}
             variant="text"
           >
             Cancel
@@ -112,13 +109,13 @@ export function JourneySort({
   return (
     <>
       <Chip
-        label={sortBy === SortBy.UNDEFINED ? 'Sort By' : sortByLabel[sortBy]}
+        label={sortOrder != null ? sortOrderLabel[sortOrder] : 'Sort By'}
         onClick={handleClick}
         ref={chipRef}
       />
       {breakpoints.md ? (
         <Popover
-          open={showSortBy}
+          open={showSortOrder}
           anchorEl={anchorEl}
           onClose={handleClose}
           anchorOrigin={{
@@ -129,7 +126,7 @@ export function JourneySort({
           <Form />
         </Popover>
       ) : (
-        <Drawer anchor="bottom" open={showSortBy} onClose={handleClose}>
+        <Drawer anchor="bottom" open={showSortOrder} onClose={handleClose}>
           <Form />
         </Drawer>
       )}
