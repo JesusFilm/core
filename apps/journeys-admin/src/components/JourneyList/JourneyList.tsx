@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react'
-import { Box, Card, Typography, Button } from '@mui/material'
+import { Box, Card, Typography, Button, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneySort, SortOrder } from './JourneySort'
@@ -24,18 +24,20 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   return (
     <>
       <JourneysAppBar variant="list" />
-      <Box
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={2}
         sx={{
-          display: 'flex',
-          flexDirection: 'row',
           justifyContent: 'space-between',
           m: 6,
-          mt: { xs: 20, md: 24 }
+          mt: { md: 13 }
         }}
       >
         <Typography variant="h3">All Journeys</Typography>
-        <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-      </Box>
+        <Box>
+          <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+        </Box>
+      </Stack>
       <Box sx={{ m: { xs: 0, md: 6 } }} data-testid="journey-list">
         {sortedJourneys.map((journey) => (
           <JourneyCard key={journey.id} journey={journey} />
