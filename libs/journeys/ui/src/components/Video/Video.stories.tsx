@@ -10,7 +10,7 @@ const Demo = {
   component: Video,
   title: 'Journeys-Ui/Video',
   parameters: {
-    chromatic: { disableSnapshot: true }
+    chromatic: { disableSnapshot: true, delay: 300 }
   }
 }
 
