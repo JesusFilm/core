@@ -83,7 +83,6 @@ type LinkAction implements Action {
 
 interface Block {
   id: ID!
-  type: String!
   parentBlockId: ID
 }
 
@@ -124,7 +123,6 @@ enum ButtonSize {
 type ButtonBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -137,7 +135,6 @@ type ButtonBlock implements Block {
 type CardBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
@@ -171,10 +168,8 @@ type CardBlock implements Block {
 
 input CardBlockCreateInput {
   id: ID
+  journeyId: ID!
   parentBlockId: ID
-
-  """ type is overwritten by the API """
-  type: String
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -214,7 +209,6 @@ enum GridAlignItems {
 type GridContainerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
@@ -230,20 +224,8 @@ type GridItemBlock implements Block {
   sm: Int!
 }
 
-input ImageBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID
-  journeyId: ID!
-  src: String!
-  alt: String!
-}
-
 type ImageBlock implements Block {
   id: ID!
-  type: String!
   parentBlockId: ID
   src: String!
   width: Int!
@@ -257,9 +239,26 @@ type ImageBlock implements Block {
   blurhash: String!
 }
 
+input ImageBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID
+  journeyId: ID!
+  src: String!
+  alt: String!
+}
+
+input ImageBlockUpdateInput {
+  parentBlockId: ID
+  journeyId: ID
+  src: String
+  alt: String
+}
+
 type RadioOptionBlock implements Block {
   id: ID!
-  type: String!
   parentBlockId: ID
   label: String!
   action: Action
@@ -267,7 +266,6 @@ type RadioOptionBlock implements Block {
 
 type RadioQuestionBlock implements Block {
   id: ID!
-  type: String!
   parentBlockId: ID
   label: String!
   description: String
@@ -276,7 +274,6 @@ type RadioQuestionBlock implements Block {
 type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   action: Action
   submitIcon: Icon
   submitLabel: String
@@ -284,7 +281,6 @@ type SignUpBlock implements Block {
 
 type StepBlock implements Block {
   id: ID!
-  type: String!
 
   """
   nextBlockId contains the preferred block to navigate to when a
@@ -302,11 +298,9 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
-input StepBlockCreatInput {
+input StepBlockCreateInput {
   id: ID
-
-  """ type is overwritten by the API """
-  type: String
+  journeyId: ID!
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
@@ -348,7 +342,6 @@ enum TypographyAlign {
 type TypographyBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -372,7 +365,6 @@ type VideoGeneric implements VideoContent {
 type VideoBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
@@ -393,6 +385,58 @@ type VideoBlock implements Block {
   posterBlockId: ID
 }
 
+input VideoContentInput {
+  mediaComponentId: String
+  languageId: String
+  src: String
+}
+
+input VideoBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  title: String!
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContentInput!
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
+input VideoBlockUpdateInput {
+  parentBlockId: ID
+  title: String
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContentInput
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -400,7 +444,6 @@ to the next block at the designated time.
 type VideoTriggerBlock implements Block {
   id: ID!
   parentBlockId: ID
-  type: String!
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
@@ -455,16 +498,12 @@ input RadioQuestionResponseCreateInput {
   """
   id: ID
   blockId: ID!
-
-  """type is set by the api"""
-  type: String
   radioOptionBlockId: ID!
 }
 
 type RadioQuestionResponse implements Response {
   id: ID!
   userId: ID!
-  type: String!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }
@@ -472,7 +511,6 @@ type RadioQuestionResponse implements Response {
 interface Response {
   id: ID!
   userId: ID!
-  type: String!
 }
 
 input SignUpResponseCreateInput {
@@ -481,9 +519,6 @@ input SignUpResponseCreateInput {
   """
   id: ID
   blockId: ID!
-
-  """type is set by the api"""
-  type: String
   name: String!
   email: String!
 }
@@ -491,7 +526,6 @@ input SignUpResponseCreateInput {
 type SignUpResponse implements Response {
   id: ID!
   userId: ID!
-  type: String!
   name: String!
   email: String!
   block: SignUpBlock
@@ -509,9 +543,6 @@ input VideoResponseCreateInput {
   """
   id: ID
   blockId: ID!
-
-  """type is set by the api"""
-  type: String
   state: VideoResponseStateEnum!
   position: Float
 }
@@ -519,7 +550,6 @@ input VideoResponseCreateInput {
 type VideoResponse implements Response {
   id: ID!
   userId: ID!
-  type: String!
   state: VideoResponseStateEnum!
   position: Int
   block: VideoBlock
@@ -529,8 +559,11 @@ extend type Mutation {
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  stepBlockCreate(input: StepBlockCreatInput!): StepBlock!
+  imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
+  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
