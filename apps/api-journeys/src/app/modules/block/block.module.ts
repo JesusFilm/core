@@ -7,6 +7,7 @@ import { ImageBlockResolvers } from './image/image.resolvers'
 import { StepBlockResolvers } from './step/step.resolvers'
 import { CardBlockResolvers } from './card/card.resolvers'
 import {
+  VideoArclightResolvers,
   VideoBlockResolvers,
   VideoContentResolvers
 } from './video/video.resolvers'
@@ -20,7 +21,8 @@ import {
     ImageBlockResolvers,
     StepBlockResolvers,
     VideoBlockResolvers,
-    VideoContentResolvers
+    VideoContentResolvers,
+    VideoArclightResolvers
   ],
   exports: [BlockService]
 })

@@ -2,7 +2,6 @@
 
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { Block } from '../../__generated__/graphql'
-import { BlockMiddleware } from '../../lib/decorators'
 import { KeyAsId } from '@core/nest/decorators'
 import { BlockService } from './block.service'
 
@@ -19,14 +18,12 @@ export class BlockResolvers {
 
   @Query()
   @KeyAsId()
-  @BlockMiddleware()
   async blocks(): Promise<Block[]> {
     return await this.blockService.getAll()
   }
 
   @Query()
   @KeyAsId()
-  @BlockMiddleware()
   async block(@Args('id') _key: string): Promise<Block> {
     return await this.blockService.get(_key)
   }

@@ -15,7 +15,6 @@ import {
   JourneyStatus,
   JourneyUpdateInput
 } from '../../__generated__/graphql'
-import { BlockMiddleware } from '../../lib/decorators'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from './journey.service'
@@ -93,14 +92,12 @@ export class JourneyResolvers {
 
   @ResolveField('blocks')
   @KeyAsId()
-  @BlockMiddleware()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
   }
 
   @ResolveField('primaryImageBlock')
   @KeyAsId()
-  @BlockMiddleware()
   async primaryImageBlock(
     @Parent() journey: Journey
   ): Promise<ImageBlock | null> {

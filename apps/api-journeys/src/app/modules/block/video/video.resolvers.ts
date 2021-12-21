@@ -1,6 +1,7 @@
 import { UserInputError } from 'apollo-server-errors'
-import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import {
+  VideoArclight,
   VideoBlock,
   VideoBlockCreateInput,
   VideoBlockUpdateInput,
@@ -25,6 +26,14 @@ export class VideoContentResolvers {
   __resolveType(obj: VideoContent): string {
     if (has(obj, ['mediaComponentId'])) return 'VideoArclight'
     return 'VideoGeneric'
+  }
+}
+
+@Resolver('VideoArclight')
+export class VideoArclightResolvers {
+  @ResolveField()
+  src(@Parent() obj: VideoArclight): string {
+    return `https://arc.gt/hls/${obj.mediaComponentId}/${obj.languageId}`
   }
 }
 

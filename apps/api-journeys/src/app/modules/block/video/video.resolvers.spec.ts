@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
-import { VideoBlockResolvers } from './video.resolvers'
+import { VideoBlockResolvers, VideoArclightResolvers } from './video.resolvers'
 
 describe('VideoContentResolvers', () => {
   let blockResolver: BlockResolvers,
     videoBlockResolver: VideoBlockResolvers,
+    videoArclightResolvers: VideoArclightResolvers,
     service: BlockService
 
   const block1 = {
@@ -16,7 +17,8 @@ describe('VideoContentResolvers', () => {
     parentOrder: 1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
+      languageId: '529',
+      src: ''
     },
     title: 'title',
     posterBlockId: 'posterBlockId'
@@ -91,19 +93,17 @@ describe('VideoContentResolvers', () => {
 
   describe('VideoBlock Arclight', () => {
     beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block1)
-        })
-      }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [VideoArclightResolvers]
       }).compile()
-      blockResolver = module.get<BlockResolvers>(BlockResolvers)
+      videoArclightResolvers = module.get<VideoArclightResolvers>(
+        VideoArclightResolvers
+      )
     })
     it('returns VideoBlock with Arclight', async () => {
-      expect(await blockResolver.block('1')).toEqual(block1response)
+      expect(await videoArclightResolvers.src(block1.videoContent)).toEqual(
+        block1response.videoContent.src
+      )
     })
   })
 
