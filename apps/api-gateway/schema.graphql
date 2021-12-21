@@ -275,7 +275,6 @@ type Mutation {
   journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
-  userCreate(input: UserCreateInput!): User! @join__field(graph: JOURNEYS)
   userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyCreate(input: UserJourneyCreateInput!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: JOURNEYS)
@@ -307,8 +306,6 @@ type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
   me: User @join__field(graph: JOURNEYS)
-  user(id: ID): User @join__field(graph: JOURNEYS)
-  users: [User] @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
@@ -448,12 +445,6 @@ type User
   imageUrl: String @join__field(graph: JOURNEYS)
   lastName: String @join__field(graph: JOURNEYS)
   usersJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
-}
-
-input UserCreateInput {
-  firstName: String
-  imageUrl: String
-  lastName: String
 }
 
 type UserJourney {

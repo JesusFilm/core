@@ -254,7 +254,6 @@ export type Mutation = {
   journeyUpdate: Journey;
   radioQuestionResponseCreate: RadioQuestionResponse;
   signUpResponseCreate: SignUpResponse;
-  userCreate: User;
   userJourneyApprove: UserJourney;
   userJourneyCreate: UserJourney;
   userJourneyPromote: UserJourney;
@@ -291,11 +290,6 @@ export type MutationRadioQuestionResponseCreateArgs = {
 
 export type MutationSignUpResponseCreateArgs = {
   input: SignUpResponseCreateInput;
-};
-
-
-export type MutationUserCreateArgs = {
-  input: UserCreateInput;
 };
 
 
@@ -356,8 +350,6 @@ export type Query = {
   journey?: Maybe<Journey>;
   journeys: Array<Journey>;
   me?: Maybe<User>;
-  user?: Maybe<User>;
-  users: Array<User>;
 };
 
 
@@ -369,11 +361,6 @@ export type QueryJourneyArgs = {
 
 export type QueryJourneysArgs = {
   status?: Maybe<JourneyStatus>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['ID'];
 };
 
 export type RadioOptionBlock = Block & {
@@ -505,13 +492,6 @@ export type User = {
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   usersJourneys?: Maybe<Array<UserJourney>>;
-};
-
-export type UserCreateInput = {
-  email?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
-  imageUrl?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
 };
 
 export type UserJourney = {
@@ -754,7 +734,6 @@ export type ResolversTypes = {
   TypographyColor: TypographyColor;
   TypographyVariant: TypographyVariant;
   User: ResolverTypeWrapper<UserType>;
-  UserCreateInput: UserCreateInput;
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
   UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyPromote: UserJourneyPromote;
@@ -810,7 +789,6 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   TypographyBlock: BlockType;
   User: UserType;
-  UserCreateInput: UserCreateInput;
   UserJourney: UserJourneyType;
   UserJourneyCreateInput: UserJourneyCreateInput;
   UserJourneyRemoveInput: UserJourneyRemoveInput;
@@ -932,7 +910,6 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
-  userCreate?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUserCreateArgs, 'input'>>;
   userJourneyApprove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyApproveArgs, 'input'>>;
   userJourneyCreate?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyCreateArgs, 'input'>>;
   userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'input'>>;
@@ -964,8 +941,6 @@ export type QueryResolvers<ContextType = GraphQLModules.Context, ParentType exte
   journey?: Resolver<Maybe<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneyArgs, 'id'>>;
   journeys?: Resolver<Array<ResolversTypes['Journey']>, ParentType, ContextType, RequireFields<QueryJourneysArgs, never>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type RadioOptionBlockResolvers<ContextType = GraphQLModules.Context, ParentType extends ResolversParentTypes['RadioOptionBlock'] = ResolversParentTypes['RadioOptionBlock']> = {
