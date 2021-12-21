@@ -139,7 +139,6 @@ type GridItemBlock implements Block {
   lg: Int!
   parentBlockId: ID
   sm: Int!
-  type: String!
   xl: Int!
 }
 

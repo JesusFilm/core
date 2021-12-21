@@ -357,7 +357,6 @@ export class GridContainerBlock implements Block {
 export class GridItemBlock implements Block {
     __typename?: 'GridItemBlock';
     id: string;
-    type: string;
     parentBlockId?: Nullable<string>;
     xl: number;
     lg: number;

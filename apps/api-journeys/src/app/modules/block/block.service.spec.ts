@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockService } from './block.service'
-import { Block, ThemeMode, ThemeName } from '../../__generated__/graphql'
+import { ThemeMode, ThemeName } from '../../__generated__/graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {

@@ -19,6 +19,7 @@ export class UserResolver {
     private readonly userService: UserService,
     private readonly userJourneyService: UserJourneyService
   ) {}
+
   @Query()
   @KeyAsId()
   async users(): Promise<User[]> {

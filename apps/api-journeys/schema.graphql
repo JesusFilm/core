@@ -217,7 +217,6 @@ type GridContainerBlock implements Block {
 
 type GridItemBlock implements Block {
   id: ID!
-  type: String!
   parentBlockId: ID
   xl: Int!
   lg: Int!
