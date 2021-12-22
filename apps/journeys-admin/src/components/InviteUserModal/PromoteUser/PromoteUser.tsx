@@ -16,9 +16,6 @@ export const USER_JOURNEY_PROMOTE = gql`
       role
       journey {
         id
-        userJourneys {
-          id
-        }
       }
     }
   }
@@ -31,24 +28,25 @@ export const PromoteUser = ({
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 
   const handlePromoteUser = async (
-    id: string
   ): Promise<void> => {
     await userJourneyPromote({
-      variables: {
-        input: {
-          id
-        },
-        optimisticResponse: {
-          userJourneyPromote: {
-            id
-          }
+      variables: { id: userJourneys.id },
+      optimisticResponse: {
+        userJourneyPromote: {
+          id: userJourneys.id,
+          role: userJourneys.role,
+          journey: {
+            id: userJourneys.journeyId,
+            __typename: 'Journey',
+          },
+          __typename: 'UserJourney'
         }
       }
     })
   }
 
   return (
-    <MenuItem onClick={async () => await handlePromoteUser(userJourneys.id)}>
+    <MenuItem onClick={handlePromoteUser}>
       <NewReleasesRounded sx={{ mr: 2 }} />
       Promote
     </MenuItem>

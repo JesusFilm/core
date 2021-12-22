@@ -9,15 +9,9 @@ import { UserJourneyRole } from "./globalTypes";
 // GraphQL mutation operation: UserJourneyPromote
 // ====================================================
 
-export interface UserJourneyPromote_userJourneyPromote_journey_userJourneys {
-  __typename: "UserJourney";
-  id: string;
-}
-
 export interface UserJourneyPromote_userJourneyPromote_journey {
   __typename: "Journey";
   id: string;
-  userJourneys: UserJourneyPromote_userJourneyPromote_journey_userJourneys[] | null;
 }
 
 export interface UserJourneyPromote_userJourneyPromote {

@@ -7,15 +7,9 @@
 // GraphQL mutation operation: UserJourneyRemove
 // ====================================================
 
-export interface UserJourneyRemove_userJourneyRemove_journey_userJourneys {
-  __typename: "UserJourney";
-  id: string;
-}
-
 export interface UserJourneyRemove_userJourneyRemove_journey {
   __typename: "Journey";
   id: string;
-  userJourneys: UserJourneyRemove_userJourneyRemove_journey_userJourneys[] | null;
 }
 
 export interface UserJourneyRemove_userJourneyRemove {
@@ -29,5 +23,5 @@ export interface UserJourneyRemove {
 }
 
 export interface UserJourneyRemoveVariables {
-  userJourneyRemoveId: string;
+  id: string;
 }

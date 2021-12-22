@@ -15,9 +15,6 @@ export const USER_JOURNEY_REMOVE = gql`
       id
       journey {
         id
-        userJourneys {
-          id
-        }
       }
     }
   }
@@ -27,16 +24,17 @@ export const RemoveUser = ({ userJourneys }: RemoveUserProps): ReactElement => {
   const [userJourneyRemove] =
     useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
 
-  const handleRemoveUser = async (id: string): Promise<void> => {
+  const handleRemoveUser = async (): Promise<void> => {
     await userJourneyRemove({
-      variables: {
-        input: {
-          id
-        },
-        optimisticResponse: {
-          userJourneyRemove: {
-            id
-          }
+      variables: { userJourneyRemoveId: userJourneys.id },
+      optimisticResponse: {
+        userJourneyRemove: {
+          id: userJourneys.id,
+          journey: {
+            id: userJourneys.journeyId,
+            __typename: 'Journey',
+          },
+          __typename: 'UserJourney'
         }
       }
     })
@@ -44,7 +42,7 @@ export const RemoveUser = ({ userJourneys }: RemoveUserProps): ReactElement => {
 
   return (
     <MenuItem
-      onClick={async () => await handleRemoveUser(userJourneys.id)}
+      onClick={handleRemoveUser}
       sx={{ mr: 2 }}
     >
       <RemoveCircleRounded sx={{ mr: 2 }} />

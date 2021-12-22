@@ -13,7 +13,6 @@ export const USER_JOURNEY_APPROVE = gql`
   mutation UserJourneyApprove($userJourneyApproveId: ID!) {
     userJourneyApprove(id: $userJourneyApproveId) {
       id
-      role
     }
   }
 `
@@ -24,23 +23,20 @@ export const ApproveUser = ({
   const [userJourneyApprove] =
     useMutation<UserJourneyApprove>(USER_JOURNEY_APPROVE)
 
-  const handleApproveUser = async (id: string): Promise<void> => {
+  const handleApproveUser = async (): Promise<void> => {
     await userJourneyApprove({
-      variables: {
-        input: {
-          id
-        },
-        optimisticResponse: {
-          userJourneyApprove: {
-            id
-          }
+      variables: { userJourneyApproveId: userJourneys.id },
+      optimisticResponse: {
+        userJourneyApprove: {
+          id: userJourneys.id,
+          __typename: 'UserJourney'
         }
       }
     })
   }
 
   return (
-    <MenuItem onClick={async () => await handleApproveUser(userJourneys.id)}>
+    <MenuItem onClick={handleApproveUser}>
       <BeenhereRounded sx={{ mr: 2 }} />
       Approve
     </MenuItem>
