@@ -3,19 +3,23 @@
   "ignorePatterns": ["**/*"],
   "plugins": ["@nrwl/nx", "import"],
   "rules": {
-    "import/no-unresolved": "error",
+    "import/no-unresolved": "warn", //error when importing from @core
+    "import/no-internal-modules": "warn", //error when importing from generated
+    "import/no-relative-parent-imports": "warn", //error when importing from generated
+    "import/no-named-export": "warn", //error when exporting on same line as declaration
+    "import/no-default-export": "warn", //problem for storybook
+    "import/group-exports": "warn", //error when multiple exports in file
+    "import/prefer-default-export": "warn", //error when if only 1 export and not default
+    "import/no-absolute-path": "error",
     "import/named": "error",
     "import/default": "error",
     "import/namespace": "error",
     "import/no-restricted-paths": "error",
-    "import/no-absoulte-paths": "error",
     "import/no-dynamic-require": "error",
-    "import/no-internal-modules": "error",
     "import/no-webpack-loader-syntax": "error",
     "import/no-self-import": "error",
-    "import/no-cyle": "error",
-    "import/no-uselesspath-segments": "error",
-    "import/no-relative-parent-imports": "error",
+    "import/no-cycle": "error",
+    "import/no-useless-path-segments": "error",
     "import/no-relative-packages": "error",
     "import/export": "error",
     "import/no-named-as-default": "error",
@@ -23,27 +27,23 @@
     "import/no-deprecated": "error",
     "import/no-extraneous-dependencies": "error",
     "import/no-mutable-exports": "error",
-    "import/no-unsued-modules": "error",
+    "import/no-unused-modules": "error",
     "import/unambiguous": "error",
     "import/no-commonjs": "error",
     "import/no-amd": "error",
     "import/no-nodejs-modules": "error",
     "import/no-import-module-exports": "error",
     "import/first": "error",
-    "import/export-last": "error",
+    "import/exports-last": "error",
     "import/no-duplicates": "error",
     "import/no-namespace": "error",
     "import/extensions": "error",
     "import/order": "error",
     "import/newline-after-import": "error",
-    "import/perfer-default-export": "error",
     "import/max-dependencies": "error",
     "import/no-unassigned-import": "error",
     "import/no-named-default": "error",
-    "import/no-default-export": "error",
-    "import/no-named-export": "error",
     "import/no-anonymous-default-export": "error",
-    "import/group-exports": "error",
     "import/dynamic-import-chunkname": "error"
   },
   "overrides": [

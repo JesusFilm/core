@@ -1,6 +1,6 @@
-import { journeysAdminConfig } from '../../libs/storybook'
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, Story } from '@storybook/react'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { JourneysAppBar, JourneysAppBarProps } from '.'
 
 const JourneysAppBarDemo = {
