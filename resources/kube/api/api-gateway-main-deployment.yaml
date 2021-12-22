@@ -15,7 +15,7 @@ spec:
         app: api-gateway-main
     spec:
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway:c33fe910f485803718fa8d656d85816755247078
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway:09df3ec2538d0d4ee5e5a86debc67c45f5f15420
           imagePullPolicy: IfNotPresent
           name: jfp-api-gateway
           ports:
@@ -28,9 +28,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: api-gateway-main
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: graphql.core.jesusfilm.org
+    # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:894231352815:certificate/81272a7c-9e04-4314-8682-53faf2b818a6
+    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
 spec:
   selector:
     app: api-gateway-main
   ports:
-    - port: 4000
+    - port: 443
+      targetPort: 4000
   type: LoadBalancer
