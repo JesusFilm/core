@@ -3,9 +3,10 @@ import { useMutation, gql } from '@apollo/client'
 import {
   Divider,
   IconButton,
-  Link,
   Menu as MuiMenu,
-  MenuItem
+  MenuItem,
+  ListItemText,
+  ListItemIcon
 } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
@@ -14,6 +15,13 @@ import { TitleDialog } from './TitleDialog'
 import { useJourney } from '../Context'
 import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
 import { Alert } from './Alert'
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import EditIcon from '@mui/icons-material/Edit'
+import DescriptionIcon from '@mui/icons-material/Description'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
+import NextLink from 'next/link'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -80,49 +88,65 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
       >
         <MoreVert />
       </IconButton>
+
       <MuiMenu
         id="single-journey-actions"
         anchorEl={anchorEl}
         open={openMenu}
         onClose={handleCloseMenu}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
         MenuListProps={{
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <MenuItem disabled={journey.status === JourneyStatus.draft}>
-          <Link
-            href={`http://your.nextstep.is/${journey.slug}`}
-            underline="none"
-          >
-            Preview
-          </Link>
+        <MenuItem
+          disabled={journey.status === JourneyStatus.draft}
+          component="a"
+          href={`http://your.nextstep.is/${journey.slug}`}
+        >
+          <ListItemIcon>
+            <AssignmentTurnedInIcon />
+          </ListItemIcon>
+          <ListItemText>Preview</ListItemText>
         </MenuItem>
         <MenuItem
           disabled={journey.status === JourneyStatus.published}
           onClick={handlePublish}
         >
-          Publish
+          <ListItemIcon>
+            <VisibilityIcon />
+          </ListItemIcon>
+          <ListItemText>Publish</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleUpdateTitle}>Title</MenuItem>
-        <MenuItem onClick={handleUpdateDescription}>Description</MenuItem>
-
-        <Divider />
-        <MenuItem>
-          <Link href={`/journeys/${journey.slug}/edit`} underline="none">
-            Edit Cards
-          </Link>
+        <MenuItem onClick={handleUpdateTitle}>
+          <ListItemIcon>
+            <EditIcon />
+          </ListItemIcon>
+          <ListItemText>Title</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleUpdateDescription}>
+          <ListItemIcon>
+            <DescriptionIcon />
+          </ListItemIcon>
+          <ListItemText>Description</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleCopyLink}>Copy Link</MenuItem>
+        <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
+          <MenuItem>
+            <ListItemIcon>
+              <ViewCarouselIcon />
+            </ListItemIcon>
+            <ListItemText>Edit Cards</ListItemText>
+          </MenuItem>
+        </NextLink>
+        <Divider />
+        <MenuItem onClick={handleCopyLink}>
+          <ListItemIcon>
+            <ContentCopyIcon />
+          </ListItemIcon>
+          <ListItemText>Copy Link</ListItemText>
+        </MenuItem>
       </MuiMenu>
+
       <TitleDialog
         open={showTitleDialog}
         onClose={() => setShowTitleDialog(false)}

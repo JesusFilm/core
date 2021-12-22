@@ -52,7 +52,7 @@ describe('JourneyView/Menu', () => {
 
     fireEvent.click(menu)
 
-    const link = getByRole('link', { name: 'Preview' })
+    const link = getByRole('menuitem', { name: 'Preview' })
 
     expect(link).toHaveAttribute(
       'href',
