@@ -1,11 +1,32 @@
 import { ReactElement, useState } from 'react'
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemText,
+  ListItemIcon,
+  Typography
+} from '@mui/material'
+import Link from 'next/link'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import EditIcon from '@mui/icons-material/Edit'
+import PeopleIcon from '@mui/icons-material/People'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
-// Pass journeyID and slug to JourneyCardMenu
+export interface JourneyCardMenuProps {
+  status: JourneyStatus
+  slug: string
+  forceMenu?: boolean
+}
 
-export function JourneyCardMenu(): ReactElement {
+export function JourneyCardMenu({
+  status,
+  slug,
+  forceMenu // this is only used for storybook snapshots
+}: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
+  const open = forceMenu === true ? true : Boolean(anchorEl)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -14,30 +35,16 @@ export function JourneyCardMenu(): ReactElement {
     setAnchorEl(null)
   }
 
-  const handleEdit = (): void => {
-    // trigger LinkAction to Edit Card page Tatai makes
-  }
-  const handleDuplicate = (): void => {
-    // trigger the duplicate journey mutation based on journey.id
-  }
-  const handleChangeAccess = (): void => {
-    // trigger the change access modal that John / Gavin build
-  }
-  const handleCopyUrl = (): void => {
-    // get journey.slug and save to client clipboard
-  }
-
   return (
     <div>
-      {/* https://mui.com/components/material-icons/ use correct icon */}
       <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? 'true' : 'false'}
         onClick={handleOpenMenu}
       >
-        ...
+        <MoreVertIcon />
       </IconButton>
       <Menu
         id="journey-actions"
@@ -48,10 +55,55 @@ export function JourneyCardMenu(): ReactElement {
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <MenuItem onClick={handleEdit}>Edit</MenuItem>
-        <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
-        <MenuItem onClick={handleChangeAccess}>Change Access</MenuItem>
-        <MenuItem onClick={handleCopyUrl}>Copy URL</MenuItem>
+        <Link href={`/journeys/${slug}/edit`} passHref>
+          <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+            <ListItemIcon>
+              <EditIcon color="secondary" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Edit
+              </Typography>
+            </ListItemText>
+          </MenuItem>
+        </Link>
+
+        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+          <ListItemIcon>
+            <PeopleIcon color="secondary" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography variant="body1" sx={{ pl: 2 }}>
+              Access
+            </Typography>
+          </ListItemText>
+        </MenuItem>
+
+        {status === JourneyStatus.draft ? (
+          <MenuItem disabled sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+            <ListItemIcon>
+              <VisibilityIcon color="secondary" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Preview
+              </Typography>
+            </ListItemText>
+          </MenuItem>
+        ) : (
+          <Link href={`https://your.nextstep.is/${slug}`} passHref>
+            <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+              <ListItemIcon>
+                <VisibilityIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Preview
+                </Typography>
+              </ListItemText>
+            </MenuItem>
+          </Link>
+        )}
       </Menu>
     </div>
   )

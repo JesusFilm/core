@@ -1,8 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../../libs/storybook'
+import {
+  defaultJourney,
+  descriptiveJourney,
+  oldJourney,
+  publishedJourney
+} from '../journeyListData'
 import { JourneyCard } from './JourneyCard'
-import { defaultJourney } from '../journeyListData'
 
 const TestStory = {
   ...journeysAdminConfig,
@@ -10,8 +15,25 @@ const TestStory = {
   title: 'Journeys-Admin/JourneyList/JourneyCard'
 }
 
-const Template: Story = () => <JourneyCard journey={defaultJourney} />
+const Template: Story = ({ ...args }) => (
+  <JourneyCard journey={defaultJourney} {...args} />
+)
 
-export const StoryComponent = Template.bind({})
+export const Default = Template.bind({})
+Default.args = { journey: defaultJourney }
+
+export const Published = Template.bind({})
+Published.args = {
+  journey: publishedJourney
+}
+
+export const ExcessContent = Template.bind({})
+ExcessContent.args = {
+  journey: descriptiveJourney
+}
+export const PreYear = Template.bind({})
+PreYear.args = {
+  journey: oldJourney
+}
 
 export default TestStory as Meta
