@@ -3,8 +3,7 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { SignIn } from '../src/components/SignIn'
 import Image from 'next/image'
 import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
-import { Box, Button, Typography } from '@mui/material'
-import Link from 'next/link'
+import { Box, Typography } from '@mui/material'
 
 function Dashboard(): ReactElement {
   const handleFeedbackSupport = (): void => {
@@ -33,13 +32,6 @@ function Dashboard(): ReactElement {
           Sign In
         </Typography>
         <SignIn />
-        <Box my={2}>
-          <Link href={`/journeys`} passHref>
-            <Button variant="contained" fullWidth>
-              Journeys List
-            </Button>
-          </Link>
-        </Box>
         <Typography
           variant={'body2'}
           sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
