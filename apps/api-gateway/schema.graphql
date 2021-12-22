@@ -223,7 +223,7 @@ type Journey
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
-  usersJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
+  userJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
 }
 
 input JourneyCreateInput {
@@ -275,9 +275,9 @@ type Mutation {
   journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
-  userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: JOURNEYS)
-  userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: JOURNEYS)
-  userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRequest(input: UserJourneyRequestInput!): UserJourney! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
@@ -443,11 +443,9 @@ type User
   id: ID! @join__field(graph: JOURNEYS)
   imageUrl: String @join__field(graph: JOURNEYS)
   lastName: String @join__field(graph: JOURNEYS)
-  usersJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
 }
 
 type UserJourney {
-  id: ID!
   journey: Journey
   journeyId: ID!
   role: UserJourneyRole!
@@ -455,36 +453,14 @@ type UserJourney {
   userId: ID!
 }
 
-enum UserJourneyPromote {
-  editor
-  owner
-}
-
-input UserJourneyRemoveInput {
-  journeyId: ID!
-  role: UserJourneyRoleForUpdates!
-  userId: ID!
-}
-
 input UserJourneyRequestInput {
   journeyId: ID!
-  userId: ID!
 }
 
 enum UserJourneyRole {
   editor
   inviteRequested
   owner
-}
-
-enum UserJourneyRoleForUpdates {
-  editor
-  inviteRequested
-}
-
-input UserJourneyUpdateInput {
-  journeyId: ID!
-  userId: ID!
 }
 
 type VideoArclight implements VideoContent {

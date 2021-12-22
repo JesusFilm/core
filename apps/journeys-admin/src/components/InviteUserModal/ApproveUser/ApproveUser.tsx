@@ -1,17 +1,17 @@
 import { ReactElement } from 'react'
 import { MenuItem } from '@mui/material'
-import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_userJourneys as UserJourneys } from '../../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyUpdate } from '../../../../__generated__/UserJourneyUpdate'
 import { BeenhereRounded } from '@mui/icons-material'
 
 interface ApproveUserProps {
-  usersJourneys: UsersJourneys
+  userJourneys: UserJourneys
 }
 
 export const USER_JOURNEY_APPROVE = gql`
-  mutation UserJourneyUpdate($input: UserJourneyUpdateInput!) {
-    userJourneyApprove(input: $input) {
+  mutation UserJourneyApprove($userJourneyApproveId: ID!) {
+    userJourneyApprove(id: $userJourneyApproveId) {
       id
       role
     }
@@ -19,25 +19,22 @@ export const USER_JOURNEY_APPROVE = gql`
 `
 
 export const ApproveUser = ({
-  usersJourneys
+  userJourneys
 }: ApproveUserProps): ReactElement => {
   const [userJourneyApprove] =
     useMutation<UserJourneyUpdate>(USER_JOURNEY_APPROVE)
 
   const handleApproveUser = async (
-    userId: string,
-    journeyId: string
+    id: string
   ): Promise<void> => {
     await userJourneyApprove({
       variables: {
         input: {
-          userId,
-          journeyId
+          id
         },
         optimisticResponse: {
           userJourneyApprove: {
-            userId,
-            journeyId
+            id
           }
         }
       }
@@ -47,11 +44,12 @@ export const ApproveUser = ({
   return (
     <MenuItem
       onClick={async () =>
-        await handleApproveUser(usersJourneys.userId, usersJourneys.journeyId)
+        await handleApproveUser(userJourneys.id)
       }
     >
+      {console.log(userJourneys.id)}
       <BeenhereRounded sx={{ mr: 2 }} />
       Approve
-    </MenuItem>
+    </MenuItem >
   )
 }

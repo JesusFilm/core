@@ -1,21 +1,21 @@
 import { ReactElement } from 'react'
 import { MenuItem } from '@mui/material'
-import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_userJourneys as UserJourneys } from '../../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
 import { RemoveCircleRounded } from '@mui/icons-material'
 
 interface RemoveUserProps {
-  usersJourneys: UsersJourneys
+  userJourneys: UserJourneys
 }
 
 export const USER_JOURNEY_REMOVE = gql`
-  mutation UserJourneyRemove($input: UserJourneyRemoveInput!) {
-    userJourneyRemove(input: $input) {
+  mutation UserJourneyRemove($userJourneyRemoveId: ID!) {
+    userJourneyRemove(id: $userJourneyRemoveId) {
       id
       journey {
         id
-        usersJourneys {
+        userJourneys {
           id
         }
       }
@@ -24,7 +24,7 @@ export const USER_JOURNEY_REMOVE = gql`
 `
 
 export const RemoveUser = ({
-  usersJourneys
+  userJourneys
 }: RemoveUserProps): ReactElement => {
   const [userJourneyRemove] =
     useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
@@ -56,9 +56,9 @@ export const RemoveUser = ({
     <MenuItem
       onClick={async () =>
         await handleRemoveUser(
-          usersJourneys.userId,
-          usersJourneys.journeyId,
-          usersJourneys.role
+          userJourneys.userId,
+          userJourneys.journeyId,
+          userJourneys.role
         )
       }
       sx={{ mr: 2 }}

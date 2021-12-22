@@ -196,7 +196,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
-  usersJourneys: [UserJourney!]
+  userJourneys: [UserJourney!]
 }
 
 input JourneyCreateInput {
@@ -247,9 +247,9 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
-  userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
-  userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
   userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
@@ -410,7 +410,6 @@ type User @key(fields: "id") {
   lastName: String
   email: String!
   imageUrl: String
-  usersJourneys: [UserJourney!]
 }
 
 type UserJourney {
@@ -422,19 +421,7 @@ type UserJourney {
   user: User
 }
 
-enum UserJourneyPromote {
-  editor
-  owner
-}
-
-input UserJourneyRemoveInput {
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRoleForUpdates!
-}
-
 input UserJourneyRequestInput {
-  userId: ID!
   journeyId: ID!
 }
 
@@ -442,16 +429,6 @@ enum UserJourneyRole {
   inviteRequested
   editor
   owner
-}
-
-enum UserJourneyRoleForUpdates {
-  inviteRequested
-  editor
-}
-
-input UserJourneyUpdateInput {
-  userId: ID!
-  journeyId: ID!
 }
 
 type VideoArclight implements VideoContent {

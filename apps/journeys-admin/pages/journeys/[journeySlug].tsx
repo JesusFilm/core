@@ -6,7 +6,7 @@ import client from '../../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey,
-  GetJourney_journey_usersJourneys as UsersJourneys
+  GetJourney_journey_userJourneys as UserJourneys
 } from '../../__generated__/GetJourney'
 import { Typography, Box } from '@mui/material'
 import { useFirebase } from '../../src/libs/firebaseClient/'
@@ -26,7 +26,7 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
   const { user, loading } = useFirebase()
   const router = useRouter()
   const [currentUsersJourney, setCurrentUsersJourney] =
-    useState<UsersJourneys | null>()
+    useState<UserJourneys | null>()
 
   useEffect(() => {
     // prevent user from accessing this page if they are not logged in
@@ -35,19 +35,19 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
     }
     if (
       user == null ||
-      journey.usersJourneys == null ||
-      journey.usersJourneys.length === 0
+      journey.userJourneys == null ||
+      journey.userJourneys.length === 0
     ) {
       setCurrentUsersJourney(null)
     } else {
-      const userJourneys = journey.usersJourneys?.filter(
+      const userJourneys = journey.userJourneys?.filter(
         (userJourney) => userJourney.userId === user.uid
       )
       if (userJourneys.length > 0) {
         setCurrentUsersJourney(userJourneys[0])
       }
     }
-  }, [user, router, loading, journey.usersJourneys])
+  }, [user, router, loading, journey.userJourneys])
 
   return (
     <>
@@ -94,7 +94,8 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
             primaryImageBlock {
               src
             }
-            usersJourneys {
+            userJourneys {
+              id
               userId
               journeyId
               role

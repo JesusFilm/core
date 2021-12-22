@@ -5,43 +5,31 @@ export namespace UserJourneyModule {
   interface DefinedFields {
     UserJourney: 'id' | 'userId' | 'journeyId' | 'role';
     Mutation: 'userJourneyApprove' | 'userJourneyPromote' | 'userJourneyRemove' | 'userJourneyRequest';
-    Journey: 'usersJourneys';
-    User: 'usersJourneys';
+    Journey: 'userJourneys';
   };
   
   interface DefinedEnumValues {
     UserJourneyRole: 'inviteRequested' | 'editor' | 'owner';
-    UserJourneyRoleForUpdates: 'inviteRequested' | 'editor';
-    UserJourneyPromote: 'editor' | 'owner';
   };
   
   interface DefinedInputFields {
-    UserJourneyUpdateInput: 'userId' | 'journeyId';
-    UserJourneyRemoveInput: 'userId' | 'journeyId' | 'role';
-    UserJourneyRequestInput: 'userId' | 'journeyId';
+    UserJourneyRequestInput: 'journeyId';
   };
   
   export type UserJourneyRole = DefinedEnumValues['UserJourneyRole'];
-  export type UserJourneyRoleForUpdates = DefinedEnumValues['UserJourneyRoleForUpdates'];
-  export type UserJourneyPromote = DefinedEnumValues['UserJourneyPromote'];
-  export type UserJourneyUpdateInput = Pick<Types.UserJourneyUpdateInput, DefinedInputFields['UserJourneyUpdateInput']>;
-  export type UserJourneyRemoveInput = Pick<Types.UserJourneyRemoveInput, DefinedInputFields['UserJourneyRemoveInput']>;
   export type UserJourneyRequestInput = Pick<Types.UserJourneyRequestInput, DefinedInputFields['UserJourneyRequestInput']>;
   export type Journey = Types.Journey;
   export type UserJourney = Pick<Types.UserJourney, DefinedFields['UserJourney']>;
-  export type User = Types.User;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   
   export type UserJourneyResolvers = Pick<Types.UserJourneyResolvers, DefinedFields['UserJourney'] | '__isTypeOf'>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey']>;
-  export type UserResolvers = Pick<Types.UserResolvers, DefinedFields['User']>;
   
   export interface Resolvers {
     UserJourney?: UserJourneyResolvers;
     Mutation?: MutationResolvers;
     Journey?: JourneyResolvers;
-    User?: UserResolvers;
   };
   
   export interface MiddlewareMap {
@@ -50,11 +38,7 @@ export namespace UserJourneyModule {
     };
     Journey?: {
       '*'?: gm.Middleware[];
-      usersJourneys?: gm.Middleware[];
-    };
-    User?: {
-      '*'?: gm.Middleware[];
-      usersJourneys?: gm.Middleware[];
+      userJourneys?: gm.Middleware[];
     };
     UserJourney?: {
       '*'?: gm.Middleware[];

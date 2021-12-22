@@ -130,11 +130,6 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
-export enum UserJourneyRoleForUpdates {
-  editor = "editor",
-  inviteRequested = "inviteRequested",
-}
-
 export enum VideoResponseStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
@@ -164,20 +159,8 @@ export interface SignUpResponseCreateInput {
   name: string;
 }
 
-export interface UserJourneyRemoveInput {
-  journeyId: string;
-  role: UserJourneyRoleForUpdates;
-  userId: string;
-}
-
 export interface UserJourneyRequestInput {
   journeyId: string;
-  userId: string;
-}
-
-export interface UserJourneyUpdateInput {
-  journeyId: string;
-  userId: string;
 }
 
 export interface VideoResponseCreateInput {

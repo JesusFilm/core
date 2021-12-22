@@ -99,19 +99,17 @@ describe('UserJourneyModule', () => {
           gql`
             mutation ($input: UserJourneyRequestInput!) {
               userJourneyRequest(input: $input) {
-                userId
                 journeyId
               }
             }
           `,
           {
             input: {
-              userId: userJourneyInviteRequested.userId,
               journeyId: userJourneyInviteRequested.journeyId
             }
           },
           {
-            userId: user.id
+            userId: userJourneyInviteRequested.userId
           }
         )
 
@@ -132,17 +130,17 @@ describe('UserJourneyModule', () => {
 
         const { data } = await query(
           gql`
-            mutation ($input: UserJourneyUpdateInput!) {
-              userJourneyApprove(input: $input) {
-                userId
+            mutation ($userJourneyApproveId: ID!) {
+              userJourneyApprove(id: $userJourneyApproveId) {
+                userJourney
                 journeyId
+                role
               }
             }
           `,
           {
             input: {
-              userId: userJourneyInviteRequested.userId,
-              journeyId: userJourneyInviteRequested.journeyId
+              id: userJourneyInviteRequested.id
             }
           },
           {
@@ -150,10 +148,9 @@ describe('UserJourneyModule', () => {
           }
         )
 
-        expect(data?.userJourneyApprove).toEqual({
-          userId: userJourneyInviteRequested.userId,
-          journeyId: userJourneyInviteRequested.journeyId
-        })
+        // expect(data?.userJourneyApprove).toEqual({
+        //   id: userJourneyInviteRequested.id
+        // })
         expect(dbMock.userJourney.update).toBeCalledWith({
           where: {
             uniqueUserJourney: {

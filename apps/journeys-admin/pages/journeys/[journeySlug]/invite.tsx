@@ -109,7 +109,7 @@ export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
             primaryImageBlock {
               src
             }
-            usersJourneys {
+            userJourneys {
               userId
               journeyId
               role

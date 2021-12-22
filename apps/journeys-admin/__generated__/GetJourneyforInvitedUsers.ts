@@ -9,7 +9,7 @@ import { UserJourneyRole } from "./globalTypes";
 // GraphQL query operation: GetJourneyforInvitedUsers
 // ====================================================
 
-export interface GetJourneyforInvitedUsers_journey_usersJourneys_user {
+export interface GetJourneyforInvitedUsers_journey_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -18,19 +18,19 @@ export interface GetJourneyforInvitedUsers_journey_usersJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetJourneyforInvitedUsers_journey_usersJourneys {
+export interface GetJourneyforInvitedUsers_journey_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
   userId: string;
   journeyId: string;
-  user: GetJourneyforInvitedUsers_journey_usersJourneys_user | null;
+  user: GetJourneyforInvitedUsers_journey_userJourneys_user | null;
 }
 
 export interface GetJourneyforInvitedUsers_journey {
   __typename: "Journey";
   id: string;
-  usersJourneys: GetJourneyforInvitedUsers_journey_usersJourneys[] | null;
+  userJourneys: GetJourneyforInvitedUsers_journey_userJourneys[] | null;
 }
 
 export interface GetJourneyforInvitedUsers {

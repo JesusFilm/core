@@ -14,7 +14,7 @@ export interface GetJourney_journey_primaryImageBlock {
   src: string;
 }
 
-export interface GetJourney_journey_usersJourneys_user {
+export interface GetJourney_journey_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -23,12 +23,13 @@ export interface GetJourney_journey_usersJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetJourney_journey_usersJourneys {
+export interface GetJourney_journey_userJourneys {
   __typename: "UserJourney";
+  id: string;
   userId: string;
   journeyId: string;
   role: UserJourneyRole;
-  user: GetJourney_journey_usersJourneys_user | null;
+  user: GetJourney_journey_userJourneys_user | null;
 }
 
 export interface GetJourney_journey {
@@ -41,7 +42,7 @@ export interface GetJourney_journey {
   publishedAt: any | null;
   slug: string;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
-  usersJourneys: GetJourney_journey_usersJourneys[] | null;
+  userJourneys: GetJourney_journey_userJourneys[] | null;
 }
 
 export interface GetJourney {

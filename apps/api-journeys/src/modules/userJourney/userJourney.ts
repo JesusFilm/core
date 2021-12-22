@@ -1,8 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { UserJourneyModule } from './__generated__/types'
-import { AuthenticationError } from 'apollo-server-errors'
-import { includes } from 'lodash'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 
 const typeDefs = gql`
   enum UserJourneyRole {
@@ -11,38 +10,12 @@ const typeDefs = gql`
     owner
   }
 
-  enum UserJourneyRoleForUpdates {
-    inviteRequested
-    editor
-  }
-
-  enum UserJourneyPromote {
-    editor
-    owner
-  }
-
-  input UserJourneyUpdateInput {
-    userId: ID!
-    journeyId: ID!
-  }
-
-  input UserJourneyRemoveInput {
-    userId: ID!
-    journeyId: ID!
-    role: UserJourneyRoleForUpdates!
-  }
-
   input UserJourneyRequestInput {
-    userId: ID!
     journeyId: ID!
   }
 
   extend type Journey {
-    usersJourneys: [UserJourney!]
-  }
-
-  extend type User {
-    usersJourneys: [UserJourney!]
+    userJourneys: [UserJourney!]
   }
 
   type UserJourney {
@@ -53,32 +26,22 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    userJourneyApprove(input: UserJourneyUpdateInput!): UserJourney!
-    userJourneyPromote(input: UserJourneyUpdateInput!): UserJourney!
-    userJourneyRemove(input: UserJourneyRemoveInput!): UserJourney!
+    userJourneyApprove(id: ID!): UserJourney!
+    userJourneyPromote(id: ID!): UserJourney!
+    userJourneyRemove(id: ID!): UserJourney!
     userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
   }
 `
 
 const resolvers: UserJourneyModule.Resolvers = {
   Journey: {
-    async usersJourneys(journey, __, { db }) {
-      const usersJourneys = await db.userJourney.findMany({
+    async userJourneys(journey, __, { db }) {
+      const userJourneys = await db.userJourney.findMany({
         where: {
           journeyId: journey.id
         }
       })
-      return usersJourneys
-    }
-  },
-  User: {
-    async usersJourneys(user, __, { db }) {
-      const usersJourneys = await db.userJourney.findMany({
-        where: {
-          userId: user.id
-        }
-      })
-      return usersJourneys
+      return userJourneys
     }
   },
   UserJourney: {
@@ -93,22 +56,27 @@ const resolvers: UserJourneyModule.Resolvers = {
 
       return await db.userJourney.create({
         data: {
-          userId: input.userId,
+          userId,
           journeyId: input.journeyId,
           role: 'inviteRequested'
         }
       })
     },
-    async userJourneyApprove(_parent, { input }, { db, userId }) {
+    async userJourneyApprove(_parent, { id }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const userJourney = await db.userJourney.findUnique({ where: { id } })
+
+      if (userJourney === null)
+        throw new UserInputError('User journey not found')
 
       // can only update user journey roles if you are the journey's owner.
       const actor = await db.userJourney.findUnique({
         where: {
           uniqueUserJourney: {
-            userId: userId,
-            journeyId: input.journeyId
+            userId,
+            journeyId: userJourney.journeyId
           }
         }
       })
@@ -121,8 +89,8 @@ const resolvers: UserJourneyModule.Resolvers = {
       return await db.userJourney.update({
         where: {
           uniqueUserJourney: {
-            userId: input.userId,
-            journeyId: input.journeyId
+            userId,
+            journeyId: userJourney.journeyId
           }
         },
         data: {
@@ -130,16 +98,21 @@ const resolvers: UserJourneyModule.Resolvers = {
         }
       })
     },
-    async userJourneyRemove(_parent, { input }, { db, userId }) {
+    async userJourneyRemove(_parent, { id }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const userJourney = await db.userJourney.findUnique({ where: { id } })
+
+      if (userJourney === null)
+        throw new UserInputError('User journey not found')
 
       // can only remove user if you are the journey's owner.
       const actor = await db.userJourney.findUnique({
         where: {
           uniqueUserJourney: {
-            userId: userId,
-            journeyId: input.journeyId
+            userId,
+            journeyId: userJourney.journeyId
           }
         }
       })
@@ -149,30 +122,27 @@ const resolvers: UserJourneyModule.Resolvers = {
           'You do not own this journey so you cannot remove users'
         )
 
-      if (!includes(['inviteRequested', 'editor', null], input.role))
-        throw new AuthenticationError(
-          'you cannot remove yourself from this journey when you are an owner'
-        )
-
       return await db.userJourney.delete({
         where: {
-          uniqueUserJourney: {
-            userId: input.userId,
-            journeyId: input.journeyId
-          }
+          id
         }
       })
     },
-    async userJourneyPromote(_parent, { input }, { db, userId }) {
+    async userJourneyPromote(_parent, { id }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const userJourney = await db.userJourney.findUnique({ where: { id } })
+
+      if (userJourney === null)
+        throw new UserInputError('User journey not found')
 
       // can only promote an editor to owner if you are the journey's owner.
       const actor = await db.userJourney.findUnique({
         where: {
           uniqueUserJourney: {
-            userId: userId,
-            journeyId: input.journeyId
+            userId,
+            journeyId: userJourney.journeyId
           }
         }
       })
@@ -182,18 +152,13 @@ const resolvers: UserJourneyModule.Resolvers = {
           'You do not own this journey so you cannot change roles'
         )
 
-      if (
-        actor.role === 'owner' &&
-        actor.journeyId === input.journeyId &&
-        actor.userId === input.userId
-      )
-        return actor
+      if (actor.role === 'owner' && actor.userId === userId) return actor
 
       const newOwner = await db.userJourney.update({
         where: {
           uniqueUserJourney: {
-            userId: input.userId,
-            journeyId: input.journeyId
+            userId,
+            journeyId: userJourney.journeyId
           }
         },
         data: {

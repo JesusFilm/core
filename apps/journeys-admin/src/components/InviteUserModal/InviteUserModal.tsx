@@ -22,7 +22,7 @@ import {
   LinkRounded
 } from '@mui/icons-material'
 import {
-  GetJourney_journey_usersJourneys as UsersJourneys,
+  GetJourney_journey_userJourneys as UserJourneys,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
 import { RemoveUser } from './RemoveUser'
@@ -38,7 +38,7 @@ export const GET_USERS_JOURNEYS = gql`
   query GetJourneyforInvitedUsers($journeyId: ID!) {
     journey(id: $journeyId) {
       id
-      usersJourneys {
+      userJourneys {
         id
         role
         userId
@@ -68,6 +68,7 @@ export const InviteUserModal = ({
   const handleOpen = (): void => {
     setOpen(true)
     loadUsersJourneys()
+    console.log(journey)
   }
 
   const handleClose = (): void => setOpen(false)
@@ -177,7 +178,7 @@ export const InviteUserModal = ({
                 <Typography variant={'body1'} gutterBottom>
                   Requested Editing Rights
                 </Typography>
-                {uj?.usersJourneys?.map(
+                {uj?.userJourneys?.map(
                   (userJourney, i) =>
                     userJourney.role === 'inviteRequested' && (
                       <UserAccess key={i} userJourney={userJourney} />
@@ -189,7 +190,7 @@ export const InviteUserModal = ({
                 <Typography variant={'body1'} gutterBottom>
                   Users With Access
                 </Typography>
-                {uj?.usersJourneys?.map(
+                {uj?.userJourneys?.map(
                   (userJourney, i) =>
                     userJourney.role !== 'inviteRequested' && (
                       <UserAccess key={i} userJourney={userJourney} />
@@ -205,7 +206,7 @@ export const InviteUserModal = ({
 }
 
 interface UserAccessProps {
-  userJourney: UsersJourneys
+  userJourney: UserJourneys
 }
 
 export const UserAccess = ({ userJourney }: UserAccessProps): ReactElement => {
@@ -280,12 +281,12 @@ export const UserAccess = ({ userJourney }: UserAccessProps): ReactElement => {
           open={open}
         >
           {userJourney.role === 'inviteRequested' ? (
-            <ApproveUser usersJourneys={userJourney} />
+            <ApproveUser userJourneys={userJourney} />
           ) : (
-            <PromoteUser usersJourneys={userJourney} />
+            <PromoteUser userJourneys={userJourney} />
           )}
           <Divider />
-          <RemoveUser usersJourneys={userJourney} />
+          <RemoveUser userJourneys={userJourney} />
         </Menu>
       </Box>
     </Box>

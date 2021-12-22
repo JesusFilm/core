@@ -203,7 +203,7 @@ export type Journey = {
   themeMode: ThemeMode;
   themeName: ThemeName;
   title: Scalars['String'];
-  usersJourneys?: Maybe<Array<UserJourney>>;
+  userJourneys?: Maybe<Array<UserJourney>>;
 };
 
 export type JourneyCreateInput = {
@@ -293,17 +293,17 @@ export type MutationSignUpResponseCreateArgs = {
 
 
 export type MutationUserJourneyApproveArgs = {
-  input: UserJourneyUpdateInput;
+  id: Scalars['ID'];
 };
 
 
 export type MutationUserJourneyPromoteArgs = {
-  input: UserJourneyUpdateInput;
+  id: Scalars['ID'];
 };
 
 
 export type MutationUserJourneyRemoveArgs = {
-  input: UserJourneyRemoveInput;
+  id: Scalars['ID'];
 };
 
 
@@ -485,7 +485,6 @@ export type User = {
   id: Scalars['ID'];
   imageUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
-  usersJourneys?: Maybe<Array<UserJourney>>;
 };
 
 export type UserJourney = {
@@ -498,34 +497,14 @@ export type UserJourney = {
   userId: Scalars['ID'];
 };
 
-export type UserJourneyPromote =
-  | 'editor'
-  | 'owner';
-
-export type UserJourneyRemoveInput = {
-  journeyId: Scalars['ID'];
-  role: UserJourneyRoleForUpdates;
-  userId: Scalars['ID'];
-};
-
 export type UserJourneyRequestInput = {
   journeyId: Scalars['ID'];
-  userId: Scalars['ID'];
 };
 
 export type UserJourneyRole =
   | 'editor'
   | 'inviteRequested'
   | 'owner';
-
-export type UserJourneyRoleForUpdates =
-  | 'editor'
-  | 'inviteRequested';
-
-export type UserJourneyUpdateInput = {
-  journeyId: Scalars['ID'];
-  userId: Scalars['ID'];
-};
 
 export type VideoArclight = VideoContent & {
   __typename?: 'VideoArclight';
@@ -723,12 +702,8 @@ export type ResolversTypes = {
   TypographyVariant: TypographyVariant;
   User: ResolverTypeWrapper<UserType>;
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
-  UserJourneyPromote: UserJourneyPromote;
-  UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyRequestInput: UserJourneyRequestInput;
   UserJourneyRole: UserJourneyRole;
-  UserJourneyRoleForUpdates: UserJourneyRoleForUpdates;
-  UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
   VideoContent: ResolversTypes['VideoArclight'] | ResolversTypes['VideoGeneric'];
@@ -777,9 +752,7 @@ export type ResolversParentTypes = {
   TypographyBlock: BlockType;
   User: UserType;
   UserJourney: UserJourneyType;
-  UserJourneyRemoveInput: UserJourneyRemoveInput;
   UserJourneyRequestInput: UserJourneyRequestInput;
-  UserJourneyUpdateInput: UserJourneyUpdateInput;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
   VideoContent: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
@@ -878,7 +851,7 @@ export type JourneyResolvers<ContextType = GraphQLModules.Context, ParentType ex
   themeMode?: Resolver<ResolversTypes['ThemeMode'], ParentType, ContextType>;
   themeName?: Resolver<ResolversTypes['ThemeName'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  usersJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
+  userJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -896,9 +869,9 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   journeyUpdate?: Resolver<ResolversTypes['Journey'], ParentType, ContextType, RequireFields<MutationJourneyUpdateArgs, 'input'>>;
   radioQuestionResponseCreate?: Resolver<ResolversTypes['RadioQuestionResponse'], ParentType, ContextType, RequireFields<MutationRadioQuestionResponseCreateArgs, 'input'>>;
   signUpResponseCreate?: Resolver<ResolversTypes['SignUpResponse'], ParentType, ContextType, RequireFields<MutationSignUpResponseCreateArgs, 'input'>>;
-  userJourneyApprove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyApproveArgs, 'input'>>;
-  userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'input'>>;
-  userJourneyRemove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRemoveArgs, 'input'>>;
+  userJourneyApprove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyApproveArgs, 'id'>>;
+  userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'id'>>;
+  userJourneyRemove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRemoveArgs, 'id'>>;
   userJourneyRequest?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRequestArgs, 'input'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };
@@ -1000,7 +973,6 @@ export type UserResolvers<ContextType = GraphQLModules.Context, ParentType exten
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  usersJourneys?: Resolver<Maybe<Array<ResolversTypes['UserJourney']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -1,22 +1,22 @@
 import { ReactElement } from 'react'
 import { MenuItem } from '@mui/material'
-import { GetJourney_journey_usersJourneys as UsersJourneys } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_userJourneys as UserJourneys } from '../../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
 import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 import { NewReleasesRounded } from '@mui/icons-material'
 
 interface PromoteUserProps {
-  usersJourneys: UsersJourneys
+  userJourneys: UserJourneys
 }
 
 export const USER_JOURNEY_PROMOTE = gql`
-  mutation UserJourneyPromote($input: UserJourneyUpdateInput!) {
-    userJourneyPromote(input: $input) {
+  mutation UserJourneyPromote($userJourneyPromoteId: ID!) {
+    userJourneyPromote(id: $userJourneyPromoteId) {
       id
       role
       journey {
         id
-        usersJourneys {
+        userJourneys {
           id
         }
       }
@@ -25,7 +25,7 @@ export const USER_JOURNEY_PROMOTE = gql`
 `
 
 export const PromoteUser = ({
-  usersJourneys
+  userJourneys
 }: PromoteUserProps): ReactElement => {
   const [userJourneyPromote] =
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
@@ -53,7 +53,7 @@ export const PromoteUser = ({
   return (
     <MenuItem
       onClick={async () =>
-        await handlePromoteUser(usersJourneys.userId, usersJourneys.journeyId)
+        await handlePromoteUser(userJourneys.id)
       }
     >
       <NewReleasesRounded sx={{ mr: 2 }} />

@@ -40,7 +40,6 @@ export async function nua1(prisma: PrismaClient): Promise<void> {
       parentOrder: 0
     }
   })
-
   const coverBlockId = uuidv4()
   const card1 = await prisma.block.create({
     data: {

@@ -3,13 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { UserJourneyRemoveInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: UserJourneyRemove
 // ====================================================
 
-export interface UserJourneyRemove_userJourneyRemove_journey_usersJourneys {
+export interface UserJourneyRemove_userJourneyRemove_journey_userJourneys {
   __typename: "UserJourney";
   id: string;
 }
@@ -17,7 +15,7 @@ export interface UserJourneyRemove_userJourneyRemove_journey_usersJourneys {
 export interface UserJourneyRemove_userJourneyRemove_journey {
   __typename: "Journey";
   id: string;
-  usersJourneys: UserJourneyRemove_userJourneyRemove_journey_usersJourneys[] | null;
+  userJourneys: UserJourneyRemove_userJourneyRemove_journey_userJourneys[] | null;
 }
 
 export interface UserJourneyRemove_userJourneyRemove {
@@ -31,5 +29,5 @@ export interface UserJourneyRemove {
 }
 
 export interface UserJourneyRemoveVariables {
-  input: UserJourneyRemoveInput;
+  userJourneyRemoveId: string;
 }

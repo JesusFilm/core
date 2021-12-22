@@ -32,7 +32,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
 
     // get all journeys user has access to
     const accessibleJourneys = journeys.filter((journey) => {
-      return journey.usersJourneys?.find((userJourney) => {
+      return journey.userJourneys?.find((userJourney) => {
         return userJourney?.userId === user?.uid
       })
     })
@@ -77,7 +77,7 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
             themeMode
             locale
             status
-            usersJourneys {
+            userJourneys {
               userId
               journeyId
             }

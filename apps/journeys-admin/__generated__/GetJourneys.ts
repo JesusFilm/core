@@ -9,7 +9,7 @@ import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 // GraphQL query operation: GetJourneys
 // ====================================================
 
-export interface GetJourneys_journeys_usersJourneys {
+export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   userId: string;
   journeyId: string;
@@ -27,7 +27,7 @@ export interface GetJourneys_journeys {
   themeMode: ThemeMode;
   locale: string;
   status: JourneyStatus;
-  usersJourneys: GetJourneys_journeys_usersJourneys[] | null;
+  userJourneys: GetJourneys_journeys_userJourneys[] | null;
 }
 
 export interface GetJourneys {
