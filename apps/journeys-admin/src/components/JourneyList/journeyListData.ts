@@ -10,22 +10,22 @@ import {
 export const defaultJourney: Journey = {
   __typename: 'Journey',
   id: 'journey-id',
-  title: 'Journey Heading',
-  description: 'Description',
+  title: 'Default Journey Heading',
+  description: null,
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
-  locale: 'en_US',
+  locale: 'en-US',
+  createdAt: formatISO(startOfYear(new Date())),
+  publishedAt: null,
+  status: JourneyStatus.draft,
   usersJourneys: [
     {
       __typename: 'UserJourney',
       userId: 'user-id',
       journeyId: 'journey-id'
     }
-  ],
-  createdAt: formatISO(startOfYear(new Date())),
-  publishedAt: null,
-  status: JourneyStatus.draft
+  ]
 }
 
 export const oldJourney: Journey = {
