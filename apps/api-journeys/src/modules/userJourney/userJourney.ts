@@ -44,11 +44,6 @@ const resolvers: UserJourneyModule.Resolvers = {
       return userJourneys
     }
   },
-  UserJourney: {
-    id(userJourney) {
-      return `${userJourney.journeyId}:${userJourney.userId}`
-    }
-  },
   Mutation: {
     async userJourneyRequest(_parent, { input }, { db, userId }) {
       if (userId == null)
@@ -124,7 +119,10 @@ const resolvers: UserJourneyModule.Resolvers = {
 
       return await db.userJourney.delete({
         where: {
-          id
+          uniqueUserJourney: {
+            userId,
+            journeyId: userJourney.journeyId
+          }
         }
       })
     },

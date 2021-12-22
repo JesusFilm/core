@@ -31,19 +31,16 @@ export const PromoteUser = ({
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 
   const handlePromoteUser = async (
-    userId: string,
-    journeyId: string
+    id: string
   ): Promise<void> => {
     await userJourneyPromote({
       variables: {
         input: {
-          userId,
-          journeyId
+          id
         },
         optimisticResponse: {
           userJourneyPromote: {
-            userId,
-            journeyId
+            id
           }
         }
       }
@@ -51,11 +48,7 @@ export const PromoteUser = ({
   }
 
   return (
-    <MenuItem
-      onClick={async () =>
-        await handlePromoteUser(userJourneys.id)
-      }
-    >
+    <MenuItem onClick={async () => await handlePromoteUser(userJourneys.id)}>
       <NewReleasesRounded sx={{ mr: 2 }} />
       Promote
     </MenuItem>

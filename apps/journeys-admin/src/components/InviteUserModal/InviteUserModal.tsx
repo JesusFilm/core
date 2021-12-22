@@ -68,7 +68,6 @@ export const InviteUserModal = ({
   const handleOpen = (): void => {
     setOpen(true)
     loadUsersJourneys()
-    console.log(journey)
   }
 
   const handleClose = (): void => setOpen(false)
