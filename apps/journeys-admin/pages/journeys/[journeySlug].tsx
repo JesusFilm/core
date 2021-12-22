@@ -9,7 +9,6 @@ import {
 import { JourneyProvider, JourneyView } from '../../src/components'
 import client from '../../src/libs/client'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
-import { Typography, Box } from '@mui/material'
 import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface JourneyViewPageProps {

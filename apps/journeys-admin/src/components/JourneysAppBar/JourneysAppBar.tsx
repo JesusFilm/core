@@ -36,6 +36,7 @@ export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
             >
               Journey Details
             </Typography>
+            <Menu />
           </Toolbar>
         ) : (
           <Toolbar sx={{ flexGrow: 1 }}>
