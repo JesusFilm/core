@@ -13,14 +13,18 @@ import {
   Journey,
   JourneyCreateInput,
   JourneyStatus,
-  JourneyUpdateInput
+  JourneyUpdateInput,
+  UserJourneyRole
 } from '../../__generated__/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
+import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { BlockService } from '../block/block.service'
 import { JourneyService } from './journey.service'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { UserJourneyService } from '../userJourney/userJourney.service'
+import { includes } from 'lodash'
+import { AuthenticationError } from 'apollo-server-errors'
 
 function resolveStatus(journey: Journey): Journey {
   journey.status =
@@ -32,7 +36,8 @@ function resolveStatus(journey: Journey): Journey {
 export class JourneyResolvers {
   constructor(
     private readonly journeyService: JourneyService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly userJourneyService: UserJourneyService
   ) {}
 
   @Query()
@@ -61,30 +66,54 @@ export class JourneyResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @IdAsKey()
-  async createJourney(
-    @Args('input') input: JourneyCreateInput
+  async journeyCreate(
+    @Args('input') input: JourneyCreateInput,
+    @CurrentUserId() userId: string
   ): Promise<Journey> {
     if (input.slug != null)
       input.slug = slugify(input.slug ?? input.title, {
         remove: /[*+~.()'"!:@#]/g
       })
-    return await this.journeyService.save(input)
+    const journey: Journey & { _key: string } = await this.journeyService.save(
+      input
+    )
+    await this.userJourneyService.save({
+      userId,
+      journeyId: journey._key,
+      role: UserJourneyRole.owner
+    })
+    return journey
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async journeyUpdate(
     @Args('id') id: string,
-    @Args('input') input: JourneyUpdateInput
+    @Args('input') input: JourneyUpdateInput,
+    @CurrentUserId() userId: string
   ): Promise<Journey> {
     if (input.slug != null)
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
+
+    const actor = await this.userJourneyService.forJourneyUser(id, userId)
+
+    if (!includes([UserJourneyRole.owner, UserJourneyRole.editor], actor?.role))
+      throw new AuthenticationError('User is not owner or editor of journey')
+
     return await this.journeyService.update(id, input)
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async journeyPublish(@Args('id') id: string): Promise<Journey> {
+  async journeyPublish(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<Journey> {
+    const actor = await this.userJourneyService.forJourneyUser(id, userId)
+
+    if (actor?.role !== UserJourneyRole.owner)
+      throw new AuthenticationError('User is not owner of journey')
+
     return await this.journeyService.update(id, {
       publishedAt: new Date().toISOString()
     })

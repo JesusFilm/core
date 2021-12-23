@@ -2,15 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  UserJourneyRole
 } from '../../__generated__/graphql'
 import { BlockResolvers } from '../block/block.resolvers'
 import { BlockService } from '../block/block.service'
+import { UserJourneyService } from '../userJourney/userJourney.service'
 import { JourneyResolvers } from './journey.resolvers'
 import { JourneyService } from './journey.service'
 
 describe('Journey', () => {
-  let resolver: JourneyResolvers, service: JourneyService
+  let resolver: JourneyResolvers,
+    service: JourneyService,
+    ujService: UserJourneyService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -92,6 +96,27 @@ describe('Journey', () => {
     status: JourneyStatus.draft
   }
 
+  const userJourney = {
+    _key: '1',
+    userId: '1',
+    journeyId: '1',
+    role: UserJourneyRole.editor
+  }
+
+  const ownerUserJourney = {
+    _key: '2',
+    userId: '2',
+    journeyId: '1',
+    role: UserJourneyRole.owner
+  }
+
+  const invitedUserJourney = {
+    _key: '3',
+    userId: '3',
+    journeyId: '1',
+    role: UserJourneyRole.inviteRequested
+  }
+
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
@@ -105,11 +130,30 @@ describe('Journey', () => {
       update: jest.fn(() => journey)
     })
   }
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
-      get: jest.fn(() => block)
+      get: jest.fn(() => block),
+      save: jest.fn((input) => input)
+    })
+  }
+
+  const userJourneyService = {
+    provide: UserJourneyService,
+    useFactory: () => ({
+      get: jest.fn((key) => {
+        if (key === ownerUserJourney._key) return ownerUserJourney
+        if (key === invitedUserJourney._key) return invitedUserJourney
+        return userJourney
+      }),
+      save: jest.fn((input) => input),
+      forJourneyUser: jest.fn((journeyId, userId) => {
+        if (userId === ownerUserJourney.userId) return ownerUserJourney
+        if (userId === invitedUserJourney.userId) return invitedUserJourney
+        return userJourney
+      })
     })
   }
 
@@ -119,11 +163,13 @@ describe('Journey', () => {
         JourneyResolvers,
         journeyService,
         blockService,
-        BlockResolvers
+        BlockResolvers,
+        userJourneyService
       ]
     }).compile()
     resolver = module.get<JourneyResolvers>(JourneyResolvers)
     service = module.get<JourneyService>(JourneyService)
+    ujService = module.get<UserJourneyService>(UserJourneyService)
   })
 
   describe('published Journey', () => {
@@ -171,28 +217,66 @@ describe('Journey', () => {
   })
 
   describe('createJourney', () => {
-    it('creates a Journey', async () => {
-      expect(await resolver.createJourney(journey)).toEqual(journeyresponse)
+    it('creates a Journey and UserJourney', async () => {
+      expect(
+        await resolver.journeyCreate(journey, ownerUserJourney._key)
+      ).toEqual(journeyresponse)
+      expect(ujService.save).toHaveBeenCalledWith({
+        userId: ownerUserJourney._key,
+        journeyId: journey._key,
+        role: UserJourneyRole.owner
+      })
     })
   })
 
   describe('updateJourney', () => {
     it('updates a Journey', async () => {
-      resolver
-        .journeyUpdate('1', journeyupdate)
+      await resolver
+        .journeyUpdate('1', journeyupdate, ownerUserJourney._key)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
+    })
+    it('updates a Journey 2', async () => {
+      await resolver
+        .journeyUpdate('1', journeyupdate, userJourney._key)
+        .catch((err) => console.log(err))
+      expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
+    })
+
+    it('should not update a Journey 2', async () => {
+      await resolver
+        .journeyUpdate('1', journeyupdate, invitedUserJourney._key)
+        .catch((err) => console.log(err))
+      expect(service.update).not.toHaveBeenCalled()
     })
   })
 
   describe('publishJourney', () => {
-    it('publishJourney a Journey', async () => {
+    it('publishes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      resolver.journeyPublish('1').catch((err) => console.log(err))
+      await resolver
+        .journeyPublish('1', ownerUserJourney._key)
+        .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
         publishedAt: '2021-12-07T03:22:41.135Z'
       })
     })
+  })
+  it('should not publish a Journey', async () => {
+    const date = '2021-12-07T03:22:41.135Z'
+    jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+    await resolver
+      .journeyPublish('1', invitedUserJourney._key)
+      .catch((err) => console.log(err))
+    expect(service.update).not.toHaveBeenCalled()
+  })
+  it('should not publish a Journey', async () => {
+    const date = '2021-12-07T03:22:41.135Z'
+    jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+    await resolver
+      .journeyPublish('1', userJourney._key)
+      .catch((err) => console.log(err))
+    expect(service.update).not.toHaveBeenCalled()
   })
 })

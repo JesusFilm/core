@@ -1,58 +1,15 @@
-input UserCreateInput {
-  id: ID
-  firstName: String
-  lastName: String
-  email: String
-  imageUrl: String
-}
-
 type User @key(fields: "id") {
   id: ID!
-  firstName: String
+  firstName: String!
   lastName: String
-  email: String
+  email: String!
   imageUrl: String
-  usersJourneys: [UserJourney!]
 }
 
-type UserJourney {
+extend type UserJourney {
   user: User
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRoles!
-}
-
-enum UserJourneyRoles {
-  inviteRequested
-  editor
-  owner
-}
-
-input UserJourneyCreateInput {
-  id: ID
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRoles
-}
-
-input UserJourneyUpdateInput {
-  role: UserJourneyRoles
 }
 
 extend type Query {
   me: User
-  users: [User!]!
-  user(id: ID!): User
-}
-
-extend type Mutation {
-  userCreate(input: UserCreateInput!): User!
-  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney!
-  userJourneyUpdate(id: ID!, input: UserJourneyUpdateInput!): UserJourney!
-  userJourneyRemove(id: ID!): UserJourney!
-}
-
-extend type Journey {
-  usersJourneys: [UserJourney!]
 }

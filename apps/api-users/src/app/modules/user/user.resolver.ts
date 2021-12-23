@@ -1,54 +1,38 @@
-import {
-  Args,
-  Resolver,
-  Query,
-  ResolveField,
-  Parent,
-  Mutation
-} from '@nestjs/graphql'
+import { Resolver, Query } from '@nestjs/graphql'
 import { UserService } from './user.service'
-import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
-import { User, UserCreateInput, UserJourney } from '../../__generated__/graphql'
-import { UserJourneyService } from '../userJourney/userJourney.service'
+import { CurrentUserId, KeyAsId } from '@core/nest/decorators'
+import { User } from '../../__generated__/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { firebaseClient } from '../../lib/firebaseClient'
 
 @Resolver('User')
 export class UserResolver {
-  constructor(
-    private readonly userService: UserService,
-    private readonly userJourneyService: UserJourneyService
-  ) {}
-
-  @Query()
-  @KeyAsId()
-  async users(): Promise<User[]> {
-    return await this.userService.getAll()
-  }
-
-  @Query()
-  @KeyAsId()
-  async user(@Args('id') _key: string): Promise<User> {
-    return await this.userService.get(_key)
-  }
+  constructor(private readonly userService: UserService) {}
 
   @Query()
   @UseGuards(GqlAuthGuard)
   @KeyAsId()
   async me(@CurrentUserId() userId: string): Promise<User> {
-    return await this.userService.get(userId)
-  }
+    const existingUser: User = await this.userService.get(userId)
 
-  @ResolveField('usersJourneys')
-  @KeyAsId()
-  async usersJourneys(@Parent() user: User): Promise<UserJourney[]> {
-    return await this.userJourneyService.forUser(user)
-  }
+    if (existingUser != null) return existingUser
 
-  @Mutation()
-  @UseGuards(GqlAuthGuard)
-  @IdAsKey()
-  async userCreate(@Args('input') input: UserCreateInput): Promise<User> {
-    return await this.userService.save(input)
+    const {
+      displayName,
+      email,
+      photoURL: imageUrl
+    } = await firebaseClient.auth().getUser(userId)
+
+    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
+    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
+
+    return await this.userService.save({
+      userId,
+      firstName,
+      lastName,
+      email,
+      imageUrl
+    })
   }
 }

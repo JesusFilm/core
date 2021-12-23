@@ -132,6 +132,12 @@ export enum VideoResponseStateEnum {
     FINISHED = "FINISHED"
 }
 
+export enum UserJourneyRole {
+    inviteRequested = "inviteRequested",
+    editor = "editor",
+    owner = "owner"
+}
+
 export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -318,6 +324,7 @@ export class Journey {
     publishedAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
+    userJourneys?: Nullable<UserJourney[]>;
 }
 
 export class ButtonBlock implements Block {
@@ -451,6 +458,15 @@ export class VideoTriggerBlock implements Block {
     action?: Nullable<Action>;
 }
 
+export class UserJourney {
+    __typename?: 'UserJourney';
+    journey?: Nullable<Journey>;
+    id: string;
+    userId: string;
+    journeyId: string;
+    role: UserJourneyRole;
+}
+
 export class RadioQuestionResponse implements Response {
     __typename?: 'RadioQuestionResponse';
     id: string;
@@ -505,6 +521,14 @@ export abstract class IMutation {
     abstract signUpResponseCreate(input: SignUpResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
 
     abstract videoResponseCreate(input: VideoResponseCreateInput): VideoResponse | Promise<VideoResponse>;
+
+    abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
+
+    abstract userJourneyPromote(id: string): UserJourney | Promise<UserJourney>;
+
+    abstract userJourneyRemove(id: string): UserJourney | Promise<UserJourney>;
+
+    abstract userJourneyRequest(journeyId: string): UserJourney | Promise<UserJourney>;
 }
 
 export abstract class IQuery {

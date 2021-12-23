@@ -5,6 +5,7 @@ import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { ResponseModule } from './modules/response/response.module'
+import { UserJourneyModule } from './modules/userJourney/userJourney.module'
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ResponseModule } from './modules/response/response.module'
     BlockModule,
     JourneyModule,
     ResponseModule,
+    UserJourneyModule,
     GraphQLFederationModule.forRoot({
       typePaths: [
         join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql'),

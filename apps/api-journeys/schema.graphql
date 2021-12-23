@@ -100,6 +100,7 @@ type Journey @key(fields: "id") {
   publishedAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  userJourneys: [UserJourney!]
 }
 
 enum ButtonVariant {
@@ -491,6 +492,14 @@ input JourneyUpdateInput {
   slug: String
 }
 
+type UserJourney {
+  journey: Journey
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+}
+
 input RadioQuestionResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
@@ -554,6 +563,12 @@ type VideoResponse implements Response {
   block: VideoBlock
 }
 
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
 extend type Mutation {
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock!
@@ -569,6 +584,10 @@ extend type Mutation {
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!): UserJourney!
 }
 
 extend type Query {
