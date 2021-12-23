@@ -19,7 +19,8 @@ const EditorStory = {
   component: Editor,
   title: 'Journeys-Admin/Editor',
   parameters: {
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: { diffThreshold: 0.5 }
   }
 }
 
