@@ -8,7 +8,12 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { UserJourneyRoles } from '../../__generated__/graphql'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName,
+  UserJourneyRole
+} from '../../__generated__/graphql'
 
 describe('UserJourneyService', () => {
   let service: UserJourneyService
@@ -35,26 +40,47 @@ describe('UserJourneyService', () => {
     _key: '1',
     userId: '1',
     journeyId: '2',
-    role: UserJourneyRoles.editor
+    role: UserJourneyRole.editor
   }
 
-  const user = {
+  const journey = {
     id: '1',
-    firstName: 'fo',
-    lastName: 'sho',
-    email: 'tho@no.co',
-    imageUrl: 'po'
+    title: 'published',
+    published: true,
+    locale: 'en-US',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug',
+    createdAt: '',
+    status: JourneyStatus.published
   }
 
-  describe('forUser', () => {
+  describe('forJourney', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [userJourney, userJourney])
       )
     })
 
-    it('should return an array of users', async () => {
-      expect(await service.forUser(user)).toEqual([userJourney, userJourney])
+    it('should return an array of userjourneys', async () => {
+      expect(await service.forJourney(journey)).toEqual([
+        userJourney,
+        userJourney
+      ])
+    })
+  })
+
+  describe('forUserJourney', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [userJourney])
+      )
+    })
+
+    it('should return a userjourney', async () => {
+      expect(await service.forJourneyUser('1', 2)).toEqual(userJourney)
     })
   })
 

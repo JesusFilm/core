@@ -55,6 +55,10 @@ input JourneyUpdateInput {
   slug: String
 }
 
+extend type UserJourney {
+  journey: Journey
+}
+
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!

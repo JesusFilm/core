@@ -10,12 +10,10 @@ interface TransformObject {
 const idAsKey = (obj: TransformObject): TransformObject =>
   has(obj, 'id') && obj.id != null
     ? omit({ ...obj, _key: obj.id }, ['id'])
-    : omit(obj, ['id'])
+    : obj
 
 const keyAsId = (obj: TransformObject): TransformObject =>
-  has(obj, '_key')
-    ? omit({ ...obj, id: obj._key }, ['_key'])
-    : omit(obj, ['_key'])
+  has(obj, '_key') ? omit({ ...obj, id: obj._key }, ['_key']) : obj
 
 export function IdAsKey() {
   return (

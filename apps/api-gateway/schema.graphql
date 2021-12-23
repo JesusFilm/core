@@ -253,7 +253,7 @@ type Journey
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
-  usersJourneys: [UserJourney!] @join__field(graph: USERS)
+  userJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
 }
 
 input JourneyCreateInput {
@@ -309,10 +309,10 @@ type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock! @join__field(graph: JOURNEYS)
-  userCreate(input: UserCreateInput!): User! @join__field(graph: USERS)
-  userJourneyCreate(input: UserJourneyCreateInput!): UserJourney! @join__field(graph: USERS)
-  userJourneyRemove(id: ID!): UserJourney! @join__field(graph: USERS)
-  userJourneyUpdate(id: ID!, input: UserJourneyUpdateInput!): UserJourney! @join__field(graph: USERS)
+  userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRequest(journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
@@ -341,8 +341,6 @@ type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
   me: User @join__field(graph: USERS)
-  user(id: ID!): User @join__field(graph: USERS)
-  users: [User!]! @join__field(graph: USERS)
 }
 
 type RadioOptionBlock implements Block {
@@ -490,45 +488,26 @@ type User
   @join__owner(graph: USERS)
   @join__type(graph: USERS, key: "id")
 {
-  email: String @join__field(graph: USERS)
-  firstName: String @join__field(graph: USERS)
+  email: String! @join__field(graph: USERS)
+  firstName: String! @join__field(graph: USERS)
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
-  usersJourneys: [UserJourney!] @join__field(graph: USERS)
-}
-
-input UserCreateInput {
-  email: String
-  firstName: String
-  id: ID
-  imageUrl: String
-  lastName: String
 }
 
 type UserJourney {
   id: ID!
+  journey: Journey
   journeyId: ID!
-  role: UserJourneyRoles!
-  user: User
+  role: UserJourneyRole!
+  user: User @join__field(graph: USERS)
   userId: ID!
 }
 
-input UserJourneyCreateInput {
-  id: ID
-  journeyId: ID!
-  role: UserJourneyRoles
-  userId: ID!
-}
-
-enum UserJourneyRoles {
+enum UserJourneyRole {
   editor
   inviteRequested
   owner
-}
-
-input UserJourneyUpdateInput {
-  role: UserJourneyRoles
 }
 
 type VideoArclight implements VideoContent {

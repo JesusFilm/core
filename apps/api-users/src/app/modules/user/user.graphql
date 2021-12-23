@@ -1,29 +1,13 @@
-input UserCreateInput {
-  id: ID
-  firstName: String
-  lastName: String
-  email: String
-  imageUrl: String
-}
-
 type User @key(fields: "id") {
   id: ID!
-  firstName: String
+  firstName: String!
   lastName: String
-  email: String
+  email: String!
   imageUrl: String
 }
-
 extend type UserJourney {
   user: User
 }
-
 extend type Query {
   me: User
-  users: [User!]!
-  user(id: ID!): User
-}
-
-extend type Mutation {
-  userCreate(input: UserCreateInput!): User!
 }
