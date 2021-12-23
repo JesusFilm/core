@@ -20,7 +20,7 @@ const EditorStory = {
   title: 'Journeys-Admin/Editor',
   parameters: {
     layout: 'fullscreen',
-    chromatic: { diffThreshold: 0.3 }
+    chromatic: { diffThreshold: 0.8 }
   }
 }
 
