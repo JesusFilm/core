@@ -1,5 +1,5 @@
-import { PrismaClient, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 import { v4 as uuidv4 } from 'uuid'
+import { PrismaClient, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
 
 export async function nuaEp8(prisma: PrismaClient): Promise<void> {
   let journey = await prisma.journey.findFirst({

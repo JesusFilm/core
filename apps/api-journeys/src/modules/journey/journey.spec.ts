@@ -1,9 +1,11 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
-import { journeyModule } from '.'
 import { omit } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import { DocumentNode, ExecutionResult } from 'graphql'
 import dbMock from '../../../tests/dbMock'
+import { actionModule, blockModule, buttonModule, iconModule } from '..'
+import { journeyModule } from '.'
 import {
   Journey,
   ThemeName,
@@ -11,8 +13,6 @@ import {
   Prisma,
   Block
 } from '.prisma/api-journeys-client'
-import { DocumentNode, ExecutionResult } from 'graphql'
-import { actionModule, blockModule, buttonModule, iconModule } from '..'
 
 describe('JourneyModule', () => {
   let app

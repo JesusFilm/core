@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { ActionModule } from './__generated__/types'
 import { ActionResolvers } from '../../__generated__/types'
+import { ActionModule } from './__generated__/types'
 
 const typeDefs = gql`
   interface Action {

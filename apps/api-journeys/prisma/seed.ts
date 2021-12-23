@@ -1,6 +1,6 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
 import { noop } from 'lodash'
 import { nua1, nua2, nuaEp8, nua9 } from './factories'
+import { PrismaClient } from '.prisma/api-journeys-client'
 
 const prisma = new PrismaClient()
 

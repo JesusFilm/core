@@ -3,8 +3,8 @@ import { createModule, gql } from 'graphql-modules'
 import { AuthenticationError } from 'apollo-server-errors'
 import { transformBlock } from '../block'
 import { transformResponse } from '../response'
-import { VideoModule } from './__generated__/types'
 import { VideoContentResolvers } from '../../__generated__/types'
+import { VideoModule } from './__generated__/types'
 
 const typeDefs = gql`
   enum VideoResponseStateEnum {

@@ -1,10 +1,11 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { transformBlock } from '../block'
-import { ImageModule } from './__generated__/types'
 import { encode } from 'blurhash'
 import { createCanvas, loadImage, Image } from 'canvas'
+import { transformBlock } from '../block'
+import { ImageModule } from './__generated__/types'
+
 const typeDefs = gql`
   input ImageBlockCreateInput {
     """

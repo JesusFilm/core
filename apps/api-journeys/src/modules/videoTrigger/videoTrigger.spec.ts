@@ -1,5 +1,7 @@
 import { testkit, gql } from 'graphql-modules'
 import { schemaBuilder } from '@core/shared/util-graphql'
+import { v4 as uuidv4 } from 'uuid'
+import { DocumentNode, ExecutionResult } from 'graphql'
 import {
   videoTriggerModule,
   journeyModule,
@@ -7,9 +9,7 @@ import {
   actionModule
 } from '..'
 import dbMock from '../../../tests/dbMock'
-import { v4 as uuidv4 } from 'uuid'
 import { Block, ThemeName, ThemeMode } from '.prisma/api-journeys-client'
-import { DocumentNode, ExecutionResult } from 'graphql'
 
 describe('VideoTriggerModule', () => {
   let app, journeyId

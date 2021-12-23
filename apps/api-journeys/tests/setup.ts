@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv'
-import * as path from 'path'
+import { resolve } from 'path'
+import { config } from 'dotenv'
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
+config({ path: resolve(__dirname, '../.env') })

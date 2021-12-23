@@ -3,13 +3,13 @@
   "ignorePatterns": ["**/*"],
   "plugins": ["@nrwl/nx", "import"],
   "rules": {
-    "import/no-unresolved": "warn", //error when importing from @core
-    "import/no-internal-modules": "warn", //error when importing from generated
-    "import/no-relative-parent-imports": "warn", //error when importing from generated
-    "import/no-named-export": "warn", //error when exporting on same line as declaration
-    "import/no-default-export": "warn", //problem for storybook
-    "import/group-exports": "warn", //error when multiple exports in file
-    "import/prefer-default-export": "warn", //error when if only 1 export and not default
+    // "import/no-unresolved": "warn", //error when importing from @core
+    // "import/no-internal-modules": "warn", //error when importing from generated
+    // "import/no-relative-parent-imports": "warn", //error when importing from generated
+    // "import/no-named-export": "warn", //error when exporting on same line as declaration
+    // "import/no-default-export": "warn", //problem for storybook
+    // "import/group-exports": "warn", //error when multiple exports in file
+    // "import/prefer-default-export": "warn", //error when if only 1 export and not default
     "import/no-absolute-path": "error",
     "import/named": "error",
     "import/default": "error",
@@ -28,10 +28,10 @@
     "import/no-extraneous-dependencies": "error",
     "import/no-mutable-exports": "error",
     "import/no-unused-modules": "error",
-    "import/unambiguous": "error",
-    "import/no-commonjs": "error",
+    // "import/unambiguous": "error", //error for export on jest.config.js
+    // "import/no-commonjs": "error", //error for export on jest.config.js
     "import/no-amd": "error",
-    "import/no-nodejs-modules": "error",
+    // "import/no-nodejs-modules": "error", //error when importing from certain node modules
     "import/no-import-module-exports": "error",
     "import/first": "error",
     "import/exports-last": "error",
@@ -40,8 +40,8 @@
     "import/extensions": "error",
     "import/order": "error",
     "import/newline-after-import": "error",
-    "import/max-dependencies": "error",
-    "import/no-unassigned-import": "error",
+    // "import/max-dependencies": "error", //some index files have more than 10
+    // "import/no-unassigned-import": "error", //causes problems with reflect-metadata
     "import/no-named-default": "error",
     "import/no-anonymous-default-export": "error",
     "import/dynamic-import-chunkname": "error"

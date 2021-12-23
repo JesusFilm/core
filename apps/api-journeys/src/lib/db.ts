@@ -12,4 +12,6 @@ if (process.env.NODE_ENV === 'production') {
   db = global.db
 }
 
-export default db
+const dbExport = db
+
+export default dbExport

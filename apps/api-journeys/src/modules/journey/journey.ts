@@ -1,10 +1,10 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { JourneyModule } from './__generated__/types'
 import { isNil, omitBy, get } from 'lodash'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
-import { Prisma } from '.prisma/api-journeys-client'
 import slugify from 'slugify'
+import { JourneyModule } from './__generated__/types'
+import { Prisma } from '.prisma/api-journeys-client'
 
 const typeDefs = gql`
   enum ThemeMode {
