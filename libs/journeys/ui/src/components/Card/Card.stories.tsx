@@ -210,7 +210,7 @@ VideoCover.args = {
   ]
 }
 VideoCover.parameters = {
-  chromatic: { delay: 400, diffThreshold: 0.7 }
+  chromatic: { delay: 400, diffThreshold: 0.75 }
 }
 
 export const ImageBlur: Story<TreeBlock<CardFields>> = Template.bind({})
