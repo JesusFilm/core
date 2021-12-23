@@ -3,10 +3,10 @@ import {
   createHttpLink,
   NormalizedCacheObject
 } from '@apollo/client'
-import { cache } from './cache'
 import { setContext } from '@apollo/client/link/context'
+import { cache } from './cache'
 
-export function createApolloClient(
+function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
@@ -34,3 +34,4 @@ const client = new ApolloClient({
 })
 
 export default client
+export { createApolloClient }

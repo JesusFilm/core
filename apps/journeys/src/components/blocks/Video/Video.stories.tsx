@@ -1,11 +1,11 @@
 import { Story, Meta } from '@storybook/react'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
-import { MockedProvider } from '@apollo/client/testing'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
 import { Conductor, ConductorProps } from '../../Conductor'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 const Demo = {
   ...journeysConfig,
@@ -86,7 +86,7 @@ const Template: Story<ConductorProps> = ({ ...props }) => (
   </MockedProvider>
 )
 
-export const Default = Template.bind({})
+const Default = Template.bind({})
 Default.args = {
   blocks: conductorProps([videoBlock])
 }
@@ -94,17 +94,17 @@ Default.parameters = {
   chromatic: { disableSnapshot: false }
 }
 
-export const Autoplay = Template.bind({})
+const Autoplay = Template.bind({})
 Autoplay.args = {
   blocks: conductorProps([{ ...videoBlock, autoplay: true }])
 }
 
-export const Muted = Template.bind({})
+const Muted = Template.bind({})
 Muted.args = {
   blocks: conductorProps([{ ...videoBlock, muted: true }])
 }
 
-export const ExternalSource = Template.bind({})
+const ExternalSource = Template.bind({})
 ExternalSource.args = {
   blocks: conductorProps([
     {
@@ -117,7 +117,7 @@ ExternalSource.args = {
   ])
 }
 
-export const StartAt = Template.bind({})
+const StartAt = Template.bind({})
 StartAt.args = {
   blocks: conductorProps([
     {
@@ -129,7 +129,7 @@ StartAt.args = {
 
 // TODO: Add EndAt
 
-export const Poster = Template.bind({})
+const Poster = Template.bind({})
 Poster.args = {
   blocks: conductorProps([
     {
@@ -156,3 +156,4 @@ Poster.parameters = {
 }
 
 export default Demo as Meta
+export { Default, Autoplay, Muted, ExternalSource, StartAt, Poster }

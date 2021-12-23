@@ -1,11 +1,11 @@
 import { makeVar, useReactiveVar } from '@apollo/client'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { useCallback } from 'react'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../transformer/transformer'
 
-export const activeBlockVar = makeVar<TreeBlock<StepBlock> | null>(null)
-export const previousBlocksVar = makeVar<TreeBlock[]>([])
-export const treeBlocksVar = makeVar<TreeBlock[]>([])
+const activeBlockVar = makeVar<TreeBlock<StepBlock> | null>(null)
+const previousBlocksVar = makeVar<TreeBlock[]>([])
+const treeBlocksVar = makeVar<TreeBlock[]>([])
 
 interface NextActiveBlockArgs {
   /** StepBlock id to set as activeBlock. If no id is set, block will be set to
@@ -20,7 +20,7 @@ interface UseBlocksHook {
   previousBlocks: TreeBlock[]
 }
 
-export function nextActiveBlock(args?: NextActiveBlockArgs): void {
+function nextActiveBlock(args?: NextActiveBlockArgs): void {
   const blocks = treeBlocksVar()
   const activeBlock = activeBlockVar()
   let block: TreeBlock<StepBlock> | undefined
@@ -49,7 +49,7 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
   )
 }
 
-export function isActiveBlockOrDescendant(blockId: string): boolean {
+function isActiveBlockOrDescendant(blockId: string): boolean {
   const activeBlock = activeBlockVar()
   if (activeBlock == null) return false
   if (activeBlock.id === blockId) return true
@@ -76,4 +76,12 @@ export function useBlocks(): UseBlocksHook {
     treeBlocks,
     previousBlocks
   }
+}
+
+export {
+  nextActiveBlock,
+  isActiveBlockOrDescendant,
+  activeBlockVar,
+  previousBlocksVar,
+  treeBlocksVar
 }

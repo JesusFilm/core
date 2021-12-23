@@ -1,16 +1,16 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock,
   GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock
 } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { RadioQuestion } from './RadioQuestion'
 import {
   journeysConfig,
   simpleComponentConfig,
   StoryCard
 } from '../../../libs/storybook'
-import { MockedProvider } from '@apollo/client/testing'
+import { RadioQuestion } from './RadioQuestion'
 import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
 const children: Array<TreeBlock<RadioOptionBlock>> = [
@@ -109,8 +109,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionBlock>> = ({
   </MockedProvider>
 )
 
-export const Default: Story<TreeBlock<RadioQuestionBlock>> =
-  DefaultTemplate.bind({})
+const Default: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'RadioQuestion1',
   label: 'How can we help you know more about Jesus?',
@@ -120,9 +119,7 @@ Default.args = {
   parentBlockId: 'Step1'
 }
 
-export const Long: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind(
-  {}
-)
+const Long: Story<TreeBlock<RadioQuestionBlock>> = DefaultTemplate.bind({})
 Long.args = {
   id: 'RadioQuestion1',
   label: 'Have you accepted Jesus in your life?',
@@ -132,3 +129,4 @@ Long.args = {
 }
 
 export default Demo as Meta
+export { Default, Long }

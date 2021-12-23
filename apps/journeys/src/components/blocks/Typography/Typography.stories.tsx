@@ -1,7 +1,5 @@
 import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
-
-import { Typography } from './Typography'
 import {
   ThemeMode,
   ThemeName,
@@ -16,6 +14,7 @@ import {
 } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { Typography } from './Typography'
 
 const TypographyDemo = {
   ...journeysConfig,
@@ -68,7 +67,7 @@ const VariantTemplate: Story<TypographyStoryProps> = (props) => (
   </StoryCard>
 )
 
-export const Variants = VariantTemplate.bind({})
+const Variants = VariantTemplate.bind({})
 Variants.args = {
   variants: [
     'h1',
@@ -110,7 +109,7 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
   </div>
 )
 
-export const Colors = ColorTemplate.bind({})
+const Colors = ColorTemplate.bind({})
 Colors.args = {
   variants: ['primary', 'secondary', 'error']
 }
@@ -129,9 +128,10 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
   </StoryCard>
 )
 
-export const Alignment = AlignmentTemplate.bind({})
+const Alignment = AlignmentTemplate.bind({})
 Alignment.args = {
   variants: ['left', 'center', 'right']
 }
 
 export default TypographyDemo as Meta
+export { Variants, Colors, Alignment }

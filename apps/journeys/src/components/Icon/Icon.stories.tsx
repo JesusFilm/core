@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import { Icon } from '.'
 import { Box } from '@mui/system'
 import { Typography, Grid } from '@mui/material'
 import {
@@ -14,6 +13,7 @@ import {
   simpleComponentConfig,
   StoryCard
 } from '../../libs/storybook'
+import { Icon } from '.'
 
 const IconDemo = {
   ...journeysConfig,
@@ -49,7 +49,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   </StoryCard>
 )
 
-export const Variant = VariantTemplate.bind({})
+const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'Icon',
   color: null,
@@ -91,7 +91,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
   </StoryCard>
 )
 
-export const Color = ColorTemplate.bind({})
+const Color = ColorTemplate.bind({})
 Color.args = {
   __typename: 'Icon',
   name: IconName.CheckCircleRounded,
@@ -124,7 +124,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
   </StoryCard>
 )
 
-export const Size = SizeTemplate.bind({})
+const Size = SizeTemplate.bind({})
 Size.args = {
   __typename: 'Icon',
   name: IconName.CheckCircleRounded,
@@ -139,3 +139,4 @@ Size.args = {
 }
 
 export default IconDemo as Meta
+export { Variant, Color, Size }

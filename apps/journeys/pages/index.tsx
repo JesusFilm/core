@@ -5,8 +5,8 @@ import Container from '@mui/material/Container'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
-import client from '../src/libs/client'
 import { ThemeProvider } from '@core/shared/ui'
+import client from '../src/libs/client'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey

@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Button } from '.'
+import { Typography } from '@mui/material'
 import {
   ButtonVariant,
   ButtonColor,
@@ -13,7 +13,7 @@ import {
   ButtonFields_startIcon as StartIcon,
   ButtonFields_endIcon as EndIcon
 } from '../../../../__generated__/ButtonFields'
-import { Typography } from '@mui/material'
+import { Button } from '.'
 
 const ButtonDemo = {
   ...journeysConfig,
@@ -31,7 +31,7 @@ const Template: Story<ButtonStoryProps> = ({ ...args }) => (
   </StoryCard>
 )
 
-export const Variant = Template.bind({})
+const Variant = Template.bind({})
 Variant.args = { label: ButtonVariant.contained }
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
@@ -47,7 +47,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   </StoryCard>
 )
 
-export const Color = ColorTemplate.bind({})
+const Color = ColorTemplate.bind({})
 Color.args = {
   variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error]
 }
@@ -70,7 +70,7 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   </StoryCard>
 )
 
-export const Size = SizeTemplate.bind({})
+const Size = SizeTemplate.bind({})
 Size.args = {
   variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
 }
@@ -98,7 +98,8 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
   )
 }
 
-export const Icon = IconTemplate.bind({})
+const Icon = IconTemplate.bind({})
 Icon.args = { variants: ['Start', 'End'] }
 
 export default ButtonDemo as Meta
+export { Variant, Color, Size, Icon }

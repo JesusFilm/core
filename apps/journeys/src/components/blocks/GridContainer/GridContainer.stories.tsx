@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { GetJourney_journey_blocks_GridContainerBlock as GridContainerBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { GridContainer } from './GridContainer'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import {
   TypographyVariant,
@@ -14,6 +13,7 @@ import {
   GridDirection,
   GridJustifyContent
 } from '../../../../__generated__/globalTypes'
+import { GridContainer } from './GridContainer'
 
 const Demo = {
   ...journeysConfig,
@@ -105,8 +105,7 @@ const childrenTwo: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<GridContainerBlock>> =
-  DefaultTemplate.bind({})
+const Default: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -136,8 +135,9 @@ Default.args = {
   ]
 }
 
-export const OffsetRight: Story<TreeBlock<GridContainerBlock>> =
-  DefaultTemplate.bind({})
+const OffsetRight: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind(
+  {}
+)
 OffsetRight.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -158,8 +158,7 @@ OffsetRight.args = {
   ]
 }
 
-export const Center: Story<TreeBlock<GridContainerBlock>> =
-  DefaultTemplate.bind({})
+const Center: Story<TreeBlock<GridContainerBlock>> = DefaultTemplate.bind({})
 Center.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -200,3 +199,4 @@ Center.args = {
   ]
 }
 export default Demo as Meta
+export { Default, OffsetRight, Center }

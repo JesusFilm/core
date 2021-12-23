@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import { useField } from 'formik'
-
 import { TextField, TextFieldProps } from './TextField'
 
 const props: TextFieldProps = {

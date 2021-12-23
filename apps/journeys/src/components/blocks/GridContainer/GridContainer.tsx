@@ -1,8 +1,11 @@
 import { ReactElement } from 'react'
+import MaterialGrid, { GridDirection } from '@mui/material/Grid'
 import { GetJourney_journey_blocks_GridContainerBlock as GridContainerBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import MaterialGrid, { GridDirection } from '@mui/material/Grid'
 import { BlockRenderer } from '../../BlockRenderer'
+
+const hyphenate = (value): string =>
+  value.replace(/([A-Z])/g, (g: string[]): string => `-${g[0].toLowerCase()}`)
 
 export function GridContainer({
   spacing,
@@ -25,6 +28,3 @@ export function GridContainer({
     </MaterialGrid>
   )
 }
-
-const hyphenate = (value): string =>
-  value.replace(/([A-Z])/g, (g: string[]): string => `-${g[0].toLowerCase()}`)

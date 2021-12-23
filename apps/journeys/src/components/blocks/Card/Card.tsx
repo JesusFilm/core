@@ -1,17 +1,65 @@
-import { TreeBlock } from '../../../libs/transformer/transformer'
 import { ReactElement, ReactNode } from 'react'
-import { BlockRenderer } from '../../BlockRenderer'
+import { ThemeProvider } from '@core/shared/ui'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import { SxProps } from '@mui/system'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { ThemeProvider } from '@core/shared/ui'
-import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import { SxProps } from '@mui/system'
+import { BlockRenderer } from '../../BlockRenderer'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 import { CardCover } from '.'
 
+interface CardWrapperProps
+  extends Pick<
+    CardBlock,
+    'id' | 'backgroundColor' | 'themeMode' | 'themeName'
+  > {
+  children: ReactNode
+  sx?: SxProps
+}
+
+export const CardWrapper = ({
+  id,
+  backgroundColor,
+  themeMode,
+  themeName,
+  children,
+  sx
+}: CardWrapperProps): ReactElement => {
+  const Card = (
+    <Paper
+      data-testid={id}
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        borderRadius: (theme) => theme.spacing(4),
+        backgroundColor,
+        backgroundImage: 'none',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        position: 'relative',
+        ...sx
+      }}
+      elevation={3}
+    >
+      {children}
+    </Paper>
+  )
+
+  if (themeMode != null && themeName != null) {
+    return (
+      <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
+        {Card}
+      </ThemeProvider>
+    )
+  } else {
+    return Card
+  }
+}
 export function Card({
   id,
   children,
@@ -91,53 +139,4 @@ export function Card({
       )}
     </CardWrapper>
   )
-}
-
-interface CardWrapperProps
-  extends Pick<
-    CardBlock,
-    'id' | 'backgroundColor' | 'themeMode' | 'themeName'
-  > {
-  children: ReactNode
-  sx?: SxProps
-}
-
-export const CardWrapper = ({
-  id,
-  backgroundColor,
-  themeMode,
-  themeName,
-  children,
-  sx
-}: CardWrapperProps): ReactElement => {
-  const Card = (
-    <Paper
-      data-testid={id}
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        borderRadius: (theme) => theme.spacing(4),
-        backgroundColor,
-        backgroundImage: 'none',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        position: 'relative',
-        ...sx
-      }}
-      elevation={3}
-    >
-      {children}
-    </Paper>
-  )
-
-  if (themeMode != null && themeName != null) {
-    return (
-      <ThemeProvider themeMode={themeMode} themeName={themeName} nested>
-        {Card}
-      </ThemeProvider>
-    )
-  } else {
-    return Card
-  }
 }

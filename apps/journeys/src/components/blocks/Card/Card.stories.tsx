@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Card } from './Card'
+import { useTheme, Box } from '@mui/material'
 import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -12,7 +12,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
-import { useTheme, Box } from '@mui/material'
+import { Card } from './Card'
 
 const Demo: Meta = {
   ...journeysConfig,
@@ -83,20 +83,20 @@ const children: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<CardBlock>> = Template.bind({})
+const Default: Story<TreeBlock<CardBlock>> = Template.bind({})
 Default.args = {
   themeMode: null,
   themeName: null,
   children
 }
 
-export const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
+const CustomColor: Story<TreeBlock<CardBlock>> = Template.bind({})
 CustomColor.args = {
   backgroundColor: '#F1A025',
   children
 }
 
-export const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+const ImageCover: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageCover.args = {
   coverBlockId: 'imageBlockId1',
   children: [
@@ -145,7 +145,7 @@ ImageCover.args = {
   ]
 }
 
-export const VideoCover: Story<TreeBlock<CardBlock>> = Template.bind({})
+const VideoCover: Story<TreeBlock<CardBlock>> = Template.bind({})
 VideoCover.args = {
   coverBlockId: 'videoBlockId1',
   children: [
@@ -211,7 +211,7 @@ VideoCover.args = {
   ]
 }
 
-export const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
+const ImageBlur: Story<TreeBlock<CardBlock>> = Template.bind({})
 ImageBlur.args = {
   coverBlockId: 'imageBlockId1',
   children: [
@@ -262,3 +262,4 @@ ImageBlur.args = {
 }
 
 export default Demo
+export { Default, CustomColor, ImageCover, VideoCover, ImageBlur }
