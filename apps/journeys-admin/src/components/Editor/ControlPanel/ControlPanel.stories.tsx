@@ -21,7 +21,7 @@ const ControlPanelStory = {
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen',
-    chromatic: { diffThreshold: 0.8 }
+    chromatic: { diffThreshold: 0.6 }
   }
 }
 
