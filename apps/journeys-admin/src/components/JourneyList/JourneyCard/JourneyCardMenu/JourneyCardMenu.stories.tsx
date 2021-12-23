@@ -13,13 +13,13 @@ const Template: Story<JourneyCardMenuProps> = ({ ...args }) => (
   <JourneyCardMenu {...args} />
 )
 
-export const Draft = Template.bind({})
+const Draft = Template.bind({})
 Draft.args = {
   status: JourneyStatus.draft,
   slug: 'draft-journey',
   forceMenu: true
 }
-export const Published = Template.bind({})
+const Published = Template.bind({})
 Published.args = {
   status: JourneyStatus.published,
   slug: 'published-journey',
@@ -27,3 +27,4 @@ Published.args = {
 }
 
 export default JoruneyCardMenuDemo as Meta
+export { Draft, Published }

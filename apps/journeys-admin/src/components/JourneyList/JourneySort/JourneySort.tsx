@@ -6,21 +6,19 @@ import {
   MouseEvent,
   ChangeEvent
 } from 'react'
-import {
-  Box,
-  Button,
-  Chip,
-  Drawer,
-  FormControl,
-  FormLabel,
-  FormControlLabel,
-  Popover,
-  RadioGroup,
-  Radio
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Drawer from '@mui/material/Drawer'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Popover from '@mui/material/Popover'
+import RadioGroup from '@mui/material/RadioGroup'
+import Radio from '@mui/material/Radio'
 import { useBreakpoints } from '@core/shared/ui'
 
-export enum SortOrder {
+enum SortOrder {
   CREATED_AT = 'createdAt',
   TITLE = 'title'
 }
@@ -133,3 +131,5 @@ export function JourneySort({
     </>
   )
 }
+
+export { SortOrder }

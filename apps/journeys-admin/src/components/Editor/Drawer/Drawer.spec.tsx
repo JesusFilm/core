@@ -1,8 +1,8 @@
-import { ThemeProvider } from '../../ThemeProvider'
 import { render } from '@testing-library/react'
-import { Drawer } from '.'
+import useMediaQuery from '@mui/material/useMediaQuery' // This is being marked as deprecated
+import { ThemeProvider } from '../../ThemeProvider'
 import { EditorProvider } from '../Context'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import { Drawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

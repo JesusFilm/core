@@ -1,17 +1,15 @@
 import { ReactElement, ReactNode, useContext } from 'react'
-import {
-  AppBar,
-  Drawer as MuiDrawer,
-  IconButton,
-  Theme,
-  Toolbar,
-  Typography
-} from '@mui/material'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { EditorContext } from '../Context'
+import AppBar from '@mui/material/AppBar'
+import MuiDrawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery' // This is being marked as deprecated
 import { Close } from '@mui/icons-material'
+import { EditorContext } from '../Context'
 
-export const DRAWER_WIDTH = 328
+const DRAWER_WIDTH = 328
 
 interface DrawerContentProps {
   title?: string
@@ -106,3 +104,5 @@ export function Drawer(): ReactElement {
     </>
   )
 }
+
+export { DRAWER_WIDTH }

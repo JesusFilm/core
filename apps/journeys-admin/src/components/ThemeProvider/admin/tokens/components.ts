@@ -1,4 +1,4 @@
-import { ThemeOptions } from '@mui/material'
+import { ThemeOptions } from '@mui/material/styles'
 
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {

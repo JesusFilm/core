@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
-import client from '../../src/libs/client'
 import { gql } from '@apollo/client'
+import client from '../../src/libs/client'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
@@ -16,40 +16,41 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   return <JourneyList journeys={journeys} />
 }
 
-export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
-  async () => {
-    const { data } = await client.query<GetJourneys>({
-      query: gql`
-        query GetJourneys {
-          journeys {
-            id
-            title
-            description
-            slug
-            themeName
-            themeMode
-            locale
-            status
-            createdAt
-            publishedAt
-          }
-        }
-      `
-    })
-
-    if (data.journeys === null) {
-      return {
-        props: {
-          journeys: []
+export const getServerSideProps: GetServerSideProps<
+  JourneysListPageProps
+> = async () => {
+  const { data } = await client.query<GetJourneys>({
+    query: gql`
+      query GetJourneys {
+        journeys {
+          id
+          title
+          description
+          slug
+          themeName
+          themeMode
+          locale
+          status
+          createdAt
+          publishedAt
         }
       }
-    } else {
-      return {
-        props: {
-          journeys: data.journeys
-        }
+    `
+  })
+
+  if (data.journeys === null) {
+    return {
+      props: {
+        journeys: []
+      }
+    }
+  } else {
+    return {
+      props: {
+        journeys: data.journeys
       }
     }
   }
+}
 
 export default JourneyListPage

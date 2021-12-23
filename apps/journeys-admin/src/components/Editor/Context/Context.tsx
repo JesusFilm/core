@@ -1,5 +1,4 @@
 import { TreeBlock } from '@core/journeys/ui'
-import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import {
   createContext,
   Dispatch,
@@ -7,6 +6,7 @@ import {
   ReactNode,
   useReducer
 } from 'react'
+import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 
 interface EditorState {
   steps: Array<TreeBlock<StepBlock>>
@@ -75,7 +75,7 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
   }
 }
 
-export const EditorContext = createContext<{
+const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
@@ -106,3 +106,5 @@ export function EditorProvider({
     </EditorContext.Provider>
   )
 }
+
+export { EditorContext }

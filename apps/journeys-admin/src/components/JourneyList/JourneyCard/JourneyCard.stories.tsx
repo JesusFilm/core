@@ -19,21 +19,22 @@ const Template: Story = ({ ...args }) => (
   <JourneyCard journey={defaultJourney} {...args} />
 )
 
-export const Default = Template.bind({})
+const Default = Template.bind({})
 Default.args = { journey: defaultJourney }
 
-export const Published = Template.bind({})
+const Published = Template.bind({})
 Published.args = {
   journey: publishedJourney
 }
 
-export const ExcessContent = Template.bind({})
+const ExcessContent = Template.bind({})
 ExcessContent.args = {
   journey: descriptiveJourney
 }
-export const PreYear = Template.bind({})
+const PreYear = Template.bind({})
 PreYear.args = {
   journey: oldJourney
 }
 
 export default TestStory as Meta
+export { Default, Published, ExcessContent, PreYear }

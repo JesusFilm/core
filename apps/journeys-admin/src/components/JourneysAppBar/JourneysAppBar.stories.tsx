@@ -18,9 +18,10 @@ const Template: Story<JourneysAppBarProps> = ({ ...args }) => (
   </MockedProvider>
 )
 
-export const Default = Template.bind({})
+const Default = Template.bind({})
 
-export const SingleJourney = Template.bind({})
+const SingleJourney = Template.bind({})
 SingleJourney.args = { variant: 'view' }
 
 export default JourneysAppBarDemo as Meta
+export { Default, SingleJourney }

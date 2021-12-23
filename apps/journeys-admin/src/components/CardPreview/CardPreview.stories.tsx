@@ -1,10 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { CardPreview } from '.'
 import { useState } from 'react'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
+import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
   ButtonSize,
@@ -13,6 +12,7 @@ import {
   IconSize,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
+import { CardPreview } from '.'
 
 const CardPreviewStory = {
   ...journeysAdminConfig,

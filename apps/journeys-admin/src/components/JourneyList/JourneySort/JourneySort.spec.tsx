@@ -1,8 +1,8 @@
 import { render, fireEvent } from '@testing-library/react'
-import { SortOrder, JourneySort } from '.'
 import { useState, ReactElement } from 'react'
+import { SortOrder, JourneySort } from '.'
 
-export const JourneySortMock = (): ReactElement => {
+const JourneySortMock = (): ReactElement => {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   return <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
 }
@@ -46,3 +46,5 @@ describe('JourneyList/JourneySort', () => {
     expect(button).toBeInTheDocument()
   })
 })
+
+export { JourneySortMock }

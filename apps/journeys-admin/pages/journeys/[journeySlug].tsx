@@ -2,12 +2,13 @@ import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import client from '../../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { Typography, Box } from '@mui/material'
 import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface SingleJourneyPageProps {
@@ -38,38 +39,39 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
-  async (context) => {
-    const { data } = await client.query<GetJourney>({
-      query: gql`
-        query GetJourney($id: ID!) {
-          # slug might have to be string
-          journey(id: $id, idType: slug) {
-            id
-            title
-            description
-            status
-            createdAt
-            publishedAt
-          }
+export const getServerSideProps: GetServerSideProps<
+  SingleJourneyPageProps
+> = async (context) => {
+  const { data } = await client.query<GetJourney>({
+    query: gql`
+      query GetJourney($id: ID!) {
+        # slug might have to be string
+        journey(id: $id, idType: slug) {
+          id
+          title
+          description
+          status
+          createdAt
+          publishedAt
         }
-      `,
-      variables: {
-        id: context.query.journeySlug
       }
-    })
+    `,
+    variables: {
+      id: context.query.journeySlug
+    }
+  })
 
-    if (data.journey === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journey: data.journey
-        }
+  if (data.journey === null) {
+    return {
+      notFound: true
+    }
+  } else {
+    return {
+      props: {
+        journey: data.journey
       }
     }
   }
+}
 
 export default SingleJourneyPage

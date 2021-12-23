@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { Editor } from '.'
 import {
   ButtonColor,
   ButtonSize,
@@ -12,7 +12,7 @@ import {
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 import { GetJourneyForEdit_journey_blocks } from '../../../__generated__/GetJourneyForEdit'
-import { MockedProvider } from '@apollo/client/testing'
+import { Editor } from '.'
 
 const EditorStory = {
   ...journeysAdminConfig,

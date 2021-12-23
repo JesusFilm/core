@@ -1,13 +1,11 @@
 import { ReactElement, useContext } from 'react'
-import {
-  Box,
-  Card as MuiCard,
-  CardActionArea,
-  CardContent,
-  Typography,
-  Stack,
-  Divider
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import MuiCard from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
+import Divider from '@mui/material/Divider'
 import { EditorContext } from '../../../Context'
 
 interface AttributeProps {

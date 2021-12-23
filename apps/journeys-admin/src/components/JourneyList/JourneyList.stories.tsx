@@ -22,14 +22,15 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
   <JourneyList {...args} />
 )
 
-export const Default = Template.bind({})
+const Default = Template.bind({})
 Default.args = {
   journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
 }
 
-export const Empty = Template.bind({})
+const Empty = Template.bind({})
 Empty.args = {
   journeys: []
 }
 
 export default JourneyListStory as Meta
+export { Default, Empty }

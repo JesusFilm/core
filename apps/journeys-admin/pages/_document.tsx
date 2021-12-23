@@ -2,7 +2,7 @@ import { Children, ReactElement } from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@mui/styles'
 
-export default class MyDocument extends Document {
+class MyDocument extends Document {
   render(): ReactElement {
     return (
       <Html lang="en">
@@ -65,3 +65,5 @@ MyDocument.getInitialProps = async (ctx) => {
     styles: [...Children.toArray(initialProps.styles), sheets.getStyleElement()]
   }
 }
+
+export default MyDocument
