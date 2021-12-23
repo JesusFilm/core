@@ -20,7 +20,8 @@ const ControlPanelStory = {
   title: 'Journeys-Admin/Editor/ControlPanel',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: { diffThreshold: 0.4 }
   }
 }
 
