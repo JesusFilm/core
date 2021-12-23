@@ -24,6 +24,8 @@ spec:
           envFrom:
             - secretRef:
                 name: env-db-stage
+            - secretRef:
+                name: env-firebase-stage
 ---
 apiVersion: v1
 kind: Service

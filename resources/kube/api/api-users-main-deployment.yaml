@@ -24,6 +24,8 @@ spec:
           envFrom:
             - secretRef:
                 name: env-db-main
+            - secretRef:
+                name: env-firebase-main
 ---
 apiVersion: v1
 kind: Service
