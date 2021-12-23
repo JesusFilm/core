@@ -10,10 +10,6 @@ const typeDefs = gql`
     owner
   }
 
-  input UserJourneyRequestInput {
-    journeyId: ID!
-  }
-
   extend type Journey {
     userJourneys: [UserJourney!]
   }
@@ -29,7 +25,7 @@ const typeDefs = gql`
     userJourneyApprove(id: ID!): UserJourney!
     userJourneyPromote(id: ID!): UserJourney!
     userJourneyRemove(id: ID!): UserJourney!
-    userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
+    userJourneyRequest(journeyId: ID!): UserJourney!
   }
 `
 
@@ -45,14 +41,20 @@ const resolvers: UserJourneyModule.Resolvers = {
     }
   },
   Mutation: {
-    async userJourneyRequest(_parent, { input }, { db, userId }) {
+    async userJourneyRequest(_parent, { journeyId }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const journey = await db.journey.findUnique({
+        where: { id: journeyId }
+      })
+
+      if (journey === null) throw new UserInputError('Journey not found')
 
       return await db.userJourney.create({
         data: {
           userId,
-          journeyId: input.journeyId,
+          journeyId,
           role: 'inviteRequested'
         }
       })
@@ -83,10 +85,7 @@ const resolvers: UserJourneyModule.Resolvers = {
 
       return await db.userJourney.update({
         where: {
-          uniqueUserJourney: {
-            userId,
-            journeyId: userJourney.journeyId
-          }
+          id
         },
         data: {
           role: 'editor'
@@ -119,10 +118,7 @@ const resolvers: UserJourneyModule.Resolvers = {
 
       return await db.userJourney.delete({
         where: {
-          uniqueUserJourney: {
-            userId,
-            journeyId: userJourney.journeyId
-          }
+          id
         }
       })
     },
@@ -150,14 +146,15 @@ const resolvers: UserJourneyModule.Resolvers = {
           'You do not own this journey so you cannot change roles'
         )
 
-      if (actor.role === 'owner' && actor.userId === userId) return actor
+      if (
+        userJourney.role !== 'editor' &&
+        userJourney.role !== 'inviteRequested'
+      )
+        return actor
 
       const newOwner = await db.userJourney.update({
         where: {
-          uniqueUserJourney: {
-            userId,
-            journeyId: userJourney.journeyId
-          }
+          id
         },
         data: {
           role: 'owner'
@@ -166,10 +163,7 @@ const resolvers: UserJourneyModule.Resolvers = {
 
       await db.userJourney.update({
         where: {
-          uniqueUserJourney: {
-            userId: actor.userId,
-            journeyId: actor.journeyId
-          }
+          id: actor.id
         },
         data: {
           role: 'editor'

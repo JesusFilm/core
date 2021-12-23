@@ -12,12 +12,7 @@ export namespace UserJourneyModule {
     UserJourneyRole: 'inviteRequested' | 'editor' | 'owner';
   };
   
-  interface DefinedInputFields {
-    UserJourneyRequestInput: 'journeyId';
-  };
-  
   export type UserJourneyRole = DefinedEnumValues['UserJourneyRole'];
-  export type UserJourneyRequestInput = Pick<Types.UserJourneyRequestInput, DefinedInputFields['UserJourneyRequestInput']>;
   export type Journey = Types.Journey;
   export type UserJourney = Pick<Types.UserJourney, DefinedFields['UserJourney']>;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;

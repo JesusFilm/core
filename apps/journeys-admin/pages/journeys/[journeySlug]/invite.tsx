@@ -18,10 +18,11 @@ interface JourneyInvitePageProps {
 }
 
 export const USER_JOURNEY_REQUEST = gql`
-  mutation UserJourneyRequest($input: UserJourneyRequestInput!) {
-    userJourneyRequest(input: $input) {
+  mutation UserJourneyRequest($journeyId: ID!) {
+    userJourneyRequest(journeyId: $journeyId) {
       userId
       journeyId
+      role
     }
   }
 `
@@ -40,20 +41,9 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
     }
   }
 
-  const handleClick = (userId: string, journeyId: string): void => {
+  const handleClick = (journeyId: string): void => {
     void userJourneyRequest({
-      variables: {
-        input: {
-          userId,
-          journeyId
-        },
-        optimisticResponse: {
-          userJourneyRequest: {
-            userId: userId,
-            journeyId: journeyId
-          }
-        }
-      }
+      variables: { journeyId }
     })
 
     localStorage.removeItem('pendingInviteRequest')
@@ -84,10 +74,7 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
         <Typography variant={'h6'}>
           You need access for {journey.title}
         </Typography>
-        <Button
-          variant={'contained'}
-          onClick={() => handleClick(user?.uid, journey.id)}
-        >
+        <Button variant={'contained'} onClick={() => handleClick(journey.id)}>
           Request Access
         </Button>
       </Box>

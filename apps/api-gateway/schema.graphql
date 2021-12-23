@@ -278,7 +278,7 @@ type Mutation {
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
-  userJourneyRequest(input: UserJourneyRequestInput!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRequest(journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -452,10 +452,6 @@ type UserJourney {
   role: UserJourneyRole!
   user: User
   userId: ID!
-}
-
-input UserJourneyRequestInput {
-  journeyId: ID!
 }
 
 enum UserJourneyRole {

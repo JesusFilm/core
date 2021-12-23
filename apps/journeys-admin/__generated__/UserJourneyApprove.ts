@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { UserJourneyRole } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: UserJourneyApprove
 // ====================================================
@@ -10,6 +12,7 @@
 export interface UserJourneyApprove_userJourneyApprove {
   __typename: "UserJourney";
   id: string;
+  role: UserJourneyRole;
 }
 
 export interface UserJourneyApprove {
@@ -17,5 +20,5 @@ export interface UserJourneyApprove {
 }
 
 export interface UserJourneyApproveVariables {
-  id: string;
+  userJourneyApproveId: string;
 }

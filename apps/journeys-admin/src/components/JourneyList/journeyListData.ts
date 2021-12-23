@@ -19,7 +19,7 @@ export const defaultJourney: Journey = {
   createdAt: formatISO(startOfYear(new Date())),
   publishedAt: null,
   status: JourneyStatus.draft,
-  usersJourneys: [
+  userJourneys: [
     {
       __typename: 'UserJourney',
       userId: 'user-id',

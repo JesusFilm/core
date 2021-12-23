@@ -308,7 +308,7 @@ export type MutationUserJourneyRemoveArgs = {
 
 
 export type MutationUserJourneyRequestArgs = {
-  input: UserJourneyRequestInput;
+  journeyId: Scalars['ID'];
 };
 
 
@@ -495,10 +495,6 @@ export type UserJourney = {
   role: UserJourneyRole;
   user?: Maybe<User>;
   userId: Scalars['ID'];
-};
-
-export type UserJourneyRequestInput = {
-  journeyId: Scalars['ID'];
 };
 
 export type UserJourneyRole =
@@ -702,7 +698,6 @@ export type ResolversTypes = {
   TypographyVariant: TypographyVariant;
   User: ResolverTypeWrapper<UserType>;
   UserJourney: ResolverTypeWrapper<UserJourneyType>;
-  UserJourneyRequestInput: UserJourneyRequestInput;
   UserJourneyRole: UserJourneyRole;
   VideoArclight: ResolverTypeWrapper<VideoArclight>;
   VideoBlock: ResolverTypeWrapper<BlockType>;
@@ -752,7 +747,6 @@ export type ResolversParentTypes = {
   TypographyBlock: BlockType;
   User: UserType;
   UserJourney: UserJourneyType;
-  UserJourneyRequestInput: UserJourneyRequestInput;
   VideoArclight: VideoArclight;
   VideoBlock: BlockType;
   VideoContent: ResolversParentTypes['VideoArclight'] | ResolversParentTypes['VideoGeneric'];
@@ -872,7 +866,7 @@ export type MutationResolvers<ContextType = GraphQLModules.Context, ParentType e
   userJourneyApprove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyApproveArgs, 'id'>>;
   userJourneyPromote?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyPromoteArgs, 'id'>>;
   userJourneyRemove?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRemoveArgs, 'id'>>;
-  userJourneyRequest?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRequestArgs, 'input'>>;
+  userJourneyRequest?: Resolver<ResolversTypes['UserJourney'], ParentType, ContextType, RequireFields<MutationUserJourneyRequestArgs, 'journeyId'>>;
   videoResponseCreate?: Resolver<ResolversTypes['VideoResponse'], ParentType, ContextType, RequireFields<MutationVideoResponseCreateArgs, 'input'>>;
 };
 

@@ -250,7 +250,7 @@ extend type Mutation {
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
-  userJourneyRequest(input: UserJourneyRequestInput!): UserJourney!
+  userJourneyRequest(journeyId: ID!): UserJourney!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
@@ -419,10 +419,6 @@ type UserJourney {
   role: UserJourneyRole!
   journey: Journey
   user: User
-}
-
-input UserJourneyRequestInput {
-  journeyId: ID!
 }
 
 enum UserJourneyRole {

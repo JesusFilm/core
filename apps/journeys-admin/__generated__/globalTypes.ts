@@ -159,10 +159,6 @@ export interface SignUpResponseCreateInput {
   name: string;
 }
 
-export interface UserJourneyRequestInput {
-  journeyId: string;
-}
-
 export interface VideoResponseCreateInput {
   blockId: string;
   id?: string | null;

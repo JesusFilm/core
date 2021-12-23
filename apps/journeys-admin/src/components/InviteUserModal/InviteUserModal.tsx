@@ -280,12 +280,12 @@ export const UserAccess = ({ userJourney }: UserAccessProps): ReactElement => {
           open={open}
         >
           {userJourney.role === 'inviteRequested' ? (
-            <ApproveUser userJourneys={userJourney} />
+            <ApproveUser userJourney={userJourney} />
           ) : (
-            <PromoteUser userJourneys={userJourney} />
+            <PromoteUser userJourney={userJourney} />
           )}
           <Divider />
-          <RemoveUser userJourneys={userJourney} />
+          <RemoveUser userJourney={userJourney} />
         </Menu>
       </Box>
     </Box>
