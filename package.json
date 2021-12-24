@@ -41,7 +41,7 @@
     "@mui/styles": "^5.0.0-rc.1",
     "@prisma/client": "^3.6.0",
     "apollo-datasource": "^3.0.3",
-    "apollo-server": "^3.1.2",
+    "apollo-server": "^3.4.1",
     "blurhash": "^1.1.4",
     "canvas": "^2.8.0",
     "core-js": "^3.6.5",
