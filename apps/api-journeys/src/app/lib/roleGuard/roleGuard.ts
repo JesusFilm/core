@@ -3,34 +3,48 @@ import {
   CanActivate,
   ExecutionContext,
   mixin,
-  Type
+  Type,
+  Inject
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
-import { UserJourneyRole } from '../../__generated__/graphql'
+import { UserJourney, UserJourneyRole } from '../../__generated__/graphql'
 import { get, includes } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
 
+// broken out into function for test injection
+export const checkActor = async (
+  userJourneyService: UserJourneyService,
+  journeyId: string,
+  userId: string
+): Promise<UserJourney> => {
+  return await userJourneyService.forJourneyUser(journeyId, userId)
+}
+
 export const RoleGuard = (
   journeyIdArgName: string,
-  roles: UserJourneyRole[] | UserJourneyRole
+  roles: UserJourneyRole[] | UserJourneyRole,
+  ca: typeof checkActor = checkActor
 ): Type<CanActivate> => {
   @Injectable()
   class RolesGuard implements CanActivate {
-    constructor(private readonly userJourneyService: UserJourneyService) {}
+    constructor(
+      @Inject(UserJourneyService)
+      private readonly userJourneyService: UserJourneyService
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const ctx = GqlExecutionContext.create(context).getContext()
-      const userId = ctx.headers['user-id']
+      const userId = get(ctx.headers, 'user-id')
 
       if (userId == null) return false
 
       const args = context.getArgByIndex(1)
-      const actor = await this.userJourneyService.forJourneyUser(
+      const actor = await ca(
+        this.userJourneyService,
         get(args, journeyIdArgName),
         userId
       )
-      console.log(actor)
 
       const result = Array.isArray(roles)
         ? includes(roles, actor?.role)

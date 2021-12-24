@@ -6,6 +6,7 @@ import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { ResponseModule } from './modules/response/response.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
+// import { UserJourneyService } from './modules/userJourney/userJourney.service'
 
 @Module({
   imports: [

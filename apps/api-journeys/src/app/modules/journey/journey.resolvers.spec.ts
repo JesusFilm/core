@@ -242,13 +242,6 @@ describe('Journey', () => {
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
     })
-
-    it('should not update a Journey 2', async () => {
-      await resolver
-        .journeyUpdate('1', journeyupdate, invitedUserJourney._key)
-        .catch((err) => console.log(err))
-      expect(service.update).not.toHaveBeenCalled()
-    })
   })
 
   describe('publishJourney', () => {
@@ -262,21 +255,5 @@ describe('Journey', () => {
         publishedAt: '2021-12-07T03:22:41.135Z'
       })
     })
-  })
-  it('should not publish a Journey', async () => {
-    const date = '2021-12-07T03:22:41.135Z'
-    jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-    await resolver
-      .journeyPublish('1', invitedUserJourney._key)
-      .catch((err) => console.log(err))
-    expect(service.update).not.toHaveBeenCalled()
-  })
-  it('should not publish a Journey', async () => {
-    const date = '2021-12-07T03:22:41.135Z'
-    jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-    await resolver
-      .journeyPublish('1', userJourney._key)
-      .catch((err) => console.log(err))
-    expect(service.update).not.toHaveBeenCalled()
   })
 })
