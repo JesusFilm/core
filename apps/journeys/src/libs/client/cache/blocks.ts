@@ -58,7 +58,7 @@ function isActiveBlockOrDescendant(blockId: string): boolean {
   return descendants.some(({ id }) => id === blockId)
 }
 
-export function useBlocks(): UseBlocksHook {
+function useBlocks(): UseBlocksHook {
   const activeBlock = useReactiveVar(activeBlockVar)
   const treeBlocks = useReactiveVar(treeBlocksVar)
   const previousBlocks = useReactiveVar(previousBlocksVar)
@@ -81,6 +81,7 @@ export function useBlocks(): UseBlocksHook {
 export {
   nextActiveBlock,
   isActiveBlockOrDescendant,
+  useBlocks,
   activeBlockVar,
   previousBlocksVar,
   treeBlocksVar

@@ -1,4 +1,4 @@
-import { Paper } from '@mui/material'
+import Paper from '@mui/material/Paper'
 import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
