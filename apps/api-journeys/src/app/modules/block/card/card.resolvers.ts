@@ -3,17 +3,23 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import {
   CardBlock,
   CardBlockCreateInput,
-  CardBlockUpdateInput
+  CardBlockUpdateInput,
+  UserJourneyRole
 } from '../../../__generated__/graphql'
 import { IdAsKey } from '@core/nest/decorators'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { BlockService } from '../block.service'
+import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 @Resolver('CardBlock')
 export class CardBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   @IdAsKey()
   async cardBlockCreate(
     @Args('input') input: CardBlockCreateInput & { __typename }
@@ -23,7 +29,12 @@ export class CardBlockResolvers {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   async cardBlockUpdate(
     @Args('id') id: string,
     @Args('input') input: CardBlockUpdateInput

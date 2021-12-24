@@ -20,7 +20,7 @@ export class UserJourneyService extends BaseService {
   async forJourneyUser(journeyId, userId): Promise<UserJourney> {
     const res = await this.db.query(aql`
       FOR j in ${this.collection}
-        FILTER j.journeyId == ${journeyId} && j.userId == { userId }
+        FILTER j.journeyId == ${journeyId} && j.userId == ${userId}
         LIMIT 1
         RETURN j
     `)

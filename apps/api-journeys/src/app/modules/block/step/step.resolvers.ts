@@ -3,17 +3,23 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import {
   StepBlock,
   StepBlockCreateInput,
-  StepBlockUpdateInput
+  StepBlockUpdateInput,
+  UserJourneyRole
 } from '../../../__generated__/graphql'
 import { IdAsKey } from '@core/nest/decorators'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { BlockService } from '../block.service'
+import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 @Resolver('StepBlock')
 export class StepBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   @IdAsKey()
   async stepBlockCreate(
     @Args('input') input: StepBlockCreateInput & { __typename }
@@ -23,7 +29,13 @@ export class StepBlockResolvers {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
+  @IdAsKey()
   async stepBlockUpdate(
     @Args('id') id: string,
     @Args('input') input: StepBlockUpdateInput
