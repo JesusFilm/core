@@ -6,10 +6,10 @@ import {
   StoryCard,
   TreeBlock
 } from '../..'
-import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
 import { RadioQuestion } from './RadioQuestion'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioOptionFields } from './RadioOption/__generated__/RadioOptionFields'
+import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
 const children: Array<TreeBlock<RadioOptionFields>> = [
   {
@@ -107,8 +107,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
   </MockedProvider>
 )
 
-export const Default: Story<TreeBlock<RadioQuestionFields>> =
-  DefaultTemplate.bind({})
+const Default: Story<TreeBlock<RadioQuestionFields>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'RadioQuestion1',
   label: 'How can we help you know more about Jesus?',
@@ -118,9 +117,7 @@ Default.args = {
   parentBlockId: 'Step1'
 }
 
-export const Long: Story<TreeBlock<RadioQuestionFields>> = DefaultTemplate.bind(
-  {}
-)
+const Long: Story<TreeBlock<RadioQuestionFields>> = DefaultTemplate.bind({})
 Long.args = {
   id: 'RadioQuestion1',
   label: 'Have you accepted Jesus in your life?',
@@ -130,3 +127,4 @@ Long.args = {
 }
 
 export default Demo as Meta
+export { Default, Long }

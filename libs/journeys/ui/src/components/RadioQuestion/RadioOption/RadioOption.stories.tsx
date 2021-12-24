@@ -15,7 +15,7 @@ const Template: Story<RadioOptionProps> = ({ ...props }) => (
   </StoryCard>
 )
 
-export const Default: Story<RadioOptionProps> = Template.bind({})
+const Default: Story<RadioOptionProps> = Template.bind({})
 Default.args = {
   id: 'NestedOptions',
   label: 'Chat Privately',
@@ -23,7 +23,7 @@ Default.args = {
   disabled: false
 }
 
-export const Long: Story<RadioOptionProps> = Template.bind({})
+const Long: Story<RadioOptionProps> = Template.bind({})
 Long.args = {
   id: 'NestedOptions2',
   label:
@@ -32,7 +32,7 @@ Long.args = {
   disabled: false
 }
 
-export const Selected: Story<RadioOptionProps> = Template.bind({})
+const Selected: Story<RadioOptionProps> = Template.bind({})
 Selected.args = {
   id: 'NestedOptions3',
   label: 'Watch more videos about Jesus',
@@ -40,7 +40,7 @@ Selected.args = {
   disabled: false
 }
 
-export const Disabled: Story<RadioOptionProps> = Template.bind({})
+const Disabled: Story<RadioOptionProps> = Template.bind({})
 Disabled.args = {
   id: 'NestedOptions4',
   label: 'Ask a question',
@@ -49,3 +49,4 @@ Disabled.args = {
 }
 
 export default Demo as Meta
+export { Default, Long, Selected, Disabled }

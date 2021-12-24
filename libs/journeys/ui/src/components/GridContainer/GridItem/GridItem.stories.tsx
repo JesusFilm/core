@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import { GridItem } from './GridItem'
 import { journeyUiConfig, StoryCard, TreeBlock } from '../../..'
 import {
   TypographyVariant,
@@ -9,6 +8,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
+import { GridItem } from './GridItem'
 import { GridItemFields } from './__generated__/GridItemFields'
 
 const Demo = {
@@ -64,10 +64,7 @@ const childrenOne: TreeBlock[] = [
     children: []
   }
 ]
-
-export const Default: Story<TreeBlock<GridItemFields>> = DefaultTemplate.bind(
-  {}
-)
+const Default: Story<TreeBlock<GridItemFields>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'GridItemLeft',
   __typename: 'GridItemBlock',
@@ -79,3 +76,4 @@ Default.args = {
 }
 
 export default Demo as Meta
+export { Default }

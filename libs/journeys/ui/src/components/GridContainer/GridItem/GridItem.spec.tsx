@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { TreeBlock } from '../../../'
+import { TreeBlock } from '../../..'
 import { GridItemFields } from './__generated__/GridItemFields'
 import { GridItem } from '.'
 

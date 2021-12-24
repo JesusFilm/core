@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, journeyUiConfig } from '../..'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
-import { VideoFields } from './__generated__/VideoFields'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { VideoFields } from './__generated__/VideoFields'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 const Demo = {
   ...journeyUiConfig,
@@ -58,7 +58,7 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
   </MockedProvider>
 )
 
-export const Default = Template.bind({})
+const Default = Template.bind({})
 Default.args = {
   ...videoBlock
 }
@@ -66,19 +66,19 @@ Default.parameters = {
   chromatic: { disableSnapshot: false }
 }
 
-export const Autoplay = Template.bind({})
+const Autoplay = Template.bind({})
 Autoplay.args = {
   ...videoBlock,
   autoplay: true
 }
 
-export const Muted = Template.bind({})
+const Muted = Template.bind({})
 Muted.args = {
   ...videoBlock,
   muted: true
 }
 
-export const ExternalSource = Template.bind({})
+const ExternalSource = Template.bind({})
 ExternalSource.args = {
   ...videoBlock,
   videoContent: {
@@ -87,7 +87,7 @@ ExternalSource.args = {
   }
 }
 
-export const StartAt = Template.bind({})
+const StartAt = Template.bind({})
 StartAt.args = {
   ...videoBlock,
   startAt: 20
@@ -95,7 +95,7 @@ StartAt.args = {
 
 // TODO: Add EndAt
 
-export const Poster = Template.bind({})
+const Poster = Template.bind({})
 Poster.args = {
   ...videoBlock,
   posterBlockId: 'posterBlockId',
@@ -118,3 +118,4 @@ Poster.parameters = {
 }
 
 export default Demo as Meta
+export { Default, Autoplay, Muted, ExternalSource, StartAt, Poster }

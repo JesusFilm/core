@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { Image } from './Image'
 import { journeyUiConfig, StoryCard, TreeBlock } from '../..'
+import { Image } from './Image'
 import { ImageFields } from './__generated__/ImageFields'
 
 const Demo = {
@@ -15,7 +15,7 @@ const DefaultTemplate: Story<TreeBlock<ImageFields>> = ({ alt, ...props }) => (
   </StoryCard>
 )
 
-export const Default: Story<TreeBlock<ImageFields>> = DefaultTemplate.bind({})
+const Default: Story<TreeBlock<ImageFields>> = DefaultTemplate.bind({})
 Default.args = {
   id: 'Image',
   src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
@@ -26,3 +26,4 @@ Default.args = {
 }
 
 export default Demo as Meta
+export { Default }

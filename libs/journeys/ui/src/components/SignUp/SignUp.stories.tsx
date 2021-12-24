@@ -1,14 +1,14 @@
 import { Meta, Story } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { ReactElement } from 'react'
 import {
   journeyUiConfig,
   simpleComponentConfig,
   StoryCard,
   TreeBlock
 } from '../..'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
-import { MockedProvider } from '@apollo/client/testing'
-import { ReactElement } from 'react'
 import { IconName } from '../../../__generated__/globalTypes'
+import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import {
   SignUpFields,
   SignUpFields_submitIcon
@@ -78,18 +78,19 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
   </MockedProvider>
 )
 
-export const Default = Template.bind({})
+const Default = Template.bind({})
 
-export const CustomButton = Template.bind({})
+const CustomButton = Template.bind({})
 CustomButton.args = {
   submitIcon: icon,
   submitLabel: 'Unlock Now'
 }
 
-// export const SubmitError = Template.bind({})
+//  const SubmitError = Template.bind({})
 // SubmitError.args = {
 //   label: 'Label',
 //   description: 'Description'
 // }
 
 export default Demo as Meta
+export { Default, CustomButton }

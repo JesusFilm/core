@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { TreeBlock } from '../..'
 import { BlockRenderer } from '.'
-import { TreeBlock } from '../../'
 
 describe('BlockRenderer', () => {
   it('should render Button', () => {

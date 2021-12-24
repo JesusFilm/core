@@ -1,12 +1,11 @@
 import { render } from '@testing-library/react'
-
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
+import { TreeBlock } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
-import { TreeBlock } from '../../'
 import { Typography } from './Typography'
 
 describe('Typography', () => {

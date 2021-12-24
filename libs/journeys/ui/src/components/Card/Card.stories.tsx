@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { useTheme, Box } from '@mui/material'
+import Box from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
 import { journeyUiConfig, TreeBlock } from '../..'
 import {
   TypographyColor,
@@ -82,20 +83,20 @@ const children: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<CardFields>> = Template.bind({})
+const Default: Story<TreeBlock<CardFields>> = Template.bind({})
 Default.args = {
   themeMode: null,
   themeName: null,
   children
 }
 
-export const CustomColor: Story<TreeBlock<CardFields>> = Template.bind({})
+const CustomColor: Story<TreeBlock<CardFields>> = Template.bind({})
 CustomColor.args = {
   backgroundColor: '#F1A025',
   children
 }
 
-export const ImageCover: Story<TreeBlock<CardFields>> = Template.bind({})
+const ImageCover: Story<TreeBlock<CardFields>> = Template.bind({})
 ImageCover.args = {
   coverBlockId: 'imageBlockId1',
   children: [
@@ -144,7 +145,7 @@ ImageCover.args = {
   ]
 }
 
-export const VideoCover: Story<TreeBlock<CardFields>> = Template.bind({})
+const VideoCover: Story<TreeBlock<CardFields>> = Template.bind({})
 VideoCover.args = {
   coverBlockId: 'videoBlockId1',
   children: [
@@ -210,7 +211,7 @@ VideoCover.args = {
   ]
 }
 
-export const ImageBlur: Story<TreeBlock<CardFields>> = Template.bind({})
+const ImageBlur: Story<TreeBlock<CardFields>> = Template.bind({})
 ImageBlur.args = {
   coverBlockId: 'imageBlockId1',
   children: [
@@ -261,3 +262,4 @@ ImageBlur.args = {
 }
 
 export default Demo
+export { Default, CustomColor, ImageCover, VideoCover, ImageBlur }

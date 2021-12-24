@@ -4,15 +4,14 @@ import { useMutation, gql } from '@apollo/client'
 import { Box } from '@mui/material'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
-import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { ImageFields } from '../Image/__generated__/ImageFields'
+import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
 import { VideoTrigger } from './VideoTrigger'
-
 import 'video.js/dist/video-js.css'
 import { VideoFields } from './__generated__/VideoFields'
-import { ImageFields } from '../Image/__generated__/ImageFields'
 
-export const VIDEO_RESPONSE_CREATE = gql`
+const VIDEO_RESPONSE_CREATE = gql`
   mutation VideoResponseCreate($input: VideoResponseCreateInput!) {
     videoResponseCreate(input: $input) {
       id
@@ -161,3 +160,5 @@ export function Video({
     </Box>
   )
 }
+
+export { VIDEO_RESPONSE_CREATE }

@@ -9,7 +9,7 @@ import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
 import { CardCover } from '.'
 
-export function Card({
+function Card({
   id,
   children,
   backgroundColor,
@@ -138,3 +138,5 @@ export const CardWrapper = ({
     return Card
   }
 }
+
+export { Card }

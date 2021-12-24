@@ -1,7 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { Icon } from '.'
-import { Box } from '@mui/system'
-import { Typography, Grid, Container } from '@mui/material'
+import Box from '@mui/system/Box'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
 import {
   IconName,
   IconSize,
@@ -9,6 +10,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
 import { journeyUiConfig, simpleComponentConfig } from '../..'
+import { Icon } from '.'
 
 const IconDemo = {
   ...journeyUiConfig,
@@ -44,7 +46,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
   </Container>
 )
 
-export const Variant = VariantTemplate.bind({})
+const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'Icon',
   color: null,
@@ -86,7 +88,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
   </Container>
 )
 
-export const Color = ColorTemplate.bind({})
+const Color = ColorTemplate.bind({})
 Color.args = {
   __typename: 'Icon',
   name: IconName.CheckCircleRounded,
@@ -119,7 +121,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
   </Container>
 )
 
-export const Size = SizeTemplate.bind({})
+const Size = SizeTemplate.bind({})
 Size.args = {
   __typename: 'Icon',
   name: IconName.CheckCircleRounded,
@@ -134,3 +136,4 @@ Size.args = {
 }
 
 export default IconDemo as Meta
+export { Variant, Color, Size }
