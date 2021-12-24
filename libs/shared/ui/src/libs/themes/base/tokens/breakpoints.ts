@@ -1,4 +1,4 @@
-import { Breakpoints, Breakpoint, ThemeOptions } from '@mui/material'
+import { Breakpoints, Breakpoint, ThemeOptions } from '@mui/material/styles'
 import { createBreakpoints } from '@mui/system'
 
 const minWidths: { [key in Breakpoint]: number } = {

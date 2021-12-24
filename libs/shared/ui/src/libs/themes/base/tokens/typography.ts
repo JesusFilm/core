@@ -1,4 +1,4 @@
-import { ThemeOptions } from '@mui/material'
+import { ThemeOptions } from '@mui/material/styles'
 
 // Update the Typography's variant prop options
 declare module '@mui/material' {

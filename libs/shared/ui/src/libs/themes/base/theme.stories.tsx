@@ -1,15 +1,14 @@
 import { useState, useEffect, ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
+import Box from '@mui/material/Box'
+import Typography, { TypographyProps } from '@mui/material/Typography'
+import { Breakpoint } from '@mui/system'
 import {
-  Box,
   useTheme,
   PaletteColor,
   PaletteOptions,
-  Breakpoint,
-  Typography,
-  TypographyProps,
   SimplePaletteColorOptions
-} from '@mui/material'
+} from '@mui/material/styles'
 
 import { sharedUiConfig, themes, useBreakpoints } from '../../../index'
 
@@ -175,7 +174,7 @@ const ColorTemplate: Story<ColorStoryProps> = (args) => (
   <ColorTokens {...args} />
 )
 
-export const Colors = ColorTemplate.bind({})
+const Colors = ColorTemplate.bind({})
 Colors.args = {
   mainColor: ['light', 'main', 'dark'],
   overrideColors: ['primary', 'secondary', 'error']
@@ -244,7 +243,7 @@ const PaletteTemplate: Story<ThemeStoryProps> = (args) => (
   <PaletteTokens {...args} variants={args.variants} />
 )
 
-export const FullPalette = PaletteTemplate.bind({})
+const FullPalette = PaletteTemplate.bind({})
 FullPalette.args = {
   variants: [...Object.keys(palette)]
 }
@@ -378,7 +377,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
 
 const breakpoints = themes.base.light.breakpoints
 
-export const Viewport = ViewportTemplate.bind({})
+const Viewport = ViewportTemplate.bind({})
 Viewport.args = {
   // Height of viewport will alter breakpoints display.
   variants: ['xs', 'sm', 'md', 'lg', 'xl']
@@ -401,3 +400,4 @@ Viewport.parameters = {
 }
 
 export default ThemeDemo as Meta
+export { Colors, FullPalette, Viewport }
