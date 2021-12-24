@@ -6,8 +6,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import { AuthenticationError } from 'apollo-server-errors'
 
 describe('RoleGuard', () => {
-  let roleGuard: any
-
   const userJourney = {
     id: '1',
     userId: '1',
@@ -54,7 +52,7 @@ describe('RoleGuard', () => {
         }
       )
       const RoleGuardClass = RoleGuard('id', UserJourneyRole.owner, checkActor)
-      roleGuard = new RoleGuardClass(gqlContext)
+      const roleGuard = new RoleGuardClass(gqlContext)
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
     it('should throw error', async () => {
@@ -66,7 +64,7 @@ describe('RoleGuard', () => {
         }
       )
       const RoleGuardClass = RoleGuard('id', UserJourneyRole.editor, checkActor)
-      roleGuard = new RoleGuardClass(gqlContext)
+      const roleGuard = new RoleGuardClass(gqlContext)
       // eslint-disable-next-line
       expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
         new AuthenticationError(
@@ -90,7 +88,7 @@ describe('RoleGuard', () => {
         [UserJourneyRole.owner, UserJourneyRole.editor],
         checkActor
       )
-      roleGuard = new RoleGuardClass(gqlContext)
+      const roleGuard = new RoleGuardClass(gqlContext)
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
     it('should throw error', async () => {
@@ -106,7 +104,7 @@ describe('RoleGuard', () => {
         [UserJourneyRole.inviteRequested, UserJourneyRole.editor],
         checkActor
       )
-      roleGuard = new RoleGuardClass(gqlContext)
+      const roleGuard = new RoleGuardClass(gqlContext)
 
       // eslint-disable-next-line
       expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
@@ -126,7 +124,7 @@ describe('RoleGuard', () => {
         }
       )
       const RoleGuardClass = RoleGuard('id', UserJourneyRole.owner, checkActor)
-      roleGuard = new RoleGuardClass(gqlContext)
+      const roleGuard = new RoleGuardClass(gqlContext)
       expect(await roleGuard.canActivate(gqlContext)).toEqual(false)
     })
   })
