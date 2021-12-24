@@ -23,8 +23,7 @@ import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { includes } from 'lodash'
-import { AuthenticationError } from 'apollo-server-errors'
+import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 
 function resolveStatus(journey: Journey): Journey {
   journey.status =
@@ -86,7 +85,7 @@ export class JourneyResolvers {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyUpdate(
     @Args('id') id: string,
     @Args('input') input: JourneyUpdateInput,
@@ -94,26 +93,15 @@ export class JourneyResolvers {
   ): Promise<Journey> {
     if (input.slug != null)
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
-
-    const actor = await this.userJourneyService.forJourneyUser(id, userId)
-
-    if (!includes([UserJourneyRole.owner, UserJourneyRole.editor], actor?.role))
-      throw new AuthenticationError('User is not owner or editor of journey')
-
     return await this.journeyService.update(id, input)
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyPublish(
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<Journey> {
-    const actor = await this.userJourneyService.forJourneyUser(id, userId)
-
-    if (actor?.role !== UserJourneyRole.owner)
-      throw new AuthenticationError('User is not owner of journey')
-
     return await this.journeyService.update(id, {
       publishedAt: new Date().toISOString()
     })

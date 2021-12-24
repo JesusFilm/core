@@ -1,4 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
+import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
 import { VideoBlockResolvers, VideoArclightResolvers } from './video.resolvers'
@@ -94,7 +97,14 @@ describe('VideoContentResolvers', () => {
   describe('VideoBlock Arclight', () => {
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoArclightResolvers]
+        providers: [
+          VideoArclightResolvers,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       videoArclightResolvers = module.get<VideoArclightResolvers>(
         VideoArclightResolvers
@@ -116,7 +126,15 @@ describe('VideoContentResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [
+          BlockResolvers,
+          blockService,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
@@ -136,7 +154,16 @@ describe('VideoContentResolvers', () => {
       }
 
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService, VideoBlockResolvers]
+        providers: [
+          BlockResolvers,
+          blockService,
+          VideoBlockResolvers,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       blockResolver = module.get<BlockResolvers>(BlockResolvers)
       videoBlockResolver = module.get<VideoBlockResolvers>(VideoBlockResolvers)

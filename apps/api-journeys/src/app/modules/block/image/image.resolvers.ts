@@ -3,14 +3,15 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import {
   ImageBlock,
   ImageBlockCreateInput,
-  ImageBlockUpdateInput
+  ImageBlockUpdateInput,
+  UserJourneyRole
 } from '../../../__generated__/graphql'
 import { UserInputError } from 'apollo-server-errors'
 import { IdAsKey } from '@core/nest/decorators'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { BlockService } from '../block.service'
 import { encode } from 'blurhash'
 import { createCanvas, loadImage, Image } from 'canvas'
+import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 const getImageData = (image: Image): ImageData => {
   const canvas = createCanvas(image.width, image.height)
@@ -50,7 +51,12 @@ async function handleImage(
 export class ImageBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   @IdAsKey()
   async imageBlockCreate(
     @Args('input') input: ImageBlockCreateInput & { __typename }
@@ -61,7 +67,13 @@ export class ImageBlockResolvers {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
+  @IdAsKey()
   async imageBlockUpdate(
     @Args('id') id: string,
     @Args('input') input: ImageBlockUpdateInput

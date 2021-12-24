@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
 import { ImageBlockCreateInput } from '../../../__generated__/graphql'
+import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
 import { ImageBlockResolvers } from './image.resolvers'
@@ -81,7 +84,10 @@ describe('Image', () => {
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService, ImageBlockResolvers]
+      providers: [BlockResolvers, blockService, ImageBlockResolvers, UserJourneyService, {
+        provide: 'DATABASE',
+        useFactory: () => mockDeep<Database>()
+      }]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
     resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers)

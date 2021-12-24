@@ -37,6 +37,7 @@
     "@emotion/cache": "^11.6.0",
     "@emotion/react": "11.5.0",
     "@emotion/styled": "11.3.0",
+    "@golevelup/ts-jest": "^0.3.2",
     "@mui/icons-material": "^5.0.0-rc.1",
     "@mui/material": "^5.0.0-rc.1",
     "@mui/styles": "^5.0.0-rc.1",

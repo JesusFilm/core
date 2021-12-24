@@ -1,6 +1,7 @@
 import { UserInputError } from 'apollo-server-errors'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import {
+  UserJourneyRole,
   VideoArclight,
   VideoBlock,
   VideoBlockCreateInput,
@@ -8,11 +9,11 @@ import {
   VideoContent,
   VideoContentInput
 } from '../../../__generated__/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { IdAsKey } from '@core/nest/decorators'
 import { BlockService } from '../block.service'
 import { UseGuards } from '@nestjs/common'
 import { has } from 'lodash'
+import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 function checkVideoContentInput(input: VideoContentInput): boolean {
   return (
@@ -41,7 +42,12 @@ export class VideoArclightResolvers {
 export class VideoBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   @IdAsKey()
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput & { __typename }
@@ -55,7 +61,13 @@ export class VideoBlockResolvers {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
+  @IdAsKey()
   async videoBlockUpdate(
     @Args('id') id: string,
     @Args('input') input: VideoBlockUpdateInput

@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
 import { ThemeMode, ThemeName } from '../../../__generated__/graphql'
+import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
 import { CardBlockResolvers } from './card.resolvers'
@@ -71,7 +74,16 @@ describe('Card', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService, CardBlockResolvers]
+      providers: [
+        BlockResolvers,
+        blockService,
+        CardBlockResolvers,
+        UserJourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
     cardBlockResolver = module.get<CardBlockResolvers>(CardBlockResolvers)
