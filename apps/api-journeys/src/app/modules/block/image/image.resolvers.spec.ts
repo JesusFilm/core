@@ -84,10 +84,16 @@ describe('Image', () => {
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService, ImageBlockResolvers, UserJourneyService, {
-        provide: 'DATABASE',
-        useFactory: () => mockDeep<Database>()
-      }]
+      providers: [
+        BlockResolvers,
+        blockService,
+        ImageBlockResolvers,
+        UserJourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
     resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers)
