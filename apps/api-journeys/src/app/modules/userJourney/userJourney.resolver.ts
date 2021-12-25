@@ -125,7 +125,6 @@ export class UserJourneyResolver {
   }
 
   @ResolveField('user')
-  // @KeyAsId()
   async user(
     @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
