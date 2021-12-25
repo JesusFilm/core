@@ -16,6 +16,7 @@ import {
   JourneyUpdateInput,
   ThemeMode,
   ThemeName,
+  UserJourney,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
@@ -115,18 +116,24 @@ export class JourneyResolvers {
     })
   }
 
-  @ResolveField('blocks')
+  @ResolveField()
   @KeyAsId()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
   }
 
-  @ResolveField('primaryImageBlock')
+  @ResolveField()
   @KeyAsId()
   async primaryImageBlock(
     @Parent() journey: Journey
   ): Promise<ImageBlock | null> {
     if (journey.primaryImageBlock?.id == null) return null
     return await this.blockService.get(journey.primaryImageBlock.id)
+  }
+
+  @ResolveField()
+  @KeyAsId()
+  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
+    return await this.userJourneyService.forJourney(journey)
   }
 }
