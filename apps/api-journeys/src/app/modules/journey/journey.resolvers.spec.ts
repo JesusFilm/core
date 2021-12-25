@@ -232,13 +232,13 @@ describe('Journey', () => {
   describe('updateJourney', () => {
     it('updates a Journey', async () => {
       await resolver
-        .journeyUpdate('1', journeyupdate, ownerUserJourney._key)
+        .journeyUpdate('1', journeyupdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
     })
     it('updates a Journey 2', async () => {
       await resolver
-        .journeyUpdate('1', journeyupdate, userJourney._key)
+        .journeyUpdate('1', journeyupdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
     })
@@ -248,9 +248,7 @@ describe('Journey', () => {
     it('publishes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver
-        .journeyPublish('1', ownerUserJourney._key)
-        .catch((err) => console.log(err))
+      await resolver.journeyPublish('1').catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
         published: true,
         publishedAt: '2021-12-07T03:22:41.135Z'

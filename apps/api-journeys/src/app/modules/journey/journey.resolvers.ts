@@ -44,11 +44,14 @@ export class JourneyResolvers {
   @Query()
   @KeyAsId()
   async journeys(@Args('status') status: JourneyStatus): Promise<Journey[]> {
-    const result =
-      status === JourneyStatus.published
-        ? await this.journeyService.getAllPublishedJourneys()
-        : await this.journeyService.getAllDraftJourneys()
-    return result.map(resolveStatus)
+    switch (status) {
+      case JourneyStatus.published:
+        return await this.journeyService.getAllPublishedJourneys()
+      case JourneyStatus.draft:
+        return await this.journeyService.getAllDraftJourneys()
+      default:
+        return await this.journeyService.getAll()
+    }
   }
 
   @Query()
@@ -96,8 +99,7 @@ export class JourneyResolvers {
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyUpdate(
     @Args('id') id: string,
-    @Args('input') input: JourneyUpdateInput,
-    @CurrentUserId() userId: string
+    @Args('input') input: JourneyUpdateInput
   ): Promise<Journey> {
     if (input.slug != null)
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
@@ -106,10 +108,7 @@ export class JourneyResolvers {
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyPublish(
-    @Args('id') id: string,
-    @CurrentUserId() userId: string
-  ): Promise<Journey> {
+  async journeyPublish(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
       published: true,
       publishedAt: new Date().toISOString()
