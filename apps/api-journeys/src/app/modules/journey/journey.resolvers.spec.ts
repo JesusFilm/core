@@ -252,6 +252,7 @@ describe('Journey', () => {
         .journeyPublish('1', ownerUserJourney._key)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
+        published: true,
         publishedAt: '2021-12-07T03:22:41.135Z'
       })
     })

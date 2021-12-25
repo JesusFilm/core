@@ -14,6 +14,8 @@ import {
   JourneyCreateInput,
   JourneyStatus,
   JourneyUpdateInput,
+  ThemeMode,
+  ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
@@ -73,9 +75,15 @@ export class JourneyResolvers {
       input.slug = slugify(input.slug ?? input.title, {
         remove: /[*+~.()'"!:@#]/g
       })
-    const journey: Journey & { _key: string } = await this.journeyService.save(
-      input
-    )
+    const journey: Journey & { _key: string } = await this.journeyService.save({
+      ...input,
+      createdAt: new Date().toISOString(),
+      themeName: input.themeName ?? ThemeName.base,
+      themeMode: input.themeMode ?? ThemeMode.light,
+      locale: input.locale ?? 'en-US',
+      status: JourneyStatus.draft,
+      published: false
+    })
     await this.userJourneyService.save({
       userId,
       journeyId: journey._key,
@@ -103,6 +111,7 @@ export class JourneyResolvers {
     @CurrentUserId() userId: string
   ): Promise<Journey> {
     return await this.journeyService.update(id, {
+      published: true,
       publishedAt: new Date().toISOString()
     })
   }
