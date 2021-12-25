@@ -492,7 +492,7 @@ input JourneyUpdateInput {
   slug: String
 }
 
-type UserJourney {
+type UserJourney @key(fields: "id") {
   journey: Journey
   id: ID!
   userId: ID!

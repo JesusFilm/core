@@ -495,13 +495,17 @@ type User
   lastName: String @join__field(graph: USERS)
 }
 
-type UserJourney {
-  id: ID!
-  journey: Journey
-  journeyId: ID!
-  role: UserJourneyRole!
+type UserJourney
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: USERS, key: "id")
+{
+  id: ID! @join__field(graph: JOURNEYS)
+  journey: Journey @join__field(graph: JOURNEYS)
+  journeyId: ID! @join__field(graph: JOURNEYS)
+  role: UserJourneyRole! @join__field(graph: JOURNEYS)
   user: User @join__field(graph: USERS)
-  userId: ID!
+  userId: ID! @join__field(graph: JOURNEYS)
 }
 
 enum UserJourneyRole {

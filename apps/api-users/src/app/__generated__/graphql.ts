@@ -17,6 +17,7 @@ export class User {
 }
 
 export class UserJourney {
+    id: string;
     user?: Nullable<User>;
 }
 
