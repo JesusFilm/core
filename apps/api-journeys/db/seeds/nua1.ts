@@ -1,4 +1,4 @@
-import { ThemeMode, ThemeName } from '../../src/app/__generated__/graphql'
+import { JourneyStatus, ThemeMode, ThemeName } from '../../src/app/__generated__/graphql'
 import { aql, Database } from 'arangojs'
 
 const db = new Database({ url: process.env.DATABASE_URL })
@@ -21,8 +21,9 @@ export async function nua1(): Promise<void> {
     title: 'Fact or Fiction',
     locale: 'en-US',
     themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
+    themeName: ThemeName.base,    
     slug: 'fact-or-fiction',
+    status: JourneyStatus.published,
     createdAt: new Date('2031-12-25T12:34:56.647Z'),
     publishedAt: new Date('2031-12-25T12:34:56.647Z')
   })

@@ -1,4 +1,8 @@
-import { ThemeMode, ThemeName } from '../../src/app/__generated__/graphql'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../src/app/__generated__/graphql'
 import { aql, Database } from 'arangojs'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -24,6 +28,7 @@ export async function nua9(): Promise<void> {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     slug: slug,
+    status: JourneyStatus.published,
     createdAt: new Date('2031-12-25T12:34:56.647Z'),
     publishedAt: new Date('2031-12-25T12:34:56.647Z')
   })
