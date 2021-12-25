@@ -1,4 +1,8 @@
-import { JourneyStatus, ThemeMode, ThemeName } from '../../src/app/__generated__/graphql'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../src/app/__generated__/graphql'
 import { aql, Database } from 'arangojs'
 
 const db = new Database({ url: process.env.DATABASE_URL })
