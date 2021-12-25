@@ -17,8 +17,6 @@ import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { JourneyService } from '../journey/journey.service'
-// eslint-disable-next-line
-import { User } from '@core/api-users'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {
@@ -128,7 +126,9 @@ export class UserJourneyResolver {
 
   @ResolveField('user')
   // @KeyAsId()
-  async user(@Parent() userJourney: UserJourney): Promise<User> {
+  async user(
+    @Parent() userJourney: UserJourney
+  ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userJourney.userId }
   }
 }
