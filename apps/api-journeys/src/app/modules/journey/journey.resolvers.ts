@@ -44,7 +44,7 @@ export class JourneyResolvers {
 
   @Query()
   @KeyAsId()
-  async journeys(@Args('status') status: JourneyStatus): Promise<Journey[]> {
+  async journeys(@Args('status') status?: JourneyStatus): Promise<Journey[]> {
     switch (status) {
       case JourneyStatus.published:
         return await this.journeyService.getAllPublishedJourneys()
