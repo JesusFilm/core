@@ -47,5 +47,5 @@ export interface VideoTriggerFields {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: VideoTriggerFields_triggerAction | null;
+  triggerAction: VideoTriggerFields_triggerAction;
 }
