@@ -118,7 +118,7 @@ describe('Journey', () => {
 
   const draftJourneyResponse = {
     id: '1',
-    title: 'unpublished',    
+    title: 'unpublished',
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
