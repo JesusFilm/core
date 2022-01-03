@@ -11,7 +11,7 @@ export interface VideoTriggerProps extends TreeBlock<VideoTriggerFields> {
 
 export function VideoTrigger({
   player,
-  action,
+  triggerAction,
   triggerStart
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
@@ -25,16 +25,16 @@ export function VideoTrigger({
           player.pause()
           if (player.isFullscreen()) {
             player.exitFullscreen()
-            setTimeout(() => handleAction(router, action), 1000)
+            setTimeout(() => handleAction(router, triggerAction), 1000)
           } else {
-            handleAction(router, action)
+            handleAction(router, triggerAction)
           }
         }
       }
       player.on('timeupdate', timeUpdate)
       return () => player.off('timeupdate', timeUpdate)
     }
-  }, [player, triggerStart, router, action, triggered])
+  }, [player, triggerStart, router, triggerAction, triggered])
 
   return <></>
 }

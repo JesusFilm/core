@@ -726,7 +726,7 @@ export const videoBlock: TreeBlock[] = [
             __typename: 'VideoTriggerBlock',
             parentBlockId: 'video1.id',
             triggerStart: 20,
-            action: {
+            triggerAction: {
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step2.id'
