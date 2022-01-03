@@ -449,7 +449,7 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
-  action: Action
+  action: Action!
 }
 
 enum IdType {

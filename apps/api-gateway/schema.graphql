@@ -632,7 +632,7 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block {
-  action: Action
+  action: Action!
   id: ID!
   parentBlockId: ID
 

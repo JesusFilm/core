@@ -454,7 +454,7 @@ export class VideoTriggerBlock implements Block {
     id: string;
     parentBlockId?: Nullable<string>;
     triggerStart: number;
-    action?: Nullable<Action>;
+    action: Action;
 }
 
 export class UserJourney {

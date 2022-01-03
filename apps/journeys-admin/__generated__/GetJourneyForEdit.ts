@@ -324,7 +324,7 @@ export interface GetJourneyForEdit_journey_blocks_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: GetJourneyForEdit_journey_blocks_VideoTriggerBlock_triggerAction | null;
+  triggerAction: GetJourneyForEdit_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
 export type GetJourneyForEdit_journey_blocks = GetJourneyForEdit_journey_blocks_ButtonBlock | GetJourneyForEdit_journey_blocks_CardBlock | GetJourneyForEdit_journey_blocks_GridContainerBlock | GetJourneyForEdit_journey_blocks_GridItemBlock | GetJourneyForEdit_journey_blocks_ImageBlock | GetJourneyForEdit_journey_blocks_RadioOptionBlock | GetJourneyForEdit_journey_blocks_RadioQuestionBlock | GetJourneyForEdit_journey_blocks_SignUpBlock | GetJourneyForEdit_journey_blocks_StepBlock | GetJourneyForEdit_journey_blocks_TypographyBlock | GetJourneyForEdit_journey_blocks_VideoBlock | GetJourneyForEdit_journey_blocks_VideoTriggerBlock;

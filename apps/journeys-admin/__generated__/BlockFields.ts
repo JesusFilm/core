@@ -324,7 +324,7 @@ export interface BlockFields_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: BlockFields_VideoTriggerBlock_triggerAction | null;
+  triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
 export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
