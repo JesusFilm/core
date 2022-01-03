@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import {
+  JourneyStatus,
   ThemeMode,
   ThemeName,
   UserJourneyRole
@@ -39,7 +40,7 @@ describe('Step', () => {
   const journey = {
     _key: '1',
     title: 'published',
-    published: true,
+    status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,

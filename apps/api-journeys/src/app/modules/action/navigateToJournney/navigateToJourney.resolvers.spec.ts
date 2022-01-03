@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { JourneyStatus } from '../../../__generated__/graphql'
 import { BlockResolvers } from '../../block/block.resolvers'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
@@ -38,7 +39,7 @@ describe('ActionResolvers', () => {
   const journey = {
     _key: '4',
     title: 'Fact or Fiction',
-    published: true,
+    status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: 'light',
     themeName: 'base',
@@ -48,7 +49,7 @@ describe('ActionResolvers', () => {
   const journeyresponse = {
     id: '4',
     title: 'Fact or Fiction',
-    published: true,
+    status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: 'light',
     themeName: 'base',

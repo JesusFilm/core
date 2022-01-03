@@ -90,7 +90,6 @@ type Journey @key(fields: "id") {
   blocks: [Block!]
   primaryImageBlock: ImageBlock
   id: ID!
-  published: Boolean!
   title: String!
   locale: String!
   themeMode: ThemeMode!
@@ -469,7 +468,7 @@ input JourneyCreateInput {
   (Provided for optimistic mutation result matching)
   """
   id: ID
-  title: String
+  title: String!
   locale: String
   themeMode: ThemeMode
   themeName: ThemeName
@@ -479,7 +478,7 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
   """
-  slug: String
+  slug: String!
 }
 
 input JourneyUpdateInput {

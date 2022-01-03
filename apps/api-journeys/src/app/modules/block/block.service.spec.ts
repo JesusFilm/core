@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockService } from './block.service'
-import { ThemeMode, ThemeName } from '../../__generated__/graphql'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../__generated__/graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
@@ -44,9 +48,10 @@ describe('BlockService', () => {
   }
 
   const journey = {
-    _key: '1',
+    id: '1',
     title: 'published',
-    published: true,
+    createdAt: '1234',
+    status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,

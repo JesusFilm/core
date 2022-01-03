@@ -22,7 +22,7 @@ describe('Journey', () => {
   const journey = {
     _key: '1',
     title: 'published',
-    published: true,
+    status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -70,7 +70,6 @@ describe('Journey', () => {
   const journeyresponse = {
     id: '1',
     title: 'published',
-    published: true,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -85,7 +84,6 @@ describe('Journey', () => {
   const pijourneyresponse = {
     id: '1',
     title: 'published',
-    published: true,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -107,7 +105,6 @@ describe('Journey', () => {
   const pijourneyresponsenull = {
     id: '1',
     title: 'published',
-    published: true,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -121,8 +118,7 @@ describe('Journey', () => {
 
   const draftJourneyResponse = {
     id: '1',
-    title: 'unpublished',
-    published: true,
+    title: 'unpublished',    
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -314,7 +310,7 @@ describe('Journey', () => {
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
       await resolver.journeyPublish('1').catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
-        published: true,
+        status: JourneyStatus.published,
         publishedAt: '2021-12-07T03:22:41.135Z'
       })
     })

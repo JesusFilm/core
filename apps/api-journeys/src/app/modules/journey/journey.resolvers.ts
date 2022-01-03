@@ -85,8 +85,7 @@ export class JourneyResolvers {
       themeName: input.themeName ?? ThemeName.base,
       themeMode: input.themeMode ?? ThemeMode.light,
       locale: input.locale ?? 'en-US',
-      status: JourneyStatus.draft,
-      published: false
+      status: JourneyStatus.draft
     })
     await this.userJourneyService.save({
       userId,
@@ -111,7 +110,7 @@ export class JourneyResolvers {
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyPublish(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
-      published: true,
+      status: JourneyStatus.published,
       publishedAt: new Date().toISOString()
     })
   }

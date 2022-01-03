@@ -221,12 +221,12 @@ export class VideoBlockUpdateInput {
 
 export class JourneyCreateInput {
     id?: Nullable<string>;
-    title?: Nullable<string>;
+    title: string;
     locale?: Nullable<string>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
-    slug?: Nullable<string>;
+    slug: string;
 }
 
 export class JourneyUpdateInput {
@@ -314,7 +314,6 @@ export class Journey {
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
     id: string;
-    published: boolean;
     title: string;
     locale: string;
     themeMode: ThemeMode;
