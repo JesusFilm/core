@@ -1,0 +1,8 @@
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}

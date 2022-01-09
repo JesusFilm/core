@@ -67,7 +67,7 @@ export const InviteUserModal = ({
   )
   const handleOpen = (): void => {
     setOpen(true)
-    loadUsersJourneys()
+    loadUsersJourneys().catch((err) => console.log(err))
   }
 
   const handleClose = (): void => setOpen(false)

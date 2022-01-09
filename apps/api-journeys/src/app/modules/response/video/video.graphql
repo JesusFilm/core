@@ -1,0 +1,27 @@
+enum VideoResponseStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoResponseStateEnum!
+  position: Float
+}
+
+type VideoResponse implements Response {
+  id: ID!
+  userId: ID!
+  state: VideoResponseStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
+extend type Mutation {
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
+}

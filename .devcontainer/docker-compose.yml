@@ -15,26 +15,18 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:db
+    network_mode: service:arangodb
     # Uncomment the next line to use a non-root user for all processes.
     # user: node
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
-    environment:
-      PGHOST: localhost
-      PGPASSWORD: postgres
-      PGUSER: postgres
-      PGDATABASE: postgres
-  db:
-    image: postgres:latest
-    restart: unless-stopped
+  arangodb:
+    image: arangodb/arangodb
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - arango-data:/var/lib/arangodb3
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+      ARANGO_NO_AUTH: 1
+    ports:
+      - 8529:8529
 volumes:
-  postgres-data:
+  arango-data:
