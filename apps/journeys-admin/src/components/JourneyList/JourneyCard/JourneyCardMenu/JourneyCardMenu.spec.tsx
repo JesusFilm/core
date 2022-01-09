@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import JourneyCardMenu from '.'
+import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
   it('should open menu on click', () => {
@@ -31,22 +31,9 @@ describe('JourneyCardMenu', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
       'href',
       '/journeys/published-journey/edit'
-    )
-  })
-  it('should handle changing journey access', () => {
-    const { getByRole } = render(
-      <JourneyCardMenu
-        status={JourneyStatus.published}
-        slug={'published-journey'}
-      />
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Change Access' })).toHaveAttribute(
-      'href',
-      '/journeys/published-journey/access'
     )
   })
   it('should handle preview', () => {
@@ -57,9 +44,9 @@ describe('JourneyCardMenu', () => {
       />
     )
     fireEvent.click(getByRole('button'))
-    expect(getByRole('link', { name: 'Preview' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      '/journeys/published-journey/preview'
+      'https://your.nextstep.is/published-journey'
     )
   })
 

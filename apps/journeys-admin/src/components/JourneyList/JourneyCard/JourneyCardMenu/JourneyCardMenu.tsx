@@ -5,8 +5,9 @@ import {
   MenuItem,
   ListItemText,
   ListItemIcon,
-  Link
+  Typography
 } from '@mui/material'
+import Link from 'next/link'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import EditIcon from '@mui/icons-material/Edit'
 import PeopleIcon from '@mui/icons-material/People'
@@ -19,11 +20,11 @@ export interface JourneyCardMenuProps {
   forceMenu?: boolean
 }
 
-const JourneyCardMenu = ({
+export function JourneyCardMenu({
   status,
   slug,
   forceMenu // this is only used for storybook snapshots
-}: JourneyCardMenuProps): ReactElement => {
+}: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
 
@@ -58,40 +59,52 @@ const JourneyCardMenu = ({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}/edit`} underline="none">
-          <MenuItem>
+        <Link href={`/journeys/${slug}/edit`} passHref>
+          <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
-              <EditIcon />
+              <EditIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText>Edit</ListItemText>
+            <ListItemText>
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Edit
+              </Typography>
+            </ListItemText>
           </MenuItem>
         </Link>
 
-        {/* update link */}
-        <Link href={`/journeys/${slug}/access`} underline="none">
-          <MenuItem>
-            <ListItemIcon>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText>Change Access</ListItemText>
-          </MenuItem>
-        </Link>
+        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+          <ListItemIcon>
+            <PeopleIcon color="secondary" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography variant="body1" sx={{ pl: 2 }}>
+              Access
+            </Typography>
+          </ListItemText>
+        </MenuItem>
 
         {status === JourneyStatus.draft ? (
-          <MenuItem disabled>
+          <MenuItem disabled sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
-              <VisibilityIcon />
+              <VisibilityIcon color="secondary" />
             </ListItemIcon>
-            <ListItemText>Preview</ListItemText>
+            <ListItemText>
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Preview
+              </Typography>
+            </ListItemText>
           </MenuItem>
         ) : (
-          <Link href={`/journeys/${slug}/preview`} underline="none">
-            {/* update link */}
-            <MenuItem>
+          <Link href={`https://your.nextstep.is/${slug}`} passHref>
+            <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
               <ListItemIcon>
-                <VisibilityIcon />
+                <VisibilityIcon color="secondary" />
               </ListItemIcon>
-              <ListItemText>Preview</ListItemText>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Preview
+                </Typography>
+              </ListItemText>
             </MenuItem>
           </Link>
         )}
@@ -99,5 +112,3 @@ const JourneyCardMenu = ({
     </div>
   )
 }
-
-export default JourneyCardMenu

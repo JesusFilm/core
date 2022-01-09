@@ -1,107 +1,123 @@
 import { ReactElement } from 'react'
-import moment from 'moment'
+import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { Card, Chip, Typography, Box } from '@mui/material'
+import {
+  Card,
+  Typography,
+  Grid,
+  CardActionArea,
+  CardContent,
+  CardActions
+} from '@mui/material'
+import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
-
-import JourneyCardMenu from './JourneyCardMenu'
-import { AccessAvatars } from './AccessAvatars'
-import { user1, user2, user3 } from './AccessAvatars/AccessAvatarsData'
+import { JourneyCardMenu } from './JourneyCardMenu'
 
 interface JourneyCardProps {
   journey: Journey
 }
 
-const JourneyCard = ({ journey }: JourneyCardProps): ReactElement => {
-  const AccessAvatarsProps = {
-    users: [user1, user2, user3]
-  }
-  const date =
-    moment(journey.createdAt).format('YYYY') === moment().format('YYYY')
-      ? moment(journey.createdAt).format('MMM Do')
-      : moment(journey.createdAt).format('MMM Do, YYYY')
+export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
+  const date = parseISO(journey.createdAt)
+  const formattedDate = intlFormat(date, {
+    day: 'numeric',
+    month: 'long',
+    year: isThisYear(date) ? undefined : 'numeric'
+  })
 
   return (
-    <Card sx={{ borderRadius: '0px', px: 6, py: 4 }} variant="outlined">
-      <Typography
-        variant="subtitle1"
-        sx={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden'
-        }}
-        gutterBottom
-      >
-        {journey.title}
-      </Typography>
-
-      <Typography
-        variant="body2"
-        sx={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden'
-        }}
-        gutterBottom
-      >
-        {date}
-        {journey.description !== null && ` - ${journey.description}`}
-      </Typography>
-
-      <Box sx={{ display: 'flex' }}>
-        <AccessAvatars {...AccessAvatarsProps} />
-        {journey.status === 'draft' ? (
-          <Chip
-            label={'Draft'}
-            icon={<EditIcon style={{ color: '#F0720C' }} />}
+    <Card
+      aria-label="journey-card"
+      variant="outlined"
+      sx={{
+        borderRadius: 0,
+        borderColor: 'divider',
+        borderBottom: 'none',
+        '&:first-child': {
+          borderTopLeftRadius: { xs: 0, md: 12 },
+          borderTopRightRadius: { xs: 0, md: 12 }
+        },
+        '&:last-child': {
+          borderBottomLeftRadius: { xs: 0, md: 12 },
+          borderBottomRightRadius: { xs: 0, md: 12 },
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }
+      }}
+    >
+      <Link href={`/journeys/${journey.slug}`} passHref>
+        <CardActionArea>
+          <CardContent
             sx={{
-              height: '42px',
-              width: 'auto',
-              borderRadius: '18px',
-              fontSize: '17px',
-              backgroundColor: 'white',
-              ml: 4
+              px: 6,
+              py: 4
             }}
-          />
-        ) : (
-          <Chip
-            label={'Published'}
-            icon={<CheckCircleIcon style={{ color: '#3AA74A' }} />}
-            sx={{
-              height: '42px',
-              width: 'auto',
-              borderRadius: '18px',
-              fontSize: '17px',
-              backgroundColor: 'white',
-              ml: 4
-            }}
-          />
-        )}
-        {/* Locale formatting does not currently work for every locale */}
-        <Chip
-          label={`${journey.locale
-            .substring(0, 2)
-            .toUpperCase()} (${journey.locale.substring(3)})`}
-          icon={<TranslateIcon />}
-          sx={{
-            height: '42px',
-            width: 'auto',
-            borderRadius: '18px',
-            fontSize: '17px',
-            backgroundColor: 'white',
-            ml: 4
-          }}
-        />
-        <Box sx={{ marginLeft: 'auto' }}>
-          <JourneyCardMenu status={journey.status} slug={journey.slug} />
-        </Box>
-      </Box>
+          >
+            <Typography
+              variant="subtitle1"
+              component="div"
+              noWrap
+              gutterBottom
+              sx={{ color: 'secondary.main' }}
+            >
+              {journey.title}
+            </Typography>
+            <Typography
+              variant="caption"
+              noWrap
+              sx={{
+                display: 'block',
+                color: 'secondary.main'
+              }}
+            >
+              {formattedDate}
+              {journey.description !== null && ` - ${journey.description}`}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Link>
+      <CardActions
+        sx={{
+          px: 6,
+          pt: 0,
+          pb: 4
+        }}
+      >
+        <Grid container spacing={2}>
+          {journey.status === 'draft' ? (
+            <>
+              <Grid item>
+                <EditIcon color="warning" />
+              </Grid>
+              <Grid item>
+                <Typography variant="caption" sx={{ pr: 2 }}>
+                  Draft
+                </Typography>
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item>
+                <CheckCircleIcon color="success" />
+              </Grid>
+              <Grid item>
+                <Typography variant="caption" sx={{ pr: 2 }}>
+                  Published
+                </Typography>
+              </Grid>
+            </>
+          )}
+          <Grid item>
+            <TranslateIcon />
+          </Grid>
+          <Grid item>
+            <Typography variant="caption">{journey.locale}</Typography>
+          </Grid>
+        </Grid>
+        <JourneyCardMenu status={journey.status} slug={journey.slug} />
+      </CardActions>
     </Card>
   )
 }
-
-export default JourneyCard

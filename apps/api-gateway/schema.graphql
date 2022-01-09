@@ -223,6 +223,7 @@ type Journey
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
+  userJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
 }
 
 input JourneyCreateInput {
@@ -274,6 +275,10 @@ type Mutation {
   journeyUpdate(input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+  userJourneyRequest(journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -299,6 +304,7 @@ type NavigateToJourneyAction implements Action {
 type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
+  me: User @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
@@ -426,6 +432,32 @@ enum TypographyVariant {
   overline
   subtitle1
   subtitle2
+}
+
+type User
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  email: String! @join__field(graph: JOURNEYS)
+  firstName: String! @join__field(graph: JOURNEYS)
+  id: ID! @join__field(graph: JOURNEYS)
+  imageUrl: String @join__field(graph: JOURNEYS)
+  lastName: String @join__field(graph: JOURNEYS)
+}
+
+type UserJourney {
+  id: ID!
+  journey: Journey
+  journeyId: ID!
+  role: UserJourneyRole!
+  user: User
+  userId: ID!
+}
+
+enum UserJourneyRole {
+  editor
+  inviteRequested
+  owner
 }
 
 type VideoArclight implements VideoContent {

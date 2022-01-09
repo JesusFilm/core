@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import JourneyCard from './JourneyCard'
+import { JourneyCard } from './JourneyCard'
 import {
   publishedJourney,
   defaultJourney,
@@ -8,40 +8,39 @@ import {
 
 describe('JourneyCard', () => {
   it('should render the title', () => {
-    const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('Published Journey Heading')[0]).toBeInTheDocument()
+    const { getByText } = render(<JourneyCard journey={publishedJourney} />)
+    expect(getByText('Published Journey Heading')).toBeInTheDocument()
   })
 
   it('should render the formatted  date', () => {
     const { getByText } = render(<JourneyCard journey={defaultJourney} />)
-    expect(getByText('Nov 19th')).toBeInTheDocument()
+    expect(getByText('January 1')).toBeInTheDocument()
   })
 
   it('should render the description with the dash', () => {
     const { getByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getByText('Nov 19th - a published journey')).toBeInTheDocument()
-  })
-
-  it('should render the published status', () => {
-    const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('Published')[0]).toBeInTheDocument()
+    expect(getByText('January 1 - a published journey')).toBeInTheDocument()
   })
 
   it('should render the locale captialized', () => {
-    const { getAllByText } = render(<JourneyCard journey={publishedJourney} />)
-    expect(getAllByText('EN (US)')[0]).toBeInTheDocument()
+    const { getByText } = render(<JourneyCard journey={publishedJourney} />)
+    expect(getByText('en-US')).toBeInTheDocument()
   })
 
   it('should render the formated date with year if journey is created before the current year', () => {
-    const { getAllByText } = render(<JourneyCard journey={oldJourney} />)
+    const { getByText } = render(<JourneyCard journey={oldJourney} />)
     expect(
-      getAllByText(
-        'Nov 19th, 2020 - Journey created before the current year should also show the year in the date'
-      )[0]
+      getByText(
+        'November 19, 2020 - Journey created before the current year should also show the year in the date'
+      )
     ).toBeInTheDocument()
   })
-  it('should render the draft status', () => {
-    const { getAllByText } = render(<JourneyCard journey={defaultJourney} />)
-    expect(getAllByText('Draft')[0]).toBeInTheDocument()
+
+  it('should have correct link on title', () => {
+    const { getByText } = render(<JourneyCard journey={defaultJourney} />)
+
+    expect(
+      getByText('Default Journey Heading').parentElement?.parentElement
+    ).toHaveAttribute('href', '/journeys/default')
   })
 })
