@@ -22,6 +22,8 @@ generates:
         SignUpBlock: .prisma/api-journeys-client#Block as BlockType
         StepBlock: .prisma/api-journeys-client#Block as BlockType
         TypographyBlock: .prisma/api-journeys-client#Block as BlockType
+        User: .prisma/api-journeys-client#User as UserType
+        UserJourney: .prisma/api-journeys-client#UserJourney as UserJourneyType
         VideoBlock: .prisma/api-journeys-client#Block as BlockType
         VideoTriggerBlock: .prisma/api-journeys-client#Block as BlockType
         RadioQuestionResponse: .prisma/api-journeys-client#Response as ResponseType

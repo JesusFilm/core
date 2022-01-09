@@ -254,6 +254,37 @@ describe('JourneyModule', () => {
         })
       })
 
+      it('allocates an owner role to the user', async () => {
+        dbMock.journey.create.mockResolvedValue(draftJourney)
+
+        await query(
+          gql`
+            mutation ($input: JourneyCreateInput!) {
+              journeyCreate(input: $input) {
+                id
+              }
+            }
+          `,
+          {
+            input: {
+              title: 'my journey',
+              slug: 'my-journey'
+            }
+          },
+          {
+            userId: 'userId'
+          }
+        )
+
+        expect(dbMock.userJourney.create).toBeCalledWith({
+          data: {
+            userId: 'userId',
+            journeyId: draftJourney.id,
+            role: 'owner'
+          }
+        })
+      })
+
       it('throws an error on create without authentication', async () => {
         const { errors } = await query(
           gql`
@@ -317,6 +348,13 @@ describe('JourneyModule', () => {
           slug: 'my-journey'
         }
         dbMock.journey.update.mockResolvedValue(updatedJourney)
+
+        dbMock.userJourney.findUnique.mockResolvedValue({
+          id: 'id',
+          userId: 'userId',
+          journeyId: updatedJourney.id,
+          role: 'owner'
+        })
 
         const { data } = await query(
           gql`
@@ -389,6 +427,13 @@ describe('JourneyModule', () => {
           )
         })
 
+        dbMock.userJourney.findUnique.mockResolvedValue({
+          id: 'id',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: 'owner'
+        })
+
         const { errors } = await query(
           gql`
             mutation ($input: JourneyUpdateInput!) {
@@ -424,6 +469,13 @@ describe('JourneyModule', () => {
       })
       it('publishes journey', async () => {
         dbMock.journey.update.mockResolvedValue(publishedJourney)
+
+        dbMock.userJourney.findUnique.mockResolvedValue({
+          id: 'id',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          role: 'owner'
+        })
 
         const { data } = await query(
           gql`

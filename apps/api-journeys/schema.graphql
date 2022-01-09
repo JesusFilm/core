@@ -196,6 +196,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   blocks: [Block!]
   primaryImageBlock: ImageBlock
+  userJourneys: [UserJourney!]
 }
 
 input JourneyCreateInput {
@@ -246,6 +247,10 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!): UserJourney!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
 }
 
@@ -271,6 +276,7 @@ type NavigateToJourneyAction implements Action {
 extend type Query {
   journeys(status: JourneyStatus): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  me: User
 }
 
 type RadioOptionBlock implements Block {
@@ -396,6 +402,29 @@ enum TypographyVariant {
   body2
   caption
   overline
+}
+
+type User @key(fields: "id") {
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: String!
+  imageUrl: String
+}
+
+type UserJourney {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+  journey: Journey
+  user: User
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
 }
 
 type VideoArclight implements VideoContent {

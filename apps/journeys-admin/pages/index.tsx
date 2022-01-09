@@ -1,24 +1,47 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import Link from 'next/link'
+import Image from 'next/image'
+import { ThemeProvider } from '../src/components/ThemeProvider'
+import { SignIn } from '../src/components/SignIn'
+import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
 
 function Dashboard(): ReactElement {
+  const handleFeedbackSupport = (): void => {
+    const subject = 'Support/Feedback Request'
+    window.location.assign(`mailto:support@nextstep.is?Subject=${subject}`)
+  }
+
   return (
-    <Container sx={{ my: 10 }}>
-      <Typography variant={'h1'} sx={{ mb: 8 }}>
-        Dashboard
-      </Typography>
-      <Box my={2}>
-        <Link href={`/journeys`} passHref>
-          <Button variant="contained" fullWidth>
-            Journeys List
-          </Button>
-        </Link>
+    <ThemeProvider>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pt: 30
+        }}
+      >
+        <Image
+          src={JesusFilmSignInLogo}
+          alt="Jesus Film Sign In Logo"
+          height={68}
+          width={152}
+        />
+        <Typography variant={'h5'} sx={{ mt: 20, mb: 3 }}>
+          Sign In
+        </Typography>
+        <SignIn />
+        <Typography
+          variant={'body2'}
+          sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
+          onClick={handleFeedbackSupport}
+        >
+          Feedback & Support
+        </Typography>
       </Box>
-    </Container>
+    </ThemeProvider>
   )
 }
 

@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { createModule, gql } from 'graphql-modules'
-import { isNil, omitBy, get } from 'lodash'
+import { isNil, omitBy, get, includes } from 'lodash'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import slugify from 'slugify'
 import { JourneyModule } from './__generated__/types'
@@ -75,6 +75,10 @@ const typeDefs = gql`
     slug: String
   }
 
+  extend type UserJourney {
+    journey: Journey
+  }
+
   extend type Mutation {
     journeyCreate(input: JourneyCreateInput!): Journey!
     journeyUpdate(input: JourneyUpdateInput!): Journey!
@@ -87,6 +91,16 @@ const typeDefs = gql`
 `
 
 const resolvers: JourneyModule.Resolvers = {
+  UserJourney: {
+    async journey(userJourney, __, { db }) {
+      const journey = await db.journey.findUnique({
+        where: {
+          id: userJourney.journeyId
+        }
+      })
+      return journey
+    }
+  },
   Journey: {
     status: (journey) => {
       return journey.publishedAt === null ? 'draft' : 'published'
@@ -127,8 +141,9 @@ const resolvers: JourneyModule.Resolvers = {
     ) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
       try {
-        return await db.journey.create({
+        const journey = await db.journey.create({
           data: {
             id: id as string | undefined,
             title,
@@ -139,6 +154,14 @@ const resolvers: JourneyModule.Resolvers = {
             slug: slugify(slug ?? title, { remove: /[*+~.()'"!:@#]/g })
           }
         })
+        await db.userJourney.create({
+          data: {
+            userId,
+            journeyId: journey.id,
+            role: 'owner'
+          }
+        })
+        return journey
       } catch (e) {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -155,6 +178,19 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyUpdate(_parent, { input }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId,
+            journeyId: input.id
+          }
+        }
+      })
+
+      if (!includes(['owner', 'editor'], actor?.role))
+        throw new AuthenticationError('User is not owner or editor of journey')
+
       try {
         if (input.slug != null) {
           input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
@@ -185,6 +221,19 @@ const resolvers: JourneyModule.Resolvers = {
     async journeyPublish(_parent, { id }, { db, userId }) {
       if (userId == null)
         throw new AuthenticationError('No user token provided')
+
+      const actor = await db.userJourney.findUnique({
+        where: {
+          uniqueUserJourney: {
+            userId,
+            journeyId: id
+          }
+        }
+      })
+
+      if (actor?.role !== 'owner')
+        throw new AuthenticationError('User is not owner of journey')
+
       return await db.journey.update({
         where: { id },
         data: {

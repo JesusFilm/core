@@ -1,0 +1,1 @@
+export { userJourneyModule } from './userJourney'

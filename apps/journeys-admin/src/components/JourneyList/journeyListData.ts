@@ -17,7 +17,14 @@ export const defaultJourney: Journey = {
   locale: 'en-US',
   createdAt: formatISO(startOfYear(new Date())),
   publishedAt: null,
-  status: JourneyStatus.draft
+  status: JourneyStatus.draft,
+  userJourneys: [
+    {
+      __typename: 'UserJourney',
+      userId: 'user-id',
+      journeyId: 'journey-id'
+    }
+  ]
 }
 
 export const oldJourney: Journey = {
