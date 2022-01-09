@@ -108,22 +108,22 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
         }
       }
     `,
-    variables: {
-      id: context.query.journeySlug
-    }
-  })
+      variables: {
+        id: context.query.journeySlug
+      }
+    })
 
-  if (data.journey === null) {
-    return {
-      notFound: true
-    }
-  } else {
-    return {
-      props: {
-        journey: data.journey
+    if (data.journey === null) {
+      return {
+        notFound: true
+      }
+    } else {
+      return {
+        props: {
+          journey: data.journey
+        }
       }
     }
   }
-}
 
 export default SingleJourneyPage

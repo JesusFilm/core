@@ -85,21 +85,21 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
         }
       }
     `
-  })
+    })
 
-  if (data.journeys === null) {
-    return {
-      props: {
-        journeys: []
+    if (data.journeys === null) {
+      return {
+        props: {
+          journeys: []
+        }
       }
-    }
-  } else {
-    return {
-      props: {
-        journeys: data.journeys
+    } else {
+      return {
+        props: {
+          journeys: data.journeys
+        }
       }
     }
   }
-}
 
 export default JourneyListPage
