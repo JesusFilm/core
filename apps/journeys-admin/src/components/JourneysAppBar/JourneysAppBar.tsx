@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
+import { Menu } from '../JourneyView/Menu'
 import { useBreakpoints } from '@core/shared/ui'
 
 export interface JourneysAppBarProps {
@@ -35,6 +36,7 @@ export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
             >
               Journey Details
             </Typography>
+            <Menu />
           </Toolbar>
         ) : (
           <Toolbar sx={{ flexGrow: 1 }}>

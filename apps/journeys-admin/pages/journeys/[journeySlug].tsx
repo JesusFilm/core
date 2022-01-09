@@ -2,12 +2,14 @@ import { ReactElement, useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
-import client from '../../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey,
   GetJourney_journey_userJourneys as UserJourneys
 } from '../../__generated__/GetJourney'
+import { JourneyProvider, JourneyView } from '../../src/components'
+import client from '../../src/libs/client'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
 import { Typography, Box } from '@mui/material'
 import { useFirebase } from '../../src/libs/firebaseClient/'
 import { useRouter } from 'next/router'
@@ -15,14 +17,12 @@ import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS
 } from '../../src/components/InviteUserModal'
-import { ThemeProvider } from '../../src/components/ThemeProvider'
-import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
-interface SingleJourneyPageProps {
+interface JourneyViewPageProps {
   journey: Journey
 }
 
-function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
+function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
   const { user, loading } = useFirebase()
   const router = useRouter()
   const [currentUsersJourney, setCurrentUsersJourney] =
@@ -58,8 +58,8 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
           <meta name="description" content={journey.description} />
         )}
       </Head>
-      <ThemeProvider>
-        <JourneysAppBar variant="view" />
+      <JourneyProvider value={journey}>
+        <JourneyView />
         <Box sx={{ m: 10 }}>
           <Typography variant={'h2'}>{journey.title}</Typography>
           {currentUsersJourney?.role === 'inviteRequested' ? (
@@ -72,25 +72,30 @@ function SingleJourneyPage({ journey }: SingleJourneyPageProps): ReactElement {
             'Sorry, you have no access to the requested journey.'
           )}
         </Box>
-      </ThemeProvider>
+      </JourneyProvider>
     </>
   )
 }
 
-export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
+export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
   async (context) => {
     const { data } = await client.query<GetJourney>({
       query: gql`
+        ${BLOCK_FIELDS}
         ${INVITE_USER_MODAL_FIELDS}
         query GetJourney($id: ID!) {
           journey(id: $id, idType: slug) {
             id
+            slug
             title
             description
             status
+            locale
             createdAt
             publishedAt
-            slug
+            blocks {
+              ...BlockFields
+            }
             primaryImageBlock {
               src
             }
@@ -124,4 +129,4 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyPageProps> =
     }
   }
 
-export default SingleJourneyPage
+export default JourneyViewPage
