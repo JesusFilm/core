@@ -1,0 +1,8 @@
+interface Block {
+  id: ID!
+  parentBlockId: ID
+}
+
+extend type Journey {
+  blocks: [Block!]
+}

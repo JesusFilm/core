@@ -48,7 +48,7 @@ export function SignIn(): ReactElement {
     ],
     callbacks: {
       signInSuccessWithAuthResult: () => {
-        callMe()
+        callMe().catch((err) => console.log(err))
         return false
       }
     }

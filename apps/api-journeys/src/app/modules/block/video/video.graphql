@@ -1,0 +1,96 @@
+interface VideoContent {
+  src: String!
+}
+
+type VideoArclight implements VideoContent {
+  mediaComponentId: String!
+  languageId: String!
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
+  src: String!
+}
+
+type VideoBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  title: String!
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContent!
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
+input VideoContentInput {
+  mediaComponentId: String
+  languageId: String
+  src: String
+}
+
+input VideoBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  title: String!
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContentInput!
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
+input VideoBlockUpdateInput {
+  parentBlockId: ID
+  title: String
+  """
+  startAt dictates at which point of time the video should start playing
+  """
+  startAt: Int
+  """
+  endAt dictates at which point of time the video should end
+  """
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContentInput
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
+}
+
+extend type Mutation {
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
+  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+}

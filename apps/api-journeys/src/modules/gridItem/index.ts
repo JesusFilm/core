@@ -1,1 +1,0 @@
-export { gridItemModule } from './gridItem'

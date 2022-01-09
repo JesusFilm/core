@@ -14,6 +14,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import { JourneyCardMenu } from './JourneyCardMenu'
+import { AccessAvatars } from './AccessAvatars'
+import { user1 } from './AccessAvatars/AccessAvatarsData'
 
 interface JourneyCardProps {
   journey: Journey
@@ -26,6 +28,9 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
     month: 'long',
     year: isThisYear(date) ? undefined : 'numeric'
   })
+  const AccessAvatarsProps = {
+    users: [user1]
+  }
 
   return (
     <Card
@@ -86,6 +91,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         }}
       >
         <Grid container spacing={2}>
+          <AccessAvatars {...AccessAvatarsProps} />
           {journey.status === 'draft' ? (
             <>
               <Grid item>

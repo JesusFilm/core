@@ -4,7 +4,7 @@
   "projectType": "application",
   "targets": {
     "e2e": {
-      "builder": "@nrwl/workspace:run-commands",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
           {

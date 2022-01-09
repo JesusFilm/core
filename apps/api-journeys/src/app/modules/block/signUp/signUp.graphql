@@ -1,0 +1,7 @@
+type SignUpBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  action: Action
+  submitIcon: Icon
+  submitLabel: String
+}

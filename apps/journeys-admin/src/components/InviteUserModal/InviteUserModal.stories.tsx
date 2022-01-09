@@ -16,11 +16,13 @@ const journey: Journey = {
   createdAt: '2020-01-01T00:00:00.000Z',
   id: '1234',
   description: '',
-  primaryImageBlock: null,
+  locale: 'en-US',
   slug: 'fact-or-fiction',
   status: JourneyStatus.published,
   publishedAt: '2020-01-01T00:00:00.000Z',
   title: 'Fact or fiction',
+  blocks: null,
+  primaryImageBlock: null,
   userJourneys: []
 }
 

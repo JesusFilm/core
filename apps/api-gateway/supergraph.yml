@@ -3,3 +3,7 @@ subgraphs:
     routing_url: http://127.0.0.1:4001/graphql
     schema:
       file: ../api-journeys/schema.graphql
+  users:
+    routing_url: http://127.0.0.1:4002/graphql
+    schema:
+      file: ../api-users/schema.graphql
