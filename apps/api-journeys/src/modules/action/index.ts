@@ -1,1 +1,0 @@
-export { actionModule } from './action'

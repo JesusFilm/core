@@ -1,5 +1,84 @@
+"""DateTime custom scalar"""
+scalar DateTime
+
+"""IconName is equivalent to the icons found in @mui/icons-material"""
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+type Icon {
+  name: IconName!
+  color: IconColor
+  size: IconSize
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
 interface Action {
   gtmEventName: String
+}
+
+"""
+NavigateAction is an Action that navigates to the nextBlockId field set on the
+closest ancestor StepBlock.
+"""
+type NavigateAction implements Action {
+  gtmEventName: String
+}
+
+type NavigateToBlockAction implements Action {
+  gtmEventName: String
+  blockId: String!
+}
+
+type NavigateToJourneyAction implements Action {
+  gtmEventName: String
+  journeyId: String!
+  journey: Journey
+}
+
+type LinkAction implements Action {
+  gtmEventName: String
+  url: String!
+  target: String
 }
 
 interface Block {
@@ -7,16 +86,25 @@ interface Block {
   parentBlockId: ID
 }
 
-type ButtonBlock implements Block {
+type Journey @key(fields: "id") {
+  blocks: [Block!]
+  primaryImageBlock: ImageBlock
   id: ID!
-  parentBlockId: ID
-  label: String!
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  startIcon: Icon
-  endIcon: Icon
-  action: Action
+  title: String!
+  locale: String!
+  themeMode: ThemeMode!
+  themeName: ThemeName!
+  description: String
+  slug: String!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  status: JourneyStatus!
+  userJourneys: [UserJourney!]
+}
+
+enum ButtonVariant {
+  text
+  contained
 }
 
 enum ButtonColor {
@@ -32,9 +120,16 @@ enum ButtonSize {
   large
 }
 
-enum ButtonVariant {
-  text
-  contained
+type ButtonBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIcon: Icon
+  endIcon: Icon
+  action: Action
 }
 
 type CardBlock implements Block {
@@ -71,7 +166,38 @@ type CardBlock implements Block {
   themeName: ThemeName
 }
 
-scalar DateTime
+input CardBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput {
+  parentBlockId: ID
+  backgroundColor: String
+  coverBlockId: ID
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+enum GridDirection {
+  columnReverse
+  column
+  row
+  rowReverse
+}
+
+enum GridJustifyContent {
+  flexStart
+  flexEnd
+  center
+}
 
 enum GridAlignItems {
   baseline
@@ -89,72 +215,12 @@ type GridContainerBlock implements Block {
   alignItems: GridAlignItems!
 }
 
-enum GridDirection {
-  columnReverse
-  column
-  row
-  rowReverse
-}
-
 type GridItemBlock implements Block {
   id: ID!
   parentBlockId: ID
   xl: Int!
   lg: Int!
   sm: Int!
-}
-
-enum GridJustifyContent {
-  flexStart
-  flexEnd
-  center
-}
-
-type Icon {
-  name: IconName!
-  color: IconColor
-  size: IconSize
-}
-
-enum IconColor {
-  primary
-  secondary
-  action
-  error
-  disabled
-  inherit
-}
-
-"""IconName is equivalent to the icons found in @mui/icons-material"""
-enum IconName {
-  PlayArrowRounded
-  TranslateRounded
-  CheckCircleRounded
-  RadioButtonUncheckedRounded
-  FormatQuoteRounded
-  LockOpenRounded
-  ArrowForwardRounded
-  ChatBubbleOutlineRounded
-  LiveTvRounded
-  MenuBookRounded
-  ChevronRightRounded
-  BeenhereRounded
-  SendRounded
-  SubscriptionsRounded
-  ContactSupportRounded
-}
-
-enum IconSize {
-  sm
-  md
-  lg
-  xl
-  inherit
-}
-
-enum IdType {
-  databaseId
-  slug
 }
 
 type ImageBlock implements Block {
@@ -183,100 +249,11 @@ input ImageBlockCreateInput {
   alt: String!
 }
 
-type Journey @key(fields: "id") {
-  id: ID!
-  title: String!
-  locale: String!
-  themeMode: ThemeMode!
-  themeName: ThemeName!
-  description: String
-  slug: String!
-  publishedAt: DateTime
-  createdAt: DateTime!
-  status: JourneyStatus!
-  blocks: [Block!]
-  primaryImageBlock: ImageBlock
-  userJourneys: [UserJourney!]
-}
-
-input JourneyCreateInput {
-  """
-  ID should be unique Response UUID
-  (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  title: String!
-  locale: String
-  themeMode: ThemeMode
-  themeName: ThemeName
-  description: String
-
-  """
-  Slug should be unique amongst all journeys
-  (server will throw BAD_USER_INPUT error if not)
-  """
-  slug: String!
-}
-
-enum JourneyStatus {
-  draft
-  published
-}
-
-input JourneyUpdateInput {
-  id: ID!
-  title: String
-  locale: String
-  themeMode: ThemeMode
-  themeName: ThemeName
-  description: String
-  primaryImageBlockId: ID
-  slug: String
-}
-
-type LinkAction implements Action {
-  gtmEventName: String
-  url: String!
-  target: String
-}
-
-extend type Mutation {
-  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  journeyCreate(input: JourneyCreateInput!): Journey!
-  journeyUpdate(input: JourneyUpdateInput!): Journey!
-  journeyPublish(id: ID!): Journey
-  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  userJourneyApprove(id: ID!): UserJourney!
-  userJourneyPromote(id: ID!): UserJourney!
-  userJourneyRemove(id: ID!): UserJourney!
-  userJourneyRequest(journeyId: ID!): UserJourney!
-  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
-}
-
-"""
-NavigateAction is an Action that navigates to the nextBlockId field set on the
-closest ancestor StepBlock.
-"""
-type NavigateAction implements Action {
-  gtmEventName: String
-}
-
-type NavigateToBlockAction implements Action {
-  gtmEventName: String
-  blockId: String!
-}
-
-type NavigateToJourneyAction implements Action {
-  gtmEventName: String
-  journeyId: String!
-  journey: Journey
-}
-
-extend type Query {
-  journeys(status: JourneyStatus): [Journey!]!
-  journey(id: ID!, idType: IdType): Journey
-  me: User
+input ImageBlockUpdateInput {
+  parentBlockId: ID
+  journeyId: ID
+  src: String
+  alt: String
 }
 
 type RadioOptionBlock implements Block {
@@ -293,51 +270,12 @@ type RadioQuestionBlock implements Block {
   description: String
 }
 
-type RadioQuestionResponse implements Response {
-  id: ID!
-  userId: ID!
-  radioOptionBlockId: ID!
-  block: RadioQuestionBlock
-}
-
-input RadioQuestionResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-}
-
-interface Response {
-  id: ID!
-  userId: ID!
-}
-
 type SignUpBlock implements Block {
   id: ID!
   parentBlockId: ID
   action: Action
   submitIcon: Icon
   submitLabel: String
-}
-
-type SignUpResponse implements Response {
-  id: ID!
-  userId: ID!
-  name: String!
-  email: String!
-  block: SignUpBlock
-}
-
-input SignUpResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  name: String!
-  email: String!
 }
 
 type StepBlock implements Block {
@@ -359,34 +297,18 @@ type StepBlock implements Block {
   parentBlockId: ID
 }
 
-enum ThemeMode {
-  light
-  dark
-}
-
-enum ThemeName {
-  base
-}
-
-enum TypographyAlign {
-  left
-  center
-  right
-}
-
-type TypographyBlock implements Block {
-  id: ID!
+input StepBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  nextBlockId: ID
+  locked: Boolean
   parentBlockId: ID
-  content: String!
-  variant: TypographyVariant
-  color: TypographyColor
-  align: TypographyAlign
 }
 
-enum TypographyColor {
-  primary
-  secondary
-  error
+input StepBlockUpdateInput {
+  nextBlockId: ID
+  locked: Boolean
+  parentBlockId: ID
 }
 
 enum TypographyVariant {
@@ -404,32 +326,38 @@ enum TypographyVariant {
   overline
 }
 
-type User @key(fields: "id") {
-  id: ID!
-  firstName: String!
-  lastName: String
-  email: String!
-  imageUrl: String
+enum TypographyColor {
+  primary
+  secondary
+  error
 }
 
-type UserJourney {
-  id: ID!
-  userId: ID!
-  journeyId: ID!
-  role: UserJourneyRole!
-  journey: Journey
-  user: User
+enum TypographyAlign {
+  left
+  center
+  right
 }
 
-enum UserJourneyRole {
-  inviteRequested
-  editor
-  owner
+type TypographyBlock implements Block {
+  id: ID!
+  parentBlockId: ID
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+interface VideoContent {
+  src: String!
 }
 
 type VideoArclight implements VideoContent {
   mediaComponentId: String!
   languageId: String!
+  src: String!
+}
+
+type VideoGeneric implements VideoContent {
   src: String!
 }
 
@@ -456,36 +384,56 @@ type VideoBlock implements Block {
   posterBlockId: ID
 }
 
-interface VideoContent {
-  src: String!
+input VideoContentInput {
+  mediaComponentId: String
+  languageId: String
+  src: String
 }
 
-type VideoGeneric implements VideoContent {
-  src: String!
-}
-
-type VideoResponse implements Response {
-  id: ID!
-  userId: ID!
-  state: VideoResponseStateEnum!
-  position: Int
-  block: VideoBlock
-}
-
-input VideoResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
+input VideoBlockCreateInput {
   id: ID
-  blockId: ID!
-  state: VideoResponseStateEnum!
-  position: Float
+  journeyId: ID!
+  parentBlockId: ID
+  title: String!
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContentInput!
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
 }
 
-enum VideoResponseStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+input VideoBlockUpdateInput {
+  parentBlockId: ID
+  title: String
+
+  """startAt dictates at which point of time the video should start playing"""
+  startAt: Int
+
+  """endAt dictates at which point of time the video should end"""
+  endAt: Int
+  description: String
+  muted: Boolean
+  autoplay: Boolean
+  videoContent: VideoContentInput
+
+  """
+  posterBlockId is present if a child block should be used as a poster.
+  This child block should not be rendered normally, instead it should be used
+  as the video poster. PosterBlock should be of type ImageBlock.
+  """
+  posterBlockId: ID
 }
 
 """
@@ -502,4 +450,146 @@ type VideoTriggerBlock implements Block {
   """
   triggerStart: Int!
   action: Action!
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+enum JourneyStatus {
+  draft
+  published
+}
+
+input JourneyCreateInput {
+  """
+  ID should be unique Response UUID
+  (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  title: String!
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+
+  """
+  Slug should be unique amongst all journeys
+  (server will throw BAD_USER_INPUT error if not)
+  """
+  slug: String!
+}
+
+input JourneyUpdateInput {
+  title: String
+  locale: String
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  primaryImageBlockId: ID
+  slug: String
+}
+
+type UserJourney @key(fields: "id") {
+  journey: Journey
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+}
+
+input RadioQuestionResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
+type RadioQuestionResponse implements Response {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
+interface Response {
+  id: ID!
+  userId: ID!
+}
+
+input SignUpResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
+}
+
+type SignUpResponse implements Response {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+enum VideoResponseStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoResponseStateEnum!
+  position: Float
+}
+
+type VideoResponse implements Response {
+  id: ID!
+  userId: ID!
+  state: VideoResponseStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+extend type Mutation {
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock!
+  imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
+  imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
+  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
+  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  journeyPublish(id: ID!): Journey
+  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
+  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!): UserJourney!
+}
+
+extend type Query {
+  journeys(status: JourneyStatus): [Journey!]!
+  journey(id: ID!, idType: IdType): Journey
 }

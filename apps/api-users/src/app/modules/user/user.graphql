@@ -1,0 +1,14 @@
+type User @key(fields: "id") {
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: String!
+  imageUrl: String
+}
+extend type UserJourney @key(fields: "id") {
+  id: ID! @external
+  user: User
+}
+extend type Query {
+  me: User
+}
