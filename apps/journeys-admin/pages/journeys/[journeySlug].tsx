@@ -96,6 +96,9 @@ export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
             blocks {
               ...BlockFields
             }
+            primaryImageBlock {
+              src
+            }
             userJourneys {
               id
               userId

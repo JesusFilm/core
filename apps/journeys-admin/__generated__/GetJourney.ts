@@ -329,6 +329,11 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
+export interface GetJourney_journey_primaryImageBlock {
+  __typename: "ImageBlock";
+  src: string;
+}
+
 export interface GetJourney_journey_userJourneys_user {
   __typename: "User";
   id: string;
@@ -358,6 +363,7 @@ export interface GetJourney_journey {
   createdAt: any;
   publishedAt: any | null;
   blocks: GetJourney_journey_blocks[] | null;
+  primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;
 }
 
