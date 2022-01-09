@@ -9,7 +9,6 @@ import {
 } from '@mui/icons-material'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { useJourney } from '../../Context'
-import { ShareSection } from '../../ShareSection'
 
 export function JourneyDetails(): ReactElement {
   const journey = useJourney()
@@ -49,7 +48,6 @@ export function JourneyDetails(): ReactElement {
           {journey.locale}
         </Typography>
       </Box>
-      <ShareSection slug={journey.slug} />
     </>
   )
 }

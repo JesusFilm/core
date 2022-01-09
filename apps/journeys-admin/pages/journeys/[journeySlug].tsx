@@ -17,7 +17,6 @@ import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS
 } from '../../src/components/InviteUserModal'
-import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface JourneyViewPageProps {
   journey: Journey
@@ -60,7 +59,6 @@ function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
         )}
       </Head>
       <JourneyProvider value={journey}>
-        <JourneysAppBar variant="view" />
         <JourneyView />
         <Box sx={{ m: 10 }}>
           <Typography variant={'h2'}>{journey.title}</Typography>

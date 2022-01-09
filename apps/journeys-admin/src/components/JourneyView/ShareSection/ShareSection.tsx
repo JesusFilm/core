@@ -60,7 +60,7 @@ export function ShareSection({
   }
 
   return (
-    <Box sx={{ px: 2, py: 3 }}>
+    <Box>
       {breakpoints.md ? (
         <Stack spacing={6} direction="column">
           <Typography variant="subtitle2">Journey URL</Typography>
