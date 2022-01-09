@@ -46,7 +46,6 @@ describe('UserJourneyService', () => {
   const journey = {
     id: '1',
     title: 'published',
-    published: true,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,

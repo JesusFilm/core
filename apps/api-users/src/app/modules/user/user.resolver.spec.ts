@@ -21,23 +21,22 @@ describe('Step', () => {
     imageUrl: 'po'
   }
 
-  const userService = {
-    provide: UserService,
-    useFactory: () => ({
-      get: jest.fn(() => user),
-      getAll: jest.fn(() => [user, user]),
-      save: jest.fn((input) => input)
-    })
-  }
-
   beforeEach(async () => {
+    const userService = {
+      provide: UserService,
+      useFactory: () => ({
+        get: jest.fn(() => user),
+        getAll: jest.fn(() => [user, user]),
+        save: jest.fn((input) => input)
+      })
+    }
     const module: TestingModule = await Test.createTestingModule({
       providers: [UserResolver, userService]
     }).compile()
     resolver = module.get<UserResolver>(UserResolver)
   })
 
-  describe('User', () => {
+  describe('me', () => {
     it('returns User', async () => {
       expect(await resolver.me(user._key)).toEqual(userResponse)
     })

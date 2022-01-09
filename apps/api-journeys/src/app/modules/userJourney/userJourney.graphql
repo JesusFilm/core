@@ -7,7 +7,7 @@ enum UserJourneyRole {
 extend type Journey {
   userJourneys: [UserJourney!]
 }
-type UserJourney {
+type UserJourney @key(fields: "id") {
   id: ID!
   userId: ID!
   journeyId: ID!

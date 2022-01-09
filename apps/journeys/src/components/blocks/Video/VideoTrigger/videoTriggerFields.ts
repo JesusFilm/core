@@ -7,7 +7,7 @@ export const VIDEO_TRIGGER_FIELDS = gql`
     id
     parentBlockId
     triggerStart
-    action: action {
+    triggerAction: action {
       ...ActionFields
     }
   }

@@ -150,7 +150,6 @@ export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;
   radioOptionBlockId: string;
-  type?: string | null;
 }
 
 export interface SignUpResponseCreateInput {
@@ -158,7 +157,6 @@ export interface SignUpResponseCreateInput {
   email: string;
   id?: string | null;
   name: string;
-  type?: string | null;
 }
 
 export interface VideoResponseCreateInput {
@@ -166,7 +164,6 @@ export interface VideoResponseCreateInput {
   id?: string | null;
   position?: number | null;
   state: VideoResponseStateEnum;
-  type?: string | null;
 }
 
 //==============================================================

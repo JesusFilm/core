@@ -10,13 +10,9 @@
   ],
   "exclude": [
     "../**/*.spec.ts",
-    "../**/*.test.ts",
     "../**/*.spec.js",
-    "../**/*.test.js",
     "../**/*.spec.tsx",
-    "../**/*.test.tsx",
-    "../**/*.spec.jsx",
-    "../**/*.test.jsx"
+    "../**/*.spec.jsx"
   ],
   "include": [
     "../src/**/*.stories.ts",

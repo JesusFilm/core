@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { BlockService } from './block.service'
-import { ThemeMode, ThemeName } from '../../__generated__/graphql'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../__generated__/graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
@@ -43,6 +47,19 @@ describe('BlockService', () => {
     fullscreen: true
   }
 
+  const journey = {
+    id: '1',
+    title: 'published',
+    createdAt: '1234',
+    status: JourneyStatus.published,
+    locale: 'en-US',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlockId: null,
+    slug: 'published-slug'
+  }
+
   describe('getAll', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
@@ -52,6 +69,18 @@ describe('BlockService', () => {
 
     it('should return an array of journeys', async () => {
       expect(await service.getAll()).toEqual([block, block])
+    })
+  })
+
+  describe('forJourney', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [block, block])
+      )
+    })
+
+    it('should return an array of journeys', async () => {
+      expect(await service.forJourney(journey)).toEqual([block, block])
     })
   })
 

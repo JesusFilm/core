@@ -246,7 +246,6 @@ type Journey
   id: ID! @join__field(graph: JOURNEYS)
   locale: String! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
-  published: Boolean! @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
@@ -270,10 +269,10 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
   """
-  slug: String
+  slug: String!
   themeMode: ThemeMode
   themeName: ThemeName
-  title: String
+  title: String!
 }
 
 enum JourneyStatus {
@@ -495,13 +494,17 @@ type User
   lastName: String @join__field(graph: USERS)
 }
 
-type UserJourney {
-  id: ID!
-  journey: Journey
-  journeyId: ID!
-  role: UserJourneyRole!
+type UserJourney
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: USERS, key: "id")
+{
+  id: ID! @join__field(graph: JOURNEYS)
+  journey: Journey @join__field(graph: JOURNEYS)
+  journeyId: ID! @join__field(graph: JOURNEYS)
+  role: UserJourneyRole! @join__field(graph: JOURNEYS)
   user: User @join__field(graph: USERS)
-  userId: ID!
+  userId: ID! @join__field(graph: JOURNEYS)
 }
 
 enum UserJourneyRole {
@@ -629,7 +632,7 @@ VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block {
-  action: Action
+  action: Action!
   id: ID!
   parentBlockId: ID
 

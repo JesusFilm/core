@@ -14,6 +14,9 @@ import {
   JourneyCreateInput,
   JourneyStatus,
   JourneyUpdateInput,
+  ThemeMode,
+  ThemeName,
+  UserJourney,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
@@ -41,12 +44,15 @@ export class JourneyResolvers {
 
   @Query()
   @KeyAsId()
-  async journeys(@Args('status') status: JourneyStatus): Promise<Journey[]> {
-    const result =
-      status === JourneyStatus.published
-        ? await this.journeyService.getAllPublishedJourneys()
-        : await this.journeyService.getAllDraftJourneys()
-    return result.map(resolveStatus)
+  async journeys(@Args('status') status?: JourneyStatus): Promise<Journey[]> {
+    switch (status) {
+      case JourneyStatus.published:
+        return await this.journeyService.getAllPublishedJourneys()
+      case JourneyStatus.draft:
+        return await this.journeyService.getAllDraftJourneys()
+      default:
+        return await this.journeyService.getAll()
+    }
   }
 
   @Query()
@@ -73,9 +79,14 @@ export class JourneyResolvers {
       input.slug = slugify(input.slug ?? input.title, {
         remove: /[*+~.()'"!:@#]/g
       })
-    const journey: Journey & { _key: string } = await this.journeyService.save(
-      input
-    )
+    const journey: Journey & { _key: string } = await this.journeyService.save({
+      ...input,
+      createdAt: new Date().toISOString(),
+      themeName: input.themeName ?? ThemeName.base,
+      themeMode: input.themeMode ?? ThemeMode.light,
+      locale: input.locale ?? 'en-US',
+      status: JourneyStatus.draft
+    })
     await this.userJourneyService.save({
       userId,
       journeyId: journey._key,
@@ -88,8 +99,7 @@ export class JourneyResolvers {
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyUpdate(
     @Args('id') id: string,
-    @Args('input') input: JourneyUpdateInput,
-    @CurrentUserId() userId: string
+    @Args('input') input: JourneyUpdateInput
   ): Promise<Journey> {
     if (input.slug != null)
       input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
@@ -98,27 +108,31 @@ export class JourneyResolvers {
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyPublish(
-    @Args('id') id: string,
-    @CurrentUserId() userId: string
-  ): Promise<Journey> {
+  async journeyPublish(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
+      status: JourneyStatus.published,
       publishedAt: new Date().toISOString()
     })
   }
 
-  @ResolveField('blocks')
+  @ResolveField()
   @KeyAsId()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
   }
 
-  @ResolveField('primaryImageBlock')
+  @ResolveField()
   @KeyAsId()
   async primaryImageBlock(
     @Parent() journey: Journey
   ): Promise<ImageBlock | null> {
     if (journey.primaryImageBlock?.id == null) return null
     return await this.blockService.get(journey.primaryImageBlock.id)
+  }
+
+  @ResolveField()
+  @KeyAsId()
+  async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
+    return await this.userJourneyService.forJourney(journey)
   }
 }

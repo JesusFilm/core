@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import {
+  IdType,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -21,7 +22,7 @@ describe('Journey', () => {
   const journey = {
     _key: '1',
     title: 'published',
-    published: true,
+    status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -69,7 +70,6 @@ describe('Journey', () => {
   const journeyresponse = {
     id: '1',
     title: 'published',
-    published: true,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -81,10 +81,44 @@ describe('Journey', () => {
     status: JourneyStatus.published
   }
 
+  const pijourneyresponse = {
+    id: '1',
+    title: 'published',
+    locale: 'en-US',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlock: {
+      id: '2',
+      src: '',
+      width: 1,
+      height: 1,
+      alt: '',
+      blurhash: ''
+    },
+    slug: 'published-slug',
+    createdAt,
+    publishedAt,
+    status: JourneyStatus.published
+  }
+
+  const pijourneyresponsenull = {
+    id: '1',
+    title: 'published',
+    locale: 'en-US',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    description: null,
+    primaryImageBlock: null,
+    slug: 'published-slug',
+    createdAt,
+    publishedAt,
+    status: JourneyStatus.published
+  }
+
   const draftJourneyResponse = {
     id: '1',
     title: 'unpublished',
-    published: true,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
@@ -98,6 +132,13 @@ describe('Journey', () => {
 
   const userJourney = {
     _key: '1',
+    userId: '1',
+    journeyId: '1',
+    role: UserJourneyRole.editor
+  }
+
+  const userJourneyResponse = {
+    id: '1',
     userId: '1',
     journeyId: '1',
     role: UserJourneyRole.editor
@@ -120,7 +161,9 @@ describe('Journey', () => {
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
+      get: jest.fn(() => journey),
       getBySlug: jest.fn(() => journey),
+      getAll: jest.fn(() => [journey, journey]),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
       getAllDraftJourneys: jest.fn(() => [
         draftJourneyResponse,
@@ -149,6 +192,7 @@ describe('Journey', () => {
         return userJourney
       }),
       save: jest.fn((input) => input),
+      forJourney: jest.fn(() => [userJourney, userJourney]),
       forJourneyUser: jest.fn((journeyId, userId) => {
         if (userId === ownerUserJourney.userId) return ownerUserJourney
         if (userId === invitedUserJourney.userId) return invitedUserJourney
@@ -172,32 +216,43 @@ describe('Journey', () => {
     ujService = module.get<UserJourneyService>(UserJourneyService)
   })
 
-  describe('published Journey', () => {
+  describe('journey', () => {
     it('returns Journey', async () => {
-      expect(await resolver.journey('1')).toEqual(journeyresponse)
+      expect(await resolver.journey('slug')).toEqual(journeyresponse)
+      expect(service.getBySlug).toHaveBeenCalledWith('slug')
+    })
+
+    it('returns Journey by id', async () => {
+      expect(await resolver.journey('1', IdType.databaseId)).toEqual(
+        journeyresponse
+      )
+      expect(service.get).toHaveBeenCalledWith('1')
+    })
+  })
+
+  describe('journeys', () => {
+    it('should get published journeys', async () => {
       expect(await resolver.journeys(JourneyStatus.published)).toEqual([
         journeyresponse,
         journeyresponse
       ])
-    })
-
-    it('should get published journeys', async () => {
-      await resolver.journeys(JourneyStatus.published)
       expect(service.getAllPublishedJourneys).toHaveBeenCalled()
     })
-  })
 
-  describe('draft Journey', () => {
-    it('returns Journey', async () => {
+    it('should get draft journeys', async () => {
       expect(await resolver.journeys(JourneyStatus.draft)).toEqual([
         draftJourneyResponse,
         draftJourneyResponse
       ])
+      expect(service.getAllDraftJourneys).toHaveBeenCalled()
     })
 
-    it('should get draft journeys', async () => {
-      await resolver.journeys(JourneyStatus.draft)
-      expect(service.getAllDraftJourneys).toHaveBeenCalled()
+    it('should get all journeys', async () => {
+      expect(await resolver.journeys()).toEqual([
+        journeyresponse,
+        journeyresponse
+      ])
+      expect(service.getAll).toHaveBeenCalled()
     })
   })
 
@@ -208,11 +263,16 @@ describe('Journey', () => {
   })
 
   // need working example to diagnose
-  xdescribe('primaryImageBlock', () => {
+  describe('primaryImageBlock', () => {
     it('returns primaryImageBlock', async () => {
-      expect(await resolver.primaryImageBlock(journeyresponse)).toEqual([
+      expect(await resolver.primaryImageBlock(pijourneyresponse)).toEqual(
         blockresponse
-      ])
+      )
+    })
+    it('should return null', async () => {
+      expect(await resolver.primaryImageBlock(pijourneyresponsenull)).toEqual(
+        null
+      )
     })
   })
 
@@ -232,13 +292,13 @@ describe('Journey', () => {
   describe('updateJourney', () => {
     it('updates a Journey', async () => {
       await resolver
-        .journeyUpdate('1', journeyupdate, ownerUserJourney._key)
+        .journeyUpdate('1', journeyupdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
     })
     it('updates a Journey 2', async () => {
       await resolver
-        .journeyUpdate('1', journeyupdate, userJourney._key)
+        .journeyUpdate('1', journeyupdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
     })
@@ -248,12 +308,21 @@ describe('Journey', () => {
     it('publishes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver
-        .journeyPublish('1', ownerUserJourney._key)
-        .catch((err) => console.log(err))
+      await resolver.journeyPublish('1').catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
+        status: JourneyStatus.published,
         publishedAt: '2021-12-07T03:22:41.135Z'
       })
+    })
+  })
+
+  describe('userJourneys', () => {
+    it('should get userJourneys', async () => {
+      expect(await resolver.userJourneys(journeyresponse)).toEqual([
+        userJourneyResponse,
+        userJourneyResponse
+      ])
+      expect(ujService.forJourney).toHaveBeenCalledWith(journeyresponse)
     })
   })
 })

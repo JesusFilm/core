@@ -289,36 +289,36 @@ export interface GetJourney_journey_blocks_VideoBlock {
   videoContent: GetJourney_journey_blocks_VideoBlock_videoContent;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
   __typename: "NavigateAction";
   gtmEventName: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToBlockAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction_journey {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction_journey | null;
+  journey: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
-export interface GetJourney_journey_blocks_VideoTriggerBlock_action_LinkAction {
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   gtmEventName: string | null;
   url: string;
 }
 
-export type GetJourney_journey_blocks_VideoTriggerBlock_action = GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_VideoTriggerBlock_action_LinkAction;
+export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction;
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -329,7 +329,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  action: GetJourney_journey_blocks_VideoTriggerBlock_action | null;
+  triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;

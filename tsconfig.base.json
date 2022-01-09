@@ -16,7 +16,6 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@core/api-users": ["apps/api-users/index.ts"],
       "@core/journeys/ui": ["libs/journeys/ui/src/index.ts"],
       "@core/nest/database": ["libs/nest/database/src/index.ts"],
       "@core/nest/decorators": ["libs/nest/decorators/src/index.ts"],

@@ -123,4 +123,11 @@ export class UserJourneyResolver {
   async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
     return await this.journeyService.get(userJourney.journeyId)
   }
+
+  @ResolveField('user')
+  async user(
+    @Parent() userJourney: UserJourney
+  ): Promise<{ __typename: string; id: string }> {
+    return { __typename: 'User', id: userJourney.userId }
+  }
 }
