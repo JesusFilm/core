@@ -5,13 +5,16 @@ import {
   Tab,
   Tabs,
   TextField,
-  Typography
+  Theme,
+  Typography,
+  useMediaQuery
 } from '@mui/material'
 import { Colorize } from '@mui/icons-material'
 import { RgbaStringColorPicker } from 'react-colorful'
 import PropTypes from 'prop-types'
 import Stack from '@mui/material/Stack'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import SwiperCore from 'swiper'
 
 interface BackgroundColorProps {
   id: string
@@ -74,11 +77,18 @@ export function BackgroundColor({
   id,
   backgroundColor
 }: BackgroundColorProps): ReactElement {
-  const [color, setColor] = useState(backgroundColor ?? '#aabbcc')
+  const [color, setColor] = useState(backgroundColor ?? '#FFFFFF')
   const [tabValue, setTabValue] = useState(0)
+  const [swiper] = useState<SwiperCore>()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const handleTabChange = (event, newValue): void => {
     setTabValue(newValue)
   }
+
+  if (swiper != null && themeColors.includes(color)) {
+    swiper.slideTo(themeColors.findIndex((col) => col === color))
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ px: 6, py: 4 }}>
@@ -99,53 +109,99 @@ export function BackgroundColor({
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Colorize onClick={(e) => handleTabChange(e, 1)}></Colorize>
+                  <Colorize
+                    onClick={(e) => handleTabChange(e, 1)}
+                    style={{ cursor: 'pointer' }}
+                  ></Colorize>
                 </InputAdornment>
               )
             }}
           ></TextField>
         </Stack>
       </Box>
-      <Box sx={{ px: 6, py: 4 }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="background tabs"
-          centered
-        >
-          <Tab label="Theme" {...tabProps(0)}></Tab>
-          <Tab label="Custom" {...tabProps(1)}></Tab>
-        </Tabs>
-      </Box>
-      <TabPanel value={tabValue} index={0}>
-        <Swiper
-          slidesPerView={'auto'}
-          spaceBetween={12}
-          style={{ height: 125 }}
-        >
-          {themeColors.map((col) => (
-            <SwiperSlide key={col} style={{ width: 56 }}>
-              <Box
-                sx={{
-                  backgroundColor: col,
-                  width: 56,
-                  height: 56,
-                  border: 1,
-                  borderRadius: 2
-                }}
-                onClick={() => setColor(col)}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </TabPanel>
-      <TabPanel value={tabValue} index={1}>
-        <RgbaStringColorPicker
-          color={color}
-          onChange={setColor}
-          style={{ width: 'auto', height: 125 }}
-        />
-      </TabPanel>
+      {!smUp && (
+        <>
+          <Box sx={{ px: 6, py: 4 }}>
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              aria-label="background tabs"
+              centered
+            >
+              <Tab label="Theme" {...tabProps(0)}></Tab>
+              <Tab label="Custom" {...tabProps(1)}></Tab>
+            </Tabs>
+          </Box>
+          <TabPanel value={tabValue} index={0}>
+            <Swiper
+              slidesPerView={'auto'}
+              spaceBetween={12}
+              style={{ height: 125 }}
+            >
+              {themeColors.map((col, index) => (
+                <SwiperSlide key={index} style={{ width: 56 }}>
+                  <Box
+                    sx={{
+                      backgroundColor: col,
+                      width: 56,
+                      height: 56,
+                      border: 1,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      borderColor: col === color ? 'red' : ''
+                    }}
+                    onClick={() => setColor(col)}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            <RgbaStringColorPicker
+              color={color}
+              onChange={setColor}
+              style={{ width: 'auto', height: 125 }}
+            />
+          </TabPanel>
+        </>
+      )}
+      {smUp && (
+        <>
+          <Box sx={{ px: 6, py: 4 }}>Theme</Box>
+          <Box sx={{ px: 6 }}>
+            <Swiper
+              slidesPerView={'auto'}
+              spaceBetween={12}
+              style={{ height: 125 }}
+            >
+              {themeColors.map((col, index) => (
+                <SwiperSlide key={index} style={{ width: 56 }}>
+                  <Box
+                    sx={{
+                      backgroundColor: col,
+                      width: 56,
+                      height: 56,
+                      border: 1,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      borderColor: col === color ? 'red' : ''
+                    }}
+                    onClick={() => setColor(col)}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </Box>
+          <Box sx={{ px: 6, py: 4 }}>Custom</Box>
+          <Box sx={{ px: 6 }}>
+            <RgbaStringColorPicker
+              color={color}
+              onChange={setColor}
+              style={{ width: 'auto', height: 125 }}
+            />
+          </Box>
+        </>
+      )}
     </Box>
   )
 }
