@@ -110,8 +110,7 @@ export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
             }
           }
         }
-      }
-    `,
+      `,
       variables: {
         id: context.query.journeySlug
       }
