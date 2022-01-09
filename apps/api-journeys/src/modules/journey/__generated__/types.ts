@@ -6,6 +6,7 @@ export namespace JourneyModule {
     Journey: 'id' | 'title' | 'locale' | 'themeMode' | 'themeName' | 'description' | 'slug' | 'publishedAt' | 'createdAt' | 'status';
     Query: 'journeys' | 'journey';
     Mutation: 'journeyCreate' | 'journeyUpdate' | 'journeyPublish';
+    UserJourney: 'journey';
     NavigateToJourneyAction: 'journey';
   };
   
@@ -29,6 +30,7 @@ export namespace JourneyModule {
   export type Query = Pick<Types.Query, DefinedFields['Query']>;
   export type JourneyCreateInput = Pick<Types.JourneyCreateInput, DefinedInputFields['JourneyCreateInput']>;
   export type JourneyUpdateInput = Pick<Types.JourneyUpdateInput, DefinedInputFields['JourneyUpdateInput']>;
+  export type UserJourney = Types.UserJourney;
   export type Mutation = Pick<Types.Mutation, DefinedFields['Mutation']>;
   export type NavigateToJourneyAction = Types.NavigateToJourneyAction;
   
@@ -38,12 +40,14 @@ export namespace JourneyModule {
   export type JourneyResolvers = Pick<Types.JourneyResolvers, DefinedFields['Journey'] | '__isTypeOf'>;
   export type QueryResolvers = Pick<Types.QueryResolvers, DefinedFields['Query']>;
   export type MutationResolvers = Pick<Types.MutationResolvers, DefinedFields['Mutation']>;
+  export type UserJourneyResolvers = Pick<Types.UserJourneyResolvers, DefinedFields['UserJourney']>;
   export type NavigateToJourneyActionResolvers = Pick<Types.NavigateToJourneyActionResolvers, DefinedFields['NavigateToJourneyAction']>;
   
   export interface Resolvers {
     Journey?: JourneyResolvers;
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
+    UserJourney?: UserJourneyResolvers;
     NavigateToJourneyAction?: NavigateToJourneyActionResolvers;
     DateTime?: Types.Resolvers['DateTime'];
   };
@@ -68,6 +72,10 @@ export namespace JourneyModule {
     Query?: {
       '*'?: gm.Middleware[];
       journeys?: gm.Middleware[];
+      journey?: gm.Middleware[];
+    };
+    UserJourney?: {
+      '*'?: gm.Middleware[];
       journey?: gm.Middleware[];
     };
     Mutation?: {

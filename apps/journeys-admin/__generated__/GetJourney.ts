@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { JourneyStatus, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -329,6 +329,24 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
+export interface GetJourney_journey_userJourneys_user {
+  __typename: "User";
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string;
+  imageUrl: string | null;
+}
+
+export interface GetJourney_journey_userJourneys {
+  __typename: "UserJourney";
+  id: string;
+  userId: string;
+  journeyId: string;
+  role: UserJourneyRole;
+  user: GetJourney_journey_userJourneys_user | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -340,6 +358,7 @@ export interface GetJourney_journey {
   createdAt: any;
   publishedAt: any | null;
   blocks: GetJourney_journey_blocks[] | null;
+  userJourneys: GetJourney_journey_userJourneys[] | null;
 }
 
 export interface GetJourney {
