@@ -84,11 +84,13 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
 
-1. Make a copy of `apps/api-gateway/.env` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
+1. Make a copy of `apps/api-gateway/.env.example` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
+1. Make a copy of `apps/api-journeys/.env.example` with the file name `apps/api-journeys/.env.local`. Open the file and set up your own environment variables.
+1. Make a copy of `apps/api-users/.env.example` with the file name `apps/api-users/.env.local`. Open the file and set up your own environment variables.
 1. Make a copy of `apps/journeys/.env` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
 1. Make a copy of `apps/journeys-admin/.env` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
-1. run `nx run api-journeys:migrations`
 1. run `nx run api-journeys:seed`
+1. run `nx run api-users:seed`
 1. Starting the projects
    - run `nx run journeys:serve-all`
    - run `nx run journeys-admin:serve-all`

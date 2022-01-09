@@ -7,14 +7,9 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then groupmod --gid $USER_GID node && usermod --uid $USER_UID --gid $USER_GID node; fi
 
-# https://www.postgresql.org/download/linux/debian/
-# required to install postgresql-client-12
-RUN sh -c 'echo "deb [signed-by=/usr/share/keyrings/postgresql-archive.keyring.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/postgresql-archive.keyring.gpg
-
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends postgresql-client-13 gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev
+    && apt-get -y install --no-install-recommends gnupg2 libpixman-1-dev libcairo2-dev libpango1.0-dev
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10

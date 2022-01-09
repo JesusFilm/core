@@ -1,0 +1,82 @@
+{
+  "root": "apps/api-users",
+  "sourceRoot": "apps/api-users/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-users",
+        "main": "apps/api-users/src/main.ts",
+        "tsConfig": "apps/api-users/tsconfig.app.json",
+        "assets": ["apps/api-users/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-users/src/environments/environment.ts",
+              "with": "apps/api-users/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "seed": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx ts-node apps/api-users/db/seed.ts"
+      }
+    },
+    "serve-nowatch": {
+      "executor": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "api-users:build"
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve-nowatch api-users"
+          },
+          {
+            "command": "npx ts-node apps/api-users/src/generate-typings.ts"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-users/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-users"],
+      "options": {
+        "jestConfig": "apps/api-users/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4002/graphql > apps/api-users/schema.graphql"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material'
+import { palette } from './colors'
 
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
@@ -7,7 +8,20 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         root: {
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 'bold',
-          borderRadius: '1000px'
+          borderRadius: '1000px',
+          textTransform: 'none'
+        },
+        sizeSmall: {
+          fontSize: '14px',
+          fontWeight: 'normal'
+        },
+        sizeMedium: {
+          fontWeight: 700,
+          fontSize: '15px',
+          lineHeight: '18px',
+          padding: '6px 12px',
+          borderRadius: '12px',
+          margin: '26px 0px'
         }
       }
     },
@@ -25,8 +39,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       styleOverrides: {
         colorDefault: {
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #DCDDE5'
+          backgroundColor: palette[0]
         }
       }
     },
@@ -36,8 +49,11 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       styleOverrides: {
         dense: {
+          maxHeight: 48,
           paddingLeft: 24,
-          paddingRight: 24
+          paddingRight: 24,
+          borderBottom: '1px solid',
+          borderColor: palette[200]
         }
       }
     }

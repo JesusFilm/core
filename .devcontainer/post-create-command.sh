@@ -4,11 +4,11 @@
 sudo chown node -R /workspaces
 sudo chgrp node -R /workspaces
 
-# add default user to postgres
-psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
-
 # install Nx CLI tool
 npm install -g nx
+
+# install Nest CLI tool
+npm install -g @nestjs/cli@^8.1.5
 
 # install Rover CLI tool
 ./tools/scripts/install-rover.sh

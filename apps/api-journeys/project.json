@@ -9,7 +9,8 @@
       "options": {
         "outputPath": "dist/apps/api-journeys",
         "main": "apps/api-journeys/src/main.ts",
-        "tsConfig": "apps/api-journeys/tsconfig.app.json"
+        "tsConfig": "apps/api-journeys/tsconfig.app.json",
+        "assets": ["apps/api-journeys/src/assets"]
       },
       "configurations": {
         "production": {
@@ -25,23 +26,37 @@
         }
       }
     },
-    "serve": {
+    "seed": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx ts-node apps/api-journeys/db/seed.ts"
+      }
+    },
+    "serve-nowatch": {
       "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "api-journeys:build"
       }
     },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
-      },
-      "outputs": ["{options.outputFile}"]
-    },
-    "type-check": {
+    "serve": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+        "commands": [
+          {
+            "command": "nx serve-nowatch api-journeys"
+          },
+          {
+            "command": "npx ts-node apps/api-journeys/src/generate-typings.ts"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-journeys/**/*.ts"]
       }
     },
     "test": {
@@ -49,40 +64,11 @@
       "outputs": ["coverage/apps/api-journeys"],
       "options": {
         "jestConfig": "apps/api-journeys/jest.config.js",
-        "passWithNoTests": true
-      }
-    },
-    "generate": {
-      "executor": "@nx-tools/nx-prisma:generate",
-      "options": {
-        "schema": "apps/api-journeys/prisma/schema.prisma"
-      }
-    },
-    "migrations": {
-      "executor": "@nx-tools/nx-prisma:migrations",
-      "options": {
-        "schema": "apps/api-journeys/prisma/schema.prisma"
-      }
-    },
-    "rollback": {
-      "executor": "@nx-tools/nx-prisma:rollback",
-      "options": {
-        "schema": "apps/api-journeys/prisma/schema.prisma"
-      }
-    },
-    "seed": {
-      "executor": "@nx-tools/nx-prisma:seed",
-      "options": {
-        "script": "apps/api-journeys/prisma/seed.ts",
-        "tsConfig": "apps/api-journeys/tsconfig.app.json"
-      }
-    },
-    "codegen": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
+        "passWithNoTests": true,
+        "fileReplacements": [
           {
-            "command": "npx graphql-codegen --config apps/api-journeys/codegen.yml"
+            "replace": "apps/api-journeys/src/environments/environment.ts",
+            "with": "apps/api-journeys/src/environments/environment.testing.ts"
           }
         ]
       }
