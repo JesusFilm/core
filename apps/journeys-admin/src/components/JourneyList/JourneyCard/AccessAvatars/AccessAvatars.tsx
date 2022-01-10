@@ -23,7 +23,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       {users.slice(0, avatarsShown).map(
         (user) =>
           user != null && (
-            <Tooltip title={user.firstName} key={user.id}>
+            <Tooltip title={createToolTip(user)} key={user.id}>
               <Avatar
                 sx={{ width: 31, height: 31 }}
                 alt={user.firstName}
@@ -40,7 +40,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
             return (
               user != null && (
                 <p key={user.id} style={{ margin: '0px' }}>
-                  {user.firstName}
+                  {createToolTip(user)}
                 </p>
               )
             )
@@ -59,4 +59,12 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       )}
     </AvatarGroup>
   )
+}
+
+function createToolTip(user: GetJourneys_journeys_userJourneys_user): string {
+  let toolTip = user.firstName
+  if (user.lastName != null) {
+    toolTip += ` ${user.lastName}`
+  }
+  return toolTip
 }

@@ -26,32 +26,6 @@ describe('AccessAvatars', () => {
     expect(getByLabelText('Amin Person')).toBeInTheDocument()
   })
 
-  it('should use email as tooltip if user has no firstname', () => {
-    const props: AccessAvatarsProps = {
-      users: [{ ...user6, firstName: undefined }]
-    }
-    const { getByLabelText } = render(<AccessAvatars users={props.users} />)
-    expect(getByLabelText('grahamDrake@email.com')).toBeInTheDocument()
-  })
-
-  it('should use "No name or email available for this user" as tooltip if user has no firstname and no email', () => {
-    const props: AccessAvatarsProps = {
-      users: [{ ...user6, firstName: undefined, email: undefined }]
-    }
-    const { getByLabelText } = render(<AccessAvatars users={props.users} />)
-    expect(getByLabelText('Anonymous')).toBeInTheDocument()
-  })
-
-  it('should display generic avatar icon if user has no firstname, no email and no image', () => {
-    const props: AccessAvatarsProps = {
-      users: [
-        { ...user6, firstName: undefined, email: undefined, image: undefined }
-      ]
-    }
-    const { getByTestId } = render(<AccessAvatars users={props.users} />)
-    expect(getByTestId('PersonIcon')).toBeInTheDocument()
-  })
-
   it('should render overflow avatar with correct details', async () => {
     const props: AccessAvatarsProps = {
       users: [user1, user2, user3, user4, user5, user6]
