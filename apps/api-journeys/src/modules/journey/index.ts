@@ -1,1 +1,0 @@
-export { journeyModule } from './journey'

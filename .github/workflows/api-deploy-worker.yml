@@ -1,0 +1,126 @@
+name: API Deployment
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+    secrets:
+      ARANGODB_URL:
+        required: true
+      ARANGODB_USER:
+        required: true
+      ARANGODB_PASS:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_DEFAULT_REGION:
+        required: true
+      KUBE_CONFIG_DATA:
+        required: true
+
+jobs:
+  build-and-deploy:
+    environment: Production
+    env:
+      ENV_SUFFIX: ${{ github.ref_name }}
+      ECR_REPOSITORY: ${{ inputs.repository }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      IMAGE_TAG: ${{ github.sha }}
+      DATABASE_URL: ${{ secrets.ARANGODB_URL }}
+      DATABASE_USER: ${{ secrets.ARANGODB_USER }}
+      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+
+      - name: NPM Install
+        run: npm install --silent
+
+      - name: nx Install
+        run: npm install -g nx --silent
+
+      - name: Get affected apps
+        run: echo "::set-output name=apps::$(nx affected:apps plain)"
+        id: affected-apps
+
+      - name: Build ${{ inputs.name }}
+        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: build
+          projects: ${{ inputs.name }}
+
+      - name: Configure AWS credentials
+        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f apps/${{ inputs.name }}/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Deploy to Kubernetes cluster
+        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        with:
+          args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
+
+      - name: Verify Kubernetes deployment
+        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        uses: kodermax/kubectl-aws-eks@master
+        with:
+          args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
+
+      - name: Get affected app seed
+        run: echo "::set-output name=dbs::$(nx affected:apps plain --files apps/${{ inputs.name }}/db/seed.ts)"
+        id: affected-dbs
+
+      - name: Seed Database
+        if: contains(steps.affected-dbs.outputs.dbs, ${{ inputs.name }})
+        uses: mansagroup/nrwl-nx-action@v2
+        env:
+          DATABASE_DB: ${{ env.ENV_SUFFIX }}
+        with:
+          targets: seed
+          projects: ${{ inputs.name }}
