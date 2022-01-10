@@ -7,7 +7,10 @@ import { UserModule } from './modules/user/user.module'
   imports: [
     UserModule,
     GraphQLFederationModule.forRoot({
-      typePaths: [join(process.cwd(), 'apps/api-users/src/app/**/*.graphql')],
+      typePaths: [
+        join(process.cwd(), 'apps/api-users/src/app/**/*.graphql'),
+        join(process.cwd(), 'assets/**/*.graphql')
+      ],
       cors: true,
       context: ({ req }) => ({ headers: req.headers })
     })
