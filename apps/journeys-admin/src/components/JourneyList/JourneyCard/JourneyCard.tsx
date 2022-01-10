@@ -87,8 +87,12 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           pb: 4
         }}
       >
-        <Grid container spacing={2}>
-          {users != null && <AccessAvatars users={users} />}
+        <Grid container spacing={2} alignItems="center">
+          {users != null && (
+            <Grid item>
+              <AccessAvatars users={users} />
+            </Grid>
+          )}
 
           {journey.status === 'draft' ? (
             <>
