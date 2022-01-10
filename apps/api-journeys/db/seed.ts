@@ -12,7 +12,9 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
     await await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
-    await db.createCollection('responses', { keyOptions: { type: 'uuid' } })
+    await await db.createCollection('responses', {
+      keyOptions: { type: 'uuid' }
+    })
   } catch {}
   await db.collection('journeys').ensureIndex({
     type: 'persistent',
