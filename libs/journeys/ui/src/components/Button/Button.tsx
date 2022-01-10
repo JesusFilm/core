@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
 import { Button as MuiButton } from '@mui/material'
-import { Icon } from '../Icon'
-import { ButtonFields } from './__generated__/ButtonFields'
-import { handleAction } from '../..'
 import { useRouter } from 'next/router'
+import { Icon } from '../Icon'
+import { handleAction } from '../..'
+import { ButtonFields } from './__generated__/ButtonFields'
 
 export function Button({
   buttonVariant,

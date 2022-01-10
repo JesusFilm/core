@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import NextImage from 'next/image'
-import { TreeBlock } from '../..'
 import { SxProps } from '@mui/system'
 import { Theme, Box } from '@mui/material'
+import { TreeBlock } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
 interface ImageProps extends TreeBlock<ImageFields> {

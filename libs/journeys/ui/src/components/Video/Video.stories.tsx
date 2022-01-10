@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, journeyUiConfig } from '../..'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
-import { VideoFields } from './__generated__/VideoFields'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { VideoFields } from './__generated__/VideoFields'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 const Demo = {
   ...journeyUiConfig,
