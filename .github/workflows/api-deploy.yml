@@ -6,7 +6,7 @@ on:
       - stage
 jobs:
   api-journeys:
-    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-journeys
       repository: jfp-api-journeys
@@ -19,7 +19,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   api-users:
-    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
       name: api-users
       repository: jfp-api-users
@@ -34,7 +34,7 @@ jobs:
 
   api-gateway:
     needs: [api-journeys, api-users]
-    uses: JesusFilm/core/.github/workflows/api-gateway-worker.yml
+    uses: JesusFilm/core/.github/workflows/api-gateway-worker.yml@main
     with:
       name: api-gateway
       repository: jfp-api-gateway
