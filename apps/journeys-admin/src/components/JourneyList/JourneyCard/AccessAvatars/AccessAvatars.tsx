@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { Avatar, AvatarGroup, Tooltip } from '@mui/material'
-import { createToolTipTitle, createFallbackLetter } from './utils'
 import { useBreakpoints } from '@core/shared/ui'
 import { GetJourneys_journeys_userJourneys_user } from '../../../../../__generated__/GetJourneys'
 
@@ -24,13 +23,13 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
       {users.slice(0, avatarsShown).map(
         (user) =>
           user != null && (
-            <Tooltip title={`${createToolTipTitle(user)}`} key={user.id}>
+            <Tooltip title={user.firstName} key={user.id}>
               <Avatar
                 sx={{ width: 31, height: 31 }}
                 alt={user.firstName}
                 src={user.imageUrl ?? undefined}
               >
-                {createFallbackLetter(user)}
+                {user.firstName[0].toUpperCase()}
               </Avatar>
             </Tooltip>
           )
@@ -41,7 +40,7 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
             return (
               user != null && (
                 <p key={user.id} style={{ margin: '0px' }}>
-                  {createToolTipTitle(user)}
+                  {user.firstName}
                 </p>
               )
             )
