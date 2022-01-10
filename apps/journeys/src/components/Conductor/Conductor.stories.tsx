@@ -34,5 +34,8 @@ export const WithVideoContent: Story<ConductorProps> = Template.bind({})
 WithVideoContent.args = {
   blocks: videoBlock
 }
+WithVideoContent.parameters = {
+  chromatic: { delay: 100, diffThreshold: 0.2 }
+}
 
 export default Demo as Meta
