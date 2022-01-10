@@ -9,7 +9,8 @@
       "options": {
         "outputPath": "dist/apps/api-gateway",
         "main": "apps/api-gateway/src/main.ts",
-        "tsConfig": "apps/api-gateway/tsconfig.app.json"
+        "tsConfig": "apps/api-gateway/tsconfig.app.json",
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {

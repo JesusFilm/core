@@ -41,5 +41,8 @@ Thumbs.db
 #local .env files
 .env*local
 
+# kube secrets
+/resources/kube/secrets
+
 # nx generated files
 migrations.json

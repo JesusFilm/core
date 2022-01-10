@@ -1,12 +1,13 @@
+import { aql } from 'arangojs'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-import { aql, Database } from 'arangojs'
 import { v4 as uuidv4 } from 'uuid'
+import { ArangoDB } from '../db'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 export async function nua9(): Promise<void> {
   const slug = 'descision'

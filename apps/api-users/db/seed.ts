@@ -1,6 +1,6 @@
-import { Database } from 'arangojs'
+import { ArangoDB } from './db'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 async function main(): Promise<void> {
   try {

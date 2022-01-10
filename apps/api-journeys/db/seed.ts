@@ -1,10 +1,10 @@
-import { Database } from 'arangojs'
+import { ArangoDB } from './db'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
 import { nua8 } from './seeds/nua8'
 import { nua9 } from './seeds/nua9'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 async function main(): Promise<void> {
   try {
@@ -12,7 +12,9 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
     await await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
-    await db.createCollection('responses', { keyOptions: { type: 'uuid' } })
+    await await db.createCollection('responses', {
+      keyOptions: { type: 'uuid' }
+    })
   } catch {}
   await db.collection('journeys').ensureIndex({
     type: 'persistent',
