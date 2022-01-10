@@ -33,6 +33,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         themeName={journey.themeName}
         themeMode={journey.themeMode}
       >
+        {console.log(journey)}
         {journey.blocks != null && (
           <Conductor blocks={transformer(journey.blocks)} />
         )}
