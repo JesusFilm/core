@@ -16,7 +16,7 @@ export function Properties(): ReactElement {
           Properties
         </Typography>
       </Toolbar>
-      <Box sx={{ px: 6, py: 8 }}>
+      <Box sx={{ px: 6, py: 9 }}>
         <JourneyDetails />
       </Box>
       <Divider />
@@ -27,7 +27,7 @@ export function Properties(): ReactElement {
   ) : (
     <>
       <Divider />
-      <Box sx={{ p: 6, backgroundColor: 'background.paper' }}>
+      <Box sx={{ p: 6, pt: 9, backgroundColor: 'background.paper' }}>
         <JourneyDetails />
       </Box>
       <Divider />
