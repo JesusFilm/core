@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-users-stage
+  labels:
+    app: api-users-stage
+    type: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-users-stage
+  template:
+    metadata:
+      labels:
+        app: api-users-stage
+    spec:
+      containers:
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:c33fe910f485803718fa8d656d85816755247078
+          imagePullPolicy: IfNotPresent
+          name: jfp-api-users
+          ports:
+            - containerPort: 4002
+          envFrom:
+            - secretRef:
+                name: env-db-stage
+            - secretRef:
+                name: env-firebase-stage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-users-stage
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: api-users-stage.core.jesusfilm.org
+spec:
+  selector:
+    app: api-users-stage
+  ports:
+    - port: 4002
+  type: LoadBalancer

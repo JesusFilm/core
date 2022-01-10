@@ -1,0 +1,9 @@
+subgraphs:
+  journeys:
+    routing_url: http://api-journeys-main:4001/graphql
+    schema:
+      file: ../../dist/apps/api-gateway/api-journeys-schema.graphql
+  users:
+    routing_url: http://api-users-main:4002/graphql
+    schema:
+      file: ../../dist/apps/api-gateway/api-users-schema.graphql

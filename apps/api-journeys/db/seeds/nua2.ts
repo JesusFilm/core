@@ -1,11 +1,12 @@
+import { aql } from 'arangojs'
+import { ArangoDB } from '../db'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-import { aql, Database } from 'arangojs'
 
-const db = new Database({ url: process.env.DATABASE_URL })
+const db = ArangoDB()
 
 export async function nua2(): Promise<void> {
   const slug = 'what-about-the-resurrection'
