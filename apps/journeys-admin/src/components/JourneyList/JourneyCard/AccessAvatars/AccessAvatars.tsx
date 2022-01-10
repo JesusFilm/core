@@ -47,7 +47,12 @@ export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
           })}
         >
           <Avatar
-            sx={{ backgroundColor: 'primary', width: 31, height: 31 }}
+            sx={{
+              backgroundColor: 'primary',
+              width: 31,
+              height: 31,
+              fontSize: 12
+            }}
             alt="overflow avatar"
           >{`+${users.slice(avatarsShown).length}`}</Avatar>
         </Tooltip>

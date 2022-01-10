@@ -45,6 +45,19 @@ export const defaultJourney: Journey = {
         imageUrl: 'https://source.unsplash.com/random/300x301',
         email: 'horace@email.com'
       }
+    },
+    {
+      __typename: 'UserJourney',
+      userId: 'user-id3',
+      journeyId: 'journey-id3',
+      user: {
+        __typename: 'User',
+        id: 'user-id3',
+        firstName: 'Coral',
+        lastName: 'Ortega',
+        imageUrl: 'https://source.unsplash.com/random/301x300',
+        email: 'coral@email.com'
+      }
     }
   ]
 }

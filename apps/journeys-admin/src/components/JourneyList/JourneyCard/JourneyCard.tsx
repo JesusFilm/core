@@ -87,7 +87,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           pb: 4
         }}
       >
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} display="flex" alignItems="center">
           {users != null && (
             <Grid item>
               <AccessAvatars users={users} />
@@ -96,8 +96,8 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
 
           {journey.status === 'draft' ? (
             <>
-              <Grid item>
-                <EditIcon color="warning" />
+              <Grid item display="flex" alignItems="center">
+                <EditIcon color="warning" sx={{ height: 13, width: 13 }} />
               </Grid>
               <Grid item>
                 <Typography variant="caption" sx={{ pr: 2 }}>
@@ -107,8 +107,11 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             </>
           ) : (
             <>
-              <Grid item>
-                <CheckCircleIcon color="success" />
+              <Grid item display="flex" alignItems="center">
+                <CheckCircleIcon
+                  color="success"
+                  sx={{ height: 13, width: 13 }}
+                />
               </Grid>
               <Grid item>
                 <Typography variant="caption" sx={{ pr: 2 }}>
@@ -117,8 +120,8 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               </Grid>
             </>
           )}
-          <Grid item>
-            <TranslateIcon />
+          <Grid item display="flex" alignItems="center">
+            <TranslateIcon sx={{ height: 13, width: 13 }} />
           </Grid>
           <Grid item>
             <Typography variant="caption">{journey.locale}</Typography>
