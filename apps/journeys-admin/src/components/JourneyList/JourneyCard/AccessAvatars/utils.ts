@@ -1,6 +1,8 @@
-import { AccessAvatar, Role } from './AccessAvatars'
+import { GetJourneys_journeys_userJourneys_user } from '../../../../../__generated__/GetJourneys'
 
-export function createToolTipTitle(user: AccessAvatar): string {
+export function createToolTipTitle(
+  user: GetJourneys_journeys_userJourneys_user
+): string {
   if (user.firstName != null && user.lastName != null) {
     return `${user.firstName} ${user.lastName}`
   } else if (user.email != null) {
@@ -10,7 +12,9 @@ export function createToolTipTitle(user: AccessAvatar): string {
   }
 }
 
-export function createFallbackLetter(user: AccessAvatar): string | null {
+export function createFallbackLetter(
+  user: GetJourneys_journeys_userJourneys_user
+): string | null {
   if (user.firstName != null) {
     return `${user.firstName[0].toUpperCase()}`
   } else if (user.email != null) {
@@ -18,10 +22,4 @@ export function createFallbackLetter(user: AccessAvatar): string | null {
   } else {
     return null
   }
-}
-
-export function orderAvatars(users: AccessAvatar[]): AccessAvatar[] {
-  const owners = users.filter((user) => user.role === Role.owner)
-  const editors = users.filter((user) => user.role === Role.editor)
-  return owners.concat(editors)
 }

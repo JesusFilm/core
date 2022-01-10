@@ -1,52 +1,52 @@
-import { AccessAvatar, Role } from './AccessAvatars'
+import { GetJourneys_journeys_userJourneys_user } from '../../../../../__generated__/GetJourneys'
 
-export const user1: AccessAvatar = {
+export const user1: GetJourneys_journeys_userJourneys_user = {
+  __typename: 'User',
   id: '1',
   firstName: 'Amin',
   lastName: 'Person',
-  image: 'https://source.unsplash.com/random/300x300',
-  email: 'amin@email.com',
-  role: Role.editor
+  imageUrl: 'https://source.unsplash.com/random/300x300',
+  email: 'amin@email.com'
 }
 
-export const user2: AccessAvatar = {
+export const user2: GetJourneys_journeys_userJourneys_user = {
+  __typename: 'User',
   id: '2',
   firstName: 'Horace',
   lastName: 'Reader',
-  image: 'https://source.unsplash.com/random/300x301',
-  email: 'horace@email.com',
-  role: Role.editor
+  imageUrl: 'https://source.unsplash.com/random/300x301',
+  email: 'horace@email.com'
 }
-export const user3: AccessAvatar = {
+export const user3: GetJourneys_journeys_userJourneys_user = {
+  __typename: 'User',
   id: '3',
   firstName: 'Coral',
   lastName: 'Ortega',
-  image: 'https://source.unsplash.com/random/301x300',
-  email: 'coral@email.com',
-  role: Role.owner
+  imageUrl: 'https://source.unsplash.com/random/301x300',
+  email: 'coral@email.com'
 }
-export const user4: AccessAvatar = {
+export const user4: GetJourneys_journeys_userJourneys_user = {
+  __typename: 'User',
   id: '4',
   firstName: 'Effie',
   lastName: 'Lowe',
-  image: 'https://source.unsplash.com/random/302x300',
-  email: 'effie@email.com',
-  role: Role.editor
+  imageUrl: 'https://source.unsplash.com/random/302x300',
+  email: 'effie@email.com'
 }
-export const user5: AccessAvatar = {
+export const user5: GetJourneys_journeys_userJourneys_user = {
+  __typename: 'User',
   id: '5',
   firstName: 'Janelle',
   lastName: 'Clegg',
-  image: 'https://source.unsplash.com/random/302x301',
-  email: 'jan@email.com',
-  role: Role.editor
+  imageUrl: 'https://source.unsplash.com/random/302x301',
+  email: 'jan@email.com'
 }
 
-export const user6: AccessAvatar = {
+export const user6: GetJourneys_journeys_userJourneys_user = {
+  __typename: 'User',
   id: '6',
   firstName: 'Drake',
   lastName: 'Graham',
-  image: 'https://source.unsplash.com/random/301x302',
-  email: 'grahamDrake@email.com',
-  role: Role.editor
+  imageUrl: 'https://source.unsplash.com/random/301x302',
+  email: 'grahamDrake@email.com'
 }

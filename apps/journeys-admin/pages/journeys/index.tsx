@@ -81,6 +81,7 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
               userId
               journeyId
               user {
+                __typename
                 id
                 firstName
                 lastName
