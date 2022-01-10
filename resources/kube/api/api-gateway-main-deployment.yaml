@@ -30,8 +30,7 @@ metadata:
   name: api-gateway-main
   annotations:
     external-dns.alpha.kubernetes.io/hostname: graphql.core.jesusfilm.org
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:894231352815:certificate/53c84356-0e4f-4bfd-9730-80575ea4454b
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:894231352815:certificate/e15ec06e-c83a-487f-8a86-c4cdb4daf6f6
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:894231352815:certificate/15347d85-a737-49a7-8b2f-0b060df6f1d1
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
 spec:
   selector:
