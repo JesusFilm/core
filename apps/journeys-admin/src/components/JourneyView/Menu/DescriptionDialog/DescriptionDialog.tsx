@@ -10,8 +10,8 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { useBreakpoints } from '@core/shared/ui'
+import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { Alert } from '../Alert'
 import { useJourney } from '../../Context'
 

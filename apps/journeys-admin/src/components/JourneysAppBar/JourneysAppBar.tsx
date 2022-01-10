@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link'
 import { ChevronLeftRounded } from '@mui/icons-material'
-import { Menu } from '../JourneyView/Menu'
 import { useBreakpoints } from '@core/shared/ui'
+import { Menu } from '../JourneyView/Menu'
 
 export interface JourneysAppBarProps {
   variant: 'list' | 'view'

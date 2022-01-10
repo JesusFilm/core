@@ -1,19 +1,19 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { ReactElement, useContext } from 'react'
 import {
-  GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
-  GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
-  GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/GetJourneyForEdit'
-import { Attribute } from '../..'
-import {
   Image as ImageIcon,
   Palette,
   VerticalSplit,
   Videocam
 } from '@mui/icons-material'
-import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Paper, Box } from '@mui/material'
+import {
+  GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
+  GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
+  GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../__generated__/GetJourneyForEdit'
+import { Attribute } from '../..'
+import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { EditorContext } from '../../../../Context'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'

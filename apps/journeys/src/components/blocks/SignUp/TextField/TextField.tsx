@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { useField } from 'formik'
 
-import * as MuiTextField from '@mui/material/TextField'
+import MuiTextField from '@mui/material/TextField'
 import { OutlinedTextFieldProps as MuiTextFieldProps } from '@mui/material'
 
 export interface TextFieldProps
@@ -16,7 +16,7 @@ const TextField = ({
 }: TextFieldProps): ReactElement => {
   const [formikFieldProps, meta] = useField(name)
 
-  const Field = MuiTextField.default
+  const Field = MuiTextField
   const hasError = meta.error !== undefined && meta.touched
 
   return (

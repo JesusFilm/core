@@ -3,8 +3,8 @@ import { Box, Button, Container } from '@mui/material'
 import { ThemeProvider } from '@core/shared/ui'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
-import client from '../src/libs/client'
 import { gql } from '@apollo/client'
+import client from '../src/libs/client'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey

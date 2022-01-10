@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
 import { MenuItem } from '@mui/material'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
-import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 import { NewReleasesRounded } from '@mui/icons-material'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 
 interface PromoteUserProps {
   userJourney: UserJourney

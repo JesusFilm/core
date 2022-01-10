@@ -8,8 +8,8 @@ import {
   Typography
 } from '@mui/material'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { EditorContext } from '../Context'
 import { Close } from '@mui/icons-material'
+import { EditorContext } from '../Context'
 
 export const DRAWER_WIDTH = 328
 

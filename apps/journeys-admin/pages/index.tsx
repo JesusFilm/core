@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
+import Image from 'next/image'
+import { Box, Typography } from '@mui/material'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { SignIn } from '../src/components/SignIn'
-import Image from 'next/image'
 import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
-import { Box, Typography } from '@mui/material'
 
 function Dashboard(): ReactElement {
   const handleFeedbackSupport = (): void => {

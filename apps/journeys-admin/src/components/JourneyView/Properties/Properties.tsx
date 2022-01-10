@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
 import { Box, Divider, Drawer, Toolbar, Typography } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
-import { JourneyDetails } from './JourneyDetails'
 import { ShareSection } from '../ShareSection'
 import { useJourney } from '../Context'
+import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
   const breakpoints = useBreakpoints()

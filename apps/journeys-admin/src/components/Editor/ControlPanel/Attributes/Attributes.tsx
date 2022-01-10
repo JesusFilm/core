@@ -1,8 +1,8 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { Stack, Box, Typography } from '@mui/material'
 import { ReactElement } from 'react'
-import { Card, Step } from './blocks'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourneyForEdit'
+import { Card, Step } from './blocks'
 
 function AttributesContent({ selected }: AttributesProps): ReactElement {
   switch (selected?.__typename) {

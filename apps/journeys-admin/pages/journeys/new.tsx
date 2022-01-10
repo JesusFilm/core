@@ -2,10 +2,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import Head from 'next/head'
 import { Typography, Box, Button, FormControl, Input } from '@mui/material'
-import { useFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
-import { JourneyCreate } from '../../__generated__/JourneyCreate'
 import { v4 as uuidv4 } from 'uuid'
+import { useFirebase } from '../../src/libs/firebaseClient'
+import { JourneyCreate } from '../../__generated__/JourneyCreate'
 
 export const NEW_JOURNEY = gql`
   mutation JourneyCreate($input: JourneyCreateInput!) {

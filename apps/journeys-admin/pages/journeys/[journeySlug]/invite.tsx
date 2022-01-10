@@ -2,14 +2,14 @@ import { ReactElement, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql, useMutation } from '@apollo/client'
 import Head from 'next/head'
+import { Typography, Box, Button } from '@mui/material'
+import { useRouter } from 'next/router'
 import client from '../../../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { Typography, Box, Button } from '@mui/material'
 import { useFirebase } from '../../../src/libs/firebaseClient'
-import { useRouter } from 'next/router'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 import { INVITE_USER_MODAL_FIELDS } from '../../../src/components/InviteUserModal'
 

@@ -1,16 +1,16 @@
 import { Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { ReactElement } from 'react'
 import {
   journeysConfig,
   simpleComponentConfig,
   StoryCard
 } from '../../../libs/storybook'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
-import { MockedProvider } from '@apollo/client/testing'
-import { ReactElement } from 'react'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { IconName } from '../../../../__generated__/globalTypes'
 import { ButtonFields_startIcon as IconType } from '../../../../__generated__/ButtonFields'
+import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 
 const Demo = {
   ...journeysConfig,

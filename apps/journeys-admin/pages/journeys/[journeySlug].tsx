@@ -2,6 +2,9 @@ import { ReactElement, useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
+import { Typography, Box } from '@mui/material'
+import { useRouter } from 'next/router'
 import {
   GetJourney,
   GetJourney_journey as Journey,
@@ -9,10 +12,7 @@ import {
 } from '../../__generated__/GetJourney'
 import { JourneyProvider, JourneyView } from '../../src/components'
 import client from '../../src/libs/client'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
-import { Typography, Box } from '@mui/material'
-import { useFirebase } from '../../src/libs/firebaseClient/'
-import { useRouter } from 'next/router'
+import { useFirebase } from "../../src/libs/firebaseClient"
 import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS

@@ -1,10 +1,10 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
-import { Attributes } from '.'
 import {
   GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
   GetJourneyForEdit_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourneyForEdit'
+import { Attributes } from '.'
 
 describe('Attributes', () => {
   it('should render card block', () => {

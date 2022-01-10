@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserJourneyService } from './userJourney.service'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
@@ -14,6 +13,7 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
+import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyService', () => {
   let service: UserJourneyService

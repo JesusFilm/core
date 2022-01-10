@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Button } from '.'
+import { Typography } from '@mui/material'
 import {
   ButtonVariant,
   ButtonColor,
@@ -13,7 +13,7 @@ import {
   ButtonFields_startIcon as StartIcon,
   ButtonFields_endIcon as EndIcon
 } from '../../../../__generated__/ButtonFields'
-import { Typography } from '@mui/material'
+import { Button } from '.'
 
 const ButtonDemo = {
   ...journeysConfig,

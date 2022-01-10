@@ -1,14 +1,14 @@
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway'
 import { ApolloServer } from 'apollo-server'
+import { initializeApp, credential, auth } from 'firebase-admin'
 import { config } from './environments/environment'
-import * as admin from 'firebase-admin'
 
 if (
   process.env.GOOGLE_APPLICATION_JSON != null &&
   process.env.GOOGLE_APPLICATION_JSON !== ''
 ) {
-  admin.initializeApp({
-    credential: admin.credential.cert(
+  initializeApp({
+    credential: credential.cert(
       JSON.parse(process.env.GOOGLE_APPLICATION_JSON)
     )
   })
@@ -42,7 +42,7 @@ const server = new ApolloServer({
     )
       return {}
     try {
-      const { uid } = await admin.auth().verifyIdToken(token)
+      const { uid } = await auth().verifyIdToken(token)
       return { userId: uid }
     } catch (err) {
       console.log(err)

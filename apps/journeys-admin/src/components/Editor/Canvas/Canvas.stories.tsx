@@ -1,9 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { Canvas } from '.'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ButtonColor,
   ButtonSize,
@@ -13,6 +12,7 @@ import {
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
 import { EditorProvider } from '../Context'
+import { Canvas } from '.'
 
 const CanvasStory = {
   ...journeysAdminConfig,

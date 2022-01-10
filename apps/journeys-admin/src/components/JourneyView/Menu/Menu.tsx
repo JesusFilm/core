@@ -9,12 +9,6 @@ import {
   ListItemIcon
 } from '@mui/material'
 import { MoreVert } from '@mui/icons-material'
-import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { TitleDialog } from './TitleDialog'
-import { useJourney } from '../Context'
-import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
-import { Alert } from './Alert'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
@@ -22,6 +16,12 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
+import { useJourney } from '../Context'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
+import { Alert } from './Alert'
+import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
+import { TitleDialog } from './TitleDialog'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {

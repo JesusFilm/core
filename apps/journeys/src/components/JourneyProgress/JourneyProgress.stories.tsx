@@ -1,10 +1,10 @@
-import { journeysConfig, simpleComponentConfig } from '../../libs/storybook'
 import { Meta } from '@storybook/react'
 import { ReactElement } from 'react'
-import { JourneyProgress } from '.'
+import { journeysConfig, simpleComponentConfig } from '../../libs/storybook'
 import { TreeBlock } from '../../libs/transformer/transformer'
 import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import { JourneyProgress } from '.'
 
 const Demo = {
   ...journeysConfig,

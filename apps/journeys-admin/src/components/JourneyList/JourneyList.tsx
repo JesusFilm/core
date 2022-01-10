@@ -1,11 +1,11 @@
 import { ReactElement, useState } from 'react'
 import { Box, Card, Typography, Button, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
+import { sortBy } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { JourneysAppBar } from '../JourneysAppBar'
 import { JourneySort, SortOrder } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
-import { JourneysAppBar } from '../JourneysAppBar'
-import { sortBy } from 'lodash'
 
 export interface JourneysListProps {
   journeys: Journey[]

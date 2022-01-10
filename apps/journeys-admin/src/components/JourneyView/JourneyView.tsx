@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import { Box, Typography } from '@mui/material'
+import { useBreakpoints } from '@core/shared/ui'
+import { transformer, TreeBlock } from '@core/journeys/ui'
 import { JourneysAppBar } from '../JourneysAppBar'
+import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { Properties } from './Properties'
 import { useJourney } from './Context'
 import { CardView } from './CardView'
-import { useBreakpoints } from '@core/shared/ui'
-import { transformer, TreeBlock } from '@core/journeys/ui'
-import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 
 export function JourneyView(): ReactElement {
   const journey = useJourney()

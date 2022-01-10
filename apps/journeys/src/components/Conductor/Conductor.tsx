@@ -1,16 +1,16 @@
-import { BlockRenderer } from '../BlockRenderer'
 import { ReactElement, useEffect, useState } from 'react'
-import { TreeBlock } from '../../libs/transformer/transformer'
-import { useBlocks } from '../../libs/client/cache/blocks'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
-import { JourneyProgress } from '../JourneyProgress'
 import { Box, IconButton, useTheme } from '@mui/material'
 import { useBreakpoints } from '@core/shared/ui'
-import 'swiper/swiper.min.css'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import { JourneyProgress } from '../JourneyProgress'
+import { BlockRenderer } from '../BlockRenderer'
+import { useBlocks } from '../../libs/client/cache/blocks'
+import { TreeBlock } from '../../libs/transformer/transformer'
 import { CardWrapper } from '../blocks/Card'
+import 'swiper/swiper.min.css'
 
 export interface ConductorProps {
   blocks: TreeBlock[]

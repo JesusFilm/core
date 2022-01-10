@@ -1,14 +1,14 @@
-import { TreeBlock } from '../../../libs/transformer/transformer'
 import { ReactElement, ReactNode } from 'react'
-import { BlockRenderer } from '../../BlockRenderer'
+import { ThemeProvider } from '@core/shared/ui'
+import { Paper, Box } from '@mui/material'
+import { SxProps } from '@mui/system'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { ThemeProvider } from '@core/shared/ui'
-import { Paper, Box } from '@mui/material'
-import { SxProps } from '@mui/system'
+import { BlockRenderer } from '../../BlockRenderer'
+import { TreeBlock } from '../../../libs/transformer/transformer'
 import { CardCover } from '.'
 
 export function Card({

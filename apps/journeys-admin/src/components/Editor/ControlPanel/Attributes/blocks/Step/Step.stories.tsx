@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { Step } from '.'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
 import { Stack } from '@mui/material'
+import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { Step } from '.'
 
 const StepStory = {
   ...journeysAdminConfig,
