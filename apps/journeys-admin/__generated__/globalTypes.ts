@@ -124,10 +124,37 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum UserJourneyRole {
+  editor = "editor",
+  inviteRequested = "inviteRequested",
+  owner = "owner",
+}
+
 export enum VideoResponseStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
+}
+
+export interface JourneyCreateInput {
+  description?: string | null;
+  id?: string | null;
+  locale?: string | null;
+  slug: string;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+  title: string;
+}
+
+export interface JourneyUpdateInput {
+  description?: string | null;
+  id: string;
+  locale?: string | null;
+  primaryImageBlockId?: string | null;
+  slug?: string | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+  title?: string | null;
 }
 
 export interface RadioQuestionResponseCreateInput {

@@ -1,0 +1,10 @@
+apiVersion: 'database.arangodb.com/v1alpha'
+kind: 'ArangoDeployment'
+metadata:
+  name: 'arangodb'
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: arangodb.core.jesusfilm.org
+spec:
+  mode: Single
+  tls:
+    caSecretName: None

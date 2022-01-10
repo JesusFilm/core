@@ -1,9 +1,13 @@
 {
+  "files.eol": "\n",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[graphql]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

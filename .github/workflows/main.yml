@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
+      - name: Upgrade NPM
+        run: npm install -g npm
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
@@ -35,6 +37,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
+      - name: Upgrade NPM
+        run: npm install -g npm
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         env:
@@ -53,11 +57,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
+      - name: Upgrade NPM
+        run: npm install -g npm
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,test
   visual-test:
+    needs: [lint, build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -69,6 +76,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
+      - name: Upgrade NPM
+        run: npm install -g npm
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook

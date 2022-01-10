@@ -3,11 +3,15 @@
   "projects": {
     "api-gateway": "apps/api-gateway",
     "api-journeys": "apps/api-journeys",
+    "api-users": "apps/api-users",
     "journeys": "apps/journeys",
     "journeys-admin": "apps/journeys-admin",
     "journeys-admin-e2e": "apps/journeys-admin-e2e",
     "journeys-e2e": "apps/journeys-e2e",
     "journeys-ui": "libs/journeys/ui",
+    "nest-database": "libs/nest/database",
+    "nest-decorators": "libs/nest/decorators",
+    "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "shared-util-graphql": "libs/shared/util-graphql"

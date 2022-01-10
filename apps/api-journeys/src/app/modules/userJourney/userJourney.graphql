@@ -1,0 +1,21 @@
+enum UserJourneyRole {
+  inviteRequested
+  editor
+  owner
+}
+
+extend type Journey {
+  userJourneys: [UserJourney!]
+}
+type UserJourney @key(fields: "id") {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  role: UserJourneyRole!
+}
+extend type Mutation {
+  userJourneyApprove(id: ID!): UserJourney!
+  userJourneyPromote(id: ID!): UserJourney!
+  userJourneyRemove(id: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!): UserJourney!
+}

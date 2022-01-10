@@ -7,4 +7,26 @@ export const cache: InMemoryCache = new InMemoryCache({
      these relationships, we need to pass a possibleTypes option when
      initializing InMemoryCache.
    */
+  possibleTypes: {
+    Action: [
+      'NavigateAction',
+      'NavigateToBlockAction',
+      'NavigateToJourneyAction',
+      'LinkAction'
+    ],
+    Block: [
+      'ButtonBlock',
+      'CardBlock',
+      'GridContainerBlock',
+      'GridItemBlock',
+      'ImageBlock',
+      'RadioQuestionBlock',
+      'RadioOptionBlock',
+      'SignUpBlock',
+      'StepBlock',
+      'TypographyBlock',
+      'VideoBlock',
+      'VideoTriggerBlock'
+    ]
+  }
 })
