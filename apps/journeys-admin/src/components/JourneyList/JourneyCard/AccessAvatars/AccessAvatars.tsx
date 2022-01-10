@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { Avatar, AvatarGroup, Tooltip, useTheme } from '@mui/material'
-
 import { createToolTipTitle, createFallbackLetter, orderAvatars } from './utils'
 import { useBreakpoints } from '@core/shared/ui'
 

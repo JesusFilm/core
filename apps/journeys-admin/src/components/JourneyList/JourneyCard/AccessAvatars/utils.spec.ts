@@ -1,5 +1,5 @@
 import { createToolTipTitle, createFallbackLetter, orderAvatars } from './utils'
-import { user1, user2, user3 } from './AccessAvatarsData'
+import { user1, user2, user3 } from './data'
 
 describe('utils', () => {
   describe('createToolTipTitle', () => {

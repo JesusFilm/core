@@ -61,45 +61,51 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<
-  JourneysListPageProps
-> = async () => {
-  const { data } = await client.query<GetJourneys>({
-    query: gql`
-      query GetJourneys {
-        journeys {
-          id
-          title
-          createdAt
-          publishedAt
-          description
-          slug
-          themeName
-          themeMode
-          locale
-          status
-          userJourneys {
-            userId
-            journeyId
+export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
+  async () => {
+    const { data } = await client.query<GetJourneys>({
+      query: gql`
+        query GetJourneys {
+          journeys {
+            id
+            title
+            createdAt
+            publishedAt
+            description
+            slug
+            themeName
+            themeMode
+            locale
+            status
+            userJourneys {
+              userId
+              journeyId
+              user {
+                id
+                firstName
+                lastName
+                email
+                imageUrl
+              }
+            }
           }
         }
-      }
-    `
-  })
+      `
+    })
 
-  if (data.journeys === null) {
-    return {
-      props: {
-        journeys: []
+    if (data.journeys === null) {
+      return {
+        props: {
+          journeys: []
+        }
       }
-    }
-  } else {
-    return {
-      props: {
-        journeys: data.journeys
+    } else {
+      return {
+        props: {
+          journeys: data.journeys
+        }
       }
     }
   }
-}
 
 export default JourneyListPage

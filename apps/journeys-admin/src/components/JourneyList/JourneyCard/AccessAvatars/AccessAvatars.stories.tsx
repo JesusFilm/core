@@ -2,7 +2,7 @@ import { journeysAdminConfig } from '../../../../libs/storybook'
 import { AccessAvatars } from '.'
 import { Meta, Story } from '@storybook/react'
 import { AccessAvatarsProps } from './AccessAvatars'
-import { user1, user2, user3, user4, user5, user6 } from './AccessAvatarsData'
+import { user1, user2, user3, user4, user5, user6 } from './data'
 
 const AccessAvatarsDemo = {
   ...journeysAdminConfig,

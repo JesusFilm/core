@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { AccessAvatars, AccessAvatarsProps } from './AccessAvatars'
-import { user1, user2, user3, user4, user5, user6 } from './AccessAvatarsData'
+import { user1, user2, user3, user4, user5, user6 } from './data'
 
 describe('AccessAvatars', () => {
   it('should render avatars', () => {
@@ -60,8 +60,8 @@ describe('AccessAvatars', () => {
     const { getByRole, getByText } = render(
       <AccessAvatars users={props.users} />
     )
-    expect(getByText('+4')).toBeInTheDocument()
-    fireEvent.focus(getByText('+4'))
+    expect(getByText('+2')).toBeInTheDocument()
+    fireEvent.focus(getByText('+2'))
     await waitFor(() => {
       expect(getByRole('tooltip')).toBeInTheDocument()
       expect(getByText('Janelle Clegg')).toBeInTheDocument()

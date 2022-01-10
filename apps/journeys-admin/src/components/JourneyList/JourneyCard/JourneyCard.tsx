@@ -15,7 +15,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { AccessAvatars } from './AccessAvatars'
-import { user1 } from './AccessAvatars/AccessAvatarsData'
+import { user1 } from './AccessAvatars/data'
 
 interface JourneyCardProps {
   journey: Journey
