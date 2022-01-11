@@ -12,7 +12,7 @@ import {
   useReducer,
   useRef
 } from 'react'
-import { styled } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 interface ContentProps {
   children: ReactNode

@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
 
-import { Typography } from './Typography'
 import {
   ThemeMode,
   ThemeName,
@@ -15,6 +14,7 @@ import {
   StoryCard,
   TreeBlock
 } from '../..'
+import { Typography } from './Typography'
 import { TypographyFields } from './__generated__/TypographyFields'
 
 const TypographyDemo = {

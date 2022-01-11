@@ -1,12 +1,13 @@
-import { TreeBlock } from '../../../../libs/transformer/transformer'
 import { ReactElement, ReactNode, useEffect, useRef } from 'react'
+import { useTheme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
+import { decode } from 'blurhash'
+import videojs from 'video.js'
+import { TreeBlock } from '../../../../libs/transformer/transformer'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
-import { useTheme, Box } from '@mui/material'
-import { decode } from 'blurhash'
-import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
 const greatestCommonDivisor = (a: number, b: number): number =>

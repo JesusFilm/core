@@ -1,6 +1,6 @@
 import { makeVar, useReactiveVar } from '@apollo/client'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { useCallback } from 'react'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../transformer/transformer'
 
 export const activeBlockVar = makeVar<TreeBlock<StepBlock> | null>(null)

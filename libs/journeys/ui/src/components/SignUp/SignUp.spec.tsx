@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { TreeBlock, handleAction } from '../../'
+import { TreeBlock, handleAction } from '../..'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 

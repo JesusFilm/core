@@ -1,26 +1,25 @@
 import { ReactElement, useState, useEffect, useRef } from 'react'
-import {
-  Button,
-  Modal,
-  Box,
-  Avatar,
-  Typography,
-  Divider,
-  FilledInput,
-  FormControl,
-  Snackbar,
-  Fade,
-  useTheme,
-  Menu,
-  CircularProgress,
-  ClickAwayListener
-} from '@mui/material'
+import Button from '@mui/material/Button'
+import Modal from '@mui/material/Modal'
+import Box from '@mui/material/Box'
+import Avatar from '@mui/material/Avatar'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import FilledInput from '@mui/material/FilledInput'
+import FormControl from '@mui/material/FormControl'
+import Snackbar from '@mui/material/Snackbar'
+import Fade from '@mui/material/Fade'
+import Menu from '@mui/material/Menu'
+import CircularProgress from '@mui/material/CircularProgress'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
+import { useTheme } from '@mui/material/styles'
 import {
   ArrowDropDown,
   CloseRounded,
   ContentCopyRounded,
   LinkRounded
 } from '@mui/icons-material'
+import { gql, useLazyQuery } from '@apollo/client'
 import {
   GetJourney_journey_userJourneys as UserJourneys,
   GetJourney_journey as Journey
@@ -28,7 +27,6 @@ import {
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
-import { gql, useLazyQuery } from '@apollo/client'
 
 interface InviteUserModalProps {
   journey: Journey

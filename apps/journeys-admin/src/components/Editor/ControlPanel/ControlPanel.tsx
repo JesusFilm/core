@@ -1,15 +1,17 @@
-import { Box, Tabs, Tab } from '@mui/material'
+import Box from '@mui/material/Box'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import {
   ReactElement,
   ReactNode,
   SyntheticEvent,
   useContext
 } from 'react'
-import { Attributes } from '../ControlPanel/Attributes'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { CardPreview } from '../../CardPreview'
 import { ActiveTab, EditorContext } from '../Context'
+import { Attributes } from './Attributes'
 
 interface TabPanelProps {
   children?: ReactNode

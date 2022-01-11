@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
+import MaterialGrid, { GridSize } from '@mui/material/Grid'
 import { GetJourney_journey_blocks_GridItemBlock as GridItemBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { Grid as MaterialGrid, GridSize } from '@mui/material'
 import { BlockRenderer } from '../../BlockRenderer'
 
 export function GridItem({

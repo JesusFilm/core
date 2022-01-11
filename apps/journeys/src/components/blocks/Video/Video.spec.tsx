@@ -1,9 +1,9 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { renderWithApolloClient } from '../../../../test/testingLibrary'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
-import { MockedProvider } from '@apollo/client/testing'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 describe('VideoComponent', () => {
   const block: TreeBlock<VideoBlock> = {

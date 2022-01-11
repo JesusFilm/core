@@ -1,15 +1,15 @@
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
-import * as Yup from 'yup'
+import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
-import { Button } from '@mui/material'
+import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock, handleAction } from '../..'
+import { Icon } from '../Icon'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
-import { Icon } from '../Icon'
 import TextField from './TextField'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
@@ -44,12 +44,12 @@ export const SignUp = ({
   )
 
   const initialValues: SignUpFormValues = { name: '', email: '' }
-  const signUpSchema = Yup.object().shape({
-    name: Yup.string()
+  const signUpSchema = object().shape({
+    name: string()
       .min(2, 'Name must be 2 characters or more')
       .max(50, 'Name must be 50 characters or less')
       .required('Required'),
-    email: Yup.string()
+    email: string()
       .email('Please enter a valid email address')
       .required('Required')
   })

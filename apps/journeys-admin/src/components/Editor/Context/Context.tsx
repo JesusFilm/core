@@ -1,5 +1,4 @@
 import { TreeBlock } from '@core/journeys/ui'
-import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import {
   createContext,
   Dispatch,
@@ -7,6 +6,7 @@ import {
   ReactNode,
   useReducer
 } from 'react'
+import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 
 export enum ActiveTab {
   Cards = 0,

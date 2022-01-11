@@ -1,10 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ReactElement } from 'react'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
-import { ReactElement } from 'react'
 import { handleAction } from '../../../libs/action'
+import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 
 jest.mock('../../../libs/action', () => {
   const originalModule = jest.requireActual('../../../libs/action')

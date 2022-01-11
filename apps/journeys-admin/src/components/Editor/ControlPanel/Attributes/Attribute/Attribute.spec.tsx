@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { EditorProvider } from '../../../Context'
-import { Attribute } from '.'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { Attribute } from '.'
 
 describe('Attribute', () => {
   it('should render attribute', () => {
