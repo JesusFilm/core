@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import { ThemeProvider } from '@core/shared/ui'
 import Link from 'next/link'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import client from '../src/libs/client'
 import { gql } from '@apollo/client'
 import {
@@ -35,31 +35,31 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneysPageProps> =
-  async () => {
-    const { data } = await client.query<GetJourneys>({
-      query: gql`
-        query GetJourneys {
-          journeys(status: published) {
-            id
-            title
-            slug
-          }
+export const getStaticProps: GetStaticProps<JourneysPageProps> = async () => {
+  const { data } = await client.query<GetJourneys>({
+    query: gql`
+      query GetJourneys {
+        journeys(status: published) {
+          id
+          title
+          slug
         }
-      `
-    })
+      }
+    `
+  })
 
-    if (data.journeys === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journeys: data.journeys
-        }
-      }
+  if (data.journeys === null) {
+    return {
+      notFound: true
+    }
+  } else {
+    return {
+      props: {
+        journeys: data.journeys
+      },
+      revalidate: 60
     }
   }
+}
 
 export default JourneysPage
