@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Typography as MuiTypography } from '@mui/material'
+import MuiTypography from '@mui/material/Typography'
 import { TypographyFields } from './__generated__/TypographyFields'
 import { TreeBlock } from '../..'
 

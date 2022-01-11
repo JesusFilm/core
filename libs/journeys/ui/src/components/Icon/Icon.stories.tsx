@@ -1,7 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { Icon } from '.'
 import { Box } from '@mui/system'
-import { Typography, Grid, Container } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
 import {
   IconName,
   IconSize,

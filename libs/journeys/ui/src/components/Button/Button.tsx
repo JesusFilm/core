@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Button as MuiButton } from '@mui/material'
+import MuiButton from '@mui/material/Button'
 import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { handleAction } from '../..'

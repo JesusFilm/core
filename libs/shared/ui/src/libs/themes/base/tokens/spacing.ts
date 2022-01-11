@@ -1,4 +1,4 @@
-import { ThemeOptions, createTheme } from '@mui/material'
+import { ThemeOptions, createTheme } from '@mui/material/styles'
 
 export const baseSpacing: Required<Pick<ThemeOptions, 'spacing'>> = {
   spacing: 4
