@@ -26,6 +26,7 @@ describe('Step', () => {
       provide: UserService,
       useFactory: () => ({
         get: jest.fn(() => user),
+        getByUserId: jest.fn(() => user),
         getAll: jest.fn(() => [user, user]),
         save: jest.fn((input) => input)
       })
@@ -39,6 +40,14 @@ describe('Step', () => {
   describe('me', () => {
     it('returns User', async () => {
       expect(await resolver.me(user._key)).toEqual(userResponse)
+    })
+  })
+
+  describe('resolveReference', () => {
+    it('returns User', async () => {
+      expect(
+        await resolver.resolveReference({ __typename: 'User', id: user._key })
+      ).toEqual(userResponse)
     })
   })
 })

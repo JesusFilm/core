@@ -61,6 +61,18 @@ describe('UserService', () => {
     })
   })
 
+  describe('getByUserId', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [user])
+      )
+    })
+
+    it('should return a user', async () => {
+      expect(await service.getByUserId('1')).toEqual(user)
+    })
+  })
+
   describe('save', () => {
     beforeEach(() => {
       ;(

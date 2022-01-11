@@ -16,11 +16,6 @@ export class User {
     imageUrl?: Nullable<string>;
 }
 
-export class UserJourney {
-    id: string;
-    user?: Nullable<User>;
-}
-
 export abstract class IQuery {
     abstract me(): Nullable<User> | Promise<Nullable<User>>;
 }

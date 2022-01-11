@@ -1,4 +1,4 @@
-import { Resolver, Query } from '@nestjs/graphql'
+import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { CurrentUserId, KeyAsId } from '@core/nest/decorators'
 import { User } from '../../__generated__/graphql'
@@ -34,5 +34,14 @@ export class UserResolver {
       email,
       imageUrl
     })
+  }
+
+  @ResolveReference()
+  @KeyAsId()
+  async resolveReference(reference: {
+    __typename: string
+    id: string
+  }): Promise<User> {
+    return await this.userService.getByUserId(reference.id)
   }
 }
