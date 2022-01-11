@@ -64,6 +64,7 @@ jobs:
         with:
           targets: generate,test
   visual-test:
+    needs: [lint, build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -4,7 +4,7 @@ import {
   GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
   GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourneyForEdit'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 interface BackgroundMediaProps {
   id: string

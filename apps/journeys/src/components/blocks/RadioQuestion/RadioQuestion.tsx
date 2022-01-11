@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { Typography, ButtonGroup } from '@mui/material'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import Typography from '@mui/material/Typography'
 import { RadioOption } from '../RadioOption'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'

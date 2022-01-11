@@ -1,15 +1,14 @@
 import { useState, useEffect, ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
+import Box from '@mui/material/Box'
+import Typography, { TypographyProps } from '@mui/material/Typography'
 import {
-  Box,
   useTheme,
   PaletteColor,
   PaletteOptions,
-  Breakpoint,
-  Typography,
-  TypographyProps,
   SimplePaletteColorOptions
-} from '@mui/material'
+} from '@mui/material/styles'
+import { Breakpoint } from '@mui/system'
 
 import { sharedUiConfig, themes, useBreakpoints } from '../../../index'
 

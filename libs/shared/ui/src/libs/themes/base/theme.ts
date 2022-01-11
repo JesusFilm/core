@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
 import { baseBreakpoints } from './tokens/breakpoints'
 import { baseComponents } from './tokens/components'

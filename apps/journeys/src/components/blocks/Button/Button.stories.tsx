@@ -13,7 +13,7 @@ import {
   ButtonFields_startIcon as StartIcon,
   ButtonFields_endIcon as EndIcon
 } from '../../../../__generated__/ButtonFields'
-import { Typography } from '@mui/material'
+import Typography from '@mui/material/Typography'
 
 const ButtonDemo = {
   ...journeysConfig,

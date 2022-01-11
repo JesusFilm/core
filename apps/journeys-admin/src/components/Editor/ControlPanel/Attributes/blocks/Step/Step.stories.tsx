@@ -3,7 +3,7 @@ import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { Step } from '.'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
-import { Stack } from '@mui/material'
+import Stack from '@mui/material/Stack'
 
 const StepStory = {
   ...journeysAdminConfig,
