@@ -59,7 +59,7 @@ describe('AccessAvatars', () => {
         expect(getByText('Drake Six')).toBeInTheDocument()
       })
     })
-    it('should display 5 avatars max for desktop', () => {
+    it('should display 5 avatars ', () => {
       const props: AccessAvatarsProps = {
         users: [user1, user2, user3, user4, user5]
       }
