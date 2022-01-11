@@ -7,7 +7,9 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { Typography, Box, Button } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { useFirebase } from '../../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'

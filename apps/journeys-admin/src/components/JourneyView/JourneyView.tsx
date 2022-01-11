@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { Box, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { JourneysAppBar } from '../JourneysAppBar'
 import { Properties } from './Properties'
 import { useJourney } from './Context'

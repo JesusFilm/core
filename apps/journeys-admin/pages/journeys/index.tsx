@@ -1,5 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { Button, Container, Typography } from '@mui/material'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
 import { GetServerSideProps } from 'next'
 import client from '../../src/libs/client'
 import { gql } from '@apollo/client'

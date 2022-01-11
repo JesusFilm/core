@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
-import { CssBaseline, ThemeProvider as MuiThemeProvider } from '@mui/material'
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 import { themes } from '../../libs/themes/index'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 

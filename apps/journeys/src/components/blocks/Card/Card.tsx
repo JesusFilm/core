@@ -7,8 +7,9 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '@core/shared/ui'
-import { Paper, Box } from '@mui/material'
-import { SxProps } from '@mui/system'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/system/styleFunctionSx'
 import { CardCover } from '.'
 
 export function Card({

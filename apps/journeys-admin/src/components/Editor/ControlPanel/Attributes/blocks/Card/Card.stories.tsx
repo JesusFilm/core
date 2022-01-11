@@ -3,7 +3,7 @@ import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { Card } from '.'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
-import { Stack } from '@mui/material'
+import Stack from '@mui/material/Stack'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 
 const CardStory = {

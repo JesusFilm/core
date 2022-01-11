@@ -6,14 +6,13 @@ import {
   GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
-import {
-  Image as ImageIcon,
-  Palette,
-  VerticalSplit,
-  Videocam
-} from '@mui/icons-material'
+import ImageIcon from '@mui/icons-material/Image'
+import Palette from '@mui/icons-material/Palette'
+import VerticalSplit from '@mui/icons-material/VerticalSplit'
+import Videocam from '@mui/icons-material/Videocam'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
-import { Paper, Box } from '@mui/material'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
 import { EditorContext } from '../../../../Context'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'

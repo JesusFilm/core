@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import * as Yup from 'yup'
 import { useMutation, gql } from '@apollo/client'
-import { Button } from '@mui/material'
+import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock, handleAction } from '../..'

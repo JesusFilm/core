@@ -1,14 +1,12 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import {
-  Divider,
-  IconButton,
-  Menu as MuiMenu,
-  MenuItem,
-  ListItemText,
-  ListItemIcon
-} from '@mui/material'
-import { MoreVert } from '@mui/icons-material'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import MuiMenu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import MoreVert from '@mui/icons-material/MoreVert'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { TitleDialog } from './TitleDialog'

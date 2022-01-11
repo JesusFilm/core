@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
-import { Box, Button, Container } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import { ThemeProvider } from '@core/shared/ui'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'

@@ -1,6 +1,6 @@
 import videojs from 'video.js'
 import React, { ReactElement, useEffect, useRef, useCallback } from 'react'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
