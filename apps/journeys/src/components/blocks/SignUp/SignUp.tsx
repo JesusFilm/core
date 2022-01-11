@@ -11,7 +11,7 @@ import { TreeBlock } from '../../../libs/transformer/transformer'
 import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'
 import { handleAction } from '../../../libs/action'
 import { Icon } from '../../Icon'
-import { TextField } from './TextField'
+import TextField from './TextField'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
   mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
