@@ -7,7 +7,7 @@ import { transformer, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { EditorProvider } from './Context'
 import { Drawer, DRAWER_WIDTH } from './Drawer'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 
 interface EditorProps {

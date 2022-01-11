@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 
 import MuiAlert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import { CheckCircleRounded } from '@mui/icons-material'
+import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
 
 export interface AlertProps {
   open: boolean
