@@ -97,7 +97,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           {journey.status === 'draft' ? (
             <>
               <Grid item display="flex" alignItems="center">
-                <EditIcon color="warning" sx={{ height: 13, width: 13 }} />
+                <EditIcon color="warning" sx={{ fontSize: 13 }} />
               </Grid>
               <Grid item>
                 <Typography variant="caption" sx={{ pr: 2 }}>
@@ -108,10 +108,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           ) : (
             <>
               <Grid item display="flex" alignItems="center">
-                <CheckCircleIcon
-                  color="success"
-                  sx={{ height: 13, width: 13 }}
-                />
+                <CheckCircleIcon color="success" sx={{ fontSize: 13 }} />
               </Grid>
               <Grid item>
                 <Typography variant="caption" sx={{ pr: 2 }}>
@@ -121,7 +118,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             </>
           )}
           <Grid item display="flex" alignItems="center">
-            <TranslateIcon sx={{ height: 13, width: 13 }} />
+            <TranslateIcon sx={{ fontSize: 13 }} />
           </Grid>
           <Grid item>
             <Typography variant="caption">{journey.locale}</Typography>
