@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
+import { useBreakpoints } from '@core/shared/ui'
 import { AccessAvatars } from './AccessAvatars'
 import { user1, user2, user3, user4, user5, user6 } from './data'
-import { useBreakpoints } from '@core/shared/ui'
 
 jest.mock('../../../../../../../libs/shared/ui/src', () => ({
   __esModule: true,
