@@ -30,21 +30,21 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
       : 'inherit'
 
   const icons = {
-    CheckCircleRoundedIcon,
-    PlayArrowRoundedIcon,
-    TranslateRoundedIcon,
-    RadioButtonUncheckedRoundedIcon,
-    FormatQuoteRoundedIcon,
-    LockOpenRoundedIcon,
-    ArrowForwardRoundedIcon,
-    ChatBubbleOutlineRoundedIcon,
-    LiveTvRoundedIcon,
-    MenuBookRoundedIcon,
-    ChevronRightRoundedIcon,
-    BeenhereRoundedIcon,
-    SendRoundedIcon,
-    SubscriptionsRoundedIcon,
-    ContactSupportRoundedIcon
+    CheckCircleRounded: CheckCircleRoundedIcon,
+    PlayArrowRounded: PlayArrowRoundedIcon,
+    TranslateRounded: TranslateRoundedIcon,
+    RadioButtonUncheckedRounded: RadioButtonUncheckedRoundedIcon,
+    FormatQuoteRounded: FormatQuoteRoundedIcon,
+    LockOpenRounded: LockOpenRoundedIcon,
+    ArrowForwardRounded: ArrowForwardRoundedIcon,
+    ChatBubbleOutlineRounded: ChatBubbleOutlineRoundedIcon,
+    LiveTvRounded: LiveTvRoundedIcon,
+    MenuBookRounded: MenuBookRoundedIcon,
+    ChevronRightRounded: ChevronRightRoundedIcon,
+    BeenhereRounded: BeenhereRoundedIcon,
+    SendRounded: SendRoundedIcon,
+    SubscriptionsRounded: SubscriptionsRoundedIcon,
+    ContactSupportRounded: ContactSupportRoundedIcon
   }
 
   return createElement(icons[name], {

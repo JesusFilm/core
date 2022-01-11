@@ -12,7 +12,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
-import useTheme from '@mui/material/styles/useTheme'
+import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 
 const Demo: Meta = {
