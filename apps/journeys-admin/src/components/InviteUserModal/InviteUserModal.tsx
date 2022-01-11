@@ -19,6 +19,7 @@ import {
   ContentCopyRounded,
   LinkRounded
 } from '@mui/icons-material'
+import { gql, useLazyQuery } from '@apollo/client'
 import {
   GetJourney_journey_userJourneys as UserJourneys,
   GetJourney_journey as Journey
@@ -26,7 +27,6 @@ import {
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
-import { gql, useLazyQuery } from '@apollo/client'
 
 interface InviteUserModalProps {
   journey: Journey

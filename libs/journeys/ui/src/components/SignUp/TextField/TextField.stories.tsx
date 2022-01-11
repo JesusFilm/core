@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { Form, Formik } from 'formik'
-import * as Yup from 'yup'
+import { object, string } from 'yup'
 
-import TextField, { TextFieldProps } from './TextField'
 import { journeyUiConfig, simpleComponentConfig, StoryCard } from '../../..'
+import TextField, { TextFieldProps } from './TextField'
 
 const Demo = {
   ...journeyUiConfig,
@@ -21,8 +21,8 @@ const Template: Story<TextFieldProps> = () => (
         errored: '',
         disabled: ''
       }}
-      validationSchema={Yup.object().shape({
-        errored: Yup.string()
+      validationSchema={object().shape({
+        errored: string()
           .min(50, 'Must be 50 characters or more')
           .required('Required')
       })}

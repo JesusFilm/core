@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import MuiTypography from '@mui/material/Typography'
-import { TypographyFields } from './__generated__/TypographyFields'
 import { TreeBlock } from '../..'
+import { TypographyFields } from './__generated__/TypographyFields'
 
 export function Typography({
   variant,

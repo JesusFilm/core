@@ -1,3 +1,4 @@
+import { ReactElement } from 'react'
 import {
   Button,
   Card,
@@ -11,7 +12,6 @@ import {
   Typography,
   Video
 } from '../blocks'
-import { ReactElement } from 'react'
 import { TreeBlock as BlockRendererProps } from '../../libs/transformer/transformer'
 
 export function BlockRenderer(block: BlockRendererProps): ReactElement {

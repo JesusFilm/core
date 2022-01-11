@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
-import { UserJourneyApprove } from '../../../../__generated__/UserJourneyApprove'
 import { useMutation, gql } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { UserJourneyApprove } from '../../../../__generated__/UserJourneyApprove'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
 interface ApproveUserProps {

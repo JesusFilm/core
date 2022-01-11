@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react'
-import { Icon } from '.'
 import {
   IconColor,
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
+import { Icon } from '.'
 
 const block: IconType = {
   __typename: 'Icon',

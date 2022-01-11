@@ -1,5 +1,5 @@
-import { EnvironmentConfig } from './types'
 import { readFileSync } from 'fs'
+import { EnvironmentConfig } from './types'
 
 export const config: EnvironmentConfig = {
   production: true,

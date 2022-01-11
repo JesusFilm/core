@@ -1,9 +1,9 @@
 import { render, fireEvent } from '@testing-library/react'
-import { Canvas } from '.'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { ThemeProvider } from '../../ThemeProvider'
 import { EditorProvider } from '../Context'
+import { Canvas } from '.'
 
 describe('Canvas', () => {
   it('should show border around selected', () => {

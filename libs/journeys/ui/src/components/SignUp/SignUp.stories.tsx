@@ -1,14 +1,14 @@
 import { Meta, Story } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { ReactElement } from 'react'
 import {
   journeyUiConfig,
   simpleComponentConfig,
   StoryCard,
   TreeBlock
 } from '../..'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
-import { MockedProvider } from '@apollo/client/testing'
-import { ReactElement } from 'react'
 import { IconName } from '../../../__generated__/globalTypes'
+import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import {
   SignUpFields,
   SignUpFields_submitIcon

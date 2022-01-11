@@ -1,12 +1,12 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { IdAsKey } from '@core/nest/decorators'
 import {
   StepBlock,
   StepBlockCreateInput,
   StepBlockUpdateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { IdAsKey } from '@core/nest/decorators'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 

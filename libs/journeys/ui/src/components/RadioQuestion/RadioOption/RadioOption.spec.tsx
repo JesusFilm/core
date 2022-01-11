@@ -1,6 +1,6 @@
-import { RadioOption } from './RadioOption'
 import { fireEvent, render } from '@testing-library/react'
-import { TreeBlock, handleAction } from '../../../'
+import { TreeBlock, handleAction } from '../../..'
+import { RadioOption } from './RadioOption'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 jest.mock('../../../libs/action', () => {

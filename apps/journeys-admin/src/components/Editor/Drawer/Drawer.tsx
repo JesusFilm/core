@@ -6,8 +6,8 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { EditorContext } from '../Context'
 import { Close } from '@mui/icons-material'
+import { EditorContext } from '../Context'
 
 export const DRAWER_WIDTH = 328
 

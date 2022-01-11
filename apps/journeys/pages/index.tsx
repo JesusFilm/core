@@ -5,8 +5,8 @@ import Container from '@mui/material/Container'
 import { ThemeProvider } from '@core/shared/ui'
 import Link from 'next/link'
 import { GetStaticProps } from 'next'
-import client from '../src/libs/client'
 import { gql } from '@apollo/client'
+import client from '../src/libs/client'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey

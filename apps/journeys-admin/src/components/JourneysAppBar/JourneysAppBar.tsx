@@ -5,8 +5,8 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
-import { Menu } from '../JourneyView/Menu'
 import { useBreakpoints } from '@core/shared/ui'
+import { Menu } from '../JourneyView/Menu'
 
 export interface JourneysAppBarProps {
   variant: 'list' | 'view'

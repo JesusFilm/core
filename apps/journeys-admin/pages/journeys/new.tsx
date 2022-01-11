@@ -6,10 +6,10 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import Input from '@mui/material/Input'
-import { useFirebase } from '../../src/libs/firebaseClient'
 import { useRouter } from 'next/router'
-import { JourneyCreate } from '../../__generated__/JourneyCreate'
 import { v4 as uuidv4 } from 'uuid'
+import { useFirebase } from '../../src/libs/firebaseClient'
+import { JourneyCreate } from '../../__generated__/JourneyCreate'
 
 export const NEW_JOURNEY = gql`
   mutation JourneyCreate($input: JourneyCreateInput!) {

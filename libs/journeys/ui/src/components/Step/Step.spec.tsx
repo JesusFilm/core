@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { TreeBlock } from '../../'
+import { TreeBlock } from '../..'
 import { StepFields } from './__generated__/StepFields'
 import { Step } from '.'
 
