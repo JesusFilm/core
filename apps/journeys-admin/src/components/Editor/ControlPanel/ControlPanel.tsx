@@ -80,6 +80,7 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={selectedBlock == null}
           />
+          <Tab label="Blocks" sx={{ flexGrow: 1 }} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
