@@ -20,17 +20,16 @@ describe('AccessAvatars', () => {
         xl: false
       })
     })
-    it('should render avatars', () => {
-      render(<AccessAvatars users={[user1]} />)
-    })
 
     it('should use first name as image alt', () => {
       const { getByAltText } = render(<AccessAvatars users={[user1]} />)
+
       expect(getByAltText('Amin')).toBeInTheDocument()
     })
 
     it('should use first name and last as tooltip', () => {
       const { getByLabelText } = render(<AccessAvatars users={[user1]} />)
+
       expect(getByLabelText('Amin One')).toBeInTheDocument()
     })
 
@@ -38,8 +37,11 @@ describe('AccessAvatars', () => {
       const { getByRole, getByText } = render(
         <AccessAvatars users={[user1, user2, user3, user4, user5, user6]} />
       )
+
       expect(getByText('+2')).toBeInTheDocument()
+
       fireEvent.focus(getByText('+2'))
+
       await waitFor(() => {
         expect(getByRole('tooltip')).toBeInTheDocument()
         expect(getByText('Janelle Five')).toBeInTheDocument()
@@ -50,6 +52,7 @@ describe('AccessAvatars', () => {
       const { getAllByRole } = render(
         <AccessAvatars users={[user1, user2, user3, user4, user5]} />
       )
+
       expect(getAllByRole('img')).toHaveLength(5)
     })
   })
@@ -65,10 +68,12 @@ describe('AccessAvatars', () => {
         xl: false
       })
     })
+
     it('should display 3 avatars max', () => {
       const { getAllByRole } = render(
         <AccessAvatars users={[user1, user2, user3]} />
       )
+
       expect(getAllByRole('img')).toHaveLength(3)
     })
   })
