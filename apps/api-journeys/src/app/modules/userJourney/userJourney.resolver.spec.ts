@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { omit } from 'lodash'
 import {
   JourneyStatus,
   ThemeMode,
@@ -6,9 +7,8 @@ import {
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserJourneyResolver } from './userJourney.resolver'
-import { omit } from 'lodash'
 import { JourneyService } from '../journey/journey.service'
+import { UserJourneyResolver } from './userJourney.resolver'
 
 describe('Step', () => {
   let resolver: UserJourneyResolver, service: UserJourneyService

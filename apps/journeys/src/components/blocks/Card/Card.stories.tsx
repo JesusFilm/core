@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { Card } from './Card'
+import { useTheme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
 import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
@@ -12,8 +13,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
-import { useTheme } from '@mui/material/styles'
-import Box from '@mui/material/Box'
+import { Card } from './Card'
 
 const Demo: Meta = {
   ...journeysConfig,

@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
-import { ThemeProvider } from '../src/components/ThemeProvider'
-import { SignIn } from '../src/components/SignIn'
 import Image from 'next/image'
-import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { ThemeProvider } from '../src/components/ThemeProvider'
+import { SignIn } from '../src/components/SignIn'
+import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
 
 function Dashboard(): ReactElement {
   const handleFeedbackSupport = (): void => {

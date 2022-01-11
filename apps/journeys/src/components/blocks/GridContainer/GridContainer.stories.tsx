@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { GetJourney_journey_blocks_GridContainerBlock as GridContainerBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { GridContainer } from './GridContainer'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import {
   TypographyVariant,
@@ -14,6 +13,7 @@ import {
   GridDirection,
   GridJustifyContent
 } from '../../../../__generated__/globalTypes'
+import { GridContainer } from './GridContainer'
 
 const Demo = {
   ...journeysConfig,

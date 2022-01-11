@@ -1,6 +1,4 @@
 import { render, fireEvent } from '@testing-library/react'
-import { ButtonFields } from './__generated__/ButtonFields'
-import { Button } from '.'
 import {
   ButtonVariant,
   ButtonColor,
@@ -9,7 +7,9 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { handleAction } from '../../'
+import { handleAction } from '../..'
+import { ButtonFields } from './__generated__/ButtonFields'
+import { Button } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')

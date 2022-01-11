@@ -1,6 +1,6 @@
 import { ResolveField, Resolver } from '@nestjs/graphql'
-import { Action } from '../../__generated__/graphql'
 import { has } from 'lodash'
+import { Action } from '../../__generated__/graphql'
 
 @Resolver('Action')
 export class ActionResolver {

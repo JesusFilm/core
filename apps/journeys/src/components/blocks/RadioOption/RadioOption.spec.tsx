@@ -1,4 +1,3 @@
-import { RadioOption } from './RadioOption'
 import {
   fireEvent,
   renderWithApolloClient
@@ -6,6 +5,7 @@ import {
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { handleAction } from '../../../libs/action'
+import { RadioOption } from './RadioOption'
 
 jest.mock('../../../libs/action', () => {
   const originalModule = jest.requireActual('../../../libs/action')

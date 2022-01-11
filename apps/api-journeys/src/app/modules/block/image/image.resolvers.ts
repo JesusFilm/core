@@ -1,16 +1,16 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { UserInputError } from 'apollo-server-errors'
+import { IdAsKey } from '@core/nest/decorators'
+import { encode } from 'blurhash'
+import { createCanvas, loadImage, Image } from 'canvas'
+import { BlockService } from '../block.service'
 import {
   ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
-import { UserInputError } from 'apollo-server-errors'
-import { IdAsKey } from '@core/nest/decorators'
-import { BlockService } from '../block.service'
-import { encode } from 'blurhash'
-import { createCanvas, loadImage, Image } from 'canvas'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 const getImageData = (image: Image): ImageData => {

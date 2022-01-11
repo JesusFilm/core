@@ -1,10 +1,10 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
-import { Step } from '.'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { EditorProvider } from '../../../../Context'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Step } from '.'
 
 describe('Step', () => {
   it('shows default messages', () => {

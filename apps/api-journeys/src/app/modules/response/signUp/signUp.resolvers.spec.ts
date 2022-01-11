@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { SignUpResponseResolver } from './signUp.resolvers'
 import { ResponseService } from '../response.service'
+import { SignUpResponseResolver } from './signUp.resolvers'
 
 describe('SignUpResponse', () => {
   let resolver: SignUpResponseResolver

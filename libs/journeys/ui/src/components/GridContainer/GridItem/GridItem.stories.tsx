@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import { GridItem } from './GridItem'
 import { journeyUiConfig, StoryCard, TreeBlock } from '../../..'
 import {
   TypographyVariant,
@@ -9,6 +8,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
+import { GridItem } from './GridItem'
 import { GridItemFields } from './__generated__/GridItemFields'
 
 const Demo = {

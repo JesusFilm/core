@@ -1,13 +1,13 @@
+import { MockedProvider } from '@apollo/client/testing'
 import {
   fireEvent,
   renderWithApolloClient,
   render,
   waitFor
 } from '../../../../test/testingLibrary'
-import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 import { GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { MockedProvider } from '@apollo/client/testing'
+import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
 describe('RadioQuestion', () => {
   const block: TreeBlock<RadioQuestionBlock> = {

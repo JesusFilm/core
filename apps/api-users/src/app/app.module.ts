@@ -1,6 +1,6 @@
+import { join } from 'path'
 import { Module } from '@nestjs/common'
 import { GraphQLFederationModule } from '@nestjs/graphql'
-import { join } from 'path'
 import { UserModule } from './modules/user/user.module'
 
 @Module({

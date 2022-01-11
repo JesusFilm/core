@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import { Icon } from '.'
 import { Box } from '@mui/system'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
@@ -11,6 +10,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
 import { journeyUiConfig, simpleComponentConfig } from '../..'
+import { Icon } from '.'
 
 const IconDemo = {
   ...journeyUiConfig,

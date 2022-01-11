@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { useMutation, gql } from '@apollo/client'
-import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 
 interface PromoteUserProps {
   userJourney: UserJourney
@@ -25,9 +25,7 @@ export const USER_JOURNEY_PROMOTE = gql`
   }
 `
 
-export const PromoteUser = ({
-  userJourney
-}: PromoteUserProps): ReactElement => {
+export function PromoteUser({ userJourney }: PromoteUserProps): ReactElement {
   const [userJourneyPromote] =
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 

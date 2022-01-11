@@ -5,9 +5,9 @@ import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
-import { JourneyDetails } from './JourneyDetails'
 import { ShareSection } from '../ShareSection'
 import { useJourney } from '../Context'
+import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
   const breakpoints = useBreakpoints()
