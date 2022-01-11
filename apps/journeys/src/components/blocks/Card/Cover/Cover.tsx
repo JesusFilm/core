@@ -4,7 +4,8 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../__generated__/GetJourney'
-import { useTheme, Box } from '@mui/material'
+import useTheme from '@mui/material/styles/useTheme'
+import Box from '@mui/material/Box'
 import { decode } from 'blurhash'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'

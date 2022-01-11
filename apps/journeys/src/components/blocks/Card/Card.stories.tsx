@@ -12,7 +12,8 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
-import { useTheme, Box } from '@mui/material'
+import useTheme from '@mui/material/styles/useTheme'
+import Box from '@mui/material/Box'
 
 const Demo: Meta = {
   ...journeysConfig,
