@@ -19,17 +19,8 @@ Single.args = {
   users: [user1]
 }
 
-export const MaxDesktop: Story<AccessAvatarsProps> = Template.bind({})
-MaxDesktop.args = {
-  users: [user1, user2, user3, user4, user5]
-}
-export const MaxMobile: Story<AccessAvatarsProps> = Template.bind({})
-MaxMobile.args = {
-  users: [user1, user2, user3]
-}
-
-export const OverFlowAvatars: Story<AccessAvatarsProps> = Template.bind({})
-OverFlowAvatars.args = {
+export const Overflow: Story<AccessAvatarsProps> = Template.bind({})
+Overflow.args = {
   users: [user1, user2, user3, user4, user5, user6]
 }
 
