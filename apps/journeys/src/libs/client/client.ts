@@ -3,8 +3,8 @@ import {
   createHttpLink,
   NormalizedCacheObject
 } from '@apollo/client'
-import { cache } from './cache'
 import { setContext } from '@apollo/client/link/context'
+import { cache } from './cache'
 
 export function createApolloClient(
   token?: string

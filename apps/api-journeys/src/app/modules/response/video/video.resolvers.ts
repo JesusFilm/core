@@ -1,11 +1,11 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { IdAsKey } from '@core/nest/decorators'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import {
   VideoResponse,
   VideoResponseCreateInput
 } from '../../../__generated__/graphql'
-import { IdAsKey } from '@core/nest/decorators'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ResponseService } from '../response.service'
 
 @Resolver('VideoResponse')

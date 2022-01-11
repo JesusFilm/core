@@ -1,14 +1,15 @@
 import { ReactElement } from 'react'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import { gql } from '@apollo/client'
+import { ThemeProvider } from '@core/shared/ui'
+import Head from 'next/head'
 import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
-import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'
-import { gql } from '@apollo/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
-import { ThemeProvider } from '@core/shared/ui'
 import {
   TYPOGRAPHY_FIELDS,
   BUTTON_FIELDS,
@@ -23,7 +24,7 @@ import {
   VIDEO_FIELDS,
   VIDEO_TRIGGER_FIELDS
 } from '../src/components/blocks'
-import Head from 'next/head'
+import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 
 interface JourneyPageProps {
   journey: Journey
@@ -54,9 +55,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
-  context
-) => {
+export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
+  params
+}) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
       ${BUTTON_FIELDS}
@@ -126,7 +127,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       }
     `,
     variables: {
-      id: context.query.journeySlug
+      id: params?.journeySlug
     }
   })
 
@@ -138,8 +139,30 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
     return {
       props: {
         journey: data.journey
-      }
+      },
+      revalidate: 60
     }
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await client.query<GetJourneySlugs>({
+    query: gql`
+      query GetJourneySlugs {
+        journeys(status: published) {
+          slug
+        }
+      }
+    `
+  })
+
+  const paths = data.journeys.map(({ slug: journeySlug }) => ({
+    params: { journeySlug }
+  }))
+
+  return {
+    paths,
+    fallback: 'blocking'
   }
 }
 

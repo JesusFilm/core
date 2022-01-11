@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock } from '../../'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
+import { TreeBlock } from '../..'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
+import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')

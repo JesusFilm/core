@@ -1,16 +1,16 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_RadioQuestionBlock as RadioQuestionBlock,
   GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock
 } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { RadioQuestion } from './RadioQuestion'
 import {
   journeysConfig,
   simpleComponentConfig,
   StoryCard
 } from '../../../libs/storybook'
-import { MockedProvider } from '@apollo/client/testing'
+import { RadioQuestion } from './RadioQuestion'
 import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
 const children: Array<TreeBlock<RadioOptionBlock>> = [

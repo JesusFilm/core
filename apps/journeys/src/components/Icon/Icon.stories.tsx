@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { Icon } from '.'
-import { Box } from '@mui/system'
-import { Typography, Grid } from '@mui/material'
+import Box from '@mui/system/Box'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
 import {
   IconName,
   IconSize,
@@ -14,6 +14,7 @@ import {
   simpleComponentConfig,
   StoryCard
 } from '../../libs/storybook'
+import { Icon } from '.'
 
 const IconDemo = {
   ...journeysConfig,

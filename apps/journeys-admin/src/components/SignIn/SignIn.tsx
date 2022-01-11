@@ -1,11 +1,11 @@
 import { ReactElement, useEffect } from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
-import { firebaseClient, useFirebase } from '../../libs/firebaseClient'
 import firebase from 'firebase/compat/app'
-import 'firebase/compat/auth'
 import { getAuth } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { useLazyQuery, gql } from '@apollo/client'
+import { firebaseClient, useFirebase } from '../../libs/firebaseClient'
+import 'firebase/compat/auth'
 
 export const ME = gql`
   query Me {

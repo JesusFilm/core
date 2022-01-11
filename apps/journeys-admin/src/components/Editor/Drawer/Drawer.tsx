@@ -1,15 +1,13 @@
 import { ReactElement, ReactNode, useContext } from 'react'
-import {
-  AppBar,
-  Drawer as MuiDrawer,
-  IconButton,
-  Theme,
-  Toolbar,
-  Typography
-} from '@mui/material'
+import AppBar from '@mui/material/AppBar'
+import MuiDrawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { EditorContext } from '../Context'
+import { Theme } from '@mui/material/styles'
 import { Close } from '@mui/icons-material'
+import { EditorContext } from '../Context'
 
 export const DRAWER_WIDTH = 328
 

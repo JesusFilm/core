@@ -1,21 +1,20 @@
 import { createElement, ReactElement } from 'react'
-import {
-  CheckCircleRounded,
-  PlayArrowRounded,
-  TranslateRounded,
-  RadioButtonUncheckedRounded,
-  FormatQuoteRounded,
-  LockOpenRounded,
-  ArrowForwardRounded,
-  ChatBubbleOutlineRounded,
-  LiveTvRounded,
-  MenuBookRounded,
-  ChevronRightRounded,
-  BeenhereRounded,
-  SendRounded,
-  SubscriptionsRounded,
-  ContactSupportRounded
-} from '@mui/icons-material'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
+import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import FormatQuoteRoundedIcon from '@mui/icons-material/FormatQuoteRounded'
+import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded'
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
+import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
+import LiveTvRoundedIcon from '@mui/icons-material/LiveTvRounded'
+import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded'
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
+import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
+import SendRoundedIcon from '@mui/icons-material/SendRounded'
+import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
+import ContactSupportRoundedIcon from '@mui/icons-material/ContactSupportRounded'
+
 import { ButtonFields_startIcon as IconType } from '../../../__generated__/ButtonFields'
 
 export function Icon({ name, color, size }: IconType): ReactElement | null {
@@ -31,21 +30,21 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
       : 'inherit'
 
   const icons = {
-    CheckCircleRounded,
-    PlayArrowRounded,
-    TranslateRounded,
-    RadioButtonUncheckedRounded,
-    FormatQuoteRounded,
-    LockOpenRounded,
-    ArrowForwardRounded,
-    ChatBubbleOutlineRounded,
-    LiveTvRounded,
-    MenuBookRounded,
-    ChevronRightRounded,
-    BeenhereRounded,
-    SendRounded,
-    SubscriptionsRounded,
-    ContactSupportRounded
+    CheckCircleRounded: CheckCircleRoundedIcon,
+    PlayArrowRounded: PlayArrowRoundedIcon,
+    TranslateRounded: TranslateRoundedIcon,
+    RadioButtonUncheckedRounded: RadioButtonUncheckedRoundedIcon,
+    FormatQuoteRounded: FormatQuoteRoundedIcon,
+    LockOpenRounded: LockOpenRoundedIcon,
+    ArrowForwardRounded: ArrowForwardRoundedIcon,
+    ChatBubbleOutlineRounded: ChatBubbleOutlineRoundedIcon,
+    LiveTvRounded: LiveTvRoundedIcon,
+    MenuBookRounded: MenuBookRoundedIcon,
+    ChevronRightRounded: ChevronRightRoundedIcon,
+    BeenhereRounded: BeenhereRoundedIcon,
+    SendRounded: SendRoundedIcon,
+    SubscriptionsRounded: SubscriptionsRoundedIcon,
+    ContactSupportRounded: ContactSupportRoundedIcon
   }
 
   return createElement(icons[name], {

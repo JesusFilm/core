@@ -1,11 +1,14 @@
 import { ReactElement } from 'react'
-import { Typography, Fab, Card, Box } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import Fab from '@mui/material/Fab'
+import Card from '@mui/material/Card'
+import Box from '@mui/material/Box'
 import EditIcon from '@mui/icons-material/Edit'
 import AddIcon from '@mui/icons-material/Add'
-import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
-import { CardPreview } from '../../CardPreview'
 import { TreeBlock } from '@core/journeys/ui'
 import { useBreakpoints } from '@core/shared/ui'
+import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { CardPreview } from '../../CardPreview'
 
 export interface CardViewProps {
   slug: string

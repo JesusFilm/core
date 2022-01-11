@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { kebabCase } from 'lodash'
-import { Grid as MaterialGrid, GridDirection } from '@mui/material'
+import MaterialGrid, { GridDirection } from '@mui/material/Grid'
 import { TreeBlock } from '../..'
 import { BlockRenderer } from '../BlockRenderer'
 import { GridContainerFields } from './__generated__/GridContainerFields'

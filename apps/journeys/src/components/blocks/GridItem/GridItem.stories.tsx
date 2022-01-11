@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { GetJourney_journey_blocks_GridItemBlock as GridItemBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
-import { GridItem } from './GridItem'
 import { journeysConfig, StoryCard } from '../../../libs/storybook'
 import {
   TypographyVariant,
@@ -11,6 +10,7 @@ import {
   IconName,
   IconSize
 } from '../../../../__generated__/globalTypes'
+import { GridItem } from './GridItem'
 
 const Demo = {
   ...journeysConfig,

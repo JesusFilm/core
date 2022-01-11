@@ -1,17 +1,15 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import {
-  Box,
-  Button,
-  Drawer,
-  Dialog,
-  FormControl,
-  FormLabel,
-  TextField,
-  Typography
-} from '@mui/material'
-import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Drawer from '@mui/material/Drawer'
+import Dialog from '@mui/material/Dialog'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
+import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { Alert } from '../Alert'
 import { useJourney } from '../../Context'
 

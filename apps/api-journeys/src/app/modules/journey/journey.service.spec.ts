@@ -1,10 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { JourneyService } from './journey.service'
-import {
-  JourneyStatus,
-  ThemeMode,
-  ThemeName
-} from '../../__generated__/graphql'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
@@ -12,6 +6,12 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../__generated__/graphql'
+import { JourneyService } from './journey.service'
 
 describe('JourneyService', () => {
   let service: JourneyService

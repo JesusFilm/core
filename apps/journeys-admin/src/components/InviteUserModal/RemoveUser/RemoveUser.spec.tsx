@@ -1,8 +1,8 @@
-import { RemoveUser, USER_JOURNEY_REMOVE } from './RemoveUser'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+import { RemoveUser, USER_JOURNEY_REMOVE } from './RemoveUser'
 
 const userJourney: UserJourney = {
   id: '1234',

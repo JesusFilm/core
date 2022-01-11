@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react'
-import { GridContainer } from '.'
 import { TreeBlock } from '../..'
 import {
   GridDirection,
@@ -7,6 +6,7 @@ import {
   GridAlignItems
 } from '../../../__generated__/globalTypes'
 import { GridContainerFields } from './__generated__/GridContainerFields'
+import { GridContainer } from '.'
 
 describe('GridContainer', () => {
   const block: TreeBlock<GridContainerFields> = {

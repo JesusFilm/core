@@ -1,10 +1,10 @@
 import { aql } from 'arangojs'
+import { v4 as uuidv4 } from 'uuid'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-import { v4 as uuidv4 } from 'uuid'
 import { ArangoDB } from '../db'
 
 const db = ArangoDB()

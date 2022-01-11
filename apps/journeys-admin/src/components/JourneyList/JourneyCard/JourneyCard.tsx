@@ -1,18 +1,16 @@
 import { ReactElement } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import {
-  Card,
-  Typography,
-  Grid,
-  CardActionArea,
-  CardContent,
-  CardActions
-} from '@mui/material'
+import Card from '@mui/material/Card'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
 import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
+import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from './JourneyCardMenu'
 
 interface JourneyCardProps {
