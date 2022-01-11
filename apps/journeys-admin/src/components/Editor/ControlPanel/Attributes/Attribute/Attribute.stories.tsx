@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Palette } from '@mui/icons-material'
+import PaletteIcon from '@mui/icons-material/Palette'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EditorProvider } from '../../../Context'
 import { Attribute } from '.'
@@ -15,7 +15,7 @@ export const Default: Story = () => {
     <EditorProvider>
       <Attribute
         id="custom-id"
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         name="Style"
         value={'Dark'}
         description="Card Styling"
@@ -29,7 +29,7 @@ export const Selected: Story = () => {
     <EditorProvider initialState={{ selectedAttributeId: 'custom-id' }}>
       <Attribute
         id="custom-id"
-        icon={<Palette />}
+        icon={<PaletteIcon />}
         name="Style"
         value={'Dark'}
         description="Card Styling"

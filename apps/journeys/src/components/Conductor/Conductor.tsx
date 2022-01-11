@@ -2,15 +2,15 @@ import { ReactElement, useEffect, useState } from 'react'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
-import { Box, IconButton, useTheme } from '@mui/material'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import { useTheme } from '@mui/material/styles'
 import { useBreakpoints } from '@core/shared/ui'
-import { ChevronLeft, ChevronRight } from '@mui/icons-material'
-import { JourneyProgress } from '../JourneyProgress'
-import { BlockRenderer } from '../BlockRenderer'
-import { useBlocks } from '../../libs/client/cache/blocks'
-import { TreeBlock } from '../../libs/transformer/transformer'
-import { CardWrapper } from '../blocks/Card'
 import 'swiper/swiper.min.css'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { JourneyProgress } from '../JourneyProgress'
+import { CardWrapper } from '../blocks/Card'
 
 export interface ConductorProps {
   blocks: TreeBlock[]
@@ -172,7 +172,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
               color: (theme) => theme.palette.text.primary
             }}
           >
-            <ChevronLeft
+            <ChevronLeftIcon
               fontSize={'large'}
               sx={{
                 display: 'none',
@@ -214,7 +214,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
               color: (theme) => theme.palette.text.primary
             }}
           >
-            <ChevronRight
+            <ChevronRightIcon
               fontSize={'large'}
               sx={{
                 display: 'none',

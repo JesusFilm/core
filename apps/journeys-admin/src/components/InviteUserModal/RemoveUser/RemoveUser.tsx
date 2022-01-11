@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
-import { MenuItem } from '@mui/material'
+import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
-import { RemoveCircleRounded } from '@mui/icons-material'
+import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
 import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
 
@@ -39,7 +39,7 @@ export const RemoveUser = ({ userJourney }: RemoveUserProps): ReactElement => {
       onClick={async () => await handleRemoveUser(userJourney.id)}
       sx={{ mr: 2 }}
     >
-      <RemoveCircleRounded sx={{ mr: 2 }} />
+      <RemoveCircleRoundedIcon sx={{ mr: 2 }} />
       Remove
     </MenuItem>
   )

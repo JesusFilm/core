@@ -1,14 +1,12 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import {
-  Divider,
-  IconButton,
-  Menu as MuiMenu,
-  MenuItem,
-  ListItemText,
-  ListItemIcon
-} from '@mui/material'
-import { MoreVert } from '@mui/icons-material'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import MuiMenu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import MoreVert from '@mui/icons-material/MoreVert'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'

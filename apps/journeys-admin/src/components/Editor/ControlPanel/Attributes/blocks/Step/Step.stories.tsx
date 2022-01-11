@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { Stack } from '@mui/material'
+import Stack from '@mui/material/Stack'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Step } from '.'

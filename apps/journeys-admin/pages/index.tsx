@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import Image from 'next/image'
-import { Box, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { SignIn } from '../src/components/SignIn'
 import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'

@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'

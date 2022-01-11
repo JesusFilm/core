@@ -1,9 +1,10 @@
 import { ReactElement } from 'react'
 import NextImage from 'next/image'
-import { SxProps } from '@mui/system'
-import { Theme, Box } from '@mui/material'
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Theme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
 interface ImageProps extends TreeBlock<ImageBlock> {
   sx?: SxProps<Theme>

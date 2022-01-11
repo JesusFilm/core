@@ -1,7 +1,10 @@
 import { ReactElement } from 'react'
-import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
+import AppBar from '@mui/material/AppBar'
+import IconButton from '@mui/material/IconButton'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import { ChevronLeftRounded } from '@mui/icons-material'
+import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import { useBreakpoints } from '@core/shared/ui'
 import { Menu } from '../JourneyView/Menu'
 

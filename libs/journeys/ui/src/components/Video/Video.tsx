@@ -1,7 +1,7 @@
 import videojs from 'video.js'
 import { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'

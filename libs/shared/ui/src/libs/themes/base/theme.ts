@@ -1,5 +1,5 @@
-import { createTheme } from '@mui/material'
 import { deepmerge } from '@mui/utils'
+import { createTheme } from '@mui/material/styles'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
 import { baseBreakpoints } from './tokens/breakpoints'
 import { baseComponents } from './tokens/components'

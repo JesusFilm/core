@@ -3,8 +3,9 @@ import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
-import { Typography, Box } from '@mui/material'
 import { useRouter } from 'next/router'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import {
   GetJourney,
   GetJourney_journey as Journey,

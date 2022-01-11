@@ -1,4 +1,6 @@
-import { Box, Theme, useMediaQuery } from '@mui/material'
+import Box from '@mui/material/Box'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { BlockRenderer } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'

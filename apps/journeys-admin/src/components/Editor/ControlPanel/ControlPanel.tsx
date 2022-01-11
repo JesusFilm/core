@@ -1,4 +1,6 @@
-import { Box, Tabs, Tab } from '@mui/material'
+import Box from '@mui/material/Box'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import {
   ReactElement,
   ReactNode,

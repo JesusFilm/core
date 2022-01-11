@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { Button, useTheme } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import Button from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
