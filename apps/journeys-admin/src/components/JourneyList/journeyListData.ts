@@ -26,11 +26,11 @@ export const defaultJourney: Journey = {
       journeyId: 'journey-id',
       user: {
         __typename: 'User',
-        id: 'user-id',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'johndoe@email.com',
-        imageUrl: 'https://source.unsplash.com/random/300x300'
+        id: 'user-id1',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: 'https://source.unsplash.com/random/300x300',
+        email: 'amin@email.com'
       }
     },
     {
@@ -41,7 +41,7 @@ export const defaultJourney: Journey = {
         __typename: 'User',
         id: 'user-id2',
         firstName: 'Horace',
-        lastName: 'Reader',
+        lastName: 'Two',
         imageUrl: 'https://source.unsplash.com/random/300x301',
         email: 'horace@email.com'
       }
@@ -54,7 +54,7 @@ export const defaultJourney: Journey = {
         __typename: 'User',
         id: 'user-id3',
         firstName: 'Coral',
-        lastName: 'Ortega',
+        lastName: 'Three',
         imageUrl: 'https://source.unsplash.com/random/301x300',
         email: 'coral@email.com'
       }
