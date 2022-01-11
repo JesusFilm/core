@@ -12,7 +12,7 @@ import {
 } from '../../__generated__/GetJourney'
 import { JourneyProvider, JourneyView } from '../../src/components'
 import client from '../../src/libs/client'
-import { useFirebase } from "../../src/libs/firebaseClient"
+import { useFirebase } from '../../src/libs/firebaseClient'
 import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS

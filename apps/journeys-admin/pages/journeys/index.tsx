@@ -10,7 +10,7 @@ import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../../__generated__/GetJourneys'
-import { JourneyList } from "../../src/components"
+import { JourneyList } from '../../src/components'
 import { useFirebase } from '../../src/libs/firebaseClient'
 import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'

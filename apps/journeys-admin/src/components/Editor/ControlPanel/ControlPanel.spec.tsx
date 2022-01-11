@@ -2,7 +2,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { EditorProvider } from '../Context'
-import { ControlPanel } from "."
+import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
   it('should render the element', () => {

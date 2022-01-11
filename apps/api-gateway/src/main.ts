@@ -8,9 +8,7 @@ if (
   process.env.GOOGLE_APPLICATION_JSON !== ''
 ) {
   initializeApp({
-    credential: credential.cert(
-      JSON.parse(process.env.GOOGLE_APPLICATION_JSON)
-    )
+    credential: credential.cert(JSON.parse(process.env.GOOGLE_APPLICATION_JSON))
   })
 }
 
