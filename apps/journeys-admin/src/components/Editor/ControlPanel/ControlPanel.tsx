@@ -80,7 +80,7 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={selectedBlock == null}
           />
-          <Tab label="Blocks" sx={{ flexGrow: 1 }} />
+          <Tab label="Blocks" {...a11yProps(2)} sx={{ flexGrow: 1 }} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -92,6 +92,9 @@ export function ControlPanel(): ReactElement {
       </TabPanel>
       <TabPanel value={value} index={1}>
         {selectedBlock != null && <Attributes selected={selectedBlock} />}
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        Sample block
       </TabPanel>
     </Box>
   )

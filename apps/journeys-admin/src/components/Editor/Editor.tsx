@@ -7,9 +7,9 @@ import { transformer, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { EditorProvider } from './Context'
 import { Drawer, DRAWER_WIDTH } from './Drawer'
-import { Box, Button } from '@mui/material'
-import AddRounded from '@mui/icons-material/AddRounded'
+import { Box } from '@mui/material'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
+import { Add } from './Add'
 
 interface EditorProps {
   journey: Journey
@@ -50,25 +50,10 @@ export function Editor({ journey }: EditorProps): ReactElement {
             <Canvas />
           </Box>
         </Box>
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<AddRounded />}
-          sx={{
-            position: 'absolute',
-            zIndex: 'modal',
-            width: '105px',
-            height: '48px',
-            boxShadow: 5,
-            right: 20,
-            bottom: 260
-          }}
-        >
-          ADD
-        </Button>
+        <Add />
         <ControlPanel />
       </Box>
       <Drawer />
-    </EditorProvider >
+    </EditorProvider>
   )
 }
