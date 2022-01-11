@@ -27,41 +27,42 @@ function SingleJourneyEditPage({
   )
 }
 
-export const getServerSideProps: GetServerSideProps<SingleJourneyEditPageProps> =
-  async (context) => {
-    const { data } = await client.query<GetJourneyForEdit>({
-      query: gql`
-        ${BLOCK_FIELDS}
-        query GetJourneyForEdit($id: ID!) {
-          journey(id: $id, idType: slug) {
-            id
-            slug
-            themeName
-            themeMode
-            title
-            description
-            blocks {
-              ...BlockFields
-            }
+export const getServerSideProps: GetServerSideProps<
+  SingleJourneyEditPageProps
+> = async (context) => {
+  const { data } = await client.query<GetJourneyForEdit>({
+    query: gql`
+      ${BLOCK_FIELDS}
+      query GetJourneyForEdit($id: ID!) {
+        journey(id: $id, idType: slug) {
+          id
+          slug
+          themeName
+          themeMode
+          title
+          description
+          blocks {
+            ...BlockFields
           }
         }
-      `,
-      variables: {
-        id: context.query.journeySlug
       }
-    })
+    `,
+    variables: {
+      id: context.query.journeySlug
+    }
+  })
 
-    if (data.journey === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journey: data.journey
-        }
+  if (data.journey === null) {
+    return {
+      notFound: true
+    }
+  } else {
+    return {
+      props: {
+        journey: data.journey
       }
     }
   }
+}
 
 export default SingleJourneyEditPage
