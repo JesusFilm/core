@@ -24,7 +24,7 @@ export const USER_JOURNEY_REMOVE = gql`
   }
 `
 
-export const RemoveUser = ({ userJourney }: RemoveUserProps): ReactElement => {
+export function RemoveUser({ userJourney }: RemoveUserProps): ReactElement {
   const [userJourneyRemove] =
     useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
 

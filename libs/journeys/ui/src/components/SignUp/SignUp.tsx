@@ -5,12 +5,11 @@ import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-
 import { TreeBlock, handleAction } from '../..'
 import { Icon } from '../Icon'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
-import TextField from './TextField'
+import { TextField } from './TextField'
 
 export const SIGN_UP_RESPONSE_CREATE = gql`
   mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {

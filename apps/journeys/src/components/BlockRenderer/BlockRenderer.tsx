@@ -42,5 +42,3 @@ export function BlockRenderer(block: BlockRendererProps): ReactElement {
       return <></>
   }
 }
-
-export default BlockRenderer

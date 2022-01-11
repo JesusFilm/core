@@ -25,9 +25,7 @@ export const USER_JOURNEY_PROMOTE = gql`
   }
 `
 
-export const PromoteUser = ({
-  userJourney
-}: PromoteUserProps): ReactElement => {
+export function PromoteUser({ userJourney }: PromoteUserProps): ReactElement {
   const [userJourneyPromote] =
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 

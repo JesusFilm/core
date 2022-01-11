@@ -19,7 +19,7 @@ export interface ConductorProps {
   blocks: TreeBlock[]
 }
 
-const Conductor = ({ blocks }: ConductorProps): ReactElement => {
+export function Conductor({ blocks }: ConductorProps): ReactElement {
   const {
     setTreeBlocks,
     nextActiveBlock,
@@ -232,5 +232,3 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     </Box>
   )
 }
-
-export default Conductor
