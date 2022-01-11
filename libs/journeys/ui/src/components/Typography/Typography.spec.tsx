@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react'
-
 import {
   TypographyAlign,
   TypographyColor,
@@ -7,7 +6,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { TreeBlock } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
-import Typography from './Typography'
+import { Typography } from './Typography'
 
 describe('Typography', () => {
   const block: TreeBlock<TypographyFields> = {
