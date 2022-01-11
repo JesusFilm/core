@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 
-import { Alert as MuiAlert, Snackbar } from '@mui/material'
+import MuiAlert from '@mui/material/Alert'
+import Snackbar from '@mui/material/Snackbar'
 import { CheckCircleRounded } from '@mui/icons-material'
 
 export interface AlertProps {

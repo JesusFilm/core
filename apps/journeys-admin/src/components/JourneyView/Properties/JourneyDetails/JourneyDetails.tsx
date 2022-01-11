@@ -1,6 +1,7 @@
 import { isThisYear, parseISO, intlFormat } from 'date-fns'
 import { ReactElement } from 'react'
-import { Box, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import {
   CheckCircleRounded,
   EditRounded,

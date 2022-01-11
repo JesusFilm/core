@@ -13,7 +13,8 @@ import {
   Videocam
 } from '@mui/icons-material'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
-import { Paper, Box } from '@mui/material'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
 import { EditorContext } from '../../../../Context'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'
