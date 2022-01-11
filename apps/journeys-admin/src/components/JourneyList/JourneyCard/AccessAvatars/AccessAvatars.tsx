@@ -12,7 +12,7 @@ export interface AccessAvatarsProps {
 export function AccessAvatars({ users }: AccessAvatarsProps): ReactElement {
   const breakpoints = useBreakpoints()
 
-  const maxAvatars = breakpoints.sm ? 5 : 3
+  const maxAvatars = breakpoints.md ? 5 : 3
   const avatarsShown = users.length <= maxAvatars ? maxAvatars : maxAvatars - 1
 
   return (
