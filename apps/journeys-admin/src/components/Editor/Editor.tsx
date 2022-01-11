@@ -31,7 +31,8 @@ export function Editor({ journey }: EditorProps): ReactElement {
           display: 'flex',
           height: '100vh',
           flexDirection: 'column',
-          marginRight: { sm: `${DRAWER_WIDTH}px` }
+          marginRight: { sm: `${DRAWER_WIDTH}px` },
+          position: 'relative'
         }}
       >
         <TopBar title={journey.title} slug={journey.slug} />
@@ -42,30 +43,29 @@ export function Editor({ journey }: EditorProps): ReactElement {
             flexGrow: 1,
             overflow: 'auto',
             borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-            backgroundColor: (theme) => theme.palette.background.paper,
-            position: 'relative'
+            backgroundColor: (theme) => theme.palette.background.paper
           }}
         >
           <Box sx={{ my: 'auto' }}>
             <Canvas />
           </Box>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<AddRounded />}
-            sx={{
-              position: 'absolute',
-              zIndex: 'modal',
-              width: '105px',
-              height: '48px',
-              boxShadow: 5,
-              right: 10,
-              bottom: 15
-            }}
-          >
-            ADD
-          </Button>
         </Box>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<AddRounded />}
+          sx={{
+            position: 'absolute',
+            zIndex: 'modal',
+            width: '105px',
+            height: '48px',
+            boxShadow: 5,
+            right: 20,
+            bottom: 260
+          }}
+        >
+          ADD
+        </Button>
         <ControlPanel />
       </Box>
       <Drawer />
