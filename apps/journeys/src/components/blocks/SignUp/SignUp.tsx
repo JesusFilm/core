@@ -5,7 +5,7 @@ import { useMutation, gql } from '@apollo/client'
 import { Button } from '@mui/material'
 import { v4 as uuidv4 } from 'uuid'
 
-import TextField from './TextField'
+import { TextField } from './TextField'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { SignUpResponseCreate } from '../../../../__generated__/SignUpResponseCreate'

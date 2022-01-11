@@ -21,5 +21,3 @@ export function Typography({
     </MuiTypography>
   )
 }
-
-export default Typography

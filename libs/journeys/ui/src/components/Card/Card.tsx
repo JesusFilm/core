@@ -99,14 +99,14 @@ interface CardWrapperProps
   sx?: SxProps
 }
 
-export const CardWrapper = ({
+export function CardWrapper({
   id,
   backgroundColor,
   themeMode,
   themeName,
   children,
   sx
-}: CardWrapperProps): ReactElement => {
+}: CardWrapperProps): ReactElement {
   const Card = (
     <Paper
       data-testid={id}

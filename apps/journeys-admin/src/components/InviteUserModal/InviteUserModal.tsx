@@ -55,9 +55,9 @@ export const GET_USERS_JOURNEYS = gql`
   }
 `
 
-export const InviteUserModal = ({
+export function InviteUserModal({
   journey
-}: InviteUserModalProps): ReactElement => {
+}: InviteUserModalProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [uj, setUsersJourneys] = useState<Journey>()
   const theme = useTheme()
@@ -208,7 +208,7 @@ interface UserAccessProps {
   userJourney: UserJourneys
 }
 
-export const UserAccess = ({ userJourney }: UserAccessProps): ReactElement => {
+export function UserAccess({ userJourney }: UserAccessProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 

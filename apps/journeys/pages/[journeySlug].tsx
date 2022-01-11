@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import Conductor from '../src/components/Conductor'
+import { Conductor } from '../src/components/Conductor'
 import transformer from '../src/libs/transformer'
 import { GetServerSideProps } from 'next'
 import client from '../src/libs/client'

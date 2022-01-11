@@ -10,10 +10,10 @@ export interface TextFieldProps
     'id' | 'name' | 'label' | 'focused' | 'disabled'
   > {}
 
-const TextField = ({
+export function TextField({
   name = '',
   ...muiFieldProps
-}: TextFieldProps): ReactElement => {
+}: TextFieldProps): ReactElement {
   const [formikFieldProps, meta] = useField(name)
 
   const Field = MuiTextField.default
@@ -34,5 +34,3 @@ const TextField = ({
     />
   )
 }
-
-export default TextField
