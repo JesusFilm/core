@@ -79,57 +79,56 @@ function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<
-  JourneyViewPageProps
-> = async (context) => {
-  const { data } = await client.query<GetJourney>({
-    query: gql`
-      ${BLOCK_FIELDS}
-      ${INVITE_USER_MODAL_FIELDS}
-      query GetJourney($id: ID!) {
-        journey(id: $id, idType: slug) {
-          id
-          slug
-          title
-          description
-          status
-          locale
-          createdAt
-          publishedAt
-          blocks {
-            ...BlockFields
-          }
-          primaryImageBlock {
-            src
-          }
-          userJourneys {
+export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
+  async (context) => {
+    const { data } = await client.query<GetJourney>({
+      query: gql`
+        ${BLOCK_FIELDS}
+        ${INVITE_USER_MODAL_FIELDS}
+        query GetJourney($id: ID!) {
+          journey(id: $id, idType: slug) {
             id
-            userId
-            journeyId
-            role
-            user {
-              ...InviteUserModalFields
+            slug
+            title
+            description
+            status
+            locale
+            createdAt
+            publishedAt
+            blocks {
+              ...BlockFields
+            }
+            primaryImageBlock {
+              src
+            }
+            userJourneys {
+              id
+              userId
+              journeyId
+              role
+              user {
+                ...InviteUserModalFields
+              }
             }
           }
         }
+      `,
+      variables: {
+        id: context.query.journeySlug
       }
-    `,
-    variables: {
-      id: context.query.journeySlug
-    }
-  })
+    })
 
-  if (data.journey === null) {
-    return {
-      notFound: true
-    }
-  } else {
-    return {
-      props: {
-        journey: data.journey
+    if (data.journey === null) {
+      return {
+        notFound: true
+      }
+    } else {
+      return {
+        props: {
+          journey: data.journey
+        }
       }
     }
   }
-}
 
 export default JourneyViewPage

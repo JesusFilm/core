@@ -84,48 +84,47 @@ function JourneyInvitePage({ journey }: JourneyInvitePageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<
-  JourneyInvitePageProps
-> = async (context) => {
-  const { data } = await client.query<GetJourney>({
-    query: gql`
-      ${INVITE_USER_MODAL_FIELDS}
-      query GetJourneyForRequest($id: ID!) {
-        journey(id: $id, idType: slug) {
-          id
-          title
-          description
-          createdAt
-          primaryImageBlock {
-            src
-          }
-          userJourneys {
-            userId
-            journeyId
-            role
-            user {
-              ...InviteUserModalFields
+export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
+  async (context) => {
+    const { data } = await client.query<GetJourney>({
+      query: gql`
+        ${INVITE_USER_MODAL_FIELDS}
+        query GetJourneyForRequest($id: ID!) {
+          journey(id: $id, idType: slug) {
+            id
+            title
+            description
+            createdAt
+            primaryImageBlock {
+              src
+            }
+            userJourneys {
+              userId
+              journeyId
+              role
+              user {
+                ...InviteUserModalFields
+              }
             }
           }
         }
+      `,
+      variables: {
+        id: context.query.journeySlug
       }
-    `,
-    variables: {
-      id: context.query.journeySlug
-    }
-  })
+    })
 
-  if (data.journey === null) {
-    return {
-      notFound: true
-    }
-  } else {
-    return {
-      props: {
-        journey: data.journey
+    if (data.journey === null) {
+      return {
+        notFound: true
+      }
+    } else {
+      return {
+        props: {
+          journey: data.journey
+        }
       }
     }
   }
-}
 
 export default JourneyInvitePage

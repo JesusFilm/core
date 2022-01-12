@@ -23,6 +23,9 @@ export {
   BLOCK_FIELDS,
   useBlocks,
   nextActiveBlock,
-  isActiveBlockOrDescendant
+  isActiveBlockOrDescendant,
+  activeBlockVar,
+  previousBlocksVar,
+  treeBlocksVar
 } from './libs'
 export type { TreeBlock } from './libs'
