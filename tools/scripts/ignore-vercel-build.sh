@@ -9,15 +9,21 @@ NX_VERSION=$(node -e "console.log(require('./package.json').devDependencies['@nr
 npm install -D @nrwl/workspace@$NX_VERSION --prefer-offline
 
 # Run the affected command, comparing latest commit to the one before that
-npx nx affected:apps --plain --base HEAD~1 --head HEAD | grep $APP_NAME -q
+AFFECTED=$(npx nx affected:apps --plain --base HEAD~1 --head HEAD) 
+
+echo "$AFFECTED" | grep $APP_NAME -q
 
 # Store result of the previous command (grep)
 IS_AFFECTED=$?
 
+echo "APP_NAME: $APP_NAME"
+echo "AFFECTED: $AFFECTED"
+echo "NX_VERSION: $NX_VERSION"
+
 if [ $IS_AFFECTED -eq 1 ]; then
-  echo "🛑 - $APP_NAME build cancelled  - @nrwl/workspace $NX_VERSION"
+  echo "🛑 - build cancelled"
   exit 0
 elif [ $IS_AFFECTED -eq 0 ]; then
-  echo "✅ - $APP_NAME build can proceed - @nrwl/workspace $NX_VERSION"
+  echo "✅ - build can proceed"
   exit 1
 fi
