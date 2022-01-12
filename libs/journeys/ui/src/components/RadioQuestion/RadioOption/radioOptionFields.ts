@@ -7,7 +7,7 @@ export const RADIO_OPTION_FIELDS = gql`
     id
     parentBlockId
     label
-    radioAction: action {
+    action {
       ...ActionFields
     }
   }

@@ -7,7 +7,7 @@ export const SIGN_UP_FIELDS = gql`
     id
     parentBlockId
     submitLabel
-    signUpaction: action {
+    action {
       ...ActionFields
     }
     submitIcon {

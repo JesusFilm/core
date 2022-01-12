@@ -20,7 +20,7 @@ export const BUTTON_FIELDS = gql`
       color
       size
     }
-    buttonAction: action {
+    action {
       ...ActionFields
     }
   }
