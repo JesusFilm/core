@@ -464,6 +464,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
+    user?: Nullable<User>;
 }
 
 export class RadioQuestionResponse implements Response {
@@ -534,6 +535,10 @@ export abstract class IQuery {
     abstract journeys(status?: Nullable<JourneyStatus>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
+}
+
+export class User {
+    id: string;
 }
 
 export type DateTime = String;

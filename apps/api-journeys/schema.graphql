@@ -497,6 +497,7 @@ type UserJourney @key(fields: "id") {
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
+  user: User
 }
 
 input RadioQuestionResponseCreateInput {
@@ -592,4 +593,8 @@ extend type Mutation {
 extend type Query {
   journeys(status: JourneyStatus): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+}
+
+extend type User @key(fields: "id") {
+  id: ID! @external
 }
