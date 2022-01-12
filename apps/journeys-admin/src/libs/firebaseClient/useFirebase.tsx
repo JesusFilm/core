@@ -1,7 +1,7 @@
 import { getAuth, signOut } from 'firebase/auth'
-import { firebaseClient } from './firebaseClient'
 import { useRouter } from 'next/router'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { firebaseClient } from './firebaseClient'
 
 interface UseFirebaseResponse {
   logOut: () => void

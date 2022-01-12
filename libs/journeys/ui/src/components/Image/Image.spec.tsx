@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
-import { Image } from '.'
-import { TreeBlock } from '../../'
+import { TreeBlock } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
+import { Image } from '.'
 
 describe('Image', () => {
   const block: TreeBlock<ImageFields> = {

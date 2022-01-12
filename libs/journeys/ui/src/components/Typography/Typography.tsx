@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
-import { Typography as MuiTypography } from '@mui/material'
-import { TypographyFields } from './__generated__/TypographyFields'
+import MuiTypography from '@mui/material/Typography'
 import { TreeBlock } from '../..'
+import { TypographyFields } from './__generated__/TypographyFields'
 
 export function Typography({
   variant,
@@ -21,5 +21,3 @@ export function Typography({
     </MuiTypography>
   )
 }
-
-export default Typography

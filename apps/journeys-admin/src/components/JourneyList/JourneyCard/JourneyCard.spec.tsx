@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react'
-import { JourneyCard } from './JourneyCard'
 import {
   publishedJourney,
   defaultJourney,
   oldJourney
 } from '../journeyListData'
+import { JourneyCard } from './JourneyCard'
 
 describe('JourneyCard', () => {
   it('should render the title', () => {

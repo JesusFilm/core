@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { Image } from './Image'
 import { journeyUiConfig, StoryCard, TreeBlock } from '../..'
+import { Image } from './Image'
 import { ImageFields } from './__generated__/ImageFields'
 
 const Demo = {

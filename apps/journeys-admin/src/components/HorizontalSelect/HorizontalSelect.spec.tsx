@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
+import Box from '@mui/material/Box'
 import { HorizontalSelect } from '.'
-import { Box } from '@mui/material'
 
 describe('HorizontalSelect', () => {
   it('should call onChange when step is clicked on', () => {

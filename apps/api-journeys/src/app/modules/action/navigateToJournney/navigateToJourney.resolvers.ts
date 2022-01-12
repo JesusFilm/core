@@ -1,9 +1,9 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql'
+import { KeyAsId } from '@core/nest/decorators'
 import {
   Journey,
   NavigateToJourneyAction
 } from '../../../__generated__/graphql'
-import { KeyAsId } from '@core/nest/decorators'
 import { JourneyService } from '../../journey/journey.service'
 
 @Resolver('NavigateToJourneyAction')

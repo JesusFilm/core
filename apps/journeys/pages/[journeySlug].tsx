@@ -1,16 +1,17 @@
 import { ReactElement } from 'react'
-import Conductor from '../src/components/Conductor'
-import transformer from '../src/libs/transformer'
-import { GetServerSideProps } from 'next'
-import client from '../src/libs/client'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
+import { ThemeProvider } from '@core/shared/ui'
+import Head from 'next/head'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
+import { Conductor } from '../src/components/Conductor'
+import transformer from '../src/libs/transformer'
+import client from '../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
-import { ThemeProvider } from '@core/shared/ui'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
-import Head from 'next/head'
+import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 
 interface JourneyPageProps {
   journey: Journey
@@ -42,9 +43,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
-  context
-) => {
+export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
+  params
+}) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
       ${BLOCK_FIELDS}
@@ -66,7 +67,7 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
       }
     `,
     variables: {
-      id: context.query.journeySlug
+      id: params?.journeySlug
     }
   })
 
@@ -78,8 +79,30 @@ export const getServerSideProps: GetServerSideProps<JourneyPageProps> = async (
     return {
       props: {
         journey: data.journey
-      }
+      },
+      revalidate: 60
     }
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await client.query<GetJourneySlugs>({
+    query: gql`
+      query GetJourneySlugs {
+        journeys(status: published) {
+          slug
+        }
+      }
+    `
+  })
+
+  const paths = data.journeys.map(({ slug: journeySlug }) => ({
+    params: { journeySlug }
+  }))
+
+  return {
+    paths,
+    fallback: 'blocking'
   }
 }
 

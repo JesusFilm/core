@@ -7,10 +7,10 @@ import {
   Inject
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
-import { UserJourney, UserJourneyRole } from '../../__generated__/graphql'
 import { get, includes } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
+import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
+import { UserJourney, UserJourneyRole } from '../../__generated__/graphql'
 
 // broken out into function for test injection
 export const checkActor = async (

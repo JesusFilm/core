@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
-import Conductor, { ConductorProps } from '.'
-import { basic, imageBlocks, videoBlock } from './data'
 import { journeysConfig } from '../../libs/storybook'
+import { basic, imageBlocks, videoBlock } from './data'
+import { Conductor, ConductorProps } from '.'
 
 const Demo = {
   ...journeysConfig,

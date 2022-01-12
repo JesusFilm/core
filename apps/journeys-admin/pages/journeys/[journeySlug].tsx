@@ -2,6 +2,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
+import { useRouter } from 'next/router'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import {
   GetJourney,
   GetJourney_journey as Journey,
@@ -9,10 +13,7 @@ import {
 } from '../../__generated__/GetJourney'
 import { JourneyProvider, JourneyView } from '../../src/components'
 import client from '../../src/libs/client'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
-import { Typography, Box } from '@mui/material'
-import { useFirebase } from '../../src/libs/firebaseClient/'
-import { useRouter } from 'next/router'
+import { useFirebase } from '../../src/libs/firebaseClient'
 import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS
@@ -77,56 +78,57 @@ function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
-  async (context) => {
-    const { data } = await client.query<GetJourney>({
-      query: gql`
-        ${BLOCK_FIELDS}
-        ${INVITE_USER_MODAL_FIELDS}
-        query GetJourney($id: ID!) {
-          journey(id: $id, idType: slug) {
+export const getServerSideProps: GetServerSideProps<
+  JourneyViewPageProps
+> = async (context) => {
+  const { data } = await client.query<GetJourney>({
+    query: gql`
+      ${BLOCK_FIELDS}
+      ${INVITE_USER_MODAL_FIELDS}
+      query GetJourney($id: ID!) {
+        journey(id: $id, idType: slug) {
+          id
+          slug
+          title
+          description
+          status
+          locale
+          createdAt
+          publishedAt
+          blocks {
+            ...BlockFields
+          }
+          primaryImageBlock {
+            src
+          }
+          userJourneys {
             id
-            slug
-            title
-            description
-            status
-            locale
-            createdAt
-            publishedAt
-            blocks {
-              ...BlockFields
-            }
-            primaryImageBlock {
-              src
-            }
-            userJourneys {
-              id
-              userId
-              journeyId
-              role
-              user {
-                ...InviteUserModalFields
-              }
+            userId
+            journeyId
+            role
+            user {
+              ...InviteUserModalFields
             }
           }
         }
-      `,
-      variables: {
-        id: context.query.journeySlug
       }
-    })
+    `,
+    variables: {
+      id: context.query.journeySlug
+    }
+  })
 
-    if (data.journey === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journey: data.journey
-        }
+  if (data.journey === null) {
+    return {
+      notFound: true
+    }
+  } else {
+    return {
+      props: {
+        journey: data.journey
       }
     }
   }
+}
 
 export default JourneyViewPage

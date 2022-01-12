@@ -6,6 +6,11 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
+import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
+import slugify from 'slugify'
+import { UseGuards } from '@nestjs/common'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { BlockService } from '../block/block.service'
 import {
   Block,
   IdType,
@@ -19,14 +24,9 @@ import {
   UserJourney,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
-import { BlockService } from '../block/block.service'
-import { JourneyService } from './journey.service'
-import slugify from 'slugify'
-import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
+import { JourneyService } from './journey.service'
 
 function resolveStatus(journey: Journey): Journey {
   journey.status =

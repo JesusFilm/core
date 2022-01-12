@@ -1,21 +1,24 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { TreeBlock } from '../../libs/transformer/transformer'
-import { useBlocks } from '../../libs/client/cache/blocks'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
-import { JourneyProgress } from '../JourneyProgress'
-import { Box, IconButton, useTheme } from '@mui/material'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import { useTheme } from '@mui/material/styles'
 import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
-import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { BlockRenderer, CardWrapper } from '@core/journeys/ui'
+import { TreeBlock } from '../../libs/transformer/transformer'
+import { useBlocks } from '../../libs/client/cache/blocks'
+import { JourneyProgress } from '../JourneyProgress'
 
 export interface ConductorProps {
   blocks: TreeBlock[]
 }
 
-const Conductor = ({ blocks }: ConductorProps): ReactElement => {
+export function Conductor({ blocks }: ConductorProps): ReactElement {
   const {
     setTreeBlocks,
     nextActiveBlock,
@@ -171,7 +174,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
               color: (theme) => theme.palette.text.primary
             }}
           >
-            <ChevronLeft
+            <ChevronLeftIcon
               fontSize={'large'}
               sx={{
                 display: 'none',
@@ -213,7 +216,7 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
               color: (theme) => theme.palette.text.primary
             }}
           >
-            <ChevronRight
+            <ChevronRightIcon
               fontSize={'large'}
               sx={{
                 display: 'none',
@@ -228,5 +231,3 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     </Box>
   )
 }
-
-export default Conductor

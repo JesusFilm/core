@@ -1,6 +1,9 @@
-import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
 import { ReactElement } from 'react'
-import { ChevronLeft } from '@mui/icons-material'
+import AppBar from '@mui/material/AppBar'
+import IconButton from '@mui/material/IconButton'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import Link from 'next/link'
 import { DRAWER_WIDTH } from '../Drawer'
 
@@ -29,7 +32,7 @@ export function TopBar({ slug, title }: TopBarProps): ReactElement {
               aria-label="back"
               sx={{ mr: 2 }}
             >
-              <ChevronLeft />
+              <ChevronLeftIcon />
             </IconButton>
           </Link>
           <Typography

@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { useTheme, Box } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
 import { journeyUiConfig, TreeBlock } from '../..'
 import {
   TypographyColor,
