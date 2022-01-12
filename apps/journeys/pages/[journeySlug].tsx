@@ -3,9 +3,8 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
 import Head from 'next/head'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
+import { BLOCK_FIELDS, transformer } from '@core/journeys/ui'
 import { Conductor } from '../src/components/Conductor'
-import transformer from '../src/libs/transformer'
 import client from '../src/libs/client'
 import {
   GetJourney,

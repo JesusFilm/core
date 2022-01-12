@@ -6,7 +6,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
 import { TreeBlock, handleAction } from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
-import { handleAction, TreeBlock } from '../../../libs'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   className?: string
