@@ -10,7 +10,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { CardCover } from '.'
+import { Cover as CardCover } from './Cover'
 
 export function Card({
   id,
