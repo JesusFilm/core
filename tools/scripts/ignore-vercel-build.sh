@@ -15,9 +15,9 @@ npx nx affected:apps --plain --base HEAD~1 --head HEAD | grep $APP_NAME -q
 IS_AFFECTED=$?
 
 if [ $IS_AFFECTED -eq 1 ]; then
-  echo "🛑 - Build cancelled"
+  echo "🛑 - $APP_NAME build cancelled (@nrwl/workspace $NX_VERSION)"
   exit 0
 elif [ $IS_AFFECTED -eq 0 ]; then
-  echo "✅ - Build can proceed"
+  echo "✅ - $APP_NAME build can proceed (@nrwl/workspace $NX_VERSION)"
   exit 1
 fi
