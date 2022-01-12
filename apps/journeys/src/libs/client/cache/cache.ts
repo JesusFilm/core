@@ -1,5 +1,4 @@
 import { InMemoryCache } from '@apollo/client'
-import { activeBlockVar, treeBlocksVar } from './blocks'
 
 export const cache: InMemoryCache = new InMemoryCache({
   /* https://www.apollographql.com/docs/react/data/fragments/#defining-possibletypes-manually
@@ -14,18 +13,20 @@ export const cache: InMemoryCache = new InMemoryCache({
       'NavigateToBlockAction',
       'NavigateToJourneyAction',
       'LinkAction'
+    ],
+    Block: [
+      'ButtonBlock',
+      'CardBlock',
+      'GridContainerBlock',
+      'GridItemBlock',
+      'ImageBlock',
+      'RadioQuestionBlock',
+      'RadioOptionBlock',
+      'SignUpBlock',
+      'StepBlock',
+      'TypographyBlock',
+      'VideoBlock',
+      'VideoTriggerBlock'
     ]
-  },
-  typePolicies: {
-    Query: {
-      fields: {
-        activeBlock: {
-          read: () => activeBlockVar()
-        },
-        treeBlocks: {
-          read: () => treeBlocksVar()
-        }
-      }
-    }
   }
 })

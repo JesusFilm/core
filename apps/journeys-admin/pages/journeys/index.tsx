@@ -78,17 +78,17 @@ export const getServerSideProps: GetServerSideProps<
           themeMode
           locale
           userJourneys {
-              userId
-              journeyId
-              user {
-                __typename
-                id
-                firstName
-                lastName
-                email
-                imageUrl
-              }
+            userId
+            journeyId
+            user {
+              __typename
+              id
+              firstName
+              lastName
+              email
+              imageUrl
             }
+          }
         }
       }
     `
