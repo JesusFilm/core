@@ -1,6 +1,6 @@
 import { Story } from '@storybook/react'
 import { sharedUiConfig } from '@core/shared/ui'
-import { ThemeProvider } from '../../components'
+import { ThemeProvider } from '../../components/ThemeProvider'
 
 // Must set parameters at component level for shared-storybook stories to work
 export const journeysAdminConfig = {

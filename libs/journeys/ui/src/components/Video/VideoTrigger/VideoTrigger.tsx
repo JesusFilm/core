@@ -1,8 +1,7 @@
 import videojs from 'video.js'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
-import { TreeBlock } from '../../..'
-import { handleAction } from '../../../libs/action'
+import { TreeBlock, handleAction } from '../../..'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
 export interface VideoTriggerProps extends TreeBlock<VideoTriggerFields> {
