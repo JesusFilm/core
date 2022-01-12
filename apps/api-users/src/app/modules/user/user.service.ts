@@ -14,6 +14,6 @@ export class UserService extends BaseService {
       LIMIT 1
       RETURN user
   `)
-  return await res.next()
+    return await res.next()
   }
 }
