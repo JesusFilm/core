@@ -80,6 +80,14 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
             userJourneys {
               userId
               journeyId
+              user {
+                __typename
+                id
+                firstName
+                lastName
+                email
+                imageUrl
+              }
             }
           }
         }

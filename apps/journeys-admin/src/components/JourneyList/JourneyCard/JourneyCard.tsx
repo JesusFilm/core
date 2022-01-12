@@ -12,6 +12,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneyCardMenu } from './JourneyCardMenu'
+import { AccessAvatars } from './AccessAvatars'
 
 interface JourneyCardProps {
   journey: Journey
@@ -24,6 +25,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
     month: 'long',
     year: isThisYear(date) ? undefined : 'numeric'
   })
+  const users = journey.userJourneys?.map(({ user }) => user)
 
   return (
     <Card
@@ -83,11 +85,17 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           pb: 4
         }}
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} display="flex" alignItems="center">
+          {users != null && (
+            <Grid item>
+              <AccessAvatars users={users} />
+            </Grid>
+          )}
+
           {journey.status === 'draft' ? (
             <>
-              <Grid item>
-                <EditIcon color="warning" />
+              <Grid item display="flex" alignItems="center">
+                <EditIcon color="warning" sx={{ fontSize: 13 }} />
               </Grid>
               <Grid item>
                 <Typography variant="caption" sx={{ pr: 2 }}>
@@ -97,8 +105,8 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             </>
           ) : (
             <>
-              <Grid item>
-                <CheckCircleIcon color="success" />
+              <Grid item display="flex" alignItems="center">
+                <CheckCircleIcon color="success" sx={{ fontSize: 13 }} />
               </Grid>
               <Grid item>
                 <Typography variant="caption" sx={{ pr: 2 }}>
@@ -107,8 +115,8 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               </Grid>
             </>
           )}
-          <Grid item>
-            <TranslateIcon />
+          <Grid item display="flex" alignItems="center">
+            <TranslateIcon sx={{ fontSize: 13 }} />
           </Grid>
           <Grid item>
             <Typography variant="caption">{journey.locale}</Typography>

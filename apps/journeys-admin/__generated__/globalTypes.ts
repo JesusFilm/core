@@ -148,7 +148,6 @@ export interface JourneyCreateInput {
 
 export interface JourneyUpdateInput {
   description?: string | null;
-  id: string;
   locale?: string | null;
   primaryImageBlockId?: string | null;
   slug?: string | null;
