@@ -6,5 +6,8 @@ export type { TreeBlock } from './transformer'
 export {
   useBlocks,
   nextActiveBlock,
-  isActiveBlockOrDescendant
+  isActiveBlockOrDescendant,
+  activeBlockVar,
+  previousBlocksVar,
+  treeBlocksVar
 } from './useBlocks/blocks'
