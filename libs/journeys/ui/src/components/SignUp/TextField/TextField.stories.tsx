@@ -8,7 +8,7 @@ const Demo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: TextField,
-  title: 'Journeys/Blocks/SignUp/TextField'
+  title: 'Journeys-Ui/SignUp/TextField'
 }
 
 const Template: Story<TextFieldProps> = () => (
