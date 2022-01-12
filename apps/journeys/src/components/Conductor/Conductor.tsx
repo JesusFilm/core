@@ -9,8 +9,7 @@ import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { BlockRenderer, CardWrapper, TreeBlock } from '@core/journeys/ui'
-import { useBlocks } from '../../libs/client/cache/blocks'
+import { BlockRenderer, CardWrapper, TreeBlock, useBlocks } from '@core/journeys/ui'
 import { JourneyProgress } from '../JourneyProgress'
 
 export interface ConductorProps {
@@ -141,7 +140,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 }}
               >
                 {activeBlock?.id === block.id ||
-                previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
+                  previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
                   <BlockRenderer {...block} />
                 ) : (
                   <CardWrapper
