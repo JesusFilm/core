@@ -1,7 +1,7 @@
 import { render } from '../../../../test/testingLibrary'
-import { Image } from '.'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { Image } from '.'
 
 describe('Image', () => {
   const block: TreeBlock<ImageBlock> = {

@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
-import { TreeBlock } from '../../'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
 import { MockedProvider } from '@apollo/client/testing'
+import { TreeBlock } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 describe('VideoComponent', () => {
   const block: TreeBlock<VideoFields> = {

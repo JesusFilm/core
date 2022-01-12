@@ -1,8 +1,8 @@
+import { themes } from '@core/shared/ui'
 import { render } from '../../../../test/testingLibrary'
-import { Card } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import { themes } from '@core/shared/ui'
+import { Card } from '.'
 
 describe('CardBlock', () => {
   const block: TreeBlock = {

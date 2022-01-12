@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserService } from './user.service'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
@@ -7,6 +6,7 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { UserService } from './user.service'
 
 describe('UserService', () => {
   let service: UserService

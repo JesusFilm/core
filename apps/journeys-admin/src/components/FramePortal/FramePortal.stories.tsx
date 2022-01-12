@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../libs/storybook'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
-import { FramePortal } from '.'
+import { ThemeProvider } from '@core/shared/ui'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import {
   ButtonVariant,
@@ -13,7 +13,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { ThemeProvider } from '@core/shared/ui'
+import { FramePortal } from '.'
 
 const FramePortalStory = {
   ...journeysAdminConfig,

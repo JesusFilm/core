@@ -1,5 +1,5 @@
-import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
 import { ReactElement } from 'react'
+import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
 
 interface CardStylingProps {
   id: string

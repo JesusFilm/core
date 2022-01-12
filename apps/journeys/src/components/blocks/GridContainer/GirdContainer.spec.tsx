@@ -1,11 +1,11 @@
 import { render } from '../../../../test/testingLibrary'
-import { GridContainer } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import {
   GridDirection,
   GridJustifyContent,
   GridAlignItems
 } from '../../../../__generated__/globalTypes'
+import { GridContainer } from '.'
 
 describe('GridContainer', () => {
   const block: TreeBlock = {

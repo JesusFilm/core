@@ -1,7 +1,7 @@
 import { renderWithApolloClient } from '../../../../test/testingLibrary'
-import { Step } from '.'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import { Step } from '.'
 
 const block: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',

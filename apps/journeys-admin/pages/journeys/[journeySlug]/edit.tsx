@@ -2,12 +2,12 @@ import { ReactElement } from 'react'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import Head from 'next/head'
+import { BLOCK_FIELDS } from '@core/journeys/ui'
 import client from '../../../src/libs/client'
 import {
   GetJourneyForEdit,
   GetJourneyForEdit_journey as Journey
 } from '../../../__generated__/GetJourneyForEdit'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
 import { Editor } from '../../../src/components/Editor'
 
 interface SingleJourneyEditPageProps {

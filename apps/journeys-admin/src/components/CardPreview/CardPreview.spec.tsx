@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
-import { CardPreview } from '.'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { TreeBlock } from '@core/journeys/ui'
+import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
+import { CardPreview } from '.'
 
 describe('CardPreview', () => {
   it('should call onSelect when step is clicked on', () => {

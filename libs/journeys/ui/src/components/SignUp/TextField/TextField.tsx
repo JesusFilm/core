@@ -1,8 +1,9 @@
 import { ReactElement } from 'react'
 import { useField } from 'formik'
 
-import * as MuiTextField from '@mui/material/TextField'
-import { OutlinedTextFieldProps as MuiTextFieldProps } from '@mui/material'
+import MuiTextField, {
+  OutlinedTextFieldProps as MuiTextFieldProps
+} from '@mui/material/TextField'
 
 export interface TextFieldProps
   extends Pick<
@@ -10,13 +11,13 @@ export interface TextFieldProps
     'id' | 'name' | 'label' | 'focused' | 'disabled'
   > {}
 
-const TextField = ({
+export function TextField({
   name = '',
   ...muiFieldProps
-}: TextFieldProps): ReactElement => {
+}: TextFieldProps): ReactElement {
   const [formikFieldProps, meta] = useField(name)
 
-  const Field = MuiTextField.default
+  const Field = MuiTextField
   const hasError = meta.error !== undefined && meta.touched
 
   return (
@@ -34,5 +35,3 @@ const TextField = ({
     />
   )
 }
-
-export default TextField

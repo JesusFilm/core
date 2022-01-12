@@ -1,5 +1,5 @@
-import { TreeBlock } from '../..'
 import { ReactElement } from 'react'
+import { TreeBlock } from '../..'
 import { BlockRenderer } from '../BlockRenderer'
 import { StepFields } from './__generated__/StepFields'
 

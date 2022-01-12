@@ -1,11 +1,11 @@
 import { Story, Meta } from '@storybook/react'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysConfig } from '../../../libs/storybook'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
-import { MockedProvider } from '@apollo/client/testing'
 import { VideoResponseStateEnum } from '../../../../__generated__/globalTypes'
-import Conductor, { ConductorProps } from '../../Conductor'
+import { Conductor, ConductorProps } from '../../Conductor'
 import { TreeBlock } from '../../../libs/transformer/transformer'
+import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 const Demo = {
   ...journeysConfig,

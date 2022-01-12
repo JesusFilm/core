@@ -1,14 +1,13 @@
 import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
 import {
-  Box,
   useTheme,
   PaletteColor,
   PaletteOptions,
-  Typography,
-  TypographyProps,
   SimplePaletteColorOptions
-} from '@mui/material'
+} from '@mui/material/styles'
+import Box from '@mui/material/Box'
+import Typography, { TypographyProps } from '@mui/material/Typography'
 import { journeysAdminConfig } from '../../../libs/storybook'
 
 const AdminThemeDemo = {

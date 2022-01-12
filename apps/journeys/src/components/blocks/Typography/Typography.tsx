@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Typography as MuiTypography } from '@mui/material'
+import MuiTypography from '@mui/material/Typography'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../__generated__/GetJourney'
 import { TreeBlock } from '../../../libs/transformer/transformer'
 
@@ -21,5 +21,3 @@ export function Typography({
     </MuiTypography>
   )
 }
-
-export default Typography

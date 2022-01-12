@@ -1,10 +1,11 @@
 import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { CurrentUserId, KeyAsId } from '@core/nest/decorators'
-import { User } from '../../__generated__/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { User } from '../../__generated__/graphql'
 import { firebaseClient } from '../../lib/firebaseClient'
+import { UserService } from './user.service'
 
 @Resolver('User')
 export class UserResolver {

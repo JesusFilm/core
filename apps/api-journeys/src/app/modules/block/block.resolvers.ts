@@ -1,8 +1,8 @@
 // Block resolver tests are in individual block type spec files
 
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { Block } from '../../__generated__/graphql'
 import { KeyAsId } from '@core/nest/decorators'
+import { Block } from '../../__generated__/graphql'
 import { BlockService } from './block.service'
 
 interface DbBlock extends Block {
