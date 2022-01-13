@@ -1,1 +1,1 @@
-export { NewBlocks } from './newBlocks'
+export { NewBlocks } from './NewBlocks'
