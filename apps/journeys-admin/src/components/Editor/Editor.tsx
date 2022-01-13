@@ -9,7 +9,6 @@ import { TopBar } from './TopBar'
 import { EditorProvider } from './Context'
 import { Drawer, DRAWER_WIDTH } from './Drawer'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
-import { Add } from './Add'
 
 interface EditorProps {
   journey: Journey
@@ -31,8 +30,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
           display: 'flex',
           height: '100vh',
           flexDirection: 'column',
-          marginRight: { sm: `${DRAWER_WIDTH}px` },
-          position: 'relative'
+          marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
         <TopBar title={journey.title} slug={journey.slug} />
@@ -50,7 +48,6 @@ export function Editor({ journey }: EditorProps): ReactElement {
             <Canvas />
           </Box>
         </Box>
-        <Add />
         <ControlPanel />
       </Box>
       <Drawer />

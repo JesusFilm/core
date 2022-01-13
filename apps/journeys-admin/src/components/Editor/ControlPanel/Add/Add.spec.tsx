@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import { EditorProvider } from '../Context'
+import { EditorProvider } from '../../Context'
 import { Add } from '.'
 
 describe('Add Button', () => {
