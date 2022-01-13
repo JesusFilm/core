@@ -12,6 +12,7 @@ import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
+import { AddFab } from './AddFab'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -64,8 +65,15 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetSelectedStepAction', step })
   }
 
+  const handleAddFabClick = (): void => {
+    setValue(2)
+  }
+
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', position: 'relative' }}>
+      <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
+        <AddFab visible={value !== 2} onClick={handleAddFabClick} />
+      </Box>
       <Box
         sx={{
           borderBottom: 1,
@@ -81,6 +89,7 @@ export function ControlPanel(): ReactElement {
             sx={{ flexGrow: 1 }}
             disabled={selectedBlock == null}
           />
+          <Tab label="Blocks" {...a11yProps(2)} sx={{ flexGrow: 1 }} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -92,6 +101,9 @@ export function ControlPanel(): ReactElement {
       </TabPanel>
       <TabPanel value={value} index={1}>
         {selectedBlock != null && <Attributes selected={selectedBlock} />}
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        Sample block
       </TabPanel>
     </Box>
   )
