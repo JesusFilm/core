@@ -48,7 +48,7 @@ export const Filled: Story = () => {
     __typename: 'TypographyBlock',
     parentBlockId: null,
     align: TypographyAlign.center,
-    color: TypographyColor.error,
+    color: TypographyColor.secondary,
     content: 'Typography',
     variant: TypographyVariant.h2,
     children: []

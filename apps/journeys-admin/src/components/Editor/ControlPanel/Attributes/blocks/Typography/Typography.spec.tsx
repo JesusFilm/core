@@ -32,13 +32,13 @@ describe('Typography properties', () => {
       __typename: 'TypographyBlock',
       parentBlockId: null,
       align: TypographyAlign.center,
-      color: TypographyColor.error,
+      color: TypographyColor.secondary,
       content: 'Typography',
       variant: TypographyVariant.h2,
       children: []
     }
     const { getByText } = render(<Typography {...block} />)
-    expect(getByText('Error')).toBeInTheDocument()
+    expect(getByText('Secondary')).toBeInTheDocument()
     expect(getByText('Header 2')).toBeInTheDocument()
     expect(getByText('Center')).toBeInTheDocument()
   })

@@ -15,7 +15,6 @@ export function Typography({
   color,
   variant
 }: TreeBlock<TypographyBlock>): ReactElement {
-  console.log(color)
   return (
     <>
       <Attribute
@@ -29,7 +28,7 @@ export function Typography({
                 height: 25,
                 m: 1,
                 borderRadius: 1000,
-                backgroundColor: (theme) => color ?? theme.palette.text.primary
+                backgroundColor: `${color ?? 'primary'}.main`
               }}
             />
           </Paper>
