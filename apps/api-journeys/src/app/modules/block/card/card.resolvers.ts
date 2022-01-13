@@ -38,9 +38,6 @@ export class CardBlockResolvers {
     @Args('journeyId') journeyId: string,
     @Args('input') input: CardBlockUpdateInput
   ): Promise<CardBlock> {
-    console.log('hi')
-    console.log('id', id)
-    console.log('input', input)
     return await this.blockService.update(id, input)
   }
 }

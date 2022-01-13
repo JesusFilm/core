@@ -11,6 +11,7 @@ describe('Attributes', () => {
     const step: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
+      journeyId: 'journey1.id',
       parentBlockId: 'step1.id',
       coverBlockId: 'image1.id',
       backgroundColor: null,
@@ -27,6 +28,7 @@ describe('Attributes', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',
+      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,
@@ -53,6 +55,7 @@ describe('Attributes', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',
+      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,

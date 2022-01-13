@@ -16,6 +16,7 @@ export const Default: Story = () => {
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    journeyId: 'journey1.id',
     locked: false,
     nextBlockId: 'step2.id',
     children: [
