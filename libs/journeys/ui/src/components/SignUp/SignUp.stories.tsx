@@ -18,7 +18,7 @@ const Demo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: SignUp,
-  title: 'Journeys/Blocks/SignUp'
+  title: 'Journeys-Ui/SignUp'
 }
 
 const icon: SignUpFields_submitIcon = {
