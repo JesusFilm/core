@@ -23,7 +23,41 @@ export const defaultJourney: Journey = {
     {
       __typename: 'UserJourney',
       userId: 'user-id',
-      journeyId: 'journey-id'
+      journeyId: 'journey-id',
+      user: {
+        __typename: 'User',
+        id: 'user-id1',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: 'https://source.unsplash.com/random/300x300',
+        email: 'amin@email.com'
+      }
+    },
+    {
+      __typename: 'UserJourney',
+      userId: 'user-id2',
+      journeyId: 'journey-id2',
+      user: {
+        __typename: 'User',
+        id: 'user-id2',
+        firstName: 'Horace',
+        lastName: 'Two',
+        imageUrl: 'https://source.unsplash.com/random/300x301',
+        email: 'horace@email.com'
+      }
+    },
+    {
+      __typename: 'UserJourney',
+      userId: 'user-id3',
+      journeyId: 'journey-id3',
+      user: {
+        __typename: 'User',
+        id: 'user-id3',
+        firstName: 'Coral',
+        lastName: 'Three',
+        imageUrl: 'https://source.unsplash.com/random/301x300',
+        email: 'coral@email.com'
+      }
     }
   ]
 }

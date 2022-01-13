@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserService } from './user.service'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
@@ -7,6 +6,7 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { UserService } from './user.service'
 
 describe('UserService', () => {
   let service: UserService
@@ -58,6 +58,18 @@ describe('UserService', () => {
 
     it('should return a user', async () => {
       expect(await service.get('1')).toEqual(user)
+    })
+  })
+
+  describe('getByUserId', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [user])
+      )
+    })
+
+    it('should return a user', async () => {
+      expect(await service.getByUserId('1')).toEqual(user)
     })
   })
 

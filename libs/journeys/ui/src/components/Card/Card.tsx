@@ -1,7 +1,8 @@
 import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui'
-import { Paper, Box } from '@mui/material'
-import { SxProps } from '@mui/system'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/system/styleFunctionSx'
 import { TreeBlock } from '../..'
 import { BlockRenderer } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -99,14 +100,14 @@ interface CardWrapperProps
   sx?: SxProps
 }
 
-export const CardWrapper = ({
+export function CardWrapper({
   id,
   backgroundColor,
   themeMode,
   themeName,
   children,
   sx
-}: CardWrapperProps): ReactElement => {
+}: CardWrapperProps): ReactElement {
   const Card = (
     <Paper
       data-testid={id}

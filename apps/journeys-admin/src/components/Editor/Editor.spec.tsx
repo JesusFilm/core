@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import { Editor } from '.'
-import { ThemeProvider } from '..'
 import { TreeBlock } from '@core/journeys/ui'
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import { ThemeProvider } from '../ThemeProvider'
+import { Editor } from '.'
 
 describe('Editor', () => {
   it('should render the element', () => {

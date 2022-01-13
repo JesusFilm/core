@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
-import { JourneyList } from '.'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
+import { JourneyList } from '.'
 
 describe('JourneyList', () => {
   it('should render journeys in descending createdAt date by default', () => {

@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import Typography from '@mui/material/Typography'
 import { render, waitFor } from '@testing-library/react'
 import { FramePortal } from '.'
 

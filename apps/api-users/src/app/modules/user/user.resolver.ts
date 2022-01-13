@@ -1,10 +1,10 @@
-import { Resolver, Query } from '@nestjs/graphql'
-import { UserService } from './user.service'
+import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
 import { CurrentUserId, KeyAsId } from '@core/nest/decorators'
-import { User } from '../../__generated__/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { User } from '../../__generated__/graphql'
 import { firebaseClient } from '../../lib/firebaseClient'
+import { UserService } from './user.service'
 
 @Resolver('User')
 export class UserResolver {
@@ -34,5 +34,14 @@ export class UserResolver {
       email,
       imageUrl
     })
+  }
+
+  @ResolveReference()
+  @KeyAsId()
+  async resolveReference(reference: {
+    __typename: string
+    id: string
+  }): Promise<User> {
+    return await this.userService.getByUserId(reference.id)
   }
 }

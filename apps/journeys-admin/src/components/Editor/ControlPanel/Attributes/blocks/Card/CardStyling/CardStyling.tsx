@@ -1,16 +1,21 @@
+import { ReactElement, useState } from 'react'
+import { Box, Stack } from '@mui/material'
+import { ColorLens } from '@mui/icons-material'
+import { gql, useMutation } from '@apollo/client'
+import Image from 'next/image'
+import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import {
   CardBlockUpdateInput,
   ThemeMode
 } from '../../../../../../../../__generated__/globalTypes'
-import { ReactElement, useState } from 'react'
-import { Box, Stack } from '@mui/material'
-import { ColorLens } from '@mui/icons-material'
-import { HorizontalSelect } from '../../../../../../HorizontalSelect'
-import { gql, useMutation } from '@apollo/client'
+import cardStyleLight from '../../../../../../../../public/card-style-light.png'
+import cardStyleDark from '../../../../../../../../public/card-style-dark.png'
 
 interface CardStylingProps {
   id: string
+  journeyId: string
   themeMode: ThemeMode | null
+  onSelect: (themeMode: ThemeMode | null) => void
 }
 
 enum themeColors {
@@ -19,26 +24,43 @@ enum themeColors {
 }
 
 export const CARD_BLOCK_UPDATE = gql`
-  mutation CardBlockUpdate($id: ID!, $input: CardBlockUpdateInput!) {
-    cardBlockUpdate(id: $id, input: $input) {
+  mutation CardBlockUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
     }
   }
 `
 
-export function CardStyling({ id, themeMode }: CardStylingProps): ReactElement {
-  const [cardBlockUpdate, { data }] =
-    useMutation<CardBlockUpdateInput>(CARD_BLOCK_UPDATE)
+export function CardStyling({
+  id,
+  journeyId,
+  themeMode,
+  onSelect
+}: CardStylingProps): ReactElement {
+  const [cardBlockUpdate] = useMutation<CardBlockUpdateInput>(CARD_BLOCK_UPDATE)
 
   const [color, setColor] = useState(
     themeMode === ThemeMode.light ? themeColors.light : themeColors.dark
   )
-  const handleChange = (selectedId: string): void => {
+
+  const [theme, setThemeMode] = useState(themeMode)
+
+  const handleChange = async (selectedTheme: ThemeMode): Promise<void> => {
+    setThemeMode(selectedTheme)
+    onSelect(selectedTheme)
+    setColor(
+      selectedTheme === ThemeMode.light ? themeColors.light : themeColors.dark
+    )
     await cardBlockUpdate({
       variables: {
         id: id,
+        journeyId: journeyId,
         input: {
-          themeMode: themeMode
+          themeMode: selectedTheme
         }
       }
     })
@@ -61,13 +83,21 @@ export function CardStyling({ id, themeMode }: CardStylingProps): ReactElement {
         </Box>
         <Stack direction="column">
           <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>
-            {themeMode}
+            {theme}
           </span>
           <span>Card Style</span>
         </Stack>
       </Stack>
+      <hr></hr>
       <Box>
-        <HorizontalSelect onChange={handleChange}></HorizontalSelect>
+        <HorizontalSelect onChange={handleChange} id={theme ?? '0'}>
+          <Box sx={{ py: 2 }} id={ThemeMode.light} key={ThemeMode.light}>
+            <Image src={cardStyleLight} alt="Light" width={89} height={137} />
+          </Box>
+          <Box sx={{ py: 2 }} id={ThemeMode.dark} key={ThemeMode.dark}>
+            <Image src={cardStyleDark} alt="Dark" width={89} height={137} />
+          </Box>
+        </HorizontalSelect>
       </Box>
     </Box>
   )

@@ -486,6 +486,7 @@ enum TypographyVariant {
 type User
   @join__owner(graph: USERS)
   @join__type(graph: USERS, key: "id")
+  @join__type(graph: JOURNEYS, key: "id")
 {
   email: String! @join__field(graph: USERS)
   firstName: String! @join__field(graph: USERS)
@@ -497,13 +498,12 @@ type User
 type UserJourney
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
-  @join__type(graph: USERS, key: "id")
 {
   id: ID! @join__field(graph: JOURNEYS)
   journey: Journey @join__field(graph: JOURNEYS)
   journeyId: ID! @join__field(graph: JOURNEYS)
   role: UserJourneyRole! @join__field(graph: JOURNEYS)
-  user: User @join__field(graph: USERS)
+  user: User @join__field(graph: JOURNEYS)
   userId: ID! @join__field(graph: JOURNEYS)
 }
 

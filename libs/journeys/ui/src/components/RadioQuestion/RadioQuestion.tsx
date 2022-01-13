@@ -1,11 +1,12 @@
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { Typography, ButtonGroup } from '@mui/material'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
+import { TreeBlock } from '../..'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { TreeBlock } from '../..'
 
 export const RADIO_QUESTION_RESPONSE_CREATE = gql`
   mutation RadioQuestionResponseCreate(

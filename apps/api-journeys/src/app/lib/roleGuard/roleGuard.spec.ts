@@ -1,9 +1,9 @@
-import { UserJourney, UserJourneyRole } from '../../__generated__/graphql'
-import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
-import { RoleGuard } from './roleGuard'
 import { ExecutionContext } from '@nestjs/common'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import { AuthenticationError } from 'apollo-server-errors'
+import { UserJourney, UserJourneyRole } from '../../__generated__/graphql'
+import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
+import { RoleGuard } from './roleGuard'
 
 describe('RoleGuard', () => {
   const userJourney = {

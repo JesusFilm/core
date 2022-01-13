@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Grid as MaterialGrid, GridSize } from '@mui/material'
+import MaterialGrid, { GridSize } from '@mui/material/Grid'
 import { TreeBlock } from '../../..'
 import { BlockRenderer } from '../../BlockRenderer'
 import { GridItemFields } from './__generated__/GridItemFields'

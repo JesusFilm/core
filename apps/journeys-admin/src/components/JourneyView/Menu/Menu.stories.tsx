@@ -2,10 +2,10 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../libs/storybook'
 
-import { Menu, JOURNEY_PUBLISH } from './Menu'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
 import { JourneyProvider } from '../Context'
+import { Menu, JOURNEY_PUBLISH } from './Menu'
 
 const MenuStory = {
   ...simpleComponentConfig,

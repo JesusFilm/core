@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { Typography } from '@mui/material'
+import Typography from '@mui/material/Typography'
 import { journeyUiConfig, StoryCard } from '../..'
 import {
   ButtonVariant,

@@ -6,17 +6,17 @@ import {
   Query,
   ResolveField
 } from '@nestjs/graphql'
-import { UserJourneyService } from './userJourney.service'
 import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
+import { UseGuards } from '@nestjs/common'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import {
   Journey,
   UserJourney,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import { JourneyService } from '../journey/journey.service'
+import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
 export class UserJourneyResolver {

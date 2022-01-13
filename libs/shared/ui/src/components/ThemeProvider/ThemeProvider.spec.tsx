@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
-import { ThemeProvider } from '.'
 import { themes } from '../../libs/themes'
+import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {
   it('should apply base light theme', () => {
