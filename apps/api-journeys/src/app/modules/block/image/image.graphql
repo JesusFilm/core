@@ -26,7 +26,6 @@ input ImageBlockCreateInput {
 
 input ImageBlockUpdateInput {
   parentBlockId: ID
-  journeyId: ID
   src: String
   alt: String
 }

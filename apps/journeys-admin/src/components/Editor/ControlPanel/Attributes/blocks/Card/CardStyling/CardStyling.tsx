@@ -15,7 +15,7 @@ interface CardStylingProps {
   id: string
   journeyId: string
   themeMode: ThemeMode | null
-  onSelect: (themeMode: ThemeMode | null) => void
+  onSelect?: (themeMode: ThemeMode | null) => void
 }
 
 enum themeColors {
@@ -91,10 +91,10 @@ export function CardStyling({
       <hr></hr>
       <Box>
         <HorizontalSelect onChange={handleChange} id={theme ?? '0'}>
-          <Box sx={{ py: 2 }} id={ThemeMode.light} key={ThemeMode.light}>
+          <Box sx={{ py: 1, px: 1 }} id={ThemeMode.light} key={ThemeMode.light}>
             <Image src={cardStyleLight} alt="Light" width={89} height={137} />
           </Box>
-          <Box sx={{ py: 2 }} id={ThemeMode.dark} key={ThemeMode.dark}>
+          <Box sx={{ py: 1, px: 1 }} id={ThemeMode.dark} key={ThemeMode.dark}>
             <Image src={cardStyleDark} alt="Dark" width={89} height={137} />
           </Box>
         </HorizontalSelect>
