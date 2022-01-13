@@ -34,6 +34,10 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected }: AttributesProps): ReactElement {
+  const blockType =
+    selected.__typename !== 'StepBlock'
+      ? selected.__typename.replace('Block', '')
+      : 'Card'
   return (
     <>
       <Stack
@@ -53,7 +57,7 @@ export function Attributes({ selected }: AttributesProps): ReactElement {
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
-        <MuiTypography align="center">Editing Card Properties</MuiTypography>
+        <MuiTypography align="center">{`Editing ${blockType} Properties`}</MuiTypography>
       </Box>
     </>
   )
