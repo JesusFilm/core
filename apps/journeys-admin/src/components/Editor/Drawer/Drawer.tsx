@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { Close } from '@mui/icons-material'
-import { EditorContext } from '../Context'
+import { EditorContext } from '@core/journeys/ui'
 
 export const DRAWER_WIDTH = 328
 

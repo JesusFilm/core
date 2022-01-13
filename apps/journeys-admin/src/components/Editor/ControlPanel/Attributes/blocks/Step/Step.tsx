@@ -1,10 +1,9 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import { ReactElement, useContext } from 'react'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
-import { EditorContext } from '../../../../Context'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/BlockFields'
 import { NextCard } from './NextCard'
 

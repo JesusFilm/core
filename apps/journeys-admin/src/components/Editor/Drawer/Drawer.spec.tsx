@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { EditorProvider } from '@core/journeys/ui'
 import { ThemeProvider } from '../../ThemeProvider'
-import { EditorProvider } from '../Context'
 import { Drawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
