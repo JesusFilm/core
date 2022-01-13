@@ -16,6 +16,8 @@ export {
 } from './components'
 export {
   handleAction,
+  EditorContext,
+  EditorProvider,
   journeyUiConfig,
   simpleComponentConfig,
   StoryCard,

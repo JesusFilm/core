@@ -1,4 +1,3 @@
-import { TreeBlock } from '@core/journeys/ui'
 import {
   createContext,
   Dispatch,
@@ -6,7 +5,8 @@ import {
   ReactNode,
   useReducer
 } from 'react'
-import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { TreeBlock } from '../transformer'
+import { StepFields as StepBlock } from '../../components/Step/__generated__/StepFields'
 
 interface EditorState {
   steps: Array<TreeBlock<StepBlock>>

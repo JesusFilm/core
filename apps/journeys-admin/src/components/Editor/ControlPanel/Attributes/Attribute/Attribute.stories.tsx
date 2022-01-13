@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import PaletteIcon from '@mui/icons-material/Palette'
+import { EditorProvider } from '@core/journeys/ui'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { EditorProvider } from '../../../Context'
 import { Attribute } from '.'
 
 const AttributesStory = {

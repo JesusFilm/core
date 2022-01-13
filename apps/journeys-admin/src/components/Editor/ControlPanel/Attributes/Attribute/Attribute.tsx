@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
-import { EditorContext } from '../../../Context'
+import { EditorContext } from '@core/journeys/ui'
 
 interface AttributeProps {
   id: string

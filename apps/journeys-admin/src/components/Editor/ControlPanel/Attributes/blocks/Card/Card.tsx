@@ -1,4 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import { ReactElement, useContext } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
@@ -13,7 +13,6 @@ import {
   GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
   GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourneyForEdit'
-import { EditorContext } from '../../../../Context'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'
 import { CardLayout } from './CardLayout'
