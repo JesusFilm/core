@@ -8,7 +8,7 @@ import {
   useContext,
   useState
 } from 'react'
-import { TreeBlock, EditorContext } from '@core/journeys/ui'
+import { TreeBlock, EditorContext, ActiveTab } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
@@ -48,9 +48,8 @@ function a11yProps(index: number): { id: string; 'aria-controls': string } {
 }
 
 export function ControlPanel(): ReactElement {
-  const [value, setValue] = useState(0)
   const {
-    state: { steps, selectedBlock, selectedStep },
+    state: { steps, selectedBlock, selectedStep, activeTab },
     dispatch
   } = useContext(EditorContext)
 
@@ -58,22 +57,25 @@ export function ControlPanel(): ReactElement {
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
-    setValue(newValue)
+    dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
   const handleSelectStep = (step: TreeBlock<StepBlock>): void => {
-    setValue(1)
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
     dispatch({ type: 'SetSelectedStepAction', step })
   }
 
   const handleAddFabClick = (): void => {
-    setValue(2)
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
   }
 
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        <AddFab visible={value !== 2} onClick={handleAddFabClick} />
+        <AddFab
+          visible={activeTab !== ActiveTab.Blocks}
+          onClick={handleAddFabClick}
+        />
       </Box>
       <Box
         sx={{
@@ -82,7 +84,11 @@ export function ControlPanel(): ReactElement {
           backgroundColor: (theme) => theme.palette.background.paper
         }}
       >
-        <Tabs value={value} onChange={handleChange} aria-label="editor tabs">
+        <Tabs
+          value={activeTab}
+          onChange={handleChange}
+          aria-label="editor tabs"
+        >
           <Tab label="Cards" {...a11yProps(0)} sx={{ flexGrow: 1 }} />
           <Tab
             label="Properties"
@@ -93,17 +99,17 @@ export function ControlPanel(): ReactElement {
           <Tab label="Blocks" {...a11yProps(2)} sx={{ flexGrow: 1 }} />
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={activeTab} index={0}>
         <CardPreview
           selected={selectedStep}
           onSelect={handleSelectStep}
           steps={steps}
         />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={activeTab} index={1}>
         {selectedBlock != null && <Attributes selected={selectedBlock} />}
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel value={activeTab} index={2}>
         <BlocksTab />
       </TabPanel>
     </Box>
