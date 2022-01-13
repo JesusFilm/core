@@ -1,5 +1,6 @@
 import { ReactElement, useContext } from 'react'
-import { Button } from '@mui/material'
+import Fab from '@mui/material/Fab'
+import Zoom from '@mui/material/Zoom'
 import AddRounded from '@mui/icons-material/AddRounded'
 import { ActiveTab, EditorContext } from '../Context'
 
@@ -13,25 +14,24 @@ export function Add(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Blocks })
   }
 
-  return activeTab === ActiveTab.Blocks ? (
-    <></>
-  ) : (
-    <Button
-      variant="contained"
-      size="small"
-      startIcon={<AddRounded />}
-      onClick={handleClick}
+  return <Zoom
+    in={activeTab !== ActiveTab.Blocks}
+    unmountOnExit
+  >
+    <Fab
+      variant="extended"
+      size="large"
+      color="primary"
       sx={{
         position: 'absolute',
-        zIndex: 'modal',
-        width: 105,
-        height: 48,
-        boxShadow: 5,
+        zIndex: 1,
         right: 20,
-        bottom: 260
+        bottom: 266
       }}
+      onClick={handleClick}
     >
-      ADD
-    </Button>
-  )
+      <AddRounded sx={{ mr: 3 }} />
+      Add
+    </Fab>
+  </Zoom>
 }
