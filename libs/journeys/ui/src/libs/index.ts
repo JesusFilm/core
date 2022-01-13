@@ -11,3 +11,4 @@ export {
   previousBlocksVar,
   treeBlocksVar
 } from './useBlocks/blocks'
+export { EditorContext, EditorProvider } from './context'

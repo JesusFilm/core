@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import { EditorProvider } from '../../../Context'
+import { EditorProvider } from '@core/journeys/ui'
 import { ThemeProvider } from '../../../../ThemeProvider'
 import { Attribute } from '.'
 
