@@ -3,8 +3,7 @@ const storiesForProject = {
   journeys: [
     '../apps/journeys/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/journeys/src/components/**/*.stories.mdx',
-    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
+    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'journeys-admin': [
     '../apps/journeys-admin/src/**/*.stories.@(js|jsx|ts|tsx)',

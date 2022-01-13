@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
 import { useFirebase } from '../src/libs/firebaseClient'
 import { createApolloClient } from '../src/libs/client'
-import { ThemeProvider } from '../src/components'
+import { ThemeProvider } from '../src/components/ThemeProvider'
 
 function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   const { user } = useFirebase()

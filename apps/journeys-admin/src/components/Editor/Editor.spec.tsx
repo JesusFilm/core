@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import { ThemeProvider } from '..'
+import { ThemeProvider } from '../ThemeProvider'
 import { Editor } from '.'
 
 describe('Editor', () => {

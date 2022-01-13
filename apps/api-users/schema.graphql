@@ -6,11 +6,6 @@ type User @key(fields: "id") {
   imageUrl: String
 }
 
-extend type UserJourney @key(fields: "id") {
-  id: ID! @external
-  user: User
-}
-
 extend type Query {
   me: User
 }

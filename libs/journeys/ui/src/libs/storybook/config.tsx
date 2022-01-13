@@ -10,7 +10,7 @@ export const simpleComponentConfig = {
   parameters: {
     ...journeyUiConfig.parameters,
     chromatic: {
-      ...journeyUiConfig.parameters.chromatic,
+      ...journeyUiConfig.parameters?.chromatic,
       viewports: [600]
     }
   }
