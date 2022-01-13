@@ -8,10 +8,9 @@ import {
   useContext,
   useState
 } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { CardPreview } from '../../CardPreview'
-import { EditorContext } from '../Context'
 import { Attributes } from './Attributes'
 
 interface TabPanelProps {

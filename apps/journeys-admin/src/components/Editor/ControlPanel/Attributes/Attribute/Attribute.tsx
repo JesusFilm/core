@@ -1,5 +1,5 @@
 import { ReactElement, useContext } from 'react'
-import { EditorContext } from '../../../Context'
+import { EditorContext } from '@core/journeys/ui'
 import { Button } from '../../Button'
 
 interface AttributeProps {
