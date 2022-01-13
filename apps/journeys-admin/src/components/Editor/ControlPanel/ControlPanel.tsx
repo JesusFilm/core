@@ -5,8 +5,7 @@ import {
   ReactElement,
   ReactNode,
   SyntheticEvent,
-  useContext,
-  useState
+  useContext
 } from 'react'
 import { TreeBlock, EditorContext, ActiveTab } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
