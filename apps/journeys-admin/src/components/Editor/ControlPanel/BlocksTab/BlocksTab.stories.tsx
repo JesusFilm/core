@@ -5,7 +5,7 @@ import { BlocksTab } from '.'
 const BlocksTabStory = {
   ...journeysAdminConfig,
   component: BlocksTab,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/NewBlock'
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab'
 }
 
 export const Default: Story = () => {
