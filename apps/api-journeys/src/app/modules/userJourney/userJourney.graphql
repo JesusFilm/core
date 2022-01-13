@@ -7,12 +7,18 @@ enum UserJourneyRole {
 extend type Journey {
   userJourneys: [UserJourney!]
 }
+
 type UserJourney @key(fields: "id") {
   id: ID!
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
+  user: User
 }
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
+
 extend type Mutation {
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!

@@ -1,1 +1,0 @@
-export { Cover } from './Cover'

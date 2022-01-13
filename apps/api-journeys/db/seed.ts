@@ -8,13 +8,14 @@ const db = ArangoDB()
 
 async function main(): Promise<void> {
   try {
-    await await db.createCollection('journeys', {
+    await db.createCollection('journeys', {
       keyOptions: { type: 'uuid' }
     })
-    await await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
-    await await db.createCollection('responses', {
+    await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
+    await db.createCollection('responses', {
       keyOptions: { type: 'uuid' }
     })
+    await db.createCollection('userJourneys', { keyOptions: { type: 'uuid' } })
   } catch {}
   await db.collection('journeys').ensureIndex({
     type: 'persistent',

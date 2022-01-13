@@ -1,7 +1,6 @@
+import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { renderWithApolloClient } from '../../../test/testingLibrary'
-import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
-import { TreeBlock } from '../../libs/transformer/transformer'
 import { JourneyProgress } from '.'
 
 describe('JourneyProgress', () => {

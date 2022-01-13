@@ -1,2 +1,2 @@
-export { default } from './Conductor'
+export { Conductor } from './Conductor'
 export type { ConductorProps } from './Conductor'

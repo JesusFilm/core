@@ -9,17 +9,19 @@ import { useBreakpoints } from '@core/shared/ui'
 import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { BlockRenderer } from '../BlockRenderer'
-import { TreeBlock } from '../../libs/transformer/transformer'
-import { useBlocks } from '../../libs/client/cache/blocks'
+import {
+  BlockRenderer,
+  CardWrapper,
+  TreeBlock,
+  useBlocks
+} from '@core/journeys/ui'
 import { JourneyProgress } from '../JourneyProgress'
-import { CardWrapper } from '../blocks/Card'
 
 export interface ConductorProps {
   blocks: TreeBlock[]
 }
 
-const Conductor = ({ blocks }: ConductorProps): ReactElement => {
+export function Conductor({ blocks }: ConductorProps): ReactElement {
   const {
     setTreeBlocks,
     nextActiveBlock,
@@ -232,5 +234,3 @@ const Conductor = ({ blocks }: ConductorProps): ReactElement => {
     </Box>
   )
 }
-
-export default Conductor

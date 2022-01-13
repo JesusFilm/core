@@ -3,27 +3,13 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
 import Head from 'next/head'
-import Conductor from '../src/components/Conductor'
-import transformer from '../src/libs/transformer'
+import { BLOCK_FIELDS, transformer } from '@core/journeys/ui'
+import { Conductor } from '../src/components/Conductor'
 import client from '../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
-import {
-  TYPOGRAPHY_FIELDS,
-  BUTTON_FIELDS,
-  IMAGE_FIELDS,
-  GRID_CONTAINER_FIELDS,
-  GRID_ITEM_FIELDS,
-  CARD_FIELDS,
-  SIGN_UP_FIELDS,
-  STEP_FIELDS,
-  RADIO_OPTION_FIELDS,
-  RADIO_QUESTION_FIELDS,
-  VIDEO_FIELDS,
-  VIDEO_TRIGGER_FIELDS
-} from '../src/components/blocks'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
 
 interface JourneyPageProps {
@@ -60,18 +46,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
 }) => {
   const { data } = await client.query<GetJourney>({
     query: gql`
-      ${BUTTON_FIELDS}
-      ${CARD_FIELDS}
-      ${IMAGE_FIELDS}
-      ${GRID_CONTAINER_FIELDS}
-      ${GRID_ITEM_FIELDS}
-      ${RADIO_OPTION_FIELDS}
-      ${RADIO_QUESTION_FIELDS}
-      ${SIGN_UP_FIELDS}
-      ${STEP_FIELDS}
-      ${TYPOGRAPHY_FIELDS}
-      ${VIDEO_FIELDS}
-      ${VIDEO_TRIGGER_FIELDS}
+      ${BLOCK_FIELDS}
       query GetJourney($id: ID!) {
         # slug might have to be string
         journey(id: $id, idType: slug) {
@@ -84,44 +59,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
             src
           }
           blocks {
-            id
-            parentBlockId
-            ... on ButtonBlock {
-              ...ButtonFields
-            }
-            ... on CardBlock {
-              ...CardFields
-            }
-            ... on GridContainerBlock {
-              ...GridContainerFields
-            }
-            ... on GridItemBlock {
-              ...GridItemFields
-            }
-            ... on ImageBlock {
-              ...ImageFields
-            }
-            ... on RadioOptionBlock {
-              ...RadioOptionFields
-            }
-            ... on RadioQuestionBlock {
-              ...RadioQuestionFields
-            }
-            ... on SignUpBlock {
-              ...SignUpFields
-            }
-            ... on StepBlock {
-              ...StepFields
-            }
-            ... on TypographyBlock {
-              ...TypographyFields
-            }
-            ... on VideoBlock {
-              ...VideoFields
-            }
-            ... on VideoTriggerBlock {
-              ...VideoTriggerFields
-            }
+            ...BlockFields
           }
         }
       }
