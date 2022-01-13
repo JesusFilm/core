@@ -1,8 +1,8 @@
 import { render, fireEvent } from '@testing-library/react'
 import { AddFab } from '.'
 
-describe('Add Button', () => {
-  it('should render the button', () => {
+describe('AddFab', () => {
+  it('should render the fab', () => {
     const onClick = jest.fn()
     const { getByRole } = render(<AddFab visible onClick={onClick} />)
 
@@ -12,7 +12,7 @@ describe('Add Button', () => {
     expect(onClick).toHaveBeenCalled()
   })
 
-  it('should not show button if visible is false', () => {
+  it('should not show fab if visible is false', () => {
     const { queryByRole } = render(<AddFab />)
     expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
   })
