@@ -7,7 +7,7 @@ import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../.
 import { CardPreview } from '../../CardPreview'
 import { ActiveTab, EditorContext } from '../Context'
 import { Attributes } from './Attributes'
-import { NewBlocks } from './Attributes/blocks/NewBlocks'
+import { BlocksTab } from './BlocksTab'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -94,7 +94,7 @@ export function ControlPanel(): ReactElement {
         {selectedBlock != null && <Attributes selected={selectedBlock} />}
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
-        <NewBlocks />
+        <BlocksTab />
       </TabPanel>
     </Box>
   )
