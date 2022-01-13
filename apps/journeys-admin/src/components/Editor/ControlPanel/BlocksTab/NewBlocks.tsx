@@ -7,7 +7,7 @@ import DraftsRounded from '@mui/icons-material/DraftsRounded'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { Button } from '../../../Button'
+import { Button } from '../Button'
 
 export function NewBlocks(): ReactElement {
   return (
@@ -21,36 +21,11 @@ export function NewBlocks(): ReactElement {
           px: 6
         }}
       >
-        <Button
-          icon={<TextFieldsRounded />}
-          name=""
-          value="Text"
-          description=""
-        />
-        <Button
-          icon={<InsertPhotoRounded />}
-          name=""
-          value="Image"
-          description=""
-        />
-        <Button
-          icon={<VideocamRounded />}
-          name=""
-          value="Video"
-          description=""
-        />
-        <Button
-          icon={<ContactSupportRounded />}
-          name=""
-          value="Poll"
-          description=""
-        />
-        <Button
-          icon={<DraftsRounded />}
-          name=""
-          value="Subscribe"
-          description=""
-        />
+        <Button icon={<TextFieldsRounded />} value="Text" />
+        <Button icon={<InsertPhotoRounded />} value="Image" />
+        <Button icon={<VideocamRounded />} value="Video" />
+        <Button icon={<ContactSupportRounded />} value="Poll" />
+        <Button icon={<DraftsRounded />} value="Subscribe" />
       </Stack>
       <Box
         sx={{

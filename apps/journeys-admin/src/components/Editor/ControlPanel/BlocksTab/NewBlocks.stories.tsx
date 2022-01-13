@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { NewBlocks } from '.'
 
 const NewBlocksStory = {
