@@ -29,7 +29,7 @@ export const defaultJourney: Journey = {
         id: 'user-id1',
         firstName: 'Amin',
         lastName: 'One',
-        imageUrl: 'https://source.unsplash.com/random/300x300',
+        imageUrl: 'https://bit.ly/3Gth4Yf',
         email: 'amin@email.com'
       }
     },
@@ -42,7 +42,7 @@ export const defaultJourney: Journey = {
         id: 'user-id2',
         firstName: 'Horace',
         lastName: 'Two',
-        imageUrl: 'https://source.unsplash.com/random/300x301',
+        imageUrl: 'https://bit.ly/3rgHd6a',
         email: 'horace@email.com'
       }
     },
@@ -55,7 +55,7 @@ export const defaultJourney: Journey = {
         id: 'user-id3',
         firstName: 'Coral',
         lastName: 'Three',
-        imageUrl: 'https://source.unsplash.com/random/301x300',
+        imageUrl: 'https://bit.ly/3nlwUwJ',
         email: 'coral@email.com'
       }
     }
