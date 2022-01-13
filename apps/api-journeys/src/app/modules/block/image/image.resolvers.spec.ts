@@ -119,7 +119,7 @@ describe('Image', () => {
 
   describe('imageBlockUpdate', () => {
     it('updates an ImageBlock', async () => {
-      await resolver.imageBlockUpdate('1', inputUpdate)
+      await resolver.imageBlockUpdate('1', '2', inputUpdate)
       expect(service.update).toHaveBeenCalledWith('1', imageblockupdateresponse)
     })
   })

@@ -168,7 +168,6 @@ export class ImageBlockCreateInput {
 
 export class ImageBlockUpdateInput {
     parentBlockId?: Nullable<string>;
-    journeyId?: Nullable<string>;
     src?: Nullable<string>;
     alt?: Nullable<string>;
 }
@@ -265,6 +264,7 @@ export interface Action {
 
 export interface Block {
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
 }
 
@@ -329,6 +329,7 @@ export class Journey {
 export class ButtonBlock implements Block {
     __typename?: 'ButtonBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     label: string;
     variant?: Nullable<ButtonVariant>;
@@ -342,6 +343,7 @@ export class ButtonBlock implements Block {
 export class CardBlock implements Block {
     __typename?: 'CardBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
@@ -353,6 +355,7 @@ export class CardBlock implements Block {
 export class GridContainerBlock implements Block {
     __typename?: 'GridContainerBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     spacing: number;
     direction: GridDirection;
@@ -363,6 +366,7 @@ export class GridContainerBlock implements Block {
 export class GridItemBlock implements Block {
     __typename?: 'GridItemBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     xl: number;
     lg: number;
@@ -372,6 +376,7 @@ export class GridItemBlock implements Block {
 export class ImageBlock implements Block {
     __typename?: 'ImageBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     src: string;
     width: number;
@@ -383,6 +388,7 @@ export class ImageBlock implements Block {
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     label: string;
     action?: Nullable<Action>;
@@ -391,6 +397,7 @@ export class RadioOptionBlock implements Block {
 export class RadioQuestionBlock implements Block {
     __typename?: 'RadioQuestionBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     label: string;
     description?: Nullable<string>;
@@ -399,6 +406,7 @@ export class RadioQuestionBlock implements Block {
 export class SignUpBlock implements Block {
     __typename?: 'SignUpBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     action?: Nullable<Action>;
     submitIcon?: Nullable<Icon>;
@@ -408,6 +416,7 @@ export class SignUpBlock implements Block {
 export class StepBlock implements Block {
     __typename?: 'StepBlock';
     id: string;
+    journeyId?: Nullable<string>;
     nextBlockId?: Nullable<string>;
     locked: boolean;
     parentBlockId?: Nullable<string>;
@@ -416,6 +425,7 @@ export class StepBlock implements Block {
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     content: string;
     variant?: Nullable<TypographyVariant>;
@@ -438,6 +448,7 @@ export class VideoGeneric implements VideoContent {
 export class VideoBlock implements Block {
     __typename?: 'VideoBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     title: string;
     startAt?: Nullable<number>;
@@ -452,6 +463,7 @@ export class VideoBlock implements Block {
 export class VideoTriggerBlock implements Block {
     __typename?: 'VideoTriggerBlock';
     id: string;
+    journeyId?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     triggerStart: number;
     action: Action;
@@ -496,19 +508,19 @@ export class VideoResponse implements Response {
 export abstract class IMutation {
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
-    abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;
+    abstract cardBlockUpdate(id: string, journeyId: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;
 
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
-    abstract imageBlockUpdate(id: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+    abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
-    abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+    abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
 
     abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract videoBlockUpdate(id: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
+    abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 

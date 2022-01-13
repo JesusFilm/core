@@ -1,5 +1,6 @@
 type SignUpBlock implements Block {
   id: ID!
+  journeyId: ID
   parentBlockId: ID
   action: Action
   submitIcon: Icon

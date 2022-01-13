@@ -181,7 +181,7 @@ describe('VideoContentResolvers', () => {
     describe('videoBlockUpdate', () => {
       it('updates a VideoBlock', async () => {
         videoBlockResolver
-          .videoBlockUpdate('1', blockUpdate)
+          .videoBlockUpdate('1', '2', blockUpdate)
           .catch((err) => console.log(err))
         expect(service.update).toHaveBeenCalledWith('1', blockUpdate)
       })
