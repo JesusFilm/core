@@ -1,5 +1,6 @@
 type ImageBlock implements Block {
   id: ID!
+  journeyId: ID
   parentBlockId: ID
   src: String!
   width: Int!
@@ -25,14 +26,17 @@ input ImageBlockCreateInput {
 
 input ImageBlockUpdateInput {
   parentBlockId: ID
-  journeyId: ID
   src: String
   alt: String
 }
 
 extend type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
-  imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  imageBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: ImageBlockUpdateInput!
+  ): ImageBlock!
 }
 
 extend type Journey {

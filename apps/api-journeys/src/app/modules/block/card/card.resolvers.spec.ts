@@ -112,7 +112,7 @@ describe('Card', () => {
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
       cardBlockResolver
-        .cardBlockUpdate(block._key, blockUpdate)
+        .cardBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })
