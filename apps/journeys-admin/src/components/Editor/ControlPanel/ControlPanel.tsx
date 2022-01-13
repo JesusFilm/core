@@ -12,6 +12,7 @@ import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
+import { BlocksTab } from './BlocksTab'
 import { AddFab } from './AddFab'
 
 interface TabPanelProps {
@@ -103,7 +104,7 @@ export function ControlPanel(): ReactElement {
         {selectedBlock != null && <Attributes selected={selectedBlock} />}
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Sample block
+        <BlocksTab />
       </TabPanel>
     </Box>
   )
