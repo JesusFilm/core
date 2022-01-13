@@ -27,6 +27,7 @@ export const BLOCK_FIELDS = gql`
   ${VIDEO_TRIGGER_FIELDS}
   fragment BlockFields on Block {
     id
+    journeyId
     parentBlockId
     ... on ButtonBlock {
       ...ButtonFields

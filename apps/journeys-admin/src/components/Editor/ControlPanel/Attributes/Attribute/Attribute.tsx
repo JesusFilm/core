@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
+import { SxProps, Theme } from '@mui/system'
 import { EditorContext } from '../../../Context'
 
 interface AttributeProps {
@@ -14,6 +15,7 @@ interface AttributeProps {
   name: string
   value: string
   description: string
+  textStyle?: SxProps<Theme>
   onClick?: () => void
 }
 
@@ -23,6 +25,7 @@ export function Attribute({
   name,
   value,
   description,
+  textStyle,
   onClick
 }: AttributeProps): ReactElement {
   const {
@@ -57,7 +60,9 @@ export function Attribute({
                 <Typography variant="caption" color="text.secondary" noWrap>
                   {name}
                 </Typography>
-                <Typography noWrap>{value}</Typography>
+                <Typography sx={{ ...textStyle }} noWrap>
+                  {value}
+                </Typography>
               </Box>
             </Stack>
           </CardContent>

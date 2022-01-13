@@ -12,6 +12,7 @@ describe('Card', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
+      journeyId: 'journey1',
       parentBlockId: 'step1.id',
       coverBlockId: null,
       backgroundColor: null,
@@ -31,6 +32,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: '#00ffcc',
@@ -46,6 +48,7 @@ describe('Card', () => {
     it('shows background color drawer', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
+        journeyId: 'journey1',
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
         coverBlockId: null,
@@ -74,6 +77,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'image1.id',
         backgroundColor: '#00ffcc',
@@ -103,6 +107,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'video1.id',
         backgroundColor: '#00ffcc',
@@ -137,6 +142,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'video1.id',
         backgroundColor: '#00ffcc',
@@ -181,6 +187,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'image1.id',
         backgroundColor: null,
@@ -197,6 +204,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -213,6 +221,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -239,6 +248,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -255,6 +265,7 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
+        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,

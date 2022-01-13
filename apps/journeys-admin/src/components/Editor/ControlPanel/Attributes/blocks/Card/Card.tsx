@@ -1,5 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui'
-import { ReactElement, useContext } from 'react'
+import { ReactElement, useContext, useState } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
 import VerticalSplit from '@mui/icons-material/VerticalSplit'
@@ -21,6 +21,7 @@ import { BackgroundMedia } from './BackgroundMedia'
 
 export function Card({
   id,
+  journeyId,
   backgroundColor,
   fullscreen,
   themeMode,
@@ -39,6 +40,12 @@ export function Card({
       mobileOpen: true,
       children: <BackgroundMedia id={id} coverBlock={coverBlock} />
     })
+  }
+
+  const [selectedThemeMode, setThemeMode] = useState(themeMode)
+
+  const handleStyleChange = (selected: ThemeMode): void => {
+    setThemeMode(selected)
   }
 
   return (
@@ -111,20 +118,22 @@ export function Card({
         icon={<Palette />}
         id={`${id}-theme-mode`}
         name="Style"
-        value={
-          themeMode == null
-            ? 'Default'
-            : themeMode === ThemeMode.light
-            ? 'Light'
-            : 'Dark'
-        }
+        value={selectedThemeMode == null ? 'Default' : selectedThemeMode}
+        textStyle={{ textTransform: 'capitalize' }}
         description="Card Styling"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
             title: 'Card Style Property',
             mobileOpen: true,
-            children: <CardStyling id={id} themeMode={themeMode} />
+            children: (
+              <CardStyling
+                id={id}
+                journeyId={journeyId}
+                themeMode={selectedThemeMode}
+                onSelect={handleStyleChange}
+              />
+            )
           })
         }}
       />
