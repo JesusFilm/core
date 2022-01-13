@@ -8,7 +8,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { Typography } from '.'
 
-describe('Typography', () => {
+describe('Typography properties', () => {
   it('shows default attributes', () => {
     const block: TreeBlock<TypographyBlock> = {
       id: 'typography1.id',
