@@ -32,4 +32,8 @@ export const Selected: Story = () => {
   )
 }
 
+export const Minimal: Story = () => {
+  return <Button icon={<PaletteIcon />} value="Palette" selected />
+}
+
 export default ButtonStory as Meta

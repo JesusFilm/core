@@ -9,9 +9,9 @@ import Divider from '@mui/material/Divider'
 
 interface ButtonProps {
   icon: ReactElement
-  name: string
+  name?: string
   value: string
-  description: string
+  description?: string
   selected?: boolean
   onClick?: () => void
 }
@@ -42,14 +42,16 @@ export function Button({
           borderBottom: 0
         }}
       >
-        <CardActionArea onClick={handleClick}>
+        <CardActionArea onClick={handleClick} sx={{ minHeight: 60 }}>
           <CardContent sx={{ py: 2, px: 4 }}>
             <Stack spacing={3} alignItems="center" direction="row">
               {icon}
               <Box sx={{ maxWidth: 92 }}>
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {name}
-                </Typography>
+                {name != null && (
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {name}
+                  </Typography>
+                )}
                 <Typography noWrap>{value}</Typography>
               </Box>
             </Stack>
@@ -67,16 +69,20 @@ export function Button({
               : theme.palette.divider
         }}
       />
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        align="center"
-        noWrap
-        component="div"
-        sx={{ pt: 1 }}
-      >
-        {description}
-      </Typography>
+      <Box sx={{ height: 24 }}>
+        {description != null && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            align="center"
+            noWrap
+            component="div"
+            sx={{ pt: 1 }}
+          >
+            {description}
+          </Typography>
+        )}
+      </Box>
     </Box>
   )
 }
