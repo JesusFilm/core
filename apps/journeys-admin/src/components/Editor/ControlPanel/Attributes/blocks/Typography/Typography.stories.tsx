@@ -21,10 +21,36 @@ export const Default: Story = () => {
     id: 'typography1.id',
     __typename: 'TypographyBlock',
     parentBlockId: null,
-    align: TypographyAlign.left,
-    color: TypographyColor.primary,
+    align: null,
+    color: null,
     content: 'Typography',
-    variant: TypographyVariant.body2,
+    variant: null,
+    children: []
+  }
+
+  return (
+    <Stack
+      direction="row"
+      spacing={4}
+      sx={{
+        overflowX: 'auto',
+        py: 5,
+        px: 6
+      }}
+    >
+      <Typography {...block} />
+    </Stack>
+  )
+}
+export const Filled: Story = () => {
+  const block: TreeBlock<TypographyBlock> = {
+    id: 'typography1.id',
+    __typename: 'TypographyBlock',
+    parentBlockId: null,
+    align: TypographyAlign.center,
+    color: TypographyColor.error,
+    content: 'Typography',
+    variant: TypographyVariant.h2,
     children: []
   }
 

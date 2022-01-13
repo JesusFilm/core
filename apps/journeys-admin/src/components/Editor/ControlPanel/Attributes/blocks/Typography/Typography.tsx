@@ -15,6 +15,7 @@ export function Typography({
   color,
   variant
 }: TreeBlock<TypographyBlock>): ReactElement {
+  console.log(color)
   return (
     <>
       <Attribute
@@ -34,7 +35,7 @@ export function Typography({
           </Paper>
         }
         name="Color"
-        value={captialize(color?.toString()) ?? 'None'}
+        value={captialize(color?.toString() ?? 'primary')}
         description="Text Color"
         // onClick open drawer
       />
@@ -42,10 +43,9 @@ export function Typography({
         id={`${id}-font-variant`}
         icon={<TextFieldsRoundedIcon />}
         name="Font Variant"
-        value={
-          captialize(lowerCase(variant?.toString()).replace('h', 'header')) ??
-          'None'
-        }
+        value={captialize(
+          lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
+        )}
         description="Font Variant"
         // onClick open drawer
       />
@@ -53,7 +53,7 @@ export function Typography({
         id={`${id}-text-alignment`}
         icon={<FormatAlignLeftRoundedIcon />}
         name="Text Alignment"
-        value={captialize(align?.toString()) ?? 'None'}
+        value={captialize(align?.toString() ?? 'Left')}
         description="Text Alignment"
         // onClick open drawer
       />

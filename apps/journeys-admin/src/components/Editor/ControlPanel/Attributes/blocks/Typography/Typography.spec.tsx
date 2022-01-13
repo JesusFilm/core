@@ -14,15 +14,32 @@ describe('Typography properties', () => {
       id: 'typography1.id',
       __typename: 'TypographyBlock',
       parentBlockId: null,
-      align: TypographyAlign.left,
-      color: TypographyColor.primary,
+      align: null,
+      color: null,
       content: 'Typography',
-      variant: TypographyVariant.body2,
+      variant: null,
       children: []
     }
     const { getByText } = render(<Typography {...block} />)
     expect(getByText('Primary')).toBeInTheDocument()
     expect(getByText('Body 2')).toBeInTheDocument()
     expect(getByText('Left')).toBeInTheDocument()
+  })
+
+  it('shows filled attributes', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      align: TypographyAlign.center,
+      color: TypographyColor.error,
+      content: 'Typography',
+      variant: TypographyVariant.h2,
+      children: []
+    }
+    const { getByText } = render(<Typography {...block} />)
+    expect(getByText('Error')).toBeInTheDocument()
+    expect(getByText('Header 2')).toBeInTheDocument()
+    expect(getByText('Center')).toBeInTheDocument()
   })
 })
