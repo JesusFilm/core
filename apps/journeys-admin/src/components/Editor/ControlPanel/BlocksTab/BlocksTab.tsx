@@ -9,7 +9,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Button } from '../Button'
 
-export function NewBlocks(): ReactElement {
+export function BlocksTab(): ReactElement {
   return (
     <>
       <Stack

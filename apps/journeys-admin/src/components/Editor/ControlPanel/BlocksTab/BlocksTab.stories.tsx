@@ -1,15 +1,15 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { NewBlocks } from '.'
+import { BlocksTab } from '.'
 
-const NewBlocksStory = {
+const BlocksTabStory = {
   ...journeysAdminConfig,
-  component: NewBlocks,
+  component: BlocksTab,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/NewBlock'
 }
 
 export const Default: Story = () => {
-  return <NewBlocks />
+  return <BlocksTab />
 }
 
-export default NewBlocksStory as Meta
+export default BlocksTabStory as Meta
