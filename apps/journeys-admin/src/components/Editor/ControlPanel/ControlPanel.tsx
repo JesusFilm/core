@@ -1,17 +1,13 @@
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import {
-  ReactElement,
-  ReactNode,
-  SyntheticEvent,
-  useContext
-} from 'react'
+import { ReactElement, ReactNode, SyntheticEvent, useContext } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { CardPreview } from '../../CardPreview'
 import { ActiveTab, EditorContext } from '../Context'
 import { Attributes } from './Attributes'
+import { NewBlocks } from './Attributes/blocks/NewBlocks'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -72,7 +68,11 @@ export function ControlPanel(): ReactElement {
           backgroundColor: (theme) => theme.palette.background.paper
         }}
       >
-        <Tabs value={activeTab} onChange={handleChange} aria-label="editor tabs">
+        <Tabs
+          value={activeTab}
+          onChange={handleChange}
+          aria-label="editor tabs"
+        >
           <Tab label="Cards" {...a11yProps(0)} sx={{ flexGrow: 1 }} />
           <Tab
             label="Properties"
@@ -94,7 +94,7 @@ export function ControlPanel(): ReactElement {
         {selectedBlock != null && <Attributes selected={selectedBlock} />}
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
-        Sample block
+        <NewBlocks />
       </TabPanel>
     </Box>
   )
