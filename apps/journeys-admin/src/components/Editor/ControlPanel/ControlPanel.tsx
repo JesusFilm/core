@@ -7,7 +7,7 @@ import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../.
 import { CardPreview } from '../../CardPreview'
 import { ActiveTab, EditorContext } from '../Context'
 import { Attributes } from './Attributes'
-import { Add } from './Add'
+import { AddFab } from './Add'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -66,7 +66,7 @@ export function ControlPanel(): ReactElement {
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        <Add visible={activeTab !== ActiveTab.Blocks} onClick={handleAdd}  />
+        <AddFab visible={activeTab !== ActiveTab.Blocks} onClick={handleAdd} />
       </Box>
       <Box
         sx={{

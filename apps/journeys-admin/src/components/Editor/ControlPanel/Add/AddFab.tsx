@@ -3,12 +3,12 @@ import Fab from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
 import AddRounded from '@mui/icons-material/AddRounded'
 
-interface AddProp {
+interface AddFabProp {
   visible?: boolean
-  onClick: () => void
+  onClick?: () => void
 }
 
-export function Add({ visible, onClick }: AddProp): ReactElement {
+export function AddFab({ visible, onClick }: AddFabProp): ReactElement {
   return (
     <Zoom in={visible} unmountOnExit>
       <Fab variant="extended" size="large" color="primary" onClick={onClick}>
