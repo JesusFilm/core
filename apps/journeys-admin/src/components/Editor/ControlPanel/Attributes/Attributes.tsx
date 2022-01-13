@@ -22,7 +22,7 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
       )
     }
     case 'TypographyBlock': {
-      return <Typography />
+      return <Typography {...selected} />
     }
     default:
       return <></>
