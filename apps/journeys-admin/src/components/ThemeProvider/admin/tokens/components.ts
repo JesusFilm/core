@@ -28,7 +28,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
     MuiTab: {
       styleOverrides: {
         root: {
-          fontWeight: 'bold',
+          fontWeight: 600,
           textTransform: 'none'
         }
       }

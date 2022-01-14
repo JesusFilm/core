@@ -32,5 +32,9 @@ input StepBlockUpdateInput {
 
 extend type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
-  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
+  stepBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: StepBlockUpdateInput!
+  ): StepBlock!
 }

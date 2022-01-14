@@ -93,5 +93,9 @@ input VideoBlockUpdateInput {
 
 extend type Mutation {
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
-  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  videoBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: VideoBlockUpdateInput!
+  ): VideoBlock!
 }

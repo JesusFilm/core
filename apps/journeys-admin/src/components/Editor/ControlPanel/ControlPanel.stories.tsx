@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
@@ -11,7 +12,6 @@ import {
   IconSize,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
-import { EditorProvider } from '../Context'
 import { ControlPanel } from '.'
 
 const ControlPanelStory = {
@@ -441,7 +441,9 @@ const Template: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ steps }}>
-        <ControlPanel />
+        <Box sx={{ mt: '80px' }}>
+          <ControlPanel />
+        </Box>
       </EditorProvider>
     </MockedProvider>
   )

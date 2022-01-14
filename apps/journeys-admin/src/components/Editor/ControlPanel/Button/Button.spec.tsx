@@ -1,13 +1,11 @@
 import { render, fireEvent } from '@testing-library/react'
-import { EditorProvider } from '@core/journeys/ui'
-import { ThemeProvider } from '../../../../ThemeProvider'
-import { Attribute } from '.'
+import { ThemeProvider } from '../../../ThemeProvider'
+import { Button } from '.'
 
-describe('Attribute', () => {
-  it('should render attribute', () => {
+describe('Button', () => {
+  it('should render button', () => {
     const { getByText } = render(
-      <Attribute
-        id="custom-id"
+      <Button
         icon={<>test</>}
         name="name"
         value="value"
@@ -22,18 +20,15 @@ describe('Attribute', () => {
 
   it('selects attribute', () => {
     const handleClick = jest.fn()
-    const { getByRole, baseElement } = render(
+    const { getByRole, baseElement, rerender } = render(
       <ThemeProvider>
-        <EditorProvider>
-          <Attribute
-            id="custom-id"
-            icon={<>test</>}
-            name="name"
-            value="value"
-            description="description"
-            onClick={handleClick}
-          />
-        </EditorProvider>
+        <Button
+          icon={<>test</>}
+          name="name"
+          value="value"
+          description="description"
+          onClick={handleClick}
+        />
       </ThemeProvider>
     )
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
@@ -41,6 +36,18 @@ describe('Attribute', () => {
     )
     fireEvent.click(getByRole('button'))
     expect(handleClick).toHaveBeenCalled()
+    rerender(
+      <ThemeProvider>
+        <Button
+          icon={<>test</>}
+          name="name"
+          value="value"
+          description="description"
+          onClick={handleClick}
+          selected
+        />
+      </ThemeProvider>
+    )
     expect(baseElement.getElementsByTagName('hr')[0]).toHaveStyle(
       'border-color: #c52d3a'
     )

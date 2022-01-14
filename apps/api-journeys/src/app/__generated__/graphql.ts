@@ -512,15 +512,15 @@ export abstract class IMutation {
 
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
-    abstract imageBlockUpdate(id: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+    abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
-    abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+    abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
 
     abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract videoBlockUpdate(id: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
+    abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 

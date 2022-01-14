@@ -1,13 +1,6 @@
 import { ReactElement, useContext } from 'react'
-import Box from '@mui/material/Box'
-import MuiCard from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
-import { SxProps, Theme } from '@mui/system'
-import { EditorContext } from '../../../Context'
+import { EditorContext } from '@core/journeys/ui'
+import { Button } from '../../Button'
 
 interface AttributeProps {
   id: string
@@ -15,80 +8,25 @@ interface AttributeProps {
   name: string
   value: string
   description: string
-  textStyle?: SxProps<Theme>
   onClick?: () => void
 }
 
-export function Attribute({
-  id,
-  icon,
-  name,
-  value,
-  description,
-  textStyle,
-  onClick
-}: AttributeProps): ReactElement {
+export function Attribute(props: AttributeProps): ReactElement {
   const {
     state: { selectedAttributeId },
     dispatch
   } = useContext(EditorContext)
 
   const handleClick = (): void => {
-    dispatch({ type: 'SetSelectedAttributeIdAction', id })
-    onClick?.()
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: props.id })
+    props.onClick?.()
   }
 
   return (
-    <Box
-      sx={{
-        maxWidth: 150
-      }}
-    >
-      <MuiCard
-        variant="outlined"
-        sx={{
-          borderBottomRightRadius: 0,
-          borderBottomLeftRadius: 0,
-          borderBottom: 0
-        }}
-      >
-        <CardActionArea onClick={handleClick}>
-          <CardContent sx={{ py: 2, px: 4 }}>
-            <Stack spacing={3} alignItems="center" direction="row">
-              {icon}
-              <Box sx={{ maxWidth: 92 }}>
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {name}
-                </Typography>
-                <Typography sx={{ ...textStyle }} noWrap>
-                  {value}
-                </Typography>
-              </Box>
-            </Stack>
-          </CardContent>
-        </CardActionArea>
-      </MuiCard>
-      <Divider
-        color="primary"
-        sx={{
-          transition: '0.2s border-color ease-out',
-          borderBottomWidth: 2,
-          borderColor: (theme) =>
-            selectedAttributeId === id
-              ? theme.palette.primary.main
-              : theme.palette.divider
-        }}
-      />
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        align="center"
-        noWrap
-        component="div"
-        sx={{ pt: 1 }}
-      >
-        {description}
-      </Typography>
-    </Box>
+    <Button
+      {...props}
+      selected={props.id === selectedAttributeId}
+      onClick={handleClick}
+    />
   )
 }
