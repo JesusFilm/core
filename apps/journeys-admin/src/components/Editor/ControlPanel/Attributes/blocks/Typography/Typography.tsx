@@ -20,12 +20,12 @@ export function Typography({
       <Attribute
         id={`${id}-text-color`}
         icon={
-          <Paper sx={{ borderRadius: 1000, overflow: 'hidden' }}>
+          <Paper sx={{ borderRadius: 1000 }}>
             <Box
               data-testid="backgroundColorIcon"
               sx={{
-                width: 25,
-                height: 25,
+                width: 20,
+                height: 20,
                 m: 1,
                 borderRadius: 1000,
                 backgroundColor: `${color ?? 'primary'}.main`

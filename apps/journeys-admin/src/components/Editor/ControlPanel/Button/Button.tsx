@@ -31,7 +31,7 @@ export function Button({
   return (
     <Box
       sx={{
-        maxWidth: 160
+        maxWidth: 150
       }}
     >
       <MuiCard
