@@ -1,1 +1,1 @@
-export { EditorContext, EditorProvider } from './EditorContext'
+export { EditorContext, EditorProvider, ActiveTab } from './EditorContext'

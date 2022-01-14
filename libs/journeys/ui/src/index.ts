@@ -18,6 +18,7 @@ export {
   handleAction,
   EditorContext,
   EditorProvider,
+  ActiveTab,
   journeyUiConfig,
   simpleComponentConfig,
   StoryCard,
