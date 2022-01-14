@@ -64,7 +64,7 @@ export const Filled: Story = () => {
     },
     endIcon: {
       __typename: 'Icon',
-      name: IconName.ChatBubbleOutlineRounded,
+      name: IconName.ChevronRightRounded,
       color: IconColor.secondary,
       size: IconSize.lg
     },
