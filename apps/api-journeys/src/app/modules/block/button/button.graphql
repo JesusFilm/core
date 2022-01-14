@@ -18,6 +18,7 @@ enum ButtonSize {
 
 type ButtonBlock implements Block {
   id: ID!
+  journeyId: ID!
   parentBlockId: ID
   label: String!
   variant: ButtonVariant

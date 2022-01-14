@@ -14,6 +14,7 @@ type VideoGeneric implements VideoContent {
 
 type VideoBlock implements Block {
   id: ID!
+  journeyId: ID!
   parentBlockId: ID
   title: String!
   """
@@ -92,5 +93,9 @@ input VideoBlockUpdateInput {
 
 extend type Mutation {
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
-  videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  videoBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: VideoBlockUpdateInput!
+  ): VideoBlock!
 }

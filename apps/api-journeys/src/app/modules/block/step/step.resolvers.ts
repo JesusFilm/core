@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { IdAsKey } from '@core/nest/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   StepBlock,
   StepBlockCreateInput,
@@ -30,14 +30,12 @@ export class StepBlockResolvers {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @IdAsKey()
+  @KeyAsId()
   async stepBlockUpdate(
     @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
     @Args('input') input: StepBlockUpdateInput
   ): Promise<StepBlock> {
     return await this.blockService.update(id, input)

@@ -40,11 +40,11 @@ export const RoleGuard = (
       if (userId == null) return false
 
       const args = context.getArgByIndex(1)
-      const actor = await ca(
-        this.userJourneyService,
-        get(args, journeyIdArgName),
-        userId
-      )
+      const journeyId = get(args, journeyIdArgName)
+      if (journeyId == null)
+        throw new AuthenticationError('No journeyId provided')
+
+      const actor = await ca(this.userJourneyService, journeyId, userId)
 
       const result = Array.isArray(roles)
         ? includes(roles, actor?.role)

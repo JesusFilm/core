@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { IdAsKey } from '@core/nest/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   CardBlock,
   CardBlockCreateInput,
@@ -29,14 +29,13 @@ export class CardBlockResolvers {
   }
 
   @Mutation()
+  @KeyAsId()
   @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async cardBlockUpdate(
     @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
     @Args('input') input: CardBlockUpdateInput
   ): Promise<CardBlock> {
     return await this.blockService.update(id, input)

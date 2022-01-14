@@ -1,5 +1,6 @@
 type RadioOptionBlock implements Block {
   id: ID!
+  journeyId: ID!
   parentBlockId: ID
   label: String!
   action: Action
@@ -7,6 +8,7 @@ type RadioOptionBlock implements Block {
 
 type RadioQuestionBlock implements Block {
   id: ID!
+  journeyId: ID!
   parentBlockId: ID
   label: String!
   description: String

@@ -99,7 +99,7 @@ describe('Step', () => {
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
       stepBlockResolver
-        .stepBlockUpdate(block._key, blockUpdate)
+        .stepBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })

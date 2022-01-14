@@ -8,6 +8,12 @@ import {
 import { TreeBlock } from '../transformer'
 import { StepFields as StepBlock } from '../../components/Step/__generated__/StepFields'
 
+export enum ActiveTab {
+  Cards = 0,
+  Properties = 1,
+  Blocks = 2
+}
+
 interface EditorState {
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
@@ -16,6 +22,7 @@ interface EditorState {
   drawerTitle?: string
   drawerChildren?: ReactNode
   drawerMobileOpen: boolean
+  activeTab: ActiveTab
 }
 
 interface SetSelectedStepAction {
@@ -45,12 +52,18 @@ interface SetDrawerMobileOpenAction {
   mobileOpen: boolean
 }
 
+interface SetActiveTabAction {
+  type: 'SetActiveTabAction'
+  activeTab: ActiveTab
+}
+
 type EditorAction =
   | SetSelectedStepAction
   | SetSelectedBlockAction
   | SetSelectedAttributeIdAction
   | SetDrawerPropsAction
   | SetDrawerMobileOpenAction
+  | SetActiveTabAction
 
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
@@ -72,6 +85,11 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
         ...state,
         drawerMobileOpen: action.mobileOpen
       }
+    case 'SetActiveTabAction':
+      return {
+        ...state,
+        activeTab: action.activeTab
+      }
   }
 }
 
@@ -79,7 +97,7 @@ export const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
-  state: { steps: [], drawerMobileOpen: false },
+  state: { steps: [], drawerMobileOpen: false, activeTab: ActiveTab.Cards },
   dispatch: () => null
 })
 
@@ -97,6 +115,7 @@ export function EditorProvider({
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
     ...initialState
   })
 
