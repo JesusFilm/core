@@ -94,7 +94,8 @@ describe('Journey', () => {
       width: 1,
       height: 1,
       alt: '',
-      blurhash: ''
+      blurhash: '',
+      journeyId: '1'
     },
     slug: 'published-slug',
     createdAt,

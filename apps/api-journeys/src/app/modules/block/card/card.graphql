@@ -1,6 +1,6 @@
 type CardBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   """
   backgroundColor should be a HEX color value e.g #FFFFFF for white.

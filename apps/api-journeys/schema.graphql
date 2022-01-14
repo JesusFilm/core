@@ -83,7 +83,7 @@ type LinkAction implements Action {
 
 interface Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
 }
 
@@ -123,7 +123,7 @@ enum ButtonSize {
 
 type ButtonBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   label: String!
   variant: ButtonVariant
@@ -136,7 +136,7 @@ type ButtonBlock implements Block {
 
 type CardBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
@@ -211,7 +211,7 @@ enum GridAlignItems {
 
 type GridContainerBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   spacing: Int!
   direction: GridDirection!
@@ -221,7 +221,7 @@ type GridContainerBlock implements Block {
 
 type GridItemBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   xl: Int!
   lg: Int!
@@ -230,7 +230,7 @@ type GridItemBlock implements Block {
 
 type ImageBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   src: String!
   width: Int!
@@ -263,7 +263,7 @@ input ImageBlockUpdateInput {
 
 type RadioOptionBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   label: String!
   action: Action
@@ -271,7 +271,7 @@ type RadioOptionBlock implements Block {
 
 type RadioQuestionBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   label: String!
   description: String
@@ -279,7 +279,7 @@ type RadioQuestionBlock implements Block {
 
 type SignUpBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   action: Action
   submitIcon: Icon
@@ -288,7 +288,7 @@ type SignUpBlock implements Block {
 
 type StepBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
 
   """
   nextBlockId contains the preferred block to navigate to when a
@@ -349,7 +349,7 @@ enum TypographyAlign {
 
 type TypographyBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   content: String!
   variant: TypographyVariant
@@ -373,7 +373,7 @@ type VideoGeneric implements VideoContent {
 
 type VideoBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   title: String!
 
@@ -453,7 +453,7 @@ to the next block at the designated time.
 """
 type VideoTriggerBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
 
   """
