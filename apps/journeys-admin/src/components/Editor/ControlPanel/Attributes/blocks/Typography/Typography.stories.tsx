@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
 import Stack from '@mui/material/Stack'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import {
   TypographyAlign,
@@ -11,7 +11,7 @@ import {
 import { Typography } from '.'
 
 const TypographyStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Typography,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography'
 }
