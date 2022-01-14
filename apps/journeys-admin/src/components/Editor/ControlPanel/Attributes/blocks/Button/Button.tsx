@@ -31,7 +31,7 @@ export function Button({
         id={`${id}-start-icon`}
         icon={<ArrowDropDownCircleRoundedIcon />}
         name="Start Icon"
-        value={startIcon?.toString() ?? 'None'}
+        value={startIcon?.name.toString() ?? 'None'}
         description="Button Start Icon"
         // onClick to open drawer
       />
@@ -40,7 +40,7 @@ export function Button({
         id={`${id}-end-icon`}
         icon={<ArrowDropDownCircleRoundedIcon />}
         name="End Icon"
-        value={endIcon?.toString() ?? 'None'}
+        value={endIcon?.name.toString() ?? 'None'}
         description="Button End Icon"
         // onClick to open drawer
       />
@@ -90,7 +90,7 @@ export function Button({
         id={`${id}-link-action`}
         icon={<ArrowDropDownCircleRoundedIcon />}
         name="Link Action"
-        value={action?.toString() ?? 'None'}
+        value={action?.__typename?.toString() ?? 'None'}
         description="Button Link Action"
         // onClick to open drawer
       />
