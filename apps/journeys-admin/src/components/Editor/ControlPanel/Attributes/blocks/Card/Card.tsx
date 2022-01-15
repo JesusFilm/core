@@ -6,7 +6,11 @@ import VerticalSplit from '@mui/icons-material/VerticalSplit'
 import Videocam from '@mui/icons-material/Videocam'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
-import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
+import { gql, useMutation } from '@apollo/client'
+import {
+  CardBlockUpdateInput,
+  ThemeMode
+} from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {
   GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
@@ -18,6 +22,18 @@ import { CardStyling } from './CardStyling'
 import { CardLayout } from './CardLayout'
 import { BackgroundMedia } from './BackgroundMedia'
 
+export const CARD_BLOCK_UPDATE = gql`
+  mutation CardBlockUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+    }
+  }
+`
+
 export function Card({
   id,
   journeyId,
@@ -27,6 +43,7 @@ export function Card({
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
+  const [cardBlockUpdate] = useMutation<CardBlockUpdateInput>(CARD_BLOCK_UPDATE)
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
@@ -42,9 +59,32 @@ export function Card({
   }
 
   const [selectedThemeMode, setThemeMode] = useState(themeMode)
+  const [selectedBgColor, setBgColor] = useState(backgroundColor)
 
-  const handleStyleChange = (selected: ThemeMode): void => {
+  const handleStyleChange = async (selected: ThemeMode): Promise<void> => {
     setThemeMode(selected)
+    await cardBlockUpdate({
+      variables: {
+        id: id,
+        journeyId: journeyId,
+        input: {
+          themeMode: selected
+        }
+      }
+    })
+  }
+
+  const handleBgColorChange = async (selected: string): Promise<void> => {
+    setBgColor(selected)
+    await cardBlockUpdate({
+      variables: {
+        id: id,
+        journeyId: journeyId,
+        input: {
+          backgroundColor: selected
+        }
+      }
+    })
   }
 
   return (
@@ -61,13 +101,13 @@ export function Card({
                 m: 1,
                 borderRadius: 1000,
                 backgroundColor: (theme) =>
-                  backgroundColor ?? theme.palette.text.primary
+                  selectedBgColor ?? theme.palette.text.primary
               }}
             />
           </Paper>
         }
         name="Color"
-        value={backgroundColor?.toUpperCase() ?? 'None'}
+        value={selectedBgColor?.toUpperCase() ?? 'None'}
         description="Background Color"
         onClick={() => {
           dispatch({
@@ -75,7 +115,12 @@ export function Card({
             title: 'Background Color Properties',
             mobileOpen: true,
             children: (
-              <BackgroundColor id={id} backgroundColor={backgroundColor} />
+              <BackgroundColor
+                id={id}
+                backgroundColor={selectedBgColor}
+                journeyId={journeyId}
+                onSubmit={handleBgColorChange}
+              />
             )
           })
         }}
@@ -117,8 +162,13 @@ export function Card({
         icon={<Palette />}
         id={`${id}-theme-mode`}
         name="Style"
-        value={selectedThemeMode == null ? 'Default' : selectedThemeMode}
-        textStyle={{ textTransform: 'capitalize' }}
+        value={
+          selectedThemeMode == null
+            ? 'Default'
+            : selectedThemeMode === ThemeMode.dark
+            ? 'Dark'
+            : 'Light'
+        }
         description="Card Styling"
         onClick={() => {
           dispatch({

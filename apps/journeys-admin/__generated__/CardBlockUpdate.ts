@@ -20,5 +20,6 @@ export interface CardBlockUpdate {
 
 export interface CardBlockUpdateVariables {
   id: string;
+  journeyId: string;
   input: CardBlockUpdateInput;
 }

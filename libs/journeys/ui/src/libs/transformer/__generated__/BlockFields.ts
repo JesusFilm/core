@@ -57,6 +57,7 @@ export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_Navi
 export interface BlockFields_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   label: string;
   buttonVariant: ButtonVariant | null;
@@ -70,6 +71,7 @@ export interface BlockFields_ButtonBlock {
 export interface BlockFields_CardBlock {
   __typename: "CardBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
@@ -102,6 +104,7 @@ export interface BlockFields_CardBlock {
 export interface BlockFields_GridContainerBlock {
   __typename: "GridContainerBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   spacing: number;
   direction: GridDirection;
@@ -112,6 +115,7 @@ export interface BlockFields_GridContainerBlock {
 export interface BlockFields_GridItemBlock {
   __typename: "GridItemBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   xl: number;
   lg: number;
@@ -121,6 +125,7 @@ export interface BlockFields_GridItemBlock {
 export interface BlockFields_ImageBlock {
   __typename: "ImageBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   src: string;
   alt: string;
@@ -167,6 +172,7 @@ export type BlockFields_RadioOptionBlock_action = BlockFields_RadioOptionBlock_a
 export interface BlockFields_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   label: string;
   action: BlockFields_RadioOptionBlock_action | null;
@@ -175,6 +181,7 @@ export interface BlockFields_RadioOptionBlock {
 export interface BlockFields_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   label: string;
   description: string | null;
@@ -221,6 +228,7 @@ export interface BlockFields_SignUpBlock_submitIcon {
 export interface BlockFields_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   submitLabel: string | null;
   action: BlockFields_SignUpBlock_action | null;
@@ -230,6 +238,7 @@ export interface BlockFields_SignUpBlock {
 export interface BlockFields_StepBlock {
   __typename: "StepBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   /**
    * locked will be set to true if the user should not be able to manually
@@ -248,6 +257,7 @@ export interface BlockFields_StepBlock {
 export interface BlockFields_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
@@ -263,6 +273,7 @@ export interface BlockFields_VideoBlock_videoContent {
 export interface BlockFields_VideoBlock {
   __typename: "VideoBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   title: string;
   muted: boolean | null;
@@ -318,6 +329,7 @@ export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTrigg
 export interface BlockFields_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   /**
    * triggerStart sets the time as to when a video navigates to the next block,
