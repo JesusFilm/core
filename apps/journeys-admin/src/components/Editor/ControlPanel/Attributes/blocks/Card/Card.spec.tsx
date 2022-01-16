@@ -56,7 +56,11 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider>
+          <EditorProvider
+            initialState={{
+              journey: { id: 'journeyId' }
+            }}
+          >
             <Drawer />
             <Card {...card} />
           </EditorProvider>
@@ -163,7 +167,11 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider>
+          <EditorProvider
+            initialState={{
+              journey: { id: 'journeyId' }
+            }}
+          >
             <Drawer />
             <Card {...card} />
           </EditorProvider>
@@ -222,7 +230,11 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider>
+          <EditorProvider
+            initialState={{
+              journey: { id: 'journeyId' }
+            }}
+          >
             <Drawer />
             <Card {...card} />
           </EditorProvider>
@@ -264,7 +276,11 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider>
+          <EditorProvider
+            initialState={{
+              journey: { id: 'journeyId' }
+            }}
+          >
             <Drawer />
             <Card {...card} />
           </EditorProvider>
