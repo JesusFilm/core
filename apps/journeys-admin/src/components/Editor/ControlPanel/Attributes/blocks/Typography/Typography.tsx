@@ -38,7 +38,7 @@ export function Typography({
           </Paper>
         }
         name="Color"
-        value={captialize(color?.toString() ?? 'primaryASDASDASD')}
+        value={captialize(color?.toString() ?? 'primary')}
         description="Text Color"
         // onClick open drawer
       />
@@ -47,10 +47,7 @@ export function Typography({
         icon={<TextFieldsRoundedIcon />}
         name="Font Variant"
         value={captialize(
-          lowerCase(variant?.toString() ?? 'body2asdasdasdas').replace(
-            'h',
-            'header'
-          )
+          lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
         description="Font Variant"
         // onClick open drawer
