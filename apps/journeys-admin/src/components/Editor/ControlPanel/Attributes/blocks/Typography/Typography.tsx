@@ -20,7 +20,11 @@ export function Typography({
       <Attribute
         id={`${id}-text-color`}
         icon={
-          <Paper sx={{ borderRadius: 1000 }}>
+          <Paper
+            sx={{
+              borderRadius: 1000
+            }}
+          >
             <Box
               data-testid="backgroundColorIcon"
               sx={{
@@ -34,7 +38,7 @@ export function Typography({
           </Paper>
         }
         name="Color"
-        value={captialize(color?.toString() ?? 'primary')}
+        value={captialize(color?.toString() ?? 'primaryASDASDASD')}
         description="Text Color"
         // onClick open drawer
       />
@@ -43,7 +47,10 @@ export function Typography({
         icon={<TextFieldsRoundedIcon />}
         name="Font Variant"
         value={captialize(
-          lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
+          lowerCase(variant?.toString() ?? 'body2asdasdasdas').replace(
+            'h',
+            'header'
+          )
         )}
         description="Font Variant"
         // onClick open drawer
