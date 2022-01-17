@@ -3,6 +3,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
+import capitalize from 'lodash/capitalize'
 import { GetJourneyForEdit_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
 
@@ -48,24 +49,27 @@ export function Button({
       <Attribute
         id={`${id}-color`}
         icon={
-          <Paper sx={{ borderRadius: 1000, overflow: 'hidden' }}>
+          <Paper
+            sx={{
+              borderRadius: 1000
+            }}
+          >
             <Box
               data-testid="backgroundColorIcon"
               sx={{
-                width: 25,
-                height: 25,
+                width: 20,
+                height: 20,
                 m: 1,
                 borderRadius: 1000,
-                backgroundColor: (theme) =>
-                  buttonColor ?? theme.palette.text.primary
+                backgroundColor: `${buttonColor ?? 'primary'}.main`
               }}
             />
           </Paper>
         }
         name="Color"
-        value={buttonColor?.toString() ?? 'None'}
+        value={capitalize(buttonColor?.toString() ?? 'primary')}
         description="Button Color"
-        // onClick to open drawer
+        // onClick open drawer
       />
 
       <Attribute
