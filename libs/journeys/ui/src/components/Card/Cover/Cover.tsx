@@ -85,7 +85,7 @@ export function Cover({
           }}
           data-testid="CardVideoCover"
         >
-          <video ref={videoRef} className="video-js">
+          <video ref={videoRef} className="video-js" playsInline>
             <source
               src={videoBlock.videoContent.src}
               type={
