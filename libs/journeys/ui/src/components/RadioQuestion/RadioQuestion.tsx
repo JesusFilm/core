@@ -1,9 +1,10 @@
-import { ReactElement } from 'react'
+import { ReactElement, useContext, MouseEvent } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import Box from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock } from '../..'
+import { TreeBlock, EditorContext } from '../..'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -28,7 +29,8 @@ export function RadioQuestion({
   label,
   description,
   children,
-  uuid = uuidv4
+  uuid = uuidv4,
+  ...props
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
@@ -55,8 +57,34 @@ export function RadioQuestion({
 
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
+  const {
+    state: { selectedBlock },
+    dispatch
+  } = useContext(EditorContext)
+
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+
+    const block: TreeBlock<RadioQuestionFields> = {
+      id: blockId,
+      label,
+      description,
+      children,
+      ...props
+    }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+  }
+
   return (
-    <>
+    <Box
+      data-testid={`radioQuestion-${blockId}`}
+      sx={{
+        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+        outlineOffset: '5px'
+      }}
+      onClick={selectedBlock !== undefined ? handleSelectBlock : undefined}
+    >
       <Typography variant="h3" gutterBottom>
         {label}
       </Typography>
@@ -79,6 +107,6 @@ export function RadioQuestion({
             )
         )}
       </ButtonGroup>
-    </>
+    </Box>
   )
 }
