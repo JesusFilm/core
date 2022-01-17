@@ -14,7 +14,7 @@ type VideoGeneric implements VideoContent {
 
 type VideoBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   title: String!
   """

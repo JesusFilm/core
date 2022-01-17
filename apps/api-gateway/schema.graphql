@@ -22,7 +22,7 @@ interface Action {
 
 interface Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
 }
 
@@ -31,7 +31,7 @@ type ButtonBlock implements Block {
   color: ButtonColor
   endIcon: Icon
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   label: String!
   parentBlockId: ID
   size: ButtonSize
@@ -75,7 +75,7 @@ type CardBlock implements Block {
   """
   fullscreen: Boolean!
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
 
   """
@@ -125,7 +125,7 @@ type GridContainerBlock implements Block {
   alignItems: GridAlignItems!
   direction: GridDirection!
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   justifyContent: GridJustifyContent!
   parentBlockId: ID
   spacing: Int!
@@ -140,7 +140,7 @@ enum GridDirection {
 
 type GridItemBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   lg: Int!
   parentBlockId: ID
   sm: Int!
@@ -210,7 +210,7 @@ type ImageBlock implements Block {
   blurhash: String!
   height: Int!
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   src: String!
   width: Int!
@@ -350,7 +350,7 @@ type Query {
 type RadioOptionBlock implements Block {
   action: Action
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   label: String!
   parentBlockId: ID
 }
@@ -358,7 +358,7 @@ type RadioOptionBlock implements Block {
 type RadioQuestionBlock implements Block {
   description: String
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   label: String!
   parentBlockId: ID
 }
@@ -388,7 +388,7 @@ interface Response {
 type SignUpBlock implements Block {
   action: Action
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   submitIcon: Icon
   submitLabel: String
@@ -415,7 +415,7 @@ input SignUpResponseCreateInput {
 
 type StepBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
 
   """
   locked will be set to true if the user should not be able to manually
@@ -467,7 +467,7 @@ type TypographyBlock implements Block {
   color: TypographyColor
   content: String!
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   variant: TypographyVariant
 }
@@ -536,7 +536,7 @@ type VideoBlock implements Block {
   """endAt dictates at which point of time the video should end"""
   endAt: Int
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   muted: Boolean
   parentBlockId: ID
 
@@ -645,7 +645,7 @@ to the next block at the designated time.
 type VideoTriggerBlock implements Block {
   action: Action!
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
 
   """
