@@ -94,7 +94,6 @@ export function Video({
             inline: true
           }
         },
-        fluid: true,
         responsive: true,
         muted: muted === true,
         poster: posterBlock?.src
@@ -135,7 +134,10 @@ export function Video({
         backgroundColor: '#000000',
         borderRadius: 4,
         overflow: 'hidden',
-        m: 0
+        m: 0,
+        '> div': {
+          width: '100%'
+        }
       }}
     >
       <video
