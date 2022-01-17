@@ -44,6 +44,7 @@ export function Video({
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
   )
+  const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
@@ -75,7 +76,6 @@ export function Video({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: autoplay === true,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -100,6 +100,13 @@ export function Video({
         poster: posterBlock?.src
       })
       playerRef.current.on('ready', () => {
+        if (
+          mobile &&
+          !navigator.userAgent.match(/AppleWebKit/i) &&
+          autoplay === true
+        ) {
+          playerRef.current?.play()
+        }
         playerRef.current?.currentTime(startAt ?? 0)
       })
       playerRef.current.on('playing', () => {
@@ -140,8 +147,9 @@ export function Video({
     >
       <video
         ref={videoRef}
-        className="video-js"
+        className="video-js vjs-big-play-centered"
         style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
+        playsInline
       >
         <source
           src={videoContent.src}
