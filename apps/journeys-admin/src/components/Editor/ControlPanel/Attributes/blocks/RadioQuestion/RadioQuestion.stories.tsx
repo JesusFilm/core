@@ -15,7 +15,7 @@ export const Default: Story = () => {
   const block: TreeBlock<RadioQuestionBlock> = {
     id: 'radio-question.id',
     __typename: 'RadioQuestionBlock',
-    parentBlockId: 'step1.id',
+    parentBlockId: null,
     label: 'Radio Question',
     description: null,
     children: []
