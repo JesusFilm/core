@@ -1,6 +1,6 @@
 type GridItemBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   xl: Int!
   lg: Int!

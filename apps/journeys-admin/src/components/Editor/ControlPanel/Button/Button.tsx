@@ -46,7 +46,7 @@ export function Button({
           <CardContent sx={{ py: 2, px: 4 }}>
             <Stack spacing={3} alignItems="center" direction="row">
               {icon}
-              <Box sx={{ maxWidth: 92 }}>
+              <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
                 {name != null && (
                   <Typography variant="caption" color="text.secondary" noWrap>
                     {name}
