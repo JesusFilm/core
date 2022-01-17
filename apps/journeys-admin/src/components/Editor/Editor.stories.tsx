@@ -102,7 +102,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     id: 'card1.id',
     __typename: 'CardBlock',
     parentBlockId: 'step1.id',
-    coverBlockId: 'image0.id',
+    coverBlockId: 'image1.id',
     backgroundColor: null,
     themeMode: null,
     themeName: null,
@@ -147,7 +147,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     }
   },
   {
-    id: 'image0.id',
+    id: 'image1.id',
     __typename: 'ImageBlock',
     src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     width: 1920,
@@ -168,7 +168,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     id: 'card2.id',
     __typename: 'CardBlock',
     parentBlockId: 'step2.id',
-    coverBlockId: 'image0.id',
+    coverBlockId: 'image2.id',
     backgroundColor: null,
     themeMode: null,
     themeName: null,
@@ -184,19 +184,10 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     variant: TypographyVariant.h6
   },
   {
-    id: 'typographyBlockId6',
-    __typename: 'TypographyBlock',
-    parentBlockId: 'card2.id',
-    align: null,
-    color: null,
-    content: 'What is Christianity to you?',
-    variant: TypographyVariant.h3
-  },
-  {
     id: 'radioQuestion1.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card2.id',
-    label: '',
+    label: 'What is Christianity to you?',
     description: ''
   },
   {
@@ -230,7 +221,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     }
   },
   {
-    id: 'image0.id',
+    id: 'image2.id',
     __typename: 'ImageBlock',
     src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80',
     width: 1920,
@@ -250,7 +241,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     id: 'card3.id',
     __typename: 'CardBlock',
     parentBlockId: 'step3.id',
-    coverBlockId: 'image0.id',
+    coverBlockId: 'image3.id',
     backgroundColor: null,
     themeMode: null,
     themeName: null,
@@ -266,19 +257,10 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     variant: TypographyVariant.h6
   },
   {
-    id: 'typographyBlockId8',
-    __typename: 'TypographyBlock',
-    parentBlockId: 'card3.id',
-    align: null,
-    color: null,
-    content: 'Do you need to change to be good enough for God?',
-    variant: TypographyVariant.h3
-  },
-  {
     id: 'radioQuestion2.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card3.id',
-    label: '',
+    label: 'Do you need to change to be good enough for God?',
     description: ''
   },
   {
@@ -302,7 +284,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     }
   },
   {
-    id: 'image0.id',
+    id: 'image3.id',
     __typename: 'ImageBlock',
     src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
     width: 1920,
@@ -322,7 +304,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     id: 'card4.id',
     __typename: 'CardBlock',
     parentBlockId: 'step4.id',
-    coverBlockId: 'image0.id',
+    coverBlockId: 'image4.id',
     backgroundColor: null,
     themeMode: null,
     themeName: null,
@@ -357,7 +339,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     variant: TypographyVariant.caption
   },
   {
-    id: 'image0.id',
+    id: 'image4.id',
     __typename: 'ImageBlock',
     src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     width: 1920,
