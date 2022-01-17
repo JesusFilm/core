@@ -27,7 +27,7 @@ enum TypographyAlign {
 
 type TypographyBlock implements Block {
   id: ID!
-  journeyId: ID
+  journeyId: ID!
   parentBlockId: ID
   content: String!
   variant: TypographyVariant
