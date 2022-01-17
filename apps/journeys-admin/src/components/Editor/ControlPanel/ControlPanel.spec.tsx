@@ -10,7 +10,19 @@ describe('ControlPanel', () => {
     parentBlockId: null,
     locked: false,
     nextBlockId: null,
-    children: []
+    children: [
+      {
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step1.id',
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: []
+      }
+    ]
   }
   const step2: TreeBlock<StepBlock> = {
     id: 'step2.id',
@@ -18,7 +30,19 @@ describe('ControlPanel', () => {
     parentBlockId: null,
     locked: true,
     nextBlockId: null,
-    children: []
+    children: [
+      {
+        id: 'card2.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: []
+      }
+    ]
   }
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(

@@ -19,7 +19,7 @@ export function Canvas(): ReactElement {
   const [spaceBetween, setSpaceBetween] = useState(16)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
-    state: { steps, selectedStep },
+    state: { steps, selectedStep, selectedBlock },
     dispatch
   } = useContext(EditorContext)
 
@@ -68,6 +68,8 @@ export function Canvas(): ReactElement {
         slidesPerView={'auto'}
         spaceBetween={spaceBetween}
         centeredSlides={true}
+        shortSwipes={false}
+        grabCursor
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) =>
           dispatch({
@@ -86,14 +88,19 @@ export function Canvas(): ReactElement {
                 position: 'relative',
                 overflow: 'hidden',
                 border: (theme) =>
-                  step.id === selectedStep?.id
+                  step.children[0].id === selectedBlock?.id
                     ? `2px solid ${theme.palette.primary.main}`
                     : `2px solid ${theme.palette.background.default}`,
                 transform:
                   step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
                 height: 536
               }}
-              onClick={() => dispatch({ type: 'SetSelectedStepAction', step })}
+              onClick={() => {
+                dispatch({
+                  type: 'SetSelectedBlockAction',
+                  block: selectedStep?.children[0]
+                })
+              }}
             >
               <Box
                 sx={{
@@ -105,7 +112,8 @@ export function Canvas(): ReactElement {
                   zIndex: 1,
                   transition: '0.2s opacity ease-out 0.1s',
                   backgroundColor: (theme) => theme.palette.background.default,
-                  opacity: step.id === selectedStep?.id ? 0 : 1
+                  opacity: step.id === selectedStep?.id ? 0 : 1,
+                  pointerEvents: 'none'
                 }}
               />
               <FramePortal width={356} height={536}>
