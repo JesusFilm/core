@@ -76,6 +76,7 @@ export function Video({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
+        autoplay: autoplay === true && !mobile,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -99,13 +100,6 @@ export function Video({
         poster: posterBlock?.src
       })
       playerRef.current.on('ready', () => {
-        if (
-          mobile &&
-          !navigator.userAgent.match(/AppleWebKit/i) &&
-          autoplay === true
-        ) {
-          playerRef.current?.play()
-        }
         playerRef.current?.currentTime(startAt ?? 0)
       })
       playerRef.current.on('playing', () => {

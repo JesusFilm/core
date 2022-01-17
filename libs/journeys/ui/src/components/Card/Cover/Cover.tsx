@@ -3,7 +3,7 @@ import { decode } from 'blurhash'
 import videojs from 'video.js'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { isActiveBlockOrDescendant, TreeBlock } from '../../..'
+import { TreeBlock } from '../../..'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 
@@ -28,10 +28,6 @@ export function Cover({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const theme = useTheme()
-  const mobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    )
 
   useEffect(() => {
     if (xsRef.current != null && lgRef.current != null) {
@@ -64,9 +60,6 @@ export function Cover({
           hotkeys: false,
           doubleClick: false
         },
-        controlBar: {
-          fullscreenToggle: false
-        },
         muted: true,
         loop: true
       })
@@ -74,7 +67,7 @@ export function Cover({
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
       })
     }
-  }, [imageBlock, theme, videoBlock, mobile])
+  }, [imageBlock, theme, videoBlock])
 
   return (
     <>
