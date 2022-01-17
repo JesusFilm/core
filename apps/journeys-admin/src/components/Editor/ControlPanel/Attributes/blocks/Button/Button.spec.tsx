@@ -26,8 +26,11 @@ describe('Button attributes', () => {
       action: null,
       children: []
     }
-    const { getAllByText } = render(<Button {...block} />)
-    expect(getAllByText('None')).toHaveLength(6)
+    const { getAllByText, getByText } = render(<Button {...block} />)
+    expect(getAllByText('None')).toHaveLength(3)
+    expect(getByText('Medium')).toBeInTheDocument()
+    expect(getByText('Primary')).toBeInTheDocument()
+    expect(getByText('Text')).toBeInTheDocument()
   })
 
   it('shows filled button', () => {
@@ -59,12 +62,12 @@ describe('Button attributes', () => {
       children: []
     }
     const { getByText } = render(<Button {...block} />)
-    expect(getByText('large')).toBeInTheDocument()
+    expect(getByText('Large')).toBeInTheDocument()
     expect(getByText('ChatBubbleOutlineRounded')).toBeInTheDocument()
     expect(getByText('ChevronRightRounded')).toBeInTheDocument()
-    expect(getByText('secondary')).toBeInTheDocument()
+    expect(getByText('Secondary')).toBeInTheDocument()
     expect(getByText('Button')).toBeInTheDocument()
-    expect(getByText('text')).toBeInTheDocument()
+    expect(getByText('Text')).toBeInTheDocument()
     expect(getByText('NavigateToBlockAction')).toBeInTheDocument()
   })
 })
