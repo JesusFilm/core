@@ -69,6 +69,7 @@ export function Canvas(): ReactElement {
         spaceBetween={spaceBetween}
         centeredSlides={true}
         shortSwipes={false}
+        slideToClickedSlide
         grabCursor
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) =>
@@ -98,7 +99,7 @@ export function Canvas(): ReactElement {
               onClick={() => {
                 dispatch({
                   type: 'SetSelectedBlockAction',
-                  block: selectedStep?.children[0]
+                  block: step?.children[0]
                 })
               }}
             >
@@ -113,7 +114,7 @@ export function Canvas(): ReactElement {
                   transition: '0.2s opacity ease-out 0.1s',
                   backgroundColor: (theme) => theme.palette.background.default,
                   opacity: step.id === selectedStep?.id ? 0 : 1,
-                  pointerEvents: 'none'
+                  pointerEvents: step.id === selectedStep?.id ? 'none' : 'auto'
                 }}
               />
               <FramePortal width={356} height={536}>
