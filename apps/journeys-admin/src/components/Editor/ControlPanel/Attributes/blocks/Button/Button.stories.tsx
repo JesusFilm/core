@@ -53,7 +53,7 @@ export const Filled: Story = () => {
     __typename: 'ButtonBlock',
     parentBlockId: 'step1.id',
     label: 'Button',
-    buttonVariant: ButtonVariant.text,
+    buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.secondary,
     size: ButtonSize.large,
     startIcon: {

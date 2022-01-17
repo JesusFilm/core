@@ -23,7 +23,7 @@ export function Button({
         id={`${id}-size`}
         icon={<ArrowDropDownCircleRoundedIcon />}
         name="Size"
-        value={size?.toString() ?? 'None'}
+        value={capitalize(size?.toString() ?? 'medium')}
         description="Button Size"
         // onClick to open drawer
       />
@@ -85,7 +85,7 @@ export function Button({
         id={`${id}-variant`}
         icon={<ArrowDropDownCircleRoundedIcon />}
         name="Variant"
-        value={buttonVariant?.toString() ?? 'None'}
+        value={capitalize(buttonVariant?.toString() ?? 'text')}
         description="Button Variant"
         // onClick to open drawer
       />
