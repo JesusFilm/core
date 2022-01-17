@@ -3,6 +3,7 @@ import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
 import { useBreakpoints } from '@core/shared/ui'
@@ -15,6 +16,7 @@ import {
   TreeBlock,
   useBlocks
 } from '@core/journeys/ui'
+import Div100vh from 'react-div-100vh'
 import { JourneyProgress } from '../JourneyProgress'
 
 export interface ConductorProps {
@@ -81,156 +83,156 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        [theme.breakpoints.up('lg')]: {
-          height: '100%',
-          flexDirection: 'column-reverse'
-        }
-      }}
-    >
-      <Box
+    <Div100vh>
+      <Stack
+        direction={breakpoints.lg ? 'column-reverse' : 'column'}
         sx={{
-          display: 'flex',
-          alignSelf: 'center',
-          py: 6,
-          width: '100%',
-          px: `${edgeSlideWidth + gapBetweenSlides}px`
+          justifyContent: 'center',
+          height: '100%'
         }}
       >
-        <JourneyProgress />
-      </Box>
-      <Box sx={{ display: 'flex' }}>
-        <Swiper
-          slidesPerView={'auto'}
-          centeredSlides={true}
-          centeredSlidesBounds={true}
-          onSwiper={(swiper) => setSwiper(swiper)}
-          resizeObserver
-          onBeforeResize={() => setGapBetween(getResponsiveGap())}
-          onSlideChangeTransitionStart={() => setShowNavArrow(false)}
-          onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
-          allowTouchMove={false}
-          style={{
-            width: '100%',
-            paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
-            paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
+        <Box
+          sx={{
+            px: `${edgeSlideWidth + gapBetweenSlides}px`,
+            py: 6,
+            pt: { lg: 0 }
           }}
         >
-          {treeBlocks.map((block) => (
-            <SwiperSlide
-              key={block.id}
-              style={{
-                marginRight: '0px'
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  paddingTop: '4px',
-                  paddingBottom: '4px',
-                  px: `${gapBetweenSlides / 2}px`,
-                  height: 'calc(100vh - 80px)',
-                  maxHeight: 'calc(100vh - 80px)',
-                  [theme.breakpoints.only('sm')]: {
-                    maxHeight: '460px'
-                  },
-                  [theme.breakpoints.up('lg')]: {
-                    maxWidth: '854px',
-                    maxHeight: '480px'
-                  }
+          <JourneyProgress />
+        </Box>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            [theme.breakpoints.only('sm')]: {
+              maxHeight: '460px'
+            },
+            [theme.breakpoints.up('lg')]: {
+              maxHeight: '480px'
+            }
+          }}
+        >
+          <Swiper
+            slidesPerView={'auto'}
+            centeredSlides={true}
+            centeredSlidesBounds={true}
+            onSwiper={(swiper) => setSwiper(swiper)}
+            resizeObserver
+            onBeforeResize={() => setGapBetween(getResponsiveGap())}
+            onSlideChangeTransitionStart={() => setShowNavArrow(false)}
+            onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
+            allowTouchMove={false}
+            style={{
+              width: '100%',
+              paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
+              paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
+            }}
+          >
+            {treeBlocks.map((block) => (
+              <SwiperSlide
+                key={block.id}
+                style={{
+                  marginRight: '0px'
                 }}
               >
-                {activeBlock?.id === block.id ||
-                previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
-                  <BlockRenderer {...block} />
-                ) : (
-                  <CardWrapper
-                    id={block.id}
-                    backgroundColor={theme.palette.primary.light}
-                    themeMode={null}
-                    themeName={null}
-                  >
-                    <></>
-                  </CardWrapper>
-                )}
-              </Box>
-            </SwiperSlide>
-          ))}
-          <IconButton
-            data-testid="conductorPrevButton"
-            onClick={handleNext}
-            disabled={true}
-            disableRipple
-            sx={{
-              display: showNavArrows ? 'flex' : 'none',
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              zIndex: 2,
-              left: 0,
-              width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-              pl: ` ${gapBetweenSlides - 100}px`,
-              color: (theme) => theme.palette.text.primary
-            }}
-          >
-            <ChevronLeftIcon
-              fontSize={'large'}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    px: `${gapBetweenSlides / 2}px`,
+                    height: `calc(100% - ${theme.spacing(6)})`,
+                    [theme.breakpoints.up('lg')]: {
+                      maxWidth: '854px'
+                    }
+                  }}
+                >
+                  {activeBlock?.id === block.id ||
+                  previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
+                    <BlockRenderer {...block} />
+                  ) : (
+                    <CardWrapper
+                      id={block.id}
+                      backgroundColor={theme.palette.primary.light}
+                      themeMode={null}
+                      themeName={null}
+                    >
+                      <></>
+                    </CardWrapper>
+                  )}
+                </Box>
+              </SwiperSlide>
+            ))}
+            <IconButton
+              data-testid="conductorPrevButton"
+              onClick={handleNext}
+              disabled={true}
+              disableRipple
               sx={{
-                display: 'none',
-                [theme.breakpoints.only('xl')]: {
-                  display: 'block'
-                }
+                display: showNavArrows ? 'flex' : 'none',
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                zIndex: 2,
+                left: 0,
+                width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+                pl: ` ${gapBetweenSlides - 100}px`,
+                color: (theme) => theme.palette.text.primary
+              }}
+            >
+              <ChevronLeftIcon
+                fontSize={'large'}
+                sx={{
+                  display: 'none',
+                  [theme.breakpoints.only('xl')]: {
+                    display: 'block'
+                  }
+                }}
+              />
+            </IconButton>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                zIndex: 2,
+                right: 0,
+                background: (theme) => theme.palette.background.default,
+                transition: 'opacity 0.5s ease-out',
+                opacity: activeBlock?.nextBlockId != null ? 0 : 1,
+                width: (theme) => theme.spacing(4)
               }}
             />
-          </IconButton>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              zIndex: 2,
-              right: 0,
-              background: (theme) => theme.palette.background.default,
-              transition: 'opacity 0.5s ease-out',
-              opacity: activeBlock?.nextBlockId != null ? 0 : 1,
-              width: (theme) => theme.spacing(4)
-            }}
-          />
-          <IconButton
-            data-testid="conductorNextButton"
-            onClick={handleNext}
-            disabled={
-              activeBlock?.locked === true || activeBlock?.nextBlockId == null
-            }
-            disableRipple
-            sx={{
-              display: showNavArrows ? 'flex' : 'none',
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              zIndex: 2,
-              right: 0,
-              width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-              pr: ` ${gapBetweenSlides - 100}px`,
-              color: (theme) => theme.palette.text.primary
-            }}
-          >
-            <ChevronRightIcon
-              fontSize={'large'}
+            <IconButton
+              data-testid="conductorNextButton"
+              onClick={handleNext}
+              disabled={
+                activeBlock?.locked === true || activeBlock?.nextBlockId == null
+              }
+              disableRipple
               sx={{
-                display: 'none',
-                [theme.breakpoints.only('xl')]: {
-                  display: 'block'
-                }
+                display: showNavArrows ? 'flex' : 'none',
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                zIndex: 2,
+                right: 0,
+                width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+                pr: ` ${gapBetweenSlides - 100}px`,
+                color: (theme) => theme.palette.text.primary
               }}
-            />
-          </IconButton>
-        </Swiper>
-      </Box>
-    </Box>
+            >
+              <ChevronRightIcon
+                fontSize={'large'}
+                sx={{
+                  display: 'none',
+                  [theme.breakpoints.only('xl')]: {
+                    display: 'block'
+                  }
+                }}
+              />
+            </IconButton>
+          </Swiper>
+        </Box>
+      </Stack>
+    </Div100vh>
   )
 }
