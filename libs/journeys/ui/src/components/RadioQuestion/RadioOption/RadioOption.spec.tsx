@@ -60,7 +60,7 @@ describe('RadioOption', () => {
 })
 
 describe('Admin RadioOption', () => {
-  it('should edit option on click if parent selected', () => {
+  it('should edit option on click if RadioQuestion selected', () => {
     const { getByRole } = render(
       <EditorProvider
         initialState={{
