@@ -1,6 +1,9 @@
 import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
+import ViewDayIcon from '@mui/icons-material/ViewDay'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
@@ -21,7 +24,7 @@ export function Button({
     <>
       <Attribute
         id={`${id}-size`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
+        icon={<ViewDayIcon />}
         name="Size"
         value={capitalize(size?.toString() ?? 'medium')}
         description="Button Size"
@@ -30,7 +33,7 @@ export function Button({
 
       <Attribute
         id={`${id}-start-icon`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
+        icon={<InfoOutlinedIcon />}
         name="Start Icon"
         value={startIcon?.name.toString() ?? 'None'}
         description="Button Start Icon"
@@ -39,7 +42,7 @@ export function Button({
 
       <Attribute
         id={`${id}-end-icon`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
+        icon={<InfoOutlinedIcon />}
         name="End Icon"
         value={endIcon?.name.toString() ?? 'None'}
         description="Button End Icon"
@@ -71,7 +74,7 @@ export function Button({
         description="Button Color"
         // onClick open drawer
       />
-
+      {/* 
       <Attribute
         id={`${id}-label`}
         icon={<ArrowDropDownCircleRoundedIcon />}
@@ -79,11 +82,11 @@ export function Button({
         value={label}
         description="Button Label"
         // onClick to open drawer
-      />
+      /> */}
 
       <Attribute
         id={`${id}-variant`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
+        icon={<FormatShapesRoundedIcon />}
         name="Variant"
         value={capitalize(buttonVariant?.toString() ?? 'text')}
         description="Button Variant"
@@ -92,6 +95,7 @@ export function Button({
 
       <Attribute
         id={`${id}-link-action`}
+        // change icon
         icon={<ArrowDropDownCircleRoundedIcon />}
         name="Link Action"
         value={action?.__typename?.toString() ?? 'None'}

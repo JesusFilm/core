@@ -66,7 +66,6 @@ describe('Button attributes', () => {
     expect(getByText('ChatBubbleOutlineRounded')).toBeInTheDocument()
     expect(getByText('ChevronRightRounded')).toBeInTheDocument()
     expect(getByText('Secondary')).toBeInTheDocument()
-    expect(getByText('Button')).toBeInTheDocument()
     expect(getByText('Text')).toBeInTheDocument()
     expect(getByText('NavigateToBlockAction')).toBeInTheDocument()
   })

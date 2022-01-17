@@ -1,6 +1,7 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { ReactElement } from 'react'
 import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Attribute } from '../..'
 import { GetJourneyForEdit_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 
@@ -32,7 +33,7 @@ export function SignUp({
 
       <Attribute
         id={`${id}-submit-icon`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
+        icon={<InfoOutlinedIcon />}
         name="Submit Icon"
         value={submitIcon?.name.toString() ?? 'None'}
         description="Submit Icon"
