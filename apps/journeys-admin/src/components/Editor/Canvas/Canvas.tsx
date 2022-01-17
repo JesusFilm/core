@@ -63,6 +63,12 @@ export function Canvas(): ReactElement {
           justifyContent: 'center'
         }
       }}
+      onClick={() => {
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          block: selectedStep?.children[0]
+        })
+      }}
     >
       <Swiper
         slidesPerView={'auto'}
@@ -70,7 +76,6 @@ export function Canvas(): ReactElement {
         centeredSlides={true}
         shortSwipes={false}
         slideToClickedSlide
-        grabCursor
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) =>
           dispatch({
@@ -95,12 +100,6 @@ export function Canvas(): ReactElement {
                 transform:
                   step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
                 height: 536
-              }}
-              onClick={() => {
-                dispatch({
-                  type: 'SetSelectedBlockAction',
-                  block: step?.children[0]
-                })
               }}
             >
               <Box
