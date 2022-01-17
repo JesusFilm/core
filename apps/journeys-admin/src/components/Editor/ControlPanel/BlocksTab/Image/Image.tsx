@@ -7,14 +7,14 @@ import {
   TreeBlock
 } from '@core/journeys/ui'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
-import { GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock } from 'apps/journeys-admin/__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { ReactElement, useContext } from 'react'
 import { Button } from '../../Button'
 
 const IMAGE_BLOCK_CREATE = gql`
+  ${IMAGE_FIELDS}
   mutation ImageBlockCreate($input: ImageBlockCreateInput!) {
-    ${IMAGE_FIELDS}
     imageBlockCreate(input: $input) {
       id
       journeyId
@@ -33,10 +33,10 @@ export function Image(): ReactElement {
 
   const handleClick = async (): Promise<void> => {
     const card = selectedStep?.children.find(
-      (block) => block.__typename === 'ImageBlock'
-    ) as TreeBlock<ImageBlock> | undefined
+      (block) => block.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock> | undefined
     if (card != null) {
-      imageBlockCreate({
+      const { data } = await imageBlockCreate({
         variables: {
           input: {
             journeyId: card.journeyId,
@@ -45,18 +45,17 @@ export function Image(): ReactElement {
             alt: ''
           }
         }
-      }).then(({ data }) => {
-        if (data?.imageBlockCreate != null) {
-          dispatch({
-            type: 'SetActiveTabAction',
-            activeTab: ActiveTab.Properties
-          })
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            block: transformer([data.imageBlockCreate])[0]
-          })
-        }
       })
+      if (data?.imageBlockCreate != null) {
+        dispatch({
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
+        })
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          block: transformer([data.imageBlockCreate])[0]
+        })
+      }
     }
   }
 
