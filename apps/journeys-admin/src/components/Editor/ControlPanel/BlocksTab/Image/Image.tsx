@@ -11,7 +11,7 @@ import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../.
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { ReactElement, useContext } from 'react'
 import { Button } from '../../Button'
-
+import DefaultImageIcon from '../../../../../../public/DefaultImageIcon.svg'
 const IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
   mutation ImageBlockCreate($input: ImageBlockCreateInput!) {
@@ -41,8 +41,8 @@ export function Image(): ReactElement {
           input: {
             journeyId: card.journeyId,
             parentBlockId: card.id,
-            src: '',
-            alt: ''
+            src: DefaultImageIcon,
+            alt: 'Default Image Icon'
           }
         }
       })
