@@ -36,6 +36,7 @@ export function SignUp({
         name="Submit Icon"
         value={submitIcon?.name.toString() ?? 'None'}
         description="Submit Icon"
+        // onClick to open drawer
       />
     </>
   )
