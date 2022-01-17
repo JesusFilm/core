@@ -83,7 +83,7 @@ export function RadioQuestion({
         outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
-      onClick={selectedBlock !== undefined ? handleSelectBlock : undefined}
+      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
       <Typography variant="h3" gutterBottom>
         {label}

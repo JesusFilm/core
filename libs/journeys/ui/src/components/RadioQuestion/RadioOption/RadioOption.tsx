@@ -59,7 +59,7 @@ export function RadioOption({
       variant="contained"
       className={className}
       disabled={disabled}
-      onClick={selectedBlock !== undefined ? handleSelectBlock : handleClick}
+      onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
       startIcon={
         selected ? (
           <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />

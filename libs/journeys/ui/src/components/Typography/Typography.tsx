@@ -40,7 +40,7 @@ export function Typography({
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
-      onClick={handleSelectBlock}
+      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
       {content}
     </MuiTypography>
