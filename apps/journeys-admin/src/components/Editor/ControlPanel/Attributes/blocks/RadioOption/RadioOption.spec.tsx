@@ -10,7 +10,8 @@ describe('RadioOption Attribute', () => {
       __typename: 'RadioOptionBlock',
       parentBlockId: 'step1.id',
       label: 'Radio Option',
-      action: null
+      action: null,
+      children: []
     }
     const { getByText } = render(<RadioOption {...block} />)
     expect(getByText('Radio Option')).toBeInTheDocument()
@@ -27,7 +28,8 @@ describe('RadioOption Attribute', () => {
         __typename: 'NavigateToBlockAction',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
-      }
+      },
+      children: []
     }
 
     const { getByText } = render(<RadioOption {...block} />)
