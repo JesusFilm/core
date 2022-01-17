@@ -1,5 +1,5 @@
-import { TreeBlock } from '@core/journeys/ui'
 import { Story, Meta } from '@storybook/react'
+import { TreeBlock } from '@core/journeys/ui'
 import { Stack } from '@mui/material'
 import { GetJourneyForEdit_journey_blocks_RadioQuestionBlock as RadioQuestionBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
@@ -8,7 +8,7 @@ import { RadioQuestion } from '.'
 const RadioQuestionStory = {
   ...simpleComponentConfig,
   component: RadioQuestion,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes//RadioQuestion'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/RadioQuestion'
 }
 
 export const Default: Story = () => {
@@ -38,7 +38,7 @@ export const Filled: Story = () => {
   const block: TreeBlock<RadioQuestionBlock> = {
     id: 'radio-question.id',
     __typename: 'RadioQuestionBlock',
-    parentBlockId: 'step2.id',
+    parentBlockId: 'step.id',
     label: 'Radio Question',
     description: 'Radio Question Description',
     children: []
