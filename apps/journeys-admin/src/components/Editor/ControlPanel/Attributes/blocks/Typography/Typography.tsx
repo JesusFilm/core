@@ -4,7 +4,7 @@ import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
-import captialize from 'lodash/capitalize'
+import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
@@ -38,7 +38,7 @@ export function Typography({
           </Paper>
         }
         name="Color"
-        value={captialize(color?.toString() ?? 'primary')}
+        value={capitalize(color?.toString() ?? 'primary')}
         description="Text Color"
         // onClick open drawer
       />
@@ -46,7 +46,7 @@ export function Typography({
         id={`${id}-font-variant`}
         icon={<TextFieldsRoundedIcon />}
         name="Font Variant"
-        value={captialize(
+        value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
         description="Font Variant"
@@ -56,7 +56,7 @@ export function Typography({
         id={`${id}-text-alignment`}
         icon={<FormatAlignLeftRoundedIcon />}
         name="Text Alignment"
-        value={captialize(align?.toString() ?? 'Left')}
+        value={capitalize(align?.toString() ?? 'Left')}
         description="Text Alignment"
         // onClick open drawer
       />
