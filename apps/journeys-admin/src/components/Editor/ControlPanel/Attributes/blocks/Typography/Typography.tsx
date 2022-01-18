@@ -9,6 +9,8 @@ import lowerCase from 'lodash/lowerCase'
 import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
 import { TextColor } from './TextColor'
+import { TextAlign } from './TextAlign'
+import { FontVariant } from './FontVariant'
 
 export function Typography({
   id,
@@ -59,7 +61,14 @@ export function Typography({
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
         description="Font Variant"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Font Variant',
+            mobileOpen: true,
+            children: <FontVariant id={id} variant={variant} />
+          })
+        }}
       />
       <Attribute
         id={`${id}-text-alignment`}
@@ -67,7 +76,14 @@ export function Typography({
         name="Text Alignment"
         value={capitalize(align?.toString() ?? 'Left')}
         description="Text Alignment"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Alignment',
+            mobileOpen: true,
+            children: <TextAlign id={id} align={align} />
+          })
+        }}
       />
     </>
   )
