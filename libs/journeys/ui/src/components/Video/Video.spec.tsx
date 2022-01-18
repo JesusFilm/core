@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
@@ -7,7 +7,7 @@ import { Video, VIDEO_RESPONSE_CREATE } from '.'
 
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
-  id: 'videoBlockId',
+  id: 'video0.id',
   parentBlockId: '',
   autoplay: false,
   title: 'Video',
@@ -28,7 +28,7 @@ const block: TreeBlock<VideoFields> = {
       width: 1600,
       height: 1067,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-      parentBlockId: 'videoBlockId',
+      parentBlockId: 'video0.id',
       children: []
     }
   ]
@@ -44,7 +44,7 @@ describe('Video', () => {
               query: VIDEO_RESPONSE_CREATE,
               variables: {
                 id: 'uuid',
-                blockId: 'Video1',
+                blockId: 'video0.id',
                 state: VideoResponseStateEnum.PLAYING,
                 position: 30
               }
@@ -63,7 +63,7 @@ describe('Video', () => {
       </MockedProvider>
     )
     const sourceTag =
-      getByTestId('VideoComponent').querySelector('.vjs-tech source')
+      getByTestId('video-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
@@ -79,7 +79,7 @@ describe('Video', () => {
               query: VIDEO_RESPONSE_CREATE,
               variables: {
                 id: 'uuid',
-                blockId: 'Video1',
+                blockId: 'video0.id',
                 state: VideoResponseStateEnum.PLAYING,
                 position: 30
               }
@@ -104,7 +104,7 @@ describe('Video', () => {
       </MockedProvider>
     )
     const sourceTag =
-      getByTestId('video-videoBlockId').querySelector('.vjs-tech source')
+      getByTestId('video-video0.id').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual(
       'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
     )
@@ -120,7 +120,7 @@ describe('Video', () => {
               query: VIDEO_RESPONSE_CREATE,
               variables: {
                 id: 'uuid',
-                blockId: 'Video1',
+                blockId: 'video0.id',
                 state: VideoResponseStateEnum.PLAYING,
                 position: 30
               }
@@ -145,7 +145,7 @@ describe('Video', () => {
       </MockedProvider>
     )
     expect(
-      getByTestId('video-videoBlockId')
+      getByTestId('video-video0.id')
         .querySelector('.vjs-poster')
         ?.getAttribute('style')
     ).toEqual(
@@ -179,8 +179,8 @@ describe('Admin Video', () => {
     )
     const video = getByRole('region', { name: 'Video Player' })
 
-    fireEvent.click(getByTestId('video-videoBlockId'))
-    expect(getByTestId('video-videoBlockId')).toHaveStyle(
+    fireEvent.click(getByTestId('video-video0.id'))
+    expect(getByTestId('video-video0.id')).toHaveStyle(
       'outline: 3px solid #C52D3A'
     )
     expect(video).toHaveClass('vjs-paused')

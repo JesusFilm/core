@@ -188,13 +188,8 @@ export function Video({
       <video
         ref={videoRef}
         className="video-js vjs-big-play-centered"
-        style={{
-          display: 'flex',
-          alignSelf: 'center',
-          height: '100%'
-        }}
+        style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
         playsInline
-        onClick={() => console.log('clicked video')}
       >
         <source
           src={videoContent.src}
