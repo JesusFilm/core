@@ -16,6 +16,24 @@ interface FontVariantProps {
 export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
   const [selected, setSelected] = useState(variant ?? 'body2')
 
+  const order = [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'subtitle1',
+    'subtitle2',
+    'body1',
+    'body2',
+    'caption',
+    'overline'
+  ]
+  const sorted = Object.values(TypographyVariant).sort(
+    (a, b) => order.indexOf(a) - order.indexOf(b)
+  )
+
   function handleClick(variant: TypographyVariant): void {
     setSelected(variant)
   }
@@ -32,7 +50,7 @@ export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
           }
         }}
       >
-        {Object.values(TypographyVariant).map((variant) => {
+        {sorted.map((variant) => {
           return (
             <ListItemButton
               key={`${id}-text-${variant}`}

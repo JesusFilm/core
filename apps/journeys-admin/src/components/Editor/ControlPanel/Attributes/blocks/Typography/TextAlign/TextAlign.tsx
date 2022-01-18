@@ -17,6 +17,11 @@ interface TextAlignProps {
 export function TextAlign({ id, align }: TextAlignProps): ReactElement {
   const [selected, setSelected] = useState(align ?? 'left')
 
+  const order = ['left', 'center', 'right']
+  const sorted = Object.values(TypographyAlign).sort(
+    (a, b) => order.indexOf(a) - order.indexOf(b)
+  )
+
   function handleClick(align: TypographyAlign): void {
     setSelected(align)
   }
@@ -46,7 +51,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
           }
         }}
       >
-        {Object.values(TypographyAlign).map((align) => {
+        {sorted.map((align) => {
           return (
             <ListItemButton
               key={`${id}-align-${align}`}

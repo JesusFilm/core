@@ -19,6 +19,10 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
   function handleClick(color: TypographyColor): void {
     setSelected(color)
   }
+  const order = ['primary', 'secondary', 'error']
+  const sorted = Object.values(TypographyColor).sort(
+    (a, b) => order.indexOf(a) - order.indexOf(b)
+  )
 
   return (
     <>
@@ -32,7 +36,7 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
           }
         }}
       >
-        {Object.values(TypographyColor).map((color) => {
+        {sorted.map((color) => {
           return (
             <ListItemButton
               key={`${id}-color-${color}`}
