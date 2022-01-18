@@ -3,13 +3,13 @@ import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Video } from '.'
 
 const VideoStory = {
-    ...journeysAdminConfig,
-    component: Video,
-    title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/Video'
+  ...journeysAdminConfig,
+  component: Video,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/Video'
 }
 
 export const Default: Story = () => {
-    return <Video />
+  return <Video />
 }
 
 export default VideoStory as Meta
