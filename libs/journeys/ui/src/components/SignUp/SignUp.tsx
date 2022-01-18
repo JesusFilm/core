@@ -5,7 +5,7 @@ import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, EditorContext } from '../..'
+import { TreeBlock, handleAction, EditorContext, ActiveTab } from '../..'
 import { Icon } from '../Icon'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
@@ -85,15 +85,22 @@ export const SignUp = ({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    const block: TreeBlock<SignUpFields> = {
-      id: blockId,
-      submitIcon,
-      submitLabel,
-      action,
-      ...props
-    }
+    if (selectedBlock?.id !== blockId) {
+      const block: TreeBlock<SignUpFields> = {
+        id: blockId,
+        submitIcon,
+        submitLabel,
+        action,
+        ...props
+      }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({
+        type: 'SetActiveTabAction',
+        activeTab: ActiveTab.Properties
+      })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (

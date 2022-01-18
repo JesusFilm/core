@@ -28,7 +28,7 @@ export function CardPreview({
         <Box
           id={step.id}
           key={step.id}
-          data-testid={`step-${step.id}`}
+          data-testid={`preview-${step.id}`}
           sx={{
             width: 95,
             height: 140

@@ -3,7 +3,7 @@ import NextImage from 'next/image'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { TreeBlock, EditorContext } from '../..'
+import { TreeBlock, EditorContext, ActiveTab } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
 interface ImageProps extends TreeBlock<ImageFields> {
@@ -26,15 +26,19 @@ export function Image({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    const block: TreeBlock<ImageFields> = {
-      src,
-      alt,
-      height,
-      width,
-      ...props
-    }
+    if (selectedBlock?.id !== props.id) {
+      const block: TreeBlock<ImageFields> = {
+        src,
+        alt,
+        height,
+        width,
+        ...props
+      }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (

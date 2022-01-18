@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
-import { TreeBlock, handleAction, EditorContext } from '../../..'
+import { TreeBlock, handleAction, EditorContext, ActiveTab } from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
@@ -51,6 +51,8 @@ export function RadioOption({
     if (parentSelected || siblingSelected) {
       e.stopPropagation()
       dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     }
   }
 

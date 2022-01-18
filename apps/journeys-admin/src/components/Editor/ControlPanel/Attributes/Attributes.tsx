@@ -53,10 +53,12 @@ export function Attributes({ selected }: AttributesProps): ReactElement {
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
-        <MuiTypography align="center">{`Editing ${selected.__typename.replace(
-          'Block',
-          ''
-        )} Properties`}</MuiTypography>
+        <MuiTypography align="center">{`Editing ${
+          // Properly map typename to labels when doing translations
+          selected.__typename === 'StepBlock'
+            ? 'Card'
+            : selected.__typename.replace('Block', '')
+        } Properties`}</MuiTypography>
       </Box>
     </>
   )

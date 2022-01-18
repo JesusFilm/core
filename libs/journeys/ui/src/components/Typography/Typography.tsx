@@ -1,6 +1,6 @@
 import { ReactElement, useContext, MouseEvent } from 'react'
 import MuiTypography from '@mui/material/Typography'
-import { EditorContext, TreeBlock } from '../..'
+import { EditorContext, TreeBlock, ActiveTab } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
 
 export function Typography({
@@ -18,15 +18,19 @@ export function Typography({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    const block: TreeBlock<TypographyFields> = {
-      variant,
-      color,
-      align,
-      content,
-      ...props
-    }
+    if (selectedBlock?.id !== props.id) {
+      const block: TreeBlock<TypographyFields> = {
+        variant,
+        color,
+        align,
+        content,
+        ...props
+      }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (

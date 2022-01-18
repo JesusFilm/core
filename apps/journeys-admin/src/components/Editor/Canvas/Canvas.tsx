@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { BlockRenderer, EditorContext } from '@core/journeys/ui'
+import { BlockRenderer, EditorContext, ActiveTab } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -64,10 +64,17 @@ export function Canvas(): ReactElement {
         }
       }}
       onClick={() => {
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          block: selectedStep
-        })
+        if (selectedBlock?.id !== selectedStep?.id) {
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            block: selectedStep
+          })
+          dispatch({
+            type: 'SetActiveTabAction',
+            activeTab: ActiveTab.Properties
+          })
+          dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+        }
       }}
     >
       <Swiper

@@ -10,7 +10,7 @@ import {
 import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, EditorContext } from '../..'
+import { TreeBlock, EditorContext, ActiveTab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -163,6 +163,11 @@ export function Video({
       }
 
       dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({
+        type: 'SetActiveTabAction',
+        activeTab: ActiveTab.Properties
+      })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     }
   }
 
