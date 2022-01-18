@@ -60,7 +60,7 @@ describe('RadioOption', () => {
 })
 
 describe('Admin RadioOption', () => {
-  it('should edit option on click if RadioQuestion selected', () => {
+  it('should edit option on click if parent is selectedBlock', () => {
     const { getByRole } = render(
       <EditorProvider
         initialState={{
@@ -86,7 +86,7 @@ describe('Admin RadioOption', () => {
     // Check editable when implemented
   })
 
-  it('should edit option on click if sibling selected', () => {
+  it('should edit option on click if sibling is selectedBlock', () => {
     const { getByRole } = render(
       <EditorProvider
         initialState={{

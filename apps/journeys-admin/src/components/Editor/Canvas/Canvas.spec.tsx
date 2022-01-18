@@ -12,19 +12,7 @@ describe('Canvas', () => {
       parentBlockId: null,
       locked: false,
       nextBlockId: null,
-      children: [
-        {
-          id: 'card0.id',
-          __typename: 'CardBlock',
-          parentBlockId: 'step0.id',
-          coverBlockId: null,
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          children: []
-        }
-      ]
+      children: []
     }
     const step1: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -32,19 +20,7 @@ describe('Canvas', () => {
       parentBlockId: null,
       locked: false,
       nextBlockId: null,
-      children: [
-        {
-          id: 'card1.id',
-          __typename: 'CardBlock',
-          parentBlockId: 'step1.id',
-          coverBlockId: null,
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          children: []
-        }
-      ]
+      children: []
     }
     const { getByTestId } = render(
       <ThemeProvider>
