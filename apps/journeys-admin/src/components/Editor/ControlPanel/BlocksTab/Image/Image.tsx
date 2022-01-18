@@ -35,13 +35,15 @@ export function Image(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
+    // Do I pass this in as a src prop?
+    // DefaultImageIcon
     if (card != null) {
       const { data } = await imageBlockCreate({
         variables: {
           input: {
             journeyId: card.journeyId,
             parentBlockId: card.id,
-            src: DefaultImageIcon,
+            src: 'Insert image URL',
             alt: 'Default Image Icon'
           }
         }
