@@ -1,11 +1,13 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
+    journeyId: '1',
     __typename: 'StepBlock',
     parentBlockId: null,
     locked: false,
@@ -14,6 +16,7 @@ describe('ControlPanel', () => {
   }
   const step2: TreeBlock<StepBlock> = {
     id: 'step2.id',
+    journeyId: '2',
     __typename: 'StepBlock',
     parentBlockId: null,
     locked: true,
@@ -23,7 +26,9 @@ describe('ControlPanel', () => {
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <EditorProvider initialState={{ steps: [step1, step2] }}>
-        <ControlPanel />
+        <MockedProvider>
+          <ControlPanel />
+        </MockedProvider>
       </EditorProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -39,7 +44,9 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <EditorProvider initialState={{ steps: [step1, step2] }}>
-        <ControlPanel />
+        <MockedProvider>
+          <ControlPanel />
+        </MockedProvider>
       </EditorProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -53,7 +60,9 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking add button', async () => {
     const { getByRole, queryByRole } = render(
       <EditorProvider initialState={{ steps: [step1, step2] }}>
-        <ControlPanel />
+        <MockedProvider>
+          <ControlPanel />
+        </MockedProvider>
       </EditorProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -62,5 +71,19 @@ describe('ControlPanel', () => {
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
     )
+  })
+  it('should change to properties tab on image click', () => {
+    const { getByRole, getByText } = render(
+      <EditorProvider initialState={{ steps: [step1, step2] }}>
+        <MockedProvider>
+          <ControlPanel />
+        </MockedProvider>
+      </EditorProvider>
+    )
+    expect(getByRole('tab', { name: 'Blocks' })).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Blocks' }))
+    expect(getByText('Image')).toBeInTheDocument()
+    fireEvent.click(getByText('Image'))
+    expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
   })
 })
