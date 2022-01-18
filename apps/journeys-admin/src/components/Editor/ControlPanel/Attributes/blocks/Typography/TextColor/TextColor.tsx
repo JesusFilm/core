@@ -14,7 +14,7 @@ interface TextColorProps {
 }
 
 export function TextColor({ id, color }: TextColorProps): ReactElement {
-  const [selected, setSelected] = useState(color)
+  const [selected, setSelected] = useState(color ?? 'primary')
 
   function handleClick(color: TypographyColor): void {
     setSelected(color)
@@ -35,7 +35,7 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
         {Object.values(TypographyColor).map((textColor) => {
           return (
             <ListItemButton
-              key={`${id}-color-id`}
+              key={`${id}-color-${textColor}`}
               onClick={() => handleClick(textColor)}
               selected={textColor === selected}
               sx={{
@@ -44,11 +44,11 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
                 borderColor: 'divider',
                 borderBottom: 'none',
                 bgcolor: 'background.paper',
-                '&:first-child': {
+                '&:first-of-type': {
                   borderTopLeftRadius: 12,
                   borderTopRightRadius: 12
                 },
-                '&:last-child': {
+                '&:last-of-type': {
                   borderBottomLeftRadius: 12,
                   borderBottomRightRadius: 12,
                   borderBottom: '1px solid',
