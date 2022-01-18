@@ -23,8 +23,7 @@ describe('Editor', () => {
                 __typename: 'StepBlock',
                 parentBlockId: null,
                 locked: false,
-                nextBlockId: null,
-                children: []
+                nextBlockId: 'step1.id'
               }
             ] as TreeBlock[]
           }}
