@@ -57,30 +57,4 @@ describe('CardStyling', () => {
   })
 })
 
-// still figuring this one out
-xit('changes color on picker color pick', () => {
-  const card: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    journeyId: 'journey1',
-    parentBlockId: 'step1.id',
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: []
-  }
-  const { getByTestId, getByRole } = render(
-    <ThemeProvider>
-      <BackgroundColor {...card} />
-    </ThemeProvider>
-  )
-  console.log(getByTestId('bgColorPicker').children)
-  fireEvent.click(getByTestId('bgColorPicker').children[1])
-  expect(
-    getByTestId('bgColorTextField').children[0].children[1].getAttribute(
-      'value'
-    )
-  ).toEqual('Default')
-})
+// test for color picker excluded as it is an external component with its own tests. The same internal handler methods are tested above

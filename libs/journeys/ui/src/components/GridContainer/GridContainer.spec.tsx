@@ -12,6 +12,7 @@ describe('GridContainer', () => {
   const block: TreeBlock<GridContainerFields> = {
     __typename: 'GridContainerBlock',
     id: 'gridContainer',
+    journeyId: 'journey1.id',
     parentBlockId: null,
     spacing: 6,
     direction: GridDirection.row,
@@ -21,6 +22,7 @@ describe('GridContainer', () => {
       {
         __typename: 'GridItemBlock',
         id: 'griditem',
+        journeyId: 'journey1.id',
         parentBlockId: 'gridContainer',
         xl: 6,
         lg: 6,
@@ -29,6 +31,7 @@ describe('GridContainer', () => {
           {
             id: 'typographyBlockId',
             __typename: 'TypographyBlock',
+            journeyId: 'journey1.id',
             parentBlockId: 'griditem',
             align: null,
             color: null,

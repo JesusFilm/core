@@ -12,6 +12,7 @@ describe('Typography', () => {
   const block: TreeBlock<TypographyFields> = {
     __typename: 'TypographyBlock',
     id: 'heading3',
+    journeyId: 'journey1.id',
     parentBlockId: 'question',
     content: 'Hello World!',
     variant: TypographyVariant.h3,

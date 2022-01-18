@@ -9,6 +9,7 @@ describe('CardPreview', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',
+      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,

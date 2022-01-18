@@ -24,6 +24,7 @@ describe('RadioOption', () => {
   const block: TreeBlock<RadioOptionFields> = {
     __typename: 'RadioOptionBlock',
     id: 'RadioOption1',
+    journeyId: 'journey1.id',
     label: 'This is a test question 2!',
     parentBlockId: null,
     action: {

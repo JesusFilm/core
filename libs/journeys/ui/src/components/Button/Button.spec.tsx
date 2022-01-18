@@ -32,6 +32,7 @@ describe('Button', () => {
   const block: ButtonFields = {
     __typename: 'ButtonBlock',
     id: 'button',
+    journeyId: 'journey1.id',
     parentBlockId: 'question',
     label: 'This is a button',
     buttonVariant: ButtonVariant.contained,

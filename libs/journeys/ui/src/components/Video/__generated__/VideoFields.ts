@@ -15,6 +15,7 @@ export interface VideoFields_videoContent {
 export interface VideoFields {
   __typename: "VideoBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   title: string;
   muted: boolean | null;

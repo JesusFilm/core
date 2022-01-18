@@ -50,6 +50,7 @@ export interface SignUpFields_submitIcon {
 export interface SignUpFields {
   __typename: "SignUpBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   submitLabel: string | null;
   action: SignUpFields_action | null;

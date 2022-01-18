@@ -17,6 +17,7 @@ describe('RadioQuestion', () => {
   const block: TreeBlock<RadioQuestionFields> = {
     __typename: 'RadioQuestionBlock',
     id: 'RadioQuestion1',
+    journeyId: 'journey1.id',
     label: 'Label',
     description: 'Description',
     parentBlockId: 'RadioQuestion1',
@@ -24,6 +25,7 @@ describe('RadioQuestion', () => {
       {
         __typename: 'RadioOptionBlock',
         id: 'RadioOption1',
+        journeyId: 'journey1.id',
         label: 'Option 1',
         parentBlockId: 'RadioQuestion1',
         action: null,
@@ -32,6 +34,7 @@ describe('RadioQuestion', () => {
       {
         __typename: 'RadioOptionBlock',
         id: 'RadioOption2',
+        journeyId: 'journey1.id',
         label: 'Option 2',
         parentBlockId: 'RadioQuestion1',
         action: null,

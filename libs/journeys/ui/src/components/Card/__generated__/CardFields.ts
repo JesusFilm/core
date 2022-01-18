@@ -12,6 +12,7 @@ import { ThemeMode, ThemeName } from "./../../../../__generated__/globalTypes";
 export interface CardFields {
   __typename: "CardBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.

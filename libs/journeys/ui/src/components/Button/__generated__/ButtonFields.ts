@@ -57,6 +57,7 @@ export type ButtonFields_action = ButtonFields_action_NavigateAction | ButtonFie
 export interface ButtonFields {
   __typename: "ButtonBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   label: string;
   buttonVariant: ButtonVariant | null;

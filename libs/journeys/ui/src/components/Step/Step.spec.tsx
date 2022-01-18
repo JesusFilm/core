@@ -6,6 +6,7 @@ import { Step } from '.'
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
   id: 'Step1',
+  journeyId: 'journey1.id',
   parentBlockId: null,
   nextBlockId: null,
   locked: false,
@@ -13,6 +14,7 @@ const block: TreeBlock<StepFields> = {
     {
       __typename: 'ButtonBlock',
       id: 'Button1',
+      journeyId: 'journey1.id',
       parentBlockId: 'Step1',
       label: 'Button 1',
       buttonVariant: null,
@@ -26,6 +28,7 @@ const block: TreeBlock<StepFields> = {
     {
       __typename: 'ButtonBlock',
       id: 'Button2',
+      journeyId: 'journey1.id',
       parentBlockId: 'Step1',
       label: 'Button 2',
       buttonVariant: null,

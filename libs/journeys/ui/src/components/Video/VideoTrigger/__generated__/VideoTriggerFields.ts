@@ -41,6 +41,7 @@ export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   /**
    * triggerStart sets the time as to when a video navigates to the next block,

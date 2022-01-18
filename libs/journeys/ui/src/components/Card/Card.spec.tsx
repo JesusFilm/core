@@ -8,6 +8,7 @@ describe('CardBlock', () => {
   const block: TreeBlock = {
     __typename: 'CardBlock',
     id: 'card',
+    journeyId: 'journey1.id',
     parentBlockId: null,
     backgroundColor: null,
     coverBlockId: null,
@@ -18,6 +19,7 @@ describe('CardBlock', () => {
       {
         id: 'typographyBlockId',
         __typename: 'TypographyBlock',
+        journeyId: 'journey1.id',
         parentBlockId: null,
         align: null,
         color: null,
@@ -66,6 +68,7 @@ describe('CardBlock', () => {
             {
               id: 'imageBlockId1',
               __typename: 'ImageBlock',
+              journeyId: 'journey1.id',
               src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
               alt: 'random image from unsplash',
               width: 1600,
@@ -95,6 +98,7 @@ describe('CardBlock', () => {
             {
               __typename: 'VideoBlock',
               id: 'videoBlockId1',
+              journeyId: 'journey1.id',
               parentBlockId: null,
               muted: true,
               autoplay: true,
@@ -110,6 +114,7 @@ describe('CardBlock', () => {
                 {
                   id: 'posterBlockId',
                   __typename: 'ImageBlock',
+                  journeyId: 'journey1.id',
                   src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
                   alt: 'random image from unsplash',
                   width: 1600,

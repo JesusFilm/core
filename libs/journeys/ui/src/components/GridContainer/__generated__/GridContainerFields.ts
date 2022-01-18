@@ -12,6 +12,7 @@ import { GridDirection, GridJustifyContent, GridAlignItems } from "./../../../..
 export interface GridContainerFields {
   __typename: "GridContainerBlock";
   id: string;
+  journeyId: string;
   parentBlockId: string | null;
   spacing: number;
   direction: GridDirection;
