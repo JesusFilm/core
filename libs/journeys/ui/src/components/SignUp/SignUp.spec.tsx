@@ -46,7 +46,7 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
   </MockedProvider>
 )
 
-describe.skip('SignUp', () => {
+describe('SignUp', () => {
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(<SignUpMock />)
 
