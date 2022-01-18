@@ -312,7 +312,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
   },
   {
     __typename: 'VideoBlock',
-    id: 'Video1',
+    id: 'video1.id',
     parentBlockId: 'card4.id',
     autoplay: false,
     muted: true,

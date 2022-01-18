@@ -346,7 +346,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         children: [
           {
             __typename: 'VideoBlock',
-            id: 'Video1',
+            id: 'video1.id',
             parentBlockId: 'card4.id',
             autoplay: false,
             muted: true,
