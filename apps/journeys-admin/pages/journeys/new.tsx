@@ -8,7 +8,6 @@ import FormControl from '@mui/material/FormControl'
 import Input from '@mui/material/Input'
 import { useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
-import { useFirebase } from '../../src/libs/firebaseClient'
 import { JourneyCreate } from '../../__generated__/JourneyCreate'
 
 export const NEW_JOURNEY = gql`

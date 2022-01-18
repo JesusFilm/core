@@ -1,45 +1,88 @@
 import { ReactElement } from 'react'
-import Image from 'next/image'
-import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import { SignIn } from '../src/components/SignIn'
-import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
+import { gql, useQuery } from '@apollo/client'
+import Link from 'next/link'
+import {
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR
+} from 'next-firebase-auth'
+import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
+import { GetJourneys } from '../__generated__/GetJourneys'
+import { JourneyList } from '../src/components/JourneyList'
+import { JourneysAppBar } from '../src/components/JourneysAppBar'
 
-function Dashboard(): ReactElement {
-  const handleFeedbackSupport = (): void => {
-    const subject = 'Support/Feedback Request'
-    window.location.assign(`mailto:support@nextstep.is?Subject=${subject}`)
+const GET_JOURNEYS = gql`
+  query GetJourneys {
+    journeys {
+      id
+      title
+      createdAt
+      publishedAt
+      description
+      slug
+      themeName
+      themeMode
+      locale
+      status
+      userJourneys {
+        userId
+        journeyId
+        user {
+          __typename
+          id
+          firstName
+          lastName
+          email
+          imageUrl
+        }
+      }
+    }
   }
+`
+
+function IndexPage(): ReactElement {
+  const { signOut } = useAuthUser()
+  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        pt: 30
-      }}
-    >
-      <Image
-        src={JesusFilmSignInLogo}
-        alt="Jesus Film Sign In Logo"
-        height={68}
-        width={152}
-      />
-      <Typography variant={'h5'} sx={{ mt: 20, mb: 3 }}>
-        Sign In
-      </Typography>
-      <SignIn />
-      <Typography
-        variant={'body2'}
-        sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
-        onClick={handleFeedbackSupport}
-      >
-        Feedback & Support
-      </Typography>
-    </Box>
+    <>
+      <JourneysAppBar variant="list" />
+      <Container sx={{ my: 10 }}>
+        <Typography variant="h1" sx={{ mb: 8 }}>
+          Journeys
+        </Typography>
+        {data?.journeys != null && <JourneyList journeys={data.journeys} />}
+        <Button variant="contained" onClick={signOut}>
+          Sign Out
+        </Button>
+        <Link href={`/journeys/new`} passHref>
+          <Button variant="contained" fullWidth>
+            New Journey
+          </Button>
+        </Link>
+      </Container>
+    </>
   )
 }
 
-export default Dashboard
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ AuthUser }) => {
+  const token = (await AuthUser.getIdToken()) ?? undefined
+  const apolloClient = initializeApollo({ token })
+  await apolloClient.query({
+    query: GET_JOURNEYS
+  })
+
+  return addApolloState(apolloClient, {
+    props: {}
+  })
+})
+
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(IndexPage)

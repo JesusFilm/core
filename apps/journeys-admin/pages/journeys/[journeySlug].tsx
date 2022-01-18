@@ -7,34 +7,62 @@ import { useRouter } from 'next/router'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import {
+  AuthAction,
+  withAuthUser,
+  withAuthUserTokenSSR
+} from 'next-firebase-auth'
+import {
   GetJourney,
   GetJourney_journey as Journey,
   GetJourney_journey_userJourneys as UserJourneys
 } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/components/JourneyView/Context'
 import { JourneyView } from '../../src/components/JourneyView'
-import client from '../../src/libs/client'
-import { useFirebase } from '../../src/libs/firebaseClient'
+import client, {
+  addApolloState,
+  initializeApollo
+} from '../../src/libs/apolloClient'
 import {
   InviteUserModal,
   INVITE_USER_MODAL_FIELDS
 } from '../../src/components/InviteUserModal'
 
-interface JourneyViewPageProps {
-  journey: Journey
-}
+const GET_JOURNEY = gql`
+  ${BLOCK_FIELDS}
+  ${INVITE_USER_MODAL_FIELDS}
+  query GetJourney($id: ID!) {
+    journey(id: $id, idType: slug) {
+      id
+      slug
+      title
+      description
+      status
+      locale
+      createdAt
+      publishedAt
+      blocks {
+        ...BlockFields
+      }
+      primaryImageBlock {
+        src
+      }
+      userJourneys {
+        id
+        userId
+        journeyId
+        role
+        user {
+          ...InviteUserModalFields
+        }
+      }
+    }
+  }
+`
 
-function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
-  const { user, loading } = useFirebase()
+function JourneySlugPage(): ReactElement {
   const router = useRouter()
-  const [currentUsersJourney, setCurrentUsersJourney] =
-    useState<UserJourneys | null>()
 
   useEffect(() => {
-    // prevent user from accessing this page if they are not logged in
-    if (loading === false && user == null) {
-      void router.push('/')
-    }
     if (
       user == null ||
       journey.userJourneys == null ||
@@ -79,56 +107,23 @@ function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
-  async (context) => {
-    const { data } = await client.query<GetJourney>({
-      query: gql`
-        ${BLOCK_FIELDS}
-        ${INVITE_USER_MODAL_FIELDS}
-        query GetJourney($id: ID!) {
-          journey(id: $id, idType: slug) {
-            id
-            slug
-            title
-            description
-            status
-            locale
-            createdAt
-            publishedAt
-            blocks {
-              ...BlockFields
-            }
-            primaryImageBlock {
-              src
-            }
-            userJourneys {
-              id
-              userId
-              journeyId
-              role
-              user {
-                ...InviteUserModalFields
-              }
-            }
-          }
-        }
-      `,
-      variables: {
-        id: context.query.journeySlug
-      }
-    })
-
-    if (data.journey === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journey: data.journey
-        }
-      }
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ AuthUser, query }) => {
+  const token = (await AuthUser.getIdToken()) ?? undefined
+  const apolloClient = initializeApollo({ token })
+  await apolloClient.query<GetJourney>({
+    query: GET_JOURNEY,
+    variables: {
+      id: query.journeySlug
     }
-  }
+  })
 
-export default JourneyViewPage
+  return addApolloState(apolloClient, {
+    props: {}
+  })
+})
+
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(JourneySlugPage)

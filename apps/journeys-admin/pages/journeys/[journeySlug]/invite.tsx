@@ -10,8 +10,7 @@ import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import client from '../../../src/libs/client'
-import { useFirebase } from '../../../src/libs/firebaseClient'
+import client from '../../../src/libs/apolloClient'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 import { INVITE_USER_MODAL_FIELDS } from '../../../src/components/InviteUserModal'
 
