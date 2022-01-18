@@ -9,7 +9,27 @@ import { ThemeProvider } from '../../../../../ThemeProvider'
 import { CARD_BLOCK_UPDATE } from './Card'
 import { Card } from '.'
 
-const mocks = [
+const themeUpdateMocks = [
+  {
+    request: {
+      query: CARD_BLOCK_UPDATE,
+      variables: {
+        id: 'card1.id',
+        journeyId: 'journey1.id',
+        input: {
+          themeMode: ThemeMode.dark
+        }
+      }
+    },
+    result: {
+      data: {
+        block: { id: 'card1.id', themeMode: ThemeMode.dark }
+      }
+    }
+  }
+]
+
+const bgColorUpdateMocks = [
   {
     request: {
       query: CARD_BLOCK_UPDATE,
