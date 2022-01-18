@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { BlocksTab } from '.'
+import { MockedProvider } from '@apollo/client/testing'
 
 const BlocksTabStory = {
   ...journeysAdminConfig,
@@ -13,7 +14,11 @@ const BlocksTabStory = {
 }
 
 export const Default: Story = () => {
-  return <BlocksTab />
+  return (
+    <MockedProvider>
+      <BlocksTab />
+    </MockedProvider>
+  )
 }
 
 export default BlocksTabStory as Meta

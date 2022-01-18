@@ -3,33 +3,36 @@ import { TreeBlock } from '@core/journeys/ui'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
 import { Editor } from '.'
+import { MockedProvider } from '@apollo/client/testing'
 
 describe('Editor', () => {
   it('should render the element', () => {
     const { getByText } = render(
-      <ThemeProvider>
-        <Editor
-          journey={{
-            __typename: 'Journey',
-            id: 'journeyId',
-            themeName: ThemeName.base,
-            themeMode: ThemeMode.light,
-            title: 'my journey',
-            slug: 'my-journey',
-            description: 'my cool journey',
-            blocks: [
-              {
-                id: 'step0.id',
-                __typename: 'StepBlock',
-                parentBlockId: null,
-                locked: false,
-                nextBlockId: null,
-                children: []
-              }
-            ] as TreeBlock[]
-          }}
-        />
-      </ThemeProvider>
+      <MockedProvider>
+        <ThemeProvider>
+          <Editor
+            journey={{
+              __typename: 'Journey',
+              id: 'journeyId',
+              themeName: ThemeName.base,
+              themeMode: ThemeMode.light,
+              title: 'my journey',
+              slug: 'my-journey',
+              description: 'my cool journey',
+              blocks: [
+                {
+                  id: 'step0.id',
+                  __typename: 'StepBlock',
+                  parentBlockId: null,
+                  locked: false,
+                  nextBlockId: null,
+                  children: []
+                }
+              ] as TreeBlock[]
+            }}
+          />
+        </ThemeProvider>
+      </MockedProvider>
     )
     expect(getByText('Cards')).toBeInTheDocument()
     expect(getByText('Social Share Appearance')).toBeInTheDocument()
