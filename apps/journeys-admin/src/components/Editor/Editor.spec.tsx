@@ -24,16 +24,6 @@ describe('Editor', () => {
                 parentBlockId: null,
                 locked: false,
                 nextBlockId: 'step1.id'
-              },
-              {
-                id: 'card0.id',
-                __typename: 'CardBlock',
-                parentBlockId: 'step0.id',
-                coverBlockId: 'image0.id',
-                backgroundColor: null,
-                themeMode: null,
-                themeName: null,
-                fullscreen: false
               }
             ] as TreeBlock[]
           }}
