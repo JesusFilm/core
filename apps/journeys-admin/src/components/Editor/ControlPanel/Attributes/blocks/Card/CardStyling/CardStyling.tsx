@@ -72,7 +72,7 @@ export function CardStyling({
             sx={{ py: 1, px: 1 }}
             id={ThemeMode.light}
             key={ThemeMode.light}
-            data-test-id={ThemeMode.light}
+            data-testid={ThemeMode.light}
           >
             <Image src={cardStyleLight} alt="Light" width={89} height={137} />
           </Box>
@@ -80,7 +80,7 @@ export function CardStyling({
             sx={{ py: 1, px: 1 }}
             id={ThemeMode.dark}
             key={ThemeMode.dark}
-            data-test-id={ThemeMode.dark}
+            data-testid={ThemeMode.dark}
           >
             <Image src={cardStyleDark} alt="Dark" width={89} height={137} />
           </Box>

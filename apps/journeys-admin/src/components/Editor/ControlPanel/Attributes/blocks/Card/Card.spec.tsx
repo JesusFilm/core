@@ -1,10 +1,33 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+import { CARD_BLOCK_UPDATE } from './Card'
 import { Card } from '.'
+
+const mocks = [
+  {
+    request: {
+      query: CARD_BLOCK_UPDATE,
+      variables: {
+        id: 'card1.id',
+        journeyId: 'journey1.id',
+        input: {
+          themeMode: ThemeMode.dark
+        }
+      }
+    },
+    result: {
+      data: {
+        block: { id: 'card1.id', themeMode: ThemeMode.dark }
+      }
+    }
+  }
+]
 
 describe('Card', () => {
   it('shows default messages', () => {
@@ -20,7 +43,11 @@ describe('Card', () => {
       fullscreen: false,
       children: []
     }
-    const { getByText } = render(<Card {...card} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <Card {...card} />
+      </MockedProvider>
+    )
     expect(getByText('Default')).toBeInTheDocument()
     expect(getByText('Contained')).toBeInTheDocument()
     expect(getByText('Background')).toBeInTheDocument()
@@ -40,7 +67,11 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      )
       expect(getByText('#00FFCC')).toBeInTheDocument()
     })
 
@@ -61,7 +92,9 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <Card {...card} />
+            <MockedProvider>
+              <Card {...card} />
+            </MockedProvider>
           </EditorProvider>
         </ThemeProvider>
       )
@@ -87,6 +120,7 @@ describe('Card', () => {
           {
             __typename: 'ImageBlock',
             id: 'image1.id',
+            journeyId: 'journey1.id',
             src: 'https://i.imgur.com/07iLnvN.jpg',
             alt: 'random image from unsplash',
             width: 1920,
@@ -97,7 +131,11 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      )
       expect(getByText('Background Image')).toBeInTheDocument()
       expect(getByText('07iLnvN.jpg')).toBeInTheDocument()
     })
@@ -117,6 +155,7 @@ describe('Card', () => {
           {
             id: 'video1.id',
             __typename: 'VideoBlock',
+            journeyId: 'journey1.id',
             parentBlockId: 'card1.id',
             videoContent: {
               __typename: 'VideoArclight',
@@ -132,7 +171,11 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      )
       expect(getByText('Background Video')).toBeInTheDocument()
       expect(getByText('#FallingPlates')).toBeInTheDocument()
     })
@@ -152,6 +195,7 @@ describe('Card', () => {
           {
             id: 'video1.id',
             __typename: 'VideoBlock',
+            journeyId: 'journey1.id',
             parentBlockId: 'card1.id',
             videoContent: {
               __typename: 'VideoArclight',
@@ -171,7 +215,9 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <Card {...card} />
+            <MockedProvider>
+              <Card {...card} />
+            </MockedProvider>
           </EditorProvider>
         </ThemeProvider>
       )
@@ -195,7 +241,11 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      )
       expect(getByText('Light')).toBeInTheDocument()
     })
 
@@ -212,7 +262,11 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      )
       expect(getByText('Dark')).toBeInTheDocument()
     })
 
@@ -233,7 +287,9 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <Card {...card} />
+            <MockedProvider>
+              <Card {...card} />
+            </MockedProvider>
           </EditorProvider>
         </ThemeProvider>
       )
@@ -256,7 +312,11 @@ describe('Card', () => {
         fullscreen: true,
         children: []
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      )
       expect(getByText('Expanded')).toBeInTheDocument()
     })
 
@@ -277,7 +337,9 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <Card {...card} />
+            <MockedProvider>
+              <Card {...card} />
+            </MockedProvider>
           </EditorProvider>
         </ThemeProvider>
       )

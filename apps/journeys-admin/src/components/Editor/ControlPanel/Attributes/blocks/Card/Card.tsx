@@ -61,7 +61,7 @@ export function Card({
   const [selectedThemeMode, setThemeMode] = useState(themeMode)
   const [selectedBgColor, setBgColor] = useState(backgroundColor)
 
-  const handleStyleChange = async (selected: ThemeMode): Promise<void> => {
+  const handleStyleChange = async (selected: ThemeMode | null): Promise<void> => {
     setThemeMode(selected)
     await cardBlockUpdate({
       variables: {
@@ -74,7 +74,7 @@ export function Card({
     })
   }
 
-  const handleBgColorChange = async (selected: string): Promise<void> => {
+  const handleBgColorChange = async (selected: string | null): Promise<void> => {
     setBgColor(selected)
     await cardBlockUpdate({
       variables: {

@@ -1,5 +1,6 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
   GetJourneyForEdit_journey_blocks_StepBlock as StepBlock
@@ -20,7 +21,11 @@ describe('Attributes', () => {
       fullscreen: true,
       children: []
     }
-    const { getByText } = render(<Attributes selected={step} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <Attributes selected={step} />
+      </MockedProvider>
+    )
     expect(getByText('Background Color')).toBeInTheDocument()
   })
 
@@ -36,6 +41,7 @@ describe('Attributes', () => {
         {
           id: 'card1.id',
           __typename: 'CardBlock',
+          journeyId: 'journey1.id',
           parentBlockId: 'step1.id',
           coverBlockId: 'image1.id',
           backgroundColor: null,
@@ -46,7 +52,11 @@ describe('Attributes', () => {
         }
       ]
     }
-    const { getByText } = render(<Attributes selected={step} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <Attributes selected={step} />
+      </MockedProvider>
+    )
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(getByText('Background Color')).toBeInTheDocument()
   })

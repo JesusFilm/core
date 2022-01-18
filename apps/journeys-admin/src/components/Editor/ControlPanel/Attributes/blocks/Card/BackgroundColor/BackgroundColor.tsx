@@ -15,7 +15,6 @@ import PropTypes from 'prop-types'
 import Stack from '@mui/material/Stack'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore from 'swiper'
-import { gql } from '@apollo/client'
 
 interface BackgroundColorProps {
   id: string
@@ -66,6 +65,7 @@ function tabProps(index: number): { id: string; 'aria-controls': string } {
 }
 
 const themeColors = [
+  null,
   '#FFFFFF',
   '#DCDDE5',
   '#AAACBA',
@@ -82,7 +82,7 @@ export function BackgroundColor({
   journeyId,
   onSubmit
 }: BackgroundColorProps): ReactElement {
-  const [color, setColor] = useState(backgroundColor ?? '#FFFFFF')
+  const [color, setColor] = useState(backgroundColor)
   const [tabValue, setTabValue] = useState(0)
   const [swiper] = useState<SwiperCore>()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -94,7 +94,7 @@ export function BackgroundColor({
     swiper.slideTo(themeColors.findIndex((col) => col === color))
   }
 
-  const handleColorChange = (color: string): void => {
+  const handleColorChange = (color: string | null): void => {
     setColor(color)
     onSubmit?.(color)
     if (swiper != null && themeColors.includes(color))
@@ -107,7 +107,7 @@ export function BackgroundColor({
         <Stack spacing={3} direction="row">
           <Box
             sx={{
-              backgroundColor: color,
+              backgroundColor: color ?? '#FFFFFF',
               width: 56,
               height: 56,
               border: 1,
@@ -116,8 +116,9 @@ export function BackgroundColor({
           />
           <TextField
             variant="outlined"
-            value={color}
+            value={color ?? 'Default'}
             onChange={(e) => handleColorChange(e.target.value)}
+            data-testid="bgColorTextField"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -151,10 +152,14 @@ export function BackgroundColor({
               style={{ height: 125 }}
             >
               {themeColors.map((col, index) => (
-                <SwiperSlide key={index} style={{ width: 56 }}>
+                <SwiperSlide
+                  key={index}
+                  style={{ width: 56 }}
+                  data-testid={col ?? 'null'}
+                >
                   <Box
                     sx={{
-                      backgroundColor: col,
+                      backgroundColor: col ?? '#FFFFFF',
                       width: 56,
                       height: 56,
                       border: 1,
@@ -170,7 +175,8 @@ export function BackgroundColor({
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
             <RgbaStringColorPicker
-              color={color}
+              data-testid="bgColorPicker"
+              color={color ?? '#FFFFFF'}
               onChange={setColor}
               style={{ width: 'auto', height: 125 }}
             />
@@ -187,7 +193,11 @@ export function BackgroundColor({
               style={{ height: 125 }}
             >
               {themeColors.map((col, index) => (
-                <SwiperSlide key={index} style={{ width: 56 }}>
+                <SwiperSlide
+                  key={index}
+                  style={{ width: 56 }}
+                  data-testid={col ?? 'null'}
+                >
                   <Box
                     sx={{
                       backgroundColor: col,
@@ -207,7 +217,8 @@ export function BackgroundColor({
           <Box sx={{ px: 6, py: 4 }}>Custom</Box>
           <Box sx={{ px: 6 }}>
             <RgbaStringColorPicker
-              color={color}
+              data-testid="bgColorPicker"
+              color={color ?? '#FFFFFF'}
               onChange={handleColorChange}
               style={{ width: 'auto', height: 125 }}
             />

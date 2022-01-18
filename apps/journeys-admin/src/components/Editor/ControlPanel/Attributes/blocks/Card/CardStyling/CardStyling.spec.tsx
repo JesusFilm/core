@@ -1,4 +1,4 @@
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourneyForEdit'
@@ -36,7 +36,7 @@ describe('CardStyling', () => {
       children: []
     }
     const { getByText } = render(<CardStyling {...card} />)
-    expect(getByText('Dark')).toBeInTheDocument()
+    expect(getByText('dark')).toBeInTheDocument()
   })
 
   it('shows light', () => {
@@ -53,7 +53,7 @@ describe('CardStyling', () => {
       children: []
     }
     const { getByText } = render(<CardStyling {...card} />)
-    expect(getByText('Light')).toBeInTheDocument()
+    expect(getByText('light')).toBeInTheDocument()
   })
 
   it('changes to Dark', () => {
@@ -71,7 +71,7 @@ describe('CardStyling', () => {
     }
     const { getByTestId, getByText } = render(<CardStyling {...card} />)
     fireEvent.click(getByTestId(ThemeMode.dark))
-    expect(getByText('Dark')).toBeInTheDocument()
+    expect(getByText('dark')).toBeInTheDocument()
   })
 
   it('changes to Light', () => {
@@ -89,6 +89,6 @@ describe('CardStyling', () => {
     }
     const { getByTestId, getByText } = render(<CardStyling {...card} />)
     fireEvent.click(getByTestId(ThemeMode.light))
-    expect(getByText('Dark')).toBeInTheDocument()
+    expect(getByText('light')).toBeInTheDocument()
   })
 })

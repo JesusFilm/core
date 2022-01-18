@@ -9,6 +9,7 @@ describe('Canvas', () => {
     const step0: TreeBlock<StepBlock> = {
       id: 'step0.id',
       __typename: 'StepBlock',
+      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,
@@ -17,6 +18,7 @@ describe('Canvas', () => {
     const step1: TreeBlock<StepBlock> = {
       id: 'step1.id',
       __typename: 'StepBlock',
+      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,
