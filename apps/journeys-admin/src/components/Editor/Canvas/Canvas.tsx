@@ -66,7 +66,7 @@ export function Canvas(): ReactElement {
       onClick={() => {
         dispatch({
           type: 'SetSelectedBlockAction',
-          block: selectedStep
+          block: selectedStep?.children[0]
         })
       }}
     >
@@ -94,7 +94,7 @@ export function Canvas(): ReactElement {
                 position: 'relative',
                 overflow: 'hidden',
                 border: (theme) =>
-                  step.id === selectedBlock?.id
+                  step.children[0].id === selectedBlock?.id
                     ? `2px solid ${theme.palette.primary.main}`
                     : `2px solid ${theme.palette.background.default}`,
                 transform:
