@@ -35,7 +35,7 @@ export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
         {Object.values(TypographyVariant).map((variant) => {
           return (
             <ListItemButton
-              key={`${id}-color-${variant}`}
+              key={`${id}-text-${variant}`}
               onClick={() => handleClick(variant)}
               selected={variant === selected}
               sx={{
