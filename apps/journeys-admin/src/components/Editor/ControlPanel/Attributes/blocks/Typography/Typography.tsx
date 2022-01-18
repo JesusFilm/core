@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { ReactElement, useContext } from 'react'
+import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
@@ -8,6 +8,7 @@ import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
+import { TextColor } from './TextColor'
 
 export function Typography({
   id,
@@ -15,6 +16,7 @@ export function Typography({
   color,
   variant
 }: TreeBlock<TypographyBlock>): ReactElement {
+  const { dispatch } = useContext(EditorContext)
   return (
     <>
       <Attribute
@@ -40,7 +42,14 @@ export function Typography({
         name="Color"
         value={capitalize(color?.toString() ?? 'primary')}
         description="Text Color"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Color',
+            mobileOpen: true,
+            children: <TextColor id={id} color={color} />
+          })
+        }}
       />
       <Attribute
         id={`${id}-font-variant`}
