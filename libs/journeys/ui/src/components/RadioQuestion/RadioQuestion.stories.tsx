@@ -112,8 +112,6 @@ export const Default: Story<TreeBlock<RadioQuestionFields>> =
 Default.args = {
   id: 'RadioQuestion1',
   label: 'How can we help you know more about Jesus?',
-  description:
-    'What do you think would be the next step to help you grow in your relationship with Jesus?',
   children,
   parentBlockId: 'Step1'
 }
