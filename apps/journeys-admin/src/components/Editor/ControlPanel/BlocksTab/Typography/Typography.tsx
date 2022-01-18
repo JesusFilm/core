@@ -29,7 +29,7 @@ export function Typography(): ReactElement {
     TYPOGRAPHY_BLOCK_CREATE
   )
   const {
-    state: { selectedStep },
+    state: { journey, selectedStep },
     dispatch
   } = useContext(EditorContext)
 
@@ -41,7 +41,7 @@ export function Typography(): ReactElement {
       const { data } = await typographyBlockCreate({
         variables: {
           input: {
-            journeyId: card.journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             content: ''
           }

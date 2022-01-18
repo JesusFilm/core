@@ -32,7 +32,11 @@ describe('Step', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider>
+          <EditorProvider
+            initialState={{
+              journey: { id: 'journeyId' }
+            }}
+          >
             <Drawer />
             <Step {...step} />
           </EditorProvider>
@@ -74,7 +78,12 @@ describe('Step', () => {
         children: []
       }
       const { getByText } = render(
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
+        <EditorProvider
+          initialState={{
+            journey: { id: 'journeyId' },
+            steps: [step1, step2]
+          }}
+        >
           <Step {...step1} />
         </EditorProvider>
       )
@@ -122,7 +131,12 @@ describe('Step', () => {
         ]
       }
       const { getByText } = render(
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
+        <EditorProvider
+          initialState={{
+            journey: { id: 'journeyId' },
+            steps: [step1, step2]
+          }}
+        >
           <Step {...step1} />
         </EditorProvider>
       )

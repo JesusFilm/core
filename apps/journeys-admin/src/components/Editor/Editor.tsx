@@ -19,6 +19,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
   return (
     <EditorProvider
       initialState={{
+        journey,
         steps,
         drawerTitle: 'Social Share Appearance',
         drawerChildren: <SocialShareAppearance id={journey.id} />

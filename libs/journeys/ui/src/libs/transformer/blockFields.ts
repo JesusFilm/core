@@ -28,7 +28,6 @@ export const BLOCK_FIELDS = gql`
   fragment BlockFields on Block {
     id
     parentBlockId
-    journeyId
     ... on ButtonBlock {
       ...ButtonFields
     }

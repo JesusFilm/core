@@ -33,7 +33,11 @@ export const Default: Story = () => {
   }
 
   return (
-    <EditorProvider>
+    <EditorProvider
+      initialState={{
+        journey: { id: 'journeyId' }
+      }}
+    >
       <Attributes selected={selected} />
     </EditorProvider>
   )
