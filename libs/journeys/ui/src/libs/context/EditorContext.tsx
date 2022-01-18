@@ -68,11 +68,7 @@ type EditorAction =
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
-      return {
-        ...state,
-        selectedStep: action.step,
-        selectedBlock: action.step?.children[0]
-      }
+      return { ...state, selectedStep: action.step, selectedBlock: action.step }
     case 'SetSelectedBlockAction':
       return { ...state, selectedBlock: action.block }
     case 'SetSelectedAttributeIdAction':
@@ -117,7 +113,7 @@ export function EditorProvider({
   const [state, dispatch] = useReducer(reducer, {
     steps: [],
     selectedStep: initialState?.steps?.[0],
-    selectedBlock: initialState?.steps?.[0].children[0],
+    selectedBlock: initialState?.steps?.[0],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
     ...initialState
