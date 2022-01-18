@@ -3,7 +3,6 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { gql, useQuery } from '@apollo/client'
-import Link from 'next/link'
 import {
   AuthAction,
   useAuthUser,
@@ -59,11 +58,6 @@ function IndexPage(): ReactElement {
         <Button variant="contained" onClick={signOut}>
           Sign Out
         </Button>
-        <Link href={`/journeys/new`} passHref>
-          <Button variant="contained" fullWidth>
-            New Journey
-          </Button>
-        </Link>
       </Container>
     </>
   )
