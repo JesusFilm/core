@@ -1,23 +1,23 @@
 import { ReactElement, useState } from 'react'
-import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import capitalize from 'lodash/capitalize'
-import Paper from '@mui/material/Paper'
-import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
+import lowerCase from 'lodash/lowerCase'
+import Typography from '@mui/material/Typography'
+import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 
-interface TextColorProps {
+interface FontVariantProps {
   id: string
-  color: TypographyColor | null
+  variant: TypographyVariant | null
 }
 
-export function TextColor({ id, color }: TextColorProps): ReactElement {
-  const [selected, setSelected] = useState(color ?? 'primary')
+export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
+  const [selected, setSelected] = useState(variant ?? 'body2')
 
-  function handleClick(color: TypographyColor): void {
-    setSelected(color)
+  function handleClick(variant: TypographyVariant): void {
+    setSelected(variant)
   }
 
   return (
@@ -32,12 +32,12 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
           }
         }}
       >
-        {Object.values(TypographyColor).map((color) => {
+        {Object.values(TypographyVariant).map((variant) => {
           return (
             <ListItemButton
-              key={`${id}-color-${color}`}
-              onClick={() => handleClick(color)}
-              selected={color === selected}
+              key={`${id}-color-${variant}`}
+              onClick={() => handleClick(variant)}
+              selected={variant === selected}
               sx={{
                 borderRadius: 0,
                 border: '1px solid',
@@ -56,25 +56,17 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
                 }
               }}
             >
-              <ListItemIcon>
-                <Paper
-                  sx={{
-                    borderRadius: 1000
-                  }}
-                >
-                  <Box
-                    data-testid="backgroundColorIcon"
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      m: 1,
-                      borderRadius: 1000,
-                      backgroundColor: `${color ?? 'primary'}.main`
-                    }}
-                  />
-                </Paper>
-              </ListItemIcon>
-              <ListItemText>{capitalize(color)}</ListItemText>
+              <ListItemIcon></ListItemIcon>
+              <ListItemText>
+                <Typography variant={variant}>
+                  {capitalize(
+                    lowerCase(variant?.toString() ?? 'body2').replace(
+                      'h',
+                      'header'
+                    )
+                  )}
+                </Typography>
+              </ListItemText>
             </ListItemButton>
           )
         })}

@@ -1,0 +1,1 @@
+export { FontVariant } from './FontVariant'
