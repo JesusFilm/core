@@ -27,7 +27,7 @@ const IMAGE_BLOCK_CREATE = gql`
 export function Image(): ReactElement {
   const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const {
-    state: { selectedStep },
+    state: { journey, selectedStep },
     dispatch
   } = useContext(EditorContext)
 
@@ -39,7 +39,7 @@ export function Image(): ReactElement {
       const { data } = await imageBlockCreate({
         variables: {
           input: {
-            journeyId: card.journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             src: `${window.location.origin}/DefaultImageIcon.png`,
             alt: 'Default Image Icon'
