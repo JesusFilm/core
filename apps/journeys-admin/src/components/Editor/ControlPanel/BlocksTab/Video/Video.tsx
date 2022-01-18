@@ -1,6 +1,12 @@
 import { ReactElement, useContext } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { ActiveTab, EditorContext, transformer, TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
+import {
+  ActiveTab,
+  EditorContext,
+  transformer,
+  TreeBlock,
+  VIDEO_FIELDS
+} from '@core/journeys/ui'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { Button } from '../../Button'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
