@@ -544,7 +544,11 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
-    abstract journeys(status?: Nullable<JourneyStatus>): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(): Journey[] | Promise<Journey[]>;
+
+    abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract journeys(): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 }

@@ -18,7 +18,7 @@ import { Editor } from '../../../src/components/Editor'
 const GET_JOURNEY_FOR_EDIT = gql`
   ${BLOCK_FIELDS}
   query GetJourneyForEdit($id: ID!) {
-    journey(id: $id, idType: slug) {
+    adminJourney(id: $id, idType: slug) {
       id
       slug
       themeName

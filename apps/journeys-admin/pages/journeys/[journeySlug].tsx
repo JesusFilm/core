@@ -18,7 +18,7 @@ const GET_JOURNEY = gql`
   ${BLOCK_FIELDS}
   ${INVITE_USER_MODAL_FIELDS}
   query GetJourney($id: ID!) {
-    journey(id: $id, idType: slug) {
+    adminJourney(id: $id, idType: slug) {
       id
       slug
       title
@@ -54,12 +54,12 @@ function JourneySlugPage(): ReactElement {
 
   return (
     <>
-      {data?.journey != null && (
+      {data?.adminJourney != null && (
         <>
           <Head>
-            <title>{data.journey.title}</title>
+            <title>{data.adminJourney.title}</title>
           </Head>
-          <JourneyProvider value={data.journey}>
+          <JourneyProvider value={data.adminJourney}>
             <JourneyView />
           </JourneyProvider>
         </>

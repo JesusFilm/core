@@ -342,8 +342,10 @@ type NavigateToJourneyAction implements Action {
 }
 
 type Query {
+  adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  journeys(status: JourneyStatus): [Journey!]! @join__field(graph: JOURNEYS)
+  journeys: [Journey!]! @join__field(graph: JOURNEYS)
   me: User @join__field(graph: USERS)
 }
 
