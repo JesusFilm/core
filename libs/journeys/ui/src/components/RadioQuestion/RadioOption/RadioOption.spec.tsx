@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { TreeBlock, handleAction } from '../../..'
+import { TreeBlock, handleAction, EditorProvider } from '../../..'
 import { RadioOption } from './RadioOption'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
@@ -20,21 +20,21 @@ jest.mock('next/router', () => ({
   }
 }))
 
-describe('RadioOption', () => {
-  const block: TreeBlock<RadioOptionFields> = {
-    __typename: 'RadioOptionBlock',
-    id: 'RadioOption1',
-    journeyId: 'journey1.id',
-    label: 'This is a test question 2!',
-    parentBlockId: null,
-    action: {
-      __typename: 'NavigateToBlockAction',
-      gtmEventName: 'gtmEventName',
-      blockId: 'def'
-    },
-    children: []
-  }
+const block: TreeBlock<RadioOptionFields> = {
+  __typename: 'RadioOptionBlock',
+  id: 'RadioOption1',
+  journeyId: 'journey1.id',
+  label: 'Option 1',
+  parentBlockId: 'RadioQuestion1',
+  action: {
+    __typename: 'NavigateToBlockAction',
+    gtmEventName: 'gtmEventName',
+    blockId: 'def'
+  },
+  children: []
+}
 
+describe('RadioOption', () => {
   it('should handle onClick', () => {
     const handleClick = jest.fn()
     const { getByRole } = render(
@@ -56,6 +56,56 @@ describe('RadioOption', () => {
         gtmEventName: 'gtmEventName',
         blockId: 'def'
       }
+    )
+  })
+})
+
+describe('Admin RadioOption', () => {
+  it('should edit option on click if parent is selectedBlock', () => {
+    const { getByRole } = render(
+      <EditorProvider
+        initialState={{
+          selectedBlock: {
+            __typename: 'RadioQuestionBlock',
+            id: 'RadioQuestion1',
+            journeyId: 'journey1.id',
+            label: 'Label',
+            description: 'Description',
+            parentBlockId: 'RadioQuestion1',
+            children: [block]
+          }
+        }}
+      >
+        <RadioOption {...block} />
+      </EditorProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+
+    expect(getByRole('button', { name: 'Option 1' })).toHaveStyle(
+      'outline: 3px solid #C52D3A'
+    )
+    // Check editable when implemented
+  })
+
+  it('should edit option on click if sibling is selectedBlock', () => {
+    const { getByRole } = render(
+      <EditorProvider
+        initialState={{
+          selectedBlock: {
+            ...block,
+            id: 'RadioOption2',
+            label: 'Option 2'
+          }
+        }}
+      >
+        <RadioOption {...block} />
+      </EditorProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+
+    expect(getByRole('button', { name: 'Option 1' })).toHaveStyle(
+      'outline: 3px solid #C52D3A;'
     )
   })
 })

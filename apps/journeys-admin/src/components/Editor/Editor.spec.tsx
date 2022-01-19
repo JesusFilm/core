@@ -24,8 +24,7 @@ describe('Editor', () => {
                 journeyId: 'journey1.id',
                 parentBlockId: null,
                 locked: false,
-                nextBlockId: null,
-                children: []
+                nextBlockId: 'step1.id'
               }
             ] as TreeBlock[]
           }}
