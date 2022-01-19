@@ -94,18 +94,6 @@ describe('JourneyService', () => {
     })
   })
 
-  describe('getAllDraftJourneys', () => {
-    beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [journey])
-      )
-    })
-
-    it('should return draft journeys', async () => {
-      expect(await service.getAllDraftJourneys()).toEqual([journey])
-    })
-  })
-
   describe('save', () => {
     beforeEach(() => {
       ;(

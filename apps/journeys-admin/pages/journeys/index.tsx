@@ -9,7 +9,7 @@ import Link from 'next/link'
 import client from '../../src/libs/client'
 import {
   GetJourneys,
-  GetJourneys_journeys as Journey
+  GetJourneys_adminJourneys as Journey
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components/JourneyList'
 import { useFirebase } from '../../src/libs/firebaseClient'
@@ -30,14 +30,7 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
       void router.push('/')
     }
 
-    // get all journeys user has access to
-    const accessibleJourneys = journeys.filter((journey) => {
-      return journey.userJourneys?.find((userJourney) => {
-        return userJourney?.userId === user?.uid
-      })
-    })
-
-    setJourneysToShow(accessibleJourneys)
+    setJourneysToShow(journeys)
   }, [user, router, loading, journeys])
 
   return (
@@ -66,7 +59,7 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
     const { data } = await client.query<GetJourneys>({
       query: gql`
         query GetJourneys {
-          journeys {
+          adminJourneys {
             id
             title
             createdAt
@@ -94,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
       `
     })
 
-    if (data.journeys === null) {
+    if (data.adminJourneys === null) {
       return {
         props: {
           journeys: []
@@ -103,7 +96,7 @@ export const getServerSideProps: GetServerSideProps<JourneysListPageProps> =
     } else {
       return {
         props: {
-          journeys: data.journeys
+          journeys: data.adminJourneys
         }
       }
     }

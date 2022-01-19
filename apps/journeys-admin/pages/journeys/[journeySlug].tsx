@@ -8,8 +8,8 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import {
   GetJourney,
-  GetJourney_journey as Journey,
-  GetJourney_journey_userJourneys as UserJourneys
+  GetJourney_adminJourney as Journey,
+  GetJourney_adminJourney_userJourneys as UserJourneys
 } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/components/JourneyView/Context'
 import { JourneyView } from '../../src/components/JourneyView'
@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
         ${BLOCK_FIELDS}
         ${INVITE_USER_MODAL_FIELDS}
         query GetJourney($id: ID!) {
-          journey(id: $id, idType: slug) {
+          adminJourney(id: $id, idType: slug) {
             id
             slug
             title
@@ -118,14 +118,14 @@ export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
       }
     })
 
-    if (data.journey === null) {
+    if (data.adminJourney === null) {
       return {
         notFound: true
       }
     } else {
       return {
         props: {
-          journey: data.journey
+          journey: data.adminJourney
         }
       }
     }

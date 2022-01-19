@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps<SingleJourneyEditPageProps> 
       query: gql`
         ${BLOCK_FIELDS}
         query GetJourneyForEdit($id: ID!) {
-          journey(id: $id, idType: slug) {
+          adminJourney(id: $id, idType: slug) {
             id
             slug
             themeName

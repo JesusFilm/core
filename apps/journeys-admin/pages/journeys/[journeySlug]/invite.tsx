@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps<JourneyInvitePageProps> =
       query: gql`
         ${INVITE_USER_MODAL_FIELDS}
         query GetJourneyForRequest($id: ID!) {
-          journey(id: $id, idType: slug) {
+          adminJourney(id: $id, idType: slug) {
             id
             title
             description

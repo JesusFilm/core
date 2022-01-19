@@ -603,7 +603,9 @@ extend type Mutation {
 }
 
 extend type Query {
-  journeys(status: JourneyStatus): [Journey!]!
+  adminJourneys: [Journey!]!
+  adminJourney(id: ID!, idType: IdType): Journey
+  journeys: [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

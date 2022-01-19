@@ -233,27 +233,11 @@ describe('Journey', () => {
 
   describe('journeys', () => {
     it('should get published journeys', async () => {
-      expect(await resolver.journeys(JourneyStatus.published)).toEqual([
-        journeyresponse,
-        journeyresponse
-      ])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalled()
-    })
-
-    it('should get draft journeys', async () => {
-      expect(await resolver.journeys(JourneyStatus.draft)).toEqual([
-        draftJourneyResponse,
-        draftJourneyResponse
-      ])
-      expect(service.getAllDraftJourneys).toHaveBeenCalled()
-    })
-
-    it('should get all journeys', async () => {
       expect(await resolver.journeys()).toEqual([
         journeyresponse,
         journeyresponse
       ])
-      expect(service.getAll).toHaveBeenCalled()
+      expect(service.getAllPublishedJourneys).toHaveBeenCalled()
     })
   })
 
