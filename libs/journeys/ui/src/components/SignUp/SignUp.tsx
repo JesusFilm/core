@@ -85,22 +85,17 @@ export const SignUp = ({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    if (selectedBlock?.id !== blockId) {
-      const block: TreeBlock<SignUpFields> = {
-        id: blockId,
-        submitIcon,
-        submitLabel,
-        action,
-        ...props
-      }
-
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({
-        type: 'SetActiveTabAction',
-        activeTab: ActiveTab.Properties
-      })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    const block: TreeBlock<SignUpFields> = {
+      id: blockId,
+      submitIcon,
+      submitLabel,
+      action,
+      ...props
     }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (

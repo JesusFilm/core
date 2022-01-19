@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourneyForEdit'
 import { Card, Step, Typography } from './blocks'
 
 function AttributesContent({ selected }: AttributesProps): ReactElement {
@@ -11,18 +10,22 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
     case 'CardBlock':
       return <Card {...selected} />
     case 'StepBlock': {
-      const card = selected.children.find(
-        (block) => block.__typename === 'CardBlock'
-      ) as TreeBlock<CardBlock> | undefined
+      const block = selected.children.find(
+        (block) =>
+          block.__typename === 'CardBlock' || block.__typename === 'VideoBlock'
+      )
       return (
         <>
           <Step {...selected} />
-          {card != null && <Card {...card} />}
+          {block != null && <AttributesContent selected={block} />}
         </>
       )
     }
     case 'TypographyBlock': {
       return <Typography {...selected} />
+    }
+    case 'VideoBlock': {
+      return <p>Video Attributes</p>
     }
     default:
       return <></>

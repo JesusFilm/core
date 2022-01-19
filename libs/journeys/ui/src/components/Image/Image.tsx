@@ -26,19 +26,17 @@ export function Image({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    if (selectedBlock?.id !== props.id) {
-      const block: TreeBlock<ImageFields> = {
-        src,
-        alt,
-        height,
-        width,
-        ...props
-      }
-
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    const block: TreeBlock<ImageFields> = {
+      src,
+      alt,
+      height,
+      width,
+      ...props
     }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (

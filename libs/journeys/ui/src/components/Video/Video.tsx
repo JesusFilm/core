@@ -54,7 +54,7 @@ export function Video({
     VIDEO_RESPONSE_CREATE
   )
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useContext(EditorContext)
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -150,7 +150,7 @@ export function Video({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    if (selectedBlock?.id !== blockId) {
+    if (props.parentBlockId !== selectedStep?.id) {
       const block: TreeBlock<VideoFields> = {
         id: blockId,
         videoContent,
@@ -163,12 +163,13 @@ export function Video({
       }
 
       dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({
-        type: 'SetActiveTabAction',
-        activeTab: ActiveTab.Properties
-      })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     }
+
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (

@@ -28,22 +28,20 @@ export function Button({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    if (selectedBlock?.id !== props.id) {
-      const block: TreeBlock<ButtonFields> = {
-        buttonVariant,
-        label,
-        buttonColor,
-        size,
-        startIcon,
-        endIcon,
-        action,
-        ...props
-      }
-
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    const block: TreeBlock<ButtonFields> = {
+      buttonVariant,
+      label,
+      buttonColor,
+      size,
+      startIcon,
+      endIcon,
+      action,
+      ...props
     }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (

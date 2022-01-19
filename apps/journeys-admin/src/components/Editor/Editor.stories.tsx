@@ -301,19 +301,9 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     nextBlockId: null
   },
   {
-    id: 'card4.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step4.id',
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false
-  },
-  {
     __typename: 'VideoBlock',
     id: 'video1.id',
-    parentBlockId: 'card4.id',
+    parentBlockId: 'step4.id',
     autoplay: false,
     muted: true,
     title: 'video1',
