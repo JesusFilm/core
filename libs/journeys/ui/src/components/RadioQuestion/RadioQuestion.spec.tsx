@@ -151,6 +151,7 @@ describe('Admin RadioQuestion', () => {
   const card: TreeBlock = {
     id: 'card0.id',
     __typename: 'CardBlock',
+    journeyId: 'journey1.id',
     parentBlockId: 'step0.id',
     coverBlockId: null,
     backgroundColor: null,

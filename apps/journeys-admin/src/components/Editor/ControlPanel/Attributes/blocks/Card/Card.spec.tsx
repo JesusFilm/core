@@ -37,13 +37,13 @@ const bgColorUpdateMocks = [
         id: 'card1.id',
         journeyId: 'journey1.id',
         input: {
-          themeMode: ThemeMode.dark
+          backgroundColor: '#FFFFFF'
         }
       }
     },
     result: {
       data: {
-        block: { id: 'card1.id', themeMode: ThemeMode.dark }
+        block: { id: 'card1.id', backgroundColor: '#FFFFFF' }
       }
     }
   }
@@ -88,7 +88,7 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider>
+        <MockedProvider mocks={bgColorUpdateMocks}>
           <Card {...card} />
         </MockedProvider>
       )
@@ -112,7 +112,7 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <MockedProvider>
+            <MockedProvider mocks={bgColorUpdateMocks}>
               <Card {...card} />
             </MockedProvider>
           </EditorProvider>
@@ -262,7 +262,7 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider>
+        <MockedProvider mocks={themeUpdateMocks}>
           <Card {...card} />
         </MockedProvider>
       )
@@ -283,7 +283,7 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider>
+        <MockedProvider mocks={themeUpdateMocks}>
           <Card {...card} />
         </MockedProvider>
       )
@@ -307,7 +307,7 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <MockedProvider>
+            <MockedProvider mocks={themeUpdateMocks}>
               <Card {...card} />
             </MockedProvider>
           </EditorProvider>
