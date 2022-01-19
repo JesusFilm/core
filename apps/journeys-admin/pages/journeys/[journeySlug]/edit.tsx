@@ -39,12 +39,12 @@ function JourneyEditPage(): ReactElement {
 
   return (
     <>
-      {data?.journey != null && (
+      {data?.adminJourney != null && (
         <>
           <Head>
-            <title>{data.journey.title}</title>
+            <title>{data.adminJourney.title}</title>
           </Head>
-          <Editor journey={data.journey} />
+          <Editor journey={data.adminJourney} />
         </>
       )}
     </>

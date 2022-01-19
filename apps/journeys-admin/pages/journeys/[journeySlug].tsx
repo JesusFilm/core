@@ -8,6 +8,7 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { INVITE_USER_MODAL_FIELDS } from '../../src/components/InviteUserModal'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/components/JourneyView/Context'
@@ -48,7 +49,7 @@ const GET_JOURNEY = gql`
 
 function JourneySlugPage(): ReactElement {
   const router = useRouter()
-  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
+  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeySlug }
   })
 
@@ -64,6 +65,16 @@ function JourneySlugPage(): ReactElement {
           </JourneyProvider>
         </>
       )}
+      {error?.graphQLErrors[0].message ===
+        'User has not received an invitation to edit this journey.' && (
+        <JourneyInvite journeySlug={router.query.journeySlug as string} />
+      )}
+      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
+        <JourneyInvite
+          journeySlug={router.query.journeySlug as string}
+          requestReceived
+        />
+      )}
     </>
   )
 }
@@ -74,12 +85,22 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const apolloClient = initializeApollo({
     token: (await AuthUser.getIdToken()) ?? ''
   })
-  await apolloClient.query({
-    query: GET_JOURNEY,
-    variables: {
-      id: query.journeySlug
+
+  try {
+    await apolloClient.query({
+      query: GET_JOURNEY,
+      variables: {
+        id: query.journeySlug
+      }
+    })
+  } catch (error) {
+    if (error.graphQLErrors[0].extensions.code === 'FORBIDDEN') {
+      return addApolloState(apolloClient, {
+        props: {}
+      })
     }
-  })
+    throw error
+  }
 
   return addApolloState(apolloClient, {
     props: {}
