@@ -1,12 +1,11 @@
 import { ReactElement, useState } from 'react'
-import List from '@mui/material/List'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import capitalize from 'lodash/capitalize'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Typography from '@mui/material/Typography'
+import capitalize from 'lodash/capitalize'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
 
 interface TextAlignProps {
@@ -22,65 +21,49 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
     (a, b) => order.indexOf(a) - order.indexOf(b)
   )
 
-  function handleClick(align: TypographyAlign): void {
-    setSelected(align)
+  function handleChange(
+    event: React.MouseEvent<HTMLElement>,
+    align: string
+  ): void {
+    if (align != null) {
+      setSelected(align)
+    }
   }
 
   function iconSelector(align: TypographyAlign): ReactElement {
     switch (align) {
-      case 'left':
-        return <FormatAlignLeftRoundedIcon />
       case 'center':
-        return <FormatAlignCenterRoundedIcon />
+        return <FormatAlignCenterRoundedIcon sx={{ mx: 3 }} />
       case 'right':
-        return <FormatAlignRightRoundedIcon />
+        return <FormatAlignRightRoundedIcon sx={{ mx: 3 }} />
       default:
-        return <></>
+        return <FormatAlignLeftRoundedIcon sx={{ mx: 3 }} />
     }
   }
 
   return (
-    <>
-      <List
-        sx={{
-          '&& .Mui-selected, && .Mui-selected:hover': {
-            bgcolor: 'background.default',
-            '&, & .MuiListItemIcon-root': {
-              color: 'primary.main'
-            }
-          }
-        }}
-      >
-        {sorted.map((align) => {
-          return (
-            <ListItemButton
-              key={`${id}-align-${align}`}
-              onClick={() => handleClick(align)}
-              selected={align === selected}
-              sx={{
-                borderRadius: 0,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderBottom: 'none',
-                bgcolor: 'background.paper',
-                '&:first-of-type': {
-                  borderTopLeftRadius: 12,
-                  borderTopRightRadius: 12
-                },
-                '&:last-of-type': {
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderBottom: '1px solid',
-                  borderColor: 'divider'
-                }
-              }}
-            >
-              <ListItemIcon>{iconSelector(align)}</ListItemIcon>
-              <ListItemText>{capitalize(align)}</ListItemText>
-            </ListItemButton>
-          )
-        })}
-      </List>
-    </>
+    <ToggleButtonGroup
+      orientation="vertical"
+      value={selected}
+      exclusive
+      onChange={handleChange}
+      fullWidth
+      sx={{
+        display: 'flex'
+      }}
+    >
+      {sorted.map((alignment) => {
+        return (
+          <ToggleButton
+            value={alignment}
+            key={`${id}-align-${alignment}`}
+            sx={{ justifyContent: 'flex-start' }}
+          >
+            {iconSelector(alignment)}
+            <Typography variant="subtitle2">{capitalize(alignment)}</Typography>
+          </ToggleButton>
+        )
+      })}
+    </ToggleButtonGroup>
   )
 }
