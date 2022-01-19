@@ -28,6 +28,14 @@ const encodeImageToBlurhash = (image: Image): string => {
 async function handleImage(
   input
 ): Promise<ImageBlockCreateInput | ImageBlockUpdateInput> {
+  const defaultBlock = {
+    ...input,
+    width: 0,
+    height: 0,
+    blurhash: ''
+  }
+  if (input.src == null) return defaultBlock
+
   let image: Image
   try {
     image = await loadImage(input.src)

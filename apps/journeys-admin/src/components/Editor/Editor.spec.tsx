@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
 import { Editor } from '.'
-import { MockedProvider } from '@apollo/client/testing'
 
 describe('Editor', () => {
   it('should render the element', () => {

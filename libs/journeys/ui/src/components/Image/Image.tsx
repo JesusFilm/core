@@ -31,9 +31,7 @@ export function Image({
     >
       <NextImage
         src={
-          src != null && src !== undefined
-            ? src
-            : `${window.location.origin}/DefaultImageIcon.png`
+          src != null ? src : `${window.location.origin}/DefaultImageIcon.png`
         }
         alt={alt}
         height={height}

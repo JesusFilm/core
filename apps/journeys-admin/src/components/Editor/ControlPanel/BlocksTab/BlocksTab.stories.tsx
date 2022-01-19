@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { BlocksTab } from '.'
-import { MockedProvider } from '@apollo/client/testing'
 
 const BlocksTabStory = {
   ...journeysAdminConfig,
