@@ -122,7 +122,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
-  src: string;
+  src: string | null;
   alt: string;
   width: number;
   height: number;
@@ -331,7 +331,7 @@ export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | 
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
-  src: string;
+  src: string | null;
 }
 
 export interface GetJourney_journey_userJourneys_user {

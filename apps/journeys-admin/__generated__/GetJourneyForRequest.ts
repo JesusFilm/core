@@ -11,7 +11,7 @@ import { UserJourneyRole } from "./globalTypes";
 
 export interface GetJourneyForRequest_journey_primaryImageBlock {
   __typename: "ImageBlock";
-  src: string;
+  src: string | null;
 }
 
 export interface GetJourneyForRequest_journey_userJourneys_user {

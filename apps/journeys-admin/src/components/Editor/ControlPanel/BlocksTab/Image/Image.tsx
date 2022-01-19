@@ -41,7 +41,7 @@ export function Image(): ReactElement {
           input: {
             journeyId: journey.id,
             parentBlockId: card.id,
-            src: `${window.location.origin}/DefaultImageIcon.png`,
+            src: null,
             alt: 'Default Image Icon'
           }
         }

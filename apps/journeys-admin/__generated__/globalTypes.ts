@@ -141,7 +141,7 @@ export interface ImageBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId?: string | null;
-  src: string;
+  src?: string | null;
 }
 
 export interface JourneyCreateInput {

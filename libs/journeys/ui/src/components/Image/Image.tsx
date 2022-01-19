@@ -30,7 +30,11 @@ export function Image({
       }}
     >
       <NextImage
-        src={src}
+        src={
+          src != null && src !== undefined
+            ? src
+            : `${window.location.origin}/DefaultImageIcon.png`
+        }
         alt={alt}
         height={height}
         width={width}

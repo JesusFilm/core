@@ -14,7 +14,7 @@ export interface ImageBlockCreate_imageBlockCreate {
   id: string;
   journeyId: string;
   parentBlockId: string | null;
-  src: string;
+  src: string | null;
   alt: string;
   width: number;
   height: number;
