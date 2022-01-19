@@ -6,7 +6,7 @@ import {
 import { setContext } from '@apollo/client/link/context'
 import merge from 'deepmerge'
 import { isEqual } from 'lodash'
-import { useAuthUser } from 'next-firebase-auth'
+import { AuthUser } from 'next-firebase-auth'
 import { AppProps } from 'next/app'
 import { useMemo } from 'react'
 import { cache } from './cache'
@@ -16,14 +16,14 @@ export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__'
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined
 
 export function createApolloClient(
-  token?: string
+  AuthUser: AuthUser
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
 
   const authLink = setContext(async (_, { headers }) => {
-    const Authorization = token ?? (await useAuthUser().getIdToken())
+    const Authorization = await AuthUser.getIdToken()
     return {
       headers: {
         ...headers,
@@ -41,12 +41,12 @@ export function createApolloClient(
 
 export function initializeApollo({
   initialState,
-  token
+  AuthUser
 }: {
   initialState?: NormalizedCacheObject
-  token?: string
-} = {}): ApolloClient<NormalizedCacheObject> {
-  const _apolloClient = apolloClient ?? createApolloClient(token)
+  AuthUser: AuthUser
+}): ApolloClient<NormalizedCacheObject> {
+  const _apolloClient = apolloClient ?? createApolloClient(AuthUser)
 
   // If your page has Next.js data fetching methods that use Apollo Client,
   // the initial state gets hydrated here
@@ -88,12 +88,13 @@ export function addApolloState(
 }
 
 export function useApollo(
+  AuthUser: AuthUser,
   pageProps: AppProps['pageProps']
 ): ApolloClient<NormalizedCacheObject> {
   const initialState = pageProps[APOLLO_STATE_PROP_NAME]
   const store = useMemo(
-    () => initializeApollo({ initialState }),
-    [initialState]
+    () => initializeApollo({ AuthUser, initialState }),
+    [AuthUser, initialState]
   )
   return store
 }

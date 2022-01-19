@@ -66,8 +66,7 @@ function IndexPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser }) => {
-  const token = (await AuthUser.getIdToken()) ?? undefined
-  const apolloClient = initializeApollo({ token })
+  const apolloClient = initializeApollo({ AuthUser })
   await apolloClient.query({
     query: GET_JOURNEYS
   })

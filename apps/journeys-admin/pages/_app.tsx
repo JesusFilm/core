@@ -2,6 +2,7 @@ import { useEffect, ReactElement } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -9,7 +10,8 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 initAuth()
 
 function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
-  const apolloClient = useApollo(pageProps)
+  const AuthUser = useAuthUser()
+  const apolloClient = useApollo(AuthUser, pageProps)
 
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -37,4 +39,4 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
   )
 }
 
-export default JourneysAdminApp
+export default withAuthUser<AppProps>()(JourneysAdminApp)
