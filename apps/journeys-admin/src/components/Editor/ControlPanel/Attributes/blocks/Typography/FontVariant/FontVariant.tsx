@@ -1,11 +1,9 @@
 import { ReactElement, useState } from 'react'
-import List from '@mui/material/List'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import Typography from '@mui/material/Typography'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 
 interface FontVariantProps {
@@ -34,61 +32,44 @@ export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
     (a, b) => order.indexOf(a) - order.indexOf(b)
   )
 
-  function handleClick(variant: TypographyVariant): void {
-    setSelected(variant)
+  function handleChange(
+    event: React.MouseEvent<HTMLElement>,
+    align: string
+  ): void {
+    if (align != null) {
+      setSelected(align)
+    }
   }
 
   return (
-    <>
-      <List
-        sx={{
-          '&& .Mui-selected, && .Mui-selected:hover': {
-            bgcolor: 'background.default',
-            '&, & .MuiListItemIcon-root': {
-              color: 'primary.main'
-            }
-          }
-        }}
-      >
-        {sorted.map((variant) => {
-          return (
-            <ListItemButton
-              key={`${id}-text-${variant}`}
-              onClick={() => handleClick(variant)}
-              selected={variant === selected}
-              sx={{
-                borderRadius: 0,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderBottom: 'none',
-                bgcolor: 'background.paper',
-                '&:first-of-type': {
-                  borderTopLeftRadius: 12,
-                  borderTopRightRadius: 12
-                },
-                '&:last-of-type': {
-                  borderBottomLeftRadius: 12,
-                  borderBottomRightRadius: 12,
-                  borderBottom: '1px solid',
-                  borderColor: 'divider'
-                }
-              }}
-            >
-              <ListItemIcon></ListItemIcon>
-              <ListItemText>
-                <Typography variant={variant}>
-                  {capitalize(
-                    lowerCase(variant?.toString() ?? 'body2').replace(
-                      'h',
-                      'header'
-                    )
-                  )}
-                </Typography>
-              </ListItemText>
-            </ListItemButton>
-          )
-        })}
-      </List>
-    </>
+    <ToggleButtonGroup
+      orientation="vertical"
+      value={selected}
+      exclusive
+      onChange={handleChange}
+      fullWidth
+      sx={{
+        display: 'flex',
+        px: 6,
+        pt: 4
+      }}
+    >
+      {sorted.map((variant) => {
+        return (
+          <ToggleButton
+            value={variant}
+            key={`${id}-align-${variant}`}
+            sx={{ justifyContent: 'flex-start' }}
+          >
+            {/* Icon goes here */}
+            <Typography variant={variant}>
+              {capitalize(
+                lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
+              )}
+            </Typography>
+          </ToggleButton>
+        )
+      })}
+    </ToggleButtonGroup>
   )
 }
