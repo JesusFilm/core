@@ -19,9 +19,14 @@ extend type User @key(fields: "id") {
   id: ID! @external
 }
 
+enum IdType {
+  databaseId
+  slug
+}
+
 extend type Mutation {
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
-  userJourneyRequest(journeyId: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
 }

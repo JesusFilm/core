@@ -540,7 +540,7 @@ export abstract class IMutation {
 
     abstract userJourneyRemove(id: string): UserJourney | Promise<UserJourney>;
 
-    abstract userJourneyRequest(journeyId: string): UserJourney | Promise<UserJourney>;
+    abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
 }
 
 export abstract class IQuery {

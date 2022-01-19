@@ -2,11 +2,12 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
 
 const USER_JOURNEY_REQUEST = gql`
-  mutation UserJourneyRequest($id: ID!) {
-    userJourneyRequest(id: $id, idType: slug) {
+  mutation UserJourneyRequest($journeyId: ID!) {
+    userJourneyRequest(journeyId: $journeyId, idType: slug) {
       userId
       journeyId
       role
@@ -31,19 +32,16 @@ export function JourneyInvite({
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRequest({
-      variables: { id: journeySlug }
+      variables: { journeyId: journeySlug }
     })
-    setRequestReceived(false)
+    setRequestReceived(true)
   }
 
   return (
-    <>
+    <Container>
       {requestReceived && (
         <>
-          <Typography variant="h6">You need access for</Typography>
-          <Button variant="contained" onClick={handleClick}>
-            Request Access
-          </Button>
+          <Typography variant="h6">YOUR ACCESS IS PENDING</Typography>
         </>
       )}
       {!requestReceived && (
@@ -54,6 +52,6 @@ export function JourneyInvite({
           </Button>
         </>
       )}
-    </>
+    </Container>
   )
 }
