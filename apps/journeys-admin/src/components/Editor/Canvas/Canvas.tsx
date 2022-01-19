@@ -64,17 +64,15 @@ export function Canvas(): ReactElement {
         }
       }}
       onClick={() => {
-        if (selectedBlock?.id !== selectedStep?.id) {
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            block: selectedStep
-          })
-          dispatch({
-            type: 'SetActiveTabAction',
-            activeTab: ActiveTab.Properties
-          })
-          dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-        }
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          block: selectedStep
+        })
+        dispatch({
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
+        })
+        dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
       }}
     >
       <Swiper
