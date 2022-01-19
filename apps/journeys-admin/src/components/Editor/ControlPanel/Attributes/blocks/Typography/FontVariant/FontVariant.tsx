@@ -51,7 +51,7 @@ export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
       sx={{
         display: 'flex',
         px: 6,
-        pt: 4
+        py: 4
       }}
     >
       {sorted.map((variant) => {

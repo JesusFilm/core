@@ -39,7 +39,7 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
       sx={{
         display: 'flex',
         px: 6,
-        pt: 4
+        py: 4
       }}
     >
       {sorted.map((color) => {

@@ -51,7 +51,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
       sx={{
         display: 'flex',
         px: 6,
-        pt: 4
+        py: 4
       }}
     >
       {sorted.map((alignment) => {
