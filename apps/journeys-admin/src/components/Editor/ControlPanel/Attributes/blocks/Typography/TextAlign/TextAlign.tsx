@@ -49,7 +49,9 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
       onChange={handleChange}
       fullWidth
       sx={{
-        display: 'flex'
+        display: 'flex',
+        px: 6,
+        pt: 4
       }}
     >
       {sorted.map((alignment) => {
