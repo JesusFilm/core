@@ -53,9 +53,9 @@ export class JourneyResolvers {
   @Query()
   @KeyAsId()
   async adminJourney(
+    @CurrentUserId() userId: string,
     @Args('id') _key: string,
-    @Args('idType') idType: IdType = IdType.slug,
-    @CurrentUserId() userId: string
+    @Args('idType') idType: IdType = IdType.slug
   ): Promise<Journey> {
     console.log('uid', userId)
     const result: Journey =
