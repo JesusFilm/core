@@ -5,7 +5,12 @@ import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
-import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
+import { ThemeProvider } from '@core/shared/ui'
+import {
+  TypographyColor,
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../../__generated__/globalTypes'
 
 interface TextColorProps {
   id: string
@@ -50,24 +55,29 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
             sx={{ justifyContent: 'flex-start' }}
           >
             {
-              <Paper
-                sx={{
-                  borderRadius: 1000,
-                  ml: 1,
-                  mr: 2
-                }}
+              <ThemeProvider
+                themeName={ThemeName.base}
+                themeMode={ThemeMode.light}
               >
-                <Box
-                  data-testid="backgroundColorIcon"
+                <Paper
                   sx={{
-                    width: 20,
-                    height: 20,
-                    m: 1,
                     borderRadius: 1000,
-                    backgroundColor: `${color ?? 'primary'}.main`
+                    ml: 1,
+                    mr: 2
                   }}
-                />
-              </Paper>
+                >
+                  <Box
+                    data-testid="backgroundColorIcon"
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      m: 1,
+                      borderRadius: 1000,
+                      backgroundColor: `${color ?? 'primary'}.main`
+                    }}
+                  />
+                </Paper>
+              </ThemeProvider>
             }
             <Typography variant="subtitle2">{capitalize(color)}</Typography>
           </ToggleButton>

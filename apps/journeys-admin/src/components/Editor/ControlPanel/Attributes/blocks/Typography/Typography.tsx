@@ -6,7 +6,12 @@ import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
+import { ThemeProvider } from '@core/shared/ui'
 import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import { TextColor } from './TextColor'
 import { TextAlign } from './TextAlign'
@@ -24,22 +29,24 @@ export function Typography({
       <Attribute
         id={`${id}-text-color`}
         icon={
-          <Paper
-            sx={{
-              borderRadius: 1000
-            }}
-          >
-            <Box
-              data-testid="backgroundColorIcon"
+          <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+            <Paper
               sx={{
-                width: 20,
-                height: 20,
-                m: 1,
-                borderRadius: 1000,
-                backgroundColor: `${color ?? 'primary'}.main`
+                borderRadius: 1000
               }}
-            />
-          </Paper>
+            >
+              <Box
+                data-testid="backgroundColorIcon"
+                sx={{
+                  width: 20,
+                  height: 20,
+                  m: 1,
+                  borderRadius: 1000,
+                  backgroundColor: `${color ?? 'primary'}.main`
+                }}
+              />
+            </Paper>
+          </ThemeProvider>
         }
         name="Color"
         value={capitalize(color?.toString() ?? 'primary')}
