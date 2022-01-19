@@ -368,7 +368,7 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
     fullscreen: false
   },
   {
-    id: 'typographyBlockId1',
+    id: 'typographyBlockId11',
     __typename: 'TypographyBlock',
     parentBlockId: 'card6.id',
     align: null,
