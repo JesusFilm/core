@@ -33,11 +33,11 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
   function iconSelector(align: TypographyAlign): ReactElement {
     switch (align) {
       case 'center':
-        return <FormatAlignCenterRoundedIcon sx={{ mx: 3 }} />
+        return <FormatAlignCenterRoundedIcon sx={{ ml: 1, mr: 2 }} />
       case 'right':
-        return <FormatAlignRightRoundedIcon sx={{ mx: 3 }} />
+        return <FormatAlignRightRoundedIcon sx={{ ml: 1, mr: 2 }} />
       default:
-        return <FormatAlignLeftRoundedIcon sx={{ mx: 3 }} />
+        return <FormatAlignLeftRoundedIcon sx={{ ml: 1, mr: 2 }} />
     }
   }
 

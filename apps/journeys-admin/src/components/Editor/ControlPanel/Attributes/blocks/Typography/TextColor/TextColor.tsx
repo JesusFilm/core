@@ -30,65 +30,6 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
   )
 
   return (
-    // <>
-    //   <List
-    //     sx={{
-    //       '&& .Mui-selected, && .Mui-selected:hover': {
-    //         bgcolor: 'background.default',
-    //         '&, & .MuiListItemIcon-root': {
-    //           color: 'primary.main'
-    //         }
-    //       }
-    //     }}
-    //   >
-    //     {sorted.map((color) => {
-    //       return (
-    //         <ListItemButton
-    //           key={`${id}-color-${color}`}
-    //           onClick={() => handleClick(color)}
-    //           selected={color === selected}
-    //           sx={{
-    //             borderRadius: 0,
-    //             border: '1px solid',
-    //             borderColor: 'divider',
-    //             borderBottom: 'none',
-    //             bgcolor: 'background.paper',
-    //             '&:first-of-type': {
-    //               borderTopLeftRadius: 12,
-    //               borderTopRightRadius: 12
-    //             },
-    //             '&:last-of-type': {
-    //               borderBottomLeftRadius: 12,
-    //               borderBottomRightRadius: 12,
-    //               borderBottom: '1px solid',
-    //               borderColor: 'divider'
-    //             }
-    //           }}
-    //         >
-    //           <ListItemIcon>
-    //             <Paper
-    //               sx={{
-    //                 borderRadius: 1000
-    //               }}
-    //             >
-    //               <Box
-    //                 data-testid="backgroundColorIcon"
-    //                 sx={{
-    //                   width: 20,
-    //                   height: 20,
-    //                   m: 1,
-    //                   borderRadius: 1000,
-    //                   backgroundColor: `${color ?? 'primary'}.main`
-    //                 }}
-    //               />
-    //             </Paper>
-    //           </ListItemIcon>
-    //           <ListItemText>{capitalize(color)}</ListItemText>
-    //         </ListItemButton>
-    //       )
-    //     })}
-    //   </List>
-    // </>
     <ToggleButtonGroup
       orientation="vertical"
       value={selected}
@@ -111,7 +52,9 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
             {
               <Paper
                 sx={{
-                  borderRadius: 1000
+                  borderRadius: 1000,
+                  ml: 1,
+                  mr: 2
                 }}
               >
                 <Box
