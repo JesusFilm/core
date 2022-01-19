@@ -54,7 +54,9 @@ function JourneyEditPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, query }) => {
-  const apolloClient = initializeApollo({ AuthUser })
+  const apolloClient = initializeApollo({
+    token: (await AuthUser.getIdToken()) ?? ''
+  })
   await apolloClient.query({
     query: GET_JOURNEY_FOR_EDIT,
     variables: {
