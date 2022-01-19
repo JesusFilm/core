@@ -65,6 +65,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         grouped: {
           textTransform: 'none',
           backgroundColor: palette[0],
+          '&:not(.Mui-selected)': { color: 'black' },
           '&:not(.first-of-type)': {
             borderTop: '1px solid',
             borderColor: palette[200]
