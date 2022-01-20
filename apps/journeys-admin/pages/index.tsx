@@ -11,7 +11,7 @@ import {
 import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
 import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
-import { JourneysAppBar } from '../src/components/JourneysAppBar'
+import { AppBar } from '../src/components/AppBar'
 
 const GET_JOURNEYS = gql`
   query GetJourneys {
@@ -49,7 +49,7 @@ function IndexPage(): ReactElement {
 
   return (
     <>
-      <JourneysAppBar variant="list" />
+      <AppBar title="Journeys" />
       <Container sx={{ mb: 10 }}>
         {data?.journeys != null && <JourneyList journeys={data.journeys} />}
         <Button variant="contained" onClick={signOut}>

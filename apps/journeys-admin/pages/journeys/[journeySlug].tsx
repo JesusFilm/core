@@ -14,6 +14,8 @@ import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/components/JourneyView/Context'
 import { JourneyView } from '../../src/components/JourneyView'
 import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
+import { AppBar } from '../../src/components/AppBar'
+import { Menu } from '../../src/components/JourneyView/Menu'
 
 const GET_JOURNEY = gql`
   ${BLOCK_FIELDS}
@@ -61,6 +63,12 @@ function JourneySlugPage(): ReactElement {
             <title>{data.journey.title}</title>
           </Head>
           <JourneyProvider value={data.journey}>
+            <AppBar
+              title="Journey Details"
+              showDrawer
+              backHref="/"
+              Menu={<Menu />}
+            />
             <JourneyView />
           </JourneyProvider>
         </>
