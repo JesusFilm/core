@@ -41,7 +41,6 @@ export function JourneyInvite({
     })
     setRequestReceived(true)
   }
-
   return (
     <Container maxWidth="xs" sx={{ py: 10 }}>
       <Box
@@ -55,7 +54,7 @@ export function JourneyInvite({
       >
         <Link href="/" passHref>
           <a>
-            <Image src={logo} alt="Next Steps" height={68} width={152} />
+            <Image src={`/${logo}`} alt="Next Steps" height={68} width={152} />
           </a>
         </Link>
       </Box>
