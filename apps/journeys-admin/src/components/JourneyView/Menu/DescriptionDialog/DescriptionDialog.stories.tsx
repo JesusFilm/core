@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../data'
-import { JourneyProvider } from '../../Context'
+import { JourneyProvider } from '../../../../libs/Context'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 
 const DescriptionDialogStory = {

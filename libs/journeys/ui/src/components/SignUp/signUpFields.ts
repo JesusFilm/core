@@ -5,7 +5,6 @@ export const SIGN_UP_FIELDS = gql`
   ${ACTION_FIELDS}
   fragment SignUpFields on SignUpBlock {
     id
-    journeyId
     parentBlockId
     submitLabel
     action {

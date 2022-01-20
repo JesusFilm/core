@@ -11,7 +11,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_userJourneys as UserJourneys
 } from '../../__generated__/GetJourney'
-import { JourneyProvider } from '../../src/components/JourneyView/Context'
+import { JourneyProvider } from '../../src/libs/Context'
 import { JourneyView } from '../../src/components/JourneyView'
 import client from '../../src/libs/client'
 import { useFirebase } from '../../src/libs/firebaseClient'

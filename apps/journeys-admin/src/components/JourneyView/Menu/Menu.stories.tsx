@@ -4,7 +4,7 @@ import { simpleComponentConfig } from '../../../libs/storybook'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
-import { JourneyProvider } from '../Context'
+import { JourneyProvider } from '../../../libs/Context'
 import { Menu, JOURNEY_PUBLISH } from './Menu'
 
 const MenuStory = {

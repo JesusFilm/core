@@ -5,7 +5,6 @@ export const BUTTON_FIELDS = gql`
   ${ACTION_FIELDS}
   fragment ButtonFields on ButtonBlock {
     id
-    journeyId
     parentBlockId
     label
     buttonVariant: variant

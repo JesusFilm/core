@@ -16,7 +16,6 @@ export const Default: Story = () => {
   const block: TreeBlock<CardBlock> = {
     id: 'card1.id',
     __typename: 'CardBlock',
-    journeyId: 'journey1.id',
     parentBlockId: 'step1.id',
     coverBlockId: null,
     backgroundColor: null,
@@ -45,7 +44,6 @@ export const Light: Story = () => {
   const block: TreeBlock<CardBlock> = {
     id: 'card1.id',
     __typename: 'CardBlock',
-    journeyId: 'journey1.id',
     parentBlockId: 'step1.id',
     coverBlockId: null,
     backgroundColor: null,
@@ -74,7 +72,6 @@ export const Dark: Story = () => {
   const block: TreeBlock<CardBlock> = {
     id: 'card1.id',
     __typename: 'CardBlock',
-    journeyId: 'journey1.id',
     parentBlockId: 'step1.id',
     coverBlockId: null,
     backgroundColor: null,

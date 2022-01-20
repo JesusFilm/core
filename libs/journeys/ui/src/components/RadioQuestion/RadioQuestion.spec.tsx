@@ -16,7 +16,6 @@ jest.mock('../../libs/action', () => {
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   id: 'RadioQuestion1',
-  journeyId: 'journey1.id',
   label: 'Label',
   description: 'Description',
   parentBlockId: 'RadioQuestion1',
@@ -24,7 +23,6 @@ const block: TreeBlock<RadioQuestionFields> = {
     {
       __typename: 'RadioOptionBlock',
       id: 'RadioOption1',
-      journeyId: 'journey1.id',
       label: 'Option 1',
       parentBlockId: 'RadioQuestion1',
       action: null,
@@ -33,7 +31,6 @@ const block: TreeBlock<RadioQuestionFields> = {
     {
       __typename: 'RadioOptionBlock',
       id: 'RadioOption2',
-      journeyId: 'journey1.id',
       label: 'Option 2',
       parentBlockId: 'RadioQuestion1',
       action: null,
@@ -151,7 +148,6 @@ describe('Admin RadioQuestion', () => {
   const card: TreeBlock = {
     id: 'card0.id',
     __typename: 'CardBlock',
-    journeyId: 'journey1.id',
     parentBlockId: 'step0.id',
     coverBlockId: null,
     backgroundColor: null,

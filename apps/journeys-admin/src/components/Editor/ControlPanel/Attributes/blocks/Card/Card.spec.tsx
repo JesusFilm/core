@@ -6,6 +6,7 @@ import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+import { JourneyProvider } from '../../../../../../libs/Context/Context'
 import { CARD_BLOCK_UPDATE } from './Card'
 import { Card } from '.'
 
@@ -49,12 +50,15 @@ const bgColorUpdateMocks = [
   }
 ]
 
+const journey: { id: string } = {
+  id: 'journey1.id'
+}
+
 describe('Card', () => {
   it('shows default messages', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
-      journeyId: 'journey1',
       parentBlockId: 'step1.id',
       coverBlockId: null,
       backgroundColor: null,
@@ -64,9 +68,11 @@ describe('Card', () => {
       children: []
     }
     const { getByText } = render(
-      <MockedProvider>
-        <Card {...card} />
-      </MockedProvider>
+      <JourneyProvider value={journey}>
+        <MockedProvider>
+          <Card {...card} />
+        </MockedProvider>
+      </JourneyProvider>
     )
     expect(getByText('Default')).toBeInTheDocument()
     expect(getByText('Contained')).toBeInTheDocument()
@@ -78,7 +84,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: '#00ffcc',
@@ -88,9 +93,11 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider mocks={bgColorUpdateMocks}>
-          <Card {...card} />
-        </MockedProvider>
+        <JourneyProvider value={journey}>
+          <MockedProvider mocks={bgColorUpdateMocks}>
+            <Card {...card} />
+          </MockedProvider>
+        </JourneyProvider>
       )
       expect(getByText('#00FFCC')).toBeInTheDocument()
     })
@@ -98,7 +105,6 @@ describe('Card', () => {
     it('shows background color drawer', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
-        journeyId: 'journey1',
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
         coverBlockId: null,
@@ -111,10 +117,12 @@ describe('Card', () => {
       const { getByText } = render(
         <ThemeProvider>
           <EditorProvider>
-            <Drawer />
-            <MockedProvider mocks={bgColorUpdateMocks}>
-              <Card {...card} />
-            </MockedProvider>
+            <JourneyProvider value={journey}>
+              <Drawer />
+              <MockedProvider mocks={bgColorUpdateMocks}>
+                <Card {...card} />
+              </MockedProvider>
+            </JourneyProvider>
           </EditorProvider>
         </ThemeProvider>
       )
@@ -129,7 +137,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'image1.id',
         backgroundColor: '#00ffcc',
@@ -140,7 +147,6 @@ describe('Card', () => {
           {
             __typename: 'ImageBlock',
             id: 'image1.id',
-            journeyId: 'journey1.id',
             src: 'https://i.imgur.com/07iLnvN.jpg',
             alt: 'random image from unsplash',
             width: 1920,
@@ -152,9 +158,11 @@ describe('Card', () => {
         ]
       }
       const { getByText } = render(
-        <MockedProvider>
-          <Card {...card} />
-        </MockedProvider>
+        <JourneyProvider value={journey}>
+          <MockedProvider>
+            <Card {...card} />
+          </MockedProvider>
+        </JourneyProvider>
       )
       expect(getByText('Background Image')).toBeInTheDocument()
       expect(getByText('07iLnvN.jpg')).toBeInTheDocument()
@@ -164,7 +172,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'video1.id',
         backgroundColor: '#00ffcc',
@@ -175,7 +182,6 @@ describe('Card', () => {
           {
             id: 'video1.id',
             __typename: 'VideoBlock',
-            journeyId: 'journey1.id',
             parentBlockId: 'card1.id',
             videoContent: {
               __typename: 'VideoArclight',
@@ -192,9 +198,11 @@ describe('Card', () => {
         ]
       }
       const { getByText } = render(
-        <MockedProvider>
-          <Card {...card} />
-        </MockedProvider>
+        <JourneyProvider value={journey}>
+          <MockedProvider>
+            <Card {...card} />
+          </MockedProvider>
+        </JourneyProvider>
       )
       expect(getByText('Background Video')).toBeInTheDocument()
       expect(getByText('#FallingPlates')).toBeInTheDocument()
@@ -204,7 +212,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'video1.id',
         backgroundColor: '#00ffcc',
@@ -215,7 +222,6 @@ describe('Card', () => {
           {
             id: 'video1.id',
             __typename: 'VideoBlock',
-            journeyId: 'journey1.id',
             parentBlockId: 'card1.id',
             videoContent: {
               __typename: 'VideoArclight',
@@ -235,9 +241,11 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <MockedProvider>
-              <Card {...card} />
-            </MockedProvider>
+            <JourneyProvider value={journey}>
+              <MockedProvider>
+                <Card {...card} />
+              </MockedProvider>
+            </JourneyProvider>
           </EditorProvider>
         </ThemeProvider>
       )
@@ -252,7 +260,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: 'image1.id',
         backgroundColor: null,
@@ -262,9 +269,11 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider mocks={themeUpdateMocks}>
-          <Card {...card} />
-        </MockedProvider>
+        <JourneyProvider value={journey}>
+          <MockedProvider mocks={themeUpdateMocks}>
+            <Card {...card} />
+          </MockedProvider>
+        </JourneyProvider>
       )
       expect(getByText('Light')).toBeInTheDocument()
     })
@@ -273,7 +282,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -283,9 +291,11 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider mocks={themeUpdateMocks}>
-          <Card {...card} />
-        </MockedProvider>
+        <JourneyProvider value={journey}>
+          <MockedProvider mocks={themeUpdateMocks}>
+            <Card {...card} />
+          </MockedProvider>
+        </JourneyProvider>
       )
       expect(getByText('Dark')).toBeInTheDocument()
     })
@@ -294,7 +304,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -307,9 +316,11 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <MockedProvider mocks={themeUpdateMocks}>
-              <Card {...card} />
-            </MockedProvider>
+            <JourneyProvider value={journey}>
+              <MockedProvider mocks={themeUpdateMocks}>
+                <Card {...card} />
+              </MockedProvider>
+            </JourneyProvider>
           </EditorProvider>
         </ThemeProvider>
       )
@@ -323,7 +334,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -333,9 +343,11 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <MockedProvider>
-          <Card {...card} />
-        </MockedProvider>
+        <JourneyProvider value={journey}>
+          <MockedProvider>
+            <Card {...card} />
+          </MockedProvider>
+        </JourneyProvider>
       )
       expect(getByText('Expanded')).toBeInTheDocument()
     })
@@ -344,7 +356,6 @@ describe('Card', () => {
       const card: TreeBlock<CardBlock> = {
         id: 'card1.id',
         __typename: 'CardBlock',
-        journeyId: 'journey1',
         parentBlockId: 'step1.id',
         coverBlockId: null,
         backgroundColor: null,
@@ -357,9 +368,11 @@ describe('Card', () => {
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <MockedProvider>
-              <Card {...card} />
-            </MockedProvider>
+            <JourneyProvider value={journey}>
+              <MockedProvider>
+                <Card {...card} />
+              </MockedProvider>
+            </JourneyProvider>
           </EditorProvider>
         </ThemeProvider>
       )

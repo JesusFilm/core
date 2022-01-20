@@ -10,7 +10,6 @@
 export interface ImageFields {
   __typename: "ImageBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   src: string;
   alt: string;

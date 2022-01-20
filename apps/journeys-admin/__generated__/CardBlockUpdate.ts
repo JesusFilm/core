@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput } from "./globalTypes";
+import { CardBlockUpdateInput, ThemeMode } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardBlockUpdate
@@ -12,6 +12,15 @@ import { CardBlockUpdateInput } from "./globalTypes";
 export interface CardBlockUpdate_cardBlockUpdate {
   __typename: "CardBlock";
   id: string;
+  /**
+   * themeMode can override journey themeMode. If nothing is set then use
+   * themeMode from journey
+   */
+  themeMode: ThemeMode | null;
+  /**
+   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
+   */
+  backgroundColor: string | null;
 }
 
 export interface CardBlockUpdate {

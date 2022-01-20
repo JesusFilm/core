@@ -23,7 +23,6 @@ jest.mock('next/router', () => ({
 const block: TreeBlock<RadioOptionFields> = {
   __typename: 'RadioOptionBlock',
   id: 'RadioOption1',
-  journeyId: 'journey1.id',
   label: 'Option 1',
   parentBlockId: 'RadioQuestion1',
   action: {
@@ -68,7 +67,6 @@ describe('Admin RadioOption', () => {
           selectedBlock: {
             __typename: 'RadioQuestionBlock',
             id: 'RadioQuestion1',
-            journeyId: 'journey1.id',
             label: 'Label',
             description: 'Description',
             parentBlockId: 'RadioQuestion1',

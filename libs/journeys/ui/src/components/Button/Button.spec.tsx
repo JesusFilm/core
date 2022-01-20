@@ -31,7 +31,6 @@ jest.mock('next/router', () => ({
 const block: TreeBlock<ButtonFields> = {
   __typename: 'ButtonBlock',
   id: 'button',
-  journeyId: 'journey1.id',
   parentBlockId: 'question',
   label: 'This is a button',
   buttonVariant: ButtonVariant.contained,
@@ -137,7 +136,6 @@ describe('Admin Button', () => {
           selectedBlock: {
             id: 'card0.id',
             __typename: 'CardBlock',
-            journeyId: 'journey1.id',
             parentBlockId: 'step0.id',
             coverBlockId: null,
             backgroundColor: null,

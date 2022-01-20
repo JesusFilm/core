@@ -41,7 +41,6 @@ export type RadioOptionFields_action = RadioOptionFields_action_NavigateAction |
 export interface RadioOptionFields {
   __typename: "RadioOptionBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   label: string;
   action: RadioOptionFields_action | null;

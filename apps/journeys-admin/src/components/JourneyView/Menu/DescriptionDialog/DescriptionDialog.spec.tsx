@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../Context'
+import { JourneyProvider } from '../../../../libs/Context'
 import { defaultJourney } from '../../data'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 

@@ -25,7 +25,6 @@ jest.mock('next/router', () => ({
 const props: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
   id: 'SignUp1',
-  journeyId: 'journey1.id',
   parentBlockId: '0',
   submitIcon: null,
   submitLabel: null,

@@ -5,14 +5,18 @@ import {
   GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
   GetJourneyForEdit_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourneyForEdit'
+import { JourneyProvider } from '../../../../libs/Context/Context'
 import { Attributes } from '.'
+
+const journey: { id: string } = {
+  id: 'journey1.id'
+}
 
 describe('Attributes', () => {
   it('should render card block', () => {
     const step: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
-      journeyId: 'journey1.id',
       parentBlockId: 'step1.id',
       coverBlockId: 'image1.id',
       backgroundColor: null,
@@ -22,9 +26,11 @@ describe('Attributes', () => {
       children: []
     }
     const { getByText } = render(
-      <MockedProvider>
-        <Attributes selected={step} />
-      </MockedProvider>
+      <JourneyProvider value={journey}>
+        <MockedProvider>
+          <Attributes selected={step} />
+        </MockedProvider>
+      </JourneyProvider>
     )
     expect(getByText('Background Color')).toBeInTheDocument()
   })
@@ -33,7 +39,6 @@ describe('Attributes', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',
-      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,
@@ -41,7 +46,6 @@ describe('Attributes', () => {
         {
           id: 'card1.id',
           __typename: 'CardBlock',
-          journeyId: 'journey1.id',
           parentBlockId: 'step1.id',
           coverBlockId: 'image1.id',
           backgroundColor: null,
@@ -53,9 +57,11 @@ describe('Attributes', () => {
       ]
     }
     const { getByText } = render(
-      <MockedProvider>
-        <Attributes selected={step} />
-      </MockedProvider>
+      <JourneyProvider value={journey}>
+        <MockedProvider>
+          <Attributes selected={step} />
+        </MockedProvider>
+      </JourneyProvider>
     )
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(getByText('Background Color')).toBeInTheDocument()
@@ -65,7 +71,6 @@ describe('Attributes', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',
-      journeyId: 'journey1.id',
       parentBlockId: null,
       locked: false,
       nextBlockId: null,

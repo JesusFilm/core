@@ -18,6 +18,7 @@ describe('CardStyling', () => {
       fullscreen: false,
       children: []
     }
+
     const { getByTestId } = render(
       <ThemeProvider>
         <BackgroundColor {...card} />

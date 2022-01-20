@@ -17,6 +17,7 @@ import {
   GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
   GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { useJourney } from '../../../../../../libs/Context'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'
 import { CardLayout } from './CardLayout'
@@ -30,24 +31,27 @@ export const CARD_BLOCK_UPDATE = gql`
   ) {
     cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
+      themeMode
+      backgroundColor
     }
   }
 `
 
 export function Card({
   id,
-  journeyId,
   backgroundColor,
   fullscreen,
   themeMode,
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
-  const [cardBlockUpdate] = useMutation<CardBlockUpdateInput>(CARD_BLOCK_UPDATE)
+  const [cardBlockUpdate] =
+    useMutation<{ cardBlockUpdate: CardBlockUpdateInput }>(CARD_BLOCK_UPDATE)
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
   const { dispatch } = useContext(EditorContext)
+  const journey = useJourney()
 
   const handleBackgroundMediaClick = (): void => {
     dispatch({
@@ -61,30 +65,36 @@ export function Card({
   const [selectedThemeMode, setThemeMode] = useState(themeMode)
   const [selectedBgColor, setBgColor] = useState(backgroundColor)
 
-  const handleStyleChange = async (selected: ThemeMode | null): Promise<void> => {
-    setThemeMode(selected)
-    await cardBlockUpdate({
+  const handleStyleChange = async (
+    selected: ThemeMode | null
+  ): Promise<void> => {
+    const { data } = await cardBlockUpdate({
       variables: {
         id: id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           themeMode: selected
         }
       }
     })
+    if (data?.cardBlockUpdate?.themeMode !== undefined)
+      setThemeMode(data.cardBlockUpdate.themeMode)
   }
 
-  const handleBgColorChange = async (selected: string | null): Promise<void> => {
-    setBgColor(selected)
-    await cardBlockUpdate({
+  const handleBgColorChange = async (
+    selected: string | null
+  ): Promise<void> => {
+    const { data } = await cardBlockUpdate({
       variables: {
         id: id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           backgroundColor: selected
         }
       }
     })
+    if (data?.cardBlockUpdate?.backgroundColor !== undefined)
+      setBgColor(data.cardBlockUpdate.backgroundColor)
   }
 
   return (
@@ -118,7 +128,6 @@ export function Card({
               <BackgroundColor
                 id={id}
                 backgroundColor={selectedBgColor}
-                journeyId={journeyId}
                 onSubmit={handleBgColorChange}
               />
             )
@@ -178,7 +187,6 @@ export function Card({
             children: (
               <CardStyling
                 id={id}
-                journeyId={journeyId}
                 themeMode={selectedThemeMode}
                 onSelect={handleStyleChange}
               />

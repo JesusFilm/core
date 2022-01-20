@@ -10,7 +10,6 @@
 export interface RadioQuestionFields {
   __typename: "RadioQuestionBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   label: string;
   description: string | null;

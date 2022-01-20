@@ -11,7 +11,6 @@ import { Typography } from './Typography'
 const block: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',
   id: 'heading3',
-  journeyId: 'journey1.id',
   parentBlockId: 'question',
   content: 'Hello World!',
   variant: TypographyVariant.h3,
@@ -51,7 +50,6 @@ describe('Admin Typography', () => {
           selectedBlock: {
             id: 'card0.id',
             __typename: 'CardBlock',
-            journeyId: 'journey1.id',
             parentBlockId: 'step0.id',
             coverBlockId: null,
             backgroundColor: null,

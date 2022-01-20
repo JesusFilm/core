@@ -21,7 +21,6 @@ describe('Editor', () => {
               {
                 id: 'step0.id',
                 __typename: 'StepBlock',
-                journeyId: 'journey1.id',
                 parentBlockId: null,
                 locked: false,
                 nextBlockId: 'step1.id'

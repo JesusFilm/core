@@ -18,7 +18,6 @@ import SwiperCore from 'swiper'
 
 interface BackgroundColorProps {
   id: string
-  journeyId: string
   backgroundColor: string | null
   onSubmit?: (string) => void
 }
@@ -79,7 +78,6 @@ const themeColors = [
 export function BackgroundColor({
   id,
   backgroundColor,
-  journeyId,
   onSubmit
 }: BackgroundColorProps): ReactElement {
   const [color, setColor] = useState(backgroundColor)

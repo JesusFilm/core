@@ -12,7 +12,6 @@ import { TypographyAlign, TypographyColor, TypographyVariant } from "./../../../
 export interface TypographyFields {
   __typename: "TypographyBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;

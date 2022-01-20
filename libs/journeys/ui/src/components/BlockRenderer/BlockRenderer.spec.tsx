@@ -8,7 +8,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'ButtonBlock',
       id: 'button',
-      journeyId: 'journey1.id',
       parentBlockId: 'question',
       label: 'Click to continue',
       buttonVariant: null,
@@ -27,7 +26,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'CardBlock',
       id: 'step',
-      journeyId: 'journey1.id',
       parentBlockId: null,
       backgroundColor: null,
       coverBlockId: null,
@@ -38,7 +36,6 @@ describe('BlockRenderer', () => {
         {
           __typename: 'RadioQuestionBlock',
           id: 'question',
-          journeyId: 'journey1.id',
           label: 'radio question',
           parentBlockId: 'step',
           description: 'description',
@@ -58,7 +55,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'ImageBlock',
       id: 'main',
-      journeyId: 'journey1.id',
       src: 'https://source.unsplash.com/random/1920x1080',
       alt: 'random image from unsplash',
       width: 1920,
@@ -78,7 +74,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
       id: 'main',
-      journeyId: 'journey1.id',
       label: 'radio option',
       parentBlockId: null,
       action: null,
@@ -96,7 +91,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'RadioQuestionBlock',
       id: 'main',
-      journeyId: 'journey1.id',
       label: 'radio question',
       parentBlockId: null,
       description: 'description',
@@ -114,7 +108,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'SignUpBlock',
       id: 'signUp',
-      journeyId: 'journey1.id',
       parentBlockId: null,
       submitLabel: null,
       submitIcon: null,
@@ -137,7 +130,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'StepBlock',
       id: 'step',
-      journeyId: 'journey1.id',
       parentBlockId: null,
       nextBlockId: null,
       locked: false,
@@ -145,7 +137,6 @@ describe('BlockRenderer', () => {
         {
           __typename: 'ButtonBlock',
           id: 'button',
-          journeyId: 'journey1.id',
           parentBlockId: 'question',
           label: 'Click to continue',
           buttonVariant: null,
@@ -166,7 +157,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
-      journeyId: 'journey1.id',
       parentBlockId: null,
       align: null,
       color: null,
@@ -182,7 +172,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      journeyId: 'journey1.id',
       videoContent: {
         __typename: 'VideoArclight',
         src: 'https://arc.gt/hls/2_0-FallingPlates/529'

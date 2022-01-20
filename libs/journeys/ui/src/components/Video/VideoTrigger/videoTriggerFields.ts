@@ -5,7 +5,6 @@ export const VIDEO_TRIGGER_FIELDS = gql`
   ${ACTION_FIELDS}
   fragment VideoTriggerFields on VideoTriggerBlock {
     id
-    journeyId
     parentBlockId
     triggerStart
     triggerAction: action {

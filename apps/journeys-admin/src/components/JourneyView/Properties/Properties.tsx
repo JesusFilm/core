@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
 import { ShareSection } from '../ShareSection'
-import { useJourney } from '../Context'
+import { useJourney } from '../../../libs/Context'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {

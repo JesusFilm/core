@@ -8,7 +8,6 @@ describe('GridItemBlock', () => {
     id: 'griditem',
     parentBlockId: 'gridItemContainer',
     __typename: 'GridItemBlock',
-    journeyId: 'journey1.id',
     xl: 6,
     lg: 6,
     sm: 6,
@@ -16,7 +15,6 @@ describe('GridItemBlock', () => {
       {
         id: 'typographyBlockId',
         __typename: 'TypographyBlock',
-        journeyId: 'journey1.id',
         parentBlockId: 'griditem',
         align: null,
         color: null,

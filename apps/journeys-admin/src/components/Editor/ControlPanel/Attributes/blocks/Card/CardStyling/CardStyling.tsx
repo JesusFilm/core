@@ -9,7 +9,6 @@ import cardStyleDark from '../../../../../../../../public/card-style-dark.png'
 
 interface CardStylingProps {
   id: string
-  journeyId: string
   themeMode: ThemeMode | null
   onSelect?: (themeMode: ThemeMode | null) => void
 }
@@ -21,7 +20,6 @@ enum themeColors {
 
 export function CardStyling({
   id,
-  journeyId,
   themeMode,
   onSelect
 }: CardStylingProps): ReactElement {

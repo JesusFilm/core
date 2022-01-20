@@ -57,7 +57,6 @@ export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_bl
 export interface GetJourney_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   label: string;
   buttonVariant: ButtonVariant | null;
@@ -71,7 +70,6 @@ export interface GetJourney_journey_blocks_ButtonBlock {
 export interface GetJourney_journey_blocks_CardBlock {
   __typename: "CardBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
@@ -104,7 +102,6 @@ export interface GetJourney_journey_blocks_CardBlock {
 export interface GetJourney_journey_blocks_GridContainerBlock {
   __typename: "GridContainerBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   spacing: number;
   direction: GridDirection;
@@ -115,7 +112,6 @@ export interface GetJourney_journey_blocks_GridContainerBlock {
 export interface GetJourney_journey_blocks_GridItemBlock {
   __typename: "GridItemBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   xl: number;
   lg: number;
@@ -125,7 +121,6 @@ export interface GetJourney_journey_blocks_GridItemBlock {
 export interface GetJourney_journey_blocks_ImageBlock {
   __typename: "ImageBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   src: string;
   alt: string;
@@ -172,7 +167,6 @@ export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journ
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   label: string;
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
@@ -181,7 +175,6 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   label: string;
   description: string | null;
@@ -228,7 +221,6 @@ export interface GetJourney_journey_blocks_SignUpBlock_submitIcon {
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   submitLabel: string | null;
   action: GetJourney_journey_blocks_SignUpBlock_action | null;
@@ -238,7 +230,6 @@ export interface GetJourney_journey_blocks_SignUpBlock {
 export interface GetJourney_journey_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   /**
    * locked will be set to true if the user should not be able to manually
@@ -257,7 +248,6 @@ export interface GetJourney_journey_blocks_StepBlock {
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   align: TypographyAlign | null;
   color: TypographyColor | null;
@@ -273,7 +263,6 @@ export interface GetJourney_journey_blocks_VideoBlock_videoContent {
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   title: string;
   muted: boolean | null;
@@ -329,7 +318,6 @@ export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourn
 export interface GetJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   /**
    * triggerStart sets the time as to when a video navigates to the next block,

@@ -9,7 +9,6 @@ describe('VideoComponent', () => {
   const block: TreeBlock<VideoFields> = {
     __typename: 'VideoBlock',
     id: 'videoBlockId',
-    journeyId: 'journey1.id',
     parentBlockId: '',
     autoplay: false,
     title: 'Video',
@@ -25,7 +24,6 @@ describe('VideoComponent', () => {
       {
         id: 'posterBlockId',
         __typename: 'ImageBlock',
-        journeyId: 'journey1.id',
         src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
         alt: 'random image from unsplash',
         width: 1600,

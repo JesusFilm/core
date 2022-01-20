@@ -9,7 +9,7 @@ import {
   TranslateRounded
 } from '@mui/icons-material'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { useJourney } from '../../Context'
+import { useJourney } from '../../../../libs/Context'
 
 export function JourneyDetails(): ReactElement {
   const journey = useJourney()

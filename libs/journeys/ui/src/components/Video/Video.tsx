@@ -42,7 +42,8 @@ export function Video({
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
-    VIDEO_RESPONSE_CREATE
+    VIDEO_RESPONSE_CREATE,
+    { ignoreResults: false }
   )
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 

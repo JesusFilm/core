@@ -10,7 +10,6 @@
 export interface StepFields {
   __typename: "StepBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   /**
    * locked will be set to true if the user should not be able to manually

@@ -10,7 +10,6 @@
 export interface GridItemFields {
   __typename: "GridItemBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   xl: number;
   lg: number;
