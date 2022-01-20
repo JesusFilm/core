@@ -23,4 +23,13 @@ describe('Image', () => {
       'random image from unsplash'
     )
   })
+
+  it('should render the default image', () => {
+    const { getByRole } = render(<Image {...block} src={null} alt={'defaultImageIcon'} />)
+    expect(getByRole('img')).toBeInTheDocument()
+    expect(getByRole('img')).toHaveAttribute(
+      'alt',
+      'defaultImageIcon'
+    )
+  })
 })
