@@ -10,6 +10,7 @@ import {
 import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import logo from '../../../public/logo.svg'
 
 export function SignIn(): ReactElement {
   // Do not SSR FirebaseUI, because it is not supported.
@@ -57,7 +58,7 @@ export function SignIn(): ReactElement {
             pt: 30
           }}
         >
-          <Image src="/logo.svg" alt="Next Steps" height={68} width={152} />
+          <Image src={logo} alt="Next Steps" height={68} width={152} />
           <Typography variant={'h5'} sx={{ mt: 20, mb: 3 }}>
             Sign In
           </Typography>

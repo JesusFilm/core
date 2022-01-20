@@ -10,6 +10,7 @@ import Box from '@mui/material/Box'
 import Image from 'next/image'
 import Link from 'next/link'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
+import logo from '../../../public/logo.svg'
 
 export const USER_JOURNEY_REQUEST = gql`
   mutation UserJourneyRequest($journeyId: ID!) {
@@ -54,7 +55,7 @@ export function JourneyInvite({
       >
         <Link href="/" passHref>
           <a>
-            <Image src="/logo.png" alt="Next Steps" height={68} width={152} />
+            <Image src={logo} alt="Next Steps" height={68} width={152} />
           </a>
         </Link>
       </Box>
