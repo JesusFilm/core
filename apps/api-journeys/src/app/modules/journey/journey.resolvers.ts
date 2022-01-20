@@ -57,7 +57,6 @@ export class JourneyResolvers {
     @Args('id') _key: string,
     @Args('idType') idType: IdType = IdType.slug
   ): Promise<Journey> {
-    console.log('uid', userId)
     const result: Journey =
       idType === IdType.slug
         ? await this.journeyService.getBySlug(_key)

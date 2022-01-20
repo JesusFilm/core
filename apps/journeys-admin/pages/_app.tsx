@@ -10,7 +10,9 @@ initAuth()
 
 function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
   const apolloClient = useApollo(
-    JSON.parse(pageProps.AuthUserSerialized)?._token ?? '',
+    pageProps.AuthUserSerialized != null
+      ? JSON.parse(pageProps.AuthUserSerialized)._token
+      : '',
     pageProps
   )
 
