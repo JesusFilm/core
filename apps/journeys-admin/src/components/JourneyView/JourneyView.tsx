@@ -17,7 +17,7 @@ export function JourneyView(): ReactElement {
   return (
     <Box sx={{ mr: breakpoints.md ? '328px' : 0 }}>
       <JourneysAppBar variant="view" />
-      <Box sx={{ p: 8, backgroundColor: 'background.paper' }}>
+      <Box sx={{ p: 8, pt: 20, backgroundColor: 'background.paper' }}>
         <Typography variant="h4">{journey.title}</Typography>
         <Typography variant="body1">{journey.description}</Typography>
       </Box>

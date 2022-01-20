@@ -1,7 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import { useRouter } from 'next/router'
@@ -13,7 +12,6 @@ import {
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components/JourneyList'
 import { useFirebase } from '../../src/libs/firebaseClient'
-import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -41,23 +39,17 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   }, [user, router, loading, journeys])
 
   return (
-    <>
-      <JourneysAppBar variant={'list'} />
-      <Container sx={{ my: 10 }}>
-        <Typography variant={'h1'} sx={{ mb: 8 }}>
-          Journeys
-        </Typography>
-        <JourneyList journeys={journeysToShow} />
-        <Button variant="contained" onClick={() => logOut()}>
-          Sign Out
+    <Container sx={{ my: 10 }}>
+      <JourneyList journeys={journeysToShow} />
+      <Button variant="contained" onClick={() => logOut()}>
+        Sign Out
+      </Button>
+      <Link href={`/journeys/new`} passHref>
+        <Button variant="contained" fullWidth>
+          New Journey
         </Button>
-        <Link href={`/journeys/new`} passHref>
-          <Button variant="contained" fullWidth>
-            New Journey
-          </Button>
-        </Link>
-      </Container>
-    </>
+      </Link>
+    </Container>
   )
 }
 
