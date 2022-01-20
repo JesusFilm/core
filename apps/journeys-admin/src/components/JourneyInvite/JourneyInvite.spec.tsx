@@ -1,10 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { USER_JOURNEY_REQUEST } from './JourneyInvite'
 import { JourneyInvite } from '.'
 
 describe('JourneyInvite', () => {
-  it('should render request invite an allow user to request invite', () => {
+  it('should render request invite an allow user to request invite', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -31,12 +31,14 @@ describe('JourneyInvite', () => {
     )
     expect(getByText('You need access')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Request Access' }))
-    expect(getByText('Request sent')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Request sent')).toBeInTheDocument())
   })
 
   it('should render invite request received', () => {
     const { getByText, queryByRole } = render(
-      <JourneyInvite journeySlug="journeySlug" requestReceived />
+      <MockedProvider mocks={[]}>
+        <JourneyInvite journeySlug="journeySlug" requestReceived />
+      </MockedProvider>
     )
     expect(
       queryByRole('button', { name: 'Request Access' })
