@@ -67,13 +67,23 @@ function JourneySlugPage(): ReactElement {
       )}
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
-        <JourneyInvite journeySlug={router.query.journeySlug as string} />
+        <>
+          <Head>
+            <title>Access Denied</title>
+          </Head>
+          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+        </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
-        <JourneyInvite
-          journeySlug={router.query.journeySlug as string}
-          requestReceived
-        />
+        <>
+          <Head>
+            <title>Access Denied</title>
+          </Head>
+          <JourneyInvite
+            journeySlug={router.query.journeySlug as string}
+            requestReceived
+          />
+        </>
       )}
     </>
   )
