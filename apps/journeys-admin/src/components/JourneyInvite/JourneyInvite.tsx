@@ -5,8 +5,12 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Card from '@mui/material/Card'
-import { CardContent } from '@mui/material'
+import CardContent from '@mui/material/CardContent'
+import Box from '@mui/material/Box'
+import Image from 'next/image'
+import Link from 'next/link'
 import { UserJourneyRequest } from '../../../__generated__/UserJourneyRequest'
+import JesusFilmSignInLogo from '../../../public/JesusFilmSignInLogo.svg'
 
 export const USER_JOURNEY_REQUEST = gql`
   mutation UserJourneyRequest($journeyId: ID!) {
@@ -40,6 +44,26 @@ export function JourneyInvite({
 
   return (
     <Container maxWidth="xs" sx={{ py: 10 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pb: 10
+        }}
+      >
+        <Link href="/" passHref>
+          <a>
+            <Image
+              src={JesusFilmSignInLogo}
+              alt="Jesus Film Sign In Logo"
+              height={68}
+              width={152}
+            />
+          </a>
+        </Link>
+      </Box>
       <Card variant="outlined">
         {!requestReceived && (
           <>
