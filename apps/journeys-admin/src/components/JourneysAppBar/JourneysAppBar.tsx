@@ -20,7 +20,7 @@ export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
       <AppBar position="fixed" color="default">
         {variant === 'view' ? (
           <Toolbar sx={{ flexGrow: 1, mr: breakpoints.md ? '328px' : 0 }}>
-            <Link href={`/journeys`} passHref>
+            <Link href="/" passHref>
               <IconButton
                 aria-label="back to journeys"
                 edge="start"
@@ -54,6 +54,7 @@ export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
           </Toolbar>
         )}
       </AppBar>
+      <Toolbar />
     </>
   )
 }

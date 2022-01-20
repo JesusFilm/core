@@ -13,6 +13,6 @@ describe('JourneysAppBar', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('link').getAttribute('href')).toEqual('/journeys')
+    expect(getByRole('link').getAttribute('href')).toEqual('/')
   })
 })

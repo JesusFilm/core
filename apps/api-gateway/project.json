@@ -40,6 +40,9 @@
             "command": "nx serve api-journeys"
           },
           {
+            "command": "nx serve api-users"
+          },
+          {
             "command": "nx serve api-gateway"
           }
         ],

@@ -70,12 +70,11 @@ export function InviteUserModal({
 
   const handleClose = (): void => setOpen(false)
 
-  // https://nextsteps.is/journeys/${journey.slug}/invite suggested link structure in figma
   const [showAlert, setShowAlert] = useState(false)
   const inviteLinkRef = useRef<string>()
 
   useEffect(() => {
-    inviteLinkRef.current = `${window.location.origin}/journeys/${journey.slug}/invite`
+    inviteLinkRef.current = `${window.location.origin}/journeys/${journey.slug}`
 
     if (!loading && data !== undefined) {
       setUsersJourneys(data.journey)
