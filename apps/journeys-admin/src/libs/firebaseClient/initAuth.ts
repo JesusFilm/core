@@ -44,7 +44,7 @@ export function initAuth(): void {
       const redirectPath =
         typeof window === 'undefined' ? ctx.resolvedUrl : window.location.href
       const redirectUrl = new URL(redirectPath, origin)
-      return `users/sign-in?redirect=${encodeURIComponent(
+      return `/users/sign-in?redirect=${encodeURIComponent(
         redirectUrl.toString()
       )}`
     },
@@ -65,7 +65,7 @@ export function initAuth(): void {
       if (redirectUrl != null) {
         // Verify the redirect URL host is allowed.
         // https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/11-Client_Side_Testing/04-Testing_for_Client_Side_URL_Redirect
-        const allowedHosts = ['localhost:3000', 'nfa-example.vercel.app']
+        const allowedHosts = ['localhost:4200', process.env.VERCEL_URL]
         const allowed = allowedHosts.includes(new URL(redirectUrl).host)
         if (allowed) {
           return redirectUrl
