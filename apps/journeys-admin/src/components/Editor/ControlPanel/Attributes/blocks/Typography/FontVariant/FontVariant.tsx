@@ -11,6 +11,8 @@ interface FontVariantProps {
   variant: TypographyVariant | null
 }
 
+// add mutaion to update back end data
+
 export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
   const [selected, setSelected] = useState(variant ?? 'body2')
 

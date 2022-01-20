@@ -29,6 +29,7 @@ export function Typography({
       <Attribute
         id={`${id}-text-color`}
         icon={
+          // update to use journey.themeMode
           <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
             <Paper
               sx={{

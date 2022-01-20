@@ -13,6 +13,8 @@ interface TextAlignProps {
   align: TypographyAlign | null
 }
 
+// add mutaion to update back end data
+
 export function TextAlign({ id, align }: TextAlignProps): ReactElement {
   const [selected, setSelected] = useState(align ?? 'left')
 

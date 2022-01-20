@@ -17,6 +17,8 @@ interface TextColorProps {
   color: TypographyColor | null
 }
 
+// add mutaion to update back end data
+
 export function TextColor({ id, color }: TextColorProps): ReactElement {
   const [selected, setSelected] = useState(color ?? 'primary')
 
@@ -55,6 +57,7 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
             sx={{ justifyContent: 'flex-start' }}
           >
             {
+              // update to use journey.themeMode
               <ThemeProvider
                 themeName={ThemeName.base}
                 themeMode={ThemeMode.light}
