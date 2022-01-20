@@ -44,9 +44,6 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
     <>
       <JourneysAppBar variant={'list'} />
       <Container sx={{ my: 10 }}>
-        <Typography variant={'h1'} sx={{ mb: 8 }}>
-          Journeys
-        </Typography>
         <JourneyList journeys={journeysToShow} />
         <Button variant="contained" onClick={() => logOut()}>
           Sign Out

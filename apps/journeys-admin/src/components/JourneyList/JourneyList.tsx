@@ -27,14 +27,12 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <>
-      <JourneysAppBar variant="list" />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
         sx={{
           justifyContent: 'space-between',
-          m: 6,
-          mt: { md: 13 }
+          m: 6
         }}
       >
         <Typography variant="h3">All Journeys</Typography>
