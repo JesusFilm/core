@@ -22,10 +22,10 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
 
   function handleChange(
     event: React.MouseEvent<HTMLElement>,
-    align: string
+    color: TypographyColor
   ): void {
-    if (align != null) {
-      setSelected(align)
+    if (color != null) {
+      setSelected(color)
     }
   }
 

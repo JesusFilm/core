@@ -34,10 +34,10 @@ export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
 
   function handleChange(
     event: React.MouseEvent<HTMLElement>,
-    align: string
+    varaint: TypographyVariant
   ): void {
-    if (align != null) {
-      setSelected(align)
+    if (varaint != null) {
+      setSelected(varaint)
     }
   }
 

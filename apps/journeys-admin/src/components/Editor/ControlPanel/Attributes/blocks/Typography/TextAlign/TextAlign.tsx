@@ -23,7 +23,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
 
   function handleChange(
     event: React.MouseEvent<HTMLElement>,
-    align: string
+    align: TypographyAlign
   ): void {
     if (align != null) {
       setSelected(align)
