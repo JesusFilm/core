@@ -127,48 +127,50 @@ export function Video({
   }, [handleVideoResponse, startAt, muted, autoplay, blockId, posterBlock])
 
   return (
-    <Box
-      data-testid="VideoComponent"
-      sx={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#000000',
-        borderRadius: 4,
-        overflow: 'hidden',
-        m: 0
-      }}
-    >
+    <>
       {videoContent.src != null ? (
-        <video
-          ref={videoRef}
-          className="video-js"
-          style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
+        <Box
+          data-testid="VideoComponent"
+          sx={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#000000',
+            borderRadius: 4,
+            overflow: 'hidden',
+            m: 0
+          }}
         >
-          <source
-            src={videoContent.src}
-            type={
-              videoContent.__typename === 'VideoArclight'
-                ? 'application/x-mpegURL'
-                : undefined
-            }
-          />
-        </video>
+          <video
+            ref={videoRef}
+            className="video-js"
+            style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
+          >
+            <source
+              src={videoContent.src}
+              type={
+                videoContent.__typename === 'VideoArclight'
+                  ? 'application/x-mpegURL'
+                  : undefined
+              }
+            />
+          </video>
+          {children?.map(
+            (option) =>
+              option.__typename === 'VideoTriggerBlock' && (
+                <VideoTrigger player={playerRef.current} {...option} />
+              )
+          )}
+        </Box>
       ) : (
         <NextImage
           src={`${window.location.origin}/DefaultVideoIcon.png`}
-          alt='DefaultVideoIcon'
+          alt="DefaultVideoIcon"
           height={100}
           width={100}
           objectFit="cover"
         />
       )}
-      {children?.map(
-        (option) =>
-          option.__typename === 'VideoTriggerBlock' && (
-            <VideoTrigger player={playerRef.current} {...option} />
-          )
-      )}
-    </Box>
+    </>
   )
 }

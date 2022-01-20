@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { Video } from '.'
 
@@ -9,7 +10,11 @@ const VideoStory = {
 }
 
 export const Default: Story = () => {
-  return <Video />
+  return (
+    <MockedProvider>
+      <Video />
+    </MockedProvider>
+  )
 }
 
 export default VideoStory as Meta
