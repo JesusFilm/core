@@ -57,12 +57,23 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const apolloClient = initializeApollo({
     token: (await AuthUser.getIdToken()) ?? ''
   })
-  await apolloClient.query({
-    query: GET_JOURNEY_FOR_EDIT,
-    variables: {
-      id: query.journeySlug
-    }
-  })
+  try {
+    await apolloClient.query({
+      query: GET_JOURNEY_FOR_EDIT,
+      variables: {
+        id: query.journeySlug
+      }
+    })
+  } catch (error) {
+    if (error?.graphQLErrors[0].extensions.code === 'FORBIDDEN')
+      return {
+        redirect: {
+          destination: `/journeys/${query.journeySlug as string}`,
+          permanent: false
+        }
+      }
+    throw error
+  }
 
   return addApolloState(apolloClient, {
     props: {
