@@ -287,7 +287,7 @@ export interface Block {
 }
 
 export interface VideoContent {
-    src: string;
+    src?: Nullable<string>;
 }
 
 export interface Response {
@@ -455,12 +455,12 @@ export class VideoArclight implements VideoContent {
     __typename?: 'VideoArclight';
     mediaComponentId: string;
     languageId: string;
-    src: string;
+    src?: Nullable<string>;
 }
 
 export class VideoGeneric implements VideoContent {
     __typename?: 'VideoGeneric';
-    src: string;
+    src?: Nullable<string>;
 }
 
 export class VideoBlock implements Block {

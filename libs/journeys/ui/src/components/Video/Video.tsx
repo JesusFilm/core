@@ -1,6 +1,7 @@
 import videojs from 'video.js'
 import { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { useMutation, gql } from '@apollo/client'
+import NextImage from 'next/image'
 import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
@@ -138,20 +139,30 @@ export function Video({
         m: 0
       }}
     >
-      <video
-        ref={videoRef}
-        className="video-js"
-        style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
-      >
-        <source
-          src={videoContent.src}
-          type={
-            videoContent.__typename === 'VideoArclight'
-              ? 'application/x-mpegURL'
-              : undefined
-          }
+      {videoContent.src != null ? (
+        <video
+          ref={videoRef}
+          className="video-js"
+          style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
+        >
+          <source
+            src={videoContent.src}
+            type={
+              videoContent.__typename === 'VideoArclight'
+                ? 'application/x-mpegURL'
+                : undefined
+            }
+          />
+        </video>
+      ) : (
+        <NextImage
+          src={`${window.location.origin}/DefaultVideoIcon.png`}
+          alt='DefaultVideoIcon'
+          height={100}
+          width={100}
+          objectFit="cover"
         />
-      </video>
+      )}
       {children?.map(
         (option) =>
           option.__typename === 'VideoTriggerBlock' && (

@@ -11,7 +11,7 @@ import { VideoBlockCreateInput } from "./globalTypes";
 
 export interface VideoBlockCreate_videoBlockCreate_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string;
+  src: string | null;
 }
 
 export interface VideoBlockCreate_videoBlockCreate {

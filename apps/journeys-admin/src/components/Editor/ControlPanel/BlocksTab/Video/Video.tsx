@@ -44,7 +44,7 @@ export function Video(): ReactElement {
             autoplay: true,
             muted: false,
             videoContent: {
-              src: ''
+              src: null
             },
             title: ''
           }
