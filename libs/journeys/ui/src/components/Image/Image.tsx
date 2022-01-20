@@ -29,15 +29,23 @@ export function Image({
         }
       }}
     >
-      <NextImage
-        src={
-          src != null ? src : `${window.location.origin}/DefaultImageIcon.png`
-        }
-        alt={alt}
-        height={height}
-        width={width}
-        objectFit="cover"
-      />
+      {src != null ? (
+        <NextImage
+          src={src}
+          alt={alt}
+          height={height}
+          width={width}
+          objectFit="cover"
+        />
+      ) : (
+        <NextImage
+          src={`${window.location.origin}/DefaultImageIcon.png`}
+          height={50}
+          width={50}
+          alt={alt}
+          objectFit="cover"
+        />
+      )}
     </Box>
   )
 }
