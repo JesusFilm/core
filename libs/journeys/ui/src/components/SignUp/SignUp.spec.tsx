@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { TreeBlock, handleAction } from '../..'
+import { TreeBlock, handleAction, EditorProvider } from '../..'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
@@ -22,9 +22,9 @@ jest.mock('next/router', () => ({
   }
 }))
 
-const props: TreeBlock<SignUpFields> = {
+const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
-  id: 'SignUp1',
+  id: 'signUp0.id',
   parentBlockId: '0',
   submitIcon: null,
   submitLabel: null,
@@ -42,7 +42,7 @@ interface SignUpMockProps {
 
 const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
-    <SignUp {...props} uuid={() => 'uuid'} />
+    <SignUp {...block} uuid={() => 'uuid'} />
   </MockedProvider>
 )
 
@@ -116,7 +116,7 @@ describe('SignUp', () => {
           variables: {
             input: {
               id: 'uuid',
-              blockId: 'SignUp1',
+              blockId: 'signUp0.id',
               name: 'Anon',
               email: '123abc@gmail.com'
             }
@@ -126,7 +126,7 @@ describe('SignUp', () => {
           data: {
             signUpResponseCreate: {
               id: 'uuid',
-              blockId: 'SignUp1',
+              blockId: 'signUp0.id',
               name: 'Anon',
               email: '123abc@gmail.com'
             }
@@ -161,4 +161,36 @@ describe('SignUp', () => {
 
   // it('should show error when submit fails', async () => {
   // })
+})
+
+describe('Admin SignUp', () => {
+  it('should edit submit button label on click', () => {
+    const { getByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              id: 'card0.id',
+              __typename: 'CardBlock',
+              parentBlockId: 'step0.id',
+              coverBlockId: null,
+              backgroundColor: null,
+              themeMode: null,
+              themeName: null,
+              fullscreen: false,
+              children: [block]
+            }
+          }}
+        >
+          <SignUp {...block} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByTestId('signUp-signUp0.id'))
+    expect(getByTestId('signUp-signUp0.id')).toHaveStyle(
+      'outline: 3px solid #C52D3A'
+    )
+    // Implement edit
+  })
 })

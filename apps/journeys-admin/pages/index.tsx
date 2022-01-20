@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -51,10 +50,7 @@ function IndexPage(): ReactElement {
   return (
     <>
       <JourneysAppBar variant="list" />
-      <Container sx={{ my: 10 }}>
-        <Typography variant="h1" sx={{ mb: 8 }}>
-          Journeys
-        </Typography>
+      <Container sx={{ mb: 10 }}>
         {data?.journeys != null && <JourneyList journeys={data.journeys} />}
         <Button variant="contained" onClick={signOut}>
           Sign Out
