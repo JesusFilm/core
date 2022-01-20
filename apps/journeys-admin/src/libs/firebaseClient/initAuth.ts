@@ -2,17 +2,18 @@ import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
 
 export function initAuth(): void {
+  const firebaseAdminInitConfig = JSON.parse(
+    process.env.GOOGLE_APPLICATION_JSON ?? '{}'
+  )
+
   init({
     loginAPIEndpoint: '/api/login',
     logoutAPIEndpoint: '/api/logout',
     firebaseAdminInitConfig: {
       credential: {
-        projectId: process.env.FIREBASE_PROJECT_ID ?? '',
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL ?? '',
-        privateKey:
-          process.env.FIREBASE_PRIVATE_KEY != null
-            ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY)
-            : undefined
+        projectId: firebaseAdminInitConfig.project_id ?? '',
+        clientEmail: firebaseAdminInitConfig.client_email ?? '',
+        privateKey: firebaseAdminInitConfig.private_key
       },
       databaseURL: ''
     },
