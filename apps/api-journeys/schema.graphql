@@ -286,6 +286,13 @@ type SignUpBlock implements Block {
   submitLabel: String
 }
 
+input SignUpBlockCreateInput {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  submitLabel: String!
+}
+
 type StepBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -604,6 +611,7 @@ extend type Mutation {
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
