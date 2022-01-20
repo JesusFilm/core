@@ -40,8 +40,8 @@ export function Image({
       ) : (
         <NextImage
           src={`${window.location.origin}/DefaultImageIcon.png`}
-          height={50}
-          width={50}
+          height={100}
+          width={100}
           alt={alt}
           objectFit="cover"
         />
