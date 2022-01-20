@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useState } from 'react'
+import { ReactElement, useContext } from 'react'
 import { TreeBlock, EditorContext } from '@core/journeys/ui'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
@@ -62,13 +62,10 @@ export function Card({
     })
   }
 
-  const [selectedThemeMode, setThemeMode] = useState(themeMode)
-  const [selectedBgColor, setBgColor] = useState(backgroundColor)
-
   const handleStyleChange = async (
     selected: ThemeMode | null
   ): Promise<void> => {
-    const { data } = await cardBlockUpdate({
+    await cardBlockUpdate({
       variables: {
         id: id,
         journeyId: journey.id,
@@ -77,14 +74,12 @@ export function Card({
         }
       }
     })
-    if (data?.cardBlockUpdate?.themeMode !== undefined)
-      setThemeMode(data.cardBlockUpdate.themeMode)
   }
 
   const handleBgColorChange = async (
     selected: string | null
   ): Promise<void> => {
-    const { data } = await cardBlockUpdate({
+    await cardBlockUpdate({
       variables: {
         id: id,
         journeyId: journey.id,
@@ -93,8 +88,6 @@ export function Card({
         }
       }
     })
-    if (data?.cardBlockUpdate?.backgroundColor !== undefined)
-      setBgColor(data.cardBlockUpdate.backgroundColor)
   }
 
   return (
@@ -111,13 +104,13 @@ export function Card({
                 m: 1,
                 borderRadius: 1000,
                 backgroundColor: (theme) =>
-                  selectedBgColor ?? theme.palette.text.primary
+                  backgroundColor ?? theme.palette.text.primary
               }}
             />
           </Paper>
         }
         name="Color"
-        value={selectedBgColor?.toUpperCase() ?? 'None'}
+        value={backgroundColor?.toUpperCase() ?? 'None'}
         description="Background Color"
         onClick={() => {
           dispatch({
@@ -127,7 +120,7 @@ export function Card({
             children: (
               <BackgroundColor
                 id={id}
-                backgroundColor={selectedBgColor}
+                backgroundColor={backgroundColor}
                 onSubmit={handleBgColorChange}
               />
             )
@@ -172,9 +165,9 @@ export function Card({
         id={`${id}-theme-mode`}
         name="Style"
         value={
-          selectedThemeMode == null
+          themeMode == null
             ? 'Default'
-            : selectedThemeMode === ThemeMode.dark
+            : themeMode === ThemeMode.dark
             ? 'Dark'
             : 'Light'
         }
@@ -187,7 +180,7 @@ export function Card({
             children: (
               <CardStyling
                 id={id}
-                themeMode={selectedThemeMode}
+                themeMode={themeMode}
                 onSelect={handleStyleChange}
               />
             )
