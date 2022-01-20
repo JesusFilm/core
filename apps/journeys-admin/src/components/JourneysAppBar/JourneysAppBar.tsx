@@ -54,7 +54,6 @@ export function JourneysAppBar({ variant }: JourneysAppBarProps): ReactElement {
           </Toolbar>
         )}
       </AppBar>
-      <Toolbar />
     </>
   )
 }

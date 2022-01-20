@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import AddIcon from '@mui/icons-material/Add'
 import { sortBy } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { JourneysAppBar } from '../JourneysAppBar'
 import { JourneySort, SortOrder } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
 
@@ -26,12 +27,14 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <>
+      <JourneysAppBar variant={'list'} />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
         sx={{
           justifyContent: 'space-between',
-          m: 6
+          m: 6,
+          mt: 20
         }}
       >
         <Typography variant="h3">All Journeys</Typography>

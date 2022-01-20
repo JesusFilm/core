@@ -12,7 +12,6 @@ import {
 } from '../../__generated__/GetJourneys'
 import { JourneyList } from '../../src/components/JourneyList'
 import { useFirebase } from '../../src/libs/firebaseClient'
-import { JourneysAppBar } from '../../src/components/JourneysAppBar'
 
 interface JourneysListPageProps {
   journeys: Journey[]
@@ -40,20 +39,17 @@ function JourneyListPage({ journeys }: JourneysListPageProps): ReactElement {
   }, [user, router, loading, journeys])
 
   return (
-    <>
-      <JourneysAppBar variant={'list'} />
-      <Container sx={{ my: 10 }}>
-        <JourneyList journeys={journeysToShow} />
-        <Button variant="contained" onClick={() => logOut()}>
-          Sign Out
+    <Container sx={{ my: 10 }}>
+      <JourneyList journeys={journeysToShow} />
+      <Button variant="contained" onClick={() => logOut()}>
+        Sign Out
+      </Button>
+      <Link href={`/journeys/new`} passHref>
+        <Button variant="contained" fullWidth>
+          New Journey
         </Button>
-        <Link href={`/journeys/new`} passHref>
-          <Button variant="contained" fullWidth>
-            New Journey
-          </Button>
-        </Link>
-      </Container>
-    </>
+      </Link>
+    </Container>
   )
 }
 
