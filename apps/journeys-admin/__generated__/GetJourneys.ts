@@ -20,6 +20,7 @@ export interface GetJourneys_journeys_userJourneys_user {
 
 export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
+  id: string;
   userId: string;
   journeyId: string;
   user: GetJourneys_journeys_userJourneys_user | null;

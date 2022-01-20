@@ -10,6 +10,8 @@ import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { ForbiddenError } from 'apollo-server-errors'
+import { get } from 'lodash'
 import { BlockService } from '../block/block.service'
 import {
   Block,
@@ -44,20 +46,14 @@ export class JourneyResolvers {
 
   @Query()
   @KeyAsId()
-  async journeys(@Args('status') status?: JourneyStatus): Promise<Journey[]> {
-    switch (status) {
-      case JourneyStatus.published:
-        return await this.journeyService.getAllPublishedJourneys()
-      case JourneyStatus.draft:
-        return await this.journeyService.getAllDraftJourneys()
-      default:
-        return await this.journeyService.getAll()
-    }
+  async adminJourneys(@CurrentUserId() userId: string): Promise<Journey[]> {
+    return await this.journeyService.getAllByOwnerEditor(userId)
   }
 
   @Query()
   @KeyAsId()
-  async journey(
+  async adminJourney(
+    @CurrentUserId() userId: string,
     @Args('id') _key: string,
     @Args('idType') idType: IdType = IdType.slug
   ): Promise<Journey> {
@@ -65,7 +61,39 @@ export class JourneyResolvers {
       idType === IdType.slug
         ? await this.journeyService.getBySlug(_key)
         : await this.journeyService.get(_key)
-    return resolveStatus(result)
+    const resolved = resolveStatus(result)
+    const ujResult = await this.userJourneyService.forJourneyUser(
+      get(resolved, '_key'),
+      userId
+    )
+    if (ujResult == null)
+      throw new ForbiddenError(
+        'User has not received an invitation to edit this journey.'
+      )
+    if (ujResult.role === UserJourneyRole.inviteRequested)
+      throw new ForbiddenError('User invitation pending.')
+
+    return resolved
+  }
+
+  @Query()
+  @KeyAsId()
+  async journeys(): Promise<Journey[]> {
+    return await this.journeyService.getAllPublishedJourneys()
+  }
+
+  @Query()
+  @KeyAsId()
+  async journey(
+    @Args('id') _key: string,
+    @Args('idType') idType: IdType = IdType.slug
+  ): Promise<Journey | null> {
+    const result: Journey =
+      idType === IdType.slug
+        ? await this.journeyService.getBySlug(_key)
+        : await this.journeyService.get(_key)
+    const resolved = resolveStatus(result)
+    return resolved.status === JourneyStatus.published ? resolved : null
   }
 
   @Mutation()
