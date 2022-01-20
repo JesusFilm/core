@@ -1,7 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import { GetServerSideProps } from 'next'
 import { gql } from '@apollo/client'
 import { useRouter } from 'next/router'
