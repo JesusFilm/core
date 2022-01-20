@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GetJourney_adminJourney as Journey } from '../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { InviteUserModal } from './InviteUserModal'
 

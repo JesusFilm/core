@@ -9,7 +9,7 @@ import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 // GraphQL query operation: GetJourneys
 // ====================================================
 
-export interface GetJourneys_adminJourneys_userJourneys_user {
+export interface GetJourneys_journeys_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -18,14 +18,14 @@ export interface GetJourneys_adminJourneys_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetJourneys_adminJourneys_userJourneys {
+export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   userId: string;
   journeyId: string;
-  user: GetJourneys_adminJourneys_userJourneys_user | null;
+  user: GetJourneys_journeys_userJourneys_user | null;
 }
 
-export interface GetJourneys_adminJourneys {
+export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
   title: string;
@@ -37,9 +37,9 @@ export interface GetJourneys_adminJourneys {
   themeMode: ThemeMode;
   locale: string;
   status: JourneyStatus;
-  userJourneys: GetJourneys_adminJourneys_userJourneys[] | null;
+  userJourneys: GetJourneys_journeys_userJourneys[] | null;
 }
 
 export interface GetJourneys {
-  adminJourneys: GetJourneys_adminJourneys[];
+  journeys: GetJourneys_journeys[];
 }

@@ -18,7 +18,7 @@ import { Editor } from '../../../src/components/Editor'
 const GET_JOURNEY_FOR_EDIT = gql`
   ${BLOCK_FIELDS}
   query GetJourneyForEdit($id: ID!) {
-    adminJourney(id: $id, idType: slug) {
+    journey: adminJourney(id: $id, idType: slug) {
       id
       slug
       themeName
@@ -39,12 +39,12 @@ function JourneyEditPage(): ReactElement {
 
   return (
     <>
-      {data?.adminJourney != null && (
+      {data?.journey != null && (
         <>
           <Head>
-            <title>{data.adminJourney.title}</title>
+            <title>{data.journey.title}</title>
           </Head>
-          <Editor journey={data.adminJourney} />
+          <Editor journey={data.journey} />
         </>
       )}
     </>

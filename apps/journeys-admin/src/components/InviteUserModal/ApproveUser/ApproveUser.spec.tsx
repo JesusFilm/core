@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { GetJourney_adminJourney_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { ApproveUser, USER_JOURNEY_APPROVE } from './ApproveUser'
 

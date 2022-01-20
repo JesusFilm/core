@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
 import Tooltip from '@mui/material/Tooltip'
 import { useBreakpoints } from '@core/shared/ui'
-import { GetJourneys_adminJourneys_userJourneys_user as User } from '../../../../../__generated__/GetJourneys'
+import { GetJourneys_journeys_userJourneys_user as User } from '../../../../../__generated__/GetJourneys'
 
 export interface AccessAvatarsProps {
   users: Array<User | null>

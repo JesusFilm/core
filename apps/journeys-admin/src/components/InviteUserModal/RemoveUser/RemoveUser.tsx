@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
 import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
-import { GetJourney_adminJourney_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
 
 interface RemoveUserProps {

@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import { GetJourney_adminJourney_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 
 interface PromoteUserProps {

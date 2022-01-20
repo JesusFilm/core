@@ -16,7 +16,7 @@ import { JourneysAppBar } from '../src/components/JourneysAppBar'
 
 const GET_JOURNEYS = gql`
   query GetJourneys {
-    adminJourneys {
+    journeys: adminJourneys {
       id
       title
       createdAt
@@ -54,9 +54,7 @@ function IndexPage(): ReactElement {
         <Typography variant="h1" sx={{ mb: 8 }}>
           Journeys
         </Typography>
-        {data?.adminJourneys != null && (
-          <JourneyList journeys={data.adminJourneys} />
-        )}
+        {data?.journeys != null && <JourneyList journeys={data.journeys} />}
         <Button variant="contained" onClick={signOut}>
           Sign Out
         </Button>
