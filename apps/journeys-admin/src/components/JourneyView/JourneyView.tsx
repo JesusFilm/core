@@ -5,8 +5,8 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { JourneysAppBar } from '../JourneysAppBar'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { Properties } from './Properties'
 import { useJourney } from '../../libs/Context'
+import { Properties } from './Properties'
 import { CardView } from './CardView'
 
 export function JourneyView(): ReactElement {

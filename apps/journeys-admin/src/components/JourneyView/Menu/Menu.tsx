@@ -17,6 +17,7 @@ import NextLink from 'next/link'
 import { useJourney } from '../../../libs/Context'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { Alert } from './Alert'
 import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
@@ -34,7 +35,7 @@ interface MenuProps {
 }
 
 export function Menu({ forceOpen }: MenuProps): ReactElement {
-  const journey = useJourney()
+  const journey: Journey = useJourney()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)

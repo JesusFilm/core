@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { JourneyProvider } from '../../libs/Context'
 import { JourneyView } from './JourneyView'
 import { defaultJourney, publishedJourney } from './data'
-import { JourneyProvider } from '../../libs/Context'
 
 const JourneyViewStory = {
   ...journeysAdminConfig,
