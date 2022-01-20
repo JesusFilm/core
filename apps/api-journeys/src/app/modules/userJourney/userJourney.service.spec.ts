@@ -79,7 +79,7 @@ describe('UserJourneyService', () => {
     })
 
     it('should return a userjourney', async () => {
-      expect(await service.forJourneyUser('1', 2)).toEqual(userJourney)
+      expect(await service.forJourneyUser('1', '2')).toEqual(userJourney)
     })
   })
 

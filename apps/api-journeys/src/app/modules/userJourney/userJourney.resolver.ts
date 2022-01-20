@@ -11,6 +11,7 @@ import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import {
+  IdType,
   Journey,
   UserJourney,
   UserJourneyRole
@@ -36,11 +37,19 @@ export class UserJourneyResolver {
   @KeyAsId()
   async userJourneyRequest(
     @Args('journeyId') journeyId: string,
+    @Args('idType') idType: IdType = IdType.slug,
     @CurrentUserId() userId: string
   ): Promise<UserJourney> {
+    const journey =
+      idType === IdType.slug
+        ? await this.journeyService.getBySlug(journeyId)
+        : await this.journeyService.get(journeyId)
+
+    if (journey == null) throw new UserInputError('journey does not exist')
+
     return await this.userJourneyService.save({
       userId,
-      journeyId,
+      journeyId: (journey as { _key: string })._key,
       role: 'inviteRequested'
     })
   }
