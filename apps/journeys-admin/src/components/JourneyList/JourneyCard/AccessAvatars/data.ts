@@ -1,6 +1,6 @@
-import { GetJourneys_journeys_userJourneys_user } from '../../../../../__generated__/GetJourneys'
+import { GetJourneys_adminJourneys_userJourneys_user } from '../../../../../__generated__/GetJourneys'
 
-export const user1: GetJourneys_journeys_userJourneys_user = {
+export const user1: GetJourneys_adminJourneys_userJourneys_user = {
   __typename: 'User',
   id: '1',
   firstName: 'Amin',
@@ -9,7 +9,7 @@ export const user1: GetJourneys_journeys_userJourneys_user = {
   email: 'amin@email.com'
 }
 
-export const user2: GetJourneys_journeys_userJourneys_user = {
+export const user2: GetJourneys_adminJourneys_userJourneys_user = {
   __typename: 'User',
   id: '2',
   firstName: 'Horace',
@@ -17,7 +17,7 @@ export const user2: GetJourneys_journeys_userJourneys_user = {
   imageUrl: 'https://bit.ly/3rgHd6a',
   email: 'horace@email.com'
 }
-export const user3: GetJourneys_journeys_userJourneys_user = {
+export const user3: GetJourneys_adminJourneys_userJourneys_user = {
   __typename: 'User',
   id: '3',
   firstName: 'Coral',
@@ -25,7 +25,7 @@ export const user3: GetJourneys_journeys_userJourneys_user = {
   imageUrl: 'https://bit.ly/3nlwUwJ',
   email: 'coral@email.com'
 }
-export const user4: GetJourneys_journeys_userJourneys_user = {
+export const user4: GetJourneys_adminJourneys_userJourneys_user = {
   __typename: 'User',
   id: '4',
   firstName: 'Effie',
@@ -33,7 +33,7 @@ export const user4: GetJourneys_journeys_userJourneys_user = {
   imageUrl: 'https://bit.ly/3GqcDgK',
   email: 'effie@email.com'
 }
-export const user5: GetJourneys_journeys_userJourneys_user = {
+export const user5: GetJourneys_adminJourneys_userJourneys_user = {
   __typename: 'User',
   id: '5',
   firstName: 'Janelle',
@@ -42,7 +42,7 @@ export const user5: GetJourneys_journeys_userJourneys_user = {
   email: 'jan@email.com'
 }
 
-export const user6: GetJourneys_journeys_userJourneys_user = {
+export const user6: GetJourneys_adminJourneys_userJourneys_user = {
   __typename: 'User',
   id: '6',
   firstName: 'Drake',

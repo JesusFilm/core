@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import { FramePortal } from '../FramePortal'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_adminJourney_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../HorizontalSelect'
 

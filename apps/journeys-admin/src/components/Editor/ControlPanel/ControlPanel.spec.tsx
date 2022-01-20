@@ -1,6 +1,6 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_adminJourney_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
 import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {

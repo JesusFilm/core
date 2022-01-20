@@ -55,8 +55,10 @@ describe('Step', () => {
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn((_key) => (_key == journey._key ? journey : undefined)),
-      getBySlug: jest.fn((slug) => (slug == journey.slug ? journey : undefined))
+      get: jest.fn((_key) => (_key === journey._key ? journey : undefined)),
+      getBySlug: jest.fn((slug) =>
+        slug === journey.slug ? journey : undefined
+      )
     })
   }
 

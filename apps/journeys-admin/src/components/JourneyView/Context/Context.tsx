@@ -1,5 +1,5 @@
 import { createContext, ReactElement, ReactNode, useContext } from 'react'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetJourney_adminJourney as Journey } from '../../../../__generated__/GetJourney'
 
 // Must set initial context for useContext, but it will always be a journey
 // Else JourneyView page will not load

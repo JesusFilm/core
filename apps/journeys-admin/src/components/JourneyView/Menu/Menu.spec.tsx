@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetJourney_adminJourney as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../Context'
 import { defaultJourney, publishedJourney } from '../data'
 import { Menu } from './Menu'

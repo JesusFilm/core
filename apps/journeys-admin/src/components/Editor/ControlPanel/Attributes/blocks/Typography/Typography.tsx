@@ -6,7 +6,7 @@ import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
-import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_adminJourney_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import { Attribute } from '../..'
 
 export function Typography({

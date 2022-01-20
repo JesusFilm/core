@@ -11,7 +11,7 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { GetJourneyForEdit_journey_blocks } from '../../../__generated__/GetJourneyForEdit'
+import { GetJourneyForEdit_adminJourney_blocks } from '../../../__generated__/GetJourneyForEdit'
 import { Editor } from '.'
 
 const EditorStory = {
@@ -24,7 +24,7 @@ const EditorStory = {
   }
 }
 
-const blocks: GetJourneyForEdit_journey_blocks[] = [
+const blocks: GetJourneyForEdit_adminJourney_blocks[] = [
   {
     id: 'step0.id',
     __typename: 'StepBlock',

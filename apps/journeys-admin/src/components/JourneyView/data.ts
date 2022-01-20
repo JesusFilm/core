@@ -1,4 +1,4 @@
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { GetJourney_adminJourney as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ButtonColor,

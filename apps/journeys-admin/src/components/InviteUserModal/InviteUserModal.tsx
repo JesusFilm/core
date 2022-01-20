@@ -21,8 +21,8 @@ import {
 } from '@mui/icons-material'
 import { gql, useLazyQuery } from '@apollo/client'
 import {
-  GetJourney_journey_userJourneys as UserJourneys,
-  GetJourney_journey as Journey
+  GetJourney_adminJourney_userJourneys as UserJourneys,
+  GetJourney_adminJourney as Journey
 } from '../../../__generated__/GetJourney'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
