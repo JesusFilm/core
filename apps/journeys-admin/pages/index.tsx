@@ -28,6 +28,7 @@ const GET_JOURNEYS = gql`
       locale
       status
       userJourneys {
+        id
         userId
         journeyId
         user {
