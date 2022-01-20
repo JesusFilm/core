@@ -33,7 +33,7 @@ export function createApolloClient(
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: authLink.concat(httpLink),
-    cache
+    cache: cache()
   })
 }
 
@@ -68,6 +68,7 @@ export function initializeApollo({
   }
   // For SSG and SSR always create a new Apollo Client
   if (typeof window === 'undefined') return _apolloClient
+
   // Create the Apollo Client once in the client
   if (apolloClient == null) apolloClient = _apolloClient
 
