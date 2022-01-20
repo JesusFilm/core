@@ -35,7 +35,7 @@ interface MenuProps {
 }
 
 export function Menu({ forceOpen }: MenuProps): ReactElement {
-  const journey: Journey = useJourney()
+  const journey = useJourney<Journey>()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)

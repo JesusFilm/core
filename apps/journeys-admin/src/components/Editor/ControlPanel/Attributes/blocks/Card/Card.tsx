@@ -13,6 +13,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {
+  GetJourneyForEdit_journey as Journey,
   GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
   GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
   GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
@@ -51,7 +52,7 @@ export function Card({
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
   const { dispatch } = useContext(EditorContext)
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
 
   const handleBackgroundMediaClick = (): void => {
     dispatch({

@@ -57,7 +57,6 @@ describe('CardStyling', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
-      journeyId: 'journey1',
       parentBlockId: 'step1.id',
       coverBlockId: null,
       backgroundColor: null,
@@ -75,7 +74,6 @@ describe('CardStyling', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
-      journeyId: 'journey1',
       parentBlockId: 'step1.id',
       coverBlockId: null,
       backgroundColor: null,

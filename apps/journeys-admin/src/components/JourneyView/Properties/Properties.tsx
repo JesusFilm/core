@@ -7,11 +7,12 @@ import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
 import { ShareSection } from '../ShareSection'
 import { useJourney } from '../../../libs/Context'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
   const breakpoints = useBreakpoints()
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
 
   return breakpoints.md ? (
     <Drawer variant="permanent" anchor="right">

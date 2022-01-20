@@ -5,12 +5,13 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { JourneysAppBar } from '../JourneysAppBar'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { useJourney } from '../../libs/Context'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
 
 export function JourneyView(): ReactElement {
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
   const breakpoints = useBreakpoints()
   const blocks = journey.blocks != null ? transformer(journey.blocks) : []
 
