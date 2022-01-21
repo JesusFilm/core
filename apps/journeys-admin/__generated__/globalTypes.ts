@@ -163,7 +163,7 @@ export interface RadioQuestionResponseCreateInput {
 }
 
 export interface SignUpBlockCreateInput {
-  id: string;
+  id?: string | null;
   journeyId: string;
   parentBlockId?: string | null;
   submitLabel: string;

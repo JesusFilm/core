@@ -173,7 +173,7 @@ export class ImageBlockUpdateInput {
 }
 
 export class SignUpBlockCreateInput {
-    id: string;
+    id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
     submitLabel: string;
