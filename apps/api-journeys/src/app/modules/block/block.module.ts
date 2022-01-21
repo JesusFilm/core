@@ -12,7 +12,10 @@ import {
   VideoBlockResolvers,
   VideoContentResolvers
 } from './video/video.resolvers'
-import { RadioQuestionBlockResolvers } from './radioQuestion/radioQuestion.resolvers'
+import {
+  RadioOptionBlockResolvers,
+  RadioQuestionBlockResolvers
+} from './radioQuestion/radioQuestion.resolvers'
 
 @Module({
   imports: [DatabaseModule],
@@ -21,6 +24,7 @@ import { RadioQuestionBlockResolvers } from './radioQuestion/radioQuestion.resol
     BlockResolvers,
     CardBlockResolvers,
     ImageBlockResolvers,
+    RadioOptionBlockResolvers,
     RadioQuestionBlockResolvers,
     StepBlockResolvers,
     TypographyBlockResolvers,

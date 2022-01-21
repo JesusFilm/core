@@ -11,6 +11,26 @@ import {
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
+@Resolver('RadioOptionBlock')
+export class RadioOptionBlockResolvers {
+  constructor(private readonly blockService: BlockService) {}
+
+  @Mutation()
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
+  @IdAsKey()
+  async radioOptionBlockCreate(
+    @Args('input') input: RadioOptionBlockCreateInput & { __typename }
+  ): Promise<RadioOptionBlock> {
+    input.__typename = 'RadioOptionBlock'
+    return await this.blockService.save(input)
+  }
+}
+
 @Resolver('RadioQuestionBlock')
 export class RadioQuestionBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
@@ -26,21 +46,6 @@ export class RadioQuestionBlockResolvers {
     @Args('input') input: RadioQuestionBlockCreateInput & { __typename }
   ): Promise<RadioQuestionBlock> {
     input.__typename = 'RadioQuestionBlock'
-    return await this.blockService.save(input)
-  }
-
-  @Mutation()
-  @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor
-    ])
-  )
-  @IdAsKey()
-  async radioOptionBlockCreate(
-    @Args('input') input: RadioOptionBlockCreateInput & { __typename }
-  ): Promise<RadioOptionBlock> {
-    input.__typename = 'RadioOptionBlock'
     return await this.blockService.save(input)
   }
 }
