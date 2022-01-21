@@ -1,6 +1,4 @@
 import { ReactElement } from 'react'
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -11,7 +9,7 @@ import {
 import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
 import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
-import { AppBar } from '../src/components/AppBar'
+import { PageWrapper } from '../src/components/PageWrapper'
 
 const GET_JOURNEYS = gql`
   query GetJourneys {
@@ -44,19 +42,12 @@ const GET_JOURNEYS = gql`
 `
 
 function IndexPage(): ReactElement {
-  const { signOut } = useAuthUser()
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
 
   return (
-    <>
-      <AppBar title="Journeys" />
-      <Container sx={{ mb: 10 }}>
-        {data?.journeys != null && <JourneyList journeys={data.journeys} />}
-        <Button variant="contained" onClick={signOut}>
-          Sign Out
-        </Button>
-      </Container>
-    </>
+    <PageWrapper title="Journeys">
+      {data?.journeys != null && <JourneyList journeys={data.journeys} />}
+    </PageWrapper>
   )
 }
 

@@ -14,7 +14,7 @@ import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/components/JourneyView/Context'
 import { JourneyView } from '../../src/components/JourneyView'
 import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
-import { AppBar } from '../../src/components/AppBar'
+import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 
 const GET_JOURNEY = gql`
@@ -63,13 +63,14 @@ function JourneySlugPage(): ReactElement {
             <title>{data.journey.title}</title>
           </Head>
           <JourneyProvider value={data.journey}>
-            <AppBar
+            <PageWrapper
               title="Journey Details"
               showDrawer
               backHref="/"
               Menu={<Menu />}
-            />
-            <JourneyView />
+            >
+              <JourneyView />
+            </PageWrapper>
           </JourneyProvider>
         </>
       )}

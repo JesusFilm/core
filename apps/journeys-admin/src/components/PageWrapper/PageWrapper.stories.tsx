@@ -2,19 +2,21 @@ import { Meta, Story } from '@storybook/react'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { AppBarProps } from './AppBar'
-import { AppBar } from '.'
+import { PageWrapperProps } from './PageWrapper'
+import { PageWrapper } from '.'
 
-const AppBarStory = {
+const PageWrapperStory = {
   ...journeysAdminConfig,
-  component: AppBar,
-  title: 'Journeys-Admin/AppBar',
+  component: PageWrapper,
+  title: 'Journeys-Admin/PageWrapper',
   parameters: {
     layout: 'fullscreen'
   }
 }
 
-const Template: Story<AppBarProps> = ({ ...args }) => <AppBar {...args} />
+const Template: Story<PageWrapperProps> = ({ ...args }) => (
+  <PageWrapper {...args} />
+)
 
 export const Default = Template.bind({})
 Default.args = { title: 'Journeys' }
@@ -31,4 +33,4 @@ Complete.args = {
   )
 }
 
-export default AppBarStory as Meta
+export default PageWrapperStory as Meta

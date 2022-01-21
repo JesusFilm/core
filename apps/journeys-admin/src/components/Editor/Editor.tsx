@@ -28,7 +28,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
           display: 'flex',
           height: '100vh',
           flexDirection: 'column',
-          marginRight: { md: `${DRAWER_WIDTH}px` }
+          marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
         <Box

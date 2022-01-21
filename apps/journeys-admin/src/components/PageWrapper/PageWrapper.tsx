@@ -7,24 +7,27 @@ import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import Box from '@mui/material/Box'
 import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import Image from 'next/image'
 
-export interface AppBarProps {
+export interface PageWrapperProps {
   backHref?: string
   showDrawer?: boolean
   title: string
   Menu?: ReactNode
+  children?: ReactNode
 }
 
-export function AppBar({
+export function PageWrapper({
   backHref,
   showDrawer,
   title,
-  Menu
-}: AppBarProps): ReactElement {
+  Menu,
+  children
+}: PageWrapperProps): ReactElement {
   return (
     <>
       <MuiAppBar
@@ -75,25 +78,39 @@ export function AppBar({
         sx={{
           width: '72px',
           flexShrink: 0,
+          display: { xs: 'none', sm: 'flex' },
           '& .MuiDrawer-paper': {
             width: '72px',
             boxSizing: 'border-box',
-            backgroundColor: '#25262E'
+            backgroundColor: '#25262E',
+            border: 0
           }
         }}
         variant="permanent"
         anchor="left"
       >
-        <Toolbar sx={{ border: 'transparent' }} />
+        <Toolbar sx={{ border: 'transparent', justifyContent: 'center', p: 0 }}>
+          <Image
+            src="/taskbar-icon.png"
+            width={32}
+            height={32}
+            layout="fixed"
+            alt="Next Steps"
+          />
+        </Toolbar>
         <List>
-          <ListItem button>
-            <ListItemIcon>
+          <Link href="/" passHref>
+            <ListItem
+              sx={{ justifyContent: 'center', color: '#6D6F81' }}
+              button
+            >
               <ExploreRoundedIcon />
-            </ListItemIcon>
-          </ListItem>
+            </ListItem>
+          </Link>
         </List>
         <Divider sx={{ borderColor: '#383940' }} />
       </Drawer>
+      <Box sx={{ ml: { sm: '72px' } }}>{children}</Box>
     </>
   )
 }

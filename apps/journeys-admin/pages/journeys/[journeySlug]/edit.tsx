@@ -14,7 +14,7 @@ import {
 } from '../../../src/libs/apolloClient'
 import { GetJourneyForEdit } from '../../../__generated__/GetJourneyForEdit'
 import { Editor } from '../../../src/components/Editor'
-import { AppBar } from '../../../src/components/AppBar'
+import { PageWrapper } from '../../../src/components/PageWrapper'
 
 const GET_JOURNEY_FOR_EDIT = gql`
   ${BLOCK_FIELDS}
@@ -45,12 +45,13 @@ function JourneyEditPage(): ReactElement {
           <Head>
             <title>{data.journey.title}</title>
           </Head>
-          <AppBar
+          <PageWrapper
             title={data.journey.title}
             showDrawer
             backHref={`/journeys/${router.query.journeySlug as string}`}
-          />
-          <Editor journey={data.journey} />
+          >
+            <Editor journey={data.journey} />
+          </PageWrapper>
         </>
       )}
     </>
