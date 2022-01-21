@@ -172,6 +172,20 @@ export class ImageBlockUpdateInput {
     alt?: Nullable<string>;
 }
 
+export class RadioOptionBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    label: string;
+}
+
+export class RadioQuestionBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    label: string;
+}
+
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -531,6 +545,10 @@ export abstract class IMutation {
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
     abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+
+    abstract radioOptionBlockCreate(input: RadioOptionBlockCreateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
+
+    abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
