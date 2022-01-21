@@ -12,6 +12,7 @@ import {
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 import { GetJourneyForEdit_journey_blocks } from '../../../__generated__/GetJourneyForEdit'
+import { PageWrapper } from '../PageWrapper'
 import { Editor } from '.'
 
 const EditorStory = {
@@ -440,18 +441,24 @@ const blocks: GetJourneyForEdit_journey_blocks[] = [
 
 const Template: Story = () => (
   <MockedProvider>
-    <Editor
-      journey={{
-        __typename: 'Journey',
-        id: 'journeyId',
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        title: 'NUA Journey: Ep.3 – Decision',
-        slug: 'nua-journey-ep-3-decision',
-        description: 'my cool journey',
-        blocks
-      }}
-    />
+    <PageWrapper
+      title="NUA Journey: Ep.3 – Decision"
+      showDrawer
+      backHref="/journeys/nua-journey-ep-3-decision"
+    >
+      <Editor
+        journey={{
+          __typename: 'Journey',
+          id: 'journeyId',
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          title: 'NUA Journey: Ep.3 – Decision',
+          slug: 'nua-journey-ep-3-decision',
+          description: 'my cool journey',
+          blocks
+        }}
+      />
+    </PageWrapper>
   </MockedProvider>
 )
 
