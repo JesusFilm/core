@@ -5,6 +5,7 @@ import { BLOCK_FIELDS } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
@@ -51,6 +52,7 @@ const GET_JOURNEY = gql`
 
 function JourneySlugPage(): ReactElement {
   const router = useRouter()
+  const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeySlug }
   })
@@ -68,6 +70,7 @@ function JourneySlugPage(): ReactElement {
               showDrawer
               backHref="/"
               Menu={<Menu />}
+              AuthUser={AuthUser}
             >
               <JourneyView />
             </PageWrapper>

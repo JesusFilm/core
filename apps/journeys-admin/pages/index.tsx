@@ -43,9 +43,10 @@ const GET_JOURNEYS = gql`
 
 function IndexPage(): ReactElement {
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
+  const AuthUser = useAuthUser()
 
   return (
-    <PageWrapper title="Journeys">
+    <PageWrapper title="Journeys" AuthUser={AuthUser}>
       {data?.journeys != null && <JourneyList journeys={data.journeys} />}
     </PageWrapper>
   )

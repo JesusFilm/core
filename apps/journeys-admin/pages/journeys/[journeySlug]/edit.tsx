@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
 import {
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
@@ -34,6 +35,7 @@ const GET_JOURNEY_FOR_EDIT = gql`
 `
 function JourneyEditPage(): ReactElement {
   const router = useRouter()
+  const AuthUser = useAuthUser()
   const { data } = useQuery<GetJourneyForEdit>(GET_JOURNEY_FOR_EDIT, {
     variables: { id: router.query.journeySlug }
   })
@@ -49,6 +51,7 @@ function JourneyEditPage(): ReactElement {
             title={data.journey.title}
             showDrawer
             backHref={`/journeys/${router.query.journeySlug as string}`}
+            AuthUser={AuthUser}
           >
             <Editor journey={data.journey} />
           </PageWrapper>

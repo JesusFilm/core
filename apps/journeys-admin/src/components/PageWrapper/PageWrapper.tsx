@@ -1,5 +1,7 @@
-import { ReactElement, ReactNode } from 'react'
-import MuiAppBar from '@mui/material/AppBar'
+import { ReactElement, ReactNode, useState } from 'react'
+import AppBar from '@mui/material/AppBar'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -7,11 +9,18 @@ import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
 import Box from '@mui/material/Box'
+import Avatar from '@mui/material/Avatar'
+import Stack from '@mui/material/Stack'
 import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Image from 'next/image'
+import { AuthUser } from 'next-firebase-auth'
+import taskbarIcon from '../../../public/taskbar-icon.svg'
 
 export interface PageWrapperProps {
   backHref?: string
@@ -19,18 +28,29 @@ export interface PageWrapperProps {
   title: string
   Menu?: ReactNode
   children?: ReactNode
+  AuthUser?: AuthUser
 }
 
 export function PageWrapper({
   backHref,
   showDrawer,
   title,
-  Menu,
-  children
+  Menu: CustomMenu,
+  children,
+  AuthUser
 }: PageWrapperProps): ReactElement {
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const profileOpen = Boolean(profileAnchorEl)
+  const handleProfileClick = (event): void => {
+    setProfileAnchorEl(event.currentTarget)
+  }
+  const handleProfileClose = (): void => {
+    setProfileAnchorEl(null)
+  }
+
   return (
     <>
-      <MuiAppBar
+      <AppBar
         position="fixed"
         color="default"
         sx={{
@@ -49,7 +69,7 @@ export function PageWrapper({
             <Link href={backHref} passHref>
               <IconButton
                 edge="start"
-                size="large"
+                size="small"
                 color="inherit"
                 sx={{ mr: 2 }}
               >
@@ -65,9 +85,9 @@ export function PageWrapper({
           >
             {title}
           </Typography>
-          {Menu != null && Menu}
+          {CustomMenu != null && CustomMenu}
         </Toolbar>
-      </MuiAppBar>
+      </AppBar>
       <Toolbar
         sx={{
           ml: { sm: '72px' },
@@ -91,7 +111,7 @@ export function PageWrapper({
       >
         <Toolbar sx={{ border: 'transparent', justifyContent: 'center', p: 0 }}>
           <Image
-            src="/taskbar-icon.png"
+            src={taskbarIcon}
             width={32}
             height={32}
             layout="fixed"
@@ -101,14 +121,78 @@ export function PageWrapper({
         <List>
           <Link href="/" passHref>
             <ListItem
-              sx={{ justifyContent: 'center', color: '#6D6F81' }}
+              sx={{ justifyContent: 'center', color: '#6D6F81', fontSize: 28 }}
               button
             >
-              <ExploreRoundedIcon />
+              <ExploreRoundedIcon fontSize="inherit" />
             </ListItem>
           </Link>
         </List>
-        <Divider sx={{ borderColor: '#383940' }} />
+        {AuthUser != null && (
+          <>
+            <Divider sx={{ borderColor: '#383940' }} />
+            <List>
+              <ListItem
+                sx={{ justifyContent: 'center', color: '#6D6F81' }}
+                button
+                onClick={handleProfileClick}
+              >
+                <Avatar
+                  alt={AuthUser.displayName ?? undefined}
+                  src={AuthUser.photoURL ?? undefined}
+                  sx={{ width: 24, height: 24 }}
+                />
+              </ListItem>
+            </List>
+            <Menu
+              anchorEl={profileAnchorEl}
+              open={profileOpen}
+              onClose={handleProfileClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left'
+              }}
+            >
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{ py: 2, px: 4 }}
+                alignItems="center"
+              >
+                <Box>
+                  <Avatar
+                    alt={AuthUser.displayName ?? undefined}
+                    src={AuthUser.photoURL ?? undefined}
+                  />
+                </Box>
+                <Box>
+                  <Typography>{AuthUser.displayName}</Typography>
+                  {AuthUser.email != null && (
+                    <Typography variant="body2" color="textSecondary">
+                      {AuthUser.email}
+                    </Typography>
+                  )}
+                </Box>
+              </Stack>
+              <Divider />
+              <MenuItem
+                onClick={async () => {
+                  handleProfileClose()
+                  await AuthUser.signOut()
+                }}
+              >
+                <ListItemIcon>
+                  <LogoutRoundedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Logout</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
+        )}
       </Drawer>
       <Box sx={{ ml: { sm: '72px' } }}>{children}</Box>
     </>

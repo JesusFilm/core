@@ -1,6 +1,7 @@
 import { Meta, Story } from '@storybook/react'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
+import { noop } from 'lodash'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapperProps } from './PageWrapper'
 import { PageWrapper } from '.'
@@ -26,6 +27,12 @@ Complete.args = {
   backHref: '/',
   showDrawer: true,
   title: 'Journey Details',
+  AuthUser: {
+    displayName: 'Amin One',
+    photoURL: 'https://bit.ly/3Gth4Yf',
+    email: 'amin@email.com',
+    signOut: noop
+  },
   Menu: (
     <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
       <MenuRounded />
