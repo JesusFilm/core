@@ -32,11 +32,7 @@ describe('Step', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider
-            initialState={{
-              journey: { id: 'journeyId' }
-            }}
-          >
+          <EditorProvider>
             <Drawer />
             <Step {...step} />
           </EditorProvider>
