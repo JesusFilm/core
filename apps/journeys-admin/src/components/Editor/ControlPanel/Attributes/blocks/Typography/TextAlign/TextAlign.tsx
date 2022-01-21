@@ -6,7 +6,11 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
-import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
+import { gql, useMutation } from '@apollo/client'
+import {
+  TypographyAlign,
+  TypographyBlockUpdateInput
+} from '../../../../../../../../__generated__/globalTypes'
 
 interface TextAlignProps {
   id: string
@@ -14,8 +18,24 @@ interface TextAlignProps {
 }
 
 // add mutaion to update back end data
+export const TYPOGRAPHY_BLOCK_UPDATE = gql`
+  mutation TypographyBlockUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: TypographyBlockUpdateInput!
+  ) {
+    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      align
+    }
+  }
+`
 
 export function TextAlign({ id, align }: TextAlignProps): ReactElement {
+  const [typographyBlockUpdate] = useMutation<{
+    typographyBlockUpdate: TypographyBlockUpdateInput
+  }>(TYPOGRAPHY_BLOCK_UPDATE)
+
   const [selected, setSelected] = useState(align ?? 'left')
 
   const order = ['left', 'center', 'right']
@@ -23,11 +43,18 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
     (a, b) => order.indexOf(a) - order.indexOf(b)
   )
 
-  function handleChange(
+  const handleChange = async (
     event: React.MouseEvent<HTMLElement>,
     align: TypographyAlign
-  ): void {
+  ): Promise<void> => {
     if (align != null) {
+      await typographyBlockUpdate({
+        variables: {
+          id,
+          journeyId: 'journey.id',
+          input: { align }
+        }
+      })
       setSelected(align)
     }
   }
