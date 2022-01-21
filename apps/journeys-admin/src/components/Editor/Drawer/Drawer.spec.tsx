@@ -47,6 +47,7 @@ describe('Drawer', () => {
       const { getByTestId } = render(
         <EditorProvider
           initialState={{
+            journey: { id: 'journeyId' },
             drawerTitle: 'Title',
             drawerChildren: <div data-testid="test">hello world</div>,
             drawerMobileOpen: true

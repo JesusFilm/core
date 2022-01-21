@@ -22,7 +22,12 @@ describe('ControlPanel', () => {
   }
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
-      <EditorProvider initialState={{ steps: [step1, step2] }}>
+      <EditorProvider
+        initialState={{
+          journey: { id: 'journeyId' },
+          steps: [step1, step2]
+        }}
+      >
         <ControlPanel />
       </EditorProvider>
     )
@@ -38,7 +43,12 @@ describe('ControlPanel', () => {
 
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
-      <EditorProvider initialState={{ steps: [step1, step2] }}>
+      <EditorProvider
+        initialState={{
+          journey: { id: 'journeyId' },
+          steps: [step1, step2]
+        }}
+      >
         <ControlPanel />
       </EditorProvider>
     )
@@ -52,7 +62,12 @@ describe('ControlPanel', () => {
 
   it('should hide add button when clicking add button', async () => {
     const { getByRole, queryByRole } = render(
-      <EditorProvider initialState={{ steps: [step1, step2] }}>
+      <EditorProvider
+        initialState={{
+          journey: { id: 'journeyId' },
+          steps: [step1, step2]
+        }}
+      >
         <ControlPanel />
       </EditorProvider>
     )

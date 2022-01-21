@@ -5,7 +5,11 @@ import { BlocksTab } from '.'
 const BlocksTabStory = {
   ...journeysAdminConfig,
   component: BlocksTab,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab'
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 export const Default: Story = () => {

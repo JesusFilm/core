@@ -34,3 +34,30 @@ type TypographyBlock implements Block {
   color: TypographyColor
   align: TypographyAlign
 }
+
+input TypographyBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+input TypographyBlockUpdateInput {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+extend type Mutation {
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: TypographyBlockUpdateInput!
+  ): TypographyBlock!
+}
