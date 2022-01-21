@@ -37,6 +37,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
             request: {
               query: JOURNEY_DESC_UPDATE,
               variables: {
+                id: defaultJourney.id,
                 input: updatedJourney
               }
             },

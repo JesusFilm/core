@@ -94,15 +94,15 @@ describe('JourneyService', () => {
     })
   })
 
-  describe('getAllDraftJourneys', () => {
+  describe('getAllByOwnerEditor', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [journey])
       )
     })
 
-    it('should return draft journeys', async () => {
-      expect(await service.getAllDraftJourneys()).toEqual([journey])
+    it('should return all for user', async () => {
+      expect(await service.getAllByOwnerEditor('1')).toEqual([journey])
     })
   })
 

@@ -16,7 +16,7 @@ const Demo = {
 
 const videoBlock: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
-  id: 'Video1',
+  id: 'video1.id',
   parentBlockId: 'step1.id',
   autoplay: false,
   muted: false,
