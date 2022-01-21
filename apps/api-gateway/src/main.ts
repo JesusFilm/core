@@ -1,6 +1,7 @@
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway'
 import { ApolloServer } from 'apollo-server'
 import { initializeApp, credential, auth } from 'firebase-admin'
+import { apolloWinstonLoggingPlugin } from '@core/apollo/logging'
 import { config } from './environments/environment'
 
 if (
@@ -29,8 +30,21 @@ export const gateway = new ApolloGateway({
   }
 })
 
+let logLevels
+switch (process.env.LOGGING_LEVEL) {
+  case 'info':
+    logLevels = ['info', 'debug', 'warn']
+    break
+  case 'debug':
+    logLevels = ['debug', 'warn']
+    break
+  default:
+    logLevels = ['warn']
+}
+
 const server = new ApolloServer({
   gateway,
+  plugins: [apolloWinstonLoggingPlugin({ levels: logLevels })],
   context: async ({ req }) => {
     const token = req.headers.authorization
     if (
