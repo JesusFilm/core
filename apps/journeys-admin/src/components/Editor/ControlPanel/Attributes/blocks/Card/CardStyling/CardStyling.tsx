@@ -4,8 +4,8 @@ import { ColorLens } from '@mui/icons-material'
 import Image from 'next/image'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
-import cardStyleLight from '../../../../../../../../public/card-style-light.png'
-import cardStyleDark from '../../../../../../../../public/card-style-dark.png'
+import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
+import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
 
 interface CardStylingProps {
   id: string
