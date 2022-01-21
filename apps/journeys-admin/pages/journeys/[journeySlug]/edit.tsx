@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
 import {
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
@@ -14,6 +15,7 @@ import {
 } from '../../../src/libs/apolloClient'
 import { GetJourneyForEdit } from '../../../__generated__/GetJourneyForEdit'
 import { Editor } from '../../../src/components/Editor'
+import { PageWrapper } from '../../../src/components/PageWrapper'
 
 const GET_JOURNEY_FOR_EDIT = gql`
   ${BLOCK_FIELDS}
@@ -33,6 +35,7 @@ const GET_JOURNEY_FOR_EDIT = gql`
 `
 function JourneyEditPage(): ReactElement {
   const router = useRouter()
+  const AuthUser = useAuthUser()
   const { data } = useQuery<GetJourneyForEdit>(GET_JOURNEY_FOR_EDIT, {
     variables: { id: router.query.journeySlug }
   })
@@ -44,7 +47,14 @@ function JourneyEditPage(): ReactElement {
           <Head>
             <title>{data.journey.title}</title>
           </Head>
-          <Editor journey={data.journey} />
+          <PageWrapper
+            title={data.journey.title}
+            showDrawer
+            backHref={`/journeys/${router.query.journeySlug as string}`}
+            AuthUser={AuthUser}
+          >
+            <Editor journey={data.journey} />
+          </PageWrapper>
         </>
       )}
     </>

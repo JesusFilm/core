@@ -5,7 +5,6 @@ import { GetJourneyForEdit_journey as Journey } from '../../../__generated__/Get
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { Canvas } from './Canvas'
 import { ControlPanel } from './ControlPanel'
-import { TopBar } from './TopBar'
 import { Drawer, DRAWER_WIDTH } from './Drawer'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 
@@ -32,7 +31,6 @@ export function Editor({ journey }: EditorProps): ReactElement {
           marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
-        <TopBar title={journey.title} slug={journey.slug} />
         <Box
           sx={{
             display: 'flex',

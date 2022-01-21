@@ -5,6 +5,7 @@ import { BLOCK_FIELDS } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
@@ -14,6 +15,8 @@ import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/components/JourneyView/Context'
 import { JourneyView } from '../../src/components/JourneyView'
 import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { Menu } from '../../src/components/JourneyView/Menu'
 
 const GET_JOURNEY = gql`
   ${BLOCK_FIELDS}
@@ -49,6 +52,7 @@ const GET_JOURNEY = gql`
 
 function JourneySlugPage(): ReactElement {
   const router = useRouter()
+  const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeySlug }
   })
@@ -61,7 +65,15 @@ function JourneySlugPage(): ReactElement {
             <title>{data.journey.title}</title>
           </Head>
           <JourneyProvider value={data.journey}>
-            <JourneyView />
+            <PageWrapper
+              title="Journey Details"
+              showDrawer
+              backHref="/"
+              Menu={<Menu />}
+              AuthUser={AuthUser}
+            >
+              <JourneyView />
+            </PageWrapper>
           </JourneyProvider>
         </>
       )}
