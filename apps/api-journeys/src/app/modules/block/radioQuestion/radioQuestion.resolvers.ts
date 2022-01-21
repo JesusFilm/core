@@ -14,7 +14,6 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 @Resolver('RadioOptionBlock')
 export class RadioOptionBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
-
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [

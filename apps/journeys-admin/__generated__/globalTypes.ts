@@ -156,6 +156,20 @@ export interface JourneyUpdateInput {
   title?: string | null;
 }
 
+export interface RadioOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId?: string | null;
+}
+
+export interface RadioQuestionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId?: string | null;
+}
+
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;

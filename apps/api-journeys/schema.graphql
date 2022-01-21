@@ -277,6 +277,20 @@ type RadioQuestionBlock implements Block {
   description: String
 }
 
+input RadioOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  label: String!
+}
+
+input RadioQuestionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  label: String!
+}
+
 type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -604,6 +618,8 @@ extend type Mutation {
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
