@@ -56,11 +56,7 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider
-            initialState={{
-              journey: { id: 'journeyId' }
-            }}
-          >
+          <EditorProvider>
             <Drawer />
             <Card {...card} />
           </EditorProvider>

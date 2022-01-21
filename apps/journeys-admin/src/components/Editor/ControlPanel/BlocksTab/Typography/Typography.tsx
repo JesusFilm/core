@@ -43,7 +43,27 @@ export function Typography(): ReactElement {
           input: {
             journeyId: journey.id,
             parentBlockId: card.id,
-            content: ''
+            content: 'TEST'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.typographyBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.typographyBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
           }
         }
       })
