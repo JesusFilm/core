@@ -17,12 +17,8 @@ import { TextColor } from './TextColor'
 import { TextAlign } from './TextAlign'
 import { FontVariant } from './FontVariant'
 
-export function Typography({
-  id,
-  align,
-  color,
-  variant
-}: TreeBlock<TypographyBlock>): ReactElement {
+export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
+  const { id, align, color, variant } = block
   const { dispatch } = useContext(EditorContext)
   return (
     <>
@@ -89,7 +85,7 @@ export function Typography({
             type: 'SetDrawerPropsAction',
             title: 'Text Alignment',
             mobileOpen: true,
-            children: <TextAlign id={id} align={align} />
+            children: <TextAlign {...block} />
           })
         }}
       />

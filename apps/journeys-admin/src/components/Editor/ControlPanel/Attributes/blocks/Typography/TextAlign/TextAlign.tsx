@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
@@ -7,17 +7,18 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
+import { EditorContext, TreeBlock } from '@core/journeys/ui'
+import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourneyForEdit'
 import {
   TypographyAlign,
   TypographyBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
-interface TextAlignProps {
-  id: string
-  align: TypographyAlign | null
-}
+// interface TextAlignProps {
+//   id: string
+//   align: TypographyAlign | null
+// }
 
-// add mutaion to update back end data
 export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   mutation TypographyBlockUpdate(
     $id: ID!
@@ -31,10 +32,16 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   }
 `
 
-export function TextAlign({ id, align }: TextAlignProps): ReactElement {
+export function TextAlign(block: TreeBlock<TypographyBlock>): ReactElement {
+  const { id, align } = block
   const [typographyBlockUpdate] = useMutation<{
     typographyBlockUpdate: TypographyBlockUpdateInput
   }>(TYPOGRAPHY_BLOCK_UPDATE)
+
+  const {
+    state: { journey },
+    dispatch
+  } = useContext(EditorContext)
 
   const [selected, setSelected] = useState(align ?? 'left')
 
@@ -51,9 +58,11 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
       await typographyBlockUpdate({
         variables: {
           id,
-          journeyId: 'journey.id',
+          journeyId: journey.id,
           input: { align }
         }
+      }).then(() => {
+        dispatch({ type: 'SetSelectedBlockAction', block })
       })
       setSelected(align)
     }
