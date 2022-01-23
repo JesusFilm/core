@@ -12,7 +12,7 @@ import {
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { INVITE_USER_MODAL_FIELDS } from '../../src/components/InviteUserModal'
 import { GetJourney } from '../../__generated__/GetJourney'
-import { JourneyProvider } from '../../src/components/JourneyView/Context'
+import { JourneyProvider } from '../../src/libs/context'
 import { JourneyView } from '../../src/components/JourneyView'
 import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
 import { PageWrapper } from '../../src/components/PageWrapper'

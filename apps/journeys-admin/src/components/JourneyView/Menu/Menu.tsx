@@ -14,9 +14,10 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
-import { useJourney } from '../Context'
+import { useJourney } from '../../../libs/context'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { Alert } from './Alert'
 import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
@@ -34,7 +35,7 @@ interface MenuProps {
 }
 
 export function Menu({ forceOpen }: MenuProps): ReactElement {
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)

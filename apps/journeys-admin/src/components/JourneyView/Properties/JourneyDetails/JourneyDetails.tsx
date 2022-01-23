@@ -9,10 +9,11 @@ import {
   TranslateRounded
 } from '@mui/icons-material'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { useJourney } from '../../Context'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import { useJourney } from '../../../../libs/context'
 
 export function JourneyDetails(): ReactElement {
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
 
   const date = parseISO(journey.createdAt)
   const formattedDate = intlFormat(date, {

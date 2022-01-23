@@ -4,12 +4,13 @@ import { transformer, TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { useJourney } from '../../libs/context'
 import { Properties } from './Properties'
-import { useJourney } from './Context'
 import { CardView } from './CardView'
 
 export function JourneyView(): ReactElement {
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
   const breakpoints = useBreakpoints()
   const blocks = journey.blocks != null ? transformer(journey.blocks) : []
 

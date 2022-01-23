@@ -10,8 +10,9 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { Alert } from '../Alert'
-import { useJourney } from '../../Context'
+import { useJourney } from '../../../../libs/context'
 
 export const JOURNEY_TITLE_UPDATE = gql`
   mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -29,7 +30,7 @@ interface TitleDialogProps {
 
 export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
 
   const breakpoints = useBreakpoints()
   const [value, setValue] = useState(journey !== undefined ? journey.title : '')

@@ -10,8 +10,9 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { Alert } from '../Alert'
-import { useJourney } from '../../Context'
+import { useJourney } from '../../../../libs/context'
 
 export const JOURNEY_DESC_UPDATE = gql`
   mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -32,7 +33,7 @@ export function DescriptionDialog({
   onClose
 }: DescriptionDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
-  const journey = useJourney()
+  const journey = useJourney<Journey>()
 
   const breakpoints = useBreakpoints()
   const [value, setValue] = useState(
