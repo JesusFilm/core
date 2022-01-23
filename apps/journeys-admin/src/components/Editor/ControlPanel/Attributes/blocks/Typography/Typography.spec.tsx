@@ -1,6 +1,6 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
-import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
   TypographyColor,

@@ -8,12 +8,11 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { ShareSection } from '../ShareSection'
 import { useJourney } from '../../../libs/context'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const journey = useJourney<Journey>()
+  const journey = useJourney()
 
   return smUp ? (
     <Drawer

@@ -18,7 +18,7 @@ import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 
-const GET_JOURNEY = gql`
+export const GET_JOURNEY = gql`
   ${BLOCK_FIELDS}
   ${INVITE_USER_MODAL_FIELDS}
   query GetJourney($id: ID!) {
@@ -31,6 +31,8 @@ const GET_JOURNEY = gql`
       locale
       createdAt
       publishedAt
+      themeName
+      themeMode
       blocks {
         ...BlockFields
       }

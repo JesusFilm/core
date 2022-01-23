@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { transformer, TreeBlock, EditorProvider } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
-import { GetJourneyForEdit_journey as Journey } from '../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/context'
 import { Canvas } from './Canvas'
