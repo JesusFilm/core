@@ -1,50 +1,26 @@
 import { ReactElement, useContext } from 'react'
 import { TreeBlock, EditorContext } from '@core/journeys/ui'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
-import { ThemeProvider } from '@core/shared/ui'
-import {
-  ThemeName,
-  ThemeMode
-} from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
+import { ColorDisplayIcon } from '../../../ColorDisplay/ColorDisplayIcon'
 import { TextColor } from './TextColor'
 import { TextAlign } from './TextAlign'
 import { FontVariant } from './FontVariant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
+
   const { dispatch } = useContext(EditorContext)
+
   return (
     <>
       <Attribute
         id={`${id}-text-color`}
-        icon={
-          // update to use journey.themeMode
-          <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-            <Paper
-              sx={{
-                borderRadius: 1000
-              }}
-            >
-              <Box
-                data-testid="backgroundColorIcon"
-                sx={{
-                  width: 20,
-                  height: 20,
-                  m: 1,
-                  borderRadius: 1000,
-                  backgroundColor: `${color ?? 'primary'}.main`
-                }}
-              />
-            </Paper>
-          </ThemeProvider>
-        }
+        icon={<ColorDisplayIcon color={color} />}
         name="Color"
         value={capitalize(color?.toString() ?? 'primary')}
         description="Text Color"
@@ -57,6 +33,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
           })
         }}
       />
+
       <Attribute
         id={`${id}-font-variant`}
         icon={<TextFieldsRoundedIcon />}
@@ -74,6 +51,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
           })
         }}
       />
+
       <Attribute
         id={`${id}-text-alignment`}
         icon={<FormatAlignLeftRoundedIcon />}
