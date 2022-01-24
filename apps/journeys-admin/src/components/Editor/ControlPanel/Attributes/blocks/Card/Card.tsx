@@ -1,5 +1,5 @@
-import { TreeBlock, EditorContext } from '@core/journeys/ui'
-import { ReactElement, useContext } from 'react'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
+import { ReactElement } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
 import VerticalSplit from '@mui/icons-material/VerticalSplit'
@@ -29,7 +29,7 @@ export function Card({
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
-  const { dispatch } = useContext(EditorContext)
+  const { dispatch } = useEditor()
 
   const handleBackgroundMediaClick = (): void => {
     dispatch({

@@ -3,6 +3,7 @@ import {
   Dispatch,
   ReactElement,
   ReactNode,
+  useContext,
   useReducer
 } from 'react'
 import { TreeBlock } from '../transformer'
@@ -128,4 +129,15 @@ export function EditorProvider({
       {children}
     </EditorContext.Provider>
   )
+}
+
+export function useEditor(): {
+  state: EditorState
+  dispatch: Dispatch<EditorAction>
+} {
+  const context = useContext(EditorContext)
+  if (context === undefined) {
+    throw new Error('useEditor must be used within a EditorProvider')
+  }
+  return context
 }
