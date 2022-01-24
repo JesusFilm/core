@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from 'apps/journeys-admin/src/libs/context'
+import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { Typography, TYPOGRAPHY_BLOCK_CREATE } from '.'
 

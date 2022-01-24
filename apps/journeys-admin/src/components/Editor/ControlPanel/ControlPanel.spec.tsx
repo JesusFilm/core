@@ -1,7 +1,7 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { MockedProvider } from '@apollo/client/testing'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
