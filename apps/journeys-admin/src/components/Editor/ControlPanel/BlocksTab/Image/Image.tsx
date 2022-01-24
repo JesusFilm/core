@@ -7,7 +7,7 @@ import {
   TreeBlock
 } from '@core/journeys/ui'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
-import { useJourney } from 'apps/journeys-admin/src/libs/context'
+import { useJourney } from '../../../../../libs/context'
 import { ReactElement, useContext } from 'react'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
