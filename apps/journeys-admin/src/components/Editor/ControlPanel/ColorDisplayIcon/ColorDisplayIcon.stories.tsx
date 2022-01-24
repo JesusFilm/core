@@ -6,12 +6,11 @@ import { ColorDisplayIcon } from '.'
 const ColorDisplayIconStory = {
   ...simpleComponentConfig,
   component: ColorDisplayIcon,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography'
+  title: 'Journeys-Admin/Editor/ControlPanel/ColorDisplayIcon'
 }
 
 export const Default: Story = () => {
-  const color: TypographyColor = TypographyColor.primary
-  return <ColorDisplayIcon color={color} />
+  return <ColorDisplayIcon color={TypographyColor.secondary} />
 }
 
 export default ColorDisplayIconStory as Meta

@@ -3,9 +3,13 @@ import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { ThemeProvider } from '@core/shared/ui'
 import { TreeBlock, EditorContext } from '@core/journeys/ui'
-import { useJourney } from '../../../../libs/context'
+// import { useJourney } from '../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
-import { TypographyColor } from '../../../../../__generated__/globalTypes'
+import {
+  TypographyColor,
+  ThemeName,
+  ThemeMode
+} from '../../../../../__generated__/globalTypes'
 
 interface ColorDisplayIconProps {
   color: TypographyColor | null
@@ -18,7 +22,7 @@ export function ColorDisplayIcon({
     state: { selectedStep }
   } = useContext(EditorContext)
 
-  const journey = useJourney()
+  // const journey = useJourney()
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
@@ -29,12 +33,12 @@ export function ColorDisplayIcon({
       sx={{
         borderRadius: 1000
       }}
+      data-testid="color-display-icon"
     >
       <ThemeProvider
-        themeName={card?.themeName ?? journey.themeName}
-        themeMode={card?.themeMode ?? journey.themeMode}
+        themeName={card?.themeName ?? ThemeName.base}
+        themeMode={card?.themeMode ?? ThemeMode.dark}
         nested
-        // themeMode={ThemeMode.dark}
       >
         <Box
           data-testid="backgroundColorIcon"

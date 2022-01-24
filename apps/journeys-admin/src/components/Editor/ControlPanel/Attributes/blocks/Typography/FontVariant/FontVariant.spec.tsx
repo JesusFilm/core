@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { FontVariant } from '.'
 
-describe('TextColor drawer', () => {
+describe('TextVariant drawer', () => {
   it('should show default values', () => {
     const { getByText, getByRole } = render(
       <FontVariant id={'font-variant-id'} variant={null} />
