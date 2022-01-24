@@ -15,9 +15,6 @@ export enum ActiveTab {
 }
 
 interface EditorState {
-  journey: {
-    id: string
-  }
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
@@ -107,15 +104,14 @@ export const EditorContext = createContext<{
   state: {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    journey: { id: 'journeyId' }
+    activeTab: ActiveTab.Cards
   },
   dispatch: () => null
 })
 
 interface EditorProviderProps {
   children: ReactNode
-  initialState: Partial<EditorState> & { journey: { id: string } }
+  initialState: Partial<EditorState>
 }
 
 export function EditorProvider({
