@@ -85,7 +85,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Text Alignment',
             mobileOpen: true,
-            children: <TextAlign {...block} />
+            children: <TextAlign id={id} align={align} />
           })
         }}
       />

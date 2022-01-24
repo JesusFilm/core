@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext } from 'react'
+import { ReactElement, useState } from 'react'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
@@ -7,17 +7,14 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
-import { EditorContext, TreeBlock } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
-import {
-  TypographyAlign,
-  TypographyBlockUpdateInput
-} from '../../../../../../../../__generated__/globalTypes'
+import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
 
-// interface TextAlignProps {
-//   id: string
-//   align: TypographyAlign | null
-// }
+import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
+
+interface TextAlignProps {
+  id: string
+  align: TypographyAlign | null
+}
 
 export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   mutation TypographyBlockUpdate(
@@ -32,16 +29,10 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   }
 `
 
-export function TextAlign(block: TreeBlock<TypographyBlock>): ReactElement {
-  const { id, align } = block
-  const [typographyBlockUpdate] = useMutation<{
-    typographyBlockUpdate: TypographyBlockUpdateInput
-  }>(TYPOGRAPHY_BLOCK_UPDATE)
-
-  const {
-    state: { journey },
-    dispatch
-  } = useContext(EditorContext)
+export function TextAlign({ id, align }: TextAlignProps): ReactElement {
+  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
+    TYPOGRAPHY_BLOCK_UPDATE
+  )
 
   const [selected, setSelected] = useState(align ?? 'left')
 
@@ -58,11 +49,9 @@ export function TextAlign(block: TreeBlock<TypographyBlock>): ReactElement {
       await typographyBlockUpdate({
         variables: {
           id,
-          journeyId: journey.id,
+          journeyId: 'journey.id',
           input: { align }
         }
-      }).then(() => {
-        dispatch({ type: 'SetSelectedBlockAction', block })
       })
       setSelected(align)
     }

@@ -9,7 +9,7 @@ import {
   transformer
 } from '@core/journeys/ui'
 import { Button } from '../../Button'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
 
 const TYPOGRAPHY_BLOCK_CREATE = gql`
