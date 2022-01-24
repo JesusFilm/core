@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { Journey, JourneyStatus } from '../../__generated__/graphql'
+import {
+  Journey,
+  JourneyStatus,
+  UserJourneyRole
+} from '../../__generated__/graphql'
 
 @Injectable()
 export class JourneyService extends BaseService {
@@ -10,14 +14,6 @@ export class JourneyService extends BaseService {
     const rst = await this.db.query(aql`
     FOR journey IN ${this.collection}
       FILTER journey.status == ${JourneyStatus.published}
-      RETURN journey`)
-    return await rst.all()
-  }
-
-  async getAllDraftJourneys(): Promise<Journey[]> {
-    const rst = await this.db.query(aql`
-    FOR journey IN ${this.collection}
-      FILTER journey.status == ${JourneyStatus.draft}
       RETURN journey`)
     return await rst.all()
   }
@@ -30,6 +26,17 @@ export class JourneyService extends BaseService {
         RETURN journey
     `)
     return await result.next()
+  }
+
+  async getAllByOwnerEditor(userId: string): Promise<Journey[]> {
+    const result = await this.db.query(aql`
+    FOR userJourney in userJourneys
+      FOR journey in ${this.collection}
+          FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
+           && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})
+          RETURN journey
+    `)
+    return await result.all()
   }
 
   collection: DocumentCollection = this.db.collection('journeys')

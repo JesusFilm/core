@@ -22,6 +22,7 @@ export const defaultJourney: Journey = {
   userJourneys: [
     {
       __typename: 'UserJourney',
+      id: 'user-journey-id',
       userId: 'user-id',
       journeyId: 'journey-id',
       user: {
@@ -35,6 +36,7 @@ export const defaultJourney: Journey = {
     },
     {
       __typename: 'UserJourney',
+      id: 'user-journey-id2',
       userId: 'user-id2',
       journeyId: 'journey-id2',
       user: {
@@ -48,6 +50,7 @@ export const defaultJourney: Journey = {
     },
     {
       __typename: 'UserJourney',
+      id: 'user-journey-id3',
       userId: 'user-id3',
       journeyId: 'journey-id3',
       user: {

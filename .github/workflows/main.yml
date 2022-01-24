@@ -43,6 +43,7 @@ jobs:
       - uses: mansagroup/nrwl-nx-action@v2
         env:
           NEXT_PUBLIC_FIREBASE_CONFIG_JSON: ${{ secrets.NEXT_PUBLIC_FIREBASE_CONFIG_JSON }}
+          COOKIE_SECRET_CURRENT: ${{ secrets.COOKIE_SECRET_CURRENT }}
         with:
           targets: generate,build
   test:

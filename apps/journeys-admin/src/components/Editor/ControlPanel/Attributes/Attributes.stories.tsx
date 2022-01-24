@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
 import { Attributes } from '.'
 
 const AttributesStory = {
