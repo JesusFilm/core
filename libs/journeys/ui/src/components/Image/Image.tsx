@@ -1,9 +1,9 @@
-import { ReactElement, useContext, MouseEvent } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import NextImage from 'next/image'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { TreeBlock, EditorContext, ActiveTab } from '../..'
+import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
 interface ImageProps extends TreeBlock<ImageFields> {
@@ -21,7 +21,7 @@ export function Image({
   const {
     state: { selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
