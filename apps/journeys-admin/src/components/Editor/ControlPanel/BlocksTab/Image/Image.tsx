@@ -7,8 +7,9 @@ import {
   TreeBlock
 } from '@core/journeys/ui'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
+import { useJourney } from 'apps/journeys-admin/src/libs/context'
 import { ReactElement, useContext } from 'react'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'
 
@@ -26,8 +27,9 @@ export const IMAGE_BLOCK_CREATE = gql`
 
 export function Image(): ReactElement {
   const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
+  const { id: journeyId } = useJourney()
   const {
-    state: { journey, selectedStep },
+    state: { selectedStep },
     dispatch
   } = useContext(EditorContext)
 
@@ -39,10 +41,30 @@ export function Image(): ReactElement {
       const { data } = await imageBlockCreate({
         variables: {
           input: {
-            journeyId: journey.id,
+            journeyId,
             parentBlockId: card.id,
             src: null,
             alt: 'Default Image Icon'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.imageBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.imageBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
           }
         }
       })
