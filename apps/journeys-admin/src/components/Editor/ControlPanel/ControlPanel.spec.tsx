@@ -24,7 +24,9 @@ describe('ControlPanel', () => {
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <EditorProvider initialState={{ steps: [step1, step2] }}>
-        <ControlPanel />
+        <MockedProvider>
+          <ControlPanel />
+        </MockedProvider>
       </EditorProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()

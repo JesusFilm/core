@@ -1,14 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, getByRole, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from 'apps/journeys-admin/src/libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { Image, IMAGE_BLOCK_CREATE } from '.'
 
 describe('Image', () => {
-  it('should render the image button', async () => {
-    const test = jest.fn()
-    const { getByText } = render(
+  it('should check if the mutation gets called', async () => {
+    const result = jest.fn()
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -24,17 +24,8 @@ describe('Image', () => {
               }
             },
             result: () => {
-              test()
-              return {
-                data: {
-                  imageBlockCreate: {
-                    journeyId: 'journeyId',
-                    parentBlockId: 'cardId',
-                    src: null,
-                    alt: 'Default Image Icon'
-                  }
-                }
-              }
+              result()
+              return {}
             }
           }
         ]}
@@ -69,9 +60,7 @@ describe('Image', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    const button = getByText('Image')
-    expect(button).toBeInTheDocument()
-    fireEvent.click(button)
-    await waitFor(() => expect(test).toHaveBeenCalled())
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
