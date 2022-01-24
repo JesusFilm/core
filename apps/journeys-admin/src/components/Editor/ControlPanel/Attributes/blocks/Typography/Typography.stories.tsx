@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
 import Stack from '@mui/material/Stack'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
-import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
   TypographyColor,

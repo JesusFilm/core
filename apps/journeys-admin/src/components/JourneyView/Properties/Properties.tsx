@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { ShareSection } from '../ShareSection'
-import { useJourney } from '../Context'
+import { useJourney } from '../../../libs/context'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {

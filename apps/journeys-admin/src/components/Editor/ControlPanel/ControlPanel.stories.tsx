@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ButtonColor,

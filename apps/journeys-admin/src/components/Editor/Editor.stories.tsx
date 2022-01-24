@@ -7,11 +7,12 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
+  JourneyStatus,
   ThemeMode,
   ThemeName,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { GetJourneyForEdit_journey_blocks } from '../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../PageWrapper'
 import { Editor } from '.'
 
@@ -25,7 +26,7 @@ const EditorStory = {
   }
 }
 
-const blocks: GetJourneyForEdit_journey_blocks[] = [
+const blocks: GetJourney_journey_blocks[] = [
   {
     id: 'step0.id',
     __typename: 'StepBlock',
@@ -455,6 +456,12 @@ const Template: Story = () => (
           title: 'NUA Journey: Ep.3 – Decision',
           slug: 'nua-journey-ep-3-decision',
           description: 'my cool journey',
+          locale: 'en-US',
+          status: JourneyStatus.draft,
+          createdAt: '2021-11-19T12:34:56.647Z',
+          publishedAt: null,
+          primaryImageBlock: null,
+          userJourneys: [],
           blocks
         }}
       />
