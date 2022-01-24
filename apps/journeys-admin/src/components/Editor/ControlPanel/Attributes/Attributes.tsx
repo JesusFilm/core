@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
 import { Card, Step, Typography } from './blocks'
 
 function AttributesContent({ selected }: AttributesProps): ReactElement {
