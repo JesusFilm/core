@@ -37,13 +37,17 @@ export function Typography(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null) {
+    const checkTypography = card?.children.map((block) =>
+      block.children.find((child) => child.__typename === 'TypographyBlock')
+    )
+    if (card != null && checkTypography !== undefined) {
       const { data } = await typographyBlockCreate({
         variables: {
           input: {
             journeyId,
             parentBlockId: card.id,
-            content: ''
+            content: 'Add your text here...',
+            variant: checkTypography.length > 0 ? 'body2' : 'h1'
           }
         },
         update(cache, { data }) {
