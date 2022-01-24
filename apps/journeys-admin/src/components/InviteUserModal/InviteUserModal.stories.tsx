@@ -2,7 +2,11 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { JourneyStatus } from '../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  ThemeName,
+  ThemeMode
+} from '../../../__generated__/globalTypes'
 import { InviteUserModal } from './InviteUserModal'
 
 const Demo = {
@@ -21,6 +25,8 @@ const journey: Journey = {
   status: JourneyStatus.published,
   publishedAt: '2020-01-01T00:00:00.000Z',
   title: 'Fact or fiction',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
   userJourneys: []

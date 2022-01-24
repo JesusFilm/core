@@ -4,18 +4,29 @@ import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { useBreakpoints } from '@core/shared/ui'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 import { ShareSection } from '../ShareSection'
-import { useJourney } from '../Context'
+import { useJourney } from '../../../libs/context'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
-  const breakpoints = useBreakpoints()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const journey = useJourney()
 
-  return breakpoints.md ? (
-    <Drawer variant="permanent" anchor="right">
-      <Toolbar sx={{ minWidth: '328px' }}>
+  return smUp ? (
+    <Drawer
+      variant="permanent"
+      anchor="right"
+      sx={{
+        display: { xs: 'none', sm: 'block' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: '328px'
+        }
+      }}
+    >
+      <Toolbar>
         <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
           Properties
         </Typography>

@@ -9,10 +9,10 @@ import Box from '@mui/material/Box'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {
-  GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
-  GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
-  GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/GetJourneyForEdit'
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../__generated__/GetJourney'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'
 import { CardLayout } from './CardLayout'

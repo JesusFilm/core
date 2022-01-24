@@ -11,11 +11,11 @@ import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { Alert } from '../Alert'
-import { useJourney } from '../../Context'
+import { useJourney } from '../../../../libs/context'
 
 export const JOURNEY_DESC_UPDATE = gql`
-  mutation JourneyDescUpdate($input: JourneyUpdateInput!) {
-    journeyUpdate(input: $input) {
+  mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {
+    journeyUpdate(id: $id, input: $input) {
       id
       description
     }
@@ -46,7 +46,7 @@ export function DescriptionDialog({
     const updatedJourney = { id: journey.id, description: value }
 
     await journeyUpdate({
-      variables: { input: updatedJourney },
+      variables: { id: journey.id, input: updatedJourney },
       optimisticResponse: {
         journeyUpdate: { __typename: 'Journey', ...updatedJourney }
       }
