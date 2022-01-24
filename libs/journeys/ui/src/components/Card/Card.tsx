@@ -121,6 +121,7 @@ export function CardWrapper({
         height: '100%',
         overflow: 'hidden',
         position: 'relative',
+        transform: 'translateZ(0)', // safari glitch with border radius
         ...sx
       }}
       elevation={3}

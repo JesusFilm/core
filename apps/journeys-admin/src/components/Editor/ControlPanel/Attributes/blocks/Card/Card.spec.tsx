@@ -1,7 +1,7 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourney'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Card } from '.'
@@ -56,11 +56,7 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider
-            initialState={{
-              journey: { id: 'journeyId' }
-            }}
-          >
+          <EditorProvider>
             <Drawer />
             <Card {...card} />
           </EditorProvider>
@@ -167,11 +163,7 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider
-            initialState={{
-              journey: { id: 'journeyId' }
-            }}
-          >
+          <EditorProvider>
             <Drawer />
             <Card {...card} />
           </EditorProvider>
@@ -230,11 +222,7 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider
-            initialState={{
-              journey: { id: 'journeyId' }
-            }}
-          >
+          <EditorProvider>
             <Drawer />
             <Card {...card} />
           </EditorProvider>
@@ -276,11 +264,7 @@ describe('Card', () => {
       }
       const { getByText } = render(
         <ThemeProvider>
-          <EditorProvider
-            initialState={{
-              journey: { id: 'journeyId' }
-            }}
-          >
+          <EditorProvider>
             <Drawer />
             <Card {...card} />
           </EditorProvider>

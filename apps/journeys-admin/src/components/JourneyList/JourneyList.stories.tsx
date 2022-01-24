@@ -1,13 +1,15 @@
 import { Story, Meta } from '@storybook/react'
 
 import { journeysAdminConfig } from '../../libs/storybook'
-import { JourneyList, JourneysListProps } from './JourneyList'
+import { PageWrapper } from '../PageWrapper'
+import { JourneysListProps } from './JourneyList'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
 } from './journeyListData'
+import { JourneyList } from '.'
 
 const JourneyListStory = {
   ...journeysAdminConfig,
@@ -19,7 +21,9 @@ const JourneyListStory = {
 }
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
-  <JourneyList {...args} />
+  <PageWrapper title="Journeys">
+    <JourneyList {...args} />
+  </PageWrapper>
 )
 
 export const Default = Template.bind({})

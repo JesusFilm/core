@@ -2,9 +2,9 @@ import { TreeBlock } from '@core/journeys/ui'
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import {
-  GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
-  GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../../../__generated__/GetJourneyForEdit'
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../../__generated__/GetJourney'
 
 interface BackgroundMediaProps {
   id: string

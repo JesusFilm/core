@@ -1,6 +1,10 @@
 import { render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
 import { Editor } from '.'
 
@@ -16,17 +20,22 @@ describe('Editor', () => {
             themeMode: ThemeMode.light,
             title: 'my journey',
             slug: 'my-journey',
+            locale: 'en-US',
             description: 'my cool journey',
+            status: JourneyStatus.draft,
+            createdAt: '2021-11-19T12:34:56.647Z',
+            publishedAt: null,
             blocks: [
               {
                 id: 'step0.id',
                 __typename: 'StepBlock',
                 parentBlockId: null,
                 locked: false,
-                nextBlockId: null,
-                children: []
+                nextBlockId: 'step1.id'
               }
-            ] as TreeBlock[]
+            ] as TreeBlock[],
+            primaryImageBlock: null,
+            userJourneys: []
           }}
         />
       </ThemeProvider>

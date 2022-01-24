@@ -117,20 +117,6 @@ describe('Journey', () => {
     status: JourneyStatus.published
   }
 
-  const draftJourneyResponse = {
-    id: '1',
-    title: 'unpublished',
-    locale: 'en-US',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlockId: '2',
-    slug: 'published-slug',
-    createdAt,
-    publishedAt,
-    status: JourneyStatus.draft
-  }
-
   const userJourney = {
     _key: '1',
     userId: '1',
@@ -164,12 +150,8 @@ describe('Journey', () => {
     useFactory: () => ({
       get: jest.fn(() => journey),
       getBySlug: jest.fn(() => journey),
-      getAll: jest.fn(() => [journey, journey]),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
-      getAllDraftJourneys: jest.fn(() => [
-        draftJourneyResponse,
-        draftJourneyResponse
-      ]),
+      getAllByOwnerEditor: jest.fn(() => [journey, journey]),
       save: jest.fn(() => journey),
       update: jest.fn(() => journey)
     })
@@ -217,6 +199,24 @@ describe('Journey', () => {
     ujService = module.get<UserJourneyService>(UserJourneyService)
   })
 
+  describe('adminJourney', () => {
+    it('returns Journey', async () => {
+      expect(await resolver.adminJourney('2', 'slug')).toEqual(journeyresponse)
+      expect(service.getBySlug).toHaveBeenCalledWith('slug')
+      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
+        userJourneyResponse.journeyId,
+        '2'
+      )
+    })
+
+    it('returns Journey by id', async () => {
+      expect(await resolver.adminJourney('2', '1', IdType.databaseId)).toEqual(
+        journeyresponse
+      )
+      expect(service.get).toHaveBeenCalledWith('1')
+    })
+  })
+
   describe('journey', () => {
     it('returns Journey', async () => {
       expect(await resolver.journey('slug')).toEqual(journeyresponse)
@@ -231,29 +231,23 @@ describe('Journey', () => {
     })
   })
 
-  describe('journeys', () => {
+  describe('adminJourneys', () => {
     it('should get published journeys', async () => {
-      expect(await resolver.journeys(JourneyStatus.published)).toEqual([
+      expect(await resolver.adminJourneys('1')).toEqual([
         journeyresponse,
         journeyresponse
       ])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalled()
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('1')
     })
+  })
 
-    it('should get draft journeys', async () => {
-      expect(await resolver.journeys(JourneyStatus.draft)).toEqual([
-        draftJourneyResponse,
-        draftJourneyResponse
-      ])
-      expect(service.getAllDraftJourneys).toHaveBeenCalled()
-    })
-
-    it('should get all journeys', async () => {
+  describe('journeys', () => {
+    it('should get published journeys', async () => {
       expect(await resolver.journeys()).toEqual([
         journeyresponse,
         journeyresponse
       ])
-      expect(service.getAll).toHaveBeenCalled()
+      expect(service.getAllPublishedJourneys).toHaveBeenCalled()
     })
   })
 

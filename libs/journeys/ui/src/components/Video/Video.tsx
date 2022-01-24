@@ -1,10 +1,17 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useRef,
+  useCallback,
+  useContext,
+  MouseEvent
+} from 'react'
 import { useMutation, gql } from '@apollo/client'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock } from '../..'
+import { TreeBlock, EditorContext } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -35,16 +42,23 @@ export function Video({
   muted,
   posterBlockId,
   uuid = uuidv4,
-  children
+  children,
+  ...props
 }: VideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
+
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
   )
+  const {
+    state: { selectedBlock },
+    dispatch
+  } = useContext(EditorContext)
+  const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
@@ -76,7 +90,7 @@ export function Video({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: autoplay === true,
+        autoplay: autoplay === true && !mobile,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -95,7 +109,6 @@ export function Video({
             inline: true
           }
         },
-        fluid: true,
         responsive: true,
         muted: muted === true,
         poster: posterBlock?.src
@@ -103,28 +116,56 @@ export function Video({
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
       })
-      playerRef.current.on('playing', () => {
-        handleVideoResponse(
-          VideoResponseStateEnum.PLAYING,
-          playerRef.current?.currentTime()
-        )
-      })
-      playerRef.current.on('pause', () => {
-        handleVideoResponse(
-          VideoResponseStateEnum.PAUSED,
-          playerRef.current?.currentTime()
-        )
-      })
-      playerRef.current.on('ended', () => {
-        if (playerRef?.current?.isFullscreen() === true)
-          playerRef.current?.exitFullscreen()
-        handleVideoResponse(
-          VideoResponseStateEnum.FINISHED,
-          playerRef.current?.currentTime()
-        )
-      })
+
+      if (selectedBlock === undefined) {
+        playerRef.current.on('playing', () => {
+          handleVideoResponse(
+            VideoResponseStateEnum.PLAYING,
+            playerRef.current?.currentTime()
+          )
+        })
+        playerRef.current.on('pause', () => {
+          handleVideoResponse(
+            VideoResponseStateEnum.PAUSED,
+            playerRef.current?.currentTime()
+          )
+        })
+        playerRef.current.on('ended', () => {
+          if (playerRef?.current?.isFullscreen() === true)
+            playerRef.current?.exitFullscreen()
+          handleVideoResponse(
+            VideoResponseStateEnum.FINISHED,
+            playerRef.current?.currentTime()
+          )
+        })
+      }
     }
   }, [handleVideoResponse, startAt, muted, autoplay, blockId, posterBlock])
+
+  useEffect(() => {
+    if (selectedBlock !== undefined) {
+      playerRef.current?.pause()
+    }
+  }, [selectedBlock])
+
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+
+    if (selectedBlock?.id !== blockId) {
+      const block: TreeBlock<VideoFields> = {
+        id: blockId,
+        videoContent,
+        autoplay,
+        startAt,
+        muted,
+        posterBlockId,
+        children,
+        ...props
+      }
+
+      dispatch({ type: 'SetSelectedBlockAction', block })
+    }
+  }
 
   return (
     <>

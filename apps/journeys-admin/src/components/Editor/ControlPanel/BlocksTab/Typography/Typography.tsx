@@ -8,17 +8,17 @@ import {
   TYPOGRAPHY_FIELDS,
   transformer
 } from '@core/journeys/ui'
+import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
 
-const TYPOGRAPHY_BLOCK_CREATE = gql`
+export const TYPOGRAPHY_BLOCK_CREATE = gql`
   ${TYPOGRAPHY_FIELDS}
   mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
     typographyBlockCreate(input: $input) {
       id
       parentBlockId
-      journeyId
       ...TypographyFields
     }
   }
@@ -28,8 +28,9 @@ export function Typography(): ReactElement {
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )
+  const { id: journeyId } = useJourney()
   const {
-    state: { journey, selectedStep },
+    state: { selectedStep },
     dispatch
   } = useContext(EditorContext)
 
@@ -41,9 +42,29 @@ export function Typography(): ReactElement {
       const { data } = await typographyBlockCreate({
         variables: {
           input: {
-            journeyId: journey.id,
+            journeyId,
             parentBlockId: card.id,
-            content: ''
+            content: 'TEST'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.typographyBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.typographyBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
           }
         }
       })

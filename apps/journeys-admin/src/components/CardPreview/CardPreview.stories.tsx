@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
@@ -106,10 +106,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
     nextBlockId: 'step2.id',
     children: [
       {
-        id: 'card0.id',
+        id: 'card1.id',
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
-        coverBlockId: 'image0.id',
+        coverBlockId: 'image1.id',
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -118,7 +118,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card1.id',
             align: null,
             color: null,
             content: 'a quick question...',
@@ -128,7 +128,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card1.id',
             align: null,
             color: null,
             content: 'Can we trust the story of Jesus ?',
@@ -138,7 +138,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             __typename: 'ButtonBlock',
             id: 'button',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card1.id',
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -157,13 +157,13 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'image0.id',
+            id: 'image1.id',
             __typename: 'ImageBlock',
             src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
             width: 1920,
             height: 1080,
             alt: 'random image from unsplash',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card1.id',
             children: [],
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
           }
@@ -179,10 +179,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
     nextBlockId: 'step3.id',
     children: [
       {
-        id: 'card0.id',
+        id: 'card2.id',
         __typename: 'CardBlock',
-        parentBlockId: 'step0.id',
-        coverBlockId: 'image0.id',
+        parentBlockId: 'step2.id',
+        coverBlockId: 'image2.id',
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -191,7 +191,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card2.id',
             align: null,
             color: null,
             content: 'if it’s true...',
@@ -199,20 +199,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId12',
-            __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
-            align: null,
-            color: null,
-            content: 'What is Christianity to you?',
-            variant: TypographyVariant.h3,
-            children: []
-          },
-          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
-            parentBlockId: 'step2.id',
-            label: '',
+            parentBlockId: 'card2.id',
+            label: 'What is Christianity to you?',
             description: '',
             children: [
               {
@@ -251,13 +241,13 @@ const steps: Array<TreeBlock<StepBlock>> = [
             ]
           },
           {
-            id: 'image0.id',
+            id: 'image2.id',
             __typename: 'ImageBlock',
             src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80',
             width: 1920,
             height: 1080,
             alt: 'random image from unsplash',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card2.id',
             children: [],
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
           }
@@ -273,10 +263,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
     nextBlockId: 'step4.id',
     children: [
       {
-        id: 'card0.id',
+        id: 'card3.id',
         __typename: 'CardBlock',
-        parentBlockId: 'step0.id',
-        coverBlockId: 'image0.id',
+        parentBlockId: 'step3.id',
+        coverBlockId: 'image3.id',
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -285,7 +275,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card3.id',
             align: null,
             color: null,
             content: 'What do you think?',
@@ -293,20 +283,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId12',
-            __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
-            align: null,
-            color: null,
-            content: 'Do you need to change to be good enough for God?',
-            variant: TypographyVariant.h3,
-            children: []
-          },
-          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
-            parentBlockId: 'step2.id',
-            label: '',
+            parentBlockId: 'card3.id',
+            label: 'Do you need to change to be good enough for God?',
             description: '',
             children: [
               {
@@ -334,13 +314,13 @@ const steps: Array<TreeBlock<StepBlock>> = [
             ]
           },
           {
-            id: 'image0.id',
+            id: 'image3.id',
             __typename: 'ImageBlock',
             src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
             width: 1920,
             height: 1080,
             alt: 'random image from unsplash',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card3.id',
             children: [],
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
           }
@@ -356,10 +336,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
     nextBlockId: null,
     children: [
       {
-        id: 'card0.id',
+        id: 'card4.id',
         __typename: 'CardBlock',
-        parentBlockId: 'step0.id',
-        coverBlockId: 'image0.id',
+        parentBlockId: 'step4.id',
+        coverBlockId: 'image4.id',
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -368,7 +348,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card4.id',
             align: null,
             color: null,
             content: 'a quote',
@@ -378,7 +358,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card4.id',
             align: null,
             color: null,
             content:
@@ -389,7 +369,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'typographyBlockId13',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card4.id',
             align: null,
             color: null,
             content: '–  The Bible, John 3:17',
@@ -397,7 +377,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'image0.id',
+            id: 'image4.id',
             __typename: 'ImageBlock',
             src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
             width: 1920,
@@ -410,7 +390,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             __typename: 'ButtonBlock',
             id: 'button',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card4.id',
             label: 'Start Over',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
