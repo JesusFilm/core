@@ -13,6 +13,7 @@ import 'swiper/swiper.min.css'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
+const TASKBAR_WIDTH = 72
 
 export function Canvas(): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
@@ -34,7 +35,7 @@ export function Canvas(): ReactElement {
       const spaceBetween = Math.max(
         MIN_SPACE_BETWEEN,
         (window.innerWidth -
-          Number(smUp) * DRAWER_WIDTH -
+          Number(smUp) * (DRAWER_WIDTH + TASKBAR_WIDTH) -
           362 -
           EDGE_SLIDE_WIDTH * 2) /
           2

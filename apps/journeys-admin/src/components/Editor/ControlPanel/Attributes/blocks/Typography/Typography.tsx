@@ -7,11 +7,11 @@ import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRound
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { ThemeProvider } from '@core/shared/ui'
-import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
 import {
   ThemeName,
   ThemeMode
 } from '../../../../../../../__generated__/globalTypes'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { TextColor } from './TextColor'
 import { TextAlign } from './TextAlign'

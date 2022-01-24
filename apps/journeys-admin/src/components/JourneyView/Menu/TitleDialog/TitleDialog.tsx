@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography'
 import { useBreakpoints } from '@core/shared/ui'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 import { Alert } from '../Alert'
-import { useJourney } from '../../Context'
+import { useJourney } from '../../../../libs/context'
 
 export const JOURNEY_TITLE_UPDATE = gql`
   mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
