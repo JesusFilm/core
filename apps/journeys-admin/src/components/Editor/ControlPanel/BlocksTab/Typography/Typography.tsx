@@ -5,8 +5,7 @@ import {
   ActiveTab,
   EditorContext,
   TreeBlock,
-  TYPOGRAPHY_FIELDS,
-  transformer
+  TYPOGRAPHY_FIELDS
 } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
@@ -74,8 +73,8 @@ export function Typography(): ReactElement {
           activeTab: ActiveTab.Properties
         })
         dispatch({
-          type: 'SetSelectedBlockAction',
-          block: transformer([data.typographyBlockCreate])[0]
+          type: 'SetSelectedBlockByIdAction',
+          id: data.typographyBlockCreate.id
         })
       }
     }
