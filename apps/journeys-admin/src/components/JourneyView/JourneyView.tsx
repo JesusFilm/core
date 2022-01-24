@@ -4,8 +4,8 @@ import { transformer, TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { useJourney } from '../../libs/context'
 import { Properties } from './Properties'
-import { useJourney } from './Context'
 import { CardView } from './CardView'
 
 export function JourneyView(): ReactElement {

@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Head from 'next/head'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
 import {
   AuthAction,
   useAuthUser,
@@ -13,30 +12,15 @@ import {
   addApolloState,
   initializeApollo
 } from '../../../src/libs/apolloClient'
-import { GetJourneyForEdit } from '../../../__generated__/GetJourneyForEdit'
+import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { GET_JOURNEY } from '../[journeySlug]'
 
-const GET_JOURNEY_FOR_EDIT = gql`
-  ${BLOCK_FIELDS}
-  query GetJourneyForEdit($id: ID!) {
-    journey: adminJourney(id: $id, idType: slug) {
-      id
-      slug
-      themeName
-      themeMode
-      title
-      description
-      blocks {
-        ...BlockFields
-      }
-    }
-  }
-`
 function JourneyEditPage(): ReactElement {
   const router = useRouter()
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetJourneyForEdit>(GET_JOURNEY_FOR_EDIT, {
+  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeySlug }
   })
 
@@ -69,7 +53,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
   try {
     await apolloClient.query({
-      query: GET_JOURNEY_FOR_EDIT,
+      query: GET_JOURNEY,
       variables: {
         id: query.journeySlug
       }
