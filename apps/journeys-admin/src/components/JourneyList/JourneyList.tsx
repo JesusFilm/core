@@ -4,6 +4,7 @@ import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import Container from '@mui/material/Container'
 import AddIcon from '@mui/icons-material/Add'
 import { sortBy } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
@@ -25,13 +26,15 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
         ).reverse()
 
   return (
-    <>
+    <Container sx={{ px: { xs: 0, sm: 8 } }}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
+        justifyContent="space-between"
         sx={{
-          justifyContent: 'space-between',
-          m: 6
+          mx: { xs: 6, sm: 0 },
+          mt: { xs: 5, sm: 10 },
+          mb: { xs: 4, sm: 5 }
         }}
       >
         <Typography variant="h3">All Journeys</Typography>
@@ -39,7 +42,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
           <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
         </Box>
       </Stack>
-      <Box sx={{ m: { xs: 0, md: 6 } }} data-testid="journey-list">
+      <Box sx={{ mb: { xs: 4, sm: 5 } }} data-testid="journey-list">
         {sortedJourneys.map((journey) => (
           <JourneyCard key={journey.id} journey={journey} />
         ))}
@@ -51,7 +54,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
               flexDirection: 'column',
               pt: 20,
               pb: 16,
-              borderRadius: { xs: 0, md: 3 }
+              borderRadius: { xs: 0, sm: 3 }
             }}
           >
             <Typography variant="subtitle1" align="center" gutterBottom>
@@ -74,6 +77,6 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
           </Card>
         )}
       </Box>
-    </>
+    </Container>
   )
 }

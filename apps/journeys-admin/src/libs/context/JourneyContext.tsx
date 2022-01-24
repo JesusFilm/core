@@ -1,9 +1,9 @@
 import { createContext, ReactElement, ReactNode, useContext } from 'react'
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 // Must set initial context for useContext, but it will always be a journey
 // Else JourneyView page will not load
-const JourneyContext = createContext<Journey | undefined>(undefined)
+const JourneyContext = createContext({} as unknown as Journey)
 
 export function useJourney(): Journey {
   const context = useContext(JourneyContext)
