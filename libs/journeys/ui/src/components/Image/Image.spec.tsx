@@ -25,7 +25,7 @@ describe('Image', () => {
   })
 
   it('should render the default image', () => {
-    const { getByRole } = render(<Image {...block} src={null} alt={'defaultImageIcon'} />)
+    const { getByRole } = render(<Image {...block} src={null} alt="defaultImageIcon" />)
     expect(getByRole('img')).toBeInTheDocument()
     expect(getByRole('img')).toHaveAttribute(
       'alt',

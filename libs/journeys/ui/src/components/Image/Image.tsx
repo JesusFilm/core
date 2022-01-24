@@ -39,7 +39,7 @@ export function Image({
         />
       ) : (
         <NextImage
-          src={`${window.location.origin}/DefaultImageIcon.png`}
+          src="/DefaultImageIcon.png"
           height={100}
           width={100}
           alt={alt}

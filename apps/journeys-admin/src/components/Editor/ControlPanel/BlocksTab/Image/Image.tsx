@@ -12,7 +12,7 @@ import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../.
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'
 
-const IMAGE_BLOCK_CREATE = gql`
+export const IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
   mutation ImageBlockCreate($input: ImageBlockCreateInput!) {
     imageBlockCreate(input: $input) {
