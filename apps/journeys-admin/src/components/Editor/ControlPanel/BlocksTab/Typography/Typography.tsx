@@ -1,9 +1,9 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
-  EditorContext,
+  useEditor,
   TreeBlock,
   TYPOGRAPHY_FIELDS
 } from '@core/journeys/ui'
@@ -31,7 +31,7 @@ export function Typography(): ReactElement {
   const {
     state: { selectedStep },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = async (): Promise<void> => {
     const card = selectedStep?.children.find(
