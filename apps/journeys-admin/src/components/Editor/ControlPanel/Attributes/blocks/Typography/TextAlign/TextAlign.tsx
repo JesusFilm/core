@@ -46,6 +46,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
     align: TypographyAlign
   ): Promise<void> => {
     if (align != null) {
+      console.log(align)
       await typographyBlockUpdate({
         variables: {
           id,
@@ -53,7 +54,6 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
           input: { align }
         }
       })
-      console.log('align', align)
       setSelected(align)
     }
   }
