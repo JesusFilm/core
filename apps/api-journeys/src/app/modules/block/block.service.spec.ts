@@ -67,7 +67,7 @@ describe('BlockService', () => {
       )
     })
 
-    it('should return an array of journeys', async () => {
+    it('should return an array of all blocks', async () => {
       expect(await service.getAll()).toEqual([block, block])
     })
   })
@@ -79,7 +79,7 @@ describe('BlockService', () => {
       )
     })
 
-    it('should return an array of journeys', async () => {
+    it('should return all blocks in a journey', async () => {
       expect(await service.forJourney(journey)).toEqual([block, block])
     })
   })
@@ -91,7 +91,7 @@ describe('BlockService', () => {
       )
     })
 
-    it('should return a journey', async () => {
+    it('should return a block', async () => {
       expect(await service.get('1')).toEqual(block)
     })
   })
@@ -105,7 +105,7 @@ describe('BlockService', () => {
       )
     })
 
-    it('should return a saved journey', async () => {
+    it('should return a saved block', async () => {
       expect(await service.save(block)).toEqual(block)
     })
   })
@@ -119,7 +119,7 @@ describe('BlockService', () => {
       )
     })
 
-    it('should return a saved journey', async () => {
+    it('should return an updated block', async () => {
       expect(await service.update(block._key, block)).toEqual(block)
     })
   })

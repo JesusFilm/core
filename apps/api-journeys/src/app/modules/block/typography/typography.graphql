@@ -29,6 +29,7 @@ type TypographyBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   content: String!
   variant: TypographyVariant
   color: TypographyColor

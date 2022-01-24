@@ -266,6 +266,7 @@ export interface Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
 }
 
 export interface VideoContent {
@@ -331,6 +332,7 @@ export class ButtonBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -345,6 +347,7 @@ export class CardBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
@@ -357,6 +360,7 @@ export class GridContainerBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     spacing: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
@@ -368,6 +372,7 @@ export class GridItemBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     xl: number;
     lg: number;
     sm: number;
@@ -378,6 +383,7 @@ export class ImageBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     src: string;
     width: number;
     height: number;
@@ -390,6 +396,7 @@ export class RadioOptionBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     label: string;
     action?: Nullable<Action>;
 }
@@ -399,6 +406,7 @@ export class RadioQuestionBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     label: string;
     description?: Nullable<string>;
 }
@@ -408,6 +416,7 @@ export class SignUpBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     action?: Nullable<Action>;
     submitIcon?: Nullable<Icon>;
     submitLabel?: Nullable<string>;
@@ -420,6 +429,7 @@ export class StepBlock implements Block {
     nextBlockId?: Nullable<string>;
     locked: boolean;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
 }
 
 export class TypographyBlock implements Block {
@@ -427,6 +437,7 @@ export class TypographyBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -450,6 +461,7 @@ export class VideoBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
@@ -465,6 +477,7 @@ export class VideoTriggerBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     triggerStart: number;
     action: Action;
 }
