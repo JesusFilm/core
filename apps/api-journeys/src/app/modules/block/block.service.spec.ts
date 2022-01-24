@@ -84,6 +84,20 @@ describe('BlockService', () => {
     })
   })
 
+  describe('getSiblings', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [block, block])
+      )
+    })
+
+    it('should return all siblings of a block', async () => {
+      expect(
+        await service.getSiblings(block.journeyId, block.parentBlockId)
+      ).toEqual([block, block])
+    })
+  })
+
   describe('get', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
