@@ -28,7 +28,7 @@ export function Editor({ journey }: EditorProps): ReactElement {
         <Box
           sx={{
             display: 'flex',
-            height: '100vh',
+            height: 'calc(100vh - 48px)',
             flexDirection: 'column',
             marginRight: { sm: `${DRAWER_WIDTH}px` }
           }}

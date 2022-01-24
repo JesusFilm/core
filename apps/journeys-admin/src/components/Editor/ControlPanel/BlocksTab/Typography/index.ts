@@ -1,1 +1,1 @@
-export { Typography } from './Typography'
+export { Typography, TYPOGRAPHY_BLOCK_CREATE } from './Typography'

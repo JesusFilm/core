@@ -12,11 +12,7 @@ const AttributeStory = {
 
 export const Default: Story = () => {
   return (
-    <EditorProvider
-      initialState={{
-        journey: { id: 'journeyId' }
-      }}
-    >
+    <EditorProvider>
       <Attribute
         id="custom-id"
         icon={<PaletteIcon />}
@@ -30,12 +26,7 @@ export const Default: Story = () => {
 
 export const Selected: Story = () => {
   return (
-    <EditorProvider
-      initialState={{
-        journey: { id: 'journeyId' },
-        selectedAttributeId: 'custom-id'
-      }}
-    >
+    <EditorProvider initialState={{ selectedAttributeId: 'custom-id' }}>
       <Attribute
         id="custom-id"
         icon={<PaletteIcon />}

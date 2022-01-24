@@ -26,7 +26,6 @@ describe('Canvas', () => {
       <ThemeProvider>
         <EditorProvider
           initialState={{
-            journey: { id: 'journeyId' },
             steps: [step0, step1]
           }}
         >

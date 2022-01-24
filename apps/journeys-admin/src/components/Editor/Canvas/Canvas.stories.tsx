@@ -495,11 +495,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
 const Template: Story = () => {
   return (
     <MockedProvider>
-      <EditorProvider
-        initialState={{
-          steps
-        }}
-      >
+      <EditorProvider initialState={{ steps: steps }}>
         <Canvas />
       </EditorProvider>
     </MockedProvider>

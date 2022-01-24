@@ -3,6 +3,7 @@ import {
   Dispatch,
   ReactElement,
   ReactNode,
+  useEffect,
   useReducer
 } from 'react'
 import { TreeBlock } from '../transformer'
@@ -35,6 +36,11 @@ interface SetSelectedBlockAction {
   block?: TreeBlock
 }
 
+interface SetSelectedBlockByIdAction {
+  type: 'SetSelectedBlockByIdAction'
+  id?: string
+}
+
 interface SetSelectedAttributeIdAction {
   type: 'SetSelectedAttributeIdAction'
   id?: string
@@ -57,13 +63,31 @@ interface SetActiveTabAction {
   activeTab: ActiveTab
 }
 
+interface SetStepsAction {
+  type: 'SetStepsAction'
+  steps: Array<TreeBlock<StepBlock>>
+}
+
 type EditorAction =
   | SetSelectedStepAction
   | SetSelectedBlockAction
+  | SetSelectedBlockByIdAction
   | SetSelectedAttributeIdAction
   | SetDrawerPropsAction
   | SetDrawerMobileOpenAction
   | SetActiveTabAction
+  | SetStepsAction
+
+function search(tree: TreeBlock[], id: string): TreeBlock | undefined {
+  const stack = [...tree]
+  while (stack.length > 0) {
+    const node = stack.pop()
+    if (node != null) {
+      if (node.id === id) return node
+      if (node.children.length > 0) stack.push(...node.children)
+    }
+  }
+}
 
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
@@ -75,6 +99,12 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
       }
     case 'SetSelectedBlockAction':
       return { ...state, selectedBlock: action.block }
+    case 'SetSelectedBlockByIdAction':
+      return {
+        ...state,
+        selectedBlock:
+          action.id != null ? search(state.steps, action.id) : undefined
+      }
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.id }
     case 'SetDrawerPropsAction':
@@ -94,6 +124,11 @@ const reducer = (state: EditorState, action: EditorAction): EditorState => {
         ...state,
         activeTab: action.activeTab
       }
+    case 'SetStepsAction':
+      return {
+        ...state,
+        steps: action.steps
+      }
   }
 }
 
@@ -101,17 +136,13 @@ export const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
-  state: {
-    steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards
-  },
+  state: { steps: [], drawerMobileOpen: false, activeTab: ActiveTab.Cards },
   dispatch: () => null
 })
 
 interface EditorProviderProps {
   children: ReactNode
-  initialState: Partial<EditorState>
+  initialState?: Partial<EditorState>
 }
 
 export function EditorProvider({
@@ -126,6 +157,11 @@ export function EditorProvider({
     activeTab: ActiveTab.Cards,
     ...initialState
   })
+
+  useEffect(() => {
+    if (initialState?.steps != null)
+      dispatch({ type: 'SetStepsAction', steps: initialState.steps })
+  }, [initialState?.steps])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>

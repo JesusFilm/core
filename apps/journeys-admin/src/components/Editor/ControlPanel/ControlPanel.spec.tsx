@@ -1,5 +1,6 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { ControlPanel } from '.'
 
@@ -22,14 +23,11 @@ describe('ControlPanel', () => {
   }
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
-      <EditorProvider
-        initialState={{
-          journey: { id: 'journeyId' },
-          steps: [step1, step2]
-        }}
-      >
-        <ControlPanel />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ steps: [step1, step2] }}>
+          <ControlPanel />
+        </EditorProvider>
+      </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('step-step1.id'))
@@ -43,14 +41,11 @@ describe('ControlPanel', () => {
 
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
-      <EditorProvider
-        initialState={{
-          journey: { id: 'journeyId' },
-          steps: [step1, step2]
-        }}
-      >
-        <ControlPanel />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ steps: [step1, step2] }}>
+          <ControlPanel />
+        </EditorProvider>
+      </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
@@ -62,14 +57,11 @@ describe('ControlPanel', () => {
 
   it('should hide add button when clicking add button', async () => {
     const { getByRole, queryByRole } = render(
-      <EditorProvider
-        initialState={{
-          journey: { id: 'journeyId' },
-          steps: [step1, step2]
-        }}
-      >
-        <ControlPanel />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ steps: [step1, step2] }}>
+          <ControlPanel />
+        </EditorProvider>
+      </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
