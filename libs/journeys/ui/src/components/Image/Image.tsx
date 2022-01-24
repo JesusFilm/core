@@ -1,9 +1,9 @@
-import { ReactElement } from 'react'
+import { ReactElement, useContext, MouseEvent } from 'react'
 import NextImage from 'next/image'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { TreeBlock } from '../..'
+import { TreeBlock, EditorContext } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
 interface ImageProps extends TreeBlock<ImageFields> {
@@ -15,10 +15,31 @@ export function Image({
   alt,
   height,
   width,
-  sx
+  sx,
+  ...props
 }: ImageProps): ReactElement {
+  const {
+    state: { selectedBlock },
+    dispatch
+  } = useContext(EditorContext)
+
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+
+    const block: TreeBlock<ImageFields> = {
+      src,
+      alt,
+      height,
+      width,
+      ...props
+    }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+  }
+
   return (
     <Box
+      data-testId={`image-${props.id}`}
       sx={{
         borderRadius: (theme) => theme.spacing(4),
         overflow: 'hidden',
@@ -26,8 +47,11 @@ export function Image({
         ...sx,
         '> div': {
           display: 'block !important'
-        }
+        },
+        outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
+        outlineOffset: '5px'
       }}
+      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
       {src != null ? (
         <NextImage

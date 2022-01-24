@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { TreeBlock } from '../..'
+import { TreeBlock, EditorProvider } from '../..'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
@@ -13,33 +13,33 @@ jest.mock('../../libs/action', () => {
   }
 })
 
-describe('RadioQuestion', () => {
-  const block: TreeBlock<RadioQuestionFields> = {
-    __typename: 'RadioQuestionBlock',
-    id: 'RadioQuestion1',
-    label: 'Label',
-    description: 'Description',
-    parentBlockId: 'RadioQuestion1',
-    children: [
-      {
-        __typename: 'RadioOptionBlock',
-        id: 'RadioOption1',
-        label: 'Option 1',
-        parentBlockId: 'RadioQuestion1',
-        action: null,
-        children: []
-      },
-      {
-        __typename: 'RadioOptionBlock',
-        id: 'RadioOption2',
-        label: 'Option 2',
-        parentBlockId: 'RadioQuestion1',
-        action: null,
-        children: []
-      }
-    ]
-  }
+const block: TreeBlock<RadioQuestionFields> = {
+  __typename: 'RadioQuestionBlock',
+  id: 'RadioQuestion1',
+  label: 'Label',
+  description: 'Description',
+  parentBlockId: 'RadioQuestion1',
+  children: [
+    {
+      __typename: 'RadioOptionBlock',
+      id: 'RadioOption1',
+      label: 'Option 1',
+      parentBlockId: 'RadioQuestion1',
+      action: null,
+      children: []
+    },
+    {
+      __typename: 'RadioOptionBlock',
+      id: 'RadioOption2',
+      label: 'Option 2',
+      parentBlockId: 'RadioQuestion1',
+      action: null,
+      children: []
+    }
+  ]
+}
 
+describe('RadioQuestion', () => {
   it('should render question props', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -141,5 +141,78 @@ describe('RadioQuestion', () => {
     )
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
+  })
+})
+
+describe('Admin RadioQuestion', () => {
+  const card: TreeBlock = {
+    id: 'card0.id',
+    __typename: 'CardBlock',
+    parentBlockId: 'step0.id',
+    coverBlockId: null,
+    backgroundColor: null,
+    themeMode: null,
+    themeName: null,
+    fullscreen: false,
+    children: [block]
+  }
+
+  it('should select whole block on option click ', () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: card
+          }}
+        >
+          <RadioQuestion {...block} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    const radioQuestion = getByTestId(`radioQuestion-${block.id}`)
+
+    fireEvent.click(getByText('Option 1'))
+
+    expect(radioQuestion).toHaveStyle('outline: 3px solid #C52D3A')
+  })
+
+  it('should edit label on click ', () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: card
+          }}
+        >
+          <RadioQuestion {...block} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    const radioQuestion = getByTestId(`radioQuestion-${block.id}`)
+
+    fireEvent.click(getByText(block.label))
+
+    expect(radioQuestion).toHaveStyle('outline: 3px solid #C52D3A')
+    // Check editable when implemented
+  })
+
+  it('should edit description on click ', () => {
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: card
+          }}
+        >
+          <RadioQuestion {...block} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    const radioQuestion = getByTestId(`radioQuestion-${block.id}`)
+
+    fireEvent.click(getByText('Description'))
+
+    expect(radioQuestion).toHaveStyle('outline: 3px solid #C52D3A;')
+    // Check editable when implemented
   })
 })

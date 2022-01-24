@@ -15,9 +15,6 @@ export enum ActiveTab {
 }
 
 interface EditorState {
-  journey: {
-    id: string
-  }
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
@@ -71,7 +68,11 @@ type EditorAction =
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
-      return { ...state, selectedStep: action.step, selectedBlock: action.step }
+      return {
+        ...state,
+        selectedStep: action.step,
+        selectedBlock: action.step
+      }
     case 'SetSelectedBlockAction':
       return { ...state, selectedBlock: action.block }
     case 'SetSelectedAttributeIdAction':
@@ -100,18 +101,13 @@ export const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
-  state: {
-    steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    journey: { id: 'journeyId' }
-  },
+  state: { steps: [], drawerMobileOpen: false, activeTab: ActiveTab.Cards },
   dispatch: () => null
 })
 
 interface EditorProviderProps {
   children: ReactNode
-  initialState: Partial<EditorState> & { journey: { id: string } }
+  initialState?: Partial<EditorState>
 }
 
 export function EditorProvider({

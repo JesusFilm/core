@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { omit } from 'lodash'
 import {
+  IdType,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -30,7 +31,7 @@ describe('Step', () => {
   const userJourneyInvited = {
     _key: '1',
     userId: '1',
-    journeyId: '2',
+    journeyId: '1',
     role: UserJourneyRole.inviteRequested
   }
 
@@ -54,7 +55,10 @@ describe('Step', () => {
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn(() => journey)
+      get: jest.fn((_key) => (_key === journey._key ? journey : undefined)),
+      getBySlug: jest.fn((slug) =>
+        slug === journey.slug ? journey : undefined
+      )
     })
   }
 
@@ -85,13 +89,25 @@ describe('Step', () => {
   })
 
   describe('userJourneyRequest', () => {
-    it('creates a UserJourney', async () => {
-      await resolver
-        .userJourneyRequest(userJourney.journeyId, userJourney.userId)
-        .catch((err) => console.log(err))
+    it('creates a UserJourney when journeyId is databaseId', async () => {
+      await resolver.userJourneyRequest(journey._key, IdType.databaseId, '1')
       expect(service.save).toHaveBeenCalledWith(
         omit(userJourneyInvited, ['_key'])
       )
+    })
+    it('creates a UserJourney when journeyId is slug', async () => {
+      await resolver.userJourneyRequest(journey.slug, IdType.slug, '1')
+      expect(service.save).toHaveBeenCalledWith(
+        omit(userJourneyInvited, ['_key'])
+      )
+    })
+
+    it('throws UserInputError when journey does not exist', async () => {
+      await resolver
+        .userJourneyRequest('randomJourneyId', IdType.databaseId, '1')
+        .catch((error) => {
+          expect(error.message).toEqual('journey does not exist')
+        })
     })
   })
 

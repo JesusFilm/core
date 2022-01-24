@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../Context'
+import { JourneyProvider } from '../../../../libs/context'
 import { defaultJourney } from '../../data'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 
@@ -37,6 +37,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
             request: {
               query: JOURNEY_DESC_UPDATE,
               variables: {
+                id: defaultJourney.id,
                 input: updatedJourney
               }
             },

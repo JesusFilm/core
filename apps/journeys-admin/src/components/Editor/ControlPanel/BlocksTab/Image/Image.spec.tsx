@@ -33,7 +33,7 @@ describe('Image', () => {
         ]}
       >
         <Image />
-      </MockedProvider >
+      </MockedProvider>
     )
     expect(getByText('Image')).toBeInTheDocument()
   })
