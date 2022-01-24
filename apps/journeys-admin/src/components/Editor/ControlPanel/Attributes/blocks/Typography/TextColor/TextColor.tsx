@@ -4,7 +4,7 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
-import { ColorDisplayIcon } from '../../../../ColorDisplay/ColorDisplayIcon'
+import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 
 interface TextColorProps {
   id: string
