@@ -29,7 +29,19 @@ describe('Typography', () => {
   }
 
   it('should check if the mutation gets called', async () => {
-    const result = jest.fn()
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          align: null,
+          color: null,
+          content: null,
+          variant: null
+        }
+      }
+    }))
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -40,11 +52,12 @@ describe('Typography', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: ''
+                  content: 'Add your text here...',
+                  variant: 'h1'
                 }
               }
             },
-            result: result()
+            result
           }
         ]}
       >
@@ -63,11 +76,25 @@ describe('Typography', () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
-        blocks: [],
+        blocks: [{ __ref: 'VideoBlock:videoBlockId' }],
         id: 'journeyId',
         __typename: 'Journey'
       }
     })
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          align: null,
+          color: null,
+          content: null,
+          variant: null,
+          __typename: 'TypographyBlock'
+        }
+      }
+    }))
     const { getByRole } = render(
       <MockedProvider
         cache={cache}
@@ -79,23 +106,12 @@ describe('Typography', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: ''
+                  content: 'Add your text here...',
+                  variant: 'h1'
                 }
               }
             },
-            result: {
-              data: {
-                typographyBlockCreate: {
-                  id: 'typographyBlockId',
-                  parentBlockId: 'cardId',
-                  journeyId: 'journeyId',
-                  align: null,
-                  color: null,
-                  content: null,
-                  variant: null
-                }
-              }
-            }
+            result
           }
         ]}
       >
@@ -107,6 +123,10 @@ describe('Typography', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    console.log(cache.extract)
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'VideoBlock:videoBlockId' },
+      { __ref: 'TypographyBlock:typographyBlockId' }
+    ])
   })
 })
