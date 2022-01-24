@@ -8,11 +8,12 @@ import {
   VIDEO_FIELDS
 } from '@core/journeys/ui'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
 
-const VIDEO_BLOCK_CREATE = gql`
+export const VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
   mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
@@ -26,8 +27,9 @@ const VIDEO_BLOCK_CREATE = gql`
 
 export function Video(): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
+  const { id: journeyId } = useJourney()
   const {
-    state: { journey, selectedStep },
+    state: { selectedStep },
     dispatch
   } = useContext(EditorContext)
 
@@ -39,7 +41,7 @@ export function Video(): ReactElement {
       const { data } = await videoBlockCreate({
         variables: {
           input: {
-            journeyId: journey.id,
+            journeyId,
             parentBlockId: card.id,
             autoplay: true,
             muted: false,
@@ -48,9 +50,28 @@ export function Video(): ReactElement {
             },
             title: ''
           }
+        },
+        update(cache, { data }) {
+          if (data?.videoBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.videoBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
+          }
         }
       })
-      console.log(data)
       if (data?.videoBlockCreate != null) {
         dispatch({
           type: 'SetActiveTabAction',

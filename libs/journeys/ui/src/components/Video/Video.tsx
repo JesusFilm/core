@@ -205,7 +205,7 @@ export function Video({
         </Box>
       ) : (
         <NextImage
-          src={`${window.location.origin}/DefaultVideoIcon.png`}
+          src="/DefaultVideoIcon.png"
           alt="DefaultVideoIcon"
           height={100}
           width={100}
