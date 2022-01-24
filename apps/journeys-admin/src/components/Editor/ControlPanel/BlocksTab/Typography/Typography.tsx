@@ -43,7 +43,7 @@ export function Typography(): ReactElement {
           input: {
             journeyId,
             parentBlockId: card.id,
-            content: 'TEST'
+            content: ''
           }
         },
         update(cache, { data }) {
@@ -69,12 +69,12 @@ export function Typography(): ReactElement {
       })
       if (data?.typographyBlockCreate != null) {
         dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
-        })
-        dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.typographyBlockCreate.id
+        })
+        dispatch({
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
         })
       }
     }
