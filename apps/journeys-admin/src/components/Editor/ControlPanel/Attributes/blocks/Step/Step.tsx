@@ -1,5 +1,5 @@
-import { TreeBlock, EditorContext } from '@core/journeys/ui'
-import { ReactElement, useContext } from 'react'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
+import { ReactElement } from 'react'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
@@ -22,7 +22,7 @@ export function Step({
   const {
     state: { steps },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
   const nextBlock = steps.find(({ id }) => id === nextBlockId)
   const nextBlockDescendants = flatten(nextBlock?.children ?? [])
   const nextBlockHeading = nextBlockDescendants.find(
