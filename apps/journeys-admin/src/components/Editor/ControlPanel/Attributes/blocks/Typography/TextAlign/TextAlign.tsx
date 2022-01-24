@@ -53,6 +53,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
           input: { align }
         }
       })
+      console.log('align', align)
       setSelected(align)
     }
   }
