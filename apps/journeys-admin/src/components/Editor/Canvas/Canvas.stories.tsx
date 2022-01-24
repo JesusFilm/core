@@ -497,7 +497,6 @@ const Template: Story = () => {
     <MockedProvider>
       <EditorProvider
         initialState={{
-          journey: { id: 'journeyId' },
           steps
         }}
       >

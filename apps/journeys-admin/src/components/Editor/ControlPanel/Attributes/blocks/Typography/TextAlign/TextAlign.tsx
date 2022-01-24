@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
-
+import { useJourney } from '../../../../../../../libs/context'
 import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
 
 interface TextAlignProps {
@@ -33,7 +33,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
     TYPOGRAPHY_BLOCK_UPDATE
   )
-
+  const journey = useJourney()
   const [selected, setSelected] = useState(align ?? 'left')
 
   const order = ['left', 'center', 'right']
@@ -49,7 +49,7 @@ export function TextAlign({ id, align }: TextAlignProps): ReactElement {
       await typographyBlockUpdate({
         variables: {
           id,
-          journeyId: 'journey.id',
+          journeyId: journey.id,
           input: { align }
         }
       })

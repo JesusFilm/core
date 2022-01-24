@@ -33,6 +33,8 @@ export function ColorDisplayIcon({
       <ThemeProvider
         themeName={card?.themeName ?? journey.themeName}
         themeMode={card?.themeMode ?? journey.themeMode}
+        nested
+        // themeMode={ThemeMode.dark}
       >
         <Box
           data-testid="backgroundColorIcon"
