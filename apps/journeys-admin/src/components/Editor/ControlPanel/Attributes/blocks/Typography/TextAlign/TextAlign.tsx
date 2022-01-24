@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
 import { EditorContext, TreeBlock } from '@core/journeys/ui'
-import { GetJourneyForEdit_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import {
   TypographyAlign,
   TypographyBlockUpdateInput
