@@ -1,12 +1,11 @@
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
-import { palette } from '../../../ThemeProvider/admin/tokens/colors'
 
-export const StyledToggleButton = styled(ToggleButton)(() => ({
+export const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   textTransform: 'none',
-  backgroundColor: palette[0], // 'primary.contastText'
+  backgroundColor: theme.palette.primary.contrastText,
   backgroundClip: 'padding-box',
-  color: palette[900], // 'secondary.dark'
+  color: theme.palette.secondary.dark,
   '&:first-of-type': {
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12
@@ -16,9 +15,9 @@ export const StyledToggleButton = styled(ToggleButton)(() => ({
     borderBottomRightRadius: 12
   },
   '&.Mui-selected': {
-    backgroundColor: palette[100] // 'background.default'
+    backgroundColor: theme.palette.background.default
   },
   '&.hover': {
-    backgroundColor: palette[200] // 'divider'
+    backgroundColor: theme.palette.divider
   }
 }))
