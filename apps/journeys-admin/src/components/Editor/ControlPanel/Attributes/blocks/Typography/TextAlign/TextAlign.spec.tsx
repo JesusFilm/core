@@ -6,14 +6,14 @@ import { TextAlign } from '.'
 
 describe('TextAlign drawer', () => {
   it('should show default values', () => {
-    const { getByText, getByRole } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <TextAlign id={'text-align-id'} align={null} />
       </MockedProvider>
     )
-    expect(getByText('Center')).toBeInTheDocument()
-    expect(getByText('Right')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Left' })).toHaveClass('Mui-selected')
+    expect(getByRole('button', { name: 'Right' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Center' })).toBeInTheDocument()
   })
   it('should select the clicked button', async () => {
     const { getByRole } = render(

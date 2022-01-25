@@ -3,20 +3,20 @@ import { FontVariant } from '.'
 
 describe('TextVariant drawer', () => {
   it('should show default values', () => {
-    const { getByText, getByRole } = render(
+    const { getByRole } = render(
       <FontVariant id={'font-variant-id'} variant={null} />
     )
-    expect(getByText('Body 1')).toBeInTheDocument()
-    expect(getByText('Header 1')).toBeInTheDocument()
-    expect(getByText('Header 2')).toBeInTheDocument()
-    expect(getByText('Header 3')).toBeInTheDocument()
-    expect(getByText('Header 4')).toBeInTheDocument()
-    expect(getByText('Header 5')).toBeInTheDocument()
-    expect(getByText('Header 6')).toBeInTheDocument()
-    expect(getByText('Subtitle 1')).toBeInTheDocument()
-    expect(getByText('Subtitle 2')).toBeInTheDocument()
-    expect(getByText('Overline')).toBeInTheDocument()
-    expect(getByText('Caption')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Body 1' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Header 1' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Header 2' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Header 3' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Header 4' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Header 5' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Header 6' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Subtitle 1' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Subtitle 2' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Overline' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Caption' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Body 2' })).toHaveClass('Mui-selected')
   })
 })
