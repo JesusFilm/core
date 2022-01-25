@@ -21,6 +21,7 @@ input ImageBlockCreateInput {
   id: ID
   parentBlockId: ID
   journeyId: ID!
+  parentOrder: Int!
   src: String!
   alt: String!
 }

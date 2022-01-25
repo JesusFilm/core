@@ -163,6 +163,7 @@ export class ImageBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     journeyId: string;
+    parentOrder: number;
     src: string;
     alt: string;
 }

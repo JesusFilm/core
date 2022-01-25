@@ -176,6 +176,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -257,6 +258,7 @@ input ImageBlockCreateInput {
   id: ID
   parentBlockId: ID
   journeyId: ID!
+  parentOrder: Int!
   src: String!
   alt: String!
 }
