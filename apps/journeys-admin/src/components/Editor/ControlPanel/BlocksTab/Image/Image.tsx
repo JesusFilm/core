@@ -1,14 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
-  EditorContext,
+  useEditor,
   IMAGE_FIELDS,
-  transformer,
   TreeBlock
 } from '@core/journeys/ui'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
+import { ReactElement } from 'react'
 import { useJourney } from '../../../../../libs/context'
-import { ReactElement, useContext } from 'react'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'
@@ -31,7 +30,7 @@ export function Image(): ReactElement {
   const {
     state: { selectedStep },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = async (): Promise<void> => {
     const card = selectedStep?.children.find(
@@ -70,12 +69,12 @@ export function Image(): ReactElement {
       })
       if (data?.imageBlockCreate != null) {
         dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
+          type: 'SetSelectedBlockByIdAction',
+          id: data.imageBlockCreate.id
         })
         dispatch({
-          type: 'SetSelectedBlockAction',
-          block: transformer([data.imageBlockCreate])[0]
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
         })
       }
     }
