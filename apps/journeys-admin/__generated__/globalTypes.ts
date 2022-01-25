@@ -159,6 +159,16 @@ export interface SignUpResponseCreateInput {
   name: string;
 }
 
+export interface TypographyBlockCreateInput {
+  align?: TypographyAlign | null;
+  color?: TypographyColor | null;
+  content: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId?: string | null;
+  variant?: TypographyVariant | null;
+}
+
 export interface VideoResponseCreateInput {
   blockId: string;
   id?: string | null;

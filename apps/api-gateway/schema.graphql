@@ -321,6 +321,8 @@ type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
+  typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -485,6 +487,24 @@ type TypographyBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int!
+  variant: TypographyVariant
+}
+
+input TypographyBlockCreateInput {
+  align: TypographyAlign
+  color: TypographyColor
+  content: String!
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  variant: TypographyVariant
+}
+
+input TypographyBlockUpdateInput {
+  align: TypographyAlign
+  color: TypographyColor
+  content: String
+  parentBlockId: ID
   variant: TypographyVariant
 }
 
