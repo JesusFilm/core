@@ -2,16 +2,15 @@ import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
 import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
 
 interface RemoveUserProps {
-  userJourney: UserJourney
+  id: string
 }
 
 export const USER_JOURNEY_REMOVE = gql`
-  mutation UserJourneyRemove($userJourneyRemoveId: ID!) {
-    userJourneyRemove(id: $userJourneyRemoveId) {
+  mutation UserJourneyRemove($id: ID!) {
+    userJourneyRemove(id: $id) {
       id
       journey {
         id
@@ -24,21 +23,18 @@ export const USER_JOURNEY_REMOVE = gql`
   }
 `
 
-export function RemoveUser({ userJourney }: RemoveUserProps): ReactElement {
+export function RemoveUser({ id }: RemoveUserProps): ReactElement {
   const [userJourneyRemove] =
     useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
 
-  const handleRemoveUser = async (id: string): Promise<void> => {
+  const handleRemoveUser = async (): Promise<void> => {
     await userJourneyRemove({
-      variables: { userJourneyRemoveId: id }
+      variables: { id }
     })
   }
 
   return (
-    <MenuItem
-      onClick={async () => await handleRemoveUser(userJourney.id)}
-      sx={{ mr: 2 }}
-    >
+    <MenuItem onClick={handleRemoveUser}>
       <RemoveCircleRoundedIcon sx={{ mr: 2 }} />
       Remove
     </MenuItem>

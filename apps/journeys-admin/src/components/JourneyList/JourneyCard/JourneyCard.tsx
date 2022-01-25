@@ -89,7 +89,10 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         <Grid container spacing={2} display="flex" alignItems="center">
           {users != null && (
             <Grid item>
-              <AccessAvatars users={compact(users)} />
+              <AccessAvatars
+                journeySlug={journey.slug}
+                users={compact(users)}
+              />
             </Grid>
           )}
 

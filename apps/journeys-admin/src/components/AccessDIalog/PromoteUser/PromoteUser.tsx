@@ -2,16 +2,15 @@ import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 
 interface PromoteUserProps {
-  userJourney: UserJourney
+  id: string
 }
 
 export const USER_JOURNEY_PROMOTE = gql`
-  mutation UserJourneyPromote($userJourneyPromoteId: ID!) {
-    userJourneyPromote(id: $userJourneyPromoteId) {
+  mutation UserJourneyPromote($id: ID!) {
+    userJourneyPromote(id: $id) {
       id
       role
       journey {
@@ -25,13 +24,13 @@ export const USER_JOURNEY_PROMOTE = gql`
   }
 `
 
-export function PromoteUser({ userJourney }: PromoteUserProps): ReactElement {
+export function PromoteUser({ id }: PromoteUserProps): ReactElement {
   const [userJourneyPromote] =
     useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
 
   const handlePromoteUser = async (): Promise<void> => {
     await userJourneyPromote({
-      variables: { userJourneyPromoteId: userJourney.id }
+      variables: { id }
     })
   }
 

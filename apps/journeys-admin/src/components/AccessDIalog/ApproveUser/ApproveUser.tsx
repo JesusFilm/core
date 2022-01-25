@@ -2,33 +2,32 @@ import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
 import { UserJourneyApprove } from '../../../../__generated__/UserJourneyApprove'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
 interface ApproveUserProps {
-  userJourney: UserJourney
+  id: string
 }
 
 export const USER_JOURNEY_APPROVE = gql`
-  mutation UserJourneyApprove($userJourneyApproveId: ID!) {
-    userJourneyApprove(id: $userJourneyApproveId) {
+  mutation UserJourneyApprove($id: ID!) {
+    userJourneyApprove(id: $id) {
       id
       role
     }
   }
 `
 
-export function ApproveUser({ userJourney }: ApproveUserProps): ReactElement {
+export function ApproveUser({ id }: ApproveUserProps): ReactElement {
   const [userJourneyApprove] =
     useMutation<UserJourneyApprove>(USER_JOURNEY_APPROVE)
 
   const handleApproveUser = async (): Promise<void> => {
     await userJourneyApprove({
-      variables: { userJourneyApproveId: userJourney.id },
+      variables: { id },
       optimisticResponse: {
         userJourneyApprove: {
-          id: userJourney.id,
+          id: id,
           role: UserJourneyRole.editor,
           __typename: 'UserJourney'
         }
