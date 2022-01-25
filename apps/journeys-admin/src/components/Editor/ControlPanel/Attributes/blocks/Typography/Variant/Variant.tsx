@@ -2,9 +2,9 @@ import { ReactElement, useState } from 'react'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import Typography from '@mui/material/Typography'
-import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { StyledToggleButton } from '../../../../StyledToggleButton'
 
 interface VariantProps {
   id: string
@@ -50,6 +50,7 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
       exclusive
       onChange={handleChange}
       fullWidth
+      color="primary"
       sx={{
         display: 'flex',
         px: 6,
@@ -58,7 +59,7 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
     >
       {sorted.map((variant) => {
         return (
-          <ToggleButton
+          <StyledToggleButton
             value={variant}
             key={`typography-align-${variant}`}
             sx={{ justifyContent: 'flex-start' }}
@@ -69,7 +70,7 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
                 lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
               )}
             </Typography>
-          </ToggleButton>
+          </StyledToggleButton>
         )
       })}
     </ToggleButtonGroup>

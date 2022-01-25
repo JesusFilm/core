@@ -2,7 +2,6 @@ import { ReactElement, useState } from 'react'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
-import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import capitalize from 'lodash/capitalize'
@@ -10,6 +9,7 @@ import { gql, useMutation } from '@apollo/client'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../../../libs/context'
 import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
+import { StyledToggleButton } from '../../../../StyledToggleButton'
 
 interface AlignProps {
   id: string
@@ -75,6 +75,7 @@ export function Align({ id, align }: AlignProps): ReactElement {
       exclusive
       onChange={handleChange}
       fullWidth
+      color="primary"
       sx={{
         display: 'flex',
         px: 6,
@@ -83,14 +84,14 @@ export function Align({ id, align }: AlignProps): ReactElement {
     >
       {sorted.map((alignment) => {
         return (
-          <ToggleButton
+          <StyledToggleButton
             value={alignment}
             key={`typography-align-${alignment}`}
             sx={{ justifyContent: 'flex-start' }}
           >
             {iconSelector(alignment)}
             <Typography variant="subtitle2">{capitalize(alignment)}</Typography>
-          </ToggleButton>
+          </StyledToggleButton>
         )
       })}
     </ToggleButtonGroup>

@@ -1,10 +1,10 @@
 import { ReactElement, useState } from 'react'
 import capitalize from 'lodash/capitalize'
-import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
+import { StyledToggleButton } from '../../../../StyledToggleButton'
 
 interface ColorProps {
   id: string
@@ -38,10 +38,11 @@ export function Color({ id, color }: ColorProps): ReactElement {
       onChange={handleChange}
       fullWidth
       sx={{ display: 'flex', px: 6, py: 4 }}
+      color="primary"
     >
       {sorted.map((color) => {
         return (
-          <ToggleButton
+          <StyledToggleButton
             value={color}
             key={`$typography-align-${color}`}
             sx={{ justifyContent: 'flex-start' }}
@@ -50,7 +51,7 @@ export function Color({ id, color }: ColorProps): ReactElement {
             <Typography variant="subtitle2" sx={{ pl: 2 }}>
               {capitalize(color)}
             </Typography>
-          </ToggleButton>
+          </StyledToggleButton>
         )
       })}
     </ToggleButtonGroup>
