@@ -42,7 +42,7 @@ export const apolloWinstonLoggingPlugin = (
   opts: Options = {}
 ): ApolloServerPlugin => {
   const logger = winston.createLogger({
-    level: opts.level ?? 'warn',
+    level: opts.level ?? 'error',
     transports: transports
   })
   if (process.env.AWS_ACCESS_KEY_ID != null) {
@@ -54,7 +54,7 @@ export const apolloWinstonLoggingPlugin = (
         name: 'api-gateway',
         logGroupName: 'JesusFilm-core',
         logStreamName: 'api-gateway',
-        level: opts.level ?? 'warn',
+        level: opts.level ?? 'error',
         retentionInDays: 7
       })
     )
