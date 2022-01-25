@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Attribute } from '../..'
-import { GetJourneyForEdit_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 
 export function SignUp({
   id,

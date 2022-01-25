@@ -4,15 +4,7 @@ import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
-import {
-  Card,
-  Step,
-  Typography,
-  Button,
-  SignUp,
-  RadioOption,
-  RadioQuestion
-} from './blocks'
+import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
 
 function AttributesContent({ selected }: AttributesProps): ReactElement {
   switch (selected?.__typename) {
@@ -46,11 +38,6 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
     case 'RadioOptionBlock': {
       return <RadioOption {...selected} />
     }
-
-    case 'RadioQuestionBlock': {
-      return <RadioQuestion {...selected} />
-    }
-
     default:
       return <></>
   }
