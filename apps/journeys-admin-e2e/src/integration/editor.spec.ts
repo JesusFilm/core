@@ -148,17 +148,13 @@ it('should switch to block properties on block click', () => {
 
 describe('fact-or-fiction edit', () => {
   before(() => {
-    cy.visit('journeys/fact-or-fiction/edit')
-    cy.on('uncaught:exception', (err, runnable) => {
-      if (err.message.includes('ResizeObserver loop limit exceeded')) {
-        return false
-      }
-    })
+    cy.visit('/journeys/fact-or-fiction/edit')
   })
 
   it('should switch to block properties on block click', () => {
+    cy.get('[id="journeys-admin-editor-tab-0"]').should('exist')
     // cards tab should be selected
-    cy.get('button').contains('Cards').should('exist').should('be.selected')
+    cy.get('button').contains('Cards').should('exist')
     // click on a block
 
     // properties tab should now be selected
