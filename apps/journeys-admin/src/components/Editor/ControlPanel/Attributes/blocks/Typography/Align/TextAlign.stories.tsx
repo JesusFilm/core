@@ -1,13 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-import { TYPOGRAPHY_BLOCK_UPDATE } from './TextAlign'
-import { TextAlign } from '.'
+import { TYPOGRAPHY_BLOCK_UPDATE } from './Align'
+import { Align } from '.'
 
-const TextAlignStory = {
+const AlignStory = {
   ...simpleComponentConfig,
-  component: TextAlign,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography/TextAlign'
+  component: Align,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Typography/Align'
 }
 
 export const Default: Story = () => {
@@ -76,9 +76,9 @@ export const Default: Story = () => {
         }
       ]}
     >
-      <TextAlign id={'text-align-id'} align={null} />
+      <Align id={'text-align-id'} align={null} />
     </MockedProvider>
   )
 }
 
-export default TextAlignStory as Meta
+export default AlignStory as Meta

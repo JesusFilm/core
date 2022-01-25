@@ -1,1 +1,0 @@
-export { TextAlign } from './TextAlign'

@@ -8,7 +8,7 @@ import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '..
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
-import { TextAlign } from './TextAlign'
+import { Align } from './Align'
 import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
@@ -63,7 +63,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Text Alignment',
             mobileOpen: true,
-            children: <TextAlign id={id} align={align} />
+            children: <Align id={id} align={align} />
           })
         }}
       />

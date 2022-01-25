@@ -1,14 +1,14 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
-import { TYPOGRAPHY_BLOCK_UPDATE } from './TextAlign'
-import { TextAlign } from '.'
+import { TYPOGRAPHY_BLOCK_UPDATE } from './Align'
+import { Align } from '.'
 
-describe('TextAlign drawer', () => {
+describe('Align drawer', () => {
   it('should show default values', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <TextAlign id={'text-align-id'} align={null} />
+        <Align id={'text-align-id'} align={null} />
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Left' })).toHaveClass('Mui-selected')
@@ -41,7 +41,7 @@ describe('TextAlign drawer', () => {
           }
         ]}
       >
-        <TextAlign id={'text-align-id'} align={TypographyAlign.center} />
+        <Align id={'text-align-id'} align={TypographyAlign.center} />
       </MockedProvider>
     )
 

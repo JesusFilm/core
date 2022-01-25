@@ -11,7 +11,7 @@ import { TypographyAlign } from '../../../../../../../../__generated__/globalTyp
 import { useJourney } from '../../../../../../../libs/context'
 import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
 
-interface TextAlignProps {
+interface AlignProps {
   id: string
   align: TypographyAlign | null
 }
@@ -29,7 +29,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   }
 `
 
-export function TextAlign({ id, align }: TextAlignProps): ReactElement {
+export function Align({ id, align }: AlignProps): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
     TYPOGRAPHY_BLOCK_UPDATE
   )
