@@ -4,7 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { Typography, TYPOGRAPHY_BLOCK_CREATE } from '.'
+import { TYPOGRAPHY_BLOCK_CREATE } from './Typography'
+import { Typography } from '.'
 
 describe('Typography', () => {
   const selectedStep: TreeBlock = {
