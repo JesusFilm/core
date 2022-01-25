@@ -56,12 +56,12 @@ describe('ControlPanel', () => {
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
-    fireEvent.click(getByTestId('step-step1.id'))
+    fireEvent.click(getByTestId('preview-step1.id'))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
-    fireEvent.click(getByTestId('step-step2.id'))
+    fireEvent.click(getByTestId('preview-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
   })
 
