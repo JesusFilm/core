@@ -1,11 +1,11 @@
-import { ReactElement, useContext, MouseEvent } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, EditorContext, ActiveTab } from '../..'
+import { TreeBlock, handleAction, useEditor, ActiveTab } from '../..'
 import { Icon } from '../Icon'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
@@ -80,7 +80,7 @@ export const SignUp = ({
   const {
     state: { selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()

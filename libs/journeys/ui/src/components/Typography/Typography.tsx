@@ -1,6 +1,6 @@
-import { ReactElement, useContext, MouseEvent } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import MuiTypography from '@mui/material/Typography'
-import { EditorContext, TreeBlock, ActiveTab } from '../..'
+import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
 
 export function Typography({
@@ -13,7 +13,7 @@ export function Typography({
   const {
     state: { selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
