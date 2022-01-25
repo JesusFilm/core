@@ -3,9 +3,9 @@ import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
+  useEditor,
   TreeBlock,
-  TYPOGRAPHY_FIELDS,
-  useEditor
+  TYPOGRAPHY_FIELDS
 } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
@@ -37,13 +37,17 @@ export function Typography(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null) {
+    const checkTypography = card?.children.map((block) =>
+      block.children.find((child) => child.__typename === 'TypographyBlock')
+    )
+    if (card != null && checkTypography !== undefined) {
       const { data } = await typographyBlockCreate({
         variables: {
           input: {
             journeyId,
             parentBlockId: card.id,
-            content: 'TEST'
+            content: 'Add your text here...',
+            variant: checkTypography.length > 0 ? 'body2' : 'h1'
           }
         },
         update(cache, { data }) {
@@ -69,13 +73,13 @@ export function Typography(): ReactElement {
       })
       if (data?.typographyBlockCreate != null) {
         dispatch({
+          type: 'SetSelectedBlockByIdAction',
+          id: data.typographyBlockCreate.id
+        })
+        dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
         })
-        // dispatch({
-        //   type: 'SetSelectedBlockByIdAction',
-        //   id: data.typographyBlockCreate.id
-        // })
       }
     }
   }

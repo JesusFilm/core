@@ -49,7 +49,7 @@ describe('ColorDisplayIcon', () => {
         <ColorDisplayIcon color={TypographyColor.primary} />
       </EditorProvider>
     )
-    expect(getByTestId('color-display-icon')).toHaveStyle(
+    expect(getByTestId('primary-display-icon')).toHaveStyle(
       `background-color: ${themes.base.dark.palette.primary.main}`
     )
   })
