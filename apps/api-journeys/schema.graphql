@@ -176,7 +176,6 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -258,7 +257,6 @@ input ImageBlockCreateInput {
   id: ID
   parentBlockId: ID
   journeyId: ID!
-  parentOrder: Int!
   src: String!
   alt: String!
 }
@@ -324,7 +322,6 @@ input StepBlockCreateInput {
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
-  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
@@ -438,7 +435,6 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
