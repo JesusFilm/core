@@ -25,7 +25,14 @@ export class TypographyBlockResolvers {
     @Args('input') input: TypographyBlockCreateInput & { __typename }
   ): Promise<TypographyBlock> {
     input.__typename = 'TypographyBlock'
-    return await this.blockService.save(input)
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
+    )
+    return await this.blockService.save({
+      ...input,
+      parentOrder: siblings.length
+    })
   }
 
   @Mutation()
