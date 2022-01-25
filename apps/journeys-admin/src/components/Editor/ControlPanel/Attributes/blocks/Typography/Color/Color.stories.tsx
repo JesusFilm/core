@@ -9,7 +9,7 @@ const ColorStory = {
 }
 
 export const Default: Story = () => {
-  return <Color id={'text-color-id'} color={null} />
+  return <Color id={'typography-color-id'} color={null} />
 }
 
 export default ColorStory as Meta
