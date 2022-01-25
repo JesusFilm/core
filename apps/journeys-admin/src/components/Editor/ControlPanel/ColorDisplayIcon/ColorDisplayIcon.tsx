@@ -9,6 +9,7 @@ import {
   ThemeName,
   ThemeMode
 } from '../../../../../__generated__/globalTypes'
+import { useJourney } from '../../../../libs/context'
 
 interface ColorDisplayIconProps {
   color: TypographyColor | null
@@ -17,6 +18,7 @@ interface ColorDisplayIconProps {
 export function ColorDisplayIcon({
   color
 }: ColorDisplayIconProps): ReactElement {
+  const journey = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
@@ -32,12 +34,12 @@ export function ColorDisplayIcon({
       }}
     >
       <ThemeProvider
-        themeName={card?.themeName ?? ThemeName.base}
-        themeMode={card?.themeMode ?? ThemeMode.dark}
+        themeName={card?.themeName ?? journey.themeName ?? ThemeName.base}
+        themeMode={card?.themeMode ?? journey.themeMode ?? ThemeMode.dark}
         nested
       >
         <Box
-          data-testid="color-display-icon"
+          data-testid={`${color ?? 'primary'}-display-icon`}
           sx={{
             width: 20,
             height: 20,
