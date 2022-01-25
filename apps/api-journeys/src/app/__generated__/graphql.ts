@@ -189,6 +189,24 @@ export class StepBlockUpdateInput {
     parentBlockId?: Nullable<string>;
 }
 
+export class TypographyBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    content: string;
+    variant?: Nullable<TypographyVariant>;
+    color?: Nullable<TypographyColor>;
+    align?: Nullable<TypographyAlign>;
+}
+
+export class TypographyBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    content?: Nullable<string>;
+    variant?: Nullable<TypographyVariant>;
+    color?: Nullable<TypographyColor>;
+    align?: Nullable<TypographyAlign>;
+}
+
 export class VideoContentInput {
     mediaComponentId?: Nullable<string>;
     languageId?: Nullable<string>;
@@ -534,6 +552,10 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+
+    abstract typographyBlockCreate(input: TypographyBlockCreateInput): TypographyBlock | Promise<TypographyBlock>;
+
+    abstract typographyBlockUpdate(id: string, journeyId: string, input: TypographyBlockUpdateInput): TypographyBlock | Promise<TypographyBlock>;
 
     abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
 

@@ -371,6 +371,24 @@ type TypographyBlock implements Block {
   align: TypographyAlign
 }
 
+input TypographyBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  content: String!
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
+input TypographyBlockUpdateInput {
+  parentBlockId: ID
+  content: String
+  variant: TypographyVariant
+  color: TypographyColor
+  align: TypographyAlign
+}
+
 interface VideoContent {
   src: String!
 }
@@ -605,6 +623,8 @@ extend type Mutation {
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
+  typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
+  typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
   journeyCreate(input: JourneyCreateInput!): Journey!

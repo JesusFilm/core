@@ -1,13 +1,13 @@
 import { ReactElement } from 'react'
-import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import DraftsRounded from '@mui/icons-material/DraftsRounded'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import MuiTypography from '@mui/material/Typography'
 import { Button } from '../Button'
+import { Typography } from './Typography'
 
 export function BlocksTab(): ReactElement {
   return (
@@ -21,7 +21,7 @@ export function BlocksTab(): ReactElement {
           px: 6
         }}
       >
-        <Button icon={<TextFieldsRounded />} value="Text" />
+        <Typography />
         <Button icon={<InsertPhotoRounded />} value="Image" />
         <Button icon={<VideocamRounded />} value="Video" />
         <Button icon={<ContactSupportRounded />} value="Poll" />
@@ -33,7 +33,7 @@ export function BlocksTab(): ReactElement {
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
-        <Typography align="center">Select a Block to Insert</Typography>
+        <MuiTypography align="center">Select a Block to Insert</MuiTypography>
       </Box>
     </>
   )
