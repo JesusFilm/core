@@ -85,7 +85,7 @@ export function Align({ id, align }: AlignProps): ReactElement {
         return (
           <ToggleButton
             value={alignment}
-            key={`${id}-align-${alignment}`}
+            key={`typography-align-${alignment}`}
             sx={{ justifyContent: 'flex-start' }}
           >
             {iconSelector(alignment)}

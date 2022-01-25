@@ -19,7 +19,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   return (
     <>
       <Attribute
-        id={`${id}-text-color`}
+        id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
         name="Color"
         value={capitalize(color?.toString() ?? 'primary')}
@@ -35,7 +35,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       />
 
       <Attribute
-        id={`${id}-font-variant`}
+        id={`${id}-typography-variant`}
         icon={<TextFieldsRoundedIcon />}
         name="Font Variant"
         value={capitalize(
@@ -53,7 +53,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       />
 
       <Attribute
-        id={`${id}-text-alignment`}
+        id={`${id}-typography-alignment`}
         icon={<FormatAlignLeftRoundedIcon />}
         name="Text Alignment"
         value={capitalize(align?.toString() ?? 'Left')}

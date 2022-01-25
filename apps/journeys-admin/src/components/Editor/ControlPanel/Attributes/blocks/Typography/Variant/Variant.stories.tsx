@@ -9,7 +9,7 @@ const VariantStory = {
 }
 
 export const Default: Story = () => {
-  return <Variant id={'text-color-id'} variant={null} />
+  return <Variant id={'typography-color-id'} variant={null} />
 }
 
 export default VariantStory as Meta

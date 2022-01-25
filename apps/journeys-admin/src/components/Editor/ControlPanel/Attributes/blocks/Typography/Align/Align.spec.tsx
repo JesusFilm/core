@@ -8,7 +8,7 @@ describe('Typography align selector', () => {
   it('should show typography align properties', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <Align id={'text-align-id'} align={null} />
+        <Align id={'typography-align-id'} align={null} />
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Left' })).toHaveClass('Mui-selected')
@@ -23,7 +23,7 @@ describe('Typography align selector', () => {
             request: {
               query: TYPOGRAPHY_BLOCK_UPDATE,
               variables: {
-                id: 'text-align-id',
+                id: 'typography-align-id',
                 journeyId: undefined,
                 input: {
                   align: 'right'
@@ -33,7 +33,7 @@ describe('Typography align selector', () => {
             result: {
               data: {
                 typographyBlockUpdate: {
-                  id: 'text-align-id',
+                  id: 'typography-align-id',
                   align: 'right'
                 }
               }
@@ -41,7 +41,7 @@ describe('Typography align selector', () => {
           }
         ]}
       >
-        <Align id={'text-align-id'} align={TypographyAlign.center} />
+        <Align id={'typography-align-id'} align={TypographyAlign.center} />
       </MockedProvider>
     )
 

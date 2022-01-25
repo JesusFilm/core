@@ -60,7 +60,7 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
         return (
           <ToggleButton
             value={variant}
-            key={`${id}-align-${variant}`}
+            key={`typography-align-${variant}`}
             sx={{ justifyContent: 'flex-start' }}
           >
             {/* Icon goes here */}

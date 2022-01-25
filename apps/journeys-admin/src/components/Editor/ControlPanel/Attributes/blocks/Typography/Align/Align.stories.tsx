@@ -18,7 +18,7 @@ export const Default: Story = () => {
           request: {
             query: TYPOGRAPHY_BLOCK_UPDATE,
             variables: {
-              id: 'text-align-id',
+              id: 'typography-align-id',
               journeyId: undefined,
               input: {
                 align: 'right'
@@ -28,7 +28,7 @@ export const Default: Story = () => {
           result: {
             data: {
               typographyBlockUpdate: {
-                id: 'text-align-id',
+                id: 'typography-align-id',
                 align: 'right'
               }
             }
@@ -38,7 +38,7 @@ export const Default: Story = () => {
           request: {
             query: TYPOGRAPHY_BLOCK_UPDATE,
             variables: {
-              id: 'text-align-id',
+              id: 'typography-align-id',
               journeyId: undefined,
               input: {
                 align: 'center'
@@ -48,7 +48,7 @@ export const Default: Story = () => {
           result: {
             data: {
               typographyBlockUpdate: {
-                id: 'text-align-id',
+                id: 'typography-align-id',
                 align: 'center'
               }
             }
@@ -58,7 +58,7 @@ export const Default: Story = () => {
           request: {
             query: TYPOGRAPHY_BLOCK_UPDATE,
             variables: {
-              id: 'text-align-id',
+              id: 'typography-align-id',
               journeyId: undefined,
               input: {
                 align: 'left'
@@ -68,7 +68,7 @@ export const Default: Story = () => {
           result: {
             data: {
               typographyBlockUpdate: {
-                id: 'text-align-id',
+                id: 'typography-align-id',
                 align: 'left'
               }
             }
@@ -76,7 +76,7 @@ export const Default: Story = () => {
         }
       ]}
     >
-      <Align id={'text-align-id'} align={null} />
+      <Align id={'typography-align-id'} align={null} />
     </MockedProvider>
   )
 }

@@ -43,7 +43,7 @@ export function Color({ id, color }: ColorProps): ReactElement {
         return (
           <ToggleButton
             value={color}
-            key={`${id}-align-${color}`}
+            key={`$typography-align-${color}`}
             sx={{ justifyContent: 'flex-start' }}
           >
             <ColorDisplayIcon color={color} />
