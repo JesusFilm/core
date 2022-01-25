@@ -40,13 +40,7 @@ export const GET_JOURNEY = gql`
         src
       }
       userJourneys {
-        id
-        userId
-        journeyId
-        role
-        user {
-          ...InviteUserModalFields
-        }
+        ...InviteUserModalFields
       }
     }
   }

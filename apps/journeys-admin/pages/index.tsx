@@ -10,8 +10,10 @@ import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
 import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { INVITE_USER_MODAL_FIELDS } from '../src/components/InviteUserModal'
 
 const GET_JOURNEYS = gql`
+  ${INVITE_USER_MODAL_FIELDS}
   query GetJourneys {
     journeys: adminJourneys {
       id
@@ -25,17 +27,7 @@ const GET_JOURNEYS = gql`
       locale
       status
       userJourneys {
-        id
-        userId
-        journeyId
-        user {
-          __typename
-          id
-          firstName
-          lastName
-          email
-          imageUrl
-        }
+        ...InviteUserModalFields
       }
     }
   }
