@@ -4,7 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { Image, IMAGE_BLOCK_CREATE } from '.'
+import { IMAGE_BLOCK_CREATE } from './Image'
+import { Image } from '.'
 
 describe('Image', () => {
   const selectedStep: TreeBlock = {

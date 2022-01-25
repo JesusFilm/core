@@ -1,1 +1,1 @@
-export { Image, IMAGE_BLOCK_CREATE } from './Image'
+export { Image } from './Image'
