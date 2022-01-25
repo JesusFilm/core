@@ -1,6 +1,6 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { ReactElement } from 'react'
-import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Attribute } from '../..'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
@@ -14,29 +14,21 @@ export function SignUp({
   return (
     <>
       <Attribute
-        id={`${id}-submit-label`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
-        name="Submit Label"
-        value={submitLabel ?? 'None'}
-        description="Submit Label"
-        // onClick to open drawer
-      />
-
-      <Attribute
         id={`${id}-submit-action`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
-        name="Submit Action"
+        icon={<LinkRoundedIcon />}
+        name="Action"
         value={action?.__typename.toString() ?? 'None'}
-        description="Submit Action"
+        description="Form Submission"
         // onClick to open drawer
       />
 
       <Attribute
         id={`${id}-submit-icon`}
         icon={<InfoOutlinedIcon />}
-        name="Submit Icon"
+        name="Button Icon"
+        // Add icon text in value
         value={submitIcon?.name.toString() ?? 'None'}
-        description="Submit Icon"
+        description="Button Icon"
         // onClick to open drawer
       />
     </>
