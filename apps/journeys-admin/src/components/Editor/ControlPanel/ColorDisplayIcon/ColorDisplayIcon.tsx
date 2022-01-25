@@ -3,7 +3,6 @@ import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { ThemeProvider } from '@core/shared/ui'
 import { TreeBlock, EditorContext } from '@core/journeys/ui'
-// import { useJourney } from '../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
 import {
   TypographyColor,
@@ -22,8 +21,6 @@ export function ColorDisplayIcon({
     state: { selectedStep }
   } = useContext(EditorContext)
 
-  // const journey = useJourney()
-
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock> | undefined
@@ -33,7 +30,6 @@ export function ColorDisplayIcon({
       sx={{
         borderRadius: 1000
       }}
-      data-testid="color-display-icon"
     >
       <ThemeProvider
         themeName={card?.themeName ?? ThemeName.base}
@@ -41,7 +37,7 @@ export function ColorDisplayIcon({
         nested
       >
         <Box
-          data-testid="backgroundColorIcon"
+          data-testid="color-display-icon"
           sx={{
             width: 20,
             height: 20,
