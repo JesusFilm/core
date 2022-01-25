@@ -1,9 +1,8 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
-  EditorContext,
-  transformer,
+  useEditor,
   TreeBlock,
   VIDEO_FIELDS
 } from '@core/journeys/ui'
@@ -31,7 +30,7 @@ export function Video(): ReactElement {
   const {
     state: { selectedStep },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = async (): Promise<void> => {
     const card = selectedStep?.children.find(
@@ -74,12 +73,12 @@ export function Video(): ReactElement {
       })
       if (data?.videoBlockCreate != null) {
         dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
+          type: 'SetSelectedBlockByIdAction',
+          id: data.videoBlockCreate.id
         })
         dispatch({
-          type: 'SetSelectedBlockAction',
-          block: transformer([data.videoBlockCreate])[0]
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
         })
       }
     }
