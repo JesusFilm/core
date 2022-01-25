@@ -63,11 +63,13 @@ export function AccessDialog({
 }: InviteUserModalProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const [loadJourney, { loading, data }] =
+  const [loadJourney, { loading, data, error }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeySlug },
       fetchPolicy: 'network-only'
     })
+
+  console.log(error)
 
   useEffect(() => {
     if (open === true) {
@@ -196,7 +198,19 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
         </ListItemAvatar>
         <ListItemText primary={displayName} secondary={user?.email} />
       </MuiListItem>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+      >
         {role === 'inviteRequested' ? (
           <ApproveUser id={id} />
         ) : (

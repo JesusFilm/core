@@ -4,7 +4,7 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import { compact } from 'lodash'
-import { AccessDialog } from '../AccessDIalog'
+import { AccessDialog } from '../AccessDialog'
 
 interface User {
   id: string
@@ -43,7 +43,7 @@ export function AccessAvatars({
 
   return (
     <>
-      <Box onClick={() => setOpen(true)}>
+      <Box onClick={() => setOpen(true)} sx={{ cursor: 'pointer' }}>
         <AvatarGroup
           max={3}
           sx={{
