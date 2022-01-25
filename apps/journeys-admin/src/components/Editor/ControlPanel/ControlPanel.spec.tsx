@@ -46,6 +46,7 @@ describe('ControlPanel', () => {
       }
     ]
   }
+
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
@@ -95,6 +96,7 @@ describe('ControlPanel', () => {
       expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
     )
   })
+
   it('should change to properties tab on text button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider
