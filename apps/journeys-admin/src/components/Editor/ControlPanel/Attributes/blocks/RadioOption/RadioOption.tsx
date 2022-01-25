@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
-import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
-import { GetJourneyForEdit_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 
 export function RadioOption({
@@ -12,20 +12,11 @@ export function RadioOption({
   return (
     <>
       <Attribute
-        id={`${id}-radio-option-label`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
-        name="Label"
-        value={label}
-        description="Radio Option Label"
-        // onClick to open drawer
-      />
-
-      <Attribute
         id={`${id}-radio-option-action`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
+        icon={<LinkRoundedIcon />}
         name="Action"
         value={action?.__typename.toString() ?? 'None'}
-        description="Radio Option Action"
+        description="Action"
         // onClick to open drawer
       />
     </>
