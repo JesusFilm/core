@@ -8,6 +8,9 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["libs/apollo/logging/tsconfig.*?.json"]
+      },
       "rules": {}
     },
     {

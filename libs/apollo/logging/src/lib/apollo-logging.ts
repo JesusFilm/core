@@ -5,11 +5,11 @@ import {
   ApolloServerPlugin,
   GraphQLRequestListener
 } from 'apollo-server-plugin-base'
-import * as winston from 'winston'
-import * as WinstonCloudWatch from 'winston-cloudwatch'
-import * as AWS from 'aws-sdk'
+import winston from 'winston'
+import WinstonCloudWatch from 'winston-cloudwatch'
+import AWS from 'aws-sdk'
 
-const stringify = (obj: unknown) => JSON.stringify(obj)
+const stringify = (obj: unknown): string => JSON.stringify(obj)
 interface Options {
   config?: {
     didEncounterErrors?: boolean
@@ -33,9 +33,10 @@ interface Options {
   level?: string
 }
 
-const transports = process.env.AWS_ACCESS_KEY_ID
-  ? []
-  : [new winston.transports.Console()]
+const transports =
+  process.env.AWS_ACCESS_KEY_ID != null
+    ? []
+    : [new winston.transports.Console()]
 
 export const apolloWinstonLoggingPlugin = (
   opts: Options = {}
@@ -44,7 +45,7 @@ export const apolloWinstonLoggingPlugin = (
     level: opts.level ?? 'warn',
     transports: transports
   })
-  if (process.env.AWS_ACCESS_KEY_ID) {
+  if (process.env.AWS_ACCESS_KEY_ID != null) {
     AWS.config.update({
       region: 'us-east-2'
     })
@@ -67,9 +68,9 @@ export const apolloWinstonLoggingPlugin = (
     validationDidStart = false,
     willSendResponse = true,
     requestDidStart = true
-  } = opts.config || {}
+  } = opts.config ?? {}
 
-  const { debug = 'debug', info = 'info', error = 'error' } = opts.levels || {}
+  const { debug = 'debug', info = 'info', error = 'error' } = opts.levels ?? {}
   const { winstonInstance = logger } = opts
 
   return {
