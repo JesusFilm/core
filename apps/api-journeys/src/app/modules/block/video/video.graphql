@@ -48,6 +48,7 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   title: String!
   """
   startAt dictates at which point of time the video should start playing

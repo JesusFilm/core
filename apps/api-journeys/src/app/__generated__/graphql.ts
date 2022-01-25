@@ -180,6 +180,7 @@ export class StepBlockCreateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
 }
 
 export class StepBlockUpdateInput {
@@ -198,6 +199,7 @@ export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
