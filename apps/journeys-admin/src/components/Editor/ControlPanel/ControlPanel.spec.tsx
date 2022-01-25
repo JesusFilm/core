@@ -8,6 +8,7 @@ import {
 import { JourneyProvider } from '../../../libs/context'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/Typography/Typography'
 import { ControlPanel } from '.'
+import { VIDEO_BLOCK_CREATE } from './BlocksTab/Video/Video'
 
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
@@ -142,6 +143,69 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
+    await waitFor(() =>
+      expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    )
+  })
+
+
+  it('should change to properties tab on video button click', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  autoplay: true,
+                  muted: false,
+                  videoContent: {
+                    src: null
+                  },
+                  title: ''
+                }
+              }
+            },
+            result: {
+              data: {
+                videoBlockCreate: {
+                  id: 'videoBlockId',
+                  parentBlockId: 'cardId',
+                  journeyId: 'journeyId',
+                  title: '',
+                  muted: false,
+                  autoplay: true,
+                  startAt: null,
+                  endAt: null,
+                  posterBlockId: null,
+                  videoContent: {
+                    src: null
+                  }
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
+    fireEvent.click(getByTestId('step-step3.id'))
+    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Add' }))
+    expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Video' }))
     await waitFor(() =>
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
