@@ -3,6 +3,7 @@ import {
   Dispatch,
   ReactElement,
   ReactNode,
+  useContext,
   useReducer
 } from 'react'
 import { TreeBlock } from '../transformer'
@@ -68,7 +69,11 @@ type EditorAction =
 const reducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
-      return { ...state, selectedStep: action.step, selectedBlock: action.step }
+      return {
+        ...state,
+        selectedStep: action.step,
+        selectedBlock: action.step
+      }
     case 'SetSelectedBlockAction':
       return { ...state, selectedBlock: action.block }
     case 'SetSelectedAttributeIdAction':
@@ -124,4 +129,15 @@ export function EditorProvider({
       {children}
     </EditorContext.Provider>
   )
+}
+
+export function useEditor(): {
+  state: EditorState
+  dispatch: Dispatch<EditorAction>
+} {
+  const context = useContext(EditorContext)
+  if (context === undefined) {
+    throw new Error('useEditor must be used within a EditorProvider')
+  }
+  return context
 }

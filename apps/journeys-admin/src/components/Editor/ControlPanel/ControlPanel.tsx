@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { ReactElement, ReactNode, SyntheticEvent, useContext } from 'react'
-import { TreeBlock, EditorContext, ActiveTab } from '@core/journeys/ui'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
+import { ReactElement, ReactNode, SyntheticEvent } from 'react'
+import { TreeBlock, useEditor, ActiveTab } from '@core/journeys/ui'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
@@ -45,7 +45,7 @@ export function ControlPanel(): ReactElement {
   const {
     state: { steps, selectedBlock, selectedStep, activeTab },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -101,7 +101,7 @@ export function ControlPanel(): ReactElement {
         />
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
-        {selectedBlock != null && <Attributes selected={selectedBlock} />}
+        {selectedBlock !== undefined && <Attributes selected={selectedBlock} />}
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
         <BlocksTab />

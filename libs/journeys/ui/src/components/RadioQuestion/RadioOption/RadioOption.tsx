@@ -1,10 +1,10 @@
-import { ReactElement } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
-import { TreeBlock, handleAction } from '../../..'
+import { TreeBlock, handleAction, useEditor } from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
@@ -21,7 +21,8 @@ export function RadioOption({
   id,
   disabled = false,
   selected = false,
-  onClick
+  onClick,
+  ...props
 }: RadioOptionProps): ReactElement {
   const theme = useTheme()
   const router = useRouter()
@@ -31,12 +32,34 @@ export function RadioOption({
     onClick?.(id)
   }
 
+  const {
+    state: { selectedBlock },
+    dispatch
+  } = useEditor()
+
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    const block: TreeBlock<RadioOptionFields> = {
+      id,
+      label,
+      action,
+      ...props
+    }
+
+    const parentSelected = selectedBlock?.id === block.parentBlockId
+    const siblingSelected = selectedBlock?.parentBlockId === block.parentBlockId
+
+    if (parentSelected || siblingSelected) {
+      e.stopPropagation()
+      dispatch({ type: 'SetSelectedBlockAction', block })
+    }
+  }
+
   return (
     <Button
       variant="contained"
       className={className}
       disabled={disabled}
-      onClick={handleClick}
+      onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
       startIcon={
         selected ? (
           <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
@@ -52,7 +75,10 @@ export function RadioOption({
         textAlign: 'start',
         justifyContent: 'flex-start',
         borderRadius: '8px',
-        padding: '14px 10px 14px 14px'
+        padding: '14px 10px 14px 14px',
+        outline: selectedBlock?.id === id ? '3px solid #C52D3A' : 'none',
+        outlineOffset: '5px',
+        zIndex: selectedBlock?.id === id ? 1 : 0
       }}
     >
       {label}

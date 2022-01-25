@@ -1,6 +1,7 @@
 import { createParamDecorator } from '@nestjs/common'
-import { has, omit } from 'lodash'
+import { get, has, omit } from 'lodash'
 import { GqlExecutionContext } from '@nestjs/graphql'
+import { AuthenticationError } from 'apollo-server-errors'
 
 interface TransformObject {
   _key?: string
@@ -60,7 +61,9 @@ export function Omit(omitFields: string[]) {
   }
 }
 
-export const CurrentUserId = createParamDecorator((data, ctx) => {
-  const context = GqlExecutionContext.create(ctx).getContext()
-  return context.userId
+export const CurrentUserId = createParamDecorator((data, context) => {
+  const ctx = GqlExecutionContext.create(context).getContext()
+  const userId = get(ctx.headers, 'user-id')
+  if (userId == null) throw new AuthenticationError('No user id provided')
+  return userId
 })

@@ -6,7 +6,9 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant
+  TypographyVariant,
+  ThemeName,
+  ThemeMode
 } from '../../../__generated__/globalTypes'
 
 export const defaultJourney: Journey = {
@@ -19,6 +21,8 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
   userJourneys: []

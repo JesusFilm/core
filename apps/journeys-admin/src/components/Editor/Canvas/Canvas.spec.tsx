@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../ThemeProvider'
 import { Canvas } from '.'
 
@@ -36,10 +36,6 @@ describe('Canvas', () => {
     fireEvent.click(getByTestId('step-step0.id'))
     expect(getByTestId('step-step0.id')).toHaveStyle(
       'border: 2px solid #c52d3a'
-    )
-    fireEvent.click(getByTestId('step-step1.id'))
-    expect(getByTestId('step-step0.id')).toHaveStyle(
-      'border: 2px solid #efefef'
     )
   })
 })
