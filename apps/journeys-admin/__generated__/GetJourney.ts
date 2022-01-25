@@ -346,8 +346,6 @@ export interface GetJourney_journey_userJourneys_user {
 export interface GetJourney_journey_userJourneys {
   __typename: "UserJourney";
   id: string;
-  userId: string;
-  journeyId: string;
   role: UserJourneyRole;
   user: GetJourney_journey_userJourneys_user | null;
 }

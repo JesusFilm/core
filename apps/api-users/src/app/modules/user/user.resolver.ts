@@ -14,7 +14,7 @@ export class UserResolver {
   @UseGuards(GqlAuthGuard)
   @KeyAsId()
   async me(@CurrentUserId() userId: string): Promise<User> {
-    const existingUser: User = await this.userService.get(userId)
+    const existingUser: User = await this.userService.getByUserId(userId)
 
     if (existingUser != null) return existingUser
 

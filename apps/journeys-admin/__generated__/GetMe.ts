@@ -3,13 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { UserJourneyRole } from "./globalTypes";
-
 // ====================================================
-// GraphQL fragment: InviteUserModalFields
+// GraphQL query operation: GetMe
 // ====================================================
 
-export interface InviteUserModalFields_user {
+export interface GetMe_me {
   __typename: "User";
   id: string;
   firstName: string;
@@ -18,9 +16,6 @@ export interface InviteUserModalFields_user {
   imageUrl: string | null;
 }
 
-export interface InviteUserModalFields {
-  __typename: "UserJourney";
-  id: string;
-  role: UserJourneyRole;
-  user: InviteUserModalFields_user | null;
+export interface GetMe {
+  me: GetMe_me | null;
 }

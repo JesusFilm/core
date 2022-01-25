@@ -1,5 +1,5 @@
 import { Meta, Story } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { AccessAvatarsProps } from './AccessAvatars'
 import { user1, user2, user3, user4, user5, user6 } from './data'
 import { AccessAvatars } from '.'
@@ -7,16 +7,16 @@ import { AccessAvatars } from '.'
 const AccessAvatarsDemo = {
   ...journeysAdminConfig,
   component: AccessAvatars,
-  title: 'Journeys-Admin/JourneyList/JourneyCard/AccessAvatar'
+  title: 'Journeys-Admin/AccessAvatars'
 }
 
 const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
   <AccessAvatars {...args} />
 )
 
-export const Single: Story<AccessAvatarsProps> = Template.bind({})
-Single.args = {
-  users: [user1]
+export const Default: Story<AccessAvatarsProps> = Template.bind({})
+Default.args = {
+  users: [user1, user2, user3]
 }
 
 export const Overflow: Story<AccessAvatarsProps> = Template.bind({})
