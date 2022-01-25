@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import Box from '@mui/material/Box'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { TypographyColor } from '../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '.'
@@ -10,7 +11,11 @@ const ColorDisplayIconStory = {
 }
 
 export const Default: Story = () => {
-  return <ColorDisplayIcon color={TypographyColor.secondary} />
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <ColorDisplayIcon color={TypographyColor.secondary} />
+    </Box>
+  )
 }
 
 export default ColorDisplayIconStory as Meta
