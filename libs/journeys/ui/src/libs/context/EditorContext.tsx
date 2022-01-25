@@ -16,7 +16,7 @@ export enum ActiveTab {
   Blocks = 2
 }
 
-interface EditorState {
+export interface EditorState {
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
@@ -90,7 +90,10 @@ function search(tree: TreeBlock[], id: string): TreeBlock | undefined {
   }
 }
 
-const reducer = (state: EditorState, action: EditorAction): EditorState => {
+export const reducer = (
+  state: EditorState,
+  action: EditorAction
+): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
       return {
