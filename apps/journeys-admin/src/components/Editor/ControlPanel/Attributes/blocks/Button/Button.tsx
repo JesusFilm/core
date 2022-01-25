@@ -1,13 +1,13 @@
 import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
-import ArrowDropDownCircleRoundedIcon from '@mui/icons-material/ArrowDropDownCircleRounded'
-import ViewDayIcon from '@mui/icons-material/ViewDay'
+import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
-import { GetJourneyForEdit_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 
 export function Button({
@@ -23,29 +23,11 @@ export function Button({
   return (
     <>
       <Attribute
-        id={`${id}-size`}
-        icon={<ViewDayIcon />}
-        name="Size"
-        value={capitalize(size?.toString() ?? 'medium')}
-        description="Button Size"
-        // onClick to open drawer
-      />
-
-      <Attribute
-        id={`${id}-start-icon`}
-        icon={<InfoOutlinedIcon />}
-        name="Start Icon"
-        value={startIcon?.name.toString() ?? 'None'}
-        description="Button Start Icon"
-        // onClick to open drawer
-      />
-
-      <Attribute
-        id={`${id}-end-icon`}
-        icon={<InfoOutlinedIcon />}
-        name="End Icon"
-        value={endIcon?.name.toString() ?? 'None'}
-        description="Button End Icon"
+        id={`${id}-link-action`}
+        icon={<LinkRoundedIcon />}
+        name="Action"
+        value={action?.__typename?.toString() ?? 'None'}
+        description="Action"
         // onClick to open drawer
       />
 
@@ -71,18 +53,18 @@ export function Button({
         }
         name="Color"
         value={capitalize(buttonColor?.toString() ?? 'primary')}
-        description="Button Color"
+        description="Background Color"
         // onClick open drawer
       />
-      {/* 
+
       <Attribute
-        id={`${id}-label`}
-        icon={<ArrowDropDownCircleRoundedIcon />}
-        name="Label"
-        value={label}
-        description="Button Label"
+        id={`${id}-size`}
+        icon={<ViewDayOutlinedIcon />}
+        name="Button Size"
+        value={capitalize(size?.toString() ?? 'medium')}
+        description="Button Size"
         // onClick to open drawer
-      /> */}
+      />
 
       <Attribute
         id={`${id}-variant`}
@@ -94,12 +76,22 @@ export function Button({
       />
 
       <Attribute
-        id={`${id}-link-action`}
-        // change icon
-        icon={<ArrowDropDownCircleRoundedIcon />}
-        name="Link Action"
-        value={action?.__typename?.toString() ?? 'None'}
-        description="Button Link Action"
+        id={`${id}-start-icon`}
+        icon={<InfoOutlinedIcon />}
+        name="Leading Icon"
+        // Add icon text in value
+        value={startIcon?.name.toString() ?? 'None'}
+        description="Leading Icon"
+        // onClick to open drawer
+      />
+
+      <Attribute
+        id={`${id}-end-icon`}
+        icon={<InfoOutlinedIcon />}
+        name="Trailing Icon"
+        // Add icon text in value
+        value={endIcon?.name.toString() ?? 'None'}
+        description="Trailing Icon"
         // onClick to open drawer
       />
     </>
