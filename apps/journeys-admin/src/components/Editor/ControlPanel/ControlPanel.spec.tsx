@@ -6,8 +6,8 @@ import {
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
-import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/Typography'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/Image/Image'
+import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/Typography/Typography'
 import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
@@ -47,6 +47,7 @@ describe('ControlPanel', () => {
       }
     ]
   }
+
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
@@ -95,24 +96,6 @@ describe('ControlPanel', () => {
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
     )
-  })
-  it('should change to properties tab on image click', () => {
-    const { getByRole, getByText } = render(
-      <EditorProvider
-        initialState={{
-          steps: [step1, step2]
-        }}
-      >
-        <MockedProvider>
-          <ControlPanel />
-        </MockedProvider>
-      </EditorProvider>
-    )
-    expect(getByRole('tab', { name: 'Blocks' })).toBeInTheDocument()
-    fireEvent.click(getByRole('tab', { name: 'Blocks' }))
-    expect(getByText('Image')).toBeInTheDocument()
-    fireEvent.click(getByText('Image'))
-    expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
   })
 
   it('should change to properties tab on text button click', async () => {
