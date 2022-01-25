@@ -37,11 +37,7 @@ export function TextColor({ id, color }: TextColorProps): ReactElement {
       exclusive
       onChange={handleChange}
       fullWidth
-      sx={{
-        display: 'flex',
-        px: 6,
-        py: 4
-      }}
+      sx={{ display: 'flex', px: 6, py: 4 }}
     >
       {sorted.map((color) => {
         return (

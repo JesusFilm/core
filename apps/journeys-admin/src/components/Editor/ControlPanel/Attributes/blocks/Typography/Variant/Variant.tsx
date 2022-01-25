@@ -13,7 +13,7 @@ interface FontVariantProps {
 
 // add mutaion to update back end data
 
-export function FontVariant({ id, variant }: FontVariantProps): ReactElement {
+export function Variant({ id, variant }: FontVariantProps): ReactElement {
   const [selected, setSelected] = useState(variant ?? 'body2')
 
   const order = [

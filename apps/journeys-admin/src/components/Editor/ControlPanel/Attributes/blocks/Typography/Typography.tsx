@@ -9,7 +9,7 @@ import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { TextColor } from './TextColor'
 import { TextAlign } from './TextAlign'
-import { FontVariant } from './FontVariant'
+import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
@@ -47,7 +47,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Font Variant',
             mobileOpen: true,
-            children: <FontVariant id={id} variant={variant} />
+            children: <Variant id={id} variant={variant} />
           })
         }}
       />

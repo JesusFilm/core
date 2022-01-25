@@ -1,10 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { FontVariant } from '.'
+import { Variant } from '.'
 
 describe('TextVariant drawer', () => {
   it('should show default values', () => {
     const { getByRole } = render(
-      <FontVariant id={'font-variant-id'} variant={null} />
+      <Variant id={'font-variant-id'} variant={null} />
     )
     expect(getByRole('button', { name: 'Body 1' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Header 1' })).toBeInTheDocument()
@@ -21,7 +21,7 @@ describe('TextVariant drawer', () => {
   })
   it('should change the variant property', async () => {
     const { getByRole } = render(
-      <FontVariant id={'font-variant-id'} variant={null} />
+      <Variant id={'font-variant-id'} variant={null} />
     )
     expect(getByRole('button', { name: 'Body 2' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Header 1' }))
