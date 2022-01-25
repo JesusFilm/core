@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import DraftsRounded from '@mui/icons-material/DraftsRounded'

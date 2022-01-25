@@ -79,7 +79,7 @@ export function Video({
   )
 
   useEffect(() => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null && posterBlock?.src != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true && !mobile,
         controls: true,

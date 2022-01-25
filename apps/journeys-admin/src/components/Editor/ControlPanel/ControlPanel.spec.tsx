@@ -7,8 +7,8 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/Typography/Typography'
-import { ControlPanel } from '.'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/Image/Image'
+import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
