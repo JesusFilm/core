@@ -30,21 +30,9 @@ export const gateway = new ApolloGateway({
   }
 })
 
-let logLevels
-switch (process.env.LOGGING_LEVEL) {
-  case 'info':
-    logLevels = ['info', 'debug', 'warn']
-    break
-  case 'debug':
-    logLevels = ['debug', 'warn']
-    break
-  default:
-    logLevels = ['warn']
-}
-
 const server = new ApolloServer({
   gateway,
-  plugins: [apolloWinstonLoggingPlugin({ levels: logLevels })],
+  plugins: [apolloWinstonLoggingPlugin({ level: process.env.LOGGING_LEVEL })],
   context: async ({ req }) => {
     const token = req.headers.authorization
     if (

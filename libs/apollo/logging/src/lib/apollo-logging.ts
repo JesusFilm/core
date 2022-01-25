@@ -6,12 +6,10 @@ import {
   GraphQLRequestListener
 } from 'apollo-server-plugin-base'
 import * as winston from 'winston'
+import * as WinstonCloudWatch from 'winston-cloudwatch'
+import * as AWS from 'aws-sdk'
 
 const stringify = (obj: unknown) => JSON.stringify(obj)
-const logger = winston.createLogger({
-  transports: [new winston.transports.Console()]
-})
-
 interface Options {
   config?: {
     didEncounterErrors?: boolean
@@ -31,11 +29,35 @@ interface Options {
     info?: string
     error?: string
   }
+
+  level?: string
 }
+
+const transports = process.env.AWS_ACCESS_KEY_ID
+  ? []
+  : [new winston.transports.Console()]
 
 export const apolloWinstonLoggingPlugin = (
   opts: Options = {}
 ): ApolloServerPlugin => {
+  const logger = winston.createLogger({
+    level: opts.level ?? 'warn',
+    transports: transports
+  })
+  if (process.env.AWS_ACCESS_KEY_ID) {
+    AWS.config.update({
+      region: 'us-east-2'
+    })
+    logger.add(
+      new WinstonCloudWatch({
+        name: 'api-gateway',
+        logGroupName: 'JesusFilm-core',
+        logStreamName: 'api-gateway',
+        level: opts.level ?? 'warn',
+        retentionInDays: 7
+      })
+    )
+  }
   const {
     didEncounterErrors = true,
     didResolveOperation = false,
