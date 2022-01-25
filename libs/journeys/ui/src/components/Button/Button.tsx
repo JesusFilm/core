@@ -1,8 +1,8 @@
-import { ReactElement, useContext, MouseEvent } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import { Icon } from '../Icon'
-import { handleAction, TreeBlock, EditorContext } from '../..'
+import { handleAction, TreeBlock, useEditor } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
 
 export function Button({
@@ -23,7 +23,7 @@ export function Button({
   const {
     state: { selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()

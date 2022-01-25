@@ -1,5 +1,5 @@
-import { ReactElement, useContext } from 'react'
-import { EditorContext } from '@core/journeys/ui'
+import { ReactElement } from 'react'
+import { useEditor } from '@core/journeys/ui'
 import { Button } from '../../Button'
 
 interface AttributeProps {
@@ -15,7 +15,7 @@ export function Attribute(props: AttributeProps): ReactElement {
   const {
     state: { selectedAttributeId },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = (): void => {
     dispatch({ type: 'SetSelectedAttributeIdAction', id: props.id })

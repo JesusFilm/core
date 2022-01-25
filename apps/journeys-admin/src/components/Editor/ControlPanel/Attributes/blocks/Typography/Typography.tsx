@@ -1,5 +1,5 @@
-import { ReactElement, useContext } from 'react'
-import { TreeBlock, EditorContext } from '@core/journeys/ui'
+import { ReactElement } from 'react'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
 import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import capitalize from 'lodash/capitalize'
@@ -14,7 +14,7 @@ import { FontVariant } from './FontVariant'
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
 
-  const { dispatch } = useContext(EditorContext)
+  const { dispatch } = useEditor()
 
   return (
     <>

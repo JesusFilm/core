@@ -1,8 +1,8 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { ThemeProvider } from '@core/shared/ui'
-import { TreeBlock, EditorContext } from '@core/journeys/ui'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
 import {
   TypographyColor,
@@ -19,7 +19,7 @@ export function ColorDisplayIcon({
 }: ColorDisplayIconProps): ReactElement {
   const {
     state: { selectedStep }
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'

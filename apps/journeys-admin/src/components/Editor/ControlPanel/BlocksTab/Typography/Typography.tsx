@@ -1,11 +1,11 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
-  EditorContext,
   TreeBlock,
-  TYPOGRAPHY_FIELDS
+  TYPOGRAPHY_FIELDS,
+  useEditor
 } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
@@ -31,7 +31,7 @@ export function Typography(): ReactElement {
   const {
     state: { selectedStep },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = async (): Promise<void> => {
     const card = selectedStep?.children.find(
@@ -72,10 +72,10 @@ export function Typography(): ReactElement {
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
         })
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          id: data.typographyBlockCreate.id
-        })
+        // dispatch({
+        //   type: 'SetSelectedBlockByIdAction',
+        //   id: data.typographyBlockCreate.id
+        // })
       }
     }
   }
