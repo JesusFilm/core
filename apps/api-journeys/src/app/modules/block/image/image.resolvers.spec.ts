@@ -39,7 +39,6 @@ describe('Image', () => {
     __typename: '',
     id: '1',
     parentBlockId: '2',
-    parentOrder: 0,
     journeyId: '3',
     src: 'https://blurha.sh/assets/images/img2.jpg',
     alt: 'grid image'
@@ -55,7 +54,7 @@ describe('Image', () => {
   const imageblockresponse = {
     _key: input.id,
     parentBlockId: input.parentBlockId,
-    parentOrder: input.parentOrder,
+    parentOrder: 0,
     journeyId: input.journeyId,
     __typename: 'ImageBlock',
     src: input.src,
