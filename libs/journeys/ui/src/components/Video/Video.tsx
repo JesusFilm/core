@@ -79,7 +79,7 @@ export function Video({
   )
 
   useEffect(() => {
-    if (videoRef.current != null && posterBlock?.src != null) {
+    if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true && !mobile,
         controls: true,
@@ -102,7 +102,7 @@ export function Video({
         },
         responsive: true,
         muted: muted === true,
-        poster: posterBlock?.src
+        poster: posterBlock?.src != null ? posterBlock.src : undefined,
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
