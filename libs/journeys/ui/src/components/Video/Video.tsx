@@ -163,7 +163,7 @@ export function Video({
     <>
       {videoContent.src != null ? (
         <Box
-          data-testid="VideoComponent"
+          data-testid={`video-${blockId}`}
           sx={{
             display: 'flex',
             width: '100%',
@@ -171,13 +171,20 @@ export function Video({
             backgroundColor: '#000000',
             borderRadius: 4,
             overflow: 'hidden',
-            m: 0
+            m: 0,
+            outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+            outlineOffset: '5px',
+            '> div': {
+              width: '100%'
+            }
           }}
+          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
         >
           <video
             ref={videoRef}
-            className="video-js"
+            className="video-js vjs-big-play-centered"
             style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
+            playsInline
           >
             <source
               src={videoContent.src}
