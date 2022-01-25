@@ -1,10 +1,10 @@
-import { ReactElement, useContext, MouseEvent } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import Box from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock, EditorContext } from '../..'
+import { TreeBlock, useEditor } from '../..'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -60,7 +60,7 @@ export function RadioQuestion({
   const {
     state: { selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()

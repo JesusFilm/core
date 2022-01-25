@@ -16,7 +16,7 @@ export {
 } from './components'
 export {
   handleAction,
-  EditorContext,
+  useEditor,
   EditorProvider,
   ActiveTab,
   journeyUiConfig,

@@ -87,7 +87,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const { data } = await client.query<GetJourneySlugs>({
     query: gql`
       query GetJourneySlugs {
-        journeys(status: published) {
+        journeys {
           slug
         }
       }

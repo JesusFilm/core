@@ -1,22 +1,14 @@
 import videojs from 'video.js'
-import {
-  ReactElement,
-  useEffect,
-  useRef,
-  useCallback,
-  useContext,
-  MouseEvent
-} from 'react'
+import { ReactElement, useEffect, useRef, useCallback, MouseEvent } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, EditorContext } from '../..'
+import { TreeBlock, useEditor } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
 import { VideoTrigger } from './VideoTrigger'
-
 import 'video.js/dist/video-js.css'
 import { VideoFields } from './__generated__/VideoFields'
 
@@ -57,7 +49,7 @@ export function Video({
   const {
     state: { selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   const handleVideoResponse = useCallback(

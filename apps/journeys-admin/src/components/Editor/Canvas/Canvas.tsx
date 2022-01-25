@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { ReactElement, useContext, useEffect, useState } from 'react'
-import { BlockRenderer, EditorContext } from '@core/journeys/ui'
+import { ReactElement, useEffect, useState } from 'react'
+import { BlockRenderer, useEditor } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -22,7 +22,7 @@ export function Canvas(): ReactElement {
   const {
     state: { steps, selectedStep, selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null) {
