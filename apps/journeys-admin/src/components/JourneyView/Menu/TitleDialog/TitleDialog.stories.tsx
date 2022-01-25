@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { JourneyProvider } from '../../Context'
+import { JourneyProvider } from '../../../../libs/context'
 import { defaultJourney } from '../../data'
 import { TitleDialog, JOURNEY_TITLE_UPDATE } from './TitleDialog'
 

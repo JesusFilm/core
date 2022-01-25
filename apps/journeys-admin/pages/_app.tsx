@@ -2,13 +2,19 @@ import { useEffect, ReactElement } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
-import { useFirebase } from '../src/libs/firebaseClient'
-import { createApolloClient } from '../src/libs/client'
+import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
+import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
-function CustomApp({ Component, pageProps }: AppProps): ReactElement {
-  const { user } = useFirebase()
-  const client = createApolloClient(user?.accessToken)
+initAuth()
+
+function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
+  const apolloClient = useApollo(
+    pageProps.AuthUserSerialized != null
+      ? JSON.parse(pageProps.AuthUserSerialized)._token
+      : '',
+    pageProps
+  )
 
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -28,7 +34,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
         />
       </Head>
       <ThemeProvider>
-        <ApolloProvider client={client}>
+        <ApolloProvider client={apolloClient}>
           <Component {...pageProps} />
         </ApolloProvider>
       </ThemeProvider>
@@ -36,4 +42,4 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   )
 }
 
-export default CustomApp
+export default JourneysAdminApp

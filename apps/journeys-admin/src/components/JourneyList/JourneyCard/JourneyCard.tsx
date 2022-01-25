@@ -36,12 +36,12 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         borderColor: 'divider',
         borderBottom: 'none',
         '&:first-child': {
-          borderTopLeftRadius: { xs: 0, md: 12 },
-          borderTopRightRadius: { xs: 0, md: 12 }
+          borderTopLeftRadius: { xs: 0, sm: 12 },
+          borderTopRightRadius: { xs: 0, sm: 12 }
         },
         '&:last-child': {
-          borderBottomLeftRadius: { xs: 0, md: 12 },
-          borderBottomRightRadius: { xs: 0, md: 12 },
+          borderBottomLeftRadius: { xs: 0, sm: 12 },
+          borderBottomRightRadius: { xs: 0, sm: 12 },
           borderBottom: '1px solid',
           borderColor: 'divider'
         }

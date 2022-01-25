@@ -635,11 +635,13 @@ extend type Mutation {
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
-  userJourneyRequest(journeyId: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
 }
 
 extend type Query {
-  journeys(status: JourneyStatus): [Journey!]!
+  adminJourneys: [Journey!]!
+  adminJourney(id: ID!, idType: IdType): Journey
+  journeys: [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 
