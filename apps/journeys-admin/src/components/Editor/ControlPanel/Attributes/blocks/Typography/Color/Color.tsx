@@ -6,14 +6,14 @@ import Typography from '@mui/material/Typography'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 
-interface TextColorProps {
+interface ColorProps {
   id: string
   color: TypographyColor | null
 }
 
 // add mutaion to update back end data
 
-export function TextColor({ id, color }: TextColorProps): ReactElement {
+export function Color({ id, color }: ColorProps): ReactElement {
   const [selected, setSelected] = useState(color ?? 'primary')
 
   function handleChange(

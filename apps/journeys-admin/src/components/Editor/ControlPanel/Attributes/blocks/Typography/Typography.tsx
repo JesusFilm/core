@@ -7,7 +7,7 @@ import lowerCase from 'lodash/lowerCase'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
-import { TextColor } from './TextColor'
+import { Color } from './Color'
 import { TextAlign } from './TextAlign'
 import { Variant } from './Variant'
 
@@ -29,7 +29,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Text Color',
             mobileOpen: true,
-            children: <TextColor id={id} color={color} />
+            children: <Color id={id} color={color} />
           })
         }}
       />

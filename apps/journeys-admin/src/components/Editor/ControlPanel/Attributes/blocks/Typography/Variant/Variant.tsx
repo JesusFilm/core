@@ -6,14 +6,14 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 
-interface FontVariantProps {
+interface VariantProps {
   id: string
   variant: TypographyVariant | null
 }
 
 // add mutaion to update back end data
 
-export function Variant({ id, variant }: FontVariantProps): ReactElement {
+export function Variant({ id, variant }: VariantProps): ReactElement {
   const [selected, setSelected] = useState(variant ?? 'body2')
 
   const order = [
