@@ -4,8 +4,8 @@ import { TypographyAlign } from '../../../../../../../../__generated__/globalTyp
 import { TYPOGRAPHY_BLOCK_UPDATE } from './Align'
 import { Align } from '.'
 
-describe('Align drawer', () => {
-  it('should show default values', () => {
+describe('Typography align selector', () => {
+  it('should show typography align properties', () => {
     const { getByRole } = render(
       <MockedProvider>
         <Align id={'text-align-id'} align={null} />
@@ -15,7 +15,7 @@ describe('Align drawer', () => {
     expect(getByRole('button', { name: 'Right' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Center' })).toBeInTheDocument()
   })
-  it('should select the clicked button', async () => {
+  it('should change the align property', async () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[

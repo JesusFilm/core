@@ -1,8 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { Variant } from '.'
 
-describe('Variant drawer', () => {
-  it('should show default values', () => {
+describe('Typography variant selector', () => {
+  it('should show variant properties', () => {
     const { getByRole } = render(
       <Variant id={'font-variant-id'} variant={null} />
     )

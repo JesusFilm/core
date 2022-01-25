@@ -1,8 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { Color } from '.'
 
-describe('Color drawer', () => {
-  it('should show default values', () => {
+describe('Typography color selector', () => {
+  it('should show typography color properties', () => {
     const { getByRole } = render(<Color id={'text-color-id'} color={null} />)
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
     expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()

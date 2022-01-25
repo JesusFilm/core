@@ -12,7 +12,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../..
 import { ColorDisplayIcon } from '.'
 
 describe('ColorDisplayIcon', () => {
-  it('should show the color', () => {
+  it('should show the selected color', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
       __typename: 'StepBlock',
