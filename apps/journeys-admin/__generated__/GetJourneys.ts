@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
+import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourneys
@@ -14,14 +14,12 @@ export interface GetJourneys_journeys_userJourneys_user {
   id: string;
   firstName: string;
   lastName: string | null;
-  email: string;
   imageUrl: string | null;
 }
 
 export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
-  role: UserJourneyRole;
   user: GetJourneys_journeys_userJourneys_user | null;
 }
 

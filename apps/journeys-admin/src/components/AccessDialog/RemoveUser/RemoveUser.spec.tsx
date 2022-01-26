@@ -1,18 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { RemoveUser, USER_JOURNEY_REMOVE } from './RemoveUser'
+import { USER_JOURNEY_REMOVE } from './RemoveUser'
+import { RemoveUser } from '.'
 
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {
     const result = jest.fn(() => ({
       data: {
-        userJourneyPromote: {
+        userJourneyRemove: {
           id: 'userId',
           role: UserJourneyRole.editor,
           journey: {
-            id: 'journeyId',
-            userJourneys: []
+            id: 'journeyId'
           }
         }
       }

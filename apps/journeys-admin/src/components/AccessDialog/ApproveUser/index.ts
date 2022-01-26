@@ -1,1 +1,1 @@
-export { ApproveUser, USER_JOURNEY_APPROVE } from './ApproveUser'
+export { ApproveUser } from './ApproveUser'

@@ -1,1 +1,1 @@
-export { RemoveUser, USER_JOURNEY_REMOVE } from './RemoveUser'
+export { RemoveUser } from './RemoveUser'

@@ -27,13 +27,13 @@ export const USER_JOURNEY_PROMOTE = gql`
 `
 
 export function PromoteUser({ id }: PromoteUserProps): ReactElement {
-  const [userJourneyPromote] =
-    useMutation<UserJourneyPromote>(USER_JOURNEY_PROMOTE)
+  const [userJourneyPromote] = useMutation<UserJourneyPromote>(
+    USER_JOURNEY_PROMOTE,
+    { variables: { id } }
+  )
 
   const handleClick = async (): Promise<void> => {
-    await userJourneyPromote({
-      variables: { id }
-    })
+    await userJourneyPromote()
   }
 
   return (

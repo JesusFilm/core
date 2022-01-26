@@ -1,1 +1,1 @@
-export { PromoteUser, USER_JOURNEY_PROMOTE } from './PromoteUser'
+export { PromoteUser } from './PromoteUser'

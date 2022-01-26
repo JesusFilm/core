@@ -99,7 +99,7 @@ export function AccessDialog({
         }}
       >
         <Typography variant="subtitle1">Invite Other Editors</Typography>
-        <IconButton onClick={onClose}>
+        <IconButton onClick={onClose} aria-label="Close">
           <CloseRoundedIcon />
         </IconButton>
       </Box>
@@ -118,7 +118,7 @@ export function AccessDialog({
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={handleCopyClick}>
+                    <IconButton onClick={handleCopyClick} aria-label="Copy">
                       <ContentCopyRoundedIcon />
                     </IconButton>
                   </InputAdornment>

@@ -16,23 +16,32 @@ export const USER_JOURNEY_REMOVE = gql`
       id
       journey {
         id
-        userJourneys {
-          id
-          role
-        }
       }
     }
   }
 `
 
 export function RemoveUser({ id }: RemoveUserProps): ReactElement {
-  const [userJourneyRemove] =
-    useMutation<UserJourneyRemove>(USER_JOURNEY_REMOVE)
+  const [userJourneyRemove] = useMutation<UserJourneyRemove>(
+    USER_JOURNEY_REMOVE,
+    {
+      variables: { id },
+      update(cache, { data }) {
+        if (data?.userJourneyRemove.journey != null)
+          cache.modify({
+            id: cache.identify({ ...data.userJourneyRemove.journey }),
+            fields: {
+              userJourneys(refs, { readField }) {
+                return refs.filter((ref) => id !== readField('id', ref))
+              }
+            }
+          })
+      }
+    }
+  )
 
   const handleClick = async (): Promise<void> => {
-    await userJourneyRemove({
-      variables: { id }
-    })
+    await userJourneyRemove()
   }
 
   return (

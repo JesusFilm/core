@@ -20,5 +20,5 @@ export interface UserJourneyApprove {
 }
 
 export interface UserJourneyApproveVariables {
-  userJourneyApproveId: string;
+  id: string;
 }

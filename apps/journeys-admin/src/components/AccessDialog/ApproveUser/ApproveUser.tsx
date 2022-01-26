@@ -21,12 +21,13 @@ export const USER_JOURNEY_APPROVE = gql`
 `
 
 export function ApproveUser({ id }: ApproveUserProps): ReactElement {
-  const [userJourneyApprove] =
-    useMutation<UserJourneyApprove>(USER_JOURNEY_APPROVE)
+  const [userJourneyApprove] = useMutation<UserJourneyApprove>(
+    USER_JOURNEY_APPROVE,
+    { variables: { id } }
+  )
 
   const handleClick = async (): Promise<void> => {
     await userJourneyApprove({
-      variables: { id },
       optimisticResponse: {
         userJourneyApprove: {
           id,
