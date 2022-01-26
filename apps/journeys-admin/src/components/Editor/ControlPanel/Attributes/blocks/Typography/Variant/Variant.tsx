@@ -34,7 +34,7 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
   )
 
   const journey = useJourney()
-  const [selected, setSelected] = useState(variant ?? 'body2')
+  const [selected, setSelected] = useState(variant ?? TypographyVariant.body2)
 
   const order = [
     'h1',
@@ -91,7 +91,13 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
             key={`typography-variant-${variant}`}
             sx={{ justifyContent: 'flex-start' }}
           >
-            <HorizontalRuleRoundedIcon sx={{ ml: 1, mr: 2 }} />
+            <HorizontalRuleRoundedIcon
+              sx={{
+                ml: 1,
+                mr: 2,
+                color: variant !== selected ? 'secondary.light' : 'primary'
+              }}
+            />
             <Typography variant={variant}>
               {capitalize(
                 lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')

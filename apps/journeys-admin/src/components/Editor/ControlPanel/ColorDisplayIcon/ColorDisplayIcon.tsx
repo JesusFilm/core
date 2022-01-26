@@ -43,7 +43,7 @@ export function ColorDisplayIcon({
           sx={{
             width: 20,
             height: 20,
-            m: 1,
+            m: 0.5,
             borderRadius: 1000,
             backgroundColor: `${color ?? 'primary'}.main`
           }}
