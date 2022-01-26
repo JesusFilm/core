@@ -24,7 +24,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
   }
 `
 
-export function SignUp(): ReactElement {
+export function NewSignUpButton(): ReactElement {
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { id: journeyId } = useJourney()

@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { SIGN_UP_BLOCK_CREATE } from './SignUp'
-import { SignUp } from '.'
+import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
+import { NewSignUpButton } from '.'
 
 describe('SignUp', () => {
   const selectedStep: TreeBlock = {
@@ -66,7 +66,7 @@ describe('SignUp', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <SignUp />
+            <NewSignUpButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -121,7 +121,7 @@ describe('SignUp', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <SignUp />
+            <NewSignUpButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

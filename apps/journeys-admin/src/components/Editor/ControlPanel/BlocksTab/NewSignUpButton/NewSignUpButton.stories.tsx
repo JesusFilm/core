@@ -4,13 +4,13 @@ import { EditorProvider } from '@core/journeys/ui'
 import { JourneyProvider } from '../../../../../libs/context'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { SIGN_UP_BLOCK_CREATE } from './SignUp'
-import { SignUp } from '.'
+import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
+import { NewSignUpButton } from '.'
 
-const SignUpStory = {
+const NewSignUpButtonStory = {
   ...journeysAdminConfig,
-  component: SignUp,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/SignUp'
+  component: NewSignUpButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewSignUpButton'
 }
 
 export const Default: Story = () => {
@@ -73,11 +73,11 @@ export const Default: Story = () => {
             }
           }}
         >
-          <SignUp />
+          <NewSignUpButton />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export default SignUpStory as Meta
+export default NewSignUpButtonStory as Meta

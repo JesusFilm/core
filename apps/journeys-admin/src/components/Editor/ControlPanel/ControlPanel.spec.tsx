@@ -7,7 +7,7 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/Typography/Typography'
-import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/SignUp/SignUp'
+import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
 import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {
