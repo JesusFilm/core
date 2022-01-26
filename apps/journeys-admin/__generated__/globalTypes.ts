@@ -176,6 +176,14 @@ export interface TypographyBlockCreateInput {
   variant?: TypographyVariant | null;
 }
 
+export interface TypographyBlockUpdateInput {
+  align?: TypographyAlign | null;
+  color?: TypographyColor | null;
+  content?: string | null;
+  parentBlockId?: string | null;
+  variant?: TypographyVariant | null;
+}
+
 export interface VideoResponseCreateInput {
   blockId: string;
   id?: string | null;
