@@ -1,4 +1,10 @@
-import { ReactElement, MouseEvent, useEffect, useState } from 'react'
+import {
+  ReactElement,
+  MouseEvent,
+  useEffect,
+  useState,
+  FocusEventHandler
+} from 'react'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -23,6 +29,7 @@ import { Theme } from '@mui/material/styles'
 import { gql, useLazyQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
+import { useSnackbar } from 'notistack'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -63,6 +70,7 @@ export function AccessDialog({
   onClose
 }: InviteUserModalProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const { enqueueSnackbar } = useSnackbar()
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
@@ -79,6 +87,14 @@ export function AccessDialog({
     await navigator.clipboard.writeText(
       `${window.location.origin}/journeys/${journeySlug}`
     )
+    enqueueSnackbar('Editor invite link copied', {
+      variant: 'success',
+      preventDuplicate: true
+    })
+  }
+
+  const handleFocus: FocusEventHandler<HTMLInputElement> = (event): void => {
+    event.target.select()
   }
 
   return (
@@ -112,6 +128,9 @@ export function AccessDialog({
                 typeof window !== 'undefined' &&
                 `${window.location.origin}/journeys/${journeySlug}`
               }
+              inputProps={{
+                onFocus: handleFocus
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -132,13 +151,14 @@ export function AccessDialog({
             You can accept or reject every request."
             />
           </MuiListItem>
-          <UserJourneyList
-            title="Requested Editing Rights"
-            loading={loading}
-            userJourneys={data?.journey?.userJourneys?.filter(
-              ({ role }) => role === UserJourneyRole.inviteRequested
-            )}
-          />
+          {!loading && (
+            <UserJourneyList
+              title="Requested Editing Rights"
+              userJourneys={data?.journey?.userJourneys?.filter(
+                ({ role }) => role === UserJourneyRole.inviteRequested
+              )}
+            />
+          )}
           <UserJourneyList
             title="Users With Access"
             loading={loading}
@@ -154,7 +174,7 @@ export function AccessDialog({
 
 interface UserJourneyListProps {
   title: string
-  loading: boolean
+  loading?: boolean
   userJourneys?: UserJourney[] | null
 }
 
@@ -166,23 +186,24 @@ function UserJourneyList({
   return (
     <>
       {((userJourneys?.length != null && userJourneys.length > 0) ||
-        loading) && (
+        loading === true) && (
         <>
           <Divider sx={{ my: 2 }} />
           <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
         </>
       )}
-      {loading && (
-        <MuiListItem sx={{ px: 0 }}>
-          <ListItemAvatar>
-            <Skeleton variant="circular" width={40} height={40} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={<Skeleton variant="text" width="60%" />}
-            secondary={<Skeleton variant="text" width="30%" />}
-          />
-        </MuiListItem>
-      )}
+      {loading === true &&
+        [0, 1, 2].map((i) => (
+          <MuiListItem sx={{ px: 0 }} key={i}>
+            <ListItemAvatar>
+              <Skeleton variant="circular" width={40} height={40} />
+            </ListItemAvatar>
+            <ListItemText
+              primary={<Skeleton variant="text" width="60%" />}
+              secondary={<Skeleton variant="text" width="30%" />}
+            />
+          </MuiListItem>
+        ))}
       {userJourneys?.map((userJourney) => (
         <ListItem key={userJourney.id} {...userJourney} />
       ))}

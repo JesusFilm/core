@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { AccessDialog, GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
@@ -152,9 +153,11 @@ describe('AccessDialog', () => {
   it('allows invitee to be approved as editor', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <AccessDialog journeySlug="journeySlug" open={true} />
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks} cache={cache}>
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Manage' })).toBeInTheDocument()
@@ -171,9 +174,11 @@ describe('AccessDialog', () => {
   it('allows editor to be removed', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <AccessDialog journeySlug="journeySlug" open={true} />
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks} cache={cache}>
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Editor' })).toBeInTheDocument()
@@ -191,9 +196,11 @@ describe('AccessDialog', () => {
   it('allows editor to be promoted to owner', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <AccessDialog journeySlug="journeySlug" open={true} />
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks} cache={cache}>
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Editor' })).toBeInTheDocument()
@@ -213,13 +220,15 @@ describe('AccessDialog', () => {
   it('calls on close', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
-        <AccessDialog
-          journeySlug="journeySlug"
-          open={true}
-          onClose={handleClose}
-        />
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks}>
+          <AccessDialog
+            journeySlug="journeySlug"
+            open={true}
+            onClose={handleClose}
+          />
+        </MockedProvider>
+      </SnackbarProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Close' }))
     expect(handleClose).toHaveBeenCalled()
@@ -241,16 +250,21 @@ describe('AccessDialog', () => {
       Object.assign(navigator, originalNavigator)
     })
 
-    it('copies link to clipboard', () => {
-      const { getByRole } = render(
-        <MockedProvider mocks={mocks}>
-          <AccessDialog journeySlug="journeySlug" open={true} />
-        </MockedProvider>
+    it('copies link to clipboard', async () => {
+      const { getByRole, getByText } = render(
+        <SnackbarProvider>
+          <MockedProvider mocks={mocks}>
+            <AccessDialog journeySlug="journeySlug" open={true} />
+          </MockedProvider>
+        </SnackbarProvider>
       )
       const link = 'http://localhost/journeys/journeySlug'
       expect(getByRole('textbox')).toHaveValue(link)
       fireEvent.click(getByRole('button', { name: 'Copy' }))
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(link)
+      await waitFor(() =>
+        expect(getByText('Editor invite link copied')).toBeInTheDocument()
+      )
     })
   })
 })
