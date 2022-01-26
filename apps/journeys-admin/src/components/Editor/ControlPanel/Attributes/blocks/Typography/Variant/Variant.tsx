@@ -36,10 +36,10 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
 
   function handleChange(
     event: React.MouseEvent<HTMLElement>,
-    varint: TypographyVariant
+    variant: TypographyVariant
   ): void {
-    if (varint != null) {
-      setSelected(varint)
+    if (variant != null) {
+      setSelected(variant)
     }
   }
 

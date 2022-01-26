@@ -4,7 +4,7 @@ import { Variant } from '.'
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
     const { getByRole } = render(
-      <Variant id={'font-variant-id'} variant={null} />
+      <Variant id={'typograpgy-variant-id'} variant={null} />
     )
     expect(getByRole('button', { name: 'Body 1' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Header 1' })).toBeInTheDocument()

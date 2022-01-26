@@ -37,15 +37,15 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
       <Attribute
         id={`${id}-typography-variant`}
         icon={<TextFieldsRoundedIcon />}
-        name="Font Variant"
+        name="Text Variant"
         value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
-        description="Font Variant"
+        description="Text Variant"
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Font Variant',
+            title: 'Text Variant',
             mobileOpen: true,
             children: <Variant id={id} variant={variant} />
           })
