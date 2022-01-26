@@ -1,9 +1,10 @@
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
+import { palette } from '../../../ThemeProvider/admin/tokens/colors'
 
 export const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   textTransform: 'none',
-  backgroundColor: theme.palette.primary.contrastText,
+  backgroundColor: palette[0],
   backgroundClip: 'padding-box',
   color: theme.palette.secondary.dark,
   '&:first-of-type': {
@@ -18,6 +19,6 @@ export const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
     backgroundColor: theme.palette.background.default
   },
   '&.hover': {
-    backgroundColor: theme.palette.divider
+    backgroundColor: palette[200]
   }
 }))

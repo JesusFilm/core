@@ -43,7 +43,7 @@ export function Attributes({ selected }: AttributesProps): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Social Share Appearance',
-      mobileOpen: true,
+      mobileOpen: false,
       children: <SocialShareAppearance id={selected.id} />
     })
   }, [selected.id, dispatch])

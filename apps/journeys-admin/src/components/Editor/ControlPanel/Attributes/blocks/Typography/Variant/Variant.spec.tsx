@@ -7,7 +7,7 @@ describe('Typography variant selector', () => {
   it('should show variant properties', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <Variant id={'typograpgy-variant-id'} variant={null} />
+        <Variant id={'typograpghy-variant-id'} variant={null} />
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Body 1' })).toBeInTheDocument()
