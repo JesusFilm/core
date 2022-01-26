@@ -1,55 +1,38 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { ApproveUser, USER_JOURNEY_APPROVE } from './ApproveUser'
+import { USER_JOURNEY_APPROVE } from './ApproveUser'
+import { ApproveUser } from '.'
 
-const userJourney: UserJourney = {
-  id: '1234',
-  __typename: 'UserJourney',
-  userId: '1',
-  journeyId: '1234',
-  role: UserJourneyRole.inviteRequested,
-  user: {
-    __typename: 'User',
-    id: '1',
-    email: 'drew@drew.com',
-    firstName: 'drew',
-    lastName: 'drew',
-    imageUrl: ''
-  }
-}
-
-describe('Approve button', () => {
-  it('should render approve button', () => {
-    const { getByText } = render(
+describe('ApproveUser', () => {
+  it('should approve user journey', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        userJourneyApprove: {
+          id: 'userId',
+          role: UserJourneyRole.editor
+        }
+      }
+    }))
+    const { getByRole } = render(
       <MockedProvider
+        addTypename={false}
         mocks={[
           {
             request: {
               query: USER_JOURNEY_APPROVE,
               variables: {
-                input: {
-                  userId: '1',
-                  journeyId: '1234'
-                }
+                id: 'userId'
               }
             },
-            result: {
-              data: {
-                userJourneyApprove: {
-                  __typename: 'UserJourney',
-                  userId: '1',
-                  journeyId: '1234'
-                }
-              }
-            }
+            result
           }
         ]}
       >
-        <ApproveUser userJourney={userJourney} />
+        <ApproveUser id="userId" />
       </MockedProvider>
     )
-    expect(getByText('Approve')).toBeInTheDocument()
+    fireEvent.click(getByRole('menuitem'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

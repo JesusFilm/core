@@ -14,7 +14,6 @@ import List from '@mui/material/List'
 import MuiListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
-import CircularProgress from '@mui/material/CircularProgress'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
@@ -23,10 +22,12 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { gql, useLazyQuery } from '@apollo/client'
 import { compact } from 'lodash'
+import Skeleton from '@mui/material/Skeleton'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
+import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -63,13 +64,11 @@ export function AccessDialog({
 }: InviteUserModalProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const [loadJourney, { loading, data, error }] =
+  const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeySlug },
       fetchPolicy: 'network-only'
     })
-
-  console.log(error)
 
   useEffect(() => {
     if (open === true) {
@@ -105,55 +104,87 @@ export function AccessDialog({
         </IconButton>
       </Box>
       <DialogContent dividers>
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <List>
-            <MuiListItem sx={{ px: 0 }}>
-              <TextField
-                fullWidth
-                hiddenLabel
-                defaultValue={`${window.location.origin}/journeys/${journeySlug}`}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LinkRoundedIcon />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleCopyClick}>
-                        <ContentCopyRoundedIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  readOnly: true
-                }}
-                variant="filled"
-                helperText="Anyone with this link can see journey and ask for editing rights.
+        <List>
+          <MuiListItem sx={{ px: 0 }}>
+            <TextField
+              fullWidth
+              hiddenLabel
+              defaultValue={`${window.location.origin}/journeys/${journeySlug}`}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LinkRoundedIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleCopyClick}>
+                      <ContentCopyRoundedIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                readOnly: true
+              }}
+              variant="filled"
+              helperText="Anyone with this link can see journey and ask for editing rights.
             You can accept or reject every request."
-              />
-            </MuiListItem>
-            <Divider sx={{ my: 2 }} />
-            <MuiListItem sx={{ px: 0 }}>Requested Editing Rights</MuiListItem>
-            {data?.journey?.userJourneys?.map(
-              (userJourney) =>
-                userJourney.role === 'inviteRequested' && (
-                  <ListItem key={userJourney.id} {...userJourney} />
-                )
+            />
+          </MuiListItem>
+          <UserJourneyList
+            title="Requested Editing Rights"
+            loading={loading}
+            userJourneys={data?.journey?.userJourneys?.filter(
+              ({ role }) => role === UserJourneyRole.inviteRequested
             )}
-            <Divider sx={{ my: 2 }} />
-            <MuiListItem sx={{ px: 0 }}>Users With Access</MuiListItem>
-            {data?.journey?.userJourneys?.map(
-              (userJourney) =>
-                userJourney.role !== 'inviteRequested' && (
-                  <ListItem key={userJourney.id} {...userJourney} />
-                )
+          />
+          <UserJourneyList
+            title="Users With Access"
+            loading={loading}
+            userJourneys={data?.journey?.userJourneys?.filter(
+              ({ role }) => role !== UserJourneyRole.inviteRequested
             )}
-          </List>
-        )}
+          />
+        </List>
       </DialogContent>
     </Dialog>
+  )
+}
+
+interface UserJourneyListProps {
+  title: string
+  loading: boolean
+  userJourneys?: UserJourney[] | null
+}
+
+function UserJourneyList({
+  title,
+  loading,
+  userJourneys
+}: UserJourneyListProps): ReactElement {
+  return (
+    <>
+      {((userJourneys?.length != null && userJourneys.length > 0) ||
+        loading) && (
+        <>
+          <Divider sx={{ my: 2 }} />
+          <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
+        </>
+      )}
+      {loading && (
+        <MuiListItem sx={{ px: 0 }}>
+          <ListItemAvatar>
+            <Skeleton variant="circular" width={40} height={40} />
+          </ListItemAvatar>
+          <ListItemText
+            primary={<Skeleton variant="text" width="60%" />}
+            secondary={<Skeleton variant="text" width="30%" />}
+          />
+        </MuiListItem>
+      )}
+      {userJourneys?.map((userJourney) => (
+        <ListItem key={userJourney.id} {...userJourney} />
+      ))}
+    </>
   )
 }
 

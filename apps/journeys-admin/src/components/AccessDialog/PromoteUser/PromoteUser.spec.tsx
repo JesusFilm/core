@@ -1,55 +1,42 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
-import { GetJourney_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourney'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { PromoteUser, USER_JOURNEY_PROMOTE } from './PromoteUser'
+import { USER_JOURNEY_PROMOTE } from './PromoteUser'
+import { PromoteUser } from '.'
 
-const userJourney: UserJourney = {
-  id: '1234',
-  __typename: 'UserJourney',
-  userId: '1',
-  journeyId: '1234',
-  role: UserJourneyRole.inviteRequested,
-  user: {
-    __typename: 'User',
-    id: '1',
-    email: 'drew@drew.com',
-    firstName: 'drew',
-    lastName: 'drew',
-    imageUrl: ''
-  }
-}
-
-describe('Promote button', () => {
-  it('should render promote button', () => {
-    const { getByText } = render(
+describe('PromoteUser', () => {
+  it('should promote user journey', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        userJourneyPromote: {
+          id: 'userId',
+          role: UserJourneyRole.editor,
+          journey: {
+            id: 'journeyId',
+            userJourneys: []
+          }
+        }
+      }
+    }))
+    const { getByRole } = render(
       <MockedProvider
+        addTypename={false}
         mocks={[
           {
             request: {
               query: USER_JOURNEY_PROMOTE,
               variables: {
-                input: {
-                  userId: '1',
-                  journeyId: '1234'
-                }
+                id: 'userId'
               }
             },
-            result: {
-              data: {
-                userJourneyApprove: {
-                  __typename: 'UserJourney',
-                  userId: '1',
-                  journeyId: '1234'
-                }
-              }
-            }
+            result
           }
         ]}
       >
-        <PromoteUser userJourney={userJourney} />
+        <PromoteUser id="userId" />
       </MockedProvider>
     )
-    expect(getByText('Promote')).toBeInTheDocument()
+    fireEvent.click(getByRole('menuitem'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

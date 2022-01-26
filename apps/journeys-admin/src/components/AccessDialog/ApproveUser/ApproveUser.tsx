@@ -1,7 +1,9 @@
 import { ReactElement } from 'react'
-import MenuItem from '@mui/material/MenuItem'
 import { useMutation, gql } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemIcon from '@mui/material/ListItemIcon'
 import { UserJourneyApprove } from '../../../../__generated__/UserJourneyApprove'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
@@ -22,12 +24,12 @@ export function ApproveUser({ id }: ApproveUserProps): ReactElement {
   const [userJourneyApprove] =
     useMutation<UserJourneyApprove>(USER_JOURNEY_APPROVE)
 
-  const handleApproveUser = async (): Promise<void> => {
+  const handleClick = async (): Promise<void> => {
     await userJourneyApprove({
       variables: { id },
       optimisticResponse: {
         userJourneyApprove: {
-          id: id,
+          id,
           role: UserJourneyRole.editor,
           __typename: 'UserJourney'
         }
@@ -36,9 +38,11 @@ export function ApproveUser({ id }: ApproveUserProps): ReactElement {
   }
 
   return (
-    <MenuItem onClick={handleApproveUser}>
-      <BeenhereRoundedIcon sx={{ mr: 2 }} />
-      Approve
+    <MenuItem onClick={handleClick}>
+      <ListItemIcon>
+        <BeenhereRoundedIcon />
+      </ListItemIcon>
+      <ListItemText>Approve</ListItemText>
     </MenuItem>
   )
 }
