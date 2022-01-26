@@ -6,6 +6,7 @@ import { PromoteUser } from '.'
 
 describe('PromoteUser', () => {
   it('should promote user journey', async () => {
+    const handleClick = jest.fn()
     const result = jest.fn(() => ({
       data: {
         userJourneyPromote: {
@@ -33,10 +34,11 @@ describe('PromoteUser', () => {
           }
         ]}
       >
-        <PromoteUser id="userId" />
+        <PromoteUser id="userId" onClick={handleClick} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(handleClick).toHaveBeenCalled()
   })
 })

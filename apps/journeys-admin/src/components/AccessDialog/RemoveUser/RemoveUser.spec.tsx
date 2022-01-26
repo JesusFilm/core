@@ -6,6 +6,7 @@ import { RemoveUser } from '.'
 
 describe('RemoveUser', () => {
   it('should remove user journey', async () => {
+    const handleClick = jest.fn()
     const result = jest.fn(() => ({
       data: {
         userJourneyRemove: {
@@ -31,10 +32,11 @@ describe('RemoveUser', () => {
           }
         ]}
       >
-        <RemoveUser id="userId" />
+        <RemoveUser id="userId" onClick={handleClick} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(handleClick).toHaveBeenCalled()
   })
 })

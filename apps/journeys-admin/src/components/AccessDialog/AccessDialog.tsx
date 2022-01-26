@@ -251,12 +251,12 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
         }}
       >
         {role === 'inviteRequested' ? (
-          <ApproveUser id={id} />
+          <ApproveUser id={id} onClick={handleClose} />
         ) : (
-          <PromoteUser id={id} />
+          <PromoteUser id={id} onClick={handleClose} />
         )}
         <Divider />
-        <RemoveUser id={id} />
+        <RemoveUser id={id} onClick={handleClose} />
       </Menu>
     </>
   )
