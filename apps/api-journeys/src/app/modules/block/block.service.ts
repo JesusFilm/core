@@ -33,7 +33,7 @@ export class BlockService extends BaseService {
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
         FILTER block.journeyId == ${journeyId}
-          ${filterParentBlockId}
+          AND ${filterParentBlockId}
         SORT block.parentOrder ASC
         RETURN block
     `)
