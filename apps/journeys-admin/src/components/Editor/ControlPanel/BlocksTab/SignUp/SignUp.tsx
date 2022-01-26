@@ -1,18 +1,18 @@
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
-  EditorContext,
+  useEditor,
   SIGN_UP_FIELDS,
-  transformer,
   TreeBlock
 } from '@core/journeys/ui'
 import DraftsRounded from '@mui/icons-material/DraftsRounded'
-import { ReactElement, useContext } from 'react'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
+import { useJourney } from '../../../../../libs/context'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
 import { Button } from '../../Button'
 
-const SIGN_UP_BLOCK_CREATE = gql`
+export const SIGN_UP_BLOCK_CREATE = gql`
   ${SIGN_UP_FIELDS}
   mutation SignUpBlockCreate($input: SignUpBlockCreateInput!) {
     signUpBlockCreate(input: $input) {
@@ -27,10 +27,11 @@ const SIGN_UP_BLOCK_CREATE = gql`
 export function SignUp(): ReactElement {
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
+  const { id: journeyId } = useJourney()
   const {
-    state: { journey, selectedStep },
+    state: { selectedStep },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = async (): Promise<void> => {
     const card = selectedStep?.children.find(
@@ -40,20 +41,40 @@ export function SignUp(): ReactElement {
       const { data } = await signUpBlockCreate({
         variables: {
           input: {
-            journeyId: journey.id,
+            journeyId,
             parentBlockId: card.id,
             submitLabel: 'Submit'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.signUpBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.signUpBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
           }
         }
       })
       if (data?.signUpBlockCreate != null) {
         dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
+          type: 'SetSelectedBlockByIdAction',
+          id: data.signUpBlockCreate.id
         })
         dispatch({
-          type: 'SetSelectedBlockAction',
-          block: transformer([data.signUpBlockCreate])[0]
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
         })
       }
     }

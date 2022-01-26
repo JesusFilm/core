@@ -24,6 +24,13 @@ export class SignUpBlockResolvers {
     @Args('input') input: SignUpBlockCreateInput & { __typename }
   ): Promise<SignUpBlock> {
     input.__typename = 'SignUpBlock'
-    return await this.blockService.save(input)
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
+    )
+    return await this.blockService.save({
+      ...input,
+      parentOrder: siblings.length
+    })
   }
 }

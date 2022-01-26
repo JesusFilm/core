@@ -60,6 +60,7 @@ describe('SignUp', () => {
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
     __typename: 'SignUpBlock',
+    parentOrder: 1,
     submitLabel: input.submitLabel
   }
 
@@ -68,6 +69,7 @@ describe('SignUp', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block]),
       save: jest.fn((input) => input)
     })
   }

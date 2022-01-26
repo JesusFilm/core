@@ -15,12 +15,12 @@ import { TypographyBlockCreate } from '../../../../../../__generated__/Typograph
 export const TYPOGRAPHY_BLOCK_CREATE = gql`
   ${TYPOGRAPHY_FIELDS}
   mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
-  typographyBlockCreate(input: $input) {
-    id
-    parentBlockId
-    ...TypographyFields
+    typographyBlockCreate(input: $input) {
+      id
+      parentBlockId
+      ...TypographyFields
+    }
   }
-}
 `
 
 export function Typography(): ReactElement {
@@ -60,9 +60,9 @@ export function Typography(): ReactElement {
                     data: data.typographyBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
-  id
-}
-`
+                        id
+                      }
+                    `
                   })
                   return [...existingBlockRefs, newBlockRef]
                 }
