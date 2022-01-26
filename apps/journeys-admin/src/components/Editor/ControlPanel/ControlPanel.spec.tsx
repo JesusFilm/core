@@ -200,7 +200,7 @@ describe('ControlPanel', () => {
       </MockedProvider>
     )
     expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
-    fireEvent.click(getByTestId('step-step3.id'))
+    fireEvent.click(getByTestId('preview-step3.id'))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
