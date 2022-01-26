@@ -6,20 +6,20 @@
 import { TypographyBlockUpdateInput, TypographyAlign } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: TypographyBlockUpdateColor
+// GraphQL mutation operation: TypographyBlockUpdateAlign
 // ====================================================
 
-export interface TypographyBlockUpdateColor_typographyBlockUpdate {
+export interface TypographyBlockUpdateAlign_typographyBlockUpdate {
   __typename: "TypographyBlock";
   id: string;
   align: TypographyAlign | null;
 }
 
-export interface TypographyBlockUpdateColor {
-  typographyBlockUpdate: TypographyBlockUpdateColor_typographyBlockUpdate;
+export interface TypographyBlockUpdateAlign {
+  typographyBlockUpdate: TypographyBlockUpdateAlign_typographyBlockUpdate;
 }
 
-export interface TypographyBlockUpdateColorVariables {
+export interface TypographyBlockUpdateAlignVariables {
   id: string;
   journeyId: string;
   input: TypographyBlockUpdateInput;

@@ -17,7 +17,7 @@ interface AlignProps {
 }
 
 export const TYPOGRAPHY_BLOCK_UPDATE = gql`
-  mutation TypographyBlockUpdateColor(
+  mutation TypographyBlockUpdateAlign(
     $id: ID!
     $journeyId: ID!
     $input: TypographyBlockUpdateInput!
@@ -41,10 +41,10 @@ export function Align({ id, align }: AlignProps): ReactElement {
     (a, b) => order.indexOf(a) - order.indexOf(b)
   )
 
-  const handleChange = async (
+  async function handleChange(
     event: React.MouseEvent<HTMLElement>,
     align: TypographyAlign
-  ): Promise<void> => {
+  ): Promise<void> {
     if (align != null) {
       await typographyBlockUpdate({
         variables: {
