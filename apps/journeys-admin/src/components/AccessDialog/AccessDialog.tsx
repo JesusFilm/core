@@ -109,7 +109,10 @@ export function AccessDialog({
             <TextField
               fullWidth
               hiddenLabel
-              defaultValue={`${window.location.origin}/journeys/${journeySlug}`}
+              defaultValue={
+                typeof window !== 'undefined' &&
+                `${window.location.origin}/journeys/${journeySlug}`
+              }
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
