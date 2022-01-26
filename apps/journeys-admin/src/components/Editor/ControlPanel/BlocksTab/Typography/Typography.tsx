@@ -60,9 +60,9 @@ export function Typography(): ReactElement {
                     data: data.typographyBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
-  id
-}
-`
+                      id
+                    }
+                    `
                   })
                   return [...existingBlockRefs, newBlockRef]
                 }

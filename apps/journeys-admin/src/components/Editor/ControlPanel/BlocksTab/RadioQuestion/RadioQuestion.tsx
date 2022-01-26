@@ -1,18 +1,18 @@
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
-  EditorContext,
   TreeBlock,
+  useEditor,
   RADIO_OPTION_FIELDS,
-  RADIO_QUESTION_FIELDS,
-  transformer
+  RADIO_QUESTION_FIELDS
 } from '@core/journeys/ui'
 import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
+import { useJourney } from '../../../../../libs/context'
 
 const RADIO_QUESTION_BLOCK_CREATE = gql`
   ${RADIO_QUESTION_FIELDS}
@@ -47,10 +47,11 @@ export function RadioQuestion(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
+  const { id: journeyId } = useJourney()
   const {
-    state: { journey, selectedStep },
+    state: { selectedStep },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleClick = async (): Promise<void> => {
     const radioQuestionId = uuidv4()
@@ -62,31 +63,51 @@ export function RadioQuestion(): ReactElement {
       const { data } = await radioQuestionBlockCreate({
         variables: {
           input: {
+            journeyId,
             id: radioQuestionId,
-            journeyId: journey.id,
             parentBlockId: card.id,
             label: 'Your Question Here?'
           },
           radioOptionBlockCreateInput1: {
-            journeyId: journey.id,
+            journeyId,
             parentBlockId: radioQuestionId,
             label: 'Option 1'
           },
           radioOptionBlockCreateInput2: {
-            journeyId: journey.id,
+            journeyId,
             parentBlockId: radioQuestionId,
             label: 'Option 2'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.radioQuestionBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.radioQuestionBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                      id
+                    }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
           }
         }
       })
       if (data?.radioQuestionBlockCreate != null) {
         dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
+          type: 'SetSelectedBlockByIdAction',
+          id: data.radioQuestionBlockCreate.id
         })
         dispatch({
-          type: 'SetSelectedBlockAction',
-          block: transformer([data.radioQuestionBlockCreate])[0]
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
         })
       }
     }

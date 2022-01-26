@@ -136,17 +136,13 @@ export const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
-  state: {
-    steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards
-  },
+  state: { steps: [], drawerMobileOpen: false, activeTab: ActiveTab.Cards },
   dispatch: () => null
 })
 
 interface EditorProviderProps {
   children: ReactNode
-  initialState: Partial<EditorState> & { journey: { id: string } }
+  initialState?: Partial<EditorState>
 }
 
 export function EditorProvider({
