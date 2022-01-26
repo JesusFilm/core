@@ -55,6 +55,7 @@ describe('PageWrapper', () => {
             result: {
               data: {
                 me: {
+                  id: 'userId',
                   firstName: 'Test',
                   lastName: 'User',
                   imageUrl: 'https://bit.ly/3Gth4Yf',
