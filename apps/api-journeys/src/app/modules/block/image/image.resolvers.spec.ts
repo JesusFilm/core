@@ -17,7 +17,7 @@ describe('Image', () => {
     journeyId: '2',
     __typename: 'ImageBlock',
     parentBlockId: '3',
-    parentOrder: 2,
+    parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
     width: 1920,
@@ -28,7 +28,7 @@ describe('Image', () => {
     journeyId: '2',
     __typename: 'ImageBlock',
     parentBlockId: '3',
-    parentOrder: 2,
+    parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
     width: 1920,
@@ -54,6 +54,7 @@ describe('Image', () => {
   const imageblockresponse = {
     _key: input.id,
     parentBlockId: input.parentBlockId,
+    parentOrder: 0,
     journeyId: input.journeyId,
     __typename: 'ImageBlock',
     src: input.src,
@@ -78,6 +79,7 @@ describe('Image', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => []),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
