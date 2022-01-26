@@ -4,11 +4,10 @@ import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 import capitalize from 'lodash/capitalize'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
+import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 
 export function Button({
   id,
@@ -33,24 +32,7 @@ export function Button({
 
       <Attribute
         id={`${id}-color`}
-        icon={
-          <Paper
-            sx={{
-              borderRadius: 1000
-            }}
-          >
-            <Box
-              data-testid="backgroundColorIcon"
-              sx={{
-                width: 20,
-                height: 20,
-                m: 1,
-                borderRadius: 1000,
-                backgroundColor: `${buttonColor ?? 'primary'}.main`
-              }}
-            />
-          </Paper>
-        }
+        icon={<ColorDisplayIcon color={buttonColor} />}
         name="Color"
         value={capitalize(buttonColor?.toString() ?? 'primary')}
         description="Background Color"
