@@ -17,7 +17,7 @@ interface AlignProps {
 }
 
 export const TYPOGRAPHY_BLOCK_UPDATE = gql`
-  mutation TypographyBlockUpdate(
+  mutation TypographyBlockUpdateColor(
     $id: ID!
     $journeyId: ID!
     $input: TypographyBlockUpdateInput!

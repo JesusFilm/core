@@ -3,17 +3,37 @@ import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import Typography from '@mui/material/Typography'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import { gql, useMutation } from '@apollo/client'
+import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 import { StyledToggleButton } from '../../../../StyledToggleButton'
+import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
+import { useJourney } from '../../../../../../../libs/context'
 
 interface VariantProps {
   id: string
   variant: TypographyVariant | null
 }
 
-// add mutaion to update back end data
+export const TYPOGRAPHY_BLOCK_UPDATE = gql`
+  mutation TypographyBlockUpdateVariant(
+    $id: ID!
+    $journeyId: ID!
+    $input: TypographyBlockUpdateInput!
+  ) {
+    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      variant
+    }
+  }
+`
 
 export function Variant({ id, variant }: VariantProps): ReactElement {
+  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
+    TYPOGRAPHY_BLOCK_UPDATE
+  )
+
+  const journey = useJourney()
   const [selected, setSelected] = useState(variant ?? 'body2')
 
   const order = [
@@ -34,11 +54,18 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
     (a, b) => order.indexOf(a) - order.indexOf(b)
   )
 
-  function handleChange(
+  async function handleChange(
     event: React.MouseEvent<HTMLElement>,
     variant: TypographyVariant
-  ): void {
+  ): Promise<void> {
     if (variant != null) {
+      await typographyBlockUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          input: { variant }
+        }
+      })
       setSelected(variant)
     }
   }
@@ -61,10 +88,10 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
         return (
           <StyledToggleButton
             value={variant}
-            key={`typography-align-${variant}`}
+            key={`typography-variant-${variant}`}
             sx={{ justifyContent: 'flex-start' }}
           >
-            {/* Icon goes here */}
+            <HorizontalRuleRoundedIcon sx={{ ml: 1, mr: 2 }} />
             <Typography variant={variant}>
               {capitalize(
                 lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
