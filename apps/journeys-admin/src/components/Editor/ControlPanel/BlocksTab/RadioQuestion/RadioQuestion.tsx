@@ -89,8 +89,8 @@ export function RadioQuestion(): ReactElement {
                     data: data.radioQuestionBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
-                      id
-                    }
+                        id
+                      }
                     `
                   })
                   return [...existingBlockRefs, newBlockRef]

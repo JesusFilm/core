@@ -24,11 +24,7 @@ describe('Attribute', () => {
     const handleClick = jest.fn()
     const { getByRole, baseElement } = render(
       <ThemeProvider>
-        <EditorProvider
-          initialState={{
-            journey: { id: 'journeyId' }
-          }}
-        >
+        <EditorProvider>
           <Attribute
             id="custom-id"
             icon={<>test</>}
