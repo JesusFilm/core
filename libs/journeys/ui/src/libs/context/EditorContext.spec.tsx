@@ -271,7 +271,57 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
-          steps: [step]
+          steps: [step],
+          selectedBlock: step,
+          selectedStep: step
+        })
+      })
+
+      it('should retain previously set steps and blocks', () => {
+        const block: TreeBlock = {
+          id: 'card0.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+        const updatedBlock: TreeBlock = {
+          ...block,
+          fullscreen: true
+        }
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          locked: false,
+          nextBlockId: null,
+          children: [block]
+        }
+        const updatedStep: TreeBlock = {
+          ...step,
+          children: [updatedBlock]
+        }
+        const state = {
+          steps: [step],
+          drawerMobileOpen: false,
+          activeTab: ActiveTab.Cards,
+          selectedBlock: block,
+          selectedStep: step
+        }
+        expect(
+          reducer(state, {
+            type: 'SetStepsAction',
+            steps: [updatedStep]
+          })
+        ).toEqual({
+          ...state,
+          steps: [updatedStep],
+          selectedBlock: updatedBlock,
+          selectedStep: updatedStep
         })
       })
     })
