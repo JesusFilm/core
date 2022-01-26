@@ -43,7 +43,11 @@ export function AccessAvatars({
 
   return (
     <>
-      <Box onClick={() => setOpen(true)} sx={{ cursor: 'pointer' }}>
+      <Box
+        onClick={() => setOpen(true)}
+        sx={{ cursor: 'pointer' }}
+        role="Button"
+      >
         <AvatarGroup
           max={3}
           sx={{

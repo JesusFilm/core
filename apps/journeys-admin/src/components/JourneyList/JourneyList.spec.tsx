@@ -1,11 +1,17 @@
 import { render, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 import { JourneyList } from '.'
 
 describe('JourneyList', () => {
   it('should render journeys in descending createdAt date by default', () => {
     const { getAllByLabelText } = render(
-      <JourneyList journeys={[defaultJourney, oldJourney]} />
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyList journeys={[defaultJourney, oldJourney]} />
+        </ThemeProvider>
+      </MockedProvider>
     )
 
     const journeyCards = getAllByLabelText('journey-card')
@@ -16,7 +22,11 @@ describe('JourneyList', () => {
 
   it('should order journeys in alphabetical order', () => {
     const { getAllByLabelText, getByRole } = render(
-      <JourneyList journeys={[defaultJourney, oldJourney]} />
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyList journeys={[defaultJourney, oldJourney]} />
+        </ThemeProvider>
+      </MockedProvider>
     )
 
     const journeyCards = getAllByLabelText('journey-card')
@@ -30,13 +40,25 @@ describe('JourneyList', () => {
 
   it('should render all journeys', () => {
     const { getAllByLabelText } = render(
-      <JourneyList journeys={[defaultJourney, publishedJourney, oldJourney]} />
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyList
+            journeys={[defaultJourney, publishedJourney, oldJourney]}
+          />
+        </ThemeProvider>
+      </MockedProvider>
     )
     expect(getAllByLabelText('journey-card').length).toBe(3)
   })
 
   it('should render text when there are no journeys', () => {
-    const { getByText, getByRole } = render(<JourneyList journeys={[]} />)
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyList journeys={[]} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
 
     expect(getByText('No journeys to display.')).toBeInTheDocument()
     expect(

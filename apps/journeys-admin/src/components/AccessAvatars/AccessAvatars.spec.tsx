@@ -1,34 +1,48 @@
-import { render } from '@testing-library/react'
-import { AccessAvatars } from './AccessAvatars'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { ThemeProvider } from '../ThemeProvider'
 import { user1, user2, user3, user4, user5, user6 } from './data'
+import { AccessAvatars } from '.'
 
 describe('AccessAvatars', () => {
   it('should use first name as image alt', () => {
     const { getByAltText } = render(
-      <AccessAvatars
-        journeySlug="journeySlug"
-        users={[user1, user2, user3, user4, user5]}
-      />
+      <MockedProvider>
+        <ThemeProvider>
+          <AccessAvatars
+            journeySlug="journeySlug"
+            users={[user1, user2, user3, user4, user5]}
+          />
+        </ThemeProvider>
+      </MockedProvider>
     )
     expect(getByAltText('Janelle Five')).toBeInTheDocument()
   })
 
   it('should use first name and last as tooltip', () => {
     const { getByLabelText } = render(
-      <AccessAvatars
-        journeySlug="journeySlug"
-        users={[user1, user2, user3, user4, user5]}
-      />
+      <MockedProvider>
+        <ThemeProvider>
+          <AccessAvatars
+            journeySlug="journeySlug"
+            users={[user1, user2, user3, user4, user5]}
+          />
+        </ThemeProvider>
+      </MockedProvider>
     )
     expect(getByLabelText('Janelle Five')).toBeInTheDocument()
   })
 
   it('should display 2 mobile and 4 desktop avatars max', () => {
     const { getAllByRole } = render(
-      <AccessAvatars
-        journeySlug="journeySlug"
-        users={[user1, user2, user3, user4, user5, user6]}
-      />
+      <MockedProvider>
+        <ThemeProvider>
+          <AccessAvatars
+            journeySlug="journeySlug"
+            users={[user1, user2, user3, user4, user5, user6]}
+          />
+        </ThemeProvider>
+      </MockedProvider>
     )
     expect(
       getAllByRole('img').map((element) => element.getAttribute('alt'))
@@ -42,5 +56,21 @@ describe('AccessAvatars', () => {
       'Horace Two',
       'Amin One'
     ])
+  })
+
+  it('should show access dialog on click', async () => {
+    const { getByRole, queryByText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <AccessAvatars journeySlug="journeySlug" users={[user1]} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('Button'))
+    expect(queryByText('Invite Other Editors')).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Close' }))
+    await waitFor(() =>
+      expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
+    )
   })
 })
