@@ -4,13 +4,13 @@ import { EditorProvider } from '@core/journeys/ui'
 import { JourneyProvider } from '../../../../../libs/context'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TYPOGRAPHY_BLOCK_CREATE } from './Typography'
-import { Typography } from '.'
+import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
+import { NewTypographyButton } from '.'
 
-const TypographyStory = {
+const NewTypographyButtonStory = {
   ...journeysAdminConfig,
-  component: Typography,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/Typography'
+  component: NewTypographyButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewTypographyButton'
 }
 
 export const Default: Story = () => {
@@ -70,11 +70,11 @@ export const Default: Story = () => {
             }
           }}
         >
-          <Typography />
+          <NewTypographyButton />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export default TypographyStory as Meta
+export default NewTypographyButtonStory as Meta

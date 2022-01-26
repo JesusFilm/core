@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
 import { Button } from '../Button'
-import { Typography } from './Typography'
+import { NewTypographyButton } from './NewTypographyButton'
 import { NewImageButton } from './NewImageButton'
 
 export function BlocksTab(): ReactElement {
@@ -21,7 +21,7 @@ export function BlocksTab(): ReactElement {
           px: 6
         }}
       >
-        <Typography />
+        <NewTypographyButton />
         <NewImageButton />
         <Button icon={<VideocamRounded />} value="Video" />
         <Button icon={<ContactSupportRounded />} value="Poll" />

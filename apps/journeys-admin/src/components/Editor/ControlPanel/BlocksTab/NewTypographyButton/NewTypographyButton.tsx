@@ -23,7 +23,7 @@ export const TYPOGRAPHY_BLOCK_CREATE = gql`
   }
 `
 
-export function Typography(): ReactElement {
+export function NewTypographyButton(): ReactElement {
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )

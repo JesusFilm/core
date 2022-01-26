@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TYPOGRAPHY_BLOCK_CREATE } from './Typography'
-import { Typography } from '.'
+import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
+import { NewTypographyButton } from '.'
 
 describe('Typography', () => {
   const selectedStep: TreeBlock = {
@@ -64,7 +64,7 @@ describe('Typography', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <Typography />
+            <NewTypographyButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -118,7 +118,7 @@ describe('Typography', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <Typography />
+            <NewTypographyButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
