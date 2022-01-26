@@ -47,7 +47,7 @@ export const Filled: Story = () => {
     id: 'typography1.id',
     __typename: 'TypographyBlock',
     parentBlockId: null,
-    align: TypographyAlign.center,
+    align: TypographyAlign.left,
     color: TypographyColor.secondary,
     content: 'Typography',
     variant: TypographyVariant.h2,
