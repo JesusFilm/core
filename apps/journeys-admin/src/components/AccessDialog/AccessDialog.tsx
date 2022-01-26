@@ -66,8 +66,7 @@ export function AccessDialog({
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
-      variables: { id: journeySlug },
-      fetchPolicy: 'network-only'
+      variables: { id: journeySlug }
     })
 
   useEffect(() => {
@@ -203,6 +202,8 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
 
   const displayName = compact([user?.firstName, user?.lastName]).join(' ')
 
+  console.log(user?.imageUrl, displayName)
+
   return (
     <>
       <MuiListItem
@@ -220,6 +221,10 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
             onClick={handleClick}
             disabled={role === 'owner'}
             endIcon={<ArrowDropDownIcon />}
+            sx={{
+              color: 'text.primary',
+              typography: 'body2'
+            }}
           >
             {role === 'inviteRequested' && 'Manage'}
             {role === 'owner' && 'Owner'}
@@ -228,7 +233,9 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
         }
       >
         <ListItemAvatar>
-          <Avatar src={user?.imageUrl ?? undefined} alt={displayName} />
+          <Avatar src={user?.imageUrl ?? undefined} alt={displayName}>
+            {displayName.charAt(0)?.toUpperCase()}
+          </Avatar>
         </ListItemAvatar>
         <ListItemText primary={displayName} secondary={user?.email} />
       </MuiListItem>

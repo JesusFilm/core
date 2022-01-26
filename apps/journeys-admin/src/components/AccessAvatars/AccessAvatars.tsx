@@ -20,9 +20,13 @@ interface AccessAvatarProps {
 function AccessAvatar({ user }: AccessAvatarProps): ReactElement {
   const displayName = compact([user.firstName, user.lastName]).join(' ')
 
+  console.log(user.imageUrl)
+
   return (
     <Tooltip title={displayName}>
-      <Avatar alt={displayName} src={user.imageUrl ?? undefined} />
+      <Avatar alt={displayName} src={user.imageUrl ?? undefined}>
+        {displayName.charAt(0)?.toUpperCase()}
+      </Avatar>
     </Tooltip>
   )
 }
