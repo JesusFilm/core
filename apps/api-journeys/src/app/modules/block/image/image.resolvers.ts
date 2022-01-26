@@ -70,8 +70,15 @@ export class ImageBlockResolvers {
     @Args('input') input: ImageBlockCreateInput & { __typename }
   ): Promise<ImageBlock> {
     input.__typename = 'ImageBlock'
-    const block = await handleImage(input)
-    return await this.blockService.save(block)
+    const block = (await handleImage(input)) as ImageBlockCreateInput
+    const siblings = await this.blockService.getSiblings(
+      block.journeyId,
+      block.parentBlockId
+    )
+    return await this.blockService.save({
+      ...block,
+      parentOrder: siblings.length
+    })
   }
 
   @Mutation()

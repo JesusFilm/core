@@ -32,7 +32,7 @@ describe('Typography', () => {
     __typename: '',
     journeyId: '2',
     parentBlockId: '3',
-    parentOrder: 7,
+    parentOrder: 1,
     content: 'text',
     variant: TypographyVariant.h2,
     color: TypographyColor.primary,
@@ -43,7 +43,7 @@ describe('Typography', () => {
     journeyId: '2',
     __typename: 'TypographyBlock',
     parentBlockId: '3',
-    parentOrder: 7,
+    parentOrder: 1,
     content: 'text',
     variant: TypographyVariant.h2,
     color: TypographyColor.primary,
@@ -67,6 +67,7 @@ describe('Typography', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -101,7 +102,7 @@ describe('Typography', () => {
 
   describe('typographyBlockCreate', () => {
     it('creates a TypographyBlock', async () => {
-      void typographyBlockResolver.typographyBlockCreate(blockUpdate)
+      await typographyBlockResolver.typographyBlockCreate(blockUpdate)
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })

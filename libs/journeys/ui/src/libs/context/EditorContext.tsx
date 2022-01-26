@@ -96,11 +96,7 @@ export const reducer = (
 ): EditorState => {
   switch (action.type) {
     case 'SetSelectedStepAction':
-      return {
-        ...state,
-        selectedStep: action.step,
-        selectedBlock: action.step
-      }
+      return { ...state, selectedStep: action.step, selectedBlock: action.step }
     case 'SetSelectedBlockAction':
       return { ...state, selectedBlock: action.block }
     case 'SetSelectedBlockByIdAction':

@@ -95,7 +95,8 @@ describe('Journey', () => {
       height: 1,
       alt: '',
       blurhash: '',
-      journeyId: '1'
+      journeyId: '1',
+      parentOrder: 0
     },
     slug: 'published-slug',
     createdAt,
@@ -161,6 +162,7 @@ describe('Journey', () => {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
+      getSiblings: jest.fn(() => [block]),
       get: jest.fn(() => block),
       save: jest.fn((input) => input)
     })

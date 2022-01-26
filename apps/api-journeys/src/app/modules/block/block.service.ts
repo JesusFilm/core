@@ -23,5 +23,22 @@ export class BlockService extends BaseService {
     return await res.all()
   }
 
+  async getSiblings(
+    journeyId: string,
+    parentBlockId?: string | null
+  ): Promise<Block[]> {
+    // Only StepBlocks should not have parentBlockId
+    const filterParentBlockId =
+      parentBlockId != null ? `AND block.parentBlockId == ${parentBlockId}` : ''
+    const res = await this.db.query(aql`
+      FOR block in ${this.collection}
+        FILTER block.journeyId == ${journeyId}
+          ${filterParentBlockId}
+        SORT block.parentOrder ASC
+        RETURN block
+    `)
+    return await res.all()
+  }
+
   collection: DocumentCollection = this.db.collection('blocks')
 }
