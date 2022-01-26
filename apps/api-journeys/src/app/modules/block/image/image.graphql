@@ -3,7 +3,7 @@ type ImageBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int!
-  src: String!
+  src: String
   width: Int!
   height: Int!
   alt: String!

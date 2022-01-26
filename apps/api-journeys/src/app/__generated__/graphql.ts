@@ -402,7 +402,7 @@ export class ImageBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder: number;
-    src: string;
+    src?: Nullable<string>;
     width: number;
     height: number;
     alt: string;
