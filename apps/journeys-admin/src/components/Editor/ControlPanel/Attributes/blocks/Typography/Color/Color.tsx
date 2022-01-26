@@ -22,7 +22,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   ) {
     typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
-      align
+      color
     }
   }
 `
