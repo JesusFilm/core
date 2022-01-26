@@ -202,8 +202,6 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
 
   const displayName = compact([user?.firstName, user?.lastName]).join(' ')
 
-  console.log(user?.imageUrl, displayName)
-
   return (
     <>
       <MuiListItem
