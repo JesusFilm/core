@@ -53,8 +53,16 @@ export class VideoBlockResolvers {
     @Args('input') input: VideoBlockCreateInput & { __typename }
   ): Promise<VideoBlock> {
     input.__typename = 'VideoBlock'
-    if (checkVideoContentInput(input?.videoContent))
-      return await this.blockService.save(input)
+    if (checkVideoContentInput(input?.videoContent)) {
+      const siblings = await this.blockService.getSiblings(
+        input.journeyId,
+        input.parentBlockId
+      )
+      return await this.blockService.save({
+        ...input,
+        parentOrder: siblings.length
+      })
+    }
     throw new UserInputError(
       'VideoContentInput requires src or mediaComponentId and languageId values'
     )
