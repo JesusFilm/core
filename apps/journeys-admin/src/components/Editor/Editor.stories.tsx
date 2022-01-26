@@ -303,19 +303,9 @@ const blocks: GetJourney_journey_blocks[] = [
     nextBlockId: null
   },
   {
-    id: 'card4.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step4.id',
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false
-  },
-  {
     __typename: 'VideoBlock',
     id: 'video1.id',
-    parentBlockId: 'card4.id',
+    parentBlockId: 'step4.id',
     autoplay: false,
     muted: true,
     title: 'video1',
@@ -380,7 +370,7 @@ const blocks: GetJourney_journey_blocks[] = [
     fullscreen: false
   },
   {
-    id: 'typographyBlockId1',
+    id: 'typographyBlockId11',
     __typename: 'TypographyBlock',
     parentBlockId: 'card6.id',
     align: null,

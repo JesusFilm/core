@@ -27,4 +27,14 @@ export class BlockResolvers {
   async block(@Args('id') _key: string): Promise<Block> {
     return await this.blockService.get(_key)
   }
+
+  @Query()
+  @KeyAsId()
+  async siblings(@Args('id') _key: string): Promise<Block[]> {
+    const block = await this.block(_key)
+    return await this.blockService.getSiblings(
+      block.journeyId,
+      block.parentBlockId
+    )
+  }
 }

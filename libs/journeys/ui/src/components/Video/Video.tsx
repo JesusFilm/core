@@ -4,7 +4,7 @@ import { useMutation, gql } from '@apollo/client'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, useEditor } from '../..'
+import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -47,7 +47,7 @@ export function Video({
     VIDEO_RESPONSE_CREATE
   )
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -143,7 +143,7 @@ export function Video({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
-    if (selectedBlock?.id !== blockId) {
+    if (props.parentBlockId !== selectedStep?.id) {
       const block: TreeBlock<VideoFields> = {
         id: blockId,
         videoContent,
@@ -157,6 +157,12 @@ export function Video({
 
       dispatch({ type: 'SetSelectedBlockAction', block })
     }
+
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (
