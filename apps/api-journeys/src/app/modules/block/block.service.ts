@@ -8,11 +8,11 @@ import { Block, Journey } from '../../__generated__/graphql'
 @Injectable()
 export class BlockService extends BaseService {
   async forJourney(journey: Journey): Promise<Block[]> {
-    const primaryImageBlockId = journey.primaryImageBlock?.id
+    const primaryImageBlockId = journey.primaryImageBlock?.id ?? null
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
         FILTER block.journeyId == ${journey.id}
-          AND block.id != ${primaryImageBlockId ?? null}
+          AND block._key != ${primaryImageBlockId}
         SORT block.parentOrder ASC
         RETURN block
     `)
