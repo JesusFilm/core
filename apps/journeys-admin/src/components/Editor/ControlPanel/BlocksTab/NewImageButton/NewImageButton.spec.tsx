@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { IMAGE_BLOCK_CREATE } from './Image'
-import { Image } from '.'
+import { IMAGE_BLOCK_CREATE } from './NewImageButton'
+import { NewImageButton } from '.'
 
 describe('Image', () => {
   const selectedStep: TreeBlock = {
@@ -87,7 +87,7 @@ describe('Image', () => {
               }
             }}
           >
-            <Image />
+            <NewImageButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -142,7 +142,7 @@ describe('Image', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <Image />
+            <NewImageButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

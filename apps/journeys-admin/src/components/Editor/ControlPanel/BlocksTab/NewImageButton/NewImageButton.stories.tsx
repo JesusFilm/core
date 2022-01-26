@@ -4,13 +4,13 @@ import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { IMAGE_BLOCK_CREATE } from './Image'
-import { Image } from '.'
+import { IMAGE_BLOCK_CREATE } from './NewImageButton'
+import { NewImageButton } from '.'
 
-const ImageStory = {
+const NewImageButtonStory = {
   ...journeysAdminConfig,
-  component: Image,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/Image'
+  component: NewImageButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewImageButton'
 }
 
 export const Default: Story = () => {
@@ -71,11 +71,11 @@ export const Default: Story = () => {
             }
           }}
         >
-          <Image />
+          <NewImageButton />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export default ImageStory as Meta
+export default NewImageButtonStory as Meta
