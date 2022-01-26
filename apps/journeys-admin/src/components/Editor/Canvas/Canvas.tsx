@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { ReactElement, useContext, useEffect, useState } from 'react'
-import { BlockRenderer, EditorContext } from '@core/journeys/ui'
+import { ReactElement, useEffect, useState } from 'react'
+import { BlockRenderer, useEditor, ActiveTab } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -13,15 +13,16 @@ import 'swiper/swiper.min.css'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
+const TASKBAR_WIDTH = 72
 
 export function Canvas(): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [spaceBetween, setSpaceBetween] = useState(16)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
-    state: { steps, selectedStep },
+    state: { steps, selectedStep, selectedBlock },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null) {
@@ -34,7 +35,7 @@ export function Canvas(): ReactElement {
       const spaceBetween = Math.max(
         MIN_SPACE_BETWEEN,
         (window.innerWidth -
-          Number(smUp) * DRAWER_WIDTH -
+          Number(smUp) * (DRAWER_WIDTH + TASKBAR_WIDTH) -
           362 -
           EDGE_SLIDE_WIDTH * 2) /
           2
@@ -63,11 +64,24 @@ export function Canvas(): ReactElement {
           justifyContent: 'center'
         }
       }}
+      onClick={() => {
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          block: selectedStep
+        })
+        dispatch({
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
+        })
+        dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+      }}
     >
       <Swiper
         slidesPerView={'auto'}
         spaceBetween={spaceBetween}
         centeredSlides={true}
+        shortSwipes={false}
+        slideToClickedSlide
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) =>
           dispatch({
@@ -86,14 +100,13 @@ export function Canvas(): ReactElement {
                 position: 'relative',
                 overflow: 'hidden',
                 border: (theme) =>
-                  step.id === selectedStep?.id
+                  step.id === selectedBlock?.id
                     ? `2px solid ${theme.palette.primary.main}`
                     : `2px solid ${theme.palette.background.default}`,
                 transform:
                   step.id === selectedStep?.id ? 'scaleY(1)' : 'scaleY(0.9)',
                 height: 536
               }}
-              onClick={() => dispatch({ type: 'SetSelectedStepAction', step })}
             >
               <Box
                 sx={{
@@ -105,7 +118,8 @@ export function Canvas(): ReactElement {
                   zIndex: 1,
                   transition: '0.2s opacity ease-out 0.1s',
                   backgroundColor: (theme) => theme.palette.background.default,
-                  opacity: step.id === selectedStep?.id ? 0 : 1
+                  opacity: step.id === selectedStep?.id ? 0 : 1,
+                  pointerEvents: step.id === selectedStep?.id ? 'none' : 'auto'
                 }}
               />
               <FramePortal width={356} height={536}>

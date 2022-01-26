@@ -190,6 +190,6 @@ describe('BlockRenderer', () => {
         <BlockRenderer {...block} />
       </MockedProvider>
     )
-    expect(getByTestId('VideoComponent')).toBeInTheDocument()
+    expect(getByTestId('video-main')).toBeInTheDocument()
   })
 })

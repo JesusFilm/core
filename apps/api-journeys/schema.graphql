@@ -85,6 +85,7 @@ interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 type Journey @key(fields: "id") {
@@ -125,6 +126,7 @@ type ButtonBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -138,6 +140,7 @@ type CardBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
@@ -213,6 +216,7 @@ type GridContainerBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
@@ -223,6 +227,7 @@ type GridItemBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   xl: Int!
   lg: Int!
   sm: Int!
@@ -232,6 +237,7 @@ type ImageBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   src: String!
   width: Int!
   height: Int!
@@ -265,6 +271,7 @@ type RadioOptionBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   label: String!
   action: Action
 }
@@ -273,6 +280,7 @@ type RadioQuestionBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   label: String!
   description: String
 }
@@ -281,6 +289,7 @@ type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   action: Action
   submitIcon: Icon
   submitLabel: String
@@ -311,6 +320,7 @@ type StepBlock implements Block {
   """
   locked: Boolean!
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 input StepBlockCreateInput {
@@ -358,6 +368,7 @@ type TypographyBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -400,6 +411,7 @@ type VideoBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
@@ -480,6 +492,7 @@ type VideoTriggerBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
@@ -627,11 +640,13 @@ extend type Mutation {
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
-  userJourneyRequest(journeyId: ID!): UserJourney!
+  userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
 }
 
 extend type Query {
-  journeys(status: JourneyStatus): [Journey!]!
+  adminJourneys: [Journey!]!
+  adminJourney(id: ID!, idType: IdType): Journey
+  journeys: [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

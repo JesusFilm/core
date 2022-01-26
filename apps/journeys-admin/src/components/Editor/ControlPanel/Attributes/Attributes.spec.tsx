@@ -1,9 +1,9 @@
 import { TreeBlock } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
 import {
-  GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
-  GetJourneyForEdit_journey_blocks_StepBlock as StepBlock
-} from '../../../../../__generated__/GetJourneyForEdit'
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
+} from '../../../../../__generated__/GetJourney'
 import { Attributes } from '.'
 
 describe('Attributes', () => {

@@ -7,5 +7,5 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/journeys-admin',
-  setupFilesAfterEnv: ['<rootDir>setupTests.ts']
+  setupFilesAfterEnv: ['<rootDir>setupTests.tsx']
 }

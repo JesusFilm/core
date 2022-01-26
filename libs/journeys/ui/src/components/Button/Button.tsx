@@ -1,8 +1,8 @@
-import { ReactElement } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import { Icon } from '../Icon'
-import { handleAction } from '../..'
+import { handleAction, TreeBlock, useEditor, ActiveTab } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
 
 export function Button({
@@ -12,11 +12,36 @@ export function Button({
   size,
   startIcon,
   endIcon,
-  action
-}: ButtonFields): ReactElement {
+  action,
+  ...props
+}: TreeBlock<ButtonFields>): ReactElement {
   const router = useRouter()
   const handleClick = (): void => {
     handleAction(router, action)
+  }
+
+  const {
+    state: { selectedBlock },
+    dispatch
+  } = useEditor()
+
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+
+    const block: TreeBlock<ButtonFields> = {
+      buttonVariant,
+      label,
+      buttonColor,
+      size,
+      startIcon,
+      endIcon,
+      action,
+      ...props
+    }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (
@@ -44,7 +69,11 @@ export function Button({
           />
         )
       }
-      onClick={handleClick}
+      sx={{
+        outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
+        outlineOffset: '5px'
+      }}
+      onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
       fullWidth
     >
       {label}

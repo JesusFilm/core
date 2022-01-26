@@ -67,6 +67,7 @@ describe('Card', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => []),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -102,7 +103,7 @@ describe('Card', () => {
 
   describe('cardBlockCreate', () => {
     it('creates a CardBlock', async () => {
-      cardBlockResolver
+      await cardBlockResolver
         .cardBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
