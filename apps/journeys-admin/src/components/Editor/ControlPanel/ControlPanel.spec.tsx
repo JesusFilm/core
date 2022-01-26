@@ -151,7 +151,6 @@ describe('ControlPanel', () => {
     )
   })
 
-
   it('should change to properties tab on video button click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider

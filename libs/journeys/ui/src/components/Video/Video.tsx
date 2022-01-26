@@ -172,7 +172,8 @@ export function Video({
             borderRadius: 4,
             overflow: 'hidden',
             m: 0,
-            outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+            outline:
+              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
             outlineOffset: '5px',
             '> div': {
               width: '100%'

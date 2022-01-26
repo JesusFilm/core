@@ -98,7 +98,7 @@ describe('Video', () => {
             <Video />
           </EditorProvider>
         </JourneyProvider>
-      </MockedProvider >
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
