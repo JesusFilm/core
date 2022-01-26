@@ -52,7 +52,11 @@ export function AccessAvatars({
           max={3}
           sx={{
             display: { xs: 'inline-flex', md: 'none' },
-            '&.MuiAvatar-root': { width: 31, height: 31 }
+            '> .MuiAvatar-root': {
+              width: 31,
+              height: 31,
+              fontSize: 12
+            }
           }}
         >
           {children}
@@ -61,7 +65,11 @@ export function AccessAvatars({
           max={5}
           sx={{
             display: { xs: 'none', md: 'inline-flex' },
-            '&.MuiAvatar-root': { width: 31, height: 31 }
+            '> .MuiAvatar-root': {
+              width: 31,
+              height: 31,
+              fontSize: 12
+            }
           }}
         >
           {children}
