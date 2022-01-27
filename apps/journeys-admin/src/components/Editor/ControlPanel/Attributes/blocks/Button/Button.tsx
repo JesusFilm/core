@@ -5,6 +5,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import capitalize from 'lodash/capitalize'
+import {
+  ButtonSize,
+  ButtonColor,
+  ButtonVariant
+} from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
@@ -37,7 +42,7 @@ export function Button({
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name="Color"
-        value={capitalize(buttonColor?.toString() ?? 'primary')}
+        value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
         description="Background Color"
         onClick={() => {
           dispatch({
@@ -53,7 +58,7 @@ export function Button({
         id={`${id}-button-size`}
         icon={<ViewDayOutlinedIcon />}
         name="Button Size"
-        value={capitalize(size?.toString() ?? 'medium')}
+        value={capitalize(size?.toString() ?? ButtonSize.medium)}
         description="Button Size"
         onClick={() => {
           dispatch({
@@ -69,7 +74,7 @@ export function Button({
         id={`${id}-button-variant`}
         icon={<FormatShapesRoundedIcon />}
         name="Variant"
-        value={capitalize(buttonVariant?.toString() ?? 'text')}
+        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
         description="Button Variant"
         onClick={() => {
           dispatch({

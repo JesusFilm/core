@@ -43,6 +43,7 @@ export function Variant({ id, variant }: VariantProps): ReactElement {
             key={`button-variant-${variant}`}
             sx={{ justifyContent: 'flex-start' }}
           >
+            {/* Icon */}
             <Typography variant="subtitle2" sx={{ pl: 2 }}>
               {capitalize(variant)}
             </Typography>

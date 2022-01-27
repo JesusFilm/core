@@ -11,7 +11,7 @@ interface SizeProps {
 }
 
 export function Size({ id, size }: SizeProps): ReactElement {
-  const [selected, setSelected] = useState(size ?? 'medium')
+  const [selected, setSelected] = useState(size ?? ButtonSize.medium)
   const order = ['small', 'medium', 'large']
   const sorted = Object.values(ButtonSize).sort(
     (a, b) => order.indexOf(a) - order.indexOf(b)
@@ -43,6 +43,7 @@ export function Size({ id, size }: SizeProps): ReactElement {
             key={`button-size-${size}`}
             sx={{ justifyContent: 'flex-start' }}
           >
+            {/* Icon */}
             <Typography variant="subtitle2" sx={{ pl: 2 }}>
               {capitalize(size)}
             </Typography>

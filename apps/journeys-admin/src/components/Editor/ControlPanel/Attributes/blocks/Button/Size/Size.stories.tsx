@@ -9,7 +9,7 @@ const SizeStory = {
 }
 
 export const Default: Story = () => {
-  return <Size id={'button-Size-id'} size={null} />
+  return <Size id={'button-size-id'} size={null} />
 }
 
 export default SizeStory as Meta

@@ -9,7 +9,7 @@ describe('Button color selector', () => {
     expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
   })
-  it('should change the color property', async () => {
+  it('should change the color property', () => {
     const { getByRole } = render(<Color id={'button-color-id'} color={null} />)
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Secondary' }))
