@@ -21,7 +21,7 @@ describe('SignUp Attributes', () => {
     }
 
     const { getAllByText } = render(<SignUp {...block} />)
-    expect(getAllByText('None')).toHaveLength(3)
+    expect(getAllByText('None')).toHaveLength(2)
   })
 
   it('shows filled attributes', () => {
@@ -45,7 +45,6 @@ describe('SignUp Attributes', () => {
     }
 
     const { getByText } = render(<SignUp {...block} />)
-    expect(getByText('Sign Up')).toBeInTheDocument()
     expect(getByText('LinkAction')).toBeInTheDocument()
     expect(getByText('ArrowForwardRounded')).toBeInTheDocument()
   })

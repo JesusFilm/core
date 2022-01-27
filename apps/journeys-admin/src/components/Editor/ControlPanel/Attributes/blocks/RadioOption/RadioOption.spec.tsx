@@ -14,7 +14,6 @@ describe('RadioOption Attribute', () => {
       children: []
     }
     const { getByText } = render(<RadioOption {...block} />)
-    expect(getByText('Radio Option')).toBeInTheDocument()
     expect(getByText('None')).toBeInTheDocument()
   })
 
