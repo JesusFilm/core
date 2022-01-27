@@ -86,7 +86,7 @@ export function AccessDialog({
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(
       `${
-        window.location.origin.includes('chromatic.com')
+        window.location.host.endsWith('.chromatic.com')
           ? 'https://admin.nextstep.is'
           : window.location.origin
       }/journeys/${journeySlug}`
@@ -131,7 +131,7 @@ export function AccessDialog({
               defaultValue={
                 typeof window !== 'undefined' &&
                 `${
-                  window.location.origin.includes('chromatic.com')
+                  window.location.host.endsWith('.chromatic.com')
                     ? 'https://admin.nextstep.is'
                     : window.location.origin
                 }/journeys/${journeySlug}`
