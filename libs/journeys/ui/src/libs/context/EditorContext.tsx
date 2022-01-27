@@ -127,7 +127,15 @@ export const reducer = (
     case 'SetStepsAction':
       return {
         ...state,
-        steps: action.steps
+        steps: action.steps,
+        selectedStep:
+          state.selectedStep != null
+            ? action.steps.find(({ id }) => id === state.selectedStep?.id)
+            : action.steps[0],
+        selectedBlock:
+          state.selectedBlock != null
+            ? search(action.steps, state.selectedBlock.id)
+            : action.steps[0]
       }
   }
 }
