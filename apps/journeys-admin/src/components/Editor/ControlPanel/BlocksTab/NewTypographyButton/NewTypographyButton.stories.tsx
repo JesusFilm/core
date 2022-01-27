@@ -2,13 +2,13 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
 import { JourneyProvider } from '../../../../../libs/context'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
 import { NewTypographyButton } from '.'
 
 const NewTypographyButtonStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: NewTypographyButton,
   title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewTypographyButton'
 }

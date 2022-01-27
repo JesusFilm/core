@@ -1,14 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 import { NewImageButton } from '.'
 
 const NewImageButtonStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: NewImageButton,
   title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewImageButton'
 }
