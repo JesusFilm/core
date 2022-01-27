@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
 import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
@@ -8,6 +8,7 @@ import capitalize from 'lodash/capitalize'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { Color } from './Color'
 
 export function Button({
   id,
@@ -18,6 +19,7 @@ export function Button({
   endIcon,
   action
 }: TreeBlock<ButtonBlock>): ReactElement {
+  const { dispatch } = useEditor()
   return (
     <>
       <Attribute
@@ -35,7 +37,14 @@ export function Button({
         name="Color"
         value={capitalize(buttonColor?.toString() ?? 'primary')}
         description="Background Color"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Button Color',
+            mobileOpen: true,
+            children: <Color id={id} color={buttonColor} />
+          })
+        }}
       />
 
       <Attribute
