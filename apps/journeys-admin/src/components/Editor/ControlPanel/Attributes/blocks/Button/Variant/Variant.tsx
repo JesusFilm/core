@@ -2,28 +2,27 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { ReactElement, useState } from 'react'
 import capitalize from 'lodash/capitalize'
 import Typography from '@mui/material/Typography'
-import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
+import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 import { StyledToggleButton } from '../../../../StyledToggleButton'
-import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 
-interface ColorProps {
+interface VariantProps {
   id: string
-  color: ButtonColor | null
+  variant: ButtonVariant | null
 }
 
-export function Color({ id, color }: ColorProps): ReactElement {
-  const [selected, setSelected] = useState(color ?? ButtonColor.primary)
-  const order = ['inherit', 'primary', 'secondary', 'error']
-  const sorted = Object.values(ButtonColor).sort(
+export function Variant({ id, variant }: VariantProps): ReactElement {
+  const [selected, setSelected] = useState(variant ?? ButtonVariant.contained)
+  const order = ['contained', 'text']
+  const sorted = Object.values(ButtonVariant).sort(
     (a, b) => order.indexOf(a) - order.indexOf(b)
   )
 
   async function handleChange(
     event: React.MouseEvent<HTMLElement>,
-    color: ButtonColor
+    variant: ButtonVariant
   ): Promise<void> {
-    if (color != null) {
-      setSelected(color)
+    if (variant != null) {
+      setSelected(variant)
     }
   }
 
@@ -37,16 +36,15 @@ export function Color({ id, color }: ColorProps): ReactElement {
       sx={{ display: 'flex', px: 6, py: 4 }}
       color="primary"
     >
-      {sorted.map((color) => {
+      {sorted.map((variant) => {
         return (
           <StyledToggleButton
-            value={color}
-            key={`typography-color-${color}`}
+            value={variant}
+            key={`button-variant-${variant}`}
             sx={{ justifyContent: 'flex-start' }}
           >
-            <ColorDisplayIcon color={color} />
             <Typography variant="subtitle2" sx={{ pl: 2 }}>
-              {capitalize(color === ButtonColor.inherit ? 'default' : color)}
+              {capitalize(variant)}
             </Typography>
           </StyledToggleButton>
         )

@@ -10,6 +10,7 @@ import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
 import { Size } from './Size'
+import { Variant } from './Variant'
 
 export function Button({
   id,
@@ -59,7 +60,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Button Size',
             mobileOpen: true,
-            children: <Size id={id} color={buttonColor} />
+            children: <Size id={id} size={size} />
           })
         }}
       />
@@ -70,7 +71,14 @@ export function Button({
         name="Variant"
         value={capitalize(buttonVariant?.toString() ?? 'text')}
         description="Button Variant"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Button Variant ',
+            mobileOpen: true,
+            children: <Variant id={id} variant={buttonVariant} />
+          })
+        }}
       />
 
       <Attribute
