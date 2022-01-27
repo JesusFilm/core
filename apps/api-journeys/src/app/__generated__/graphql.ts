@@ -172,6 +172,13 @@ export class ImageBlockUpdateInput {
     alt?: Nullable<string>;
 }
 
+export class SignUpBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    submitLabel: string;
+}
+
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -544,6 +551,8 @@ export abstract class IMutation {
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
     abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+
+    abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
