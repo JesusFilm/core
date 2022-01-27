@@ -1,20 +1,20 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { RadioQuestion } from '.'
+import { NewRadioQuestionButton } from '.'
 
-const RadioQuestionStory = {
+const NewRadioQuestionButtonStory = {
   ...journeysAdminConfig,
-  component: RadioQuestion,
+  component: NewRadioQuestionButton,
   title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/RadioQuestion'
 }
 
 export const Default: Story = () => {
   return (
     <MockedProvider>
-      <RadioQuestion />
+      <NewRadioQuestionButton />
     </MockedProvider>
   )
 }
 
-export default RadioQuestionStory as Meta
+export default NewRadioQuestionButtonStory as Meta

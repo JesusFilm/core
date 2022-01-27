@@ -2,10 +2,10 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { IdAsKey } from '@core/nest/decorators'
 import {
-  RadioQuestionBlock,
   RadioOptionBlock,
-  RadioQuestionBlockCreateInput,
+  RadioQuestionBlock,
   RadioOptionBlockCreateInput,
+  RadioQuestionBlockCreateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
@@ -26,7 +26,14 @@ export class RadioOptionBlockResolvers {
     @Args('input') input: RadioOptionBlockCreateInput & { __typename }
   ): Promise<RadioOptionBlock> {
     input.__typename = 'RadioOptionBlock'
-    return await this.blockService.save(input)
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
+    )
+    return await this.blockService.save({
+      ...input,
+      parentOrder: siblings.length
+    })
   }
 }
 
@@ -45,6 +52,13 @@ export class RadioQuestionBlockResolvers {
     @Args('input') input: RadioQuestionBlockCreateInput & { __typename }
   ): Promise<RadioQuestionBlock> {
     input.__typename = 'RadioQuestionBlock'
-    return await this.blockService.save(input)
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
+    )
+    return await this.blockService.save({
+      ...input,
+      parentOrder: siblings.length
+    })
   }
 }

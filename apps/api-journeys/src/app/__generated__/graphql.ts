@@ -186,6 +186,17 @@ export class RadioQuestionBlockCreateInput {
     label: string;
 }
 
+export class RadioOptionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+}
+
+export class RadioQuestionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label: string;
+    description?: Nullable<string>;
+}
+
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;

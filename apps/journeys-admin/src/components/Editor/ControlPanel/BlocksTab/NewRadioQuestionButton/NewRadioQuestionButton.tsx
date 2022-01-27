@@ -14,7 +14,7 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../..
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
 import { useJourney } from '../../../../../libs/context'
 
-const RADIO_QUESTION_BLOCK_CREATE = gql`
+export const RADIO_QUESTION_BLOCK_CREATE = gql`
   ${RADIO_QUESTION_FIELDS}
   ${RADIO_OPTION_FIELDS}
   mutation RadioQuestionBlockCreate(
@@ -43,7 +43,7 @@ const RADIO_QUESTION_BLOCK_CREATE = gql`
   }
 `
 
-export function RadioQuestion(): ReactElement {
+export function NewRadioQuestionButton(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
@@ -93,7 +93,28 @@ export function RadioQuestion(): ReactElement {
                       }
                     `
                   })
-                  return [...existingBlockRefs, newBlockRef]
+                  const newRadioOption1BlockRef = cache.writeFragment({
+                    data: data.radioOption1,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  const newRadioOption2BlockRef = cache.writeFragment({
+                    data: data.radioOption2,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [
+                    ...existingBlockRefs,
+                    newBlockRef,
+                    newRadioOption1BlockRef,
+                    newRadioOption2BlockRef
+                  ]
                 }
               }
             })

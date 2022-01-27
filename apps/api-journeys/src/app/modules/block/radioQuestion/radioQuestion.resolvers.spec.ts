@@ -1,10 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import {
-  RadioOptionBlockCreateInput,
-  RadioQuestionBlockCreateInput
-} from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
@@ -47,37 +43,34 @@ describe('RadioQuestion', () => {
     }
   }
 
-  const radioOptionInput: RadioOptionBlockCreateInput & { __typename: string } =
-    {
-      __typename: '',
-      id: '1',
-      parentBlockId: '2',
-      journeyId: '3',
-      label: 'label'
-    }
-
-  const radioQuestionInput: RadioQuestionBlockCreateInput & {
-    __typename: string
-  } = {
+  const radioOptionInput = {
     __typename: '',
-    id: '1',
     parentBlockId: '2',
+    parentOrder: 1,
+    journeyId: '3',
+    label: 'label'
+  }
+
+  const radioQuestionInput = {
+    __typename: '',
+    parentBlockId: '2',
+    parentOrder: 1,
     journeyId: '3',
     label: 'label'
   }
 
   const RadioOptionBlockResponse = {
-    _key: radioOptionInput.id,
-    journeyId: radioOptionInput.journeyId,
     __typename: 'RadioOptionBlock',
+    journeyId: radioOptionInput.journeyId,
+    parentOrder: radioOptionInput.parentOrder,
     parentBlockId: radioOptionInput.parentBlockId,
     label: 'label'
   }
 
   const RadioQuestionBlockResponse = {
-    _key: radioQuestionInput.id,
-    journeyId: radioQuestionInput.journeyId,
     __typename: 'RadioQuestionBlock',
+    journeyId: radioQuestionInput.journeyId,
+    parentOrder: radioQuestionInput.parentOrder,
     parentBlockId: radioQuestionInput.parentBlockId,
     label: 'label'
   }
@@ -87,6 +80,7 @@ describe('RadioQuestion', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block]),
       save: jest.fn((input) => input)
     })
   }
@@ -126,15 +120,15 @@ describe('RadioQuestion', () => {
   })
 
   describe('radioOptionBlockCreate', () => {
-    it('creates a RadioOptionBlock', () => {
-      void radioOptionBlockResolver.radioOptionBlockCreate(radioOptionInput)
+    it('creates a RadioOptionBlock', async () => {
+      await radioOptionBlockResolver.radioOptionBlockCreate(radioOptionInput)
       expect(service.save).toHaveBeenCalledWith(RadioOptionBlockResponse)
     })
   })
 
   describe('radioQuestionBlockCreate', () => {
-    it('creates a RadioQuestionBlock', () => {
-      void radioQuestionBlockResolver.radioQuestionBlockCreate(
+    it('creates a RadioQuestionBlock', async () => {
+      await radioQuestionBlockResolver.radioQuestionBlockCreate(
         radioQuestionInput
       )
       expect(service.save).toHaveBeenCalledWith(RadioQuestionBlockResponse)
