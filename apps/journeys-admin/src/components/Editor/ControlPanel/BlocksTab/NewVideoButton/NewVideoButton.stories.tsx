@@ -2,13 +2,13 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
 import { JourneyProvider } from '../../../../../libs/context'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
 import { NewVideoButton } from '.'
 
 const NewVideoButtonStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: NewVideoButton,
   title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewVideoButton'
 }

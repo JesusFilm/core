@@ -214,7 +214,7 @@ export function Video({
           sx={{
             outline:
               selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-            outlineOffset: '5px',
+            outlineOffset: '5px'
           }}
           onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
         >
