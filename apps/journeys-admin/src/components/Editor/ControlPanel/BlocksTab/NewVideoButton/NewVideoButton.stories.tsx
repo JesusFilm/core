@@ -4,13 +4,13 @@ import { EditorProvider } from '@core/journeys/ui'
 import { JourneyProvider } from '../../../../../libs/context'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { VIDEO_BLOCK_CREATE } from './Video'
-import { Video } from '.'
+import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
+import { NewVideoButton } from '.'
 
-const VideoStory = {
+const NewVideoButtonStory = {
   ...journeysAdminConfig,
-  component: Video,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/Video'
+  component: NewVideoButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewVideoButton'
 }
 
 export const Default: Story = () => {
@@ -80,11 +80,11 @@ export const Default: Story = () => {
             }
           }}
         >
-          <Video />
+          <NewVideoButton />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export default VideoStory as Meta
+export default NewVideoButtonStory as Meta

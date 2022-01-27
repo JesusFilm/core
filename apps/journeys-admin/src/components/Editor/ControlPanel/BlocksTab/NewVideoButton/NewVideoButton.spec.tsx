@@ -4,8 +4,8 @@ import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { VIDEO_BLOCK_CREATE } from './Video'
-import { Video } from '.'
+import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
+import { NewVideoButton } from '.'
 
 describe('Video', () => {
   const selectedStep: TreeBlock = {
@@ -95,7 +95,7 @@ describe('Video', () => {
               }
             }}
           >
-            <Video />
+            <NewVideoButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -158,7 +158,7 @@ describe('Video', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <Video></Video>
+            <NewVideoButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

@@ -210,13 +210,22 @@ export function Video({
           )}
         </Box>
       ) : (
-        <NextImage
-          src="/DefaultVideoIcon.png"
-          alt="DefaultVideoIcon"
-          height={100}
-          width={100}
-          objectFit="cover"
-        />
+        <Box
+          sx={{
+            outline:
+              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+            outlineOffset: '5px',
+          }}
+          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
+        >
+          <NextImage
+            src="/DefaultVideoIcon.png"
+            alt="DefaultVideoIcon"
+            height={100}
+            width={100}
+            objectFit="cover"
+          />
+        </Box>
       )}
     </>
   )

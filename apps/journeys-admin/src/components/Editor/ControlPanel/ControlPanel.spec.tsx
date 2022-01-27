@@ -7,7 +7,7 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/Typography/Typography'
-import { VIDEO_BLOCK_CREATE } from './BlocksTab/Video/Video'
+import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { ControlPanel } from '.'
 
 describe('ControlPanel', () => {

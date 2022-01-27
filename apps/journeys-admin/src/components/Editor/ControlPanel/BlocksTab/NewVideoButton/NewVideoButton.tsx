@@ -24,7 +24,7 @@ export const VIDEO_BLOCK_CREATE = gql`
   }
 `
 
-export function Video(): ReactElement {
+export function NewVideoButton(): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { id: journeyId } = useJourney()
   const {
