@@ -6,7 +6,6 @@ import { Attribute } from '../..'
 
 export function RadioOption({
   id,
-  label,
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
   return (
@@ -15,7 +14,6 @@ export function RadioOption({
         id={`${id}-radio-option-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        // Add icon text in value
         value={action?.__typename.toString() ?? 'None'}
         description="Action"
         // onClick to open drawer

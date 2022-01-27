@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { GetJourneyForEdit_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   IconName,
   IconColor,

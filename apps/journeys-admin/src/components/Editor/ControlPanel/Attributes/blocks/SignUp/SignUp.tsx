@@ -7,7 +7,6 @@ import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../.
 
 export function SignUp({
   id,
-  submitLabel,
   action,
   submitIcon
 }: TreeBlock<SignUpBlock>): ReactElement {
@@ -26,7 +25,6 @@ export function SignUp({
         id={`${id}-submit-icon`}
         icon={<InfoOutlinedIcon />}
         name="Button Icon"
-        // Add icon text in value
         value={submitIcon?.name.toString() ?? 'None'}
         description="Button Icon"
         // onClick to open drawer

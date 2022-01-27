@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { GetJourneyForEdit_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
+import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { RadioOption } from '.'
 
 describe('RadioOption Attribute', () => {

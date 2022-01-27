@@ -11,7 +11,6 @@ import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 
 export function Button({
   id,
-  label,
   buttonVariant,
   buttonColor,
   size,
@@ -61,7 +60,6 @@ export function Button({
         id={`${id}-start-icon`}
         icon={<InfoOutlinedIcon />}
         name="Leading Icon"
-        // Add icon text in value
         value={startIcon?.name.toString() ?? 'None'}
         description="Leading Icon"
         // onClick to open drawer
@@ -71,7 +69,6 @@ export function Button({
         id={`${id}-end-icon`}
         icon={<InfoOutlinedIcon />}
         name="Trailing Icon"
-        // Add icon text in value
         value={endIcon?.name.toString() ?? 'None'}
         description="Trailing Icon"
         // onClick to open drawer
