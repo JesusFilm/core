@@ -85,7 +85,11 @@ export function AccessDialog({
 
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(
-      `${window.location.origin}/journeys/${journeySlug}`
+      `${
+        window.location.origin.includes('chromatic.com')
+          ? 'https://admin.nextstep.is'
+          : window.location.origin
+      }/journeys/${journeySlug}`
     )
     enqueueSnackbar('Editor invite link copied', {
       variant: 'success',
@@ -126,7 +130,11 @@ export function AccessDialog({
               hiddenLabel
               defaultValue={
                 typeof window !== 'undefined' &&
-                `${window.location.origin}/journeys/${journeySlug}`
+                `${
+                  window.location.origin.includes('chromatic.com')
+                    ? 'https://admin.nextstep.is'
+                    : window.location.origin
+                }/journeys/${journeySlug}`
               }
               inputProps={{
                 onFocus: handleFocus
