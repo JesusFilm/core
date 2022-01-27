@@ -13,7 +13,7 @@ export function SignUp({
   return (
     <>
       <Attribute
-        id={`${id}-submit-action`}
+        id={`${id}-signup-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
         value={action?.__typename.toString() ?? 'None'}
@@ -22,7 +22,7 @@ export function SignUp({
       />
 
       <Attribute
-        id={`${id}-submit-icon`}
+        id={`${id}-signup-icon`}
         icon={<InfoOutlinedIcon />}
         name="Button Icon"
         value={submitIcon?.name.toString() ?? 'None'}

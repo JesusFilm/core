@@ -21,7 +21,7 @@ export function Button({
   return (
     <>
       <Attribute
-        id={`${id}-link-action`}
+        id={`${id}-button-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
         value={action?.__typename?.toString() ?? 'None'}
@@ -30,7 +30,7 @@ export function Button({
       />
 
       <Attribute
-        id={`${id}-color`}
+        id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name="Color"
         value={capitalize(buttonColor?.toString() ?? 'primary')}
@@ -39,7 +39,7 @@ export function Button({
       />
 
       <Attribute
-        id={`${id}-size`}
+        id={`${id}-button-size`}
         icon={<ViewDayOutlinedIcon />}
         name="Button Size"
         value={capitalize(size?.toString() ?? 'medium')}
@@ -48,7 +48,7 @@ export function Button({
       />
 
       <Attribute
-        id={`${id}-variant`}
+        id={`${id}-button-variant`}
         icon={<FormatShapesRoundedIcon />}
         name="Variant"
         value={capitalize(buttonVariant?.toString() ?? 'text')}
@@ -57,7 +57,7 @@ export function Button({
       />
 
       <Attribute
-        id={`${id}-start-icon`}
+        id={`${id}-button-leading-icon`}
         icon={<InfoOutlinedIcon />}
         name="Leading Icon"
         value={startIcon?.name.toString() ?? 'None'}
@@ -66,7 +66,7 @@ export function Button({
       />
 
       <Attribute
-        id={`${id}-end-icon`}
+        id={`${id}-button-trailing-icon`}
         icon={<InfoOutlinedIcon />}
         name="Trailing Icon"
         value={endIcon?.name.toString() ?? 'None'}
