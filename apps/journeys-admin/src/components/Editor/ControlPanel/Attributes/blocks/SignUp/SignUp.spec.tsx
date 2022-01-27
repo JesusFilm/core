@@ -20,8 +20,11 @@ describe('SignUp Attributes', () => {
       children: []
     }
 
-    const { getAllByText } = render(<SignUp {...block} />)
-    expect(getAllByText('None')).toHaveLength(2)
+    const { getByRole } = render(<SignUp {...block} />)
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Button Icon None' })
+    ).toBeInTheDocument()
   })
 
   it('shows filled attributes', () => {
@@ -44,8 +47,12 @@ describe('SignUp Attributes', () => {
       children: []
     }
 
-    const { getByText } = render(<SignUp {...block} />)
-    expect(getByText('LinkAction')).toBeInTheDocument()
-    expect(getByText('ArrowForwardRounded')).toBeInTheDocument()
+    const { getByRole } = render(<SignUp {...block} />)
+    expect(
+      getByRole('button', { name: 'Action LinkAction' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Button Icon ArrowForwardRounded' })
+    ).toBeInTheDocument()
   })
 })

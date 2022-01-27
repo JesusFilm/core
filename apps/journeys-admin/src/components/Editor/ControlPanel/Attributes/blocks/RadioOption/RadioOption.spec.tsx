@@ -13,8 +13,8 @@ describe('RadioOption Attribute', () => {
       action: null,
       children: []
     }
-    const { getByText } = render(<RadioOption {...block} />)
-    expect(getByText('None')).toBeInTheDocument()
+    const { getByRole } = render(<RadioOption {...block} />)
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
   })
 
   it('shows filled attributes', () => {
@@ -31,7 +31,9 @@ describe('RadioOption Attribute', () => {
       children: []
     }
 
-    const { getByText } = render(<RadioOption {...block} />)
-    expect(getByText('NavigateToBlockAction')).toBeInTheDocument()
+    const { getByRole } = render(<RadioOption {...block} />)
+    expect(
+      getByRole('button', { name: 'Action NavigateToBlockAction' })
+    ).toBeInTheDocument()
   })
 })

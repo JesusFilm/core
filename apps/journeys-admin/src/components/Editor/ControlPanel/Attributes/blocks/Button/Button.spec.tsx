@@ -26,11 +26,19 @@ describe('Button attributes', () => {
       action: null,
       children: []
     }
-    const { getAllByText, getByText } = render(<Button {...block} />)
-    expect(getAllByText('None')).toHaveLength(3)
-    expect(getByText('Medium')).toBeInTheDocument()
-    expect(getByText('Primary')).toBeInTheDocument()
-    expect(getByText('Text')).toBeInTheDocument()
+    const { getByRole } = render(<Button {...block} />)
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Button Size Medium' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Variant Text' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Leading Icon None' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Trailing Icon None' })
+    ).toBeInTheDocument()
   })
 
   it('shows filled button', () => {
@@ -61,12 +69,20 @@ describe('Button attributes', () => {
       },
       children: []
     }
-    const { getByText } = render(<Button {...block} />)
-    expect(getByText('Large')).toBeInTheDocument()
-    expect(getByText('ChatBubbleOutlineRounded')).toBeInTheDocument()
-    expect(getByText('ChevronRightRounded')).toBeInTheDocument()
-    expect(getByText('Secondary')).toBeInTheDocument()
-    expect(getByText('Text')).toBeInTheDocument()
-    expect(getByText('NavigateToBlockAction')).toBeInTheDocument()
+    const { getByRole } = render(<Button {...block} />)
+    expect(
+      getByRole('button', { name: 'Action NavigateToBlockAction' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color Secondary' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Button Size Large' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Variant Text' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Leading Icon ChatBubbleOutlineRounded' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Trailing Icon ChevronRightRounded' })
+    ).toBeInTheDocument()
   })
 })

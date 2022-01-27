@@ -20,10 +20,14 @@ describe('Typography properties', () => {
       variant: null,
       children: []
     }
-    const { getByText } = render(<Typography {...block} />)
-    expect(getByText('Primary')).toBeInTheDocument()
-    expect(getByText('Body 2')).toBeInTheDocument()
-    expect(getByText('Left')).toBeInTheDocument()
+    const { getByRole } = render(<Typography {...block} />)
+    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Variant Body 2' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Left' })
+    ).toBeInTheDocument()
   })
 
   it('shows filled attributes', () => {
@@ -37,9 +41,13 @@ describe('Typography properties', () => {
       variant: TypographyVariant.h2,
       children: []
     }
-    const { getByText } = render(<Typography {...block} />)
-    expect(getByText('Secondary')).toBeInTheDocument()
-    expect(getByText('Header 2')).toBeInTheDocument()
-    expect(getByText('Center')).toBeInTheDocument()
+    const { getByRole } = render(<Typography {...block} />)
+    expect(getByRole('button', { name: 'Color Secondary' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Variant Header 2' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Alignment Center' })
+    ).toBeInTheDocument()
   })
 })
