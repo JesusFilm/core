@@ -33,5 +33,5 @@ export interface UserJourneyPromote {
 }
 
 export interface UserJourneyPromoteVariables {
-  userJourneyPromoteId: string;
+  id: string;
 }

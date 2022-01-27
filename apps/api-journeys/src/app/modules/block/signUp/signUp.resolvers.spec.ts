@@ -1,9 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
+import { SignUpBlockCreateInput } from '../../../__generated__/graphql'
+import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
+import { SignUpBlockResolvers } from './signUp.resolvers'
 
 describe('SignUp', () => {
-  let resolver: BlockResolvers
+  let blockResolver: BlockResolvers,
+    signUpResolver: SignUpBlockResolvers,
+    service: BlockService
 
   const block = {
     _key: '1',
@@ -40,25 +47,65 @@ describe('SignUp', () => {
     submitLabel: 'Unlock Now!'
   }
 
+  const input: SignUpBlockCreateInput & { __typename: string } = {
+    __typename: '',
+    id: '1',
+    parentBlockId: '0',
+    journeyId: '2',
+    submitLabel: 'Submit'
+  }
+
+  const signUpBlockResponse = {
+    _key: input.id,
+    parentBlockId: input.parentBlockId,
+    journeyId: input.journeyId,
+    __typename: 'SignUpBlock',
+    parentOrder: 1,
+    submitLabel: input.submitLabel
+  }
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block])
+      getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block]),
+      save: jest.fn((input) => input)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService]
+      providers: [
+        BlockResolvers,
+        blockService,
+        SignUpBlockResolvers,
+        UserJourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
+    blockResolver = module.get<BlockResolvers>(BlockResolvers)
+    signUpResolver = module.get<SignUpBlockResolvers>(SignUpBlockResolvers)
+    service = await module.resolve(BlockService)
   })
 
   describe('SignUpBlock', () => {
     it('returns SignUpBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.blocks()).toEqual([
+        blockresponse,
+        blockresponse
+      ])
+    })
+  })
+
+  describe('SignUpBlockCreate', () => {
+    it('creates a SignUpBlock', async () => {
+      await signUpResolver.signUpBlockCreate(input)
+      expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
     })
   })
 })

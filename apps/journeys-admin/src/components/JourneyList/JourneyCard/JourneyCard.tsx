@@ -10,9 +10,10 @@ import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
+import { compact } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
-import { AccessAvatars } from './AccessAvatars'
 
 interface JourneyCardProps {
   journey: Journey
@@ -88,7 +89,10 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         <Grid container spacing={2} display="flex" alignItems="center">
           {users != null && (
             <Grid item>
-              <AccessAvatars users={users} />
+              <AccessAvatars
+                journeySlug={journey.slug}
+                users={compact(users)}
+              />
             </Grid>
           )}
 

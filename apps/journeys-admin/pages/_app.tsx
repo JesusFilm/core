@@ -2,6 +2,7 @@ import { useEffect, ReactElement } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
+import { SnackbarProvider } from 'notistack'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -35,7 +36,9 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
       </Head>
       <ThemeProvider>
         <ApolloProvider client={apolloClient}>
-          <Component {...pageProps} />
+          <SnackbarProvider>
+            <Component {...pageProps} />
+          </SnackbarProvider>
         </ApolloProvider>
       </ThemeProvider>
     </>

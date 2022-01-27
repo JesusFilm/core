@@ -2,8 +2,9 @@ import { Meta, Story } from '@storybook/react'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import { noop } from 'lodash'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapperProps } from './PageWrapper'
+import { GET_ME, PageWrapperProps } from './PageWrapper'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
@@ -16,7 +17,28 @@ const PageWrapperStory = {
 }
 
 const Template: Story<PageWrapperProps> = ({ ...args }) => (
-  <PageWrapper {...args} />
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_ME
+        },
+        result: {
+          data: {
+            me: {
+              id: 'userId',
+              firstName: 'Test',
+              lastName: 'User',
+              imageUrl: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com'
+            }
+          }
+        }
+      }
+    ]}
+  >
+    <PageWrapper {...args} />
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
