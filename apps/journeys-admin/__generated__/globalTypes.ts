@@ -166,6 +166,13 @@ export interface RadioQuestionResponseCreateInput {
   radioOptionBlockId: string;
 }
 
+export interface SignUpBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId?: string | null;
+  submitLabel: string;
+}
+
 export interface SignUpResponseCreateInput {
   blockId: string;
   email: string;
@@ -179,6 +186,14 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
+  parentBlockId?: string | null;
+  variant?: TypographyVariant | null;
+}
+
+export interface TypographyBlockUpdateInput {
+  align?: TypographyAlign | null;
+  color?: TypographyColor | null;
+  content?: string | null;
   parentBlockId?: string | null;
   variant?: TypographyVariant | null;
 }

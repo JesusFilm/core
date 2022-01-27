@@ -5,6 +5,7 @@ import { BlockService } from './block.service'
 import { BlockResolvers } from './block.resolvers'
 import { CardBlockResolvers } from './card/card.resolvers'
 import { ImageBlockResolvers } from './image/image.resolvers'
+import { SignUpBlockResolvers } from './signUp/signUp.resolvers'
 import { StepBlockResolvers } from './step/step.resolvers'
 import { TypographyBlockResolvers } from './typography/typography.resolvers'
 import {
@@ -26,6 +27,7 @@ import {
     ImageBlockResolvers,
     RadioOptionBlockResolvers,
     RadioQuestionBlockResolvers,
+    SignUpBlockResolvers,
     StepBlockResolvers,
     TypographyBlockResolvers,
     VideoBlockResolvers,
