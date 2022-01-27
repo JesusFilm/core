@@ -2,7 +2,14 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../ThemeProvider'
-import { user1, user2, user3, user4, user5, user6 } from './data'
+import {
+  userJourney1,
+  userJourney2,
+  userJourney3,
+  userJourney4,
+  userJourney5,
+  userJourney6
+} from './data'
 import { AccessAvatars } from '.'
 
 describe('AccessAvatars', () => {
@@ -13,7 +20,13 @@ describe('AccessAvatars', () => {
           <ThemeProvider>
             <AccessAvatars
               journeySlug="journeySlug"
-              users={[user1, user2, user3, user4, user5]}
+              userJourneys={[
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5
+              ]}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -29,7 +42,13 @@ describe('AccessAvatars', () => {
           <ThemeProvider>
             <AccessAvatars
               journeySlug="journeySlug"
-              users={[user1, user2, user3, user4, user5]}
+              userJourneys={[
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5
+              ]}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -45,7 +64,14 @@ describe('AccessAvatars', () => {
           <ThemeProvider>
             <AccessAvatars
               journeySlug="journeySlug"
-              users={[user1, user2, user3, user4, user5, user6]}
+              userJourneys={[
+                userJourney1,
+                userJourney2,
+                userJourney3,
+                userJourney4,
+                userJourney5,
+                userJourney6
+              ]}
             />
           </ThemeProvider>
         </MockedProvider>
@@ -70,7 +96,10 @@ describe('AccessAvatars', () => {
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
-            <AccessAvatars journeySlug="journeySlug" users={[user1]} />
+            <AccessAvatars
+              journeySlug="journeySlug"
+              userJourneys={[userJourney1]}
+            />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
