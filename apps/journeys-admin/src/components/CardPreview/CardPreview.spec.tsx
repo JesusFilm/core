@@ -17,7 +17,7 @@ describe('CardPreview', () => {
     const { getByTestId } = render(
       <CardPreview onSelect={onSelect} steps={[step]} />
     )
-    fireEvent.click(getByTestId('step-step.id'))
+    fireEvent.click(getByTestId('preview-step.id'))
     expect(onSelect).toHaveBeenCalledWith(step)
   })
 })
