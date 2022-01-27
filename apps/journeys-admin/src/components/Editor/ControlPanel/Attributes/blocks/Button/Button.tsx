@@ -9,6 +9,7 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
+import { Size } from './Size'
 
 export function Button({
   id,
@@ -53,7 +54,14 @@ export function Button({
         name="Button Size"
         value={capitalize(size?.toString() ?? 'medium')}
         description="Button Size"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Button Size',
+            mobileOpen: true,
+            children: <Size id={id} color={buttonColor} />
+          })
+        }}
       />
 
       <Attribute
