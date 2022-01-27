@@ -10,7 +10,6 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
-import { INVITE_USER_MODAL_FIELDS } from '../../src/components/InviteUserModal'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/libs/context'
 import { JourneyView } from '../../src/components/JourneyView'
@@ -20,7 +19,6 @@ import { Menu } from '../../src/components/JourneyView/Menu'
 
 export const GET_JOURNEY = gql`
   ${BLOCK_FIELDS}
-  ${INVITE_USER_MODAL_FIELDS}
   query GetJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: slug) {
       id
@@ -41,11 +39,11 @@ export const GET_JOURNEY = gql`
       }
       userJourneys {
         id
-        userId
-        journeyId
-        role
         user {
-          ...InviteUserModalFields
+          id
+          firstName
+          lastName
+          imageUrl
         }
       }
     }

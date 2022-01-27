@@ -26,14 +26,10 @@ const GET_JOURNEYS = gql`
       status
       userJourneys {
         id
-        userId
-        journeyId
         user {
-          __typename
           id
           firstName
           lastName
-          email
           imageUrl
         }
       }

@@ -170,6 +170,13 @@ export interface RadioQuestionResponseCreateInput {
   radioOptionBlockId: string;
 }
 
+export interface SignUpBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId?: string | null;
+  submitLabel: string;
+}
+
 export interface SignUpResponseCreateInput {
   blockId: string;
   email: string;

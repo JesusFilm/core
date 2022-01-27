@@ -4,14 +4,18 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: InviteUserModalFields
+// GraphQL query operation: GetMe
 // ====================================================
 
-export interface InviteUserModalFields {
+export interface GetMe_me {
   __typename: "User";
   id: string;
   firstName: string;
   lastName: string | null;
   email: string;
   imageUrl: string | null;
+}
+
+export interface GetMe {
+  me: GetMe_me | null;
 }

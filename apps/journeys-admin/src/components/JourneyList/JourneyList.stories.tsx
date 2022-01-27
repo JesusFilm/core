@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import { JourneysListProps } from './JourneyList'
@@ -21,9 +22,11 @@ const JourneyListStory = {
 }
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
-  <PageWrapper title="Journeys">
-    <JourneyList {...args} />
-  </PageWrapper>
+  <MockedProvider>
+    <PageWrapper title="Journeys">
+      <JourneyList {...args} />
+    </PageWrapper>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
