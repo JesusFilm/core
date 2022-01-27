@@ -1,12 +1,9 @@
-import 'cypress-iframe'
-
 describe('fact-or-fiction edit', () => {
   before(() => {
     cy.visit('/journeys/fact-or-fiction/edit')
   })
 
   const email = 'test@example.com'
-  // Test Example
   const password = 'Example1'
   it('should sign in successfully', () => {
     cy.get('button').contains('Sign in with email').click()
@@ -36,42 +33,39 @@ describe('fact-or-fiction edit', () => {
       .should('have.attr', 'aria-selected', 'true')
   })
 
-  // const nestedCard = '67a7feec-1699-40a5-9f28-22e473ed9348'
-  // const iframeParent = 'step-7a6c9d6a-3894-48da-9e30-27321b15402a'
-  it('gets iframe for card', () => {
-    // const iframeParent = 'step-' + card3
-    cy.get(`[data-testid="${'step-' + card3}"]`).within(() => {
+  it('navigates back to the cards tab', () => {
+    // navigate back to cards tab
+    cy.get('button[role="tab"]').contains('Cards').click()
+    // cards tab should be selected
+    cy.get('button[role="tab"]')
+      .contains('Cards')
+      .should('exist')
+      .should('have.attr', 'aria-selected', 'true')
+  })
+
+  it('gets iframe for card 3, clicks on the block', () => {
+    const displayedCard = 'step-' + card3
+    cy.get(`[data-testid="${displayedCard}"]`).within(() => {
+      // Access the IFrame inside that card
+      // Note: following 4 lines adapted from this tutorial: https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/
       cy.get('iframe')
-        .its('0.contentDocument')
-        .should('exist')
-        .its('body')
-        .should('not.be.undefined')
+        .its('0.contentDocument.body')
+        .should('not.be.empty')
         .then(cy.wrap)
-        .get('h6')
+        // Click on the h6 'What do you think?' block
+        .find(`h6`)
         .should('exist')
-      // cy.frameLoaded()
+        .click() // throws error here, because it has found 2 'h6'
     })
   })
 
-  // const getIframeDocument = () => {
-  //   return cy
-  //   .get('iframe')
-  //   .its('0.contentDocument').should('exist')
-  // }
-
-  // const getIframeBody = () => {
-  //   return getIframeDocument()
-  //   .its('body').should('not.be.undefined')
-  //   .then(cy.wrap)
-  // }
+  /* TODO in future
   it('should switch to block properties when a block on the card is clicked', () => {
-    // navigate back to cards tab
-    cy.get('button[role="tab"]').contains('Cards').click()
-
+    
     // get the iframe of the card, so we can click on block elements within it
 
     // click a block on the displayed card
-    // cy.get('h6').contains('What do you think?')
-    // cy.get(`[id="${nestedCard}"]`)
+
   })
+  */
 })
