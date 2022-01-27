@@ -30,18 +30,6 @@ input RadioQuestionBlockCreateInput {
   label: String!
 }
 
-input RadioOptionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-  # action: Action
-}
-
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID
-  label: String!
-  description: String
-}
-
 extend type Mutation {
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
   radioQuestionBlockCreate(
