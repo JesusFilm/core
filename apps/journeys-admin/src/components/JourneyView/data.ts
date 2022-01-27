@@ -25,7 +25,41 @@ export const defaultJourney: Journey = {
   themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [
+    {
+      id: 'userJourneyId1',
+      __typename: 'UserJourney',
+      user: {
+        id: '1',
+        __typename: 'User',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: 'https://bit.ly/3Gth4Yf'
+      }
+    },
+    {
+      id: 'userJourneyId2',
+      __typename: 'UserJourney',
+      user: {
+        id: '2',
+        __typename: 'User',
+        firstName: 'Horace',
+        lastName: 'Two',
+        imageUrl: 'https://bit.ly/3rgHd6a'
+      }
+    },
+    {
+      id: 'userJourneyId3',
+      __typename: 'UserJourney',
+      user: {
+        id: '3',
+        __typename: 'User',
+        firstName: 'Coral',
+        lastName: 'Three',
+        imageUrl: 'https://bit.ly/3nlwUwJ'
+      }
+    }
+  ]
 }
 
 export const publishedJourney: Journey = {
