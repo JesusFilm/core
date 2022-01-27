@@ -23,7 +23,7 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
         </>
       )
     }
-    // ask about radio question
+
     case 'TypographyBlock': {
       return <Typography {...selected} />
     }
