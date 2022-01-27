@@ -1,64 +1,71 @@
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
 import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import capitalize from 'lodash/capitalize'
 import lowerCase from 'lodash/lowerCase'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
+import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { Color } from './Color'
+import { Align } from './Align'
+import { Variant } from './Variant'
 
-export function Typography({
-  id,
-  align,
-  color,
-  variant
-}: TreeBlock<TypographyBlock>): ReactElement {
+export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
+  const { id, align, color, variant } = block
+
+  const { dispatch } = useEditor()
+
   return (
     <>
       <Attribute
-        id={`${id}-text-color`}
-        icon={
-          <Paper
-            sx={{
-              borderRadius: 1000
-            }}
-          >
-            <Box
-              data-testid="backgroundColorIcon"
-              sx={{
-                width: 20,
-                height: 20,
-                m: 1,
-                borderRadius: 1000,
-                backgroundColor: `${color ?? 'primary'}.main`
-              }}
-            />
-          </Paper>
-        }
+        id={`${id}-typography-color`}
+        icon={<ColorDisplayIcon color={color} />}
         name="Color"
         value={capitalize(color?.toString() ?? 'primary')}
         description="Text Color"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Color',
+            mobileOpen: true,
+            children: <Color id={id} color={color} />
+          })
+        }}
       />
+
       <Attribute
-        id={`${id}-font-variant`}
+        id={`${id}-typography-variant`}
         icon={<TextFieldsRoundedIcon />}
-        name="Font Variant"
+        name="Text Variant"
         value={capitalize(
           lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
         )}
-        description="Font Variant"
-        // onClick open drawer
+        description="Text Variant"
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Variant',
+            mobileOpen: true,
+            children: <Variant id={id} variant={variant} />
+          })
+        }}
       />
+
       <Attribute
-        id={`${id}-text-alignment`}
+        id={`${id}-typography-alignment`}
         icon={<FormatAlignLeftRoundedIcon />}
         name="Text Alignment"
         value={capitalize(align?.toString() ?? 'Left')}
         description="Text Alignment"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Alignment',
+            mobileOpen: true,
+            children: <Align id={id} align={align} />
+          })
+        }}
       />
     </>
   )

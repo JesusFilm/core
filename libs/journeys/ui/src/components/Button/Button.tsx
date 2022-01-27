@@ -2,7 +2,7 @@ import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import { Icon } from '../Icon'
-import { handleAction, TreeBlock, useEditor } from '../..'
+import { handleAction, TreeBlock, useEditor, ActiveTab } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
 
 export function Button({
@@ -40,6 +40,8 @@ export function Button({
     }
 
     dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (

@@ -57,7 +57,11 @@ export function AccessAvatars({
             '> .MuiAvatar-root': {
               width: 31,
               height: 31,
-              fontSize: 12
+              fontSize: 12,
+              borderColor: '#FFF'
+            },
+            '> .MuiAvatarGroup-avatar': {
+              backgroundColor: 'primary.main'
             }
           }}
         >
@@ -70,7 +74,11 @@ export function AccessAvatars({
             '> .MuiAvatar-root': {
               width: 31,
               height: 31,
-              fontSize: 12
+              fontSize: 12,
+              borderColor: '#FFF'
+            },
+            '> .MuiAvatarGroup-avatar': {
+              backgroundColor: 'primary.main'
             }
           }}
         >

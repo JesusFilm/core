@@ -1,5 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 import { JourneyList } from '.'
@@ -7,11 +8,13 @@ import { JourneyList } from '.'
 describe('JourneyList', () => {
   it('should render journeys in descending createdAt date by default', () => {
     const { getAllByLabelText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyList journeys={[defaultJourney, oldJourney]} />
-        </ThemeProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList journeys={[defaultJourney, oldJourney]} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const journeyCards = getAllByLabelText('journey-card')
@@ -22,11 +25,13 @@ describe('JourneyList', () => {
 
   it('should order journeys in alphabetical order', () => {
     const { getAllByLabelText, getByRole } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyList journeys={[defaultJourney, oldJourney]} />
-        </ThemeProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList journeys={[defaultJourney, oldJourney]} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     const journeyCards = getAllByLabelText('journey-card')
@@ -40,24 +45,28 @@ describe('JourneyList', () => {
 
   it('should render all journeys', () => {
     const { getAllByLabelText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyList
-            journeys={[defaultJourney, publishedJourney, oldJourney]}
-          />
-        </ThemeProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList
+              journeys={[defaultJourney, publishedJourney, oldJourney]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
     expect(getAllByLabelText('journey-card').length).toBe(3)
   })
 
   it('should render text when there are no journeys', () => {
     const { getByText, getByRole } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyList journeys={[]} />
-        </ThemeProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList journeys={[]} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(getByText('No journeys to display.')).toBeInTheDocument()

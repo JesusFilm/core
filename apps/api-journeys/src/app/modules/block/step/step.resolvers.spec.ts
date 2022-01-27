@@ -54,6 +54,7 @@ describe('Step', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => []),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -89,7 +90,7 @@ describe('Step', () => {
 
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
-      stepBlockResolver
+      await stepBlockResolver
         .stepBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
