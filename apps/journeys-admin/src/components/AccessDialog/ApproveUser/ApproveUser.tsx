@@ -9,6 +9,7 @@ import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
 interface ApproveUserProps {
   id: string
+  onClick?: () => void
 }
 
 export const USER_JOURNEY_APPROVE = gql`
@@ -20,7 +21,7 @@ export const USER_JOURNEY_APPROVE = gql`
   }
 `
 
-export function ApproveUser({ id }: ApproveUserProps): ReactElement {
+export function ApproveUser({ id, onClick }: ApproveUserProps): ReactElement {
   const [userJourneyApprove] = useMutation<UserJourneyApprove>(
     USER_JOURNEY_APPROVE,
     { variables: { id } }
@@ -36,6 +37,7 @@ export function ApproveUser({ id }: ApproveUserProps): ReactElement {
         }
       }
     })
+    onClick?.()
   }
 
   return (

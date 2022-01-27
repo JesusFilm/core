@@ -6,6 +6,7 @@ import { ApproveUser } from '.'
 
 describe('ApproveUser', () => {
   it('should approve user journey', async () => {
+    const handleClick = jest.fn()
     const result = jest.fn(() => ({
       data: {
         userJourneyApprove: {
@@ -29,10 +30,11 @@ describe('ApproveUser', () => {
           }
         ]}
       >
-        <ApproveUser id="userId" />
+        <ApproveUser id="userId" onClick={handleClick} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(handleClick).toHaveBeenCalled()
   })
 })

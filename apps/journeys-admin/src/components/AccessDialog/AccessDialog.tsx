@@ -85,7 +85,11 @@ export function AccessDialog({
 
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(
-      `${window.location.origin}/journeys/${journeySlug}`
+      `${
+        window.location.host.endsWith('.chromatic.com')
+          ? 'https://admin.nextstep.is'
+          : window.location.origin
+      }/journeys/${journeySlug}`
     )
     enqueueSnackbar('Editor invite link copied', {
       variant: 'success',
@@ -126,7 +130,11 @@ export function AccessDialog({
               hiddenLabel
               defaultValue={
                 typeof window !== 'undefined' &&
-                `${window.location.origin}/journeys/${journeySlug}`
+                `${
+                  window.location.host.endsWith('.chromatic.com')
+                    ? 'https://admin.nextstep.is'
+                    : window.location.origin
+                }/journeys/${journeySlug}`
               }
               inputProps={{
                 onFocus: handleFocus
@@ -272,12 +280,12 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
         }}
       >
         {role === 'inviteRequested' ? (
-          <ApproveUser id={id} />
+          <ApproveUser id={id} onClick={handleClose} />
         ) : (
-          <PromoteUser id={id} />
+          <PromoteUser id={id} onClick={handleClose} />
         )}
         <Divider />
-        <RemoveUser id={id} />
+        <RemoveUser id={id} onClick={handleClose} />
       </Menu>
     </>
   )
