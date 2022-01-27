@@ -376,6 +376,11 @@ input RadioOptionBlockCreateInput {
   parentBlockId: ID
 }
 
+input RadioOptionBlockUpdateInput {
+  label: String
+  parentBlockId: ID
+}
+
 type RadioQuestionBlock implements Block {
   description: String
   id: ID!
@@ -388,6 +393,12 @@ type RadioQuestionBlock implements Block {
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
+  label: String!
+  parentBlockId: ID
+}
+
+input RadioQuestionBlockUpdateInput {
+  description: String
   label: String!
   parentBlockId: ID
 }

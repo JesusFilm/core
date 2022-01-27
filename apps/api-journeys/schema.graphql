@@ -299,6 +299,17 @@ input RadioQuestionBlockCreateInput {
   label: String!
 }
 
+input RadioOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+}
+
+input RadioQuestionBlockUpdateInput {
+  parentBlockId: ID
+  label: String!
+  description: String
+}
+
 type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
