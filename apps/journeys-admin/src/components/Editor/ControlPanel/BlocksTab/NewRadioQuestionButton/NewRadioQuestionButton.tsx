@@ -8,7 +8,7 @@ import {
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS
 } from '@core/journeys/ui'
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
@@ -54,7 +54,8 @@ export function NewRadioQuestionButton(): ReactElement {
   } = useEditor()
 
   const handleClick = async (): Promise<void> => {
-    const radioQuestionId = uuidv4()
+    const id = 'uuid'
+    // const id = uuidv()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -64,18 +65,18 @@ export function NewRadioQuestionButton(): ReactElement {
         variables: {
           input: {
             journeyId,
-            id: radioQuestionId,
+            id,
             parentBlockId: card.id,
             label: 'Your Question Here?'
           },
           radioOptionBlockCreateInput1: {
             journeyId,
-            parentBlockId: radioQuestionId,
+            parentBlockId: id,
             label: 'Option 1'
           },
           radioOptionBlockCreateInput2: {
             journeyId,
-            parentBlockId: radioQuestionId,
+            parentBlockId: id,
             label: 'Option 2'
           }
         },
