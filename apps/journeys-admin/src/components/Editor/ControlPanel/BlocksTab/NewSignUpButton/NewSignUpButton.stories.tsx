@@ -31,7 +31,7 @@ export const Default: Story = () => {
           result: {
             data: {
               signUpBlockCreate: {
-                id: 'typographyBlockId',
+                id: 'signUpBlockId',
                 parentBlockId: 'cardId',
                 journeyId: 'journeyId',
                 submitLabel: 'Submit',
