@@ -8,3 +8,7 @@ interface Block {
 extend type Journey {
   blocks: [Block!]
 }
+
+extend type Mutation {
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
+}
