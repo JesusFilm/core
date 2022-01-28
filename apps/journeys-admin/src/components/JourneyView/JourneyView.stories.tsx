@@ -4,7 +4,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import { JourneyProvider } from '../../libs/context'
 import { JourneyView } from './JourneyView'
-import { defaultJourney, publishedJourney } from './data'
+import { publishedJourney } from './data'
 import { Menu } from './Menu'
 
 const JourneyViewStory = {
@@ -31,13 +31,8 @@ const Template: Story = ({ ...args }) => (
   </MockedProvider>
 )
 
-export const Draft = Template.bind({})
-Draft.args = {
-  journey: defaultJourney
-}
-
-export const Published = Template.bind({})
-Published.args = {
+export const Default = Template.bind({})
+Default.args = {
   journey: publishedJourney
 }
 
