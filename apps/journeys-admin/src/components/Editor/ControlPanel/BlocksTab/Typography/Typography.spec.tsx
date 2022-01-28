@@ -12,6 +12,7 @@ describe('Typography', () => {
     __typename: 'StepBlock',
     id: 'stepId',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: null,
     children: [
@@ -20,6 +21,7 @@ describe('Typography', () => {
         __typename: 'CardBlock',
         parentBlockId: 'stepId',
         coverBlockId: null,
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,

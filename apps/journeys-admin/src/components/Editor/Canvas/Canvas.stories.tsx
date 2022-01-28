@@ -27,6 +27,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step0.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
     children: [
@@ -35,15 +36,29 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
         coverBlockId: 'image0.id',
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
         children: [
           {
+            id: 'image0.id',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+            width: 1920,
+            height: 1080,
+            alt: 'random image from unsplash',
+            parentBlockId: 'card0.id',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+          },
+          {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: "What's our purpose, and how did we get here?",
@@ -54,6 +69,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 2,
             align: null,
             color: null,
             content:
@@ -65,6 +81,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'ButtonBlock',
             id: 'button',
             parentBlockId: 'card0.id',
+            parentOrder: 3,
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -81,17 +98,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName'
             },
             children: []
-          },
-          {
-            id: 'image0.id',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-            width: 1920,
-            height: 1080,
-            alt: 'random image from unsplash',
-            parentBlockId: 'card0.id',
-            children: [],
-            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
           }
         ]
       }
@@ -101,6 +107,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -109,15 +116,29 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
         coverBlockId: 'image1.id',
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
         children: [
           {
+            id: 'image1.id',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+            width: 1920,
+            height: 1080,
+            alt: 'random image from unsplash',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
+          },
+          {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card1.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'a quick question...',
@@ -128,6 +149,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
             parentBlockId: 'card1.id',
+            parentOrder: 2,
             align: null,
             color: null,
             content: 'Can we trust the story of Jesus ?',
@@ -138,6 +160,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'ButtonBlock',
             id: 'button',
             parentBlockId: 'card1.id',
+            parentOrder: 3,
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -154,17 +177,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName'
             },
             children: []
-          },
-          {
-            id: 'image1.id',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-            width: 1920,
-            height: 1080,
-            alt: 'random image from unsplash',
-            parentBlockId: 'card1.id',
-            children: [],
-            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
           }
         ]
       }
@@ -174,6 +186,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
     children: [
@@ -182,15 +195,29 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step2.id',
         coverBlockId: 'image2.id',
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
         children: [
           {
+            id: 'image2.id',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80',
+            width: 1920,
+            height: 1080,
+            alt: 'random image from unsplash',
+            parentBlockId: 'card2.id',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
+          },
+          {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card2.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'if it’s true...',
@@ -200,6 +227,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
+            parentOrder: 2,
             parentBlockId: 'card2.id',
             label: 'What is Christianity to you?',
             description: '',
@@ -208,7 +236,20 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'One of many ways to God',
+                action: {
+                  __typename: 'NavigateAction',
+                  gtmEventName: 'gtmEventName'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption2.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
+                label: 'One great lie...',
                 action: {
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
@@ -219,17 +260,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                label: 'One great lie...',
-                action: {
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
-                },
-                children: []
-              },
-              {
-                id: 'radioOption4.id',
-                __typename: 'RadioOptionBlock',
-                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 2,
                 label: 'One true way to God',
                 action: {
                   __typename: 'NavigateAction',
@@ -238,17 +269,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 children: []
               }
             ]
-          },
-          {
-            id: 'image2.id',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1136&q=80',
-            width: 1920,
-            height: 1080,
-            alt: 'random image from unsplash',
-            parentBlockId: 'card2.id',
-            children: [],
-            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
           }
         ]
       }
@@ -258,6 +278,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: 'step4.id',
     children: [
@@ -266,15 +287,29 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step3.id',
         coverBlockId: 'image3.id',
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
         children: [
           {
+            id: 'image3.id',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
+            width: 1920,
+            height: 1080,
+            alt: 'random image from unsplash',
+            parentBlockId: 'card3.id',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
+          },
+          {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card3.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'What do you think?',
@@ -285,6 +320,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
+            parentOrder: 2,
             label: 'Do you need to change to be good enough for God?',
             description: '',
             children: [
@@ -292,6 +328,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: {
                   __typename: 'NavigateAction',
@@ -303,6 +340,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: {
                   __typename: 'NavigateAction',
@@ -311,17 +349,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 children: []
               }
             ]
-          },
-          {
-            id: 'image3.id',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
-            width: 1920,
-            height: 1080,
-            alt: 'random image from unsplash',
-            parentBlockId: 'card3.id',
-            children: [],
-            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
           }
         ]
       }
@@ -331,6 +358,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null,
     children: [
@@ -339,6 +367,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step4.id',
         coverBlockId: null,
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -349,6 +378,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             id: 'video1.id',
             parentBlockId: 'card4.id',
             autoplay: false,
+            parentOrder: 0,
             muted: true,
             title: 'video1',
             videoContent: {
@@ -368,6 +398,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step5.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null,
     children: [
@@ -376,6 +407,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step5.id',
         coverBlockId: null,
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -389,6 +421,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             height: 1067,
             alt: 'random image from unsplash',
             parentBlockId: 'card5.id',
+            parentOrder: 0,
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             children: []
           },
@@ -396,6 +429,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'SignUpBlock',
             id: 'SignUp1',
             parentBlockId: 'card5.id',
+            parentOrder: 1,
             submitIcon: null,
             submitLabel: null,
             action: null,
@@ -409,6 +443,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step6.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null,
     children: [
@@ -417,15 +452,29 @@ const steps: Array<TreeBlock<StepBlock>> = [
         __typename: 'CardBlock',
         parentBlockId: 'step6.id',
         coverBlockId: 'image6.id',
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
         fullscreen: false,
         children: [
           {
+            id: 'image6.id',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+            width: 1920,
+            height: 1080,
+            alt: 'random image from unsplash',
+            parentBlockId: 'card6.id',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+          },
+          {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card6.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'a quote',
@@ -436,6 +485,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
             parentBlockId: 'card6.id',
+            parentOrder: 2,
             align: null,
             color: null,
             content:
@@ -447,6 +497,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             id: 'typographyBlockId13',
             __typename: 'TypographyBlock',
             parentBlockId: 'card6.id',
+            parentOrder: 3,
             align: null,
             color: null,
             content: '–  The Bible, John 3:17',
@@ -454,20 +505,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'image6.id',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-            width: 1920,
-            height: 1080,
-            alt: 'random image from unsplash',
-            parentBlockId: 'card6.id',
-            children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
-          },
-          {
             __typename: 'ButtonBlock',
             id: 'button',
             parentBlockId: 'card6.id',
+            parentOrder: 4,
             label: 'Start Over',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
