@@ -58,7 +58,7 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   }
 `
 
-interface InviteUserModalProps {
+interface AccessDialogProps {
   journeySlug: string
   open?: boolean
   onClose?: () => void
@@ -68,7 +68,7 @@ export function AccessDialog({
   journeySlug,
   open,
   onClose
-}: InviteUserModalProps): ReactElement {
+}: AccessDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { enqueueSnackbar } = useSnackbar()
 
