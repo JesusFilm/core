@@ -7,3 +7,14 @@ type SignUpBlock implements Block {
   submitIcon: Icon
   submitLabel: String
 }
+
+input SignUpBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  submitLabel: String!
+}
+
+extend type Mutation {
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+}
