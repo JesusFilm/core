@@ -6,6 +6,7 @@ export const SIGN_UP_FIELDS = gql`
   fragment SignUpFields on SignUpBlock {
     id
     parentBlockId
+    parentOrder
     submitLabel
     action {
       ...ActionFields

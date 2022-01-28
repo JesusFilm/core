@@ -6,6 +6,7 @@ export const RADIO_OPTION_FIELDS = gql`
   fragment RadioOptionFields on RadioOptionBlock {
     id
     parentBlockId
+    parentOrder
     label
     action {
       ...ActionFields

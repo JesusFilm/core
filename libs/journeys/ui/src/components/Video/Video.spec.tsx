@@ -9,6 +9,7 @@ const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
   id: 'video0.id',
   parentBlockId: '',
+  parentOrder: 0,
   autoplay: false,
   title: 'Video',
   startAt: 10,
@@ -29,6 +30,7 @@ const block: TreeBlock<VideoFields> = {
       height: 1067,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       parentBlockId: 'video0.id',
+      parentOrder: 0,
       children: []
     }
   ]
@@ -164,6 +166,7 @@ describe('Admin Video', () => {
               id: 'card0.id',
               __typename: 'CardBlock',
               parentBlockId: 'step0.id',
+              parentOrder: 0,
               coverBlockId: null,
               backgroundColor: null,
               themeMode: null,

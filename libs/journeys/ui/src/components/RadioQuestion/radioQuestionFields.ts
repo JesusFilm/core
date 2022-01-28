@@ -4,6 +4,7 @@ export const RADIO_QUESTION_FIELDS = gql`
   fragment RadioQuestionFields on RadioQuestionBlock {
     id
     parentBlockId
+    parentOrder
     label
     description
   }

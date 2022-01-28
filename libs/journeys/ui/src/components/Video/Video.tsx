@@ -5,11 +5,11 @@ import Box from '@mui/material/Box'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { BlockFields_VideoBlock as VideoFields } from '../../libs/transformer/__generated__/BlockFields'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
 import { VideoTrigger } from './VideoTrigger'
 import 'video.js/dist/video-js.css'
-import { VideoFields } from './__generated__/VideoFields'
 
 export const VIDEO_RESPONSE_CREATE = gql`
   mutation VideoResponseCreate($input: VideoResponseCreateInput!) {

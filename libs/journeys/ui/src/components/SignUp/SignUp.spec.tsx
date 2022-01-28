@@ -26,6 +26,7 @@ const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
   id: 'signUp0.id',
   parentBlockId: '0',
+  parentOrder: 0,
   submitIcon: null,
   submitLabel: null,
   action: {
@@ -174,6 +175,7 @@ describe('Admin SignUp', () => {
               __typename: 'CardBlock',
               parentBlockId: 'step0.id',
               coverBlockId: null,
+              parentOrder: 0,
               backgroundColor: null,
               themeMode: null,
               themeName: null,
