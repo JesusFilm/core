@@ -57,6 +57,7 @@ describe('JourneyProgress', () => {
         __typename: 'StepBlock',
         id: 'Step2',
         parentBlockId: null,
+        parentOrder: 0,
         locked: true,
         nextBlockId: 'Step3',
         children: []
@@ -65,6 +66,7 @@ describe('JourneyProgress', () => {
         __typename: 'StepBlock',
         id: 'Step3',
         parentBlockId: null,
+        parentOrder: 1,
         locked: true,
         nextBlockId: 'Step4',
         children: []
@@ -73,6 +75,7 @@ describe('JourneyProgress', () => {
         __typename: 'StepBlock',
         id: 'Step4',
         parentBlockId: null,
+        parentOrder: 2,
         locked: true,
         nextBlockId: null,
         children: []
@@ -98,6 +101,7 @@ describe('JourneyProgress', () => {
         __typename: 'StepBlock',
         id: 'Step1',
         parentBlockId: null,
+        parentOrder: 0,
         locked: true,
         nextBlockId: 'Step2',
         children: []
@@ -107,6 +111,7 @@ describe('JourneyProgress', () => {
         __typename: 'StepBlock',
         id: 'Step3',
         parentBlockId: null,
+        parentOrder: 1,
         locked: true,
         nextBlockId: 'Step4',
         children: []
@@ -115,6 +120,7 @@ describe('JourneyProgress', () => {
         __typename: 'StepBlock',
         id: 'Step4',
         parentBlockId: null,
+        parentOrder: 2,
         locked: true,
         nextBlockId: null,
         children: []
