@@ -97,7 +97,7 @@ describe('RadioQuestion', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <NewRadioQuestionButton />
+            <NewRadioQuestionButton uuid={() => 'uuid'} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -183,7 +183,7 @@ describe('RadioQuestion', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <NewRadioQuestionButton />
+            <NewRadioQuestionButton uuid={() => 'uuid'} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

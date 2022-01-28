@@ -8,7 +8,7 @@ import {
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS
 } from '@core/journeys/ui'
-// import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
@@ -43,7 +43,11 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
   }
 `
 
-export function NewRadioQuestionButton(): ReactElement {
+interface NewRadioQuestionButtonProps {
+  uuid?: () => string
+}
+
+export function NewRadioQuestionButton({ uuid = uuidv4 }: NewRadioQuestionButtonProps): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
@@ -54,8 +58,7 @@ export function NewRadioQuestionButton(): ReactElement {
   } = useEditor()
 
   const handleClick = async (): Promise<void> => {
-    const id = 'uuid'
-    // const id = uuidv()
+    const id = uuid()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
