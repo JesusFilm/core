@@ -55,7 +55,6 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: card1._key,
-    parentOrder: 0,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
@@ -65,7 +64,8 @@ export async function nua1(): Promise<void> {
     startAt: 11,
     title: 'Fact or fiction',
     description:
-      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
+    parentOrder: 0
   })
   await db
     .collection('blocks')
@@ -151,7 +151,6 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: step2._key,
-    parentOrder: 0,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
@@ -159,7 +158,8 @@ export async function nua1(): Promise<void> {
     autoplay: true,
     title: 'Fact or fiction',
     description:
-      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
+      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
+    parentOrder: 0
   })
 
   // third step
@@ -175,12 +175,12 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoTriggerBlock',
     parentBlockId: video._key,
-    parentOrder: 0,
     triggerStart: 133,
     action: {
       gtmEventName: 'trigger',
       blockId: step3._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card3 = await db.collection('blocks').save({
@@ -263,14 +263,14 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: step4._key,
-    parentOrder: 0,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
     },
     autoplay: true,
     title: 'Fact or fiction',
-    startAt: 134
+    startAt: 134,
+    parentOrder: 0
   })
 
   // fifth step
@@ -286,12 +286,12 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoTriggerBlock',
     parentBlockId: video1._key,
-    parentOrder: 0,
     triggerStart: 306,
     action: {
       gtmEventName: 'trigger',
       blockId: step5._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card5 = await db.collection('blocks').save({
@@ -394,11 +394,11 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'GridContainerBlock',
     parentBlockId: card6._key,
-    parentOrder: 0,
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 0
   })
 
   const gridItemLeft = await db.collection('blocks').save({

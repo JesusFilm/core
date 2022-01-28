@@ -68,7 +68,8 @@ export async function nua9(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'Decision'
+    title: 'Decision',
+    parentOrder: 3
   })
 
   await db.collection('blocks').save({
@@ -177,7 +178,8 @@ export async function nua9(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: questionStep._key
-    }
+    },
+    parentOrder: 0
   })
 
   const image1Id = uuidv4()
@@ -199,7 +201,8 @@ export async function nua9(): Promise<void> {
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 0
   })
 
   const gridItemLeft = await db.collection('blocks').save({
@@ -541,7 +544,8 @@ export async function nua9(): Promise<void> {
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 0
   })
 
   const prayerGridItemLeft = await db.collection('blocks').save({
@@ -729,7 +733,8 @@ export async function nua9(): Promise<void> {
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 1
   })
 
   const alreadyGridItemLeft = await db.collection('blocks').save({
@@ -916,7 +921,8 @@ export async function nua9(): Promise<void> {
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 1
   })
 
   const noThanksGridItemLeft = await db.collection('blocks').save({
@@ -1103,7 +1109,8 @@ export async function nua9(): Promise<void> {
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 1
   })
 
   const notSureGridItemLeft = await db.collection('blocks').save({
