@@ -310,6 +310,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)

@@ -55,6 +55,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: card1._key,
+    parentOrder: 0,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
@@ -150,6 +151,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: step2._key,
+    parentOrder: 0,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
@@ -173,6 +175,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoTriggerBlock',
     parentBlockId: video._key,
+    parentOrder: 0,
     triggerStart: 133,
     action: {
       gtmEventName: 'trigger',
@@ -260,6 +263,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: step4._key,
+    parentOrder: 0,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
@@ -282,6 +286,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoTriggerBlock',
     parentBlockId: video1._key,
+    parentOrder: 0,
     triggerStart: 306,
     action: {
       gtmEventName: 'trigger',
@@ -389,6 +394,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'GridContainerBlock',
     parentBlockId: card6._key,
+    parentOrder: 0,
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',

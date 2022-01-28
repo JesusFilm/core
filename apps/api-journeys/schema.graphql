@@ -617,6 +617,7 @@ enum UserJourneyRole {
 }
 
 extend type Mutation {
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!

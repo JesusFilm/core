@@ -541,6 +541,8 @@ export class VideoResponse implements Response {
 }
 
 export abstract class IMutation {
+    abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
+
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
     abstract cardBlockUpdate(id: string, journeyId: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;
