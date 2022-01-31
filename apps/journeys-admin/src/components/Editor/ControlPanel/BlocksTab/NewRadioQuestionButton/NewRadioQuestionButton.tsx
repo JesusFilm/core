@@ -47,7 +47,9 @@ interface NewRadioQuestionButtonProps {
   uuid?: () => string
 }
 
-export function NewRadioQuestionButton({ uuid = uuidv4 }: NewRadioQuestionButtonProps): ReactElement {
+export function NewRadioQuestionButton({
+  uuid = uuidv4
+}: NewRadioQuestionButtonProps): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
