@@ -101,6 +101,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   themeMode: ThemeMode
   themeName: ThemeName
 }
@@ -231,6 +232,7 @@ input ImageBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   src: String!
 }
 
@@ -308,6 +310,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
@@ -316,6 +319,7 @@ type Mutation {
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
@@ -407,6 +411,13 @@ type SignUpBlock implements Block {
   submitLabel: String
 }
 
+input SignUpBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  submitLabel: String!
+}
+
 type SignUpResponse implements Response {
   block: SignUpBlock
   email: String!
@@ -453,6 +464,7 @@ input StepBlockCreateInput {
   locked: Boolean
   nextBlockId: ID
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
@@ -597,6 +609,7 @@ input VideoBlockCreateInput {
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID
+  parentOrder: Int!
 
   """
   posterBlockId is present if a child block should be used as a poster.

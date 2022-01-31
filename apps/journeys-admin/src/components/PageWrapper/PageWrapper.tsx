@@ -20,7 +20,10 @@ import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Image from 'next/image'
 import { AuthUser } from 'next-firebase-auth'
+import { gql, useQuery } from '@apollo/client'
+import { compact } from 'lodash'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
+import { GetMe } from '../../../__generated__/GetMe'
 
 export interface PageWrapperProps {
   backHref?: string
@@ -30,6 +33,18 @@ export interface PageWrapperProps {
   children?: ReactNode
   AuthUser?: AuthUser
 }
+
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      id
+      firstName
+      lastName
+      email
+      imageUrl
+    }
+  }
+`
 
 export function PageWrapper({
   backHref,
@@ -47,6 +62,7 @@ export function PageWrapper({
   const handleProfileClose = (): void => {
     setProfileAnchorEl(null)
   }
+  const { data } = useQuery<GetMe>(GET_ME)
 
   return (
     <>
@@ -128,7 +144,7 @@ export function PageWrapper({
             </ListItem>
           </Link>
         </List>
-        {AuthUser != null && (
+        {AuthUser != null && data?.me != null && (
           <>
             <Divider sx={{ borderColor: '#383940' }} />
             <List>
@@ -138,8 +154,8 @@ export function PageWrapper({
                 onClick={handleProfileClick}
               >
                 <Avatar
-                  alt={AuthUser.displayName ?? undefined}
-                  src={AuthUser.photoURL ?? undefined}
+                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+                  src={data.me.imageUrl ?? undefined}
                   sx={{ width: 24, height: 24 }}
                 />
               </ListItem>
@@ -165,15 +181,19 @@ export function PageWrapper({
               >
                 <Box>
                   <Avatar
-                    alt={AuthUser.displayName ?? undefined}
-                    src={AuthUser.photoURL ?? undefined}
+                    alt={compact([data.me.firstName, data.me.lastName]).join(
+                      ' '
+                    )}
+                    src={data.me.imageUrl ?? undefined}
                   />
                 </Box>
                 <Box>
-                  <Typography>{AuthUser.displayName}</Typography>
-                  {AuthUser.email != null && (
+                  <Typography>
+                    {compact([data.me.firstName, data.me.lastName]).join(' ')}
+                  </Typography>
+                  {data.me.email != null && (
                     <Typography variant="body2" color="textSecondary">
-                      {AuthUser.email}
+                      {data.me.email}
                     </Typography>
                   )}
                 </Box>

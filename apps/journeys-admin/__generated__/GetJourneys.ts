@@ -14,15 +14,12 @@ export interface GetJourneys_journeys_userJourneys_user {
   id: string;
   firstName: string;
   lastName: string | null;
-  email: string;
   imageUrl: string | null;
 }
 
 export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
-  userId: string;
-  journeyId: string;
   user: GetJourneys_journeys_userJourneys_user | null;
 }
 

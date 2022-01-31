@@ -39,6 +39,7 @@ describe('Image', () => {
     __typename: '',
     id: '1',
     parentBlockId: '2',
+    parentOrder: 0,
     journeyId: '3',
     src: 'https://blurha.sh/assets/images/img2.jpg',
     alt: 'grid image'

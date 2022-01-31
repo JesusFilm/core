@@ -176,6 +176,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -257,6 +258,7 @@ input ImageBlockCreateInput {
   id: ID
   parentBlockId: ID
   journeyId: ID!
+  parentOrder: Int!
   src: String!
   alt: String!
 }
@@ -295,6 +297,13 @@ type SignUpBlock implements Block {
   submitLabel: String
 }
 
+input SignUpBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID
+  submitLabel: String!
+}
+
 type StepBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -322,6 +331,7 @@ input StepBlockCreateInput {
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
@@ -435,6 +445,7 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
@@ -613,10 +624,12 @@ enum UserJourneyRole {
 }
 
 extend type Mutation {
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
