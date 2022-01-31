@@ -13,13 +13,6 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 export class ButtonBlockResolvers {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
-  @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor
-    ])
-  )
-  @Mutation()
   @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
