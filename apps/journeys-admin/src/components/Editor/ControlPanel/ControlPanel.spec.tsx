@@ -11,6 +11,11 @@ import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButto
 import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
 import { ControlPanel } from '.'
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
+
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
@@ -274,7 +279,7 @@ describe('ControlPanel', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel uuid={() => 'uuid'} />
+            <ControlPanel />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

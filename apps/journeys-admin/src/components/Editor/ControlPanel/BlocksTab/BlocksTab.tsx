@@ -9,11 +9,7 @@ import { Typography } from './Typography'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
 
-interface BlocksTabProps {
-  uuid?: () => string
-}
-
-export function BlocksTab({ uuid }: BlocksTabProps): ReactElement {
+export function BlocksTab(): ReactElement {
   return (
     <>
       <Stack
@@ -28,7 +24,7 @@ export function BlocksTab({ uuid }: BlocksTabProps): ReactElement {
         <Typography />
         <Button icon={<InsertPhotoRounded />} value="Image" />
         <Button icon={<VideocamRounded />} value="Video" />
-        <NewRadioQuestionButton uuid={uuid} />
+        <NewRadioQuestionButton />
         <NewSignUpButton />
       </Stack>
       <Box

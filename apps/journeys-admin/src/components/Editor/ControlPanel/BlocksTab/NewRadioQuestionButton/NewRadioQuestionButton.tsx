@@ -43,13 +43,7 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
   }
 `
 
-interface NewRadioQuestionButtonProps {
-  uuid?: () => string
-}
-
-export function NewRadioQuestionButton({
-  uuid = uuidv4
-}: NewRadioQuestionButtonProps): ReactElement {
+export function NewRadioQuestionButton(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
@@ -60,7 +54,7 @@ export function NewRadioQuestionButton({
   } = useEditor()
 
   const handleClick = async (): Promise<void> => {
-    const id = uuid()
+    const id = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined

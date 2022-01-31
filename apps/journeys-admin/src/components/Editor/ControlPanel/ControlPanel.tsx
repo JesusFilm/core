@@ -41,11 +41,7 @@ function a11yProps(index: number): { id: string; 'aria-controls': string } {
   }
 }
 
-interface ControlPanelProps {
-  uuid?: () => string
-}
-
-export function ControlPanel({ uuid }: ControlPanelProps): ReactElement {
+export function ControlPanel(): ReactElement {
   const {
     state: { steps, selectedBlock, selectedStep, activeTab },
     dispatch
@@ -108,7 +104,7 @@ export function ControlPanel({ uuid }: ControlPanelProps): ReactElement {
         {selectedBlock !== undefined && <Attributes selected={selectedBlock} />}
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
-        <BlocksTab uuid={uuid} />
+        <BlocksTab />
       </TabPanel>
     </Box>
   )

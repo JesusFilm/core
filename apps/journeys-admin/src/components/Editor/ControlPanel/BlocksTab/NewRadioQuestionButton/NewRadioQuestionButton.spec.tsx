@@ -7,6 +7,11 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { RADIO_QUESTION_BLOCK_CREATE } from './NewRadioQuestionButton'
 import { NewRadioQuestionButton } from '.'
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
+
 describe('RadioQuestion', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
@@ -97,7 +102,7 @@ describe('RadioQuestion', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <NewRadioQuestionButton uuid={() => 'uuid'} />
+            <NewRadioQuestionButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -183,7 +188,7 @@ describe('RadioQuestion', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <NewRadioQuestionButton uuid={() => 'uuid'} />
+            <NewRadioQuestionButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
