@@ -6,13 +6,14 @@ import { TreeBlock, useEditor } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
 import {
   TypographyColor,
+  ButtonColor,
   ThemeName,
   ThemeMode
 } from '../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../libs/context'
 
 interface ColorDisplayIconProps {
-  color: TypographyColor | null
+  color: TypographyColor | ButtonColor | null
 }
 
 export function ColorDisplayIcon({

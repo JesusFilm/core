@@ -142,6 +142,7 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
@@ -162,6 +163,7 @@ export class ImageBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     journeyId: string;
+    parentOrder: number;
     src?: Nullable<string>;
     alt: string;
 }
@@ -185,6 +187,7 @@ export class StepBlockCreateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
 }
 
 export class StepBlockUpdateInput {
@@ -221,6 +224,7 @@ export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
+    parentOrder: number;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
@@ -544,6 +548,8 @@ export class VideoResponse implements Response {
 }
 
 export abstract class IMutation {
+    abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
+
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
     abstract cardBlockUpdate(id: string, journeyId: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;

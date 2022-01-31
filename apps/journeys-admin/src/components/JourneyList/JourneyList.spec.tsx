@@ -39,8 +39,8 @@ describe('JourneyList', () => {
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByRole('radio', { name: 'Name' }))
 
-    expect(journeyCards[0].textContent).toContain('An Old Journey Heading')
-    expect(journeyCards[1].textContent).toContain('Default Journey Heading')
+    expect(journeyCards[0].textContent).toContain('Default Journey Heading')
+    expect(journeyCards[1].textContent).toContain('An Old Journey Heading')
   })
 
   it('should render all journeys', () => {
