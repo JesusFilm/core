@@ -316,7 +316,9 @@ type Mutation {
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
@@ -376,6 +378,11 @@ input RadioOptionBlockCreateInput {
   parentBlockId: ID
 }
 
+input RadioOptionBlockUpdateInput {
+  label: String
+  parentBlockId: ID
+}
+
 type RadioQuestionBlock implements Block {
   description: String
   id: ID!
@@ -389,6 +396,12 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   label: String!
+  parentBlockId: ID
+}
+
+input RadioQuestionBlockUpdateInput {
+  description: String
+  label: String
   parentBlockId: ID
 }
 

@@ -44,34 +44,30 @@ describe('RadioQuestion', () => {
   }
 
   const radioOptionInput = {
-    __typename: '',
+    __typename: 'RadioOptionBlock',
     parentBlockId: '2',
     parentOrder: 1,
-    journeyId: '3',
+    journeyId: '2',
     label: 'label'
+  }
+
+  const radioOptionUpdate = {
+    __typename: 'RadioOptionBlock',
+    parentBlockId: '2',
+    parentOrder: 1,
+    journeyId: '2',
+    label: 'label',
+    action: {
+      gtmEventName: 'gtmEventName',
+      blockId: '4'
+    }
   }
 
   const radioQuestionInput = {
-    __typename: '',
+    __typename: 'RadioQuestionBlock',
     parentBlockId: '2',
     parentOrder: 1,
-    journeyId: '3',
-    label: 'label'
-  }
-
-  const RadioOptionBlockResponse = {
-    __typename: 'RadioOptionBlock',
-    journeyId: radioOptionInput.journeyId,
-    parentOrder: radioOptionInput.parentOrder,
-    parentBlockId: radioOptionInput.parentBlockId,
-    label: 'label'
-  }
-
-  const RadioQuestionBlockResponse = {
-    __typename: 'RadioQuestionBlock',
-    journeyId: radioQuestionInput.journeyId,
-    parentOrder: radioQuestionInput.parentOrder,
-    parentBlockId: radioQuestionInput.parentBlockId,
+    journeyId: '2',
     label: 'label'
   }
 
@@ -81,7 +77,8 @@ describe('RadioQuestion', () => {
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block]),
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => input),
+      update: jest.fn((input) => input)
     })
   }
 
@@ -122,7 +119,7 @@ describe('RadioQuestion', () => {
   describe('radioOptionBlockCreate', () => {
     it('creates a RadioOptionBlock', async () => {
       await radioOptionBlockResolver.radioOptionBlockCreate(radioOptionInput)
-      expect(service.save).toHaveBeenCalledWith(RadioOptionBlockResponse)
+      expect(service.save).toHaveBeenCalledWith(radioOptionInput)
     })
   })
 
@@ -131,7 +128,32 @@ describe('RadioQuestion', () => {
       await radioQuestionBlockResolver.radioQuestionBlockCreate(
         radioQuestionInput
       )
-      expect(service.save).toHaveBeenCalledWith(RadioQuestionBlockResponse)
+      expect(service.save).toHaveBeenCalledWith(radioQuestionInput)
+    })
+  })
+
+  describe('radioOptionBlockUpdate', () => {
+    it('updates a RadioOptionBlock', async () => {
+      await radioOptionBlockResolver.radioOptionBlockUpdate(
+        block._key,
+        block.journeyId,
+        radioOptionUpdate
+      )
+      expect(service.update).toHaveBeenCalledWith(block._key, radioOptionUpdate)
+    })
+  })
+
+  describe('radioQuestionBlockUpdate', () => {
+    it('updates a RadioQuestionBlock', async () => {
+      await radioQuestionBlockResolver.radioQuestionBlockUpdate(
+        block._key,
+        block.journeyId,
+        radioQuestionInput
+      )
+      expect(service.update).toHaveBeenCalledWith(
+        block._key,
+        radioQuestionInput
+      )
     })
   })
 })

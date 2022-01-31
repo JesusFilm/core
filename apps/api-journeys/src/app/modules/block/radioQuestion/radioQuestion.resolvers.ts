@@ -1,12 +1,14 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { IdAsKey } from '@core/nest/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   RadioOptionBlock,
   RadioQuestionBlock,
   RadioOptionBlockCreateInput,
   RadioQuestionBlockCreateInput,
-  UserJourneyRole
+  UserJourneyRole,
+  RadioOptionBlockUpdateInput,
+  RadioQuestionBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -35,6 +37,19 @@ export class RadioOptionBlockResolvers {
       parentOrder: siblings.length
     })
   }
+
+  @Mutation()
+  @KeyAsId()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  async radioOptionBlockUpdate(
+    @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
+    @Args('input') input: RadioOptionBlockUpdateInput
+  ): Promise<RadioOptionBlock> {
+    return await this.blockService.update(id, input)
+  }
 }
 
 @Resolver('RadioQuestionBlock')
@@ -60,5 +75,18 @@ export class RadioQuestionBlockResolvers {
       ...input,
       parentOrder: siblings.length
     })
+  }
+
+  @Mutation()
+  @KeyAsId()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  async radioQuestionBlockUpdate(
+    @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
+    @Args('input') input: RadioQuestionBlockUpdateInput
+  ): Promise<RadioQuestionBlock> {
+    return await this.blockService.update(id, input)
   }
 }

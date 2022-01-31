@@ -299,6 +299,17 @@ input RadioQuestionBlockCreateInput {
   label: String!
 }
 
+input RadioOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+}
+
+input RadioQuestionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  description: String
+}
+
 type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -640,6 +651,8 @@ extend type Mutation {
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, input: RadioQuestionBlockUpdateInput!): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
