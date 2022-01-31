@@ -32,7 +32,9 @@ describe('Button attributes', () => {
     expect(
       getByRole('button', { name: 'Button Size Medium' })
     ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Variant Text' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Variant Contained' })
+    ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Leading Icon None' })
     ).toBeInTheDocument()

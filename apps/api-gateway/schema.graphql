@@ -41,6 +41,14 @@ type ButtonBlock implements Block {
   variant: ButtonVariant
 }
 
+input ButtonBlockUpdateInput {
+  color: ButtonColor
+  label: String
+  parentBlockId: ID
+  size: ButtonSize
+  variant: ButtonVariant
+}
+
 enum ButtonColor {
   error
   inherit
@@ -311,6 +319,7 @@ type LinkAction implements Action {
 
 type Mutation {
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
+  buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
