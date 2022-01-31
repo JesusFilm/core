@@ -62,7 +62,8 @@ export async function nua2(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'What about the resurrection'
+    title: 'What about the resurrection',
+    parentOrder: 0
   })
   await db
     .collection('blocks')
@@ -153,7 +154,8 @@ export async function nua2(): Promise<void> {
       languageId: '529'
     },
     autoplay: true,
-    title: 'What About The Ressurection?'
+    title: 'What About The Ressurection?',
+    parentOrder: 0
   })
 
   // third step
@@ -173,7 +175,8 @@ export async function nua2(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: step3._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card3 = await db.collection('blocks').save({
@@ -273,7 +276,8 @@ export async function nua2(): Promise<void> {
     },
     autoplay: true,
     title: 'What About The Ressurection?',
-    startAt: 109
+    startAt: 109,
+    parentOrder: 0
   })
 
   // fifth step
@@ -293,7 +297,8 @@ export async function nua2(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: step5._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card5 = await db.collection('blocks').save({
@@ -392,7 +397,8 @@ export async function nua2(): Promise<void> {
     },
     autoplay: true,
     title: 'What About The Ressurection?',
-    startAt: 272
+    startAt: 272,
+    parentOrder: 0
   })
 
   // seventh step
@@ -412,7 +418,8 @@ export async function nua2(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: step7._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card7 = await db.collection('blocks').save({

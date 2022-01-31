@@ -8,6 +8,7 @@ import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote
 
 interface PromoteUserProps {
   id: string
+  onClick?: () => void
 }
 
 export const USER_JOURNEY_PROMOTE = gql`
@@ -26,7 +27,7 @@ export const USER_JOURNEY_PROMOTE = gql`
   }
 `
 
-export function PromoteUser({ id }: PromoteUserProps): ReactElement {
+export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
   const [userJourneyPromote] = useMutation<UserJourneyPromote>(
     USER_JOURNEY_PROMOTE,
     { variables: { id } }
@@ -34,6 +35,7 @@ export function PromoteUser({ id }: PromoteUserProps): ReactElement {
 
   const handleClick = async (): Promise<void> => {
     await userJourneyPromote()
+    onClick?.()
   }
 
   return (

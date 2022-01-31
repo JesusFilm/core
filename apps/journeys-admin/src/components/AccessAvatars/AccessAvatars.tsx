@@ -29,19 +29,48 @@ function AccessAvatar({ user }: AccessAvatarProps): ReactElement {
   )
 }
 
+interface UserJourney {
+  user: User | null
+}
+
 export interface AccessAvatarsProps {
   journeySlug: string
-  users: User[]
+  userJourneys: UserJourney[]
+  size?: 'small' | 'medium' | 'large'
+  xsMax?: number
+  smMax?: number
 }
 
 export function AccessAvatars({
   journeySlug,
-  users
+  userJourneys,
+  size = 'small',
+  xsMax = 3,
+  smMax = 5
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const children = users.map((user) => (
-    <AccessAvatar user={user} key={user.id} />
-  ))
+  const children = userJourneys.map(
+    ({ user }) => user != null && <AccessAvatar user={user} key={user.id} />
+  )
+
+  // small default sizes
+  let diameter: number
+  let fontSize: number | undefined
+  let borderWidth: number | undefined
+
+  switch (size) {
+    case 'small':
+      diameter = 31
+      fontSize = 12
+      borderWidth = 1
+      break
+    case 'medium':
+      diameter = 48
+      break
+    case 'large':
+      diameter = 52
+      break
+  }
 
   return (
     <>
@@ -51,13 +80,14 @@ export function AccessAvatars({
         role="Button"
       >
         <AvatarGroup
-          max={3}
+          max={xsMax}
           sx={{
-            display: { xs: 'inline-flex', md: 'none' },
+            display: { xs: 'inline-flex', sm: 'none' },
             '> .MuiAvatar-root': {
-              width: 31,
-              height: 31,
-              fontSize: 12,
+              width: diameter,
+              height: diameter,
+              fontSize,
+              borderWidth,
               borderColor: '#FFF'
             },
             '> .MuiAvatarGroup-avatar': {
@@ -68,13 +98,14 @@ export function AccessAvatars({
           {children}
         </AvatarGroup>
         <AvatarGroup
-          max={5}
+          max={smMax}
           sx={{
-            display: { xs: 'none', md: 'inline-flex' },
+            display: { xs: 'none', sm: 'inline-flex' },
             '> .MuiAvatar-root': {
-              width: 31,
-              height: 31,
-              fontSize: 12,
+              width: diameter,
+              height: diameter,
+              fontSize,
+              borderWidth,
               borderColor: '#FFF'
             },
             '> .MuiAvatarGroup-avatar': {

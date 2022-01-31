@@ -10,7 +10,6 @@ import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
-import { compact } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
@@ -26,7 +25,6 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
     month: 'long',
     year: isThisYear(date) ? undefined : 'numeric'
   })
-  const users = journey.userJourneys?.map(({ user }) => user)
 
   return (
     <Card
@@ -36,7 +34,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
-        '&:first-child': {
+        '&:first-of-type': {
           borderTopLeftRadius: { xs: 0, sm: 12 },
           borderTopRightRadius: { xs: 0, sm: 12 }
         },
@@ -87,14 +85,14 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         }}
       >
         <Grid container spacing={2} display="flex" alignItems="center">
-          {users != null && (
-            <Grid item>
+          <Grid item>
+            {journey.userJourneys != null && (
               <AccessAvatars
                 journeySlug={journey.slug}
-                users={compact(users)}
+                userJourneys={journey.userJourneys}
               />
-            </Grid>
-          )}
+            )}
+          </Grid>
 
           {journey.status === 'draft' ? (
             <>

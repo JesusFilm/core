@@ -8,6 +8,7 @@ import { UserJourneyRemove } from '../../../../__generated__/UserJourneyRemove'
 
 interface RemoveUserProps {
   id: string
+  onClick?: () => void
 }
 
 export const USER_JOURNEY_REMOVE = gql`
@@ -21,7 +22,7 @@ export const USER_JOURNEY_REMOVE = gql`
   }
 `
 
-export function RemoveUser({ id }: RemoveUserProps): ReactElement {
+export function RemoveUser({ id, onClick }: RemoveUserProps): ReactElement {
   const [userJourneyRemove] = useMutation<UserJourneyRemove>(
     USER_JOURNEY_REMOVE,
     {
@@ -42,6 +43,7 @@ export function RemoveUser({ id }: RemoveUserProps): ReactElement {
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRemove()
+    onClick?.()
   }
 
   return (

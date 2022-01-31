@@ -101,6 +101,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   themeMode: ThemeMode
   themeName: ThemeName
 }
@@ -231,6 +232,7 @@ input ImageBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   src: String!
 }
 
@@ -308,6 +310,7 @@ type LinkAction implements Action {
 }
 
 type Mutation {
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
@@ -490,6 +493,7 @@ input StepBlockCreateInput {
   locked: Boolean
   nextBlockId: ID
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
@@ -634,6 +638,7 @@ input VideoBlockCreateInput {
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID
+  parentOrder: Int!
 
   """
   posterBlockId is present if a child block should be used as a poster.

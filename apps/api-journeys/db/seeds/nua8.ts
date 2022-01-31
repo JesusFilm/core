@@ -62,7 +62,8 @@ export async function nua8(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'Decision'
+    title: 'Decision',
+    parentOrder: 0
   })
   await db
     .collection('blocks')
@@ -152,7 +153,8 @@ export async function nua8(): Promise<void> {
       languageId: '529'
     },
     autoplay: true,
-    title: "What' Jesus Got to Do With Me?"
+    title: "What' Jesus Got to Do With Me?",
+    parentOrder: 0
   })
 
   // third step
@@ -172,7 +174,8 @@ export async function nua8(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: step3._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card3 = await db.collection('blocks').save({
@@ -261,7 +264,8 @@ export async function nua8(): Promise<void> {
     },
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
-    startAt: 158
+    startAt: 158,
+    parentOrder: 0
   })
 
   // fifth step
@@ -281,7 +285,8 @@ export async function nua8(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: step5._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card5 = await db.collection('blocks').save({
@@ -380,7 +385,8 @@ export async function nua8(): Promise<void> {
     },
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
-    startAt: 221
+    startAt: 221,
+    parentOrder: 0
   })
 
   // seventh step
@@ -400,7 +406,8 @@ export async function nua8(): Promise<void> {
     action: {
       gtmEventName: 'trigger',
       blockId: step7._key
-    }
+    },
+    parentOrder: 0
   })
 
   const card7 = await db.collection('blocks').save({
@@ -420,7 +427,8 @@ export async function nua8(): Promise<void> {
     spacing: 6,
     direction: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    parentOrder: 0
   })
 
   const gridItemLeft = await db.collection('blocks').save({
