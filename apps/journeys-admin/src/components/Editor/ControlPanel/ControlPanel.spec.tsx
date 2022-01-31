@@ -274,7 +274,7 @@ describe('ControlPanel', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
+            <ControlPanel uuid={() => 'uuid'} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
