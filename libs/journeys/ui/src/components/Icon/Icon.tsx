@@ -16,7 +16,7 @@ import {
   SubscriptionsRounded,
   ContactSupportRounded
 } from '@mui/icons-material'
-import { BlockFields_ButtonBlock_startIcon as IconType } from '../../libs/transformer/__generated__/BlockFields'
+import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
 
 export function Icon({ name, color, size }: IconType): ReactElement | null {
   const fontSize =
