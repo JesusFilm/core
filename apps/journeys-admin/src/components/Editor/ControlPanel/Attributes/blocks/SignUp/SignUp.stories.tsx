@@ -21,6 +21,7 @@ export const Default: Story = () => {
     id: 'signup.id',
     __typename: 'SignUpBlock',
     parentBlockId: null,
+    parentOrder: 0,
     submitLabel: null,
     action: null,
     submitIcon: null,
@@ -45,6 +46,7 @@ export const Filled: Story = () => {
     id: 'signup.id',
     __typename: 'SignUpBlock',
     parentBlockId: 'step1.id',
+    parentOrder: 0,
     submitLabel: 'Sign Up',
     action: {
       __typename: 'LinkAction',

@@ -175,6 +175,8 @@ describe('ControlPanel', () => {
                 signUpBlockCreate: {
                   id: 'signUpBlockId',
                   parentBlockId: 'cardId',
+                  journeyId: 'journeyId',
+                  parentOrder: 0,
                   submitLabel: 'Submit',
                   __typename: 'SignUpBlock',
                   action: {

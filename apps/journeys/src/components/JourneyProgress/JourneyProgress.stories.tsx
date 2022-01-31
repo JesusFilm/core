@@ -56,6 +56,7 @@ export const Start = (): ReactElement => {
     __typename: 'StepBlock',
     id: 'Step1',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: 'Step2',
     children: []
@@ -70,6 +71,7 @@ export const Halfway = (): ReactElement => {
     __typename: 'StepBlock',
     id: 'Step2',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: 'Step3',
     children: []
@@ -84,6 +86,7 @@ export const End = (): ReactElement => {
     __typename: 'StepBlock',
     id: 'Step4',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: null,
     children: []

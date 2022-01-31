@@ -90,6 +90,7 @@ describe('Typography', () => {
           id: 'typographyBlockId',
           parentBlockId: 'cardId',
           journeyId: 'journeyId',
+          parentOrder: 0,
           align: null,
           color: null,
           content: null,
