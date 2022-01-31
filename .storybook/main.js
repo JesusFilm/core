@@ -16,8 +16,8 @@ const storiesForProject = {
     '../libs/journeys/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'shared-ui': [
-    '../libs/shared/ui/src/**/**/*.stories.mdx',
-    '../libs/shared/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
+    '../libs/shared/ui/src/**/*.stories.mdx',
+    '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
