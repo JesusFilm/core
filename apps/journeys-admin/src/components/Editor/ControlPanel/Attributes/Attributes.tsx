@@ -4,12 +4,13 @@ import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
-import { Card, Step, Typography } from './blocks'
+import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
 
 function AttributesContent({ selected }: AttributesProps): ReactElement {
   switch (selected?.__typename) {
     case 'CardBlock':
       return <Card {...selected} />
+
     case 'StepBlock': {
       const block = selected.children.find(
         (block) =>
@@ -22,12 +23,27 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
         </>
       )
     }
+
     case 'TypographyBlock': {
       return <Typography {...selected} />
     }
+
+    case 'ButtonBlock': {
+      return <Button {...selected} />
+    }
+
+    case 'SignUpBlock': {
+      return <SignUp {...selected} />
+    }
+
+    case 'RadioOptionBlock': {
+      return <RadioOption {...selected} />
+    }
+
     case 'VideoBlock': {
       return <p>Video Attributes</p>
     }
+
     default:
       return <></>
   }
@@ -47,7 +63,6 @@ export function Attributes({ selected }: AttributesProps): ReactElement {
       children: <SocialShareAppearance id={selected.id} />
     })
   }, [selected.id, dispatch])
-
   return (
     <>
       <Stack
