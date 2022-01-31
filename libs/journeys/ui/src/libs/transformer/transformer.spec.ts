@@ -48,7 +48,7 @@ describe('transformer', () => {
           __typename: 'RadioQuestionBlock',
           id: 'Question2',
           parentBlockId: 'Root2',
-          parentOrder: 2,
+          parentOrder: 1,
           label: 'Question 2',
           description: 'Question 2 description'
         },
@@ -56,7 +56,7 @@ describe('transformer', () => {
           __typename: 'RadioOptionBlock',
           id: 'Option3',
           parentBlockId: 'Question2',
-          parentOrder: 3,
+          parentOrder: 0,
           label: 'Option 3',
           action: null
         },
@@ -64,7 +64,7 @@ describe('transformer', () => {
           __typename: 'RadioOptionBlock',
           id: 'Option4',
           parentBlockId: 'Question2',
-          parentOrder: 4,
+          parentOrder: 1,
           label: 'Option 4',
           action: null
         }
@@ -79,6 +79,7 @@ describe('transformer', () => {
                 __typename: 'RadioOptionBlock',
                 id: 'Option1',
                 parentBlockId: 'Question1',
+                parentOrder: 0,
                 label: 'Option 1',
                 action: null
               },
@@ -87,6 +88,7 @@ describe('transformer', () => {
                 __typename: 'RadioOptionBlock',
                 id: 'Option2',
                 parentBlockId: 'Question1',
+                parentOrder: 1,
                 label: 'Option 2',
                 action: null
               }
@@ -94,6 +96,7 @@ describe('transformer', () => {
             __typename: 'RadioQuestionBlock',
             id: 'Question1',
             parentBlockId: 'Root1',
+            parentOrder: 0,
             label: 'Question 1',
             description: 'Question 1 description'
           }
@@ -101,6 +104,7 @@ describe('transformer', () => {
         id: 'Root1',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         nextBlockId: null,
         locked: false
       },
@@ -113,6 +117,7 @@ describe('transformer', () => {
                 __typename: 'RadioOptionBlock',
                 id: 'Option3',
                 parentBlockId: 'Question2',
+                parentOrder: 0,
                 label: 'Option 3',
                 action: null
               },
@@ -121,6 +126,7 @@ describe('transformer', () => {
                 __typename: 'RadioOptionBlock',
                 id: 'Option4',
                 parentBlockId: 'Question2',
+                parentOrder: 1,
                 label: 'Option 4',
                 action: null
               }
@@ -128,6 +134,7 @@ describe('transformer', () => {
             __typename: 'RadioQuestionBlock',
             id: 'Question2',
             parentBlockId: 'Root2',
+            parentOrder: 1,
             label: 'Question 2',
             description: 'Question 2 description'
           }
@@ -135,6 +142,7 @@ describe('transformer', () => {
         id: 'Root2',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 1,
         nextBlockId: null,
         locked: false
       }
