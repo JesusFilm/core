@@ -9,10 +9,15 @@ npm install -D @nrwl/workspace@$NX_VERSION --prefer-offline
 npm install -D typescript@$TS_VERSION --prefer-offline
 
 # Run the affected command, comparing latest commit to the one before that
-npx nx affected:apps --plain --base HEAD~1 --head HEAD | grep $APP -q
+AFFECTED=$(npx nx affected:apps --plain --base HEAD~1 --head HEAD)
+
+echo "$AFFECTED" | grep $APP_NAME -q
 
 # Store result of the previous command (grep)
 IS_AFFECTED=$?
+
+echo "APP_NAME: $APP_NAME"
+echo "AFFECTED: $AFFECTED"
 
 if [ $IS_AFFECTED -eq 1 ]; then
   echo "🛑 - Build cancelled"
