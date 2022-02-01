@@ -35,6 +35,14 @@ export function CopyTextField({
   return (
     <TextField
       fullWidth
+      sx={{
+        '.MuiInputLabel-root': {
+          marginLeft: '32px'
+        },
+        '.MuiInputAdornment-root.MuiInputAdornment-positionStart': {
+          marginTop: '0 !important'
+        }
+      }}
       hiddenLabel={label == null}
       label={label}
       defaultValue={value}
