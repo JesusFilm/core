@@ -3,6 +3,7 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
+import { DefaultSeo } from 'next-seo'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -27,8 +28,11 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
 
   return (
     <>
+      <DefaultSeo
+        titleTemplate="%s | Next Steps"
+        defaultTitle="Admin | Next Steps"
+      />
       <Head>
-        <title>Journeys Admin</title>
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
