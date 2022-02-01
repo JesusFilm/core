@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import Typography from '@mui/material/Typography'
-import { journeyUiConfig, StoryCard } from '../..'
+import { journeyUiConfig, StoryCard, TreeBlock } from '../..'
 import {
   ButtonVariant,
   ButtonColor,
@@ -21,13 +21,13 @@ const ButtonDemo = {
   title: 'Journeys-Ui/Button'
 }
 
-interface ButtonStoryProps extends ButtonFields {
+interface ButtonStoryProps extends TreeBlock<ButtonFields> {
   variants: string[]
 }
 
 const Template: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
-    <Button {...args} />
+    <Button {...args} id="id" />
   </StoryCard>
 )
 
@@ -39,6 +39,7 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
     {args.variants.map((variant, i) => (
       <Button
         {...args}
+        id="id"
         key={i}
         label={`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
         buttonColor={variant as ButtonColor}
@@ -58,6 +59,7 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
       <>
         <Button
           {...args}
+          id="id"
           key={i}
           label={`${variant ?? ''}`}
           size={variant as ButtonSize}
@@ -88,6 +90,7 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
       {args.variants.map((variant: string, i) => (
         <Button
           {...args}
+          id="id"
           key={i}
           label={`${variant} Icon`}
           startIcon={variant === 'Start' ? icon : null}

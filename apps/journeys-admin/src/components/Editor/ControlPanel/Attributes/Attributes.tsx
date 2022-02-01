@@ -1,26 +1,49 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-import { GetJourneyForEdit_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourneyForEdit'
-import { Card, Step } from './blocks'
+import MuiTypography from '@mui/material/Typography'
+import { ReactElement, useEffect } from 'react'
+import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
+import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
 
 function AttributesContent({ selected }: AttributesProps): ReactElement {
   switch (selected?.__typename) {
     case 'CardBlock':
       return <Card {...selected} />
+
     case 'StepBlock': {
-      const card = selected.children.find(
-        (block) => block.__typename === 'CardBlock'
-      ) as TreeBlock<CardBlock> | undefined
+      const block = selected.children.find(
+        (block) =>
+          block.__typename === 'CardBlock' || block.__typename === 'VideoBlock'
+      )
       return (
         <>
           <Step {...selected} />
-          {card != null && <Card {...card} />}
+          {block != null && <AttributesContent selected={block} />}
         </>
       )
     }
+
+    case 'TypographyBlock': {
+      return <Typography {...selected} />
+    }
+
+    case 'ButtonBlock': {
+      return <Button {...selected} />
+    }
+
+    case 'SignUpBlock': {
+      return <SignUp {...selected} />
+    }
+
+    case 'RadioOptionBlock': {
+      return <RadioOption {...selected} />
+    }
+
+    case 'VideoBlock': {
+      return <p>Video Attributes</p>
+    }
+
     default:
       return <></>
   }
@@ -31,6 +54,15 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected }: AttributesProps): ReactElement {
+  const { dispatch } = useEditor()
+  useEffect(() => {
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Social Share Appearance',
+      mobileOpen: false,
+      children: <SocialShareAppearance id={selected.id} />
+    })
+  }, [selected.id, dispatch])
   return (
     <>
       <Stack
@@ -50,7 +82,12 @@ export function Attributes({ selected }: AttributesProps): ReactElement {
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
-        <Typography align="center">Editing Card Properties</Typography>
+        <MuiTypography align="center">{`Editing ${
+          // Properly map typename to labels when doing translations
+          selected.__typename === 'StepBlock'
+            ? 'Card'
+            : selected.__typename.replace('Block', '')
+        } Properties`}</MuiTypography>
       </Box>
     </>
   )

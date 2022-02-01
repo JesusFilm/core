@@ -1,7 +1,6 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
-import { GetJourneyForEdit_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourneyForEdit'
-import { EditorProvider } from '../../../../Context'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Step } from '.'
@@ -75,7 +74,11 @@ describe('Step', () => {
         children: []
       }
       const { getByText } = render(
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
+        <EditorProvider
+          initialState={{
+            steps: [step1, step2]
+          }}
+        >
           <Step {...step1} />
         </EditorProvider>
       )
@@ -123,7 +126,11 @@ describe('Step', () => {
         ]
       }
       const { getByText } = render(
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
+        <EditorProvider
+          initialState={{
+            steps: [step1, step2]
+          }}
+        >
           <Step {...step1} />
         </EditorProvider>
       )

@@ -1,8 +1,17 @@
 // Block resolver tests are in individual block type spec files
 
-import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import {
+  Args,
+  Query,
+  ResolveField,
+  Resolver,
+  Mutation,
+  Parent
+} from '@nestjs/graphql'
 import { KeyAsId } from '@core/nest/decorators'
-import { Block } from '../../__generated__/graphql'
+import { UseGuards } from '@nestjs/common'
+import { Block, UserJourneyRole } from '../../__generated__/graphql'
+import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { BlockService } from './block.service'
 
 interface DbBlock extends Block {
@@ -26,5 +35,50 @@ export class BlockResolvers {
   @KeyAsId()
   async block(@Args('id') _key: string): Promise<Block> {
     return await this.blockService.get(_key)
+  }
+
+  @Mutation()
+  @KeyAsId()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  async blockOrderUpdate(
+    @Args('id') _key: string,
+    @Args('journeyId') journeyId: string,
+    @Args('parentOrder') parentOrder: number
+  ): Promise<Array<Promise<Block>>> {
+    const selectedBlock: Block = await this.block(_key)
+
+    if (selectedBlock.journeyId === journeyId) {
+      const siblings = await this.siblings(selectedBlock)
+      siblings.splice(selectedBlock.parentOrder, 1)
+      siblings.splice(parentOrder, 0, selectedBlock)
+
+      const updatedBlocks = siblings.map(async (block, index) => {
+        if (block.parentOrder !== index) {
+          return await this.updateOrder(block.id, index)
+        } else {
+          return block
+        }
+      })
+      return updatedBlocks
+    }
+    return []
+  }
+
+  @KeyAsId()
+  async siblings(@Parent() block: Block): Promise<Block[]> {
+    return await this.blockService.getSiblings(
+      block.journeyId,
+      block.parentBlockId
+    )
+  }
+
+  @KeyAsId()
+  async updateOrder(
+    @Args('id') _key: string,
+    @Args('parentOrder') parentOrder: number
+  ): Promise<Block> {
+    return await this.blockService.update(_key, { parentOrder })
   }
 }

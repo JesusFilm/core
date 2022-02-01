@@ -67,6 +67,7 @@ describe('Card', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => []),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -102,7 +103,7 @@ describe('Card', () => {
 
   describe('cardBlockCreate', () => {
     it('creates a CardBlock', async () => {
-      cardBlockResolver
+      await cardBlockResolver
         .cardBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
@@ -112,7 +113,7 @@ describe('Card', () => {
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
       cardBlockResolver
-        .cardBlockUpdate(block._key, blockUpdate)
+        .cardBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })

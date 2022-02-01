@@ -1,6 +1,6 @@
 import { UserInputError } from 'apollo-server-errors'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { IdAsKey } from '@core/nest/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
 import { has } from 'lodash'
 import { BlockService } from '../block.service'
@@ -53,8 +53,16 @@ export class VideoBlockResolvers {
     @Args('input') input: VideoBlockCreateInput & { __typename }
   ): Promise<VideoBlock> {
     input.__typename = 'VideoBlock'
-    if (checkVideoContentInput(input?.videoContent))
-      return await this.blockService.save(input)
+    if (checkVideoContentInput(input?.videoContent)) {
+      const siblings = await this.blockService.getSiblings(
+        input.journeyId,
+        input.parentBlockId
+      )
+      return await this.blockService.save({
+        ...input,
+        parentOrder: siblings.length
+      })
+    }
     throw new UserInputError(
       'VideoContentInput requires src or mediaComponentId and languageId values'
     )
@@ -62,14 +70,12 @@ export class VideoBlockResolvers {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('input.journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @IdAsKey()
+  @KeyAsId()
   async videoBlockUpdate(
     @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
     return await this.blockService.update(id, input)

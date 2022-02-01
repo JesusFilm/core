@@ -7,28 +7,16 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         root: {
           fontFamily: "'Montserrat', sans-serif",
-          fontWeight: 'bold',
+          fontWeight: 800,
           borderRadius: '1000px',
           textTransform: 'none'
-        },
-        sizeSmall: {
-          fontSize: '14px',
-          fontWeight: 'normal'
-        },
-        sizeMedium: {
-          fontWeight: 700,
-          fontSize: '15px',
-          lineHeight: '18px',
-          padding: '6px 12px',
-          borderRadius: '12px',
-          margin: '26px 0px'
         }
       }
     },
     MuiTab: {
       styleOverrides: {
         root: {
-          fontWeight: 'bold',
+          fontWeight: 600,
           textTransform: 'none'
         }
       }

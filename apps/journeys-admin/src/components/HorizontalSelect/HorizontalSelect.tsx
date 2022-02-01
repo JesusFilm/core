@@ -19,6 +19,7 @@ export function HorizontalSelect({
       spacing={1}
       sx={{
         overflowX: 'auto',
+        overflowY: 'hidden',
         py: 5,
         px: 6
       }}

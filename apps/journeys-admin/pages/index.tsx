@@ -1,45 +1,68 @@
 import { ReactElement } from 'react'
-import Image from 'next/image'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { SignIn } from '../src/components/SignIn'
-import JesusFilmSignInLogo from '../public/JesusFilmSignInLogo.svg'
+import { gql, useQuery } from '@apollo/client'
+import {
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR
+} from 'next-firebase-auth'
+import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
+import { GetJourneys } from '../__generated__/GetJourneys'
+import { JourneyList } from '../src/components/JourneyList'
+import { PageWrapper } from '../src/components/PageWrapper'
 
-function Dashboard(): ReactElement {
-  const handleFeedbackSupport = (): void => {
-    const subject = 'Support/Feedback Request'
-    window.location.assign(`mailto:support@nextstep.is?Subject=${subject}`)
+const GET_JOURNEYS = gql`
+  query GetJourneys {
+    journeys: adminJourneys {
+      id
+      title
+      createdAt
+      publishedAt
+      description
+      slug
+      themeName
+      themeMode
+      locale
+      status
+      userJourneys {
+        id
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
+    }
   }
+`
+
+function IndexPage(): ReactElement {
+  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
+  const AuthUser = useAuthUser()
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        pt: 30
-      }}
-    >
-      <Image
-        src={JesusFilmSignInLogo}
-        alt="Jesus Film Sign In Logo"
-        height={68}
-        width={152}
-      />
-      <Typography variant={'h5'} sx={{ mt: 20, mb: 3 }}>
-        Sign In
-      </Typography>
-      <SignIn />
-      <Typography
-        variant={'body2'}
-        sx={{ mt: 20, color: 'primary.main', cursor: 'pointer' }}
-        onClick={handleFeedbackSupport}
-      >
-        Feedback & Support
-      </Typography>
-    </Box>
+    <PageWrapper title="Journeys" AuthUser={AuthUser}>
+      {data?.journeys != null && <JourneyList journeys={data.journeys} />}
+    </PageWrapper>
   )
 }
 
-export default Dashboard
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ AuthUser }) => {
+  const apolloClient = initializeApollo({
+    token: (await AuthUser.getIdToken()) ?? ''
+  })
+  await apolloClient.query({
+    query: GET_JOURNEYS
+  })
+
+  return addApolloState(apolloClient, {
+    props: {}
+  })
+})
+
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(IndexPage)

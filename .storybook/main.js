@@ -3,8 +3,7 @@ const storiesForProject = {
   journeys: [
     '../apps/journeys/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/journeys/src/components/**/*.stories.mdx',
-    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)',
-    '../apps/journeys/src/components/blocks/**/*.stories.@(js|jsx|ts|tsx)'
+    '../apps/journeys/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'journeys-admin': [
     '../apps/journeys-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
@@ -17,8 +16,8 @@ const storiesForProject = {
     '../libs/journeys/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'shared-ui': [
-    '../libs/shared/ui/src/**/**/*.stories.mdx',
-    '../libs/shared/ui/src/**/**/*.stories.@(js|jsx|ts|tsx)'
+    '../libs/shared/ui/src/**/*.stories.mdx',
+    '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }

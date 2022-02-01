@@ -20,7 +20,9 @@ enum GridAlignItems {
 
 type GridContainerBlock implements Block {
   id: ID!
+  journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!

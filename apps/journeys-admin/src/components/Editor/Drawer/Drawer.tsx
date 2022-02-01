@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useContext } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { Close } from '@mui/icons-material'
-import { EditorContext } from '../Context'
+import { useEditor } from '@core/journeys/ui'
 
 export const DRAWER_WIDTH = 328
 
@@ -57,7 +57,7 @@ export function Drawer(): ReactElement {
       drawerMobileOpen: mobileOpen
     },
     dispatch
-  } = useContext(EditorContext)
+  } = useEditor()
 
   const handleDrawerToggle = (): void => {
     dispatch({

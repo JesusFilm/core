@@ -1,5 +1,6 @@
 type StepBlock implements Block {
   id: ID!
+  journeyId: ID!
   """
   nextBlockId contains the preferred block to navigate to when a
   NavigateAction occurs or if the user manually tries to advance to the next
@@ -13,6 +14,7 @@ type StepBlock implements Block {
   """
   locked: Boolean!
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 input StepBlockCreateInput {
@@ -21,6 +23,7 @@ input StepBlockCreateInput {
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
+  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
@@ -31,5 +34,9 @@ input StepBlockUpdateInput {
 
 extend type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
-  stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!): StepBlock!
+  stepBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: StepBlockUpdateInput!
+  ): StepBlock!
 }

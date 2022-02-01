@@ -31,7 +31,7 @@ describe('VideoContentResolvers', () => {
     __typename: '',
     journeyId: '2',
     parentBlockId: '3',
-    parentOrder: 1,
+    parentOrder: 0,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
       languageId: '529'
@@ -44,7 +44,7 @@ describe('VideoContentResolvers', () => {
     journeyId: '2',
     __typename: 'VideoBlock',
     parentBlockId: '3',
-    parentOrder: 1,
+    parentOrder: 0,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
       languageId: '529'
@@ -149,7 +149,8 @@ describe('VideoContentResolvers', () => {
         provide: BlockService,
         useFactory: () => ({
           save: jest.fn((input) => input),
-          update: jest.fn((input) => input)
+          update: jest.fn((input) => input),
+          getSiblings: jest.fn(() => [])
         })
       }
 
@@ -171,7 +172,7 @@ describe('VideoContentResolvers', () => {
     })
     describe('videoBlockCreate', () => {
       it('creates a VideoBlock', async () => {
-        videoBlockResolver
+        await videoBlockResolver
           .videoBlockCreate(blockUpdate)
           .catch((err) => console.log(err))
         expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
@@ -181,7 +182,7 @@ describe('VideoContentResolvers', () => {
     describe('videoBlockUpdate', () => {
       it('updates a VideoBlock', async () => {
         videoBlockResolver
-          .videoBlockUpdate('1', blockUpdate)
+          .videoBlockUpdate('1', '2', blockUpdate)
           .catch((err) => console.log(err))
         expect(service.update).toHaveBeenCalledWith('1', blockUpdate)
       })

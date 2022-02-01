@@ -40,11 +40,13 @@ const TypographyColors = ({
         <>
           <Typography
             {...props}
+            id="id"
             variant={TypographyVariant.overline}
             content={variant ?? heading}
           />
           <Typography
             {...props}
+            id="id"
             variant={TypographyVariant.h5}
             color={variant as TypographyColor}
             content="Heading"
@@ -60,6 +62,7 @@ const VariantTemplate: Story<TypographyStoryProps> = (props) => (
     {props.variants.map((variant) => (
       <Typography
         {...props}
+        id="id"
         key={variant}
         variant={variant as TypographyVariant}
         content={variant ?? ''}
@@ -120,6 +123,7 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
     {props.variants.map((variant) => (
       <Typography
         {...props}
+        id="id"
         key={variant}
         variant={TypographyVariant.h6}
         align={variant as TypographyAlign}

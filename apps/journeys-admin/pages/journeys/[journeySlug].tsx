@@ -1,134 +1,134 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { GetServerSideProps } from 'next'
-import { gql } from '@apollo/client'
+import { ReactElement } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import Head from 'next/head'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 import {
-  GetJourney,
-  GetJourney_journey as Journey,
-  GetJourney_journey_userJourneys as UserJourneys
-} from '../../__generated__/GetJourney'
-import { JourneyProvider } from '../../src/components/JourneyView/Context'
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR
+} from 'next-firebase-auth'
+import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
+import { GetJourney } from '../../__generated__/GetJourney'
+import { JourneyProvider } from '../../src/libs/context'
 import { JourneyView } from '../../src/components/JourneyView'
-import client from '../../src/libs/client'
-import { useFirebase } from '../../src/libs/firebaseClient'
-import {
-  InviteUserModal,
-  INVITE_USER_MODAL_FIELDS
-} from '../../src/components/InviteUserModal'
+import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { Menu } from '../../src/components/JourneyView/Menu'
 
-interface JourneyViewPageProps {
-  journey: Journey
-}
-
-function JourneyViewPage({ journey }: JourneyViewPageProps): ReactElement {
-  const { user, loading } = useFirebase()
-  const router = useRouter()
-  const [currentUsersJourney, setCurrentUsersJourney] =
-    useState<UserJourneys | null>()
-
-  useEffect(() => {
-    // prevent user from accessing this page if they are not logged in
-    if (loading === false && user == null) {
-      void router.push('/')
-    }
-    if (
-      user == null ||
-      journey.userJourneys == null ||
-      journey.userJourneys.length === 0
-    ) {
-      setCurrentUsersJourney(null)
-    } else {
-      const userJourneys = journey.userJourneys?.filter(
-        (userJourney) => userJourney.userId === user.uid
-      )
-      if (userJourneys.length > 0) {
-        setCurrentUsersJourney(userJourneys[0])
+export const GET_JOURNEY = gql`
+  ${BLOCK_FIELDS}
+  query GetJourney($id: ID!) {
+    journey: adminJourney(id: $id, idType: slug) {
+      id
+      slug
+      title
+      description
+      status
+      locale
+      createdAt
+      publishedAt
+      themeName
+      themeMode
+      blocks {
+        ...BlockFields
       }
-    }
-  }, [user, router, loading, journey.userJourneys])
-
-  return (
-    <>
-      <Head>
-        <title>{journey.title}</title>
-        <meta property="og:title" content={journey.title} />
-        {journey.description != null && (
-          <meta name="description" content={journey.description} />
-        )}
-      </Head>
-      <JourneyProvider value={journey}>
-        <JourneyView />
-        <Box sx={{ m: 10 }}>
-          <Typography variant={'h2'}>{journey.title}</Typography>
-          {currentUsersJourney?.role === 'inviteRequested' ? (
-            <Typography variant={'h6'}>Your invite is pending</Typography>
-          ) : currentUsersJourney?.role === 'editor' ? (
-            <Typography variant="h6">You are an editor</Typography>
-          ) : currentUsersJourney !== null ? (
-            <InviteUserModal journey={journey} />
-          ) : (
-            'Sorry, you have no access to the requested journey.'
-          )}
-        </Box>
-      </JourneyProvider>
-    </>
-  )
-}
-
-export const getServerSideProps: GetServerSideProps<JourneyViewPageProps> =
-  async (context) => {
-    const { data } = await client.query<GetJourney>({
-      query: gql`
-        ${BLOCK_FIELDS}
-        ${INVITE_USER_MODAL_FIELDS}
-        query GetJourney($id: ID!) {
-          journey(id: $id, idType: slug) {
-            id
-            slug
-            title
-            description
-            status
-            locale
-            createdAt
-            publishedAt
-            blocks {
-              ...BlockFields
-            }
-            primaryImageBlock {
-              src
-            }
-            userJourneys {
-              id
-              userId
-              journeyId
-              role
-              user {
-                ...InviteUserModalFields
-              }
-            }
-          }
-        }
-      `,
-      variables: {
-        id: context.query.journeySlug
+      primaryImageBlock {
+        src
       }
-    })
-
-    if (data.journey === null) {
-      return {
-        notFound: true
-      }
-    } else {
-      return {
-        props: {
-          journey: data.journey
+      userJourneys {
+        id
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
         }
       }
     }
   }
+`
 
-export default JourneyViewPage
+function JourneySlugPage(): ReactElement {
+  const router = useRouter()
+  const AuthUser = useAuthUser()
+  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
+    variables: { id: router.query.journeySlug }
+  })
+
+  return (
+    <>
+      {data?.journey != null && (
+        <>
+          <Head>
+            <title>{data.journey.title}</title>
+          </Head>
+          <JourneyProvider value={data.journey}>
+            <PageWrapper
+              title="Journey Details"
+              showDrawer
+              backHref="/"
+              Menu={<Menu />}
+              AuthUser={AuthUser}
+            >
+              <JourneyView />
+            </PageWrapper>
+          </JourneyProvider>
+        </>
+      )}
+      {error?.graphQLErrors[0].message ===
+        'User has not received an invitation to edit this journey.' && (
+        <>
+          <Head>
+            <title>Access Denied</title>
+          </Head>
+          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+        </>
+      )}
+      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
+        <>
+          <Head>
+            <title>Access Denied</title>
+          </Head>
+          <JourneyInvite
+            journeySlug={router.query.journeySlug as string}
+            requestReceived
+          />
+        </>
+      )}
+    </>
+  )
+}
+
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
+})(async ({ AuthUser, query }) => {
+  const apolloClient = initializeApollo({
+    token: (await AuthUser.getIdToken()) ?? ''
+  })
+
+  try {
+    await apolloClient.query({
+      query: GET_JOURNEY,
+      variables: {
+        id: query.journeySlug
+      }
+    })
+  } catch (error) {
+    if (error.graphQLErrors[0].extensions.code === 'FORBIDDEN') {
+      return addApolloState(apolloClient, {
+        props: {}
+      })
+    }
+    throw error
+  }
+
+  return addApolloState(apolloClient, {
+    props: {}
+  })
+})
+
+export default withAuthUser({
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(JourneySlugPage)

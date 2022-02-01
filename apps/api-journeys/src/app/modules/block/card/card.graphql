@@ -1,6 +1,8 @@
 type CardBlock implements Block {
   id: ID!
+  journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   """
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
@@ -33,6 +35,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
+  parentOrder: Int!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -51,5 +54,9 @@ input CardBlockUpdateInput {
 
 extend type Mutation {
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
-  cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!): CardBlock!
+  cardBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: CardBlockUpdateInput!
+  ): CardBlock!
 }

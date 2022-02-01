@@ -1,7 +1,6 @@
 import { useBreakpoints } from '@core/shared/ui'
+import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
 import { fireEvent, renderWithApolloClient } from '../../../test/testingLibrary'
-import { activeBlockVar, treeBlocksVar } from '../../libs/client/cache/blocks'
-import { TreeBlock } from '../../libs/transformer/transformer'
 import { Conductor } from '.'
 
 jest.mock('../../../../../libs/shared/ui/src/', () => ({

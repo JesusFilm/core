@@ -22,41 +22,35 @@ export const defaultJourney: Journey = {
   userJourneys: [
     {
       __typename: 'UserJourney',
-      userId: 'user-id',
-      journeyId: 'journey-id',
+      id: 'user-journey-id',
       user: {
         __typename: 'User',
         id: 'user-id1',
         firstName: 'Amin',
         lastName: 'One',
-        imageUrl: 'https://source.unsplash.com/random/300x300',
-        email: 'amin@email.com'
+        imageUrl: 'https://bit.ly/3Gth4Yf'
       }
     },
     {
       __typename: 'UserJourney',
-      userId: 'user-id2',
-      journeyId: 'journey-id2',
+      id: 'user-journey-id2',
       user: {
         __typename: 'User',
         id: 'user-id2',
         firstName: 'Horace',
         lastName: 'Two',
-        imageUrl: 'https://source.unsplash.com/random/300x301',
-        email: 'horace@email.com'
+        imageUrl: 'https://bit.ly/3rgHd6a'
       }
     },
     {
       __typename: 'UserJourney',
-      userId: 'user-id3',
-      journeyId: 'journey-id3',
+      id: 'user-journey-id3',
       user: {
         __typename: 'User',
         id: 'user-id3',
         firstName: 'Coral',
         lastName: 'Three',
-        imageUrl: 'https://source.unsplash.com/random/301x300',
-        email: 'coral@email.com'
+        imageUrl: 'https://bit.ly/3nlwUwJ'
       }
     }
   ]
@@ -64,6 +58,7 @@ export const defaultJourney: Journey = {
 
 export const oldJourney: Journey = {
   ...defaultJourney,
+  id: 'old-journey-id',
   title: 'An Old Journey Heading',
   description:
     'Journey created before the current year should also show the year in the date',
@@ -74,6 +69,7 @@ export const oldJourney: Journey = {
 
 export const publishedJourney: Journey = {
   ...defaultJourney,
+  id: 'published-journey-id',
   title: 'Published Journey Heading',
   description: 'a published journey',
   publishedAt: formatISO(startOfYear(new Date())),

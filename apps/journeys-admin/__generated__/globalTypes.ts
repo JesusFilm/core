@@ -136,16 +136,6 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
-export interface JourneyCreateInput {
-  description?: string | null;
-  id?: string | null;
-  locale?: string | null;
-  slug: string;
-  themeMode?: ThemeMode | null;
-  themeName?: ThemeName | null;
-  title: string;
-}
-
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
@@ -162,11 +152,36 @@ export interface RadioQuestionResponseCreateInput {
   radioOptionBlockId: string;
 }
 
+export interface SignUpBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId?: string | null;
+  submitLabel: string;
+}
+
 export interface SignUpResponseCreateInput {
   blockId: string;
   email: string;
   id?: string | null;
   name: string;
+}
+
+export interface TypographyBlockCreateInput {
+  align?: TypographyAlign | null;
+  color?: TypographyColor | null;
+  content: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId?: string | null;
+  variant?: TypographyVariant | null;
+}
+
+export interface TypographyBlockUpdateInput {
+  align?: TypographyAlign | null;
+  color?: TypographyColor | null;
+  content?: string | null;
+  parentBlockId?: string | null;
+  variant?: TypographyVariant | null;
 }
 
 export interface VideoResponseCreateInput {

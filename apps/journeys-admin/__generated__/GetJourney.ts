@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -339,16 +339,12 @@ export interface GetJourney_journey_userJourneys_user {
   id: string;
   firstName: string;
   lastName: string | null;
-  email: string;
   imageUrl: string | null;
 }
 
 export interface GetJourney_journey_userJourneys {
   __typename: "UserJourney";
   id: string;
-  userId: string;
-  journeyId: string;
-  role: UserJourneyRole;
   user: GetJourney_journey_userJourneys_user | null;
 }
 
@@ -362,6 +358,8 @@ export interface GetJourney_journey {
   locale: string;
   createdAt: any;
   publishedAt: any | null;
+  themeName: ThemeName;
+  themeMode: ThemeMode;
   blocks: GetJourney_journey_blocks[] | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;

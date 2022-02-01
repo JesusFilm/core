@@ -20,5 +20,6 @@ export interface JourneyDescUpdate {
 }
 
 export interface JourneyDescUpdateVariables {
+  id: string;
   input: JourneyUpdateInput;
 }

@@ -1,5 +1,5 @@
-import { TreeBlock } from '@core/journeys/ui'
-import { ReactElement, useContext } from 'react'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
+import { ReactElement } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
 import VerticalSplit from '@mui/icons-material/VerticalSplit'
@@ -9,11 +9,10 @@ import Box from '@mui/material/Box'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {
-  GetJourneyForEdit_journey_blocks_CardBlock as CardBlock,
-  GetJourneyForEdit_journey_blocks_ImageBlock as ImageBlock,
-  GetJourneyForEdit_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../../__generated__/GetJourneyForEdit'
-import { EditorContext } from '../../../../Context'
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../__generated__/GetJourney'
 import { BackgroundColor } from './BackgroundColor'
 import { CardStyling } from './CardStyling'
 import { CardLayout } from './CardLayout'
@@ -30,7 +29,7 @@ export function Card({
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
-  const { dispatch } = useContext(EditorContext)
+  const { dispatch } = useEditor()
 
   const handleBackgroundMediaClick = (): void => {
     dispatch({

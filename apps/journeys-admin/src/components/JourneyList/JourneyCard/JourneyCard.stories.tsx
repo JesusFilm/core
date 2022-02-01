@@ -1,5 +1,5 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
-
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
@@ -16,7 +16,9 @@ const TestStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <JourneyCard journey={defaultJourney} {...args} />
+  <MockedProvider>
+    <JourneyCard journey={defaultJourney} {...args} />
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})

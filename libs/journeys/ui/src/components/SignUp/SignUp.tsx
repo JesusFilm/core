@@ -1,11 +1,11 @@
-import { ReactElement } from 'react'
+import { ReactElement, MouseEvent } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction } from '../..'
+import { TreeBlock, handleAction, useEditor, ActiveTab } from '../..'
 import { Icon } from '../Icon'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
@@ -34,8 +34,9 @@ export const SignUp = ({
   uuid = uuidv4,
   submitIcon,
   // Use translated string when i18n is in
-  submitLabel = 'Submit',
-  action
+  submitLabel,
+  action,
+  ...props
 }: SignUpProps): ReactElement => {
   const router = useRouter()
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
@@ -76,26 +77,66 @@ export const SignUp = ({
     })
   }
 
+  const {
+    state: { selectedBlock },
+    dispatch
+  } = useEditor()
+
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+
+    const block: TreeBlock<SignUpFields> = {
+      id: blockId,
+      submitIcon,
+      submitLabel,
+      action,
+      ...props
+    }
+
+    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+  }
+
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={signUpSchema}
+      validationSchema={selectedBlock === undefined ? signUpSchema : undefined}
       onSubmit={(values) => {
-        // TODO: Handle server error responses when available
-        void onSubmitHandler(values).then(() => {
-          handleAction(router, action)
-        })
+        if (selectedBlock === undefined) {
+          // TODO: Handle server error responses when available
+          void onSubmitHandler(values).then(() => {
+            handleAction(router, action)
+          })
+        }
       }}
     >
       {({ ...formikProps }) => (
         <Form
+          data-testid={`signUp-${blockId}`}
           style={{
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            outline:
+              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+            outlineOffset: '5px'
           }}
+          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
         >
-          <TextField {...formikProps} id="name" name="name" label="Name" />
-          <TextField {...formikProps} id="email" name="email" label="Email" />
+          <TextField
+            {...formikProps}
+            id="name"
+            name="name"
+            label="Name"
+            disabled={selectedBlock !== undefined}
+          />
+          <TextField
+            {...formikProps}
+            id="email"
+            name="email"
+            label="Email"
+            disabled={selectedBlock !== undefined}
+          />
           <Button
             type="submit"
             variant="contained"
@@ -104,7 +145,7 @@ export const SignUp = ({
               submitIcon != null ? <Icon {...submitIcon} /> : undefined
             }
           >
-            {submitLabel}
+            {submitLabel ?? 'Submit'}
           </Button>
         </Form>
       )}

@@ -6,7 +6,9 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant
+  TypographyVariant,
+  ThemeName,
+  ThemeMode
 } from '../../../__generated__/globalTypes'
 
 export const defaultJourney: Journey = {
@@ -19,9 +21,45 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [
+    {
+      id: 'userJourneyId1',
+      __typename: 'UserJourney',
+      user: {
+        id: '1',
+        __typename: 'User',
+        firstName: 'Amin',
+        lastName: 'One',
+        imageUrl: 'https://bit.ly/3Gth4Yf'
+      }
+    },
+    {
+      id: 'userJourneyId2',
+      __typename: 'UserJourney',
+      user: {
+        id: '2',
+        __typename: 'User',
+        firstName: 'Horace',
+        lastName: 'Two',
+        imageUrl: 'https://bit.ly/3rgHd6a'
+      }
+    },
+    {
+      id: 'userJourneyId3',
+      __typename: 'UserJourney',
+      user: {
+        id: '3',
+        __typename: 'User',
+        firstName: 'Coral',
+        lastName: 'Three',
+        imageUrl: 'https://bit.ly/3nlwUwJ'
+      }
+    }
+  ]
 }
 
 export const publishedJourney: Journey = {

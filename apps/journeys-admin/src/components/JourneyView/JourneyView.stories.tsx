@@ -1,9 +1,11 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { PageWrapper } from '../PageWrapper'
+import { JourneyProvider } from '../../libs/context'
 import { JourneyView } from './JourneyView'
-import { defaultJourney, publishedJourney } from './data'
-import { JourneyProvider } from './Context'
+import { publishedJourney } from './data'
+import { Menu } from './Menu'
 
 const JourneyViewStory = {
   ...journeysAdminConfig,
@@ -17,18 +19,20 @@ const JourneyViewStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <JourneyProvider value={args.journey}>
-      <JourneyView />
+      <PageWrapper
+        title="Journey Details"
+        showDrawer
+        backHref="/"
+        Menu={<Menu />}
+      >
+        <JourneyView />
+      </PageWrapper>
     </JourneyProvider>
   </MockedProvider>
 )
 
-export const Draft = Template.bind({})
-Draft.args = {
-  journey: defaultJourney
-}
-
-export const Published = Template.bind({})
-Published.args = {
+export const Default = Template.bind({})
+Default.args = {
   journey: publishedJourney
 }
 
