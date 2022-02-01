@@ -4,10 +4,16 @@ import {
   withAuthUserTokenSSR,
   AuthAction
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {
-  return <SignIn />
+  return (
+    <>
+      <NextSeo title="Sign In" />
+      <SignIn />
+    </>
+  )
 }
 
 export const getServerSideProps = withAuthUserTokenSSR({
