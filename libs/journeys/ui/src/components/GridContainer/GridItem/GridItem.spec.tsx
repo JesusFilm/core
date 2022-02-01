@@ -5,9 +5,10 @@ import { GridItem } from '.'
 
 describe('GridItemBlock', () => {
   const block: TreeBlock<GridItemFields> = {
+    __typename: 'GridItemBlock',
     id: 'griditem',
     parentBlockId: 'gridItemContainer',
-    __typename: 'GridItemBlock',
+    parentOrder: 0,
     xl: 6,
     lg: 6,
     sm: 6,
@@ -16,6 +17,7 @@ describe('GridItemBlock', () => {
         id: 'typographyBlockId',
         __typename: 'TypographyBlock',
         parentBlockId: 'griditem',
+        parentOrder: 0,
         align: null,
         color: null,
         content: 'How did we get here?',

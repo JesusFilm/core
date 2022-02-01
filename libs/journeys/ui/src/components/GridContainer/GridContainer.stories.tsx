@@ -33,6 +33,7 @@ const childrenOne: TreeBlock[] = [
     id: 'typographyBlockId',
     __typename: 'TypographyBlock',
     parentBlockId: 'GridItemLeft',
+    parentOrder: 0,
     align: null,
     color: null,
     content: "What's the purpose, and how did we get here?",
@@ -43,6 +44,7 @@ const childrenOne: TreeBlock[] = [
     id: 'typographyBlockId1',
     __typename: 'TypographyBlock',
     parentBlockId: 'GridItemLeft',
+    parentOrder: 1,
     align: null,
     color: null,
     content:
@@ -54,6 +56,7 @@ const childrenOne: TreeBlock[] = [
     __typename: 'ButtonBlock',
     id: 'button',
     parentBlockId: 'GridItemLeft',
+    parentOrder: 2,
     label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
@@ -79,6 +82,7 @@ const childrenTwo: TreeBlock[] = [
     height: 1067,
     alt: 'random image from unsplash',
     parentBlockId: 'GridItemRight',
+    parentOrder: 0,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     children: []
   },
@@ -86,6 +90,7 @@ const childrenTwo: TreeBlock[] = [
     id: 'typographyBlockId2',
     __typename: 'TypographyBlock',
     parentBlockId: null,
+    parentOrder: 1,
     align: null,
     color: null,
     content: 'Regular Image Example',
@@ -96,6 +101,7 @@ const childrenTwo: TreeBlock[] = [
     id: 'typographyBlockId3',
     __typename: 'TypographyBlock',
     parentBlockId: null,
+    parentOrder: 2,
     align: null,
     color: null,
     content: 'The only impossible journey is the one you never begin.',
@@ -121,6 +127,7 @@ Default.args = {
       lg: 6,
       sm: 6,
       parentBlockId: 'GridContainer',
+      parentOrder: 0,
       children: childrenOne
     },
     {
@@ -130,6 +137,7 @@ Default.args = {
       lg: 6,
       sm: 6,
       parentBlockId: 'GridContainer',
+      parentOrder: 1,
       children: childrenTwo
     }
   ]
@@ -152,6 +160,7 @@ OffsetRight.args = {
       sm: 6,
       __typename: 'GridItemBlock',
       parentBlockId: 'GridContainer',
+      parentOrder: 0,
       children: childrenTwo
     }
   ]
@@ -174,6 +183,7 @@ Center.args = {
       sm: 6,
       __typename: 'GridItemBlock',
       parentBlockId: 'GridContainer',
+      parentOrder: 0,
       children: childrenOne
     },
     {
@@ -183,11 +193,13 @@ Center.args = {
       sm: 6,
       __typename: 'GridItemBlock',
       parentBlockId: 'GridContainer',
+      parentOrder: 1,
       children: [
         {
           id: 'typographyBlockId77',
           __typename: 'TypographyBlock',
           parentBlockId: null,
+          parentOrder: 0,
           align: null,
           color: null,
           content: 'The only impossible journey is the one you never begin.',

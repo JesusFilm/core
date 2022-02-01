@@ -32,6 +32,7 @@ const signUpProps: TreeBlock<SignUpFields> = {
   id: 'signUpBlockId1',
   __typename: 'SignUpBlock',
   parentBlockId: null,
+  parentOrder: 0,
   submitIcon: null,
   submitLabel: null,
   action: {

@@ -58,6 +58,7 @@ export interface ButtonFields {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;

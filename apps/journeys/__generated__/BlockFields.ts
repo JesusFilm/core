@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
@@ -267,7 +267,7 @@ export interface BlockFields_TypographyBlock {
 
 export interface BlockFields_VideoBlock_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string | null;
+  src: string;
 }
 
 export interface BlockFields_VideoBlock {

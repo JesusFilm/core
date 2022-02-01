@@ -8,7 +8,7 @@ import {
   useReducer
 } from 'react'
 import { TreeBlock } from '../transformer'
-import { StepFields as StepBlock } from '../../components/Step/__generated__/StepFields'
+import { BlockFields_StepBlock as StepBlock } from '../transformer/__generated__/BlockFields'
 
 export enum ActiveTab {
   Cards = 0,

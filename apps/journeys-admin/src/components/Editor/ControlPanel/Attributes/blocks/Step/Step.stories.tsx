@@ -17,6 +17,7 @@ export const Default: Story = () => {
     __typename: 'StepBlock',
     parentBlockId: null,
     nextBlockId: null,
+    parentOrder: 0,
     locked: false,
     children: []
   }
@@ -42,6 +43,7 @@ export const Locked: Story = () => {
     __typename: 'StepBlock',
     parentBlockId: null,
     nextBlockId: null,
+    parentOrder: 0,
     locked: true,
     children: []
   }

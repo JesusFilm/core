@@ -16,6 +16,7 @@ describe('ControlPanel', () => {
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null,
     children: []
@@ -24,6 +25,7 @@ describe('ControlPanel', () => {
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 1,
     locked: true,
     nextBlockId: null,
     children: []
@@ -32,6 +34,7 @@ describe('ControlPanel', () => {
     __typename: 'StepBlock',
     id: 'step3.id',
     parentBlockId: null,
+    parentOrder: 2,
     locked: true,
     nextBlockId: null,
     children: [
@@ -39,6 +42,7 @@ describe('ControlPanel', () => {
         id: 'cardId',
         __typename: 'CardBlock',
         parentBlockId: 'stepId',
+        parentOrder: 0,
         coverBlockId: null,
         backgroundColor: null,
         themeMode: null,
@@ -172,6 +176,8 @@ describe('ControlPanel', () => {
                 signUpBlockCreate: {
                   id: 'signUpBlockId',
                   parentBlockId: 'cardId',
+                  journeyId: 'journeyId',
+                  parentOrder: 0,
                   submitLabel: 'Submit',
                   __typename: 'SignUpBlock',
                   action: {

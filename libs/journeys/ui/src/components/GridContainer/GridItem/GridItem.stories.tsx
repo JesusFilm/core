@@ -28,6 +28,7 @@ const childrenOne: TreeBlock[] = [
     id: 'typographyBlockId',
     __typename: 'TypographyBlock',
     parentBlockId: 'GridItemLeft',
+    parentOrder: 0,
     align: null,
     color: null,
     content: "What's the purpose, and how did we get here?",
@@ -38,6 +39,7 @@ const childrenOne: TreeBlock[] = [
     id: 'typographyBlockId1',
     __typename: 'TypographyBlock',
     parentBlockId: 'GridItemLeft',
+    parentOrder: 1,
     align: null,
     color: null,
     content:
@@ -49,6 +51,7 @@ const childrenOne: TreeBlock[] = [
     __typename: 'ButtonBlock',
     id: 'button',
     parentBlockId: 'GridItemLeft',
+    parentOrder: 2,
     label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
@@ -75,6 +78,7 @@ Default.args = {
   lg: 6,
   sm: 6,
   parentBlockId: 'GridContainer',
+  parentOrder: 0,
   children: childrenOne
 }
 

@@ -16,6 +16,7 @@ export interface VideoFields {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;

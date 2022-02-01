@@ -10,6 +10,7 @@ describe('Canvas', () => {
       id: 'step0.id',
       __typename: 'StepBlock',
       parentBlockId: null,
+      parentOrder: 0,
       locked: false,
       nextBlockId: null,
       children: []
@@ -18,6 +19,7 @@ describe('Canvas', () => {
       id: 'step1.id',
       __typename: 'StepBlock',
       parentBlockId: null,
+      parentOrder: 1,
       locked: false,
       nextBlockId: null,
       children: []
