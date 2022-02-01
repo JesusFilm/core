@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
-import Head from 'next/head'
 import { BLOCK_FIELDS, transformer } from '@core/journeys/ui'
+import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import client from '../src/libs/client'
 import {
@@ -19,16 +19,18 @@ interface JourneyPageProps {
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
-      <Head>
-        <title>{journey.title}</title>
-        <meta property="og:title" content={journey.title} />
-        {journey.description != null && (
-          <meta name="description" content={journey.description} />
-        )}
-        {journey.primaryImageBlock != null && (
-          <meta property="og:image" content={journey.primaryImageBlock.src} />
-        )}
-      </Head>
+      <NextSeo
+        title={journey.title}
+        description={journey.description ?? undefined}
+        openGraph={{
+          title: journey.title,
+          description: journey.description ?? undefined,
+          images:
+            journey.primaryImageBlock != null
+              ? [{ url: journey.primaryImageBlock.src }]
+              : []
+        }}
+      />
       <ThemeProvider
         themeName={journey.themeName}
         themeMode={journey.themeMode}

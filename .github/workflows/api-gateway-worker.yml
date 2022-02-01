@@ -9,6 +9,9 @@ on:
       repository:
         required: true
         type: string
+      branch:
+        required: true
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -63,21 +66,21 @@ jobs:
           projects: ${{ inputs.name }}
           args: --configuration="production"
 
+      - name: Build api-journeys-stage schema
+        if: ${{ inputs.branch }} == 'stage'
+        run: rover subgraph introspect http://a3213965fc6c842f3abaca429a7fdbdf-2062532363.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
+
       - name: Build api-journeys-main schema
-        if: ${{ github.ref_name }} == 'main'
+        if: ${{ inputs.branch }} == 'main'
         run: rover subgraph introspect http://a8b2a4355a3734f45a29b6f5161e67bf-2098749914.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
 
       - name: Build api-journeys-stage schema
-        if: ${{ github.ref_name }} == 'stage'
-        run: rover subgraph introspect http://a3213965fc6c842f3abaca429a7fdbdf-2062532363.us-east-2.elb.amazonaws.com:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
+        if: ${{ inputs.branch }} == 'stage'
+        run: rover subgraph introspect http://a1297fe27930647eba5996fc18192a04-4172096.us-east-2.elb.amazonaws.com:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
       - name: Build api-users-main schema
-        if: ${{ github.ref_name }} == 'main'
+        if: ${{ inputs.branch }} == 'main'
         run: rover subgraph introspect http://ad67299f5087f4d1b845926ce1832198-64788321.us-east-2.elb.amazonaws.com:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
-
-      - name: Build api-journeys-stage schema
-        if: ${{ github.ref_name }} == 'stage'
-        run: rover subgraph introspect http://a1297fe27930647eba5996fc18192a04-4172096.us-east-2.elb.amazonaws.com:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
       - name: Build api-gateway schema
         run: rover supergraph compose --config apps/api-gateway/supergraph-$ENV_SUFFIX.yml > dist/apps/api-gateway/schema.graphql
