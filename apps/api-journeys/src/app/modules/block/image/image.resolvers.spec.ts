@@ -115,6 +115,10 @@ describe('Image', () => {
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {
       await resolver.imageBlockCreate(input)
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        input.journeyId,
+        input.parentBlockId
+      )
       expect(service.save).toHaveBeenCalledWith(imageblockresponse)
     })
   })
