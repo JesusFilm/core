@@ -12,6 +12,7 @@ describe('Video', () => {
     __typename: 'StepBlock',
     id: 'stepId',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: null,
     children: [
@@ -19,6 +20,7 @@ describe('Video', () => {
         id: 'cardId',
         __typename: 'CardBlock',
         parentBlockId: 'stepId',
+        parentOrder: 0,
         coverBlockId: null,
         backgroundColor: null,
         themeMode: null,
@@ -71,30 +73,7 @@ describe('Video', () => {
         ]}
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-          <EditorProvider
-            initialState={{
-              selectedStep: {
-                __typename: 'StepBlock',
-                id: 'stepId',
-                parentBlockId: null,
-                locked: true,
-                nextBlockId: null,
-                children: [
-                  {
-                    id: 'cardId',
-                    __typename: 'CardBlock',
-                    parentBlockId: 'stepId',
-                    coverBlockId: null,
-                    backgroundColor: null,
-                    themeMode: null,
-                    themeName: null,
-                    fullscreen: false,
-                    children: []
-                  }
-                ]
-              }
-            }}
-          >
+          <EditorProvider initialState={{ selectedStep }}>
             <NewVideoButton />
           </EditorProvider>
         </JourneyProvider>
