@@ -13,6 +13,7 @@ export interface TypographyFields {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   align: TypographyAlign | null;
   color: TypographyColor | null;
   content: string;

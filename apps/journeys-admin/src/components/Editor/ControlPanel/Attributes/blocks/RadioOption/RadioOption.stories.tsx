@@ -16,6 +16,7 @@ export const Default: Story = () => {
     id: 'radio-option.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'step1.id',
+    parentOrder: 0,
     label: 'Radio Option',
     action: null,
     children: []
@@ -40,6 +41,7 @@ export const Filled: Story = () => {
     id: 'radio-option.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'step1.id',
+    parentOrder: 0,
     label: 'Radio Option',
     action: {
       __typename: 'NavigateToBlockAction',

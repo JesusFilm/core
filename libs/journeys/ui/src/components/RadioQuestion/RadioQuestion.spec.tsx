@@ -19,12 +19,14 @@ const block: TreeBlock<RadioQuestionFields> = {
   label: 'Label',
   description: 'Description',
   parentBlockId: 'RadioQuestion1',
+  parentOrder: 0,
   children: [
     {
       __typename: 'RadioOptionBlock',
       id: 'RadioOption1',
       label: 'Option 1',
       parentBlockId: 'RadioQuestion1',
+      parentOrder: 0,
       action: null,
       children: []
     },
@@ -33,6 +35,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       id: 'RadioOption2',
       label: 'Option 2',
       parentBlockId: 'RadioQuestion1',
+      parentOrder: 1,
       action: null,
       children: []
     }
@@ -150,6 +153,7 @@ describe('Admin RadioQuestion', () => {
     __typename: 'CardBlock',
     parentBlockId: 'step0.id',
     coverBlockId: null,
+    parentOrder: 0,
     backgroundColor: null,
     themeMode: null,
     themeName: null,

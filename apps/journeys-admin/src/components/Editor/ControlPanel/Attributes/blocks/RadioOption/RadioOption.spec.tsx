@@ -9,6 +9,7 @@ describe('RadioOption Attribute', () => {
       id: 'radio-option.id',
       __typename: 'RadioOptionBlock',
       parentBlockId: 'step1.id',
+      parentOrder: 0,
       label: 'Radio Option',
       action: null,
       children: []
@@ -22,6 +23,7 @@ describe('RadioOption Attribute', () => {
       id: 'radio-option.id',
       __typename: 'RadioOptionBlock',
       parentBlockId: 'step1.id',
+      parentOrder: 0,
       label: 'Radio Option',
       action: {
         __typename: 'NavigateToBlockAction',

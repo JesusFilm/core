@@ -18,6 +18,7 @@ export const Default: Story = () => {
     __typename: 'CardBlock',
     parentBlockId: 'step1.id',
     coverBlockId: null,
+    parentOrder: 0,
     backgroundColor: null,
     themeMode: null,
     themeName: null,
@@ -46,6 +47,7 @@ export const Populated: Story = () => {
     __typename: 'CardBlock',
     parentBlockId: 'step1.id',
     coverBlockId: 'image1.id',
+    parentOrder: 0,
     backgroundColor: '#00ccff',
     themeMode: ThemeMode.light,
     themeName: null,
@@ -59,6 +61,7 @@ export const Populated: Story = () => {
         width: 1920,
         height: 1080,
         parentBlockId: 'card1.id',
+        parentOrder: 0,
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
         children: []
       }

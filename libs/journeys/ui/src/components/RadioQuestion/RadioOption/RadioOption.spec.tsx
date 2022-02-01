@@ -25,6 +25,7 @@ const block: TreeBlock<RadioOptionFields> = {
   id: 'RadioOption1',
   label: 'Option 1',
   parentBlockId: 'RadioQuestion1',
+  parentOrder: 0,
   action: {
     __typename: 'NavigateToBlockAction',
     gtmEventName: 'gtmEventName',
@@ -70,6 +71,7 @@ describe('Admin RadioOption', () => {
             label: 'Label',
             description: 'Description',
             parentBlockId: 'RadioQuestion1',
+            parentOrder: 0,
             children: [block]
           }
         }}

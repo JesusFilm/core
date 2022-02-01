@@ -13,6 +13,7 @@ export interface CardFields {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */

@@ -11,6 +11,7 @@ export interface RadioQuestionFields {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   label: string;
   description: string | null;
 }

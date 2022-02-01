@@ -18,6 +18,7 @@ const videoBlock: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
   id: 'video1.id',
   parentBlockId: 'step1.id',
+  parentOrder: 0,
   autoplay: false,
   muted: false,
   title: 'video1',
@@ -109,6 +110,7 @@ Poster.args = {
       height: 1067,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       parentBlockId: 'videoBlockId',
+      parentOrder: 0,
       children: []
     }
   ]

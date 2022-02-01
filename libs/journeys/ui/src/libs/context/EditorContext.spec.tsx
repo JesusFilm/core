@@ -10,6 +10,7 @@ describe('EditorContext', () => {
           id: 'step0.id',
           __typename: 'StepBlock',
           parentBlockId: null,
+          parentOrder: 0,
           locked: false,
           nextBlockId: null,
           children: []
@@ -38,6 +39,7 @@ describe('EditorContext', () => {
           id: 'step0.id',
           __typename: 'StepBlock',
           parentBlockId: null,
+          parentOrder: 0,
           locked: false,
           nextBlockId: null,
           children: []
@@ -67,6 +69,7 @@ describe('EditorContext', () => {
           parentBlockId: null,
           backgroundColor: null,
           coverBlockId: null,
+          parentOrder: 0,
           themeMode: null,
           themeName: null,
           fullscreen: false,
@@ -76,6 +79,7 @@ describe('EditorContext', () => {
           id: 'step0.id',
           __typename: 'StepBlock',
           parentBlockId: null,
+          parentOrder: 0,
           locked: false,
           nextBlockId: null,
           children: [block]
@@ -103,6 +107,7 @@ describe('EditorContext', () => {
           parentBlockId: null,
           backgroundColor: null,
           coverBlockId: null,
+          parentOrder: 0,
           themeMode: null,
           themeName: null,
           fullscreen: false,
@@ -112,6 +117,7 @@ describe('EditorContext', () => {
           id: 'step0.id',
           __typename: 'StepBlock',
           parentBlockId: null,
+          parentOrder: 0,
           locked: false,
           nextBlockId: null,
           children: [block]
@@ -255,6 +261,7 @@ describe('EditorContext', () => {
           id: 'step0.id',
           __typename: 'StepBlock',
           parentBlockId: null,
+          parentOrder: 0,
           locked: false,
           nextBlockId: null,
           children: []
@@ -284,6 +291,7 @@ describe('EditorContext', () => {
           parentBlockId: null,
           backgroundColor: null,
           coverBlockId: null,
+          parentOrder: 0,
           themeMode: null,
           themeName: null,
           fullscreen: false,
@@ -297,6 +305,7 @@ describe('EditorContext', () => {
           id: 'step0.id',
           __typename: 'StepBlock',
           parentBlockId: null,
+          parentOrder: 0,
           locked: false,
           nextBlockId: null,
           children: [block]

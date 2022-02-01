@@ -10,6 +10,7 @@ describe('CardPreview', () => {
       id: 'step.id',
       __typename: 'StepBlock',
       parentBlockId: null,
+      parentOrder: 0,
       locked: false,
       nextBlockId: null,
       children: []

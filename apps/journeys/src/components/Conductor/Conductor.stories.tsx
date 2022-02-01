@@ -17,6 +17,7 @@ const basic: TreeBlock[] = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -24,6 +25,7 @@ const basic: TreeBlock[] = [
         id: 'card1.id',
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
+        parentOrder: 0,
         coverBlockId: 'image1.id',
         backgroundColor: null,
         themeMode: null,
@@ -34,6 +36,7 @@ const basic: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
+            parentOrder: 1,
             label: 'Step 1',
             description: 'Start',
             children: [
@@ -41,6 +44,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Step 2 (Locked)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -53,6 +57,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'Step 3 (No nextBlockId)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -65,6 +70,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 2,
                 label: 'Step 4 (End)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -83,6 +89,7 @@ const basic: TreeBlock[] = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card1.id',
+            parentOrder: 0,
             children: [],
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
           }
@@ -94,6 +101,7 @@ const basic: TreeBlock[] = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 1,
     locked: true,
     nextBlockId: 'step3.id',
     children: [
@@ -101,6 +109,7 @@ const basic: TreeBlock[] = [
         id: 'card2.id',
         __typename: 'CardBlock',
         parentBlockId: 'step2.id',
+        parentOrder: 0,
         backgroundColor: null,
         coverBlockId: null,
         themeMode: null,
@@ -111,6 +120,7 @@ const basic: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
+            parentOrder: 1,
             label: 'Step 2',
             description: 'Locked',
             children: [
@@ -118,6 +128,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Step 1 (Start)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -130,6 +141,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'Step 3 (No nextBlockId)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -142,6 +154,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 2,
                 label: 'Step 4 (End)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -160,6 +173,7 @@ const basic: TreeBlock[] = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 2,
     locked: false,
     nextBlockId: null,
     children: [
@@ -167,6 +181,7 @@ const basic: TreeBlock[] = [
         id: 'card3.id',
         __typename: 'CardBlock',
         parentBlockId: 'step3.id',
+        parentOrder: 0,
         backgroundColor: null,
         coverBlockId: null,
         themeMode: null,
@@ -177,6 +192,7 @@ const basic: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
+            parentOrder: 0,
             label: 'Step 3',
             description: 'No nextBlockId',
             children: [
@@ -184,6 +200,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Step 1 (Start)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -196,6 +213,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'Step 2 (Locked)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -208,6 +226,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 2,
                 label: 'Step 4 (End)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -226,6 +245,7 @@ const basic: TreeBlock[] = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 3,
     locked: false,
     nextBlockId: null,
     children: [
@@ -233,6 +253,7 @@ const basic: TreeBlock[] = [
         id: 'card4.id',
         __typename: 'CardBlock',
         parentBlockId: 'step4.id',
+        parentOrder: 0,
         backgroundColor: null,
         coverBlockId: null,
         themeMode: null,
@@ -243,6 +264,7 @@ const basic: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step4.id',
+            parentOrder: 1,
             label: 'Step 4',
             description: 'End',
             children: [
@@ -250,6 +272,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Step 1 (Start)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -262,6 +285,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'Step 2 (Locked)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -274,6 +298,7 @@ const basic: TreeBlock[] = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 2,
                 label: 'Step 3 (No nextBlockId)',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -295,6 +320,7 @@ const imageBlocks: TreeBlock[] = [
     id: 'step0.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
     children: [
@@ -302,6 +328,7 @@ const imageBlocks: TreeBlock[] = [
         id: 'card0.id',
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
+        parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
         themeMode: null,
@@ -312,6 +339,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             align: null,
             color: null,
             content: "What's our purpose, and how did we get here?",
@@ -322,6 +350,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content:
@@ -333,6 +362,7 @@ const imageBlocks: TreeBlock[] = [
             __typename: 'ButtonBlock',
             id: 'button',
             parentBlockId: 'card0.id',
+            parentOrder: 2,
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -358,6 +388,7 @@ const imageBlocks: TreeBlock[] = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             children: [],
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
           }
@@ -369,6 +400,7 @@ const imageBlocks: TreeBlock[] = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -376,6 +408,7 @@ const imageBlocks: TreeBlock[] = [
         id: 'card0.id',
         __typename: 'CardBlock',
         parentBlockId: 'step1.id',
+        parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
         themeMode: null,
@@ -386,6 +419,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             align: null,
             color: null,
             content: 'a quick question...',
@@ -396,6 +430,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'Can we trust the story of Jesus ?',
@@ -406,6 +441,7 @@ const imageBlocks: TreeBlock[] = [
             __typename: 'ButtonBlock',
             id: 'button',
             parentBlockId: 'card0.id',
+            parentOrder: 2,
             label: 'Watch Now',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -431,6 +467,7 @@ const imageBlocks: TreeBlock[] = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             children: [],
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
           }
@@ -442,6 +479,7 @@ const imageBlocks: TreeBlock[] = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
     children: [
@@ -449,6 +487,7 @@ const imageBlocks: TreeBlock[] = [
         id: 'card0.id',
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
+        parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
         themeMode: null,
@@ -459,6 +498,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             align: null,
             color: null,
             content: 'if it’s true...',
@@ -469,6 +509,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'What is Christianity to you?',
@@ -479,6 +520,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
+            parentOrder: 2,
             label: '',
             description: '',
             children: [
@@ -486,6 +528,7 @@ const imageBlocks: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'One of many ways to God',
                 action: {
                   __typename: 'NavigateAction',
@@ -497,6 +540,7 @@ const imageBlocks: TreeBlock[] = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'One great lie...',
                 action: {
                   __typename: 'NavigateAction',
@@ -508,6 +552,7 @@ const imageBlocks: TreeBlock[] = [
                 id: 'radioOption4.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 2,
                 label: 'One true way to God',
                 action: {
                   __typename: 'NavigateAction',
@@ -525,6 +570,7 @@ const imageBlocks: TreeBlock[] = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             children: [],
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
           }
@@ -536,6 +582,7 @@ const imageBlocks: TreeBlock[] = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 3,
     locked: false,
     nextBlockId: 'step4.id',
     children: [
@@ -543,6 +590,7 @@ const imageBlocks: TreeBlock[] = [
         id: 'card0.id',
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
+        parentOrder: 1,
         coverBlockId: 'image0.id',
         backgroundColor: null,
         themeMode: null,
@@ -553,6 +601,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             align: null,
             color: null,
             content: 'What do you think?',
@@ -563,6 +612,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content: 'Do you need to change to be good enough for God?',
@@ -573,6 +623,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
+            parentOrder: 2,
             label: '',
             description: '',
             children: [
@@ -580,6 +631,7 @@ const imageBlocks: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: {
                   __typename: 'NavigateAction',
@@ -591,6 +643,7 @@ const imageBlocks: TreeBlock[] = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: {
                   __typename: 'NavigateAction',
@@ -608,6 +661,7 @@ const imageBlocks: TreeBlock[] = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             children: [],
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
           }
@@ -619,6 +673,7 @@ const imageBlocks: TreeBlock[] = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 4,
     locked: false,
     nextBlockId: null,
     children: [
@@ -627,6 +682,7 @@ const imageBlocks: TreeBlock[] = [
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
         coverBlockId: 'image0.id',
+        parentOrder: 1,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -636,6 +692,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 0,
             align: null,
             color: null,
             content: 'a quote',
@@ -646,6 +703,7 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 1,
             align: null,
             color: null,
             content:
@@ -657,27 +715,19 @@ const imageBlocks: TreeBlock[] = [
             id: 'typographyBlockId13',
             __typename: 'TypographyBlock',
             parentBlockId: 'card0.id',
+            parentOrder: 2,
             align: null,
             color: null,
             content: '–  The Bible, John 3:17',
             variant: TypographyVariant.caption,
             children: []
           },
-          {
-            id: 'image0.id',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-            width: 1920,
-            height: 1080,
-            alt: 'random image from unsplash',
-            parentBlockId: 'card0.id',
-            children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
-          },
+
           {
             __typename: 'ButtonBlock',
             id: 'button',
             parentBlockId: 'card0.id',
+            parentOrder: 3,
             label: 'Start Over',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -697,6 +747,18 @@ const imageBlocks: TreeBlock[] = [
             children: []
           }
         ]
+      },
+      {
+        id: 'image0.id',
+        __typename: 'ImageBlock',
+        src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        width: 1920,
+        height: 1080,
+        alt: 'random image from unsplash',
+        parentBlockId: 'card0.id',
+        parentOrder: 0,
+        children: [],
+        blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
       }
     ]
   }
@@ -707,6 +769,7 @@ const videoBlock: TreeBlock[] = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -714,6 +777,7 @@ const videoBlock: TreeBlock[] = [
         id: 'video1.id',
         __typename: 'VideoBlock',
         parentBlockId: 'card1.id',
+        parentOrder: 0,
         title: '',
         autoplay: true,
         muted: true,
@@ -729,6 +793,7 @@ const videoBlock: TreeBlock[] = [
             id: 'trigger.id',
             __typename: 'VideoTriggerBlock',
             parentBlockId: 'video1.id',
+            parentOrder: 0,
             triggerStart: 20,
             triggerAction: {
               __typename: 'NavigateToBlockAction',
@@ -745,6 +810,7 @@ const videoBlock: TreeBlock[] = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 1,
     locked: true,
     nextBlockId: 'step3.id',
     children: [
@@ -752,6 +818,7 @@ const videoBlock: TreeBlock[] = [
         id: 'card2.id',
         __typename: 'CardBlock',
         parentBlockId: 'step2.id',
+        parentOrder: 0,
         backgroundColor: null,
         coverBlockId: null,
         themeMode: null,
@@ -762,6 +829,7 @@ const videoBlock: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
+            parentOrder: 0,
             label: 'Step 2',
             description: 'Locked',
             children: [
@@ -769,6 +837,7 @@ const videoBlock: TreeBlock[] = [
                 id: 'radioOption1.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
                 label: 'Video with Poster',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -778,9 +847,10 @@ const videoBlock: TreeBlock[] = [
                 children: []
               },
               {
-                id: 'radioOption3.id',
+                id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
                 label: 'Video With Autoplay',
                 action: {
                   __typename: 'NavigateToBlockAction',
@@ -799,6 +869,7 @@ const videoBlock: TreeBlock[] = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 2,
     locked: false,
     nextBlockId: null,
     children: [
@@ -806,6 +877,7 @@ const videoBlock: TreeBlock[] = [
         id: 'video2.id',
         __typename: 'VideoBlock',
         parentBlockId: 'card3.id',
+        parentOrder: 0,
         title: '',
         autoplay: false,
         muted: false,
@@ -826,6 +898,7 @@ const videoBlock: TreeBlock[] = [
             height: 1067,
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             parentBlockId: 'videoBlockId',
+            parentOrder: 0,
             children: []
           }
         ]
@@ -836,6 +909,7 @@ const videoBlock: TreeBlock[] = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 3,
     locked: false,
     nextBlockId: null,
     children: [
@@ -843,6 +917,7 @@ const videoBlock: TreeBlock[] = [
         id: 'video3.id',
         __typename: 'VideoBlock',
         parentBlockId: 'card3.id',
+        parentOrder: 0,
         title: '',
         autoplay: true,
         muted: false,
