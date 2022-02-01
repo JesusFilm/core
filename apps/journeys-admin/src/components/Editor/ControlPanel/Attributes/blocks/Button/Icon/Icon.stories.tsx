@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-// import { BUTTON_BLOCK_UPDATE } from './Icon'
 import { Icon } from '.'
 
 const IconStory = {
@@ -12,35 +11,12 @@ const IconStory = {
 
 export const Default: Story = () => {
   return (
-    <MockedProvider
-    // mocks={[
-    //   {
-    //     request: {
-    //       query: BUTTON_BLOCK_UPDATE,
-    //       variables: {
-    //         id: 'button-variant-id',
-    //         journeyId: undefined,
-    //         input: {
-    //           variant: 'text'
-    //         }
-    //       }
-    //     },
-    //     result: {
-    //       data: {
-    //         buttonBlockUpdate: {
-    //           id: 'button-variant-id',
-    //           variant: 'text'
-    //         }
-    //       }
-    //     }
-    //   }
-    // ]}
-    >
+    <MockedProvider>
       <Icon
-        id={'button-icon-id'}
+        id={'button-Icon-id'}
         iconName={null}
-        iconSize={null}
         iconColor={null}
+        iconSize={null}
       />
     </MockedProvider>
   )
