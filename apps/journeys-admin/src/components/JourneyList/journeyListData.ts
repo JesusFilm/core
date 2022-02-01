@@ -58,6 +58,7 @@ export const defaultJourney: Journey = {
 
 export const oldJourney: Journey = {
   ...defaultJourney,
+  id: 'old-journey-id',
   title: 'An Old Journey Heading',
   description:
     'Journey created before the current year should also show the year in the date',
@@ -68,6 +69,7 @@ export const oldJourney: Journey = {
 
 export const publishedJourney: Journey = {
   ...defaultJourney,
+  id: 'published-journey-id',
   title: 'Published Journey Heading',
   description: 'a published journey',
   publishedAt: formatISO(startOfYear(new Date())),

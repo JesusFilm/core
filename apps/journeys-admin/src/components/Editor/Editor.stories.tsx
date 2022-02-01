@@ -31,6 +31,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step0.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id'
   },
@@ -38,6 +39,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'card0.id',
     __typename: 'CardBlock',
     parentBlockId: 'step0.id',
+    parentOrder: 0,
     coverBlockId: 'image0.id',
     backgroundColor: null,
     themeMode: null,
@@ -48,6 +50,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId1',
     __typename: 'TypographyBlock',
     parentBlockId: 'card0.id',
+    parentOrder: 0,
     align: null,
     color: null,
     content: "What's our purpose, and how did we get here?",
@@ -57,6 +60,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId2',
     __typename: 'TypographyBlock',
     parentBlockId: 'card0.id',
+    parentOrder: 1,
     align: null,
     color: null,
     content:
@@ -67,6 +71,7 @@ const blocks: GetJourney_journey_blocks[] = [
     __typename: 'ButtonBlock',
     id: 'button0',
     parentBlockId: 'card0.id',
+    parentOrder: 2,
     label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
@@ -91,12 +96,14 @@ const blocks: GetJourney_journey_blocks[] = [
     height: 1080,
     alt: 'random image from unsplash',
     parentBlockId: 'card0.id',
+    parentOrder: 4,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
   },
   {
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id'
   },
@@ -104,6 +111,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'card1.id',
     __typename: 'CardBlock',
     parentBlockId: 'step1.id',
+    parentOrder: 0,
     coverBlockId: 'image1.id',
     backgroundColor: null,
     themeMode: null,
@@ -114,6 +122,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId3',
     __typename: 'TypographyBlock',
     parentBlockId: 'card1.id',
+    parentOrder: 0,
     align: null,
     color: null,
     content: 'a quick question...',
@@ -123,6 +132,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId4',
     __typename: 'TypographyBlock',
     parentBlockId: 'card1.id',
+    parentOrder: 1,
     align: null,
     color: null,
     content: 'Can we trust the story of Jesus ?',
@@ -132,6 +142,7 @@ const blocks: GetJourney_journey_blocks[] = [
     __typename: 'ButtonBlock',
     id: 'button1',
     parentBlockId: 'card1.id',
+    parentOrder: 2,
     label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
@@ -156,6 +167,7 @@ const blocks: GetJourney_journey_blocks[] = [
     height: 1080,
     alt: 'random image from unsplash',
     parentBlockId: 'card1.id',
+    parentOrder: 3,
     blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
   },
 
@@ -163,6 +175,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id'
   },
@@ -170,6 +183,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'card2.id',
     __typename: 'CardBlock',
     parentBlockId: 'step2.id',
+    parentOrder: 0,
     coverBlockId: 'image2.id',
     backgroundColor: null,
     themeMode: null,
@@ -180,6 +194,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId5',
     __typename: 'TypographyBlock',
     parentBlockId: 'card2.id',
+    parentOrder: 0,
     align: null,
     color: null,
     content: 'if it’s true...',
@@ -189,6 +204,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioQuestion1.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card2.id',
+    parentOrder: 1,
     label: 'What is Christianity to you?',
     description: ''
   },
@@ -196,6 +212,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioOption1.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'radioQuestion1.id',
+    parentOrder: 0,
     label: 'One of many ways to God',
     action: {
       __typename: 'NavigateAction',
@@ -206,6 +223,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioOption2.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'radioQuestion1.id',
+    parentOrder: 1,
     label: 'One great lie...',
     action: {
       __typename: 'NavigateAction',
@@ -216,6 +234,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioOption3.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'radioQuestion1.id',
+    parentOrder: 2,
     label: 'One true way to God',
     action: {
       __typename: 'NavigateAction',
@@ -230,12 +249,14 @@ const blocks: GetJourney_journey_blocks[] = [
     height: 1080,
     alt: 'random image from unsplash',
     parentBlockId: 'card2.id',
+    parentOrder: 2,
     blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
   },
   {
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 3,
     locked: false,
     nextBlockId: 'step4.id'
   },
@@ -243,6 +264,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'card3.id',
     __typename: 'CardBlock',
     parentBlockId: 'step3.id',
+    parentOrder: 0,
     coverBlockId: 'image3.id',
     backgroundColor: null,
     themeMode: null,
@@ -253,6 +275,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId7',
     __typename: 'TypographyBlock',
     parentBlockId: 'card3.id',
+    parentOrder: 0,
     align: null,
     color: null,
     content: 'What do you think?',
@@ -262,6 +285,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioQuestion2.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card3.id',
+    parentOrder: 1,
     label: 'Do you need to change to be good enough for God?',
     description: ''
   },
@@ -269,6 +293,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioOption4.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'radioQuestion2.id',
+    parentOrder: 0,
     label: 'Yes, God likes good people',
     action: {
       __typename: 'NavigateAction',
@@ -279,6 +304,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioOption5.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'radioQuestion2.id',
+    parentOrder: 1,
     label: 'No, He will accept me as I am',
     action: {
       __typename: 'NavigateAction',
@@ -293,12 +319,14 @@ const blocks: GetJourney_journey_blocks[] = [
     height: 1080,
     alt: 'random image from unsplash',
     parentBlockId: 'card3.id',
+    parentOrder: 2,
     blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
   },
   {
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null
   },
@@ -306,6 +334,7 @@ const blocks: GetJourney_journey_blocks[] = [
     __typename: 'VideoBlock',
     id: 'video1.id',
     parentBlockId: 'step4.id',
+    parentOrder: 0,
     autoplay: false,
     muted: true,
     title: 'video1',
@@ -321,6 +350,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step5.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null
   },
@@ -328,6 +358,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'card5.id',
     __typename: 'CardBlock',
     parentBlockId: 'step5.id',
+    parentOrder: 0,
     coverBlockId: null,
     backgroundColor: null,
     themeMode: null,
@@ -342,12 +373,14 @@ const blocks: GetJourney_journey_blocks[] = [
     height: 1067,
     alt: 'random image from unsplash',
     parentBlockId: 'card5.id',
+    parentOrder: 0,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
   },
   {
     __typename: 'SignUpBlock',
     id: 'SignUp1',
     parentBlockId: 'card5.id',
+    parentOrder: 1,
     submitIcon: null,
     submitLabel: null,
     action: null
@@ -356,6 +389,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step6.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 0,
     locked: false,
     nextBlockId: null
   },
@@ -363,6 +397,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'card6.id',
     __typename: 'CardBlock',
     parentBlockId: 'step6.id',
+    parentOrder: 0,
     coverBlockId: 'image6.id',
     backgroundColor: null,
     themeMode: null,
@@ -370,9 +405,21 @@ const blocks: GetJourney_journey_blocks[] = [
     fullscreen: false
   },
   {
+    id: 'image6.id',
+    __typename: 'ImageBlock',
+    src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+    width: 1920,
+    height: 1080,
+    alt: 'random image from unsplash',
+    parentBlockId: 'card6.id',
+    parentOrder: 0,
+    blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+  },
+  {
     id: 'typographyBlockId11',
     __typename: 'TypographyBlock',
     parentBlockId: 'card6.id',
+    parentOrder: 1,
     align: null,
     color: null,
     content: 'a quote',
@@ -382,6 +429,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId12',
     __typename: 'TypographyBlock',
     parentBlockId: 'card6.id',
+    parentOrder: 2,
     align: null,
     color: null,
     content:
@@ -392,25 +440,17 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'typographyBlockId13',
     __typename: 'TypographyBlock',
     parentBlockId: 'card6.id',
+    parentOrder: 3,
     align: null,
     color: null,
     content: '–  The Bible, John 3:17',
     variant: TypographyVariant.caption
   },
   {
-    id: 'image6.id',
-    __typename: 'ImageBlock',
-    src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-    width: 1920,
-    height: 1080,
-    alt: 'random image from unsplash',
-    parentBlockId: 'card6.id',
-    blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
-  },
-  {
     __typename: 'ButtonBlock',
     id: 'button',
     parentBlockId: 'card6.id',
+    parentOrder: 4,
     label: 'Start Over',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,

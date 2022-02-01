@@ -7,6 +7,7 @@ describe('blocks', () => {
         id: 'a',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: false,
         nextBlockId: null,
         children: [
@@ -14,6 +15,7 @@ describe('blocks', () => {
             id: 'b',
             __typename: 'StepBlock',
             parentBlockId: null,
+            parentOrder: 0,
             locked: false,
             nextBlockId: null,
             children: [
@@ -21,6 +23,7 @@ describe('blocks', () => {
                 id: 'c',
                 __typename: 'StepBlock',
                 parentBlockId: null,
+                parentOrder: 0,
                 locked: false,
                 nextBlockId: null,
                 children: []

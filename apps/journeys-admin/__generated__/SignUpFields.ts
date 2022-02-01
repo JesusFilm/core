@@ -51,6 +51,7 @@ export interface SignUpFields {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   submitLabel: string | null;
   action: SignUpFields_action | null;
   submitIcon: SignUpFields_submitIcon | null;

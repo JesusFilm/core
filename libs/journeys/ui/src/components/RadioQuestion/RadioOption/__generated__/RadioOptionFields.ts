@@ -42,6 +42,7 @@ export interface RadioOptionFields {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   label: string;
   action: RadioOptionFields_action | null;
 }

@@ -11,6 +11,7 @@ describe('CardBlock', () => {
     parentBlockId: null,
     backgroundColor: null,
     coverBlockId: null,
+    parentOrder: 0,
     themeMode: null,
     themeName: null,
     fullscreen: false,
@@ -19,6 +20,7 @@ describe('CardBlock', () => {
         id: 'typographyBlockId',
         __typename: 'TypographyBlock',
         parentBlockId: null,
+        parentOrder: 0,
         align: null,
         color: null,
         content: 'How did we get here?',
@@ -72,6 +74,7 @@ describe('CardBlock', () => {
               height: 1067,
               blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
               parentBlockId: 'card',
+              parentOrder: 0,
               children: []
             }
           ]
@@ -96,6 +99,7 @@ describe('CardBlock', () => {
               __typename: 'VideoBlock',
               id: 'videoBlockId1',
               parentBlockId: null,
+              parentOrder: 0,
               muted: true,
               autoplay: true,
               title: 'video',
@@ -116,6 +120,7 @@ describe('CardBlock', () => {
                   height: 1067,
                   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
                   parentBlockId: 'videoBlockId',
+                  parentOrder: 0,
                   children: []
                 }
               ]

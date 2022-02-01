@@ -6,6 +6,7 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
 import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
@@ -42,9 +43,12 @@ function IndexPage(): ReactElement {
   const AuthUser = useAuthUser()
 
   return (
-    <PageWrapper title="Journeys" AuthUser={AuthUser}>
-      {data?.journeys != null && <JourneyList journeys={data.journeys} />}
-    </PageWrapper>
+    <>
+      <NextSeo title="Journeys" />
+      <PageWrapper title="Journeys" AuthUser={AuthUser}>
+        {data?.journeys != null && <JourneyList journeys={data.journeys} />}
+      </PageWrapper>
+    </>
   )
 }
 

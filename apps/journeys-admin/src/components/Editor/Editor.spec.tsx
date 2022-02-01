@@ -32,6 +32,7 @@ describe('Editor', () => {
                   id: 'step0.id',
                   __typename: 'StepBlock',
                   parentBlockId: null,
+                  parentOrder: 0,
                   locked: false,
                   nextBlockId: 'step1.id'
                 }

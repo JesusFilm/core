@@ -17,6 +17,7 @@ const blocks: TreeBlock[] = [
     __typename: 'StepBlock',
     id: 'Step1',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: 'Step2',
     children: []
@@ -25,6 +26,7 @@ const blocks: TreeBlock[] = [
     __typename: 'StepBlock',
     id: 'Step2',
     parentBlockId: null,
+    parentOrder: 1,
     locked: true,
     nextBlockId: 'Step3',
     children: []
@@ -33,6 +35,7 @@ const blocks: TreeBlock[] = [
     __typename: 'StepBlock',
     id: 'Step3',
     parentBlockId: null,
+    parentOrder: 2,
     locked: true,
     nextBlockId: 'Step4',
     children: []
@@ -41,6 +44,7 @@ const blocks: TreeBlock[] = [
     __typename: 'StepBlock',
     id: 'Step4',
     parentBlockId: null,
+    parentOrder: 3,
     locked: true,
     nextBlockId: null,
     children: []
@@ -52,6 +56,7 @@ export const Start = (): ReactElement => {
     __typename: 'StepBlock',
     id: 'Step1',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: 'Step2',
     children: []
@@ -66,6 +71,7 @@ export const Halfway = (): ReactElement => {
     __typename: 'StepBlock',
     id: 'Step2',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: 'Step3',
     children: []
@@ -80,6 +86,7 @@ export const End = (): ReactElement => {
     __typename: 'StepBlock',
     id: 'Step4',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: null,
     children: []
