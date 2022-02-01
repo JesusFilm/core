@@ -1,3 +1,4 @@
+export { CopyTextField } from './components/CopyTextField'
 export { ThemeProvider } from './components/ThemeProvider'
 export { sharedUiConfig } from './libs/storybook/config'
 export { themes } from './libs/themes'

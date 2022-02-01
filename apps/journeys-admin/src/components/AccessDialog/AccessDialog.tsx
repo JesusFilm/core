@@ -1,14 +1,6 @@
-import {
-  ReactElement,
-  MouseEvent,
-  useEffect,
-  useState,
-  FocusEventHandler
-} from 'react'
+import { ReactElement, MouseEvent, useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
-import TextField from '@mui/material/TextField'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import Box from '@mui/material/Box'
@@ -22,14 +14,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { gql, useLazyQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
-import { useSnackbar } from 'notistack'
+import { CopyTextField } from '@core/shared/ui'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -58,7 +48,7 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   }
 `
 
-interface InviteUserModalProps {
+interface AccessDialogProps {
   journeySlug: string
   open?: boolean
   onClose?: () => void
@@ -68,9 +58,8 @@ export function AccessDialog({
   journeySlug,
   open,
   onClose
-}: InviteUserModalProps): ReactElement {
+}: AccessDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { enqueueSnackbar } = useSnackbar()
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
@@ -82,24 +71,6 @@ export function AccessDialog({
       void loadJourney()
     }
   }, [open, loadJourney])
-
-  const handleCopyClick = async (): Promise<void> => {
-    await navigator.clipboard.writeText(
-      `${
-        window.location.host.endsWith('.chromatic.com')
-          ? 'https://admin.nextstep.is'
-          : window.location.origin
-      }/journeys/${journeySlug}`
-    )
-    enqueueSnackbar('Editor invite link copied', {
-      variant: 'success',
-      preventDuplicate: true
-    })
-  }
-
-  const handleFocus: FocusEventHandler<HTMLInputElement> = (event): void => {
-    event.target.select()
-  }
 
   return (
     <Dialog
@@ -125,38 +96,19 @@ export function AccessDialog({
       <DialogContent dividers>
         <List>
           <MuiListItem sx={{ px: 0 }}>
-            <TextField
-              fullWidth
-              hiddenLabel
-              defaultValue={
-                typeof window !== 'undefined' &&
-                `${
-                  window.location.host.endsWith('.chromatic.com')
-                    ? 'https://admin.nextstep.is'
-                    : window.location.origin
-                }/journeys/${journeySlug}`
+            <CopyTextField
+              value={
+                typeof window !== 'undefined'
+                  ? `${
+                      window.location.host.endsWith('.chromatic.com')
+                        ? 'https://admin.nextstep.is'
+                        : window.location.origin
+                    }/journeys/${journeySlug}`
+                  : undefined
               }
-              inputProps={{
-                onFocus: handleFocus
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LinkRoundedIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleCopyClick} aria-label="Copy">
-                      <ContentCopyRoundedIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                readOnly: true
-              }}
-              variant="filled"
+              messageText="Editor invite link copied"
               helperText="Anyone with this link can see journey and ask for editing rights.
-            You can accept or reject every request."
+              You can accept or reject every request."
             />
           </MuiListItem>
           {!loading && (

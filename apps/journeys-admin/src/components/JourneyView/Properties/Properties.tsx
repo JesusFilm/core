@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { ShareSection } from '../ShareSection'
+import { CopyTextField } from '@core/shared/ui'
 import { useJourney } from '../../../libs/context'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
@@ -31,27 +31,30 @@ export function Properties(): ReactElement {
             Properties
           </Typography>
         </Toolbar>
-        <Box sx={{ p: 6 }}>
-          <JourneyDetails />
-        </Box>
-        <Divider />
-        {userJourneys != null && (
-          <Box sx={{ p: 6 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Access Control
-            </Typography>
-            <AccessAvatars
-              journeySlug={slug}
-              userJourneys={userJourneys}
-              size="medium"
-              xsMax={5}
-            />
+        <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
+          <Box sx={{ px: 6 }}>
+            <JourneyDetails />
           </Box>
-        )}
-        <Divider />
-        <Box sx={{ p: 6 }}>
-          <ShareSection slug={slug} />
-        </Box>
+          {userJourneys != null && (
+            <Box sx={{ px: 6 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Access Control
+              </Typography>
+              <AccessAvatars
+                journeySlug={slug}
+                userJourneys={userJourneys}
+                size="medium"
+                xsMax={5}
+              />
+            </Box>
+          )}
+          <Box sx={{ px: 6 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              Journey URL
+            </Typography>
+            <CopyTextField value={`https://your.nextstep.is/${slug}`} />
+          </Box>
+        </Stack>
       </Drawer>
       <Stack
         sx={{
@@ -78,7 +81,10 @@ export function Properties(): ReactElement {
         </Box>
         <Divider />
         <Box sx={{ px: 6 }}>
-          <ShareSection slug={slug} />
+          <CopyTextField
+            value={`https://your.nextstep.is/${slug}`}
+            label="Journey URL"
+          />
         </Box>
       </Stack>
     </>
