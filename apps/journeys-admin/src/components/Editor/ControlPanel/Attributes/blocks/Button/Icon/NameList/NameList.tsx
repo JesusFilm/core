@@ -22,9 +22,11 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
       <Select
         labelId="icon-name-select"
         id="icon-name-select"
+        // value not changing
         value={iconName}
         onChange={handleChange}
         variant="filled"
+        // change disabled style
         disabled={disabled}
       >
         {Object.values(IconName).map((name) => {

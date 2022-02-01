@@ -26,6 +26,10 @@ export function Icon({
 }: IconProps): ReactElement {
   const [checked, setChecked] = useState(true)
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setChecked(event.target.checked)
+  }
+
   return (
     <>
       <Box sx={{ display: 'flex' }}>
@@ -35,7 +39,7 @@ export function Icon({
         </Box>
         <Switch
           checked={checked}
-          // onChange={handleOpenOptions}
+          onChange={handleChange}
           inputProps={{ 'aria-label': 'controlled' }}
           sx={{
             marginLeft: 'auto'
@@ -45,10 +49,12 @@ export function Icon({
 
       <NameList id={id} name={iconName} disabled={!checked} />
 
-      <Box>
-        <ColorToggleGroup id={id} color={iconColor} />
-        <SizeToggleGroup id={id} size={iconSize} />
-      </Box>
+      {checked && (
+        <Box>
+          <ColorToggleGroup id={id} color={iconColor} />
+          <SizeToggleGroup id={id} size={iconSize} />
+        </Box>
+      )}
     </>
   )
 }
