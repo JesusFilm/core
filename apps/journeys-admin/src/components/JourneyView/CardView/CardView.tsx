@@ -1,9 +1,7 @@
 import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
-import Fab from '@mui/material/Fab'
 import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
-import EditIcon from '@mui/icons-material/Edit'
 import AddIcon from '@mui/icons-material/Add'
 import { TreeBlock } from '@core/journeys/ui'
 import { useBreakpoints } from '@core/shared/ui'
@@ -31,21 +29,6 @@ export function CardView({ slug, blocks }: CardViewProps): ReactElement {
       {stepBlockLength > 0 ? (
         <>
           <CardPreview steps={blocks} />
-
-          <Fab
-            variant="extended"
-            size="medium"
-            sx={{
-              position: 'fixed',
-              bottom: '12px',
-              right: '16px'
-            }}
-            color="primary"
-            href={`/journeys/${slug}/edit`}
-          >
-            <EditIcon sx={{ mr: 1 }} />
-            Edit
-          </Fab>
         </>
       ) : (
         <Box
