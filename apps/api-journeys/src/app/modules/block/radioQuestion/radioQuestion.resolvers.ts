@@ -28,14 +28,7 @@ export class RadioOptionBlockResolvers {
     @Args('input') input: RadioOptionBlockCreateInput & { __typename }
   ): Promise<RadioOptionBlock> {
     input.__typename = 'RadioOptionBlock'
-    const siblings = await this.blockService.getSiblings(
-      input.journeyId,
-      input.parentBlockId
-    )
-    return await this.blockService.save({
-      ...input,
-      parentOrder: siblings.length
-    })
+    return await this.blockService.save(input)
   }
 
   @Mutation()

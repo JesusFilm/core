@@ -128,6 +128,10 @@ describe('RadioQuestion', () => {
       await radioQuestionBlockResolver.radioQuestionBlockCreate(
         radioQuestionInput
       )
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        radioQuestionInput.journeyId,
+        radioQuestionInput.parentBlockId
+      )
       expect(service.save).toHaveBeenCalledWith(radioQuestionInput)
     })
   })
