@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import Head from 'next/head'
 import { BLOCK_FIELDS } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
 import {
@@ -9,6 +8,7 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/libs/context'
@@ -61,9 +61,10 @@ function JourneySlugPage(): ReactElement {
     <>
       {data?.journey != null && (
         <>
-          <Head>
-            <title>{data.journey.title}</title>
-          </Head>
+          <NextSeo
+            title={data.journey.title}
+            description={data.journey.description ?? undefined}
+          />
           <JourneyProvider value={data.journey}>
             <PageWrapper
               title="Journey Details"
@@ -80,17 +81,13 @@ function JourneySlugPage(): ReactElement {
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
         <>
-          <Head>
-            <title>Access Denied</title>
-          </Head>
+          <NextSeo title="Access Denied" />
           <JourneyInvite journeySlug={router.query.journeySlug as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
-          <Head>
-            <title>Access Denied</title>
-          </Head>
+          <NextSeo title="Access Denied" />
           <JourneyInvite
             journeySlug={router.query.journeySlug as string}
             requestReceived

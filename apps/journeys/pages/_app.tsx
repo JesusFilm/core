@@ -4,6 +4,7 @@ import { ReactElement, useCallback, useEffect } from 'react'
 import { ApolloProvider } from '@apollo/client'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth, signInAnonymously } from 'firebase/auth'
+import { DefaultSeo } from 'next-seo'
 import { createApolloClient } from '../src/libs/client'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
@@ -29,8 +30,11 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
 
   return (
     <>
+      <DefaultSeo
+        titleTemplate="%s | Next Steps"
+        defaultTitle="Next Steps | Helping you find the next best step on your spiritual journey"
+      />
       <Head>
-        <title>My page</title>
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
