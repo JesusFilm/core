@@ -175,6 +175,10 @@ describe('VideoContentResolvers', () => {
         await videoBlockResolver
           .videoBlockCreate(blockUpdate)
           .catch((err) => console.log(err))
+        expect(service.getSiblings).toHaveBeenCalledWith(
+          blockUpdate.journeyId,
+          blockUpdate.parentBlockId
+        )
         expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
       })
     })
