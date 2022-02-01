@@ -70,8 +70,27 @@ describe('SignUp', () => {
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block]),
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => input),
+      update: jest.fn((input) => input)
     })
+  }
+
+  const blockupdateresponse = {
+    _key: '1',
+    journeyId: '2',
+    parentBlockId: '0',
+    __typename: 'SignUpBlock',
+    parentOrder: 2,
+    action: {
+      gtmEventName: 'gtmEventName',
+      journeyId: '2'
+    },
+    submitIcon: {
+      name: 'LockOpenRounded',
+      color: 'secondary',
+      size: 'lg'
+    },
+    submitLabel: 'Unlock Now!'
   }
 
   beforeEach(async () => {
@@ -106,6 +125,16 @@ describe('SignUp', () => {
     it('creates a SignUpBlock', async () => {
       await signUpResolver.signUpBlockCreate(input)
       expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
+    })
+  })
+
+  describe('SignUpBlockUpdate', () => {
+    it('updates a SignUpBlock', async () => {
+      await signUpResolver.signUpBlockUpdate(block._key, block.journeyId, block)
+      expect(service.update).toHaveBeenCalledWith(
+        block._key,
+        blockupdateresponse
+      )
     })
   })
 })

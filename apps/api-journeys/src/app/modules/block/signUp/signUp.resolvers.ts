@@ -1,9 +1,10 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { IdAsKey } from '@core/nest/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   SignUpBlock,
   SignUpBlockCreateInput,
+  SignUpBlockUpdateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
@@ -32,5 +33,18 @@ export class SignUpBlockResolvers {
       ...input,
       parentOrder: siblings.length
     })
+  }
+
+  @Mutation()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  @KeyAsId()
+  async signUpBlockUpdate(
+    @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
+    @Args('input') input: SignUpBlockUpdateInput
+  ): Promise<SignUpBlock> {
+    return await this.blockService.update(id, input)
   }
 }

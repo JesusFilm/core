@@ -15,6 +15,16 @@ input SignUpBlockCreateInput {
   submitLabel: String!
 }
 
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitLabel: String
+}
+
 extend type Mutation {
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: SignUpBlockUpdateInput!
+  ): SignUpBlock!
 }
