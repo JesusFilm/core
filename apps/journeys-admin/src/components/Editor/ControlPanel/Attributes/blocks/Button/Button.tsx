@@ -119,7 +119,7 @@ export function Button({
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Leading Icon ',
+            title: 'Trailing Icon ',
             mobileOpen: true,
             children: (
               <Icon

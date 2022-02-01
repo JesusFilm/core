@@ -1,18 +1,22 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import capitalize from 'lodash/capitalize'
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
 
 interface NameListProps {
   id: string
-  name: IconName | string | undefined
+  name?: IconName
   disabled: boolean
 }
 
 export function NameList({ id, name, disabled }: NameListProps): ReactElement {
-  const [iconName, setIconName] = useState(name)
+  const [iconName, setIconName] = useState('')
+  useEffect(() => {
+    name != null ? setIconName(name) : setIconName('')
+  }, [name])
 
   function handleChange(event: SelectChangeEvent): void {
     setIconName(event.target.value)
@@ -22,17 +26,23 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
       <Select
         labelId="icon-name-select"
         id="icon-name-select"
-        // value not changing
         value={iconName}
         onChange={handleChange}
         variant="filled"
-        // change disabled style
         disabled={disabled}
+        displayEmpty
+        IconComponent={KeyboardArrowDownRoundedIcon}
+        inputProps={{ 'aria-label': 'icon-name-select' }}
+        sx={{
+          '&.Mui-disabled': {
+            backgroundColor: 'white'
+          }
+        }}
       >
+        <MenuItem value="">None</MenuItem>
         {Object.values(IconName).map((name) => {
           return (
             <MenuItem key={`button-icon-name-${name}`} value={name}>
-              {/* Icon */}
               {capitalize(name)}
             </MenuItem>
           )
