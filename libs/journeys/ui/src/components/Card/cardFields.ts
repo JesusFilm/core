@@ -4,6 +4,7 @@ export const CARD_FIELDS = gql`
   fragment CardFields on CardBlock {
     id
     parentBlockId
+    parentOrder
     backgroundColor
     coverBlockId
     themeMode

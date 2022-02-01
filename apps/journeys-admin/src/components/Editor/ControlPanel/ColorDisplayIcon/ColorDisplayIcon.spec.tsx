@@ -17,6 +17,7 @@ describe('ColorDisplayIcon', () => {
       id: 'step.id',
       __typename: 'StepBlock',
       parentBlockId: null,
+      parentOrder: 0,
       locked: false,
       nextBlockId: null,
       children: [
@@ -25,6 +26,7 @@ describe('ColorDisplayIcon', () => {
           __typename: 'CardBlock',
           parentBlockId: 'step1.id',
           coverBlockId: null,
+          parentOrder: 0,
           backgroundColor: null,
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base,
@@ -34,6 +36,7 @@ describe('ColorDisplayIcon', () => {
               __typename: 'TypographyBlock',
               id: '1',
               parentBlockId: 'step.id',
+              parentOrder: 0,
               content: 'text block',
               variant: TypographyVariant.subtitle1,
               color: TypographyColor.primary,

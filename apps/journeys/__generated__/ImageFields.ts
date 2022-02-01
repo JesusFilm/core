@@ -11,6 +11,7 @@ export interface ImageFields {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   src: string;
   alt: string;
   width: number;

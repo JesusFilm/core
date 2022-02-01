@@ -6,6 +6,7 @@ export const BUTTON_FIELDS = gql`
   fragment ButtonFields on ButtonBlock {
     id
     parentBlockId
+    parentOrder
     label
     buttonVariant: variant
     buttonColor: color

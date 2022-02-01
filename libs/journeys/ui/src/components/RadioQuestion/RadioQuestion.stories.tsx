@@ -17,6 +17,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     label: 'Chat Privately',
     id: 'RadioOption1',
     parentBlockId: 'MoreQuestions',
+    parentOrder: 0,
     action: null,
     children: []
   },
@@ -25,6 +26,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     label: 'Get a bible',
     id: 'RadioOption2',
     parentBlockId: 'MoreQuestions',
+    parentOrder: 1,
     action: null,
     children: []
   },
@@ -33,6 +35,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     label: 'Watch more videos about Jesus',
     id: 'RadioOption3',
     parentBlockId: 'MoreQuestions',
+    parentOrder: 2,
     action: null,
     children: []
   },
@@ -41,6 +44,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     label: 'Ask a question',
     id: 'RadioOption4',
     parentBlockId: 'MoreQuestions',
+    parentOrder: 3,
     action: null,
     children: []
   }
@@ -53,6 +57,7 @@ const longLabel: Array<TreeBlock<RadioOptionFields>> = [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
     id: 'RadioOption1',
     parentBlockId: 'MoreQuestions',
+    parentOrder: 0,
     action: null,
     children: []
   },
@@ -62,6 +67,7 @@ const longLabel: Array<TreeBlock<RadioOptionFields>> = [
       'when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting',
     id: 'RadioOption2',
     parentBlockId: 'MoreQuestions',
+    parentOrder: 1,
     action: null,
     children: []
   }

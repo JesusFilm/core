@@ -11,6 +11,7 @@ const block: TreeBlock<ImageFields> = {
   height: 1067,
   alt: 'random image from unsplash',
   parentBlockId: 'Image1',
+  parentOrder: 0,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
   children: []
 }
@@ -35,6 +36,7 @@ describe('Admin Image', () => {
             __typename: 'CardBlock',
             parentBlockId: 'step0.id',
             coverBlockId: null,
+            parentOrder: 0,
             backgroundColor: null,
             themeMode: null,
             themeName: null,

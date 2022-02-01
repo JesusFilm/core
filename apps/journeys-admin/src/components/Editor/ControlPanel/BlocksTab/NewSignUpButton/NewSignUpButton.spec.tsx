@@ -12,6 +12,7 @@ describe('SignUp', () => {
     __typename: 'StepBlock',
     id: 'stepId',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: null,
     children: [
@@ -20,6 +21,7 @@ describe('SignUp', () => {
         __typename: 'CardBlock',
         parentBlockId: 'stepId',
         coverBlockId: null,
+        parentOrder: 0,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -89,6 +91,8 @@ describe('SignUp', () => {
         signUpBlockCreate: {
           id: 'signUpBlockId',
           parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          parentOrder: 0,
           submitLabel: 'Submit',
           __typename: 'SignUpBlock',
           action: {

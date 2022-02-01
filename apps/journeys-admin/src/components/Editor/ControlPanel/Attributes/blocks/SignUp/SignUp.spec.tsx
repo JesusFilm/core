@@ -14,6 +14,7 @@ describe('SignUp Attributes', () => {
       id: 'signup.id',
       __typename: 'SignUpBlock',
       parentBlockId: null,
+      parentOrder: 0,
       submitLabel: null,
       action: null,
       submitIcon: null,
@@ -32,6 +33,7 @@ describe('SignUp Attributes', () => {
       id: 'signup.id',
       __typename: 'SignUpBlock',
       parentBlockId: 'step1.id',
+      parentOrder: 0,
       submitLabel: 'Sign Up',
       action: {
         __typename: 'LinkAction',
