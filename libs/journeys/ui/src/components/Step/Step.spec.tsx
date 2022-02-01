@@ -7,6 +7,7 @@ const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
   id: 'Step1',
   parentBlockId: null,
+  parentOrder: 0,
   nextBlockId: null,
   locked: false,
   children: [
@@ -14,6 +15,7 @@ const block: TreeBlock<StepFields> = {
       __typename: 'ButtonBlock',
       id: 'Button1',
       parentBlockId: 'Step1',
+      parentOrder: 0,
       label: 'Button 1',
       buttonVariant: null,
       buttonColor: null,
@@ -27,6 +29,7 @@ const block: TreeBlock<StepFields> = {
       __typename: 'ButtonBlock',
       id: 'Button2',
       parentBlockId: 'Step1',
+      parentOrder: 1,
       label: 'Button 2',
       buttonVariant: null,
       buttonColor: null,

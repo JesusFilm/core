@@ -63,6 +63,7 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -76,6 +77,7 @@ export interface GetJourney_journey_blocks_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -108,6 +110,7 @@ export interface GetJourney_journey_blocks_GridContainerBlock {
   __typename: "GridContainerBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   spacing: number;
   direction: GridDirection;
   justifyContent: GridJustifyContent;
@@ -118,6 +121,7 @@ export interface GetJourney_journey_blocks_GridItemBlock {
   __typename: "GridItemBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   xl: number;
   lg: number;
   sm: number;
@@ -127,6 +131,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   src: string;
   alt: string;
   width: number;
@@ -173,6 +178,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   label: string;
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
 }
@@ -181,6 +187,7 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   label: string;
   description: string | null;
 }
@@ -227,6 +234,7 @@ export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   submitLabel: string | null;
   action: GetJourney_journey_blocks_SignUpBlock_action | null;
   submitIcon: GetJourney_journey_blocks_SignUpBlock_submitIcon | null;
@@ -236,6 +244,7 @@ export interface GetJourney_journey_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   /**
    * locked will be set to true if the user should not be able to manually
    * advance to the next step.
@@ -254,6 +263,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   align: TypographyAlign | null;
   color: TypographyColor | null;
   content: string;
@@ -269,6 +279,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;
@@ -324,6 +335,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
+  parentOrder: number;
   /**
    * triggerStart sets the time as to when a video navigates to the next block,
    * this is the number of seconds since the start of the video

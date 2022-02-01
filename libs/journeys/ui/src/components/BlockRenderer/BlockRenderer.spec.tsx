@@ -9,6 +9,7 @@ describe('BlockRenderer', () => {
       __typename: 'ButtonBlock',
       id: 'button',
       parentBlockId: 'question',
+      parentOrder: 0,
       label: 'Click to continue',
       buttonVariant: null,
       buttonColor: null,
@@ -29,6 +30,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       backgroundColor: null,
       coverBlockId: null,
+      parentOrder: 0,
       themeMode: null,
       themeName: null,
       fullscreen: false,
@@ -38,6 +40,7 @@ describe('BlockRenderer', () => {
           id: 'question',
           label: 'radio question',
           parentBlockId: 'step',
+          parentOrder: 0,
           description: 'description',
           children: []
         }
@@ -60,6 +63,7 @@ describe('BlockRenderer', () => {
       width: 1920,
       height: 1080,
       parentBlockId: null,
+      parentOrder: 0,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       children: []
     }
@@ -74,8 +78,9 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
       id: 'main',
-      label: 'radio option',
       parentBlockId: null,
+      parentOrder: 0,
+      label: 'radio option',
       action: null,
       children: []
     }
@@ -91,8 +96,9 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'RadioQuestionBlock',
       id: 'main',
-      label: 'radio question',
       parentBlockId: null,
+      parentOrder: 0,
+      label: 'radio question',
       description: 'description',
       children: []
     }
@@ -109,6 +115,7 @@ describe('BlockRenderer', () => {
       __typename: 'SignUpBlock',
       id: 'signUp',
       parentBlockId: null,
+      parentOrder: 0,
       submitLabel: null,
       submitIcon: null,
       action: {
@@ -132,12 +139,14 @@ describe('BlockRenderer', () => {
       id: 'step',
       parentBlockId: null,
       nextBlockId: null,
+      parentOrder: 0,
       locked: false,
       children: [
         {
           __typename: 'ButtonBlock',
           id: 'button',
           parentBlockId: 'question',
+          parentOrder: 0,
           label: 'Click to continue',
           buttonVariant: null,
           buttonColor: null,
@@ -158,6 +167,7 @@ describe('BlockRenderer', () => {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 0,
       align: null,
       color: null,
       content: 'How did we get here?',
@@ -183,6 +193,7 @@ describe('BlockRenderer', () => {
       startAt: null,
       parentBlockId: null,
       posterBlockId: null,
+      parentOrder: 0,
       children: []
     }
     const { getByTestId } = render(

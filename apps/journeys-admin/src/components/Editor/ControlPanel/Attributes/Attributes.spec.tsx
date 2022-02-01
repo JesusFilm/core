@@ -12,6 +12,7 @@ describe('Attributes', () => {
       id: 'card1.id',
       __typename: 'CardBlock',
       parentBlockId: 'step1.id',
+      parentOrder: 0,
       coverBlockId: 'image1.id',
       backgroundColor: null,
       themeMode: null,
@@ -28,6 +29,7 @@ describe('Attributes', () => {
       id: 'step.id',
       __typename: 'StepBlock',
       parentBlockId: null,
+      parentOrder: 0,
       locked: false,
       nextBlockId: null,
       children: [
@@ -35,6 +37,7 @@ describe('Attributes', () => {
           id: 'card1.id',
           __typename: 'CardBlock',
           parentBlockId: 'step1.id',
+          parentOrder: 0,
           coverBlockId: 'image1.id',
           backgroundColor: null,
           themeMode: null,
@@ -54,6 +57,7 @@ describe('Attributes', () => {
       id: 'step.id',
       __typename: 'StepBlock',
       parentBlockId: null,
+      parentOrder: 0,
       locked: false,
       nextBlockId: null,
       children: []

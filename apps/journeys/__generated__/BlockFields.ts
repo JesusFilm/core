@@ -127,7 +127,7 @@ export interface BlockFields_ImageBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number;
-  src: string | null;
+  src: string;
   alt: string;
   width: number;
   height: number;

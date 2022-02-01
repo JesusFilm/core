@@ -46,6 +46,7 @@ const children: TreeBlock[] = [
     id: 'typographyBlockId1',
     __typename: 'TypographyBlock',
     parentBlockId: null,
+    parentOrder: 0,
     align: null,
     color: null,
     content: "What's our purpose, and how did we get here?",
@@ -56,6 +57,7 @@ const children: TreeBlock[] = [
     id: 'typographyBlockId2',
     __typename: 'TypographyBlock',
     parentBlockId: null,
+    parentOrder: 1,
     align: null,
     color: null,
     content:
@@ -67,6 +69,7 @@ const children: TreeBlock[] = [
     __typename: 'ButtonBlock',
     id: 'button',
     parentBlockId: 'question',
+    parentOrder: 2,
     label: 'Watch Now',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
@@ -104,6 +107,7 @@ ImageCover.args = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 0,
       align: null,
       color: TypographyColor.secondary,
       content: 'It s Ok To Get Angry',
@@ -114,6 +118,7 @@ ImageCover.args = {
       id: 'typographyBlockId2',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 1,
       align: null,
       color: null,
       content:
@@ -125,6 +130,7 @@ ImageCover.args = {
       id: 'typographyBlockId3',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 2,
       align: null,
       color: null,
       content: 'Bible, 1 Corinthians 15:3-4',
@@ -139,6 +145,7 @@ ImageCover.args = {
       height: 1080,
       alt: 'random image from unsplash',
       parentBlockId: 'Image1',
+      parentOrder: 3,
       children: [],
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
     }
@@ -153,6 +160,7 @@ VideoCover.args = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 0,
       align: null,
       color: TypographyColor.secondary,
       content: 'It s Ok To Get Angry',
@@ -163,6 +171,7 @@ VideoCover.args = {
       id: 'typographyBlockId2',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 1,
       align: null,
       color: null,
       content:
@@ -174,6 +183,7 @@ VideoCover.args = {
       id: 'typographyBlockId3',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 2,
       align: null,
       color: null,
       content: 'Bible, 1 Corinthians 15:3-4',
@@ -184,6 +194,7 @@ VideoCover.args = {
       __typename: 'VideoBlock',
       id: 'videoBlockId1',
       parentBlockId: null,
+      parentOrder: 3,
       muted: true,
       autoplay: true,
       title: 'video',
@@ -204,6 +215,7 @@ VideoCover.args = {
           height: 1067,
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
           parentBlockId: 'videoBlockId',
+          parentOrder: 0,
           children: []
         }
       ]
@@ -222,6 +234,7 @@ ImageBlur.args = {
       id: 'typographyBlockId1',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 0,
       align: null,
       color: null,
       content: 'Bible Quote',
@@ -232,6 +245,7 @@ ImageBlur.args = {
       id: 'typographyBlockId2',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 1,
       align: null,
       color: null,
       content:
@@ -243,6 +257,7 @@ ImageBlur.args = {
       id: 'typographyBlockId3',
       __typename: 'TypographyBlock',
       parentBlockId: null,
+      parentOrder: 2,
       align: null,
       color: null,
       content: 'Bible, 1 Corinthians 15:3-4',
@@ -257,6 +272,7 @@ ImageBlur.args = {
       height: 1080,
       alt: 'random image from unsplash',
       parentBlockId: 'Image1',
+      parentOrder: 3,
       children: [],
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
     }

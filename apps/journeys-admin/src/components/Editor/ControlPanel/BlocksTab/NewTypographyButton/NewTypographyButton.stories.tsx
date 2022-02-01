@@ -52,6 +52,7 @@ export const Default: Story = () => {
               __typename: 'StepBlock',
               id: 'stepId',
               parentBlockId: null,
+              parentOrder: 0,
               locked: true,
               nextBlockId: null,
               children: [
@@ -60,6 +61,7 @@ export const Default: Story = () => {
                   __typename: 'CardBlock',
                   parentBlockId: 'stepId',
                   coverBlockId: null,
+                  parentOrder: 0,
                   backgroundColor: null,
                   themeMode: null,
                   themeName: null,

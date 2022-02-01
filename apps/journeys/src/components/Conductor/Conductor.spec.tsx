@@ -26,6 +26,7 @@ describe('Conductor', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: false,
         nextBlockId: 'step2.id',
         children: [
@@ -34,6 +35,7 @@ describe('Conductor', () => {
             __typename: 'CardBlock',
             parentBlockId: 'step1.id',
             coverBlockId: 'null',
+            parentOrder: 0,
             backgroundColor: null,
             themeMode: null,
             themeName: null,
@@ -43,6 +45,7 @@ describe('Conductor', () => {
                 id: 'radioQuestion1.id',
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card1.id',
+                parentOrder: 0,
                 label: 'Step 1',
                 description: 'Start',
                 children: [
@@ -50,6 +53,7 @@ describe('Conductor', () => {
                     id: 'radioOption2.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 0,
                     label: '1. Step 2 (Locked)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -62,6 +66,7 @@ describe('Conductor', () => {
                     id: 'radioOption3.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 1,
                     label: '1. Step 3 (No nextBlockId)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -74,6 +79,7 @@ describe('Conductor', () => {
                     id: 'radioOption4.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 2,
                     label: '1. Step 4 (End)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -92,6 +98,7 @@ describe('Conductor', () => {
         id: 'step2.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: true,
         nextBlockId: 'step3.id',
         children: [
@@ -100,6 +107,7 @@ describe('Conductor', () => {
             __typename: 'CardBlock',
             parentBlockId: 'step2.id',
             coverBlockId: 'null',
+            parentOrder: 0,
             backgroundColor: null,
             themeMode: null,
             themeName: null,
@@ -109,6 +117,7 @@ describe('Conductor', () => {
                 id: 'radioQuestion1.id',
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card2.id',
+                parentOrder: 0,
                 label: 'Step 2',
                 description: 'Locked',
                 children: [
@@ -116,6 +125,7 @@ describe('Conductor', () => {
                     id: 'radioOption1.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 0,
                     label: '2. Step 1 (Start)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -128,6 +138,7 @@ describe('Conductor', () => {
                     id: 'radioOption3.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 1,
                     label: '2. Step 3 (No nextBlockId)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -140,6 +151,7 @@ describe('Conductor', () => {
                     id: 'radioOption4.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 2,
                     label: '2. Step 4 (End)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -158,6 +170,7 @@ describe('Conductor', () => {
         id: 'step3.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: false,
         nextBlockId: null,
         children: [
@@ -166,6 +179,7 @@ describe('Conductor', () => {
             __typename: 'CardBlock',
             parentBlockId: 'step3.id',
             coverBlockId: 'null',
+            parentOrder: 0,
             backgroundColor: null,
             themeMode: null,
             themeName: null,
@@ -175,6 +189,7 @@ describe('Conductor', () => {
                 id: 'radioQuestion1.id',
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card3.id',
+                parentOrder: 0,
                 label: 'Step 3',
                 description: 'No nextBlockId',
                 children: [
@@ -182,6 +197,7 @@ describe('Conductor', () => {
                     id: 'radioOption1.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 0,
                     label: '3. Step 1 (Start)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -194,6 +210,7 @@ describe('Conductor', () => {
                     id: 'radioOption2.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 1,
                     label: '3. Step 2 (Locked)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -206,6 +223,7 @@ describe('Conductor', () => {
                     id: 'radioOption4.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 2,
                     label: '3. Step 4 (End)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -224,6 +242,7 @@ describe('Conductor', () => {
         id: 'step4.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: false,
         nextBlockId: null,
         children: [
@@ -232,6 +251,7 @@ describe('Conductor', () => {
             __typename: 'CardBlock',
             parentBlockId: 'step4.id',
             coverBlockId: 'null',
+            parentOrder: 0,
             backgroundColor: null,
             themeMode: null,
             themeName: null,
@@ -241,6 +261,7 @@ describe('Conductor', () => {
                 id: 'radioQuestion1.id',
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card4.id',
+                parentOrder: 0,
                 label: 'Step 4',
                 description: 'End',
                 children: [
@@ -248,6 +269,7 @@ describe('Conductor', () => {
                     id: 'radioOption1.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 0,
                     label: '4. Step 1 (Start)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -260,6 +282,7 @@ describe('Conductor', () => {
                     id: 'radioOption2.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 1,
                     label: '4. Step 2 (Locked)',
                     action: {
                       __typename: 'NavigateToBlockAction',
@@ -272,6 +295,7 @@ describe('Conductor', () => {
                     id: 'radioOption3.id',
                     __typename: 'RadioOptionBlock',
                     parentBlockId: 'radioQuestion1.id',
+                    parentOrder: 2,
                     label: '4. Step 3 (No nextBlockId)',
                     action: {
                       __typename: 'NavigateToBlockAction',

@@ -11,6 +11,7 @@ describe('Step', () => {
       id: 'step1.id',
       __typename: 'StepBlock',
       parentBlockId: 'step1.id',
+      parentOrder: 0,
       locked: false,
       nextBlockId: null,
       children: []
@@ -26,6 +27,7 @@ describe('Step', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: 'step1.id',
+        parentOrder: 0,
         locked: true,
         nextBlockId: null,
         children: []
@@ -48,6 +50,7 @@ describe('Step', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: 'step1.id',
+        parentOrder: 0,
         locked: true,
         nextBlockId: null,
         children: []
@@ -61,6 +64,7 @@ describe('Step', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: false,
         nextBlockId: 'step2.id',
         children: []
@@ -69,6 +73,7 @@ describe('Step', () => {
         id: 'step2.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 1,
         locked: false,
         nextBlockId: null,
         children: []
@@ -90,6 +95,7 @@ describe('Step', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 0,
         locked: false,
         nextBlockId: 'step2.id',
         children: []
@@ -98,6 +104,7 @@ describe('Step', () => {
         id: 'step2.id',
         __typename: 'StepBlock',
         parentBlockId: null,
+        parentOrder: 1,
         locked: false,
         nextBlockId: null,
         children: [
@@ -105,8 +112,9 @@ describe('Step', () => {
             __typename: 'CardBlock',
             id: 'card1.id',
             parentBlockId: 'step2.id',
-            backgroundColor: null,
             coverBlockId: null,
+            parentOrder: 0,
+            backgroundColor: null,
             themeMode: null,
             themeName: null,
             fullscreen: false,
@@ -116,6 +124,7 @@ describe('Step', () => {
                 id: 'typography',
                 content: 'my Title',
                 parentBlockId: 'card1.id',
+                parentOrder: 0,
                 align: null,
                 color: null,
                 variant: null,
