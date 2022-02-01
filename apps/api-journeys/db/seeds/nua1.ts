@@ -464,7 +464,7 @@ export async function nua1(): Promise<void> {
     __typename: 'RadioQuestionBlock',
     parentBlockId: gridItemRight._key,
     label: '',
-    parentOrder: 2
+    parentOrder: 0
   })
 
   await db.collection('blocks').saveAll([
@@ -488,7 +488,7 @@ export async function nua1(): Promise<void> {
         gtmEventName: 'click',
         journeyId: '2'
       },
-      parentOrder: 2
+      parentOrder: 1
     },
     {
       journeyId: journey._key,
@@ -499,7 +499,7 @@ export async function nua1(): Promise<void> {
         gtmEventName: 'click',
         journeyId: '2'
       },
-      parentOrder: 3
+      parentOrder: 2
     },
     {
       journeyId: journey._key,
@@ -510,7 +510,7 @@ export async function nua1(): Promise<void> {
         gtmEventName: 'click',
         journeyId: '2'
       },
-      parentOrder: 4
+      parentOrder: 3
     }
   ])
 }

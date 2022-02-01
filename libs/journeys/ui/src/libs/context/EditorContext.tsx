@@ -79,7 +79,10 @@ type EditorAction =
   | SetActiveTabAction
   | SetStepsAction
 
-function search(tree: TreeBlock[], id: string): TreeBlock | undefined {
+export function searchBlocks(
+  tree: TreeBlock[],
+  id: string
+): TreeBlock | undefined {
   const stack = [...tree]
   while (stack.length > 0) {
     const node = stack.pop()
@@ -103,7 +106,7 @@ export const reducer = (
       return {
         ...state,
         selectedBlock:
-          action.id != null ? search(state.steps, action.id) : undefined
+          action.id != null ? searchBlocks(state.steps, action.id) : undefined
       }
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.id }
@@ -134,7 +137,7 @@ export const reducer = (
             : action.steps[0],
         selectedBlock:
           state.selectedBlock != null
-            ? search(action.steps, state.selectedBlock.id)
+            ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
   }
