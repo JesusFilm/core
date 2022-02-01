@@ -1,7 +1,6 @@
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import Switch from '@mui/material/Switch'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import {
   IconColor,
   IconSize,
@@ -13,7 +12,7 @@ import { NameList } from './NameList'
 
 interface IconProps {
   id: string
-  iconName: IconName | undefined
+  iconName?: IconName
   iconColor: IconColor | null | undefined
   iconSize: IconSize | null | undefined
 }
@@ -24,27 +23,16 @@ export function Icon({
   iconColor,
   iconSize
 }: IconProps): ReactElement {
-  const [checked, setChecked] = useState(true)
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setChecked(event.target.checked)
-  }
+  const [checked, setChecked] = useState(iconName != null)
+  useEffect(() => {
+    setChecked(iconName != null)
+  }, [iconName])
 
   return (
     <Box sx={{ px: 6 }}>
-      <Box sx={{ display: 'flex', pt: 4 }}>
-        <Box sx={{ flexDirection: 'column' }}>
-          <Typography variant="subtitle2">Show Icon</Typography>
-          <Typography variant="caption">Show/Hide Icon on Button</Typography>
-        </Box>
-        <Switch
-          checked={checked}
-          onChange={handleChange}
-          inputProps={{ 'aria-label': 'controlled' }}
-          sx={{
-            marginLeft: 'auto'
-          }}
-        />
+      <Box sx={{ display: 'flex', pt: 4, flexDirection: 'column' }}>
+        <Typography variant="subtitle2">Show Icon</Typography>
+        <Typography variant="caption">Show/Hide Icon on Button</Typography>
       </Box>
 
       <NameList id={id} name={iconName} disabled={!checked} />

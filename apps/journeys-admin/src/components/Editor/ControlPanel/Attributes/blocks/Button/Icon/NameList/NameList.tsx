@@ -42,7 +42,7 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
           }
         }}
       >
-        <MenuItem value="">None</MenuItem>
+        <MenuItem value="">Select an icon...</MenuItem>
         {Object.values(IconName).map((name) => {
           return (
             <MenuItem key={`button-icon-name-${name}`} value={name}>
