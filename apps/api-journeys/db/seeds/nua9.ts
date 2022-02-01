@@ -1177,7 +1177,8 @@ export async function nua9(): Promise<void> {
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
-    }
+    },
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -1191,7 +1192,8 @@ export async function nua9(): Promise<void> {
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
-    }
+    },
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -1205,7 +1207,8 @@ export async function nua9(): Promise<void> {
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
-    }
+    },
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -1219,7 +1222,8 @@ export async function nua9(): Promise<void> {
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
-    }
+    },
+    parentOrder: 0
   })
 
   const lastImageId = uuidv4()
