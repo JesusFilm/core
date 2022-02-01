@@ -37,14 +37,16 @@ export function ColorToggleGroup({
   }
   return (
     <>
-      <Typography>Color</Typography>
+      <Typography variant="subtitle2" color="secondary.dark">
+        Color
+      </Typography>
       <ToggleButtonGroup
         orientation="vertical"
         value={selected}
         exclusive
         onChange={handleChange}
         fullWidth
-        sx={{ display: 'flex', px: 6, py: 4 }}
+        sx={{ display: 'flex', py: 4 }}
         color="primary"
       >
         {colorSorted.map((color) => {
