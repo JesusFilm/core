@@ -66,7 +66,7 @@ describe('RadioQuestion', () => {
   const radioQuestionInput = {
     __typename: 'RadioQuestionBlock',
     parentBlockId: '2',
-    parentOrder: 1,
+    parentOrder: 2,
     journeyId: '2',
     label: 'label'
   }
@@ -76,7 +76,7 @@ describe('RadioQuestion', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => [block]),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
