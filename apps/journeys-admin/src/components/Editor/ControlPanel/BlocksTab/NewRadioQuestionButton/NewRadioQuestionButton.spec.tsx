@@ -17,6 +17,7 @@ describe('RadioQuestion', () => {
     __typename: 'StepBlock',
     id: 'stepId',
     parentBlockId: null,
+    parentOrder: 0,
     locked: true,
     nextBlockId: null,
     children: [
@@ -24,6 +25,7 @@ describe('RadioQuestion', () => {
         id: 'cardId',
         __typename: 'CardBlock',
         parentBlockId: 'stepId',
+        parentOrder: 0,
         coverBlockId: null,
         backgroundColor: null,
         themeMode: null,
