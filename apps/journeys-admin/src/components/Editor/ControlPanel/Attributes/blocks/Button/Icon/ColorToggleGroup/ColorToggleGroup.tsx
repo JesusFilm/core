@@ -8,7 +8,7 @@ import { ColorDisplayIcon } from '../../../../../ColorDisplayIcon'
 
 interface ColorToggleGroupProps {
   id: string
-  color: IconColor | null
+  color: IconColor | null | undefined
 }
 
 export function ColorToggleGroup({

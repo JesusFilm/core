@@ -11,9 +11,9 @@ import { SizeToggleGroup } from './SizeToggleGroup'
 
 interface IconProps {
   id: string
-  iconName: IconName | null
-  iconColor: IconColor | null
-  iconSize: IconSize | null
+  iconName: IconName | undefined
+  iconColor: IconColor | null | undefined
+  iconSize: IconSize | null | undefined
 }
 
 export function Icon({

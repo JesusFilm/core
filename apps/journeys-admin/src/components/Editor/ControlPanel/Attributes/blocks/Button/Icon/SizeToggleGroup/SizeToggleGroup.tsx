@@ -7,7 +7,7 @@ import { IconSize } from '../../../../../../../../../__generated__/globalTypes'
 
 interface SizeToggleGroupProps {
   id: string
-  size: IconSize | null
+  size: IconSize | null | undefined
 }
 
 export function SizeToggleGroup({
