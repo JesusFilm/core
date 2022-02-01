@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
@@ -38,6 +39,58 @@ export const Default: Story = () => {
     <EditorProvider>
       <Attributes selected={selected} step={selected} />
     </EditorProvider>
+  )
+}
+
+export const WithMove: Story = () => {
+  const block: TreeBlock = {
+    id: 'typographyBlockId1',
+    __typename: 'TypographyBlock',
+    parentBlockId: 'card0.id',
+    parentOrder: 0,
+    align: null,
+    color: null,
+    content: 'Text1',
+    variant: null,
+    children: []
+  }
+
+  const step: TreeBlock<StepBlock> = {
+    id: 'step0.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: 'step2.id',
+    children: [
+      {
+        id: 'card0.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step0.id',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          block,
+          { ...block, id: 'typographyBlockId2', parentOrder: 1 },
+          { ...block, id: 'typographyBlockId3', parentOrder: 2 }
+        ]
+      }
+    ]
+  }
+
+  return (
+    <MockedProvider>
+      <EditorProvider>
+        <Attributes
+          selected={{ ...block, id: 'typographyBlockId2', parentOrder: 1 }}
+          step={step}
+        />
+      </EditorProvider>
+    </MockedProvider>
   )
 }
 

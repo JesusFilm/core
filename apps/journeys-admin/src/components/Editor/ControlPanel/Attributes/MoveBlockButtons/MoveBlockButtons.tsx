@@ -73,7 +73,7 @@ export function MoveBlockButtons({
       : undefined
 
   useEffect(() => {
-    const fixCover = async (): Promise<void> => {
+    const fixCoverOrder = async (): Promise<void> => {
       if (coverBlock != null && coverBlock.parentOrder !== 0) {
         await blockOrderUpdate({
           variables: {
@@ -85,7 +85,7 @@ export function MoveBlockButtons({
       }
     }
 
-    void fixCover()
+    void fixCoverOrder()
   }, [coverBlock, journey, blockOrderUpdate])
 
   const handleMove = async (move: 'up' | 'down'): Promise<void> => {
