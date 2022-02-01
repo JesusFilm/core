@@ -10,6 +10,14 @@ interface SizeToggleGroupProps {
   size: IconSize | null | undefined
 }
 
+enum IconSizeName {
+  sm = 'small',
+  md = 'medium',
+  lg = 'large',
+  xl = 'extra large',
+  inherit = 'inherit'
+}
+
 export function SizeToggleGroup({
   id,
   size
@@ -50,7 +58,7 @@ export function SizeToggleGroup({
             >
               {/* Icon */}
               <Typography variant="subtitle2" sx={{ pl: 2 }}>
-                {capitalize(size)}
+                {capitalize(IconSizeName[size])}
               </Typography>
             </StyledToggleButton>
           )
