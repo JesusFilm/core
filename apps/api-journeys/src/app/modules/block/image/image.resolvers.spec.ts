@@ -54,7 +54,7 @@ describe('Image', () => {
   const imageblockresponse = {
     _key: input.id,
     parentBlockId: input.parentBlockId,
-    parentOrder: 0,
+    parentOrder: 2,
     journeyId: input.journeyId,
     __typename: 'ImageBlock',
     src: input.src,
@@ -79,7 +79,7 @@ describe('Image', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => []),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
