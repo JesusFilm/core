@@ -4,6 +4,9 @@ import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import capitalize from 'lodash/capitalize'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import { Icon } from '@core/journeys/ui'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
 
 interface NameListProps {
@@ -22,7 +25,7 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
     setIconName(event.target.value)
   }
   return (
-    <FormControl fullWidth>
+    <FormControl fullWidth hiddenLabel>
       <Select
         labelId="icon-name-select"
         id="icon-name-select"
@@ -35,7 +38,7 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
         inputProps={{ 'aria-label': 'icon-name-select' }}
         sx={{
           '&.Mui-disabled': {
-            backgroundColor: 'white'
+            backgroundColor: 'transparent'
           }
         }}
       >
@@ -43,7 +46,16 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
         {Object.values(IconName).map((name) => {
           return (
             <MenuItem key={`button-icon-name-${name}`} value={name}>
-              {capitalize(name)}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Icon
+                  __typename={'Icon'}
+                  name={name}
+                  color={null}
+                  size={null}
+                />
+
+                <Typography sx={{ pl: 3 }}>{capitalize(name)}</Typography>
+              </Box>
             </MenuItem>
           )
         })}
