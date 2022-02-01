@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { useQuery } from '@apollo/client'
-import Head from 'next/head'
 import {
   AuthAction,
   useAuthUser,
@@ -8,6 +7,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { NextSeo } from 'next-seo'
 import {
   addApolloState,
   initializeApollo
@@ -28,9 +28,10 @@ function JourneyEditPage(): ReactElement {
     <>
       {data?.journey != null && (
         <>
-          <Head>
-            <title>{data.journey.title}</title>
-          </Head>
+          <NextSeo
+            title={`Edit ${data.journey.title}`}
+            description={data.journey.description ?? undefined}
+          />
           <PageWrapper
             title={data.journey.title}
             showDrawer
