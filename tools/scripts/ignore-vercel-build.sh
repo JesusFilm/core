@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # This script is used to ignore the vercel build. It should have a ENV APP_NAME set to the project name in Nx.
+npm install -g npm@latest
 
 # Determine version of Nx installed
 NX_VERSION=$(node -e "console.log(require('./package.json').devDependencies['@nrwl/workspace'])")
