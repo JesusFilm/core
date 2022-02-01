@@ -224,7 +224,6 @@ export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
