@@ -37,6 +37,12 @@ enum IconSize {
   inherit
 }
 
+input IconUpdateInput {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
 type Icon {
   name: IconName!
   color: IconColor
@@ -307,6 +313,7 @@ input SignUpBlockCreateInput {
 input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitLabel: String
+  submitIcon: IconUpdateInput
 }
 
 type StepBlock implements Block {

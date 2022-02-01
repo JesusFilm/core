@@ -201,6 +201,12 @@ enum IconSize {
   xl
 }
 
+input IconUpdateInput {
+  color: IconColor
+  name: IconName
+  size: IconSize
+}
+
 enum IdType {
   databaseId
   slug
@@ -421,6 +427,7 @@ input SignUpBlockCreateInput {
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
+  submitIcon: IconUpdateInput
   submitLabel: String
 }
 

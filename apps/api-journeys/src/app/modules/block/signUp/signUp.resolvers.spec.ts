@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { SignUpBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  IconName,
+  IconColor,
+  IconSize,
+  SignUpBlockCreateInput
+} from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolvers } from '../block.resolvers'
 import { BlockService } from '../block.service'
@@ -23,9 +28,9 @@ describe('SignUp', () => {
       journeyId: '2'
     },
     submitIcon: {
-      name: 'LockOpenRounded',
-      color: 'secondary',
-      size: 'lg'
+      name: IconName.LockOpenRounded,
+      color: IconColor.secondary,
+      size: IconSize.lg
     },
     submitLabel: 'Unlock Now!'
   }
@@ -86,9 +91,9 @@ describe('SignUp', () => {
       journeyId: '2'
     },
     submitIcon: {
-      name: 'LockOpenRounded',
-      color: 'secondary',
-      size: 'lg'
+      name: IconName.LockOpenRounded,
+      color: IconColor.secondary,
+      size: IconSize.lg
     },
     submitLabel: 'Unlock Now!'
   }

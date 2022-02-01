@@ -18,6 +18,7 @@ input SignUpBlockCreateInput {
 input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitLabel: String
+  submitIcon: IconUpdateInput
 }
 
 extend type Mutation {
