@@ -37,16 +37,20 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       )
     }
 
+    case 'VideoBlock': {
+      return step.id === selected.parentBlockId ? (
+        <p>Video Attributes</p>
+      ) : (
+        withMoveButtons(<p>Video Attributes</p>)
+      )
+    }
+
     case 'TypographyBlock': {
       return withMoveButtons(<Typography {...selected} />)
     }
 
     case 'ButtonBlock': {
       return withMoveButtons(<Button {...selected} />)
-    }
-
-    case 'SignUpBlock': {
-      return withMoveButtons(<SignUp {...selected} />)
     }
 
     case 'RadioQuestionBlock': {
@@ -57,12 +61,8 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       return withMoveButtons(<RadioOption {...selected} />)
     }
 
-    case 'VideoBlock': {
-      return step.id === selected.parentBlockId ? (
-        <p>Video Attributes</p>
-      ) : (
-        withMoveButtons(<p>Video Attributes</p>)
-      )
+    case 'SignUpBlock': {
+      return withMoveButtons(<SignUp {...selected} />)
     }
 
     default:

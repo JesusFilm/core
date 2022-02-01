@@ -108,9 +108,12 @@ export function MoveBlockButtons({
 
   return (
     <Box>
-      <ButtonGroup disableElevation variant="contained">
+      <ButtonGroup
+        data-testid="move-block-buttons"
+        disableElevation
+        variant="contained"
+      >
         <StyledMoveButton
-          data-testid="move-block-up"
           aria-label="move-block-up"
           disabled={selectedBlock.parentOrder === firstBlockIndex}
           onClick={async () => await handleMove('up')}
@@ -118,7 +121,6 @@ export function MoveBlockButtons({
           <KeyboardArrowUpRoundedIcon />
         </StyledMoveButton>
         <StyledMoveButton
-          data-testid="move-block-down"
           aria-label="move-block-down"
           disabled={selectedBlock.parentOrder >= lastBlockIndex}
           onClick={async () => await handleMove('down')}

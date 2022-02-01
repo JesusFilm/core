@@ -71,7 +71,7 @@ describe('MoveBlockButton', () => {
   }))
 
   it('should move selected block up on click', async () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -100,12 +100,12 @@ describe('MoveBlockButton', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('move-block-up'))
+    fireEvent.click(getByRole('button', { name: 'move-block-up' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
   it('should move selected block down on click', async () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -134,7 +134,7 @@ describe('MoveBlockButton', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('move-block-down'))
+    fireEvent.click(getByRole('button', { name: 'move-block-down' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
