@@ -23,7 +23,6 @@ input StepBlockCreateInput {
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
-  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
