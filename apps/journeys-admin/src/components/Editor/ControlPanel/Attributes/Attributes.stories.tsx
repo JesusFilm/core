@@ -36,7 +36,7 @@ export const Default: Story = () => {
 
   return (
     <EditorProvider>
-      <Attributes selected={selected} />
+      <Attributes selected={selected} step={selected} />
     </EditorProvider>
   )
 }

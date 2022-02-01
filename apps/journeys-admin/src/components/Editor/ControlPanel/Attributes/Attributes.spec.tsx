@@ -20,7 +20,7 @@ describe('Attributes', () => {
       fullscreen: true,
       children: []
     }
-    const { getByText } = render(<Attributes selected={step} />)
+    const { getByText } = render(<Attributes selected={step} step={step} />)
     expect(getByText('Background Color')).toBeInTheDocument()
   })
 
@@ -47,7 +47,7 @@ describe('Attributes', () => {
         }
       ]
     }
-    const { getByText } = render(<Attributes selected={step} />)
+    const { getByText } = render(<Attributes selected={step} step={step} />)
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(getByText('Background Color')).toBeInTheDocument()
   })
@@ -62,7 +62,9 @@ describe('Attributes', () => {
       nextBlockId: null,
       children: []
     }
-    const { getByText, queryByText } = render(<Attributes selected={step} />)
+    const { getByText, queryByText } = render(
+      <Attributes selected={step} step={step} />
+    )
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(queryByText('Background Color')).not.toBeInTheDocument()
   })
