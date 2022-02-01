@@ -25,7 +25,7 @@ export function NameList({ id, name, disabled }: NameListProps): ReactElement {
     setIconName(event.target.value)
   }
   return (
-    <FormControl fullWidth hiddenLabel>
+    <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 9 }}>
       <Select
         labelId="icon-name-select"
         id="icon-name-select"

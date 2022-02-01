@@ -31,8 +31,8 @@ export function Icon({
   }
 
   return (
-    <>
-      <Box sx={{ display: 'flex' }}>
+    <Box sx={{ px: 6 }}>
+      <Box sx={{ display: 'flex', pt: 4 }}>
         <Box sx={{ flexDirection: 'column' }}>
           <Typography variant="subtitle2">Show Icon</Typography>
           <Typography variant="caption">Show/Hide Icon on Button</Typography>
@@ -55,6 +55,6 @@ export function Icon({
           <SizeToggleGroup id={id} size={iconSize} />
         </Box>
       )}
-    </>
+    </Box>
   )
 }
