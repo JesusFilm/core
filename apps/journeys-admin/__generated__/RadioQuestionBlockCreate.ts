@@ -11,11 +11,10 @@ import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput } from "./gl
 
 export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
   __typename: "RadioQuestionBlock";
-  journeyId: string;
-  label: string;
-  parentBlockId: string | null;
   id: string;
+  parentBlockId: string | null;
   parentOrder: number;
+  label: string;
   description: string | null;
 }
 
@@ -52,11 +51,10 @@ export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCre
 
 export interface RadioQuestionBlockCreate_radioOption1 {
   __typename: "RadioOptionBlock";
-  journeyId: string;
-  label: string;
-  parentBlockId: string | null;
   id: string;
+  parentBlockId: string | null;
   parentOrder: number;
+  label: string;
   action: RadioQuestionBlockCreate_radioOption1_action | null;
 }
 
@@ -93,11 +91,10 @@ export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCre
 
 export interface RadioQuestionBlockCreate_radioOption2 {
   __typename: "RadioOptionBlock";
-  journeyId: string;
-  label: string;
-  parentBlockId: string | null;
   id: string;
+  parentBlockId: string | null;
   parentOrder: number;
+  label: string;
   action: RadioQuestionBlockCreate_radioOption2_action | null;
 }
 

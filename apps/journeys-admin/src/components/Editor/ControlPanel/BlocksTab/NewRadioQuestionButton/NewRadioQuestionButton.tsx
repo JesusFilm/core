@@ -23,21 +23,21 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
     $radioOptionBlockCreateInput2: RadioOptionBlockCreateInput!
   ) {
     radioQuestionBlockCreate(input: $input) {
-      journeyId
-      label
+      id
       parentBlockId
+      parentOrder
       ...RadioQuestionFields
     }
     radioOption1: radioOptionBlockCreate(input: $radioOptionBlockCreateInput1) {
-      journeyId
-      label
+      id
       parentBlockId
+      parentOrder
       ...RadioOptionFields
     }
     radioOption2: radioOptionBlockCreate(input: $radioOptionBlockCreateInput2) {
-      journeyId
-      label
+      id
       parentBlockId
+      parentOrder
       ...RadioOptionFields
     }
   }
