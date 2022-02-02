@@ -101,7 +101,6 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
   themeMode: ThemeMode
   themeName: ThemeName
 }
@@ -464,7 +463,6 @@ input StepBlockCreateInput {
   locked: Boolean
   nextBlockId: ID
   parentBlockId: ID
-  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
