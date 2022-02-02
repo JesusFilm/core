@@ -7,6 +7,7 @@ import {
   useContext,
   useReducer
 } from 'react'
+import { searchBlocks } from '../searchBlocks'
 import { TreeBlock } from '../transformer'
 import { BlockFields_StepBlock as StepBlock } from '../transformer/__generated__/BlockFields'
 
@@ -78,20 +79,6 @@ type EditorAction =
   | SetDrawerMobileOpenAction
   | SetActiveTabAction
   | SetStepsAction
-
-export function searchBlocks(
-  tree: TreeBlock[],
-  id: string
-): TreeBlock | undefined {
-  const stack = [...tree]
-  while (stack.length > 0) {
-    const node = stack.pop()
-    if (node != null) {
-      if (node.id === id) return node
-      if (node.children.length > 0) stack.push(...node.children)
-    }
-  }
-}
 
 export const reducer = (
   state: EditorState,
