@@ -17,8 +17,8 @@ export const IMAGE_BLOCK_CREATE = gql`
   mutation ImageBlockCreate($input: ImageBlockCreateInput!) {
     imageBlockCreate(input: $input) {
       id
-      journeyId
       parentBlockId
+      parentOrder
       ...ImageFields
     }
   }

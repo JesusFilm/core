@@ -12,7 +12,6 @@ import { ImageBlockCreateInput } from "./globalTypes";
 export interface ImageBlockCreate_imageBlockCreate {
   __typename: "ImageBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   parentOrder: number;
   src: string | null;
