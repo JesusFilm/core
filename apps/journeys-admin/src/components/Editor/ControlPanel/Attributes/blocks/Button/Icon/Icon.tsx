@@ -19,6 +19,10 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { ColorToggleGroup } from './ColorToggleGroup'
 import { SizeToggleGroup } from './SizeToggleGroup'
 
+interface IconProps {
+  iconType: IconType
+}
+
 export enum IconType {
   start = 'start',
   end = 'end'
@@ -53,7 +57,7 @@ export const END_ICON_UPDATE = gql`
   }
 `
 
-export function Icon(iconType: IconType): ReactElement {
+export function Icon({ iconType }: IconProps): ReactElement {
   const [buttonBlockStartIconUpdate] =
     useMutation<ButtonBlockStartIconUpdate>(START_ICON_UPDATE)
   const [buttonBlockEndIconUpdate] =
@@ -137,6 +141,7 @@ export function Icon(iconType: IconType): ReactElement {
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     const newName = event.target.value
+    console.log(iconType)
     if (newName === '') {
       await removeIcon(iconType)
     } else if (newName !== name) {
