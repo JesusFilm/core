@@ -41,7 +41,7 @@ describe('Card', () => {
     journeyId: '2',
     __typename: 'CardBlock',
     parentBlockId: '3',
-    parentOrder: 0,
+    parentOrder: 2,
     backgroundColor: '#FFF',
     coverBlockId: '4',
     themeMode: ThemeMode.light,
@@ -67,7 +67,7 @@ describe('Card', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => []),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -106,6 +106,10 @@ describe('Card', () => {
       await cardBlockResolver
         .cardBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockUpdate.journeyId,
+        blockUpdate.parentBlockId
+      )
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })

@@ -142,7 +142,6 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
@@ -186,7 +185,6 @@ export class StepBlockCreateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
 }
 
 export class StepBlockUpdateInput {
