@@ -88,13 +88,7 @@ describe('MoveBlockButton', () => {
         ]}
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-          <EditorProvider
-            initialState={{
-              steps: [step],
-              selectedStep: step,
-              selectedBlock: block2
-            }}
-          >
+          <EditorProvider>
             <MoveBlockButtons selectedBlock={block2} selectedStep={step} />
           </EditorProvider>
         </JourneyProvider>
@@ -122,13 +116,7 @@ describe('MoveBlockButton', () => {
         ]}
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-          <EditorProvider
-            initialState={{
-              steps: [step],
-              selectedStep: step,
-              selectedBlock: block1
-            }}
-          >
+          <EditorProvider>
             <MoveBlockButtons selectedBlock={block1} selectedStep={step} />
           </EditorProvider>
         </JourneyProvider>
@@ -137,5 +125,62 @@ describe('MoveBlockButton', () => {
     fireEvent.click(getByRole('button', { name: 'move-block-down' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should disable move up if first block', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <MoveBlockButtons selectedBlock={block1} selectedStep={step} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('button', { name: 'move-block-up' })).toBeDisabled()
+    expect(getByRole('button', { name: 'move-block-down' })).not.toBeDisabled()
+  })
+
+  it('should disable move down if last block', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <MoveBlockButtons selectedBlock={block2} selectedStep={step} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('button', { name: 'move-block-up' })).not.toBeDisabled()
+    expect(getByRole('button', { name: 'move-block-down' })).toBeDisabled()
+  })
+
+  it('should disable move if single block', async () => {
+    const card: TreeBlock = {
+      id: 'card0.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step0.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: [block1]
+    }
+
+    const stepWithOneBlock = { ...step, children: [card] }
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <MoveBlockButtons
+            selectedBlock={block1}
+            selectedStep={stepWithOneBlock}
+          />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('button', { name: 'move-block-up' })).toBeDisabled()
+    expect(getByRole('button', { name: 'move-block-down' })).toBeDisabled()
   })
 })

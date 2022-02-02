@@ -18,6 +18,7 @@ export {
   VIDEO_TRIGGER_FIELDS
 } from './transformer'
 export type { TreeBlock } from './transformer'
+export { searchBlocks } from './searchBlocks'
 export {
   useBlocks,
   nextActiveBlock,
@@ -26,4 +27,4 @@ export {
   previousBlocksVar,
   treeBlocksVar
 } from './useBlocks/blocks'
-export { useEditor, EditorProvider, ActiveTab, searchBlocks } from './context'
+export { useEditor, EditorProvider, ActiveTab } from './context'

@@ -65,31 +65,8 @@ export function MoveBlockButtons({
       ? searchBlocks(selectedStep.children, selectedBlock.parentBlockId)
       : selectedStep
 
-  const coverBlock =
-    parentBlock != null &&
-    parentBlock.__typename === 'CardBlock' &&
-    parentBlock.coverBlockId != null
-      ? searchBlocks(parentBlock.children, parentBlock.coverBlockId)
-      : undefined
-
-  useEffect(() => {
-    const fixCoverOrder = async (): Promise<void> => {
-      if (coverBlock != null && coverBlock.parentOrder !== 0) {
-        await blockOrderUpdate({
-          variables: {
-            id: coverBlock.id,
-            journeyId: journey.id,
-            parentOrder: 0
-          }
-        })
-      }
-    }
-
-    void fixCoverOrder()
-  }, [coverBlock, journey, blockOrderUpdate])
-
   const handleMove = async (move: 'up' | 'down'): Promise<void> => {
-    if (selectedBlock != null && selectedStep != null) {
+    if (selectedBlock?.parentOrder != null) {
       const moveBy = move === 'up' ? -1 : 1
 
       await blockOrderUpdate({
@@ -102,7 +79,6 @@ export function MoveBlockButtons({
     }
   }
 
-  const firstBlockIndex = coverBlock != null ? 1 : 0
   const lastBlockIndex =
     parentBlock != null ? parentBlock.children.length - 1 : 0
 
@@ -115,7 +91,7 @@ export function MoveBlockButtons({
       >
         <StyledMoveButton
           aria-label="move-block-up"
-          disabled={selectedBlock.parentOrder === firstBlockIndex}
+          disabled={selectedBlock.parentOrder === 0}
           onClick={() => {
             void handleMove('up')
           }}
@@ -124,7 +100,7 @@ export function MoveBlockButtons({
         </StyledMoveButton>
         <StyledMoveButton
           aria-label="move-block-down"
-          disabled={selectedBlock.parentOrder >= lastBlockIndex}
+          disabled={selectedBlock.parentOrder === lastBlockIndex}
           onClick={() => {
             void handleMove('down')
           }}
