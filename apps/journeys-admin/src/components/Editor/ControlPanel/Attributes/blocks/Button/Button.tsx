@@ -98,15 +98,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Leading Icon ',
             mobileOpen: true,
-            children: (
-              <Icon
-                id={id}
-                iconName={startIcon?.name}
-                iconColor={startIcon?.color}
-                iconSize={startIcon?.size}
-                iconType={IconType.start}
-              />
-            )
+            children: <Icon {...IconType.start} />
           })
         }}
       />
@@ -122,15 +114,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Trailing Icon ',
             mobileOpen: true,
-            children: (
-              <Icon
-                id={id}
-                iconName={endIcon?.name}
-                iconColor={endIcon?.color}
-                iconSize={endIcon?.size}
-                iconType={IconType.end}
-              />
-            )
+            children: <Icon {...IconType.end} />
           })
         }}
       />

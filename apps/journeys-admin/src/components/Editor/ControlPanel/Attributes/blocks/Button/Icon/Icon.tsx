@@ -16,16 +16,7 @@ import {
 import { ButtonBlockStartIconUpdate } from '../../../../../../../../__generated__/ButtonBlockStartIconUpdate'
 import { ButtonBlockEndIconUpdate } from '../../../../../../../../__generated__/ButtonBlockEndIconUpdate'
 import { useJourney } from '../../../../../../../libs/context'
-import { SizeToggleGroup } from './SizeToggleGroup'
 import { ColorToggleGroup } from './ColorToggleGroup'
-
-interface IconProps {
-  id: string
-  iconName?: IconName
-  iconColor: IconColor | null | undefined
-  iconSize: IconSize | null | undefined
-  iconType: IconType
-}
 
 export enum IconType {
   start = 'start',
@@ -61,13 +52,7 @@ export const END_ICON_UPDATE = gql`
   }
 `
 
-export function Icon({
-  id,
-  iconName,
-  iconColor,
-  iconSize,
-  iconType
-}: IconProps): ReactElement {
+export function Icon(iconType: IconType): ReactElement {
   const [buttonBlockStartIconUpdate] =
     useMutation<ButtonBlockStartIconUpdate>(START_ICON_UPDATE)
   const [buttonBlockEndIconUpdate] =
@@ -75,13 +60,13 @@ export function Icon({
 
   const journey = useJourney()
 
-  const [showProps, setShowProps] = useState(iconName != null)
-  const [name, setName] = useState('')
+  // const [showProps, setShowProps] = useState(iconName != null)
+  // const [name, setName] = useState('')
 
-  useEffect(() => {
-    setShowProps(iconName != null)
-    setName(iconName != null ? iconName : '')
-  }, [iconName])
+  // useEffect(() => {
+  //   setShowProps(iconName != null)
+  //   setName(iconName != null ? iconName : '')
+  // }, [iconName])
 
   async function updateIcon(name: string, type: IconType): Promise<void> {
     if (type === IconType.start) {
@@ -186,8 +171,8 @@ export function Icon({
 
       {showProps && (
         <Box>
-          <ColorToggleGroup id={id} color={iconColor} type={iconType} />
-          <SizeToggleGroup id={id} size={iconSize} type={iconType} />
+          <ColorToggleGroup {...iconType} />
+          <SizeToggleGroup {...iconType} />
         </Box>
       )}
     </Box>

@@ -1,28 +1,13 @@
-import { ReactElement, useState } from 'react'
-import capitalize from 'lodash/capitalize'
-import Typography from '@mui/material/Typography'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { StyledToggleButton } from '../../../../../StyledToggleButton'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { IconSize } from '../../../../../../../../../__generated__/globalTypes'
 import { IconType } from '..'
 import { ButtonBlockStartIconSizeUpdate } from '../../../../../../../../../__generated__/ButtonBlockStartIconSizeUpdate'
 import { ButtonBlockEndIconSizeUpdate } from '../../../../../../../../../__generated__/ButtonBlockEndIconSizeUpdate'
 import { useJourney } from '../../../../../../../../libs/context'
-
-interface SizeToggleGroupProps {
-  id: string
-  size: IconSize | null | undefined
-  type: IconType
-}
-
-enum IconSizeName {
-  sm = 'small',
-  md = 'medium',
-  lg = 'large',
-  xl = 'extra large',
-  inherit = 'inherit'
-}
+import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 
 export const BUTTON_START_ICON_SIZE_UPDATE = gql`
   mutation ButtonBlockStartIconSizeUpdate(
@@ -54,11 +39,7 @@ export const BUTTON_END_ICON_SIZE_UPDATE = gql`
   }
 `
 
-export function SizeToggleGroup({
-  id,
-  size,
-  type
-}: SizeToggleGroupProps): ReactElement {
+export function SizeToggleGroup(iconType: IconType): ReactElement {
   const [buttonBlockStartIconSizeUpdate] =
     useMutation<ButtonBlockStartIconSizeUpdate>(BUTTON_START_ICON_SIZE_UPDATE)
   const [buttonBlockEndIconSizeUpdate] =
@@ -66,80 +47,74 @@ export function SizeToggleGroup({
 
   const journey = useJourney()
 
-  const [selected, setSelected] = useState(size ?? IconSize.inherit)
-  const order = ['sm', 'md', 'lg', 'xl', 'inherit']
-  const sorted = Object.values(IconSize).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b)
-  )
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
 
-  async function changeIconSize(size: IconSize, type: IconType): Promise<void> {
-    console.log(size)
-    if (type === IconType.start) {
-      await buttonBlockStartIconSizeUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            startIcon: {
-              size
+  async function handleChange(size: IconSize): Promise<void> {
+    if (selectedBlock != null && size != null) {
+      if (iconType === IconType.start) {
+        await buttonBlockStartIconSizeUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: {
+              startIcon: {
+                size
+              }
             }
           }
-        }
-      })
-    } else {
-      await buttonBlockEndIconSizeUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            endIcon: {
-              size
+        })
+      } else {
+        await buttonBlockEndIconSizeUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: {
+              endIcon: {
+                size
+              }
             }
           }
-        }
-      })
+        })
+      }
     }
   }
 
-  async function handleChange(
-    event: React.MouseEvent<HTMLElement>,
-    size: IconSize
-  ): Promise<void> {
-    if (size != null) {
-      await changeIconSize(size, type)
-      setSelected(size)
+  const options = [
+    {
+      value: IconSize.inherit,
+      label: 'Default'
+    },
+    {
+      value: IconSize.sm,
+      label: 'Small'
+    },
+    {
+      value: IconSize.md,
+      label: 'Medium'
+    },
+    {
+      value: IconSize.lg,
+      label: 'Large'
+    },
+    {
+      value: IconSize.xl,
+      label: 'Extra Large'
     }
-  }
+  ]
+
   // Inherit size currently 0 by default
   return (
-    <>
-      <Typography variant="subtitle2" color="secondary.dark">
-        Size
-      </Typography>
-      <ToggleButtonGroup
-        orientation="vertical"
-        value={selected}
-        exclusive
-        onChange={handleChange}
-        fullWidth
-        sx={{ display: 'flex', py: 4 }}
-        color="primary"
-      >
-        {sorted.map((size) => {
-          return (
-            <StyledToggleButton
-              value={size}
-              key={`button-icon-size-${size}`}
-              sx={{ justifyContent: 'flex-start' }}
-            >
-              {/* Icon */}
-              <Typography variant="subtitle2" sx={{ pl: 2 }}>
-                {capitalize(IconSizeName[size])}
-              </Typography>
-            </StyledToggleButton>
-          )
-        })}
-      </ToggleButtonGroup>
-    </>
+    <ToggleButtonGroup
+      value={
+        iconType === 'start'
+          ? selectedBlock?.startIcon?.size ?? IconSize.inherit
+          : selectedBlock?.endIcon?.size ?? IconSize.inherit
+      }
+      onChange={handleChange}
+      options={options}
+    />
   )
 }
