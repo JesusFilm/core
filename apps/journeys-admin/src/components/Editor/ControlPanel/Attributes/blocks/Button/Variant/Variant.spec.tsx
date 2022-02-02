@@ -56,7 +56,7 @@ describe('Button variant selector', () => {
       data: {
         buttonBlockUpdate: {
           id: 'id',
-          color: ButtonVariant.text
+          variant: ButtonVariant.text
         }
       }
     }))
