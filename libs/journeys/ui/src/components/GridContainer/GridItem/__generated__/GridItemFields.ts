@@ -11,7 +11,7 @@ export interface GridItemFields {
   __typename: "GridItemBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   xl: number;
   lg: number;
   sm: number;
