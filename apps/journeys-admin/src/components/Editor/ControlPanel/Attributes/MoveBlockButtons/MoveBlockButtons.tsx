@@ -33,6 +33,9 @@ const StyledMoveButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.divider
   },
+  '&:disabled': {
+    backgroundColor: theme.palette.divider
+  },
   height: 60
 }))
 
