@@ -38,7 +38,7 @@ export function Icon({
 
   function handleChange(event: SelectChangeEvent): void {
     setName(event.target.value)
-    setShowProps(name === '')
+    setShowProps(event.target.value !== '')
   }
 
   return (
