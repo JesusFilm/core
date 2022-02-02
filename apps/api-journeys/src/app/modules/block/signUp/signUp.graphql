@@ -2,7 +2,7 @@ type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   action: Action
   submitIcon: Icon
   submitLabel: String
