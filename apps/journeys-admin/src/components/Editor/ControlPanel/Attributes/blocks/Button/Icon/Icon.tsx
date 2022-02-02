@@ -173,7 +173,7 @@ export function Icon({
                     __typename={'Icon'}
                     name={name}
                     color={null}
-                    size={null}
+                    size={IconSize.md}
                   />
 
                   <Typography sx={{ pl: 3 }}>{capitalize(name)}</Typography>
@@ -187,7 +187,7 @@ export function Icon({
       {showProps && (
         <Box>
           <ColorToggleGroup id={id} color={iconColor} type={iconType} />
-          <SizeToggleGroup id={id} size={iconSize} />
+          <SizeToggleGroup id={id} size={iconSize} type={iconType} />
         </Box>
       )}
     </Box>

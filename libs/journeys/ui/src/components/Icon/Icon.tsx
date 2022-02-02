@@ -50,6 +50,6 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
 
   return createElement(icons[name], {
     color: color ?? undefined,
-    sx: { fontSize }
+    sx: { width: fontSize, height: fontSize }
   })
 }
