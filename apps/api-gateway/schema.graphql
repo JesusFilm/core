@@ -231,7 +231,7 @@ input ImageBlockCreateInput {
   """
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   src: String
 }
 
@@ -504,7 +504,7 @@ input TypographyBlockCreateInput {
   content: String!
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   variant: TypographyVariant
 }
 

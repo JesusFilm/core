@@ -161,7 +161,7 @@ export class CardBlockUpdateInput {
 
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     journeyId: string;
     src?: Nullable<string>;
     alt: string;
@@ -198,7 +198,7 @@ export class StepBlockUpdateInput {
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;

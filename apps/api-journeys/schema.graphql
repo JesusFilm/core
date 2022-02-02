@@ -256,7 +256,7 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  parentBlockId: ID
+  parentBlockId: ID!
   journeyId: ID!
   src: String
   alt: String!
@@ -380,7 +380,7 @@ type TypographyBlock implements Block {
 input TypographyBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   content: String!
   variant: TypographyVariant
   color: TypographyColor
