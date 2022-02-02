@@ -1,22 +1,16 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRounded'
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Typography from '@mui/material/Typography'
-import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { TypographyBlockUpdateAlign } from '../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../../../libs/context'
-import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
-import { StyledToggleButton } from '../../../../StyledToggleButton'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 
-interface AlignProps {
-  id: string
-  align: TypographyAlign | null
-}
-
-export const TYPOGRAPHY_BLOCK_UPDATE = gql`
+export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   mutation TypographyBlockUpdateAlign(
     $id: ID!
     $journeyId: ID!
@@ -29,71 +23,58 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   }
 `
 
-export function Align({ id, align }: AlignProps): ReactElement {
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
-    TYPOGRAPHY_BLOCK_UPDATE
+export function Align(): ReactElement {
+  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(
+    TYPOGRAPHY_BLOCK_UPDATE_ALIGN
   )
   const journey = useJourney()
-  const [selected, setSelected] = useState(align ?? 'left')
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<TypographyBlock>
+    | undefined
 
-  const order = ['left', 'center', 'right']
-  const sorted = Object.values(TypographyAlign).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b)
-  )
+  const options = [
+    {
+      value: TypographyAlign.left,
+      label: 'Left',
+      icon: <FormatAlignLeftRoundedIcon />
+    },
+    {
+      value: TypographyAlign.center,
+      label: 'Center',
+      icon: <FormatAlignCenterRoundedIcon />
+    },
+    {
+      value: TypographyAlign.right,
+      label: 'Right',
+      icon: <FormatAlignRightRoundedIcon />
+    }
+  ]
 
-  async function handleChange(
-    event: React.MouseEvent<HTMLElement>,
-    align: TypographyAlign
-  ): Promise<void> {
-    if (align != null) {
+  async function handleChange(align: TypographyAlign): Promise<void> {
+    if (selectedBlock != null && align != null) {
       await typographyBlockUpdate({
         variables: {
-          id,
+          id: selectedBlock.id,
           journeyId: journey.id,
           input: { align }
+        },
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id: selectedBlock.id,
+            align,
+            __typename: 'TypographyBlock'
+          }
         }
       })
-      setSelected(align)
-    }
-  }
-
-  function iconSelector(align: TypographyAlign): ReactElement {
-    switch (align) {
-      case 'center':
-        return <FormatAlignCenterRoundedIcon sx={{ ml: 1, mr: 2 }} />
-      case 'right':
-        return <FormatAlignRightRoundedIcon sx={{ ml: 1, mr: 2 }} />
-      default:
-        return <FormatAlignLeftRoundedIcon sx={{ ml: 1, mr: 2 }} />
     }
   }
 
   return (
     <ToggleButtonGroup
-      orientation="vertical"
-      value={selected}
-      exclusive
+      value={selectedBlock?.align ?? TypographyAlign.left}
       onChange={handleChange}
-      fullWidth
-      color="primary"
-      sx={{
-        display: 'flex',
-        px: 6,
-        py: 4
-      }}
-    >
-      {sorted.map((alignment) => {
-        return (
-          <StyledToggleButton
-            value={alignment}
-            key={`typography-align-${alignment}`}
-            sx={{ justifyContent: 'flex-start' }}
-          >
-            {iconSelector(alignment)}
-            <Typography variant="subtitle2">{capitalize(alignment)}</Typography>
-          </StyledToggleButton>
-        )
-      })}
-    </ToggleButtonGroup>
+      options={options}
+    />
   )
 }
