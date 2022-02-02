@@ -133,6 +133,7 @@ export function ColorToggleGroup({
               key={`button-icon-color-${color}`}
               sx={{ justifyContent: 'flex-start' }}
             >
+              {/* Bug in ColorDisplayIcon not showing correct colors */}
               <ColorDisplayIcon color={color} />
               <Typography variant="subtitle2" sx={{ pl: 2 }}>
                 {capitalize(color)}

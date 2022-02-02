@@ -66,7 +66,7 @@ export function SizeToggleGroup({
 
   const journey = useJourney()
 
-  const [selected, setSelected] = useState(size ?? IconSize.md)
+  const [selected, setSelected] = useState(size ?? IconSize.inherit)
   const order = ['sm', 'md', 'lg', 'xl', 'inherit']
   const sorted = Object.values(IconSize).sort(
     (a, b) => order.indexOf(a) - order.indexOf(b)
@@ -110,6 +110,7 @@ export function SizeToggleGroup({
       setSelected(size)
     }
   }
+  // Inherit size currently 0 by default
   return (
     <>
       <Typography variant="subtitle2" color="secondary.dark">
