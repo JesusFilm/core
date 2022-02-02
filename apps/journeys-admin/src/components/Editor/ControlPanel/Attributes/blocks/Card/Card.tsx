@@ -67,9 +67,7 @@ export function Card({
             type: 'SetDrawerPropsAction',
             title: 'Background Color Properties',
             mobileOpen: true,
-            children: (
-              <BackgroundColor id={id} backgroundColor={backgroundColor} />
-            )
+            children: <BackgroundColor />
           })
         }}
       />
