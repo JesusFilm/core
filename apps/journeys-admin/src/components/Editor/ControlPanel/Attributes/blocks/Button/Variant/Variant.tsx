@@ -1,17 +1,11 @@
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import { ReactElement, useState } from 'react'
-import capitalize from 'lodash/capitalize'
-import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
-import { StyledToggleButton } from '../../../../StyledToggleButton'
 import { ButtonBlockUpdateVariant } from '../../../../../../../../__generated__/ButtonBlockUpdateVariant'
 import { useJourney } from '../../../../../../../libs/context'
-
-interface VariantProps {
-  id: string
-  variant: ButtonVariant | null
-}
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateVariant(
@@ -26,58 +20,53 @@ export const BUTTON_BLOCK_UPDATE = gql`
   }
 `
 
-export function Variant({ id, variant }: VariantProps): ReactElement {
+export function Variant(): ReactElement {
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateVariant>(BUTTON_BLOCK_UPDATE)
 
   const journey = useJourney()
-  const [selected, setSelected] = useState(variant ?? ButtonVariant.contained)
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
 
-  const order = ['contained', 'text']
-  const sorted = Object.values(ButtonVariant).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b)
-  )
-
-  async function handleChange(
-    event: React.MouseEvent<HTMLElement>,
-    variant: ButtonVariant
-  ): Promise<void> {
-    if (variant != null) {
+  async function handleChange(variant: ButtonVariant): Promise<void> {
+    if (selectedBlock != null && variant != null) {
       await buttonBlockUpdate({
         variables: {
-          id,
+          id: selectedBlock.id,
           journeyId: journey.id,
           input: { variant }
+        },
+        optimisticResponse: {
+          buttonBlockUpdate: {
+            id: selectedBlock.id,
+            variant,
+            __typename: 'ButtonBlock'
+          }
         }
       })
-      setSelected(variant)
     }
   }
 
+  const options = [
+    {
+      value: ButtonVariant.contained,
+      label: 'Contained'
+      // icon
+    },
+    {
+      value: ButtonVariant.text,
+      label: 'Text'
+      // icon
+    }
+  ]
+
   return (
     <ToggleButtonGroup
-      orientation="vertical"
-      value={selected}
-      exclusive
+      value={selectedBlock?.buttonVariant ?? ButtonVariant.contained}
       onChange={handleChange}
-      fullWidth
-      sx={{ display: 'flex', px: 6, py: 4 }}
-      color="primary"
-    >
-      {sorted.map((variant) => {
-        return (
-          <StyledToggleButton
-            value={variant}
-            key={`button-variant-${variant}`}
-            sx={{ justifyContent: 'flex-start' }}
-          >
-            {/* Icon */}
-            <Typography variant="subtitle2" sx={{ pl: 2 }}>
-              {capitalize(variant)}
-            </Typography>
-          </StyledToggleButton>
-        )
-      })}
-    </ToggleButtonGroup>
+      options={options}
+    />
   )
 }

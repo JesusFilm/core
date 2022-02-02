@@ -1,18 +1,12 @@
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import { ReactElement, useState } from 'react'
-import capitalize from 'lodash/capitalize'
-import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
-import { StyledToggleButton } from '../../../../StyledToggleButton'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 import { ButtonBlockUpdateColor } from '../../../../../../../../__generated__/ButtonBlockUpdateColor'
 import { useJourney } from '../../../../../../../libs/context'
-
-interface ColorProps {
-  id: string
-  color: ButtonColor | null
-}
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateColor(
@@ -27,58 +21,63 @@ export const BUTTON_BLOCK_UPDATE = gql`
   }
 `
 
-export function Color({ id, color }: ColorProps): ReactElement {
+export function Color(): ReactElement {
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateColor>(BUTTON_BLOCK_UPDATE)
 
   const journey = useJourney()
-  const [selected, setSelected] = useState(color ?? ButtonColor.primary)
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
 
-  const order = ['inherit', 'primary', 'secondary', 'error']
-  const sorted = Object.values(ButtonColor).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b)
-  )
-
-  async function handleChange(
-    event: React.MouseEvent<HTMLElement>,
-    color: ButtonColor
-  ): Promise<void> {
-    if (color != null) {
+  async function handleChange(color: ButtonColor): Promise<void> {
+    if (selectedBlock != null && color != null) {
       await buttonBlockUpdate({
         variables: {
-          id,
+          id: selectedBlock.id,
           journeyId: journey.id,
           input: { color }
+        },
+        optimisticResponse: {
+          buttonBlockUpdate: {
+            id: selectedBlock.id,
+            color,
+            __typename: 'ButtonBlock'
+          }
         }
       })
-      setSelected(color)
     }
   }
 
+  const options = [
+    {
+      value: ButtonColor.inherit,
+      label: 'Default',
+      icon: <ColorDisplayIcon color={ButtonColor.inherit} />
+    },
+    {
+      value: ButtonColor.primary,
+      label: 'Primary',
+      icon: <ColorDisplayIcon color={ButtonColor.primary} />
+    },
+    {
+      value: ButtonColor.secondary,
+      label: 'Secondary',
+      icon: <ColorDisplayIcon color={ButtonColor.secondary} />
+    },
+    {
+      value: ButtonColor.error,
+      label: 'Error',
+      icon: <ColorDisplayIcon color={ButtonColor.error} />
+    }
+  ]
+
   return (
     <ToggleButtonGroup
-      orientation="vertical"
-      value={selected}
-      exclusive
+      value={selectedBlock?.buttonColor ?? ButtonColor.primary}
       onChange={handleChange}
-      fullWidth
-      sx={{ display: 'flex', px: 6, py: 4 }}
-      color="primary"
-    >
-      {sorted.map((color) => {
-        return (
-          <StyledToggleButton
-            value={color}
-            key={`button-color-${color}`}
-            sx={{ justifyContent: 'flex-start' }}
-          >
-            <ColorDisplayIcon color={color} />
-            <Typography variant="subtitle2" sx={{ pl: 2 }}>
-              {capitalize(color === ButtonColor.inherit ? 'default' : color)}
-            </Typography>
-          </StyledToggleButton>
-        )
-      })}
-    </ToggleButtonGroup>
+      options={options}
+    />
   )
 }

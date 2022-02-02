@@ -1,21 +1,15 @@
-import { ReactElement, useState } from 'react'
-import capitalize from 'lodash/capitalize'
-import lowerCase from 'lodash/lowerCase'
+import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { gql, useMutation } from '@apollo/client'
 import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { TypographyBlockUpdateVariant } from '../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
-import { StyledToggleButton } from '../../../../StyledToggleButton'
-import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
 import { useJourney } from '../../../../../../../libs/context'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
-interface VariantProps {
-  id: string
-  variant: TypographyVariant | null
-}
-
-export const TYPOGRAPHY_BLOCK_UPDATE = gql`
+export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
   mutation TypographyBlockUpdateVariant(
     $id: ID!
     $journeyId: ID!
@@ -28,84 +22,114 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   }
 `
 
-export function Variant({ id, variant }: VariantProps): ReactElement {
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
-    TYPOGRAPHY_BLOCK_UPDATE
+export function Variant(): ReactElement {
+  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
+    TYPOGRAPHY_BLOCK_UPDATE_VARIANT
   )
-
   const journey = useJourney()
-  const [selected, setSelected] = useState(variant ?? TypographyVariant.body2)
-
-  const order = [
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'subtitle1',
-    'subtitle2',
-    'body1',
-    'body2',
-    'caption',
-    'overline'
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<TypographyBlock>
+    | undefined
+  const options = [
+    {
+      value: TypographyVariant.h1,
+      label: <Typography variant={TypographyVariant.h1}>Header 1</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.h2,
+      label: <Typography variant={TypographyVariant.h2}>Header 2</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.h3,
+      label: <Typography variant={TypographyVariant.h3}>Header 3</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.h4,
+      label: <Typography variant={TypographyVariant.h4}>Header 4</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.h5,
+      label: <Typography variant={TypographyVariant.h5}>Header 5</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.h6,
+      label: <Typography variant={TypographyVariant.h6}>Header 6</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.subtitle1,
+      label: (
+        <Typography variant={TypographyVariant.subtitle1}>
+          Subtitle 1
+        </Typography>
+      ),
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.subtitle2,
+      label: (
+        <Typography variant={TypographyVariant.subtitle2}>
+          Subtitle 2
+        </Typography>
+      ),
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.body1,
+      label: <Typography variant={TypographyVariant.body1}>Body 1</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.body2,
+      label: <Typography variant={TypographyVariant.body2}>Body 2</Typography>,
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.caption,
+      label: (
+        <Typography variant={TypographyVariant.caption}>Caption</Typography>
+      ),
+      icon: <HorizontalRuleRoundedIcon />
+    },
+    {
+      value: TypographyVariant.overline,
+      label: (
+        <Typography variant={TypographyVariant.overline}>Overline</Typography>
+      ),
+      icon: <HorizontalRuleRoundedIcon />
+    }
   ]
-  const sorted = Object.values(TypographyVariant).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b)
-  )
 
-  async function handleChange(
-    event: React.MouseEvent<HTMLElement>,
-    variant: TypographyVariant
-  ): Promise<void> {
-    if (variant != null) {
+  async function handleChange(variant: TypographyVariant): Promise<void> {
+    if (selectedBlock != null && variant != null) {
       await typographyBlockUpdate({
         variables: {
-          id,
+          id: selectedBlock.id,
           journeyId: journey.id,
           input: { variant }
+        },
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id: selectedBlock.id,
+            variant,
+            __typename: 'TypographyBlock'
+          }
         }
       })
-      setSelected(variant)
     }
   }
 
   return (
     <ToggleButtonGroup
-      orientation="vertical"
-      value={selected}
-      exclusive
+      value={selectedBlock?.variant ?? TypographyVariant.body2}
       onChange={handleChange}
-      fullWidth
-      color="primary"
-      sx={{
-        display: 'flex',
-        px: 6,
-        py: 4
-      }}
-    >
-      {sorted.map((variant) => {
-        return (
-          <StyledToggleButton
-            value={variant}
-            key={`typography-variant-${variant}`}
-            sx={{ justifyContent: 'flex-start' }}
-          >
-            <HorizontalRuleRoundedIcon
-              sx={{
-                ml: 1,
-                mr: 2,
-                color: variant !== selected ? 'secondary.light' : 'primary'
-              }}
-            />
-            <Typography variant={variant}>
-              {capitalize(
-                lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
-              )}
-            </Typography>
-          </StyledToggleButton>
-        )
-      })}
-    </ToggleButtonGroup>
+      options={options}
+    />
   )
 }
