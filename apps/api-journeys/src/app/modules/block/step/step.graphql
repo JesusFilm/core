@@ -14,7 +14,7 @@ type StepBlock implements Block {
   """
   locked: Boolean!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 }
 
 input StepBlockCreateInput {
