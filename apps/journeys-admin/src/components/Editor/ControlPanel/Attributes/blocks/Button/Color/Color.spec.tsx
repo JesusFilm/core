@@ -1,13 +1,33 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
 import { BUTTON_BLOCK_UPDATE } from './Color'
 import { Color } from '.'
 
 describe('Button color selector', () => {
   it('should show button color properties', () => {
+    const selectedBlock: TreeBlock<ButtonBlock> = {
+      __typename: 'ButtonBlock',
+      id: 'id',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      label: 'test button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIcon: null,
+      endIcon: null,
+      action: null,
+      children: []
+    }
+
     const { getByRole } = render(
       <MockedProvider>
-        <Color id={'button-color-id'} color={null} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Color />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Default' })).toBeInTheDocument()
@@ -16,6 +36,30 @@ describe('Button color selector', () => {
     expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
   })
   it('should change the color property', async () => {
+    const selectedBlock: TreeBlock<ButtonBlock> = {
+      __typename: 'ButtonBlock',
+      id: 'id',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      label: 'test button',
+      buttonVariant: null,
+      buttonColor: ButtonColor.primary,
+      size: null,
+      startIcon: null,
+      endIcon: null,
+      action: null,
+      children: []
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: {
+          id: 'id',
+          color: ButtonColor.secondary
+        }
+      }
+    }))
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -23,33 +67,24 @@ describe('Button color selector', () => {
             request: {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
-                id: 'button-color-id',
+                id: 'id',
                 journeyId: undefined,
                 input: {
-                  color: 'secondary'
+                  color: ButtonColor.secondary
                 }
               }
             },
-            result: {
-              data: {
-                buttonBlockUpdate: {
-                  id: 'button-color-id',
-                  color: 'secondary'
-                }
-              }
-            }
+            result
           }
         ]}
       >
-        <Color id={'button-color-id'} color={null} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Color />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Secondary' })).toHaveClass(
-        'Mui-selected'
-      )
-    )
+    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
   })
 })
