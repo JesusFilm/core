@@ -138,7 +138,7 @@ export function Card({
             type: 'SetDrawerPropsAction',
             title: 'Card Layout Property',
             mobileOpen: true,
-            children: <CardLayout id={id} fullscreen={fullscreen} />
+            children: <CardLayout />
           })
         }}
       />
