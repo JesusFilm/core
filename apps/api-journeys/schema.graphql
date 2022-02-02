@@ -184,7 +184,6 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -339,7 +338,6 @@ input StepBlockCreateInput {
   nextBlockId: ID
   locked: Boolean
   parentBlockId: ID
-  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
