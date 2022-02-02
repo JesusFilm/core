@@ -186,7 +186,7 @@ export function Icon({
 
       {showProps && (
         <Box>
-          <ColorToggleGroup id={id} color={iconColor} />
+          <ColorToggleGroup id={id} color={iconColor} type={iconType} />
           <SizeToggleGroup id={id} size={iconSize} />
         </Box>
       )}
