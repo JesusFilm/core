@@ -9,7 +9,7 @@ interface ToggleButtonGroupProps<T = unknown> {
   options: Array<{
     value: T
     label: string | ReactElement
-    icon: ReactElement
+    icon?: ReactElement
   }>
   onChange: (value: T) => void
 }

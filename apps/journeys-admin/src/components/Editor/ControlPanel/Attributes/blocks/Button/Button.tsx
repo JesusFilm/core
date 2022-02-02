@@ -49,7 +49,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Button Color',
             mobileOpen: true,
-            children: <Color id={id} color={buttonColor} />
+            children: <Color />
           })
         }}
       />
@@ -65,7 +65,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Button Size',
             mobileOpen: true,
-            children: <Size id={id} size={size} />
+            children: <Size />
           })
         }}
       />
@@ -81,7 +81,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Button Variant ',
             mobileOpen: true,
-            children: <Variant id={id} variant={buttonVariant} />
+            children: <Variant />
           })
         }}
       />
