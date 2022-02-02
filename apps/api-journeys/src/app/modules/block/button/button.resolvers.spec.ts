@@ -6,7 +6,10 @@ import { BlockService } from '../block.service'
 import {
   ButtonVariant,
   ButtonColor,
-  ButtonSize
+  ButtonSize,
+  IconName,
+  IconColor,
+  IconSize
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ButtonBlockResolvers } from './button.resolvers'
@@ -27,14 +30,14 @@ describe('Button', () => {
     color: ButtonColor.primary,
     size: ButtonSize.large,
     startIcon: {
-      name: 'ArrowForwardRounded',
-      color: 'secondary',
-      size: 'lg'
+      name: IconName.ArrowForwardRounded,
+      color: IconColor.secondary,
+      size: IconSize.lg
     },
     endIcon: {
-      name: 'LockOpenRounded',
-      color: 'action',
-      size: 'xl'
+      name: IconName.LockOpenRounded,
+      color: IconColor.action,
+      size: IconSize.xl
     },
     action: {
       gtmEventName: 'gtmEventName',
@@ -53,14 +56,14 @@ describe('Button', () => {
     color: ButtonColor.primary,
     size: ButtonSize.large,
     startIcon: {
-      name: 'ArrowForwardRounded',
-      color: 'secondary',
-      size: 'lg'
+      name: IconName.ArrowForwardRounded,
+      color: IconColor.secondary,
+      size: IconSize.lg
     },
     endIcon: {
-      name: 'LockOpenRounded',
-      color: 'action',
-      size: 'xl'
+      name: IconName.LockOpenRounded,
+      color: IconColor.action,
+      size: IconSize.xl
     },
     action: {
       gtmEventName: 'gtmEventName',
@@ -79,14 +82,14 @@ describe('Button', () => {
     color: ButtonColor.primary,
     size: ButtonSize.small,
     startIcon: {
-      name: 'ArrowForwardRounded',
-      color: 'secondary',
-      size: 'lg'
+      name: IconName.ArrowForwardRounded,
+      color: IconColor.secondary,
+      size: IconSize.lg
     },
     endIcon: {
-      name: 'LockOpenRounded',
-      color: 'action',
-      size: 'xl'
+      name: IconName.LockOpenRounded,
+      color: IconColor.action,
+      size: IconSize.xl
     },
     action: {
       gtmEventName: 'gtmEventName',

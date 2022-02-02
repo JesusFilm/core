@@ -37,6 +37,12 @@ enum IconSize {
   inherit
 }
 
+input IconUpdateInput {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
 type Icon {
   name: IconName!
   color: IconColor
@@ -142,6 +148,8 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIcon: IconUpdateInput
+  endIcon: IconUpdateInput
 }
 
 type CardBlock implements Block {

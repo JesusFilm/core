@@ -138,12 +138,20 @@ export enum UserJourneyRole {
     owner = "owner"
 }
 
+export class IconUpdateInput {
+    name?: Nullable<IconName>;
+    color?: Nullable<IconColor>;
+    size?: Nullable<IconSize>;
+}
+
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    startIcon?: Nullable<IconUpdateInput>;
+    endIcon?: Nullable<IconUpdateInput>;
 }
 
 export class CardBlockCreateInput {

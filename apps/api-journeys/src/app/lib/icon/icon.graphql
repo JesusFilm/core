@@ -36,6 +36,12 @@ enum IconSize {
   inherit
 }
 
+input IconUpdateInput {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
 type Icon {
   name: IconName!
   color: IconColor
