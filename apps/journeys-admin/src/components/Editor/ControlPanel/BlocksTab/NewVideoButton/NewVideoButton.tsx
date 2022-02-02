@@ -18,7 +18,7 @@ export const VIDEO_BLOCK_CREATE = gql`
     videoBlockCreate(input: $input) {
       id
       parentBlockId
-      journeyId
+      parentOrder
       ...VideoFields
     }
   }
