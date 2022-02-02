@@ -67,7 +67,7 @@ describe('Button size selector', () => {
             request: {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
-                id: 'button-size-id',
+                id: 'd',
                 journeyId: undefined,
                 input: {
                   size: 'small'

@@ -68,7 +68,7 @@ describe('Button variant selector', () => {
             request: {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
-                id: 'button-variant-id',
+                id: 'id',
                 journeyId: undefined,
                 input: {
                   variant: 'text'
