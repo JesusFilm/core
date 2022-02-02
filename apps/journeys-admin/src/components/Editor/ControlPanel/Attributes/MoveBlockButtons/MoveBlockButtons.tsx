@@ -116,14 +116,18 @@ export function MoveBlockButtons({
         <StyledMoveButton
           aria-label="move-block-up"
           disabled={selectedBlock.parentOrder === firstBlockIndex}
-          onClick={async () => await handleMove('up')}
+          onClick={() => {
+            void handleMove('up')
+          }}
         >
           <KeyboardArrowUpRoundedIcon />
         </StyledMoveButton>
         <StyledMoveButton
           aria-label="move-block-down"
           disabled={selectedBlock.parentOrder >= lastBlockIndex}
-          onClick={async () => await handleMove('down')}
+          onClick={() => {
+            void handleMove('down')
+          }}
         >
           <KeyboardArrowDownRoundedIcon />
         </StyledMoveButton>
