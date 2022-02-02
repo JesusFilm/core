@@ -43,7 +43,7 @@ describe('Button color selector', () => {
       parentOrder: 0,
       label: 'test button',
       buttonVariant: null,
-      buttonColor: ButtonColor.primary,
+      buttonColor: null,
       size: null,
       startIcon: null,
       endIcon: null,
