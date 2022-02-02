@@ -136,6 +136,15 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface CardBlockUpdateInput {
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  fullscreen?: boolean | null;
+  parentBlockId?: string | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
