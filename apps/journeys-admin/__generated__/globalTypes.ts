@@ -140,18 +140,8 @@ export interface ImageBlockCreateInput {
   alt: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   src?: string | null;
-}
-
-export interface JourneyCreateInput {
-  description?: string | null;
-  id?: string | null;
-  locale?: string | null;
-  slug: string;
-  themeMode?: ThemeMode | null;
-  themeName?: ThemeName | null;
-  title: string;
 }
 
 export interface JourneyUpdateInput {
@@ -190,7 +180,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   variant?: TypographyVariant | null;
 }
 
