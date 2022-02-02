@@ -290,14 +290,14 @@ type RadioQuestionBlock implements Block {
 input RadioOptionBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   label: String!
 }
 
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   label: String!
 }
 

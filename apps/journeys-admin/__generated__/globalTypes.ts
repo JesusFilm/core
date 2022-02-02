@@ -150,14 +150,14 @@ export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
   label: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
 }
 
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
   label: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
 }
 
 export interface RadioQuestionResponseCreateInput {

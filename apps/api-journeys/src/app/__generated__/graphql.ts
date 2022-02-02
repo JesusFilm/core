@@ -177,14 +177,14 @@ export class ImageBlockUpdateInput {
 export class RadioOptionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     label: string;
 }
 
 export class RadioQuestionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     label: string;
 }
 

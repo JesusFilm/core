@@ -46,7 +46,7 @@ describe('RadioQuestion', () => {
   const radioOptionInput = {
     __typename: 'RadioOptionBlock',
     parentBlockId: '2',
-    parentOrder: 1,
+    parentOrder: 2,
     journeyId: '2',
     label: 'label'
   }
@@ -119,6 +119,10 @@ describe('RadioQuestion', () => {
   describe('radioOptionBlockCreate', () => {
     it('creates a RadioOptionBlock', async () => {
       await radioOptionBlockResolver.radioOptionBlockCreate(radioOptionInput)
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        radioOptionInput.journeyId,
+        radioOptionInput.parentBlockId
+      )
       expect(service.save).toHaveBeenCalledWith(radioOptionInput)
     })
   })

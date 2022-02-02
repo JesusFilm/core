@@ -378,7 +378,7 @@ input RadioOptionBlockCreateInput {
   id: ID
   journeyId: ID!
   label: String!
-  parentBlockId: ID
+  parentBlockId: ID!
 }
 
 input RadioOptionBlockUpdateInput {
@@ -399,7 +399,7 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   label: String!
-  parentBlockId: ID
+  parentBlockId: ID!
 }
 
 input RadioQuestionBlockUpdateInput {
