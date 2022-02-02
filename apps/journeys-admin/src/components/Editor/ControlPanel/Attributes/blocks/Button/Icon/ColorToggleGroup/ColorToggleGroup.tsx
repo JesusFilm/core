@@ -59,7 +59,7 @@ export function ColorToggleGroup({
 
   const journey = useJourney()
 
-  const [selected, setSelected] = useState(color ?? IconColor.primary)
+  const [selected, setSelected] = useState(color ?? IconColor.inherit)
   const order = [
     'inherit',
     'primary',

@@ -56,4 +56,5 @@ describe('ColorDisplayIcon', () => {
       `background-color: ${themes.base.dark.palette.primary.main}`
     )
   })
+  // add test for a different color since color defaults to primary if it something doesnt work
 })

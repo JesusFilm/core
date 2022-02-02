@@ -47,6 +47,7 @@ export function ColorDisplayIcon({
             height: 20,
             m: 0.5,
             borderRadius: 1000,
+            // only displaying Primary Secondary Error
             backgroundColor: `${color ?? 'primary'}.main`
           }}
         />
