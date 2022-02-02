@@ -1,1 +1,0 @@
-export { NameList } from './NameList'

@@ -16,7 +16,6 @@ import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { Icon } from './Icon'
 
 export function Button({
   id,
@@ -93,21 +92,7 @@ export function Button({
         name="Leading Icon"
         value={startIcon?.name.toString() ?? 'None'}
         description="Leading Icon"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Leading Icon ',
-            mobileOpen: true,
-            children: (
-              <Icon
-                id={id}
-                iconName={startIcon?.name}
-                iconColor={startIcon?.color}
-                iconSize={startIcon?.size}
-              />
-            )
-          })
-        }}
+        // onClick to open drawer
       />
 
       <Attribute
@@ -116,21 +101,7 @@ export function Button({
         name="Trailing Icon"
         value={endIcon?.name.toString() ?? 'None'}
         description="Trailing Icon"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Trailing Icon ',
-            mobileOpen: true,
-            children: (
-              <Icon
-                id={id}
-                iconName={endIcon?.name}
-                iconColor={endIcon?.color}
-                iconSize={endIcon?.size}
-              />
-            )
-          })
-        }}
+        // onClick to open drawer
       />
     </>
   )
