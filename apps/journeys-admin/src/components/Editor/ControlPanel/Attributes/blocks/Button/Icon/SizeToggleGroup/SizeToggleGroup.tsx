@@ -9,6 +9,10 @@ import { useJourney } from '../../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 
+interface SizeToggleGroupProps {
+  type: IconType
+}
+
 export const BUTTON_START_ICON_SIZE_UPDATE = gql`
   mutation ButtonBlockStartIconSizeUpdate(
     $id: ID!
@@ -39,7 +43,7 @@ export const BUTTON_END_ICON_SIZE_UPDATE = gql`
   }
 `
 
-export function SizeToggleGroup(iconType: IconType): ReactElement {
+export function SizeToggleGroup({ type }: SizeToggleGroupProps): ReactElement {
   const [buttonBlockStartIconSizeUpdate] =
     useMutation<ButtonBlockStartIconSizeUpdate>(BUTTON_START_ICON_SIZE_UPDATE)
   const [buttonBlockEndIconSizeUpdate] =
@@ -54,7 +58,7 @@ export function SizeToggleGroup(iconType: IconType): ReactElement {
 
   async function handleChange(size: IconSize): Promise<void> {
     if (selectedBlock != null && size != null) {
-      if (iconType === IconType.start) {
+      if (type === IconType.start) {
         await buttonBlockStartIconSizeUpdate({
           variables: {
             id: selectedBlock.id,
@@ -109,7 +113,7 @@ export function SizeToggleGroup(iconType: IconType): ReactElement {
   return (
     <ToggleButtonGroup
       value={
-        iconType === 'start'
+        type === 'start'
           ? selectedBlock?.startIcon?.size ?? IconSize.inherit
           : selectedBlock?.endIcon?.size ?? IconSize.inherit
       }

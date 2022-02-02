@@ -10,6 +10,10 @@ import { useJourney } from '../../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 
+interface ColorToggleGroupProps {
+  type: IconType
+}
+
 export const BUTTON_START_ICON_COLOR_UPDATE = gql`
   mutation ButtonBlockStartIconColorUpdate(
     $id: ID!
@@ -40,7 +44,9 @@ export const BUTTON_END_ICON_COLOR_UPDATE = gql`
   }
 `
 
-export function ColorToggleGroup(type: IconType): ReactElement {
+export function ColorToggleGroup({
+  type
+}: ColorToggleGroupProps): ReactElement {
   const [buttonBlockStartIconColorUpdate] =
     useMutation<ButtonBlockStartIconColorUpdate>(BUTTON_START_ICON_COLOR_UPDATE)
   const [buttonBlockEndIconColorUpdate] =

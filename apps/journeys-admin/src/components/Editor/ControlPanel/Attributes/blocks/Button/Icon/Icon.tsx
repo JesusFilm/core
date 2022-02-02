@@ -71,7 +71,7 @@ export function Icon({ iconType }: IconProps): ReactElement {
     | undefined
 
   const iconName =
-    iconType === 'start'
+    iconType === IconType.start
       ? selectedBlock?.startIcon?.name
       : selectedBlock?.endIcon?.name
 
@@ -141,7 +141,6 @@ export function Icon({ iconType }: IconProps): ReactElement {
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     const newName = event.target.value
-    console.log(iconType)
     if (newName === '') {
       await removeIcon(iconType)
     } else if (newName !== name) {
@@ -192,9 +191,9 @@ export function Icon({ iconType }: IconProps): ReactElement {
       {showProps && (
         <Box>
           <Typography variant="subtitle2">Color</Typography>
-          <ColorToggleGroup {...iconType} />
+          <ColorToggleGroup type={iconType} />
           <Typography variant="subtitle2">Size</Typography>
-          <SizeToggleGroup {...iconType} />
+          <SizeToggleGroup type={iconType} />
         </Box>
       )}
     </Box>
