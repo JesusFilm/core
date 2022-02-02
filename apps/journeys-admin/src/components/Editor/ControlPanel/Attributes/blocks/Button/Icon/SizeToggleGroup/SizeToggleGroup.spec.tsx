@@ -10,10 +10,10 @@ describe('Button icon size selector', () => {
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Inherit' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Md' })).toHaveClass('Mui-selected')
-    expect(getByRole('button', { name: 'Lg' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Sm' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Xl' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
+    expect(getByRole('button', { name: 'Large' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Small' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Extra large' })).toBeInTheDocument()
   })
   it('should change the icon size property', async () => {
     const { getByRole } = render(
@@ -21,10 +21,10 @@ describe('Button icon size selector', () => {
         <SizeToggleGroup id={'button-icon-size-id'} size={null} />
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Md' })).toHaveClass('Mui-selected')
-    fireEvent.click(getByRole('button', { name: 'Sm' }))
+    expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
+    fireEvent.click(getByRole('button', { name: 'Small' }))
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Sm' })).toHaveClass('Mui-selected')
+      expect(getByRole('button', { name: 'Small' })).toHaveClass('Mui-selected')
     )
   })
 })
