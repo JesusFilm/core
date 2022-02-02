@@ -191,7 +191,7 @@ export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;
   muted?: boolean | null;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   posterBlockId?: string | null;
   startAt?: number | null;
   title: string;

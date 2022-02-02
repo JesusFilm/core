@@ -19,6 +19,7 @@ export interface VideoBlockCreate_videoBlockCreate {
   id: string;
   parentBlockId: string | null;
   journeyId: string;
+  parentOrder: number;
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;

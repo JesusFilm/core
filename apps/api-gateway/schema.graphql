@@ -606,7 +606,7 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   muted: Boolean
-  parentBlockId: ID
+  parentBlockId: ID!
 
   """
   posterBlockId is present if a child block should be used as a poster.
