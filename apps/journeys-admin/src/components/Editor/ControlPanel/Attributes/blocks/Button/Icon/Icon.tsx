@@ -1,22 +1,23 @@
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { ReactElement, useState, useEffect } from 'react'
+import { useEditor, TreeBlock, Icon as CoreIcon } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import capitalize from 'lodash/capitalize'
-import { Icon as CoreIcon } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import {
-  IconColor,
   IconSize,
   IconName
 } from '../../../../../../../../__generated__/globalTypes'
 import { ButtonBlockStartIconUpdate } from '../../../../../../../../__generated__/ButtonBlockStartIconUpdate'
 import { ButtonBlockEndIconUpdate } from '../../../../../../../../__generated__/ButtonBlockEndIconUpdate'
 import { useJourney } from '../../../../../../../libs/context'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ColorToggleGroup } from './ColorToggleGroup'
+import { SizeToggleGroup } from './SizeToggleGroup'
 
 export enum IconType {
   start = 'start',
@@ -60,63 +61,77 @@ export function Icon(iconType: IconType): ReactElement {
 
   const journey = useJourney()
 
-  // const [showProps, setShowProps] = useState(iconName != null)
-  // const [name, setName] = useState('')
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
 
-  // useEffect(() => {
-  //   setShowProps(iconName != null)
-  //   setName(iconName != null ? iconName : '')
-  // }, [iconName])
+  const iconName =
+    iconType === 'start'
+      ? selectedBlock?.startIcon?.name
+      : selectedBlock?.endIcon?.name
+
+  const [showProps, setShowProps] = useState(iconName != null)
+  const [name, setName] = useState('')
+
+  useEffect(() => {
+    setShowProps(iconName != null)
+    setName(iconName != null ? iconName : '')
+  }, [iconName])
 
   async function updateIcon(name: string, type: IconType): Promise<void> {
-    if (type === IconType.start) {
-      await buttonBlockStartIconUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            startIcon: {
-              name: name
+    if (selectedBlock != null) {
+      if (type === IconType.start) {
+        await buttonBlockStartIconUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: {
+              startIcon: {
+                name: name
+              }
             }
           }
-        }
-      })
-    } else {
-      await buttonBlockEndIconUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            endIcon: {
-              name: name
+        })
+      } else {
+        await buttonBlockEndIconUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: {
+              endIcon: {
+                name: name
+              }
             }
           }
-        }
-      })
+        })
+      }
     }
   }
 
   async function removeIcon(type: IconType): Promise<void> {
-    if (type === IconType.start) {
-      await buttonBlockStartIconUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            startIcon: null
+    if (selectedBlock != null) {
+      if (type === IconType.start) {
+        await buttonBlockStartIconUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: {
+              startIcon: null
+            }
           }
-        }
-      })
-    } else {
-      await buttonBlockEndIconUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            endIcon: null
+        })
+      } else {
+        await buttonBlockEndIconUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: {
+              endIcon: null
+            }
           }
-        }
-      })
+        })
+      }
     }
   }
 
@@ -171,7 +186,9 @@ export function Icon(iconType: IconType): ReactElement {
 
       {showProps && (
         <Box>
+          <Typography variant="subtitle2">Color</Typography>
           <ColorToggleGroup {...iconType} />
+          <Typography variant="subtitle2">Size</Typography>
           <SizeToggleGroup {...iconType} />
         </Box>
       )}
