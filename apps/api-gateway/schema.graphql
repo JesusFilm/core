@@ -43,9 +43,11 @@ type ButtonBlock implements Block {
 
 input ButtonBlockUpdateInput {
   color: ButtonColor
+  endIcon: IconUpdateInput
   label: String
   parentBlockId: ID
   size: ButtonSize
+  startIcon: IconUpdateInput
   variant: ButtonVariant
 }
 
@@ -207,6 +209,12 @@ enum IconSize {
   md
   sm
   xl
+}
+
+input IconUpdateInput {
+  color: IconColor
+  name: IconName
+  size: IconSize
 }
 
 enum IdType {

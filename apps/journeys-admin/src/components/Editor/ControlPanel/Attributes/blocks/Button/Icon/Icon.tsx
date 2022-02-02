@@ -7,11 +7,15 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import capitalize from 'lodash/capitalize'
 import { Icon as CoreIcon } from '@core/journeys/ui'
+import { gql, useMutation } from '@apollo/client'
 import {
   IconColor,
   IconSize,
   IconName
 } from '../../../../../../../../__generated__/globalTypes'
+import { ButtonBlockStartIconUpdate } from '../../../../../../../../__generated__/ButtonBlockStartIconUpdate'
+import { ButtonBlockEndIconUpdate } from '../../../../../../../../__generated__/ButtonBlockEndIconUpdate'
+import { useJourney } from '../../../../../../../libs/context'
 import { SizeToggleGroup } from './SizeToggleGroup'
 import { ColorToggleGroup } from './ColorToggleGroup'
 
@@ -20,14 +24,57 @@ interface IconProps {
   iconName?: IconName
   iconColor: IconColor | null | undefined
   iconSize: IconSize | null | undefined
+  iconType: IconType
 }
+
+export enum IconType {
+  start = 'start',
+  end = 'end'
+}
+
+export const START_ICON_UPDATE = gql`
+  mutation ButtonBlockStartIconUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: ButtonBlockUpdateInput!
+  ) {
+    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      startIcon {
+        name
+      }
+    }
+  }
+`
+export const END_ICON_UPDATE = gql`
+  mutation ButtonBlockEndIconUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: ButtonBlockUpdateInput!
+  ) {
+    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      endIcon {
+        name
+      }
+    }
+  }
+`
 
 export function Icon({
   id,
   iconName,
   iconColor,
-  iconSize
+  iconSize,
+  iconType
 }: IconProps): ReactElement {
+  const [buttonBlockStartIconUpdate] =
+    useMutation<ButtonBlockStartIconUpdate>(START_ICON_UPDATE)
+  const [buttonBlockEndIconUpdate] =
+    useMutation<ButtonBlockEndIconUpdate>(END_ICON_UPDATE)
+
+  const journey = useJourney()
+
   const [showProps, setShowProps] = useState(iconName != null)
   const [name, setName] = useState('')
 
@@ -36,9 +83,67 @@ export function Icon({
     setName(iconName != null ? iconName : '')
   }, [iconName])
 
-  function handleChange(event: SelectChangeEvent): void {
-    setName(event.target.value)
-    setShowProps(event.target.value !== '')
+  async function updateIcon(name: string, type: IconType): Promise<void> {
+    if (type === IconType.start) {
+      await buttonBlockStartIconUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          input: {
+            startIcon: {
+              name: name
+            }
+          }
+        }
+      })
+    } else {
+      await buttonBlockEndIconUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          input: {
+            endIcon: {
+              name: name
+            }
+          }
+        }
+      })
+    }
+  }
+
+  async function removeIcon(type: IconType): Promise<void> {
+    if (type === IconType.start) {
+      await buttonBlockStartIconUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          input: {
+            startIcon: null
+          }
+        }
+      })
+    } else {
+      await buttonBlockEndIconUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          input: {
+            endIcon: null
+          }
+        }
+      })
+    }
+  }
+
+  async function handleChange(event: SelectChangeEvent): Promise<void> {
+    const newName = event.target.value
+    if (newName === '') {
+      await removeIcon(iconType)
+    } else if (newName !== name) {
+      await updateIcon(newName, iconType)
+    }
+    setName(newName)
+    setShowProps(newName !== '')
   }
 
   return (

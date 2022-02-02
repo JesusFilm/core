@@ -16,7 +16,7 @@ import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { Icon } from './Icon'
+import { Icon, IconType } from './Icon'
 
 export function Button({
   id,
@@ -104,6 +104,7 @@ export function Button({
                 iconName={startIcon?.name}
                 iconColor={startIcon?.color}
                 iconSize={startIcon?.size}
+                iconType={IconType.start}
               />
             )
           })
@@ -127,6 +128,7 @@ export function Button({
                 iconName={endIcon?.name}
                 iconColor={endIcon?.color}
                 iconSize={endIcon?.size}
+                iconType={IconType.end}
               />
             )
           })
