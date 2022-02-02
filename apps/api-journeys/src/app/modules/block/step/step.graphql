@@ -22,7 +22,6 @@ input StepBlockCreateInput {
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 input StepBlockUpdateInput {

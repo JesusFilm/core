@@ -100,7 +100,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   themeMode: ThemeMode
   themeName: ThemeName
 }
@@ -230,7 +230,7 @@ input ImageBlockCreateInput {
   """
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
   src: String!
 }
@@ -413,7 +413,7 @@ type SignUpBlock implements Block {
 input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   submitLabel: String!
 }
 
@@ -462,7 +462,6 @@ input StepBlockCreateInput {
   journeyId: ID!
   locked: Boolean
   nextBlockId: ID
-  parentBlockId: ID
 }
 
 input StepBlockUpdateInput {
@@ -503,7 +502,7 @@ input TypographyBlockCreateInput {
   content: String!
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   variant: TypographyVariant
 }
 
@@ -606,7 +605,7 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   muted: Boolean
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
 
   """
