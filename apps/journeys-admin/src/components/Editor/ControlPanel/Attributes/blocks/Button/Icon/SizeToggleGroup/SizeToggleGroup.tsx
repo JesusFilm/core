@@ -88,10 +88,6 @@ export function SizeToggleGroup({ type }: SizeToggleGroupProps): ReactElement {
 
   const options = [
     {
-      value: IconSize.inherit,
-      label: 'Default'
-    },
-    {
       value: IconSize.sm,
       label: 'Small'
     },
@@ -102,10 +98,6 @@ export function SizeToggleGroup({ type }: SizeToggleGroupProps): ReactElement {
     {
       value: IconSize.lg,
       label: 'Large'
-    },
-    {
-      value: IconSize.xl,
-      label: 'Extra Large'
     }
   ]
 
@@ -114,8 +106,8 @@ export function SizeToggleGroup({ type }: SizeToggleGroupProps): ReactElement {
     <ToggleButtonGroup
       value={
         type === 'start'
-          ? selectedBlock?.startIcon?.size ?? IconSize.inherit
-          : selectedBlock?.endIcon?.size ?? IconSize.inherit
+          ? selectedBlock?.startIcon?.size ?? IconSize.md
+          : selectedBlock?.endIcon?.size ?? IconSize.md
       }
       onChange={handleChange}
       options={options}

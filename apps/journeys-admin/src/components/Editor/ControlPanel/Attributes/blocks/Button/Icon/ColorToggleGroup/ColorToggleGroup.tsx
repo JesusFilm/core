@@ -109,16 +109,6 @@ export function ColorToggleGroup({
       value: IconColor.error,
       label: 'Error',
       icon: <ColorDisplayIcon color={IconColor.error} />
-    },
-    {
-      value: IconColor.action,
-      label: 'Action',
-      icon: <ColorDisplayIcon color={IconColor.action} />
-    },
-    {
-      value: IconColor.disabled,
-      label: 'Disabled',
-      icon: <ColorDisplayIcon color={IconColor.disabled} />
     }
   ]
 
