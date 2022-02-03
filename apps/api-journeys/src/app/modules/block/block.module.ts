@@ -13,6 +13,7 @@ import {
   VideoBlockResolvers,
   VideoContentResolvers
 } from './video/video.resolvers'
+import { ButtonBlockResolvers } from './button/button.resolvers'
 import {
   RadioOptionBlockResolvers,
   RadioQuestionBlockResolvers
@@ -23,6 +24,7 @@ import {
   providers: [
     BlockService,
     BlockResolvers,
+    ButtonBlockResolvers,
     CardBlockResolvers,
     ImageBlockResolvers,
     RadioOptionBlockResolvers,

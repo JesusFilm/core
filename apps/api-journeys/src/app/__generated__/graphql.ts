@@ -138,6 +138,14 @@ export enum UserJourneyRole {
     owner = "owner"
 }
 
+export class ButtonBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+    variant?: Nullable<ButtonVariant>;
+    color?: Nullable<ButtonColor>;
+    size?: Nullable<ButtonSize>;
+}
+
 export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -162,8 +170,7 @@ export class ImageBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
     journeyId: string;
-    parentOrder: number;
-    src: string;
+    src?: Nullable<string>;
     alt: string;
 }
 
@@ -434,7 +441,7 @@ export class ImageBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    src: string;
+    src?: Nullable<string>;
     width: number;
     height: number;
     alt: string;
@@ -570,6 +577,8 @@ export class VideoResponse implements Response {
 
 export abstract class IMutation {
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
+
+    abstract buttonBlockUpdate(id: string, journeyId: string, input: ButtonBlockUpdateInput): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 

@@ -71,7 +71,7 @@ export function Card({
           })
         }}
       />
-      {coverBlock?.__typename === 'ImageBlock' && (
+      {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<ImageIcon />}

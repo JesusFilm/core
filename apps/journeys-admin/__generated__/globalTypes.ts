@@ -136,6 +136,14 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ButtonBlockUpdateInput {
+  color?: ButtonColor | null;
+  label?: string | null;
+  parentBlockId?: string | null;
+  size?: ButtonSize | null;
+  variant?: ButtonVariant | null;
+}
+
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
   coverBlockId?: string | null;
@@ -143,6 +151,14 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ImageBlockCreateInput {
+  alt: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  src?: string | null;
 }
 
 export interface JourneyUpdateInput {

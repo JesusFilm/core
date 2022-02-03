@@ -17,7 +17,10 @@ import { BackgroundColor } from '.'
 const BackgroundColorStory = {
   ...journeysAdminConfig,
   component: BackgroundColor,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor',
+  parameters: {
+    ...journeysAdminConfig.parameters
+  }
 }
 
 const journey: Journey = {

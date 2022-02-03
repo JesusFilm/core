@@ -460,7 +460,7 @@ export async function nua1(): Promise<void> {
     __typename: 'RadioQuestionBlock',
     parentBlockId: gridItemRight._key,
     label: '',
-    parentOrder: 2
+    parentOrder: 0
   })
 
   await db.collection('blocks').saveAll([
