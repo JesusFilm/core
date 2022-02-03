@@ -3,15 +3,27 @@ import { Box, Divider, Stack } from '@mui/material'
 import { VerticalSplit } from '@mui/icons-material'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import cardLayoutContained from '../../../../../../../../public/card-layout-contained.svg'
 import cardLayoutExpanded from '../../../../../../../../public/card-layout-expanded.svg'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { useJourney } from '../../../../../../../libs/context'
-import { CardBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { CardBlockLayoutUpdate } from '../../../../../../../../__generated__/CardBlockLayoutUpdate'
+
+export const CARD_BLOCK_LAYOUT_UPDATE = gql`
+  mutation CardBlockLayoutUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      fullscreen
+    }
+  }
+`
 
 export function CardLayout(): ReactElement {
   const {
@@ -24,17 +36,25 @@ export function CardLayout(): ReactElement {
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock> | undefined
+  ) as TreeBlock<CardBlock>
 
-  const [cardBlockUpdate] =
-    useMutation<{ cardBlockUpdate: CardBlockUpdateInput }>(CARD_BLOCK_UPDATE)
+  const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
+    CARD_BLOCK_LAYOUT_UPDATE
+  )
   const { id: journeyId } = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
     await cardBlockUpdate({
       variables: {
-        id: cardBlock?.id,
+        id: cardBlock.id,
         journeyId: journeyId,
         input: {
+          fullscreen: selected
+        }
+      },
+      optimisticResponse: {
+        cardBlockUpdate: {
+          id: cardBlock.id,
+          __typename: 'CardBlock',
           fullscreen: selected
         }
       }
@@ -58,7 +78,7 @@ export function CardLayout(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock?.fullscreen ?? false ? 'Expanded' : 'Contained'}
+              {cardBlock.fullscreen ?? false ? 'Expanded' : 'Contained'}
             </Typography>
             <Typography variant="caption">Card Layout</Typography>
           </Stack>
@@ -68,7 +88,7 @@ export function CardLayout(): ReactElement {
       <Box>
         <HorizontalSelect
           onChange={async (val) => await handleLayoutChange(val === 'true')}
-          id={cardBlock?.fullscreen.toString()}
+          id={cardBlock.fullscreen.toString()}
         >
           <Box sx={{ py: 1, px: 1 }} id="false" key="false" data-testid="false">
             <Image
