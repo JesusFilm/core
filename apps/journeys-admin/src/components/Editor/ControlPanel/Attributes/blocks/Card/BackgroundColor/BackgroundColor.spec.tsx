@@ -12,9 +12,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import { BackgroundColor } from '.'
+import { BackgroundColor, CARD_BLOCK_BGCOLOR_UPDATE } from './BackgroundColor'
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -98,7 +97,7 @@ describe('CardStyling', () => {
         mocks={[
           {
             request: {
-              query: CARD_BLOCK_UPDATE,
+              query: CARD_BLOCK_BGCOLOR_UPDATE,
               variables: {
                 id: 'card1.id',
                 journeyId: 'journeyId',
