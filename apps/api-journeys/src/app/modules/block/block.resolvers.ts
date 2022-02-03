@@ -8,7 +8,7 @@ import {
   Mutation,
   Parent
 } from '@nestjs/graphql'
-import { KeyAsId } from '@core/nest/decorators'
+import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
 import { Block, UserJourneyRole } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -64,6 +64,18 @@ export class BlockResolvers {
       return updatedBlocks
     }
     return []
+  }
+
+  @Mutation()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  @IdAsKey()
+  async blockRemove(
+    @Args('id') id: string,
+    @Args('journeyId') journeyId: string
+  ): Promise<Block[]> {
+    return await this.blockService.removeBlockAndChildren(id)
   }
 
   @KeyAsId()
