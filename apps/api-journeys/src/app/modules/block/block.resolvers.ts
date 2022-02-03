@@ -49,7 +49,10 @@ export class BlockResolvers {
   ): Promise<Array<Promise<Block>>> {
     const selectedBlock: Block = await this.block(_key)
 
-    if (selectedBlock.journeyId === journeyId) {
+    if (
+      selectedBlock.journeyId === journeyId &&
+      selectedBlock.parentOrder != null
+    ) {
       const siblings = await this.siblings(selectedBlock)
       siblings.splice(selectedBlock.parentOrder, 1)
       siblings.splice(parentOrder, 0, selectedBlock)

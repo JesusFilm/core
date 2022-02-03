@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
-import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
 import { Button } from '../Button'
 import { Typography } from './Typography'
 import { NewVideoButton } from './NewVideoButton'
+import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
 
 export function BlocksTab(): ReactElement {
@@ -24,9 +24,9 @@ export function BlocksTab(): ReactElement {
         <Typography />
         <Button icon={<InsertPhotoRounded />} value="Image" />
         <NewVideoButton />
-        <Button icon={<ContactSupportRounded />} value="Poll" />
+        <NewRadioQuestionButton />
         <NewSignUpButton />
-      </Stack>
+      </Stack >
       <Box
         sx={{
           py: 4.25,

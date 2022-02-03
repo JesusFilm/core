@@ -80,5 +80,41 @@ describe('Image', () => {
         parentOrder: 2
       })
     })
+
+    it('does not update if block not part of current journey', async () => {
+      const data = await resolver.blockOrderUpdate('image1', '1', 2)
+
+      expect(service.update).toBeCalledTimes(0)
+      expect(data).toEqual([])
+    })
+
+    it('does not update if block does not have parent order', async () => {
+      const coverImage1 = { ...image1, parentOrder: undefined }
+      const blockService = {
+        provide: BlockService,
+        useFactory: () => ({
+          get: jest.fn(() => coverImage1),
+          getSiblings: jest.fn(() => [coverImage1, image2, image3]),
+          update: jest.fn((input) => input)
+        })
+      }
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          BlockResolvers,
+          blockService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
+      }).compile()
+      resolver = module.get<BlockResolvers>(BlockResolvers)
+      service = await module.resolve(BlockService)
+
+      const data = await resolver.blockOrderUpdate('image1', '1', 2)
+
+      expect(service.update).toBeCalledTimes(0)
+      expect(data).toEqual([])
+    })
   })
 })
