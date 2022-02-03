@@ -29,7 +29,7 @@ describe('Image', () => {
     const { getByTestId } = render(
       <Image {...block} src={null} alt="defaultImageIcon" />
     )
-    expect(getByTestId('ImageIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('ImageRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })
 })
 
