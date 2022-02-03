@@ -19,6 +19,7 @@ const CardPreviewStory = {
   component: CardPreview,
   title: 'Journeys-Admin/CardPreview',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }

@@ -1,16 +1,16 @@
-import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
+import { Story, Meta } from '@storybook/react'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../libs/context'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TYPOGRAPHY_BLOCK_CREATE } from './Typography'
-import { Typography } from '.'
+import { IMAGE_BLOCK_CREATE } from './NewImageButton'
+import { NewImageButton } from '.'
 
-const TypographyStory = {
-  ...journeysAdminConfig,
-  component: Typography,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/Typography'
+const NewImageButtonStory = {
+  ...simpleComponentConfig,
+  component: NewImageButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewImageButton'
 }
 
 export const Default: Story = () => {
@@ -19,31 +19,32 @@ export const Default: Story = () => {
       mocks={[
         {
           request: {
-            query: TYPOGRAPHY_BLOCK_CREATE,
+            query: IMAGE_BLOCK_CREATE,
             variables: {
               input: {
                 journeyId: 'journeyId',
                 parentBlockId: 'cardId',
-                content: 'TEST'
+                src: null,
+                alt: 'Default Image Icon'
               }
             }
           },
           result: {
             data: {
-              typographyBlockCreate: {
-                id: 'typographyBlockId',
+              imageBlockCreate: {
+                id: 'imageBlockId',
                 parentBlockId: 'cardId',
                 journeyId: 'journeyId',
-                align: null,
-                color: null,
-                content: null,
-                variant: null
+                src: null,
+                alt: 'Default Image Icon',
+                width: 0,
+                height: 0,
+                blurhash: null
               }
             }
           }
         }
       ]}
-      addTypename={false}
     >
       <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
         <EditorProvider
@@ -60,8 +61,8 @@ export const Default: Story = () => {
                   id: 'cardId',
                   __typename: 'CardBlock',
                   parentBlockId: 'stepId',
-                  coverBlockId: null,
                   parentOrder: 0,
+                  coverBlockId: null,
                   backgroundColor: null,
                   themeMode: null,
                   themeName: null,
@@ -72,11 +73,11 @@ export const Default: Story = () => {
             }
           }}
         >
-          <Typography />
+          <NewImageButton />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export default TypographyStory as Meta
+export default NewImageButtonStory as Meta

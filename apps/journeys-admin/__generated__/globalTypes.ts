@@ -136,6 +136,14 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ButtonBlockUpdateInput {
+  color?: ButtonColor | null;
+  label?: string | null;
+  parentBlockId?: string | null;
+  size?: ButtonSize | null;
+  variant?: ButtonVariant | null;
+}
+
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
   coverBlockId?: string | null;
@@ -143,6 +151,14 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ImageBlockCreateInput {
+  alt: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  src?: string | null;
 }
 
 export interface JourneyUpdateInput {
@@ -155,6 +171,20 @@ export interface JourneyUpdateInput {
   title?: string | null;
 }
 
+export interface RadioOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+}
+
+export interface RadioQuestionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+}
+
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;
@@ -164,7 +194,7 @@ export interface RadioQuestionResponseCreateInput {
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   submitLabel: string;
 }
 
@@ -181,7 +211,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   variant?: TypographyVariant | null;
 }
 

@@ -7,13 +7,14 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../..
 import {
   TypographyColor,
   ButtonColor,
+  IconColor,
   ThemeName,
   ThemeMode
 } from '../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../libs/context'
 
 interface ColorDisplayIconProps {
-  color: TypographyColor | ButtonColor | null
+  color: TypographyColor | ButtonColor | IconColor | null
 }
 
 export function ColorDisplayIcon({

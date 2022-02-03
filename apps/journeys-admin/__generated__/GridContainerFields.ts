@@ -13,7 +13,7 @@ export interface GridContainerFields {
   __typename: "GridContainerBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   spacing: number;
   direction: GridDirection;
   justifyContent: GridJustifyContent;

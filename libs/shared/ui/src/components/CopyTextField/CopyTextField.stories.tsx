@@ -9,6 +9,7 @@ const Demo = {
   component: CopyTextField,
   title: 'Shared-Ui/CopyTextField',
   parameters: {
+    ...sharedUiConfig.parameters,
     chromatic: {
       ...sharedUiConfig.parameters.chromatic,
       viewports: [1200]

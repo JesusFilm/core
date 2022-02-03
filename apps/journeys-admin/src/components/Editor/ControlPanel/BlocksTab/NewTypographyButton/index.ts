@@ -1,0 +1,1 @@
+export { NewTypographyButton } from './NewTypographyButton'

@@ -22,7 +22,7 @@ type GridContainerBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
