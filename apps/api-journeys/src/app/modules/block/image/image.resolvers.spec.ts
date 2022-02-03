@@ -39,7 +39,6 @@ describe('Image', () => {
     __typename: '',
     id: '1',
     parentBlockId: '2',
-    parentOrder: 0,
     journeyId: '3',
     src: 'https://blurha.sh/assets/images/img2.jpg',
     alt: 'grid image'
@@ -55,7 +54,7 @@ describe('Image', () => {
   const imageblockresponse = {
     _key: input.id,
     parentBlockId: input.parentBlockId,
-    parentOrder: 0,
+    parentOrder: 2,
     journeyId: input.journeyId,
     __typename: 'ImageBlock',
     src: input.src,
@@ -80,7 +79,7 @@ describe('Image', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => []),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -116,6 +115,10 @@ describe('Image', () => {
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {
       await resolver.imageBlockCreate(input)
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        input.journeyId,
+        input.parentBlockId
+      )
       expect(service.save).toHaveBeenCalledWith(imageblockresponse)
     })
   })

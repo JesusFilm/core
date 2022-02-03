@@ -1,11 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": ["node", "express"],
+    "outDir": "../../../dist/out-tsc",
+    "declaration": true,
+    "types": ["node"],
+    "target": "es6",
     "esModuleInterop": true
   },
-  "exclude": ["**/*.spec.ts", "setupTests.ts"],
+  "exclude": ["**/*.spec.ts"],
   "include": ["**/*.ts"]
 }

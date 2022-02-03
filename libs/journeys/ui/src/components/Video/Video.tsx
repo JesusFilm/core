@@ -104,7 +104,7 @@ export function Video({
         },
         responsive: true,
         muted: muted === true,
-        poster: posterBlock?.src
+        poster: posterBlock?.src != null ? posterBlock.src : undefined
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)

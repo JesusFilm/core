@@ -1,32 +1,31 @@
-import { ReactElement } from 'react'
-import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
   useEditor,
-  TreeBlock,
-  TYPOGRAPHY_FIELDS
+  IMAGE_FIELDS,
+  TreeBlock
 } from '@core/journeys/ui'
+import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
+import { ReactElement } from 'react'
 import { useJourney } from '../../../../../libs/context'
-import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
+import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
+import { Button } from '../../Button'
 
-export const TYPOGRAPHY_BLOCK_CREATE = gql`
-  ${TYPOGRAPHY_FIELDS}
-  mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
-    typographyBlockCreate(input: $input) {
+export const IMAGE_BLOCK_CREATE = gql`
+  ${IMAGE_FIELDS}
+  mutation ImageBlockCreate($input: ImageBlockCreateInput!) {
+    imageBlockCreate(input: $input) {
       id
       parentBlockId
-      ...TypographyFields
+      parentOrder
+      ...ImageFields
     }
   }
 `
 
-export function Typography(): ReactElement {
-  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
-    TYPOGRAPHY_BLOCK_CREATE
-  )
+export function NewImageButton(): ReactElement {
+  const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { id: journeyId } = useJourney()
   const {
     state: { selectedStep },
@@ -37,27 +36,24 @@ export function Typography(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    const checkTypography = card?.children.map((block) =>
-      block.children.find((child) => child.__typename === 'TypographyBlock')
-    )
-    if (card != null && checkTypography !== undefined) {
-      const { data } = await typographyBlockCreate({
+    if (card != null) {
+      const { data } = await imageBlockCreate({
         variables: {
           input: {
             journeyId,
             parentBlockId: card.id,
-            content: 'Add your text here...',
-            variant: checkTypography.length > 0 ? 'body2' : 'h1'
+            src: null,
+            alt: 'Default Image Icon'
           }
         },
         update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
+          if (data?.imageBlockCreate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journeyId }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
+                    data: data.imageBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -71,10 +67,10 @@ export function Typography(): ReactElement {
           }
         }
       })
-      if (data?.typographyBlockCreate != null) {
+      if (data?.imageBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.typographyBlockCreate.id
+          id: data.imageBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
@@ -85,6 +81,6 @@ export function Typography(): ReactElement {
   }
 
   return (
-    <Button icon={<TextFieldsRounded />} value="Text" onClick={handleClick} />
+    <Button icon={<InsertPhotoRounded />} value="Image" onClick={handleClick} />
   )
 }

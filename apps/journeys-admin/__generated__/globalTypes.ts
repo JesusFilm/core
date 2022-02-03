@@ -136,6 +136,14 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ImageBlockCreateInput {
+  alt: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  src?: string | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;

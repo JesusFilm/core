@@ -3,11 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ImageBlockCreateInput } from "./globalTypes";
+
 // ====================================================
-// GraphQL fragment: ImageFields
+// GraphQL mutation operation: ImageBlockCreate
 // ====================================================
 
-export interface ImageFields {
+export interface ImageBlockCreate_imageBlockCreate {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -21,4 +23,12 @@ export interface ImageFields {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+}
+
+export interface ImageBlockCreate {
+  imageBlockCreate: ImageBlockCreate_imageBlockCreate;
+}
+
+export interface ImageBlockCreateVariables {
+  input: ImageBlockCreateInput;
 }
