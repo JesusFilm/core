@@ -4,7 +4,7 @@ import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import ImageIcon from '@mui/icons-material/Image'
+import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
 import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
@@ -78,7 +78,7 @@ export function Image({
           elevation={0}
           variant="outlined"
         >
-          <ImageIcon fontSize="inherit" />
+          <ImageRoundedIcon fontSize="inherit" />
         </Paper>
       )}
     </Box>
