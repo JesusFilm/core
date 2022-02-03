@@ -5,7 +5,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -52,6 +53,46 @@ describe('CardStyling', () => {
         <ThemeProvider>
           <JourneyProvider value={journey}>
             <EditorProvider initialState={{ selectedBlock: card }}>
+              <BackgroundColor />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('bgColorTextField').children[0].children[1].getAttribute(
+        'value'
+      )
+    ).toEqual('Default')
+  })
+
+  it('works in a step block', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      locked: false,
+      nextBlockId: null,
+      parentOrder: 0,
+      children: [card]
+    }
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={journey}>
+            <EditorProvider initialState={{ selectedBlock: step }}>
               <BackgroundColor />
             </EditorProvider>
           </JourneyProvider>
