@@ -2,6 +2,8 @@ import videojs from 'video.js'
 import { ReactElement, useEffect, useRef, useCallback, MouseEvent } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
@@ -165,45 +167,74 @@ export function Video({
   }
 
   return (
-    <Box
-      data-testid={`video-${blockId}`}
-      sx={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#000000',
-        borderRadius: 4,
-        overflow: 'hidden',
-        m: 0,
-        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px',
-        '> div': {
-          width: '100%'
-        }
-      }}
-      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
-    >
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered"
-        style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
-        playsInline
-      >
-        <source
-          src={videoContent.src}
-          type={
-            videoContent.__typename === 'VideoArclight'
-              ? 'application/x-mpegURL'
-              : undefined
-          }
-        />
-      </video>
-      {children?.map(
-        (option) =>
-          option.__typename === 'VideoTriggerBlock' && (
-            <VideoTrigger player={playerRef.current} {...option} />
-          )
+    <>
+      {videoContent.src != null ? (
+        <Box
+          data-testid={`video-${blockId}`}
+          sx={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#000000',
+            borderRadius: 4,
+            overflow: 'hidden',
+            m: 0,
+            outline:
+              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+            outlineOffset: '5px',
+            '> div': {
+              width: '100%'
+            }
+          }}
+          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
+        >
+          <video
+            ref={videoRef}
+            className="video-js vjs-big-play-centered"
+            style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
+            playsInline
+          >
+            <source
+              src={videoContent.src}
+              type={
+                videoContent.__typename === 'VideoArclight'
+                  ? 'application/x-mpegURL'
+                  : undefined
+              }
+            />
+          </video>
+          {children?.map(
+            (option) =>
+              option.__typename === 'VideoTriggerBlock' && (
+                <VideoTrigger player={playerRef.current} {...option} />
+              )
+          )}
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            outline:
+              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+            outlineOffset: '5px'
+          }}
+          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
+        >
+          <Paper
+            sx={{
+              borderRadius: (theme) => theme.spacing(4),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 200,
+              fontSize: 100
+            }}
+            elevation={0}
+            variant="outlined"
+          >
+            <VideocamRounded fontSize="inherit" />
+          </Paper>
+        </Box>
       )}
-    </Box>
+    </>
   )
 }

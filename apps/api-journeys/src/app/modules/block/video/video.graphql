@@ -1,15 +1,15 @@
 interface VideoContent {
-  src: String!
+  src: String
 }
 
 type VideoArclight implements VideoContent {
   mediaComponentId: String!
   languageId: String!
-  src: String!
+  src: String
 }
 
 type VideoGeneric implements VideoContent {
-  src: String!
+  src: String
 }
 
 type VideoBlock implements Block {
@@ -48,7 +48,6 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  parentOrder: Int!
   title: String!
   """
   startAt dictates at which point of time the video should start playing
