@@ -326,7 +326,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 4,
     locked: false,
     nextBlockId: null
   },
@@ -350,7 +350,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step5.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 5,
     locked: false,
     nextBlockId: null
   },
@@ -389,7 +389,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'step6.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 6,
     locked: false,
     nextBlockId: null
   },
