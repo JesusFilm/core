@@ -145,6 +145,14 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ImageBlockCreateInput {
+  alt: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  src?: string | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
@@ -153,6 +161,20 @@ export interface JourneyUpdateInput {
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   title?: string | null;
+}
+
+export interface RadioOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+}
+
+export interface RadioQuestionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
 }
 
 export interface RadioQuestionResponseCreateInput {
@@ -164,7 +186,7 @@ export interface RadioQuestionResponseCreateInput {
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   submitLabel: string;
 }
 
@@ -181,7 +203,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   variant?: TypographyVariant | null;
 }
 

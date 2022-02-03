@@ -93,10 +93,7 @@ describe('Step', () => {
       await stepBlockResolver
         .stepBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        blockUpdate.journeyId,
-        blockUpdate.parentBlockId
-      )
+      expect(service.getSiblings).toHaveBeenCalledWith(blockUpdate.journeyId)
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })

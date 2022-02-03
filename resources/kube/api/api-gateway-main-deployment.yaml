@@ -15,7 +15,7 @@ spec:
         app: api-gateway-main
     spec:
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway:09df3ec2538d0d4ee5e5a86debc67c45f5f15420
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway:3acc8a9f7b63c4275f8c3e2663561a081175ddbf
           imagePullPolicy: IfNotPresent
           name: jfp-api-gateway
           ports:
@@ -23,6 +23,8 @@ spec:
           envFrom:
             - secretRef:
                 name: env-firebase-main
+            - secretRef:
+                name: env-apollo-gateway-main
 ---
 apiVersion: v1
 kind: Service

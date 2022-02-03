@@ -23,6 +23,8 @@ spec:
           envFrom:
             - secretRef:
                 name: env-firebase-stage
+            - secretRef:
+                name: env-apollo-gateway-stage
 ---
 apiVersion: v1
 kind: Service
