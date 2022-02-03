@@ -5,16 +5,16 @@ import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import { BackgroundColor } from '.'
+import { BackgroundColor, CARD_BLOCK_BGCOLOR_UPDATE } from './BackgroundColor'
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -66,6 +66,46 @@ describe('CardStyling', () => {
     ).toEqual('Default')
   })
 
+  it('works in a step block', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      locked: false,
+      nextBlockId: null,
+      parentOrder: 0,
+      children: [card]
+    }
+    const { getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider value={journey}>
+            <EditorProvider initialState={{ selectedBlock: step }}>
+              <BackgroundColor />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('bgColorTextField').children[0].children[1].getAttribute(
+        'value'
+      )
+    ).toEqual('Default')
+  })
+
   it('changes to gql selection', async () => {
     const cache = new InMemoryCache()
     cache.restore({
@@ -98,7 +138,7 @@ describe('CardStyling', () => {
         mocks={[
           {
             request: {
-              query: CARD_BLOCK_UPDATE,
+              query: CARD_BLOCK_BGCOLOR_UPDATE,
               variables: {
                 id: 'card1.id',
                 journeyId: 'journeyId',

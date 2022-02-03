@@ -4,16 +4,16 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import { CardStyling } from '.'
+import { CardStyling, CARD_BLOCK_THEME_UPDATE } from './CardStyling'
 
 const initialBlock: TreeBlock<CardBlock> = {
   id: 'card1.id',
@@ -84,6 +84,40 @@ describe('CardStyling', () => {
     expect(getByText('Dark')).toBeInTheDocument()
   })
 
+  it('works in a step block', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: ThemeMode.dark,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      locked: false,
+      nextBlockId: null,
+      parentOrder: 0,
+      children: [card]
+    }
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider value={journey}>
+          <EditorProvider initialState={{ selectedBlock: step }}>
+            <CardStyling />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Dark')).toBeInTheDocument()
+  })
+
   it('shows light', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
@@ -134,7 +168,7 @@ describe('CardStyling', () => {
         mocks={[
           {
             request: {
-              query: CARD_BLOCK_UPDATE,
+              query: CARD_BLOCK_THEME_UPDATE,
               variables: {
                 id: 'card1.id',
                 journeyId: 'journeyId',

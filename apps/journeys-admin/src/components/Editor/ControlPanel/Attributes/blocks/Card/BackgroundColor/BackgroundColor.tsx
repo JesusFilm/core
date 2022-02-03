@@ -13,14 +13,13 @@ import {
 import { Colorize } from '@mui/icons-material'
 import { RgbaStringColorPicker } from 'react-colorful'
 import Stack from '@mui/material/Stack'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { TabPanel, tabProps } from '@core/shared/ui'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { useJourney } from '../../../../../../../libs/context'
-import { CardBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { CardBlockBgColorUpdate } from '../../../../../../../../__generated__/CardBlockBgColorUpdate'
 
 const themeColors = [
   'null',
@@ -33,6 +32,19 @@ const themeColors = [
   '#EB6C57',
   '#CC4530'
 ]
+
+export const CARD_BLOCK_BGCOLOR_UPDATE = gql`
+  mutation CardBlockBgColorUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      backgroundColor
+    }
+  }
+`
 
 export function BackgroundColor(): ReactElement {
   const {
@@ -48,25 +60,34 @@ export function BackgroundColor(): ReactElement {
   ) as TreeBlock<CardBlock> | undefined
   const { id: journeyId } = useJourney()
 
-  // const [color, setColor] = useState(backgroundColor)
   const [tabValue, setTabValue] = useState(0)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [cardBlockUpdate] =
-    useMutation<{ cardBlockUpdate: CardBlockUpdateInput }>(CARD_BLOCK_UPDATE)
+  const [cardBlockUpdate] = useMutation<CardBlockBgColorUpdate>(
+    CARD_BLOCK_BGCOLOR_UPDATE
+  )
   const handleTabChange = (event, newValue): void => {
     setTabValue(newValue)
   }
 
   const handleColorChange = async (color: string): Promise<void> => {
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock?.id,
-        journeyId: journeyId,
-        input: {
-          backgroundColor: color === 'null' ? null : color
+    if (cardBlock != null) {
+      await cardBlockUpdate({
+        variables: {
+          id: cardBlock.id,
+          journeyId: journeyId,
+          input: {
+            backgroundColor: color === 'null' ? null : color
+          }
+        },
+        optimisticResponse: {
+          cardBlockUpdate: {
+            id: cardBlock.id,
+            __typename: 'CardBlock',
+            backgroundColor: color === 'null' ? null : color
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (

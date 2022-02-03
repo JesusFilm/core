@@ -5,16 +5,16 @@ import { InMemoryCache } from '@apollo/client'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import { CardLayout } from '.'
+import { CardLayout, CARD_BLOCK_LAYOUT_UPDATE } from './CardLayout'
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -84,6 +84,40 @@ describe('CardLayout', () => {
     expect(getByText('Expanded')).toBeInTheDocument()
   })
 
+  it('works in a step block', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      locked: false,
+      nextBlockId: null,
+      parentOrder: 0,
+      children: [card]
+    }
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider value={journey}>
+          <EditorProvider initialState={{ selectedBlock: step }}>
+            <CardLayout />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Contained')).toBeInTheDocument()
+  })
+
   it('changes to gql selection', async () => {
     const cache = new InMemoryCache()
     cache.restore({
@@ -116,7 +150,7 @@ describe('CardLayout', () => {
         mocks={[
           {
             request: {
-              query: CARD_BLOCK_UPDATE,
+              query: CARD_BLOCK_LAYOUT_UPDATE,
               variables: {
                 id: 'card1.id',
                 journeyId: 'journeyId',
