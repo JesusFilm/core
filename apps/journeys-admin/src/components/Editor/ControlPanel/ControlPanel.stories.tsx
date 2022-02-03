@@ -21,7 +21,10 @@ const ControlPanelStory = {
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen',
-    chromatic: { diffThreshold: 0.75 }
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.75
+    }
   }
 }
 
@@ -539,7 +542,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
 const Template: Story = () => {
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ steps }}>
+      <EditorProvider
+        initialState={{
+          steps
+        }}
+      >
         <Box sx={{ mt: '80px' }}>
           <ControlPanel />
         </Box>

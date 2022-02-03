@@ -10,7 +10,11 @@ const Demo = {
   component: Video,
   title: 'Journeys-Ui/Video',
   parameters: {
-    chromatic: { disableSnapshot: true }
+    ...journeyUiConfig.parameters,
+    chromatic: {
+      ...journeyUiConfig.parameters.chromatic,
+      disableSnapshot: true
+    }
   }
 }
 
@@ -117,6 +121,25 @@ Poster.args = {
 }
 Poster.parameters = {
   chromatic: { disableSnapshot: false }
+}
+
+export const NoVideoSource = Template.bind({})
+NoVideoSource.args = {
+  __typename: 'VideoBlock',
+  id: 'video1.id',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  autoplay: false,
+  muted: false,
+  title: 'video1',
+  videoContent: {
+    __typename: 'VideoArclight',
+    src: null
+  },
+  startAt: null,
+  endAt: null,
+  posterBlockId: null,
+  children: []
 }
 
 export default Demo as Meta

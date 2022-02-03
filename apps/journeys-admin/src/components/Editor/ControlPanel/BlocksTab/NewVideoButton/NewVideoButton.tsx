@@ -1,32 +1,31 @@
 import { ReactElement } from 'react'
-import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
 import {
   ActiveTab,
   useEditor,
   TreeBlock,
-  TYPOGRAPHY_FIELDS
+  VIDEO_FIELDS
 } from '@core/journeys/ui'
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
-import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
+import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
 
-export const TYPOGRAPHY_BLOCK_CREATE = gql`
-  ${TYPOGRAPHY_FIELDS}
-  mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
-    typographyBlockCreate(input: $input) {
+export const VIDEO_BLOCK_CREATE = gql`
+  ${VIDEO_FIELDS}
+  mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
+    videoBlockCreate(input: $input) {
       id
       parentBlockId
-      ...TypographyFields
+      parentOrder
+      ...VideoFields
     }
   }
 `
 
-export function Typography(): ReactElement {
-  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
-    TYPOGRAPHY_BLOCK_CREATE
-  )
+export function NewVideoButton(): ReactElement {
+  const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { id: journeyId } = useJourney()
   const {
     state: { selectedStep },
@@ -37,27 +36,28 @@ export function Typography(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    const checkTypography = card?.children.map((block) =>
-      block.children.find((child) => child.__typename === 'TypographyBlock')
-    )
-    if (card != null && checkTypography !== undefined) {
-      const { data } = await typographyBlockCreate({
+    if (card != null) {
+      const { data } = await videoBlockCreate({
         variables: {
           input: {
             journeyId,
             parentBlockId: card.id,
-            content: 'Add your text here...',
-            variant: checkTypography.length > 0 ? 'body2' : 'h1'
+            autoplay: true,
+            muted: false,
+            videoContent: {
+              src: null
+            },
+            title: ''
           }
         },
         update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
+          if (data?.videoBlockCreate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journeyId }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
+                    data: data.videoBlockCreate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -71,10 +71,10 @@ export function Typography(): ReactElement {
           }
         }
       })
-      if (data?.typographyBlockCreate != null) {
+      if (data?.videoBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.typographyBlockCreate.id
+          id: data.videoBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',
@@ -85,6 +85,6 @@ export function Typography(): ReactElement {
   }
 
   return (
-    <Button icon={<TextFieldsRounded />} value="Text" onClick={handleClick} />
+    <Button icon={<VideocamRounded />} value="Video" onClick={handleClick} />
   )
 }

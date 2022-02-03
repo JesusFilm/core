@@ -86,26 +86,30 @@ export function Cover({
           data-testid="CardVideoCover"
         >
           <video ref={videoRef} className="video-js" playsInline>
-            <source
-              src={videoBlock.videoContent.src}
-              type={
-                videoBlock.videoContent.__typename === 'VideoArclight'
-                  ? 'application/x-mpegURL'
-                  : undefined
-              }
-            />
+            {videoBlock.videoContent.src != null && (
+              <source
+                src={videoBlock.videoContent.src}
+                type={
+                  videoBlock.videoContent.__typename === 'VideoArclight'
+                    ? 'application/x-mpegURL'
+                    : undefined
+                }
+              />
+            )}
           </video>
         </Box>
       ) : (
-        <Box
-          data-testid="CardImageCover"
-          sx={{
-            flexGrow: 1,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundImage: `url(${imageBlock.src})`
-          }}
-        />
+        imageBlock.src != null && (
+          <Box
+            data-testid="CardImageCover"
+            sx={{
+              flexGrow: 1,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundImage: `url(${imageBlock.src})`
+            }}
+          />
+        )
       )}
       <Box
         sx={{

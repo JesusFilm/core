@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { InMemoryCache } from '@apollo/client'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { TYPOGRAPHY_BLOCK_CREATE } from './Typography'
-import { Typography } from '.'
+import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
+import { NewVideoButton } from '.'
 
-describe('Typography', () => {
+describe('Video', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -20,8 +20,8 @@ describe('Typography', () => {
         id: 'cardId',
         __typename: 'CardBlock',
         parentBlockId: 'stepId',
-        coverBlockId: null,
         parentOrder: 0,
+        coverBlockId: null,
         backgroundColor: null,
         themeMode: null,
         themeName: null,
@@ -30,18 +30,22 @@ describe('Typography', () => {
       }
     ]
   }
-
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {
-        typographyBlockCreate: {
-          id: 'typographyBlockId',
+        videoBlockCreate: {
+          id: 'videoBlockId',
           parentBlockId: 'cardId',
           journeyId: 'journeyId',
-          align: null,
-          color: null,
-          content: null,
-          variant: null
+          title: '',
+          muted: false,
+          autoplay: true,
+          startAt: null,
+          endAt: null,
+          posterBlockId: null,
+          videoContent: {
+            src: null
+          }
         }
       }
     }))
@@ -50,13 +54,17 @@ describe('Typography', () => {
         mocks={[
           {
             request: {
-              query: TYPOGRAPHY_BLOCK_CREATE,
+              query: VIDEO_BLOCK_CREATE,
               variables: {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
-                  variant: 'h1'
+                  autoplay: true,
+                  muted: false,
+                  videoContent: {
+                    src: null
+                  },
+                  title: ''
                 }
               }
             },
@@ -66,7 +74,7 @@ describe('Typography', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <Typography />
+            <NewVideoButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -79,23 +87,27 @@ describe('Typography', () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
-        blocks: [{ __ref: 'VideoBlock:videoBlockId' }],
+        blocks: [{ __ref: 'TypographyBlock:typographyBlockId' }],
         id: 'journeyId',
         __typename: 'Journey'
       }
     })
     const result = jest.fn(() => ({
       data: {
-        typographyBlockCreate: {
-          id: 'typographyBlockId',
+        videoBlockCreate: {
+          id: 'videoBlockId',
           parentBlockId: 'cardId',
           journeyId: 'journeyId',
-          parentOrder: 0,
-          align: null,
-          color: null,
-          content: null,
-          variant: null,
-          __typename: 'TypographyBlock'
+          title: '',
+          muted: false,
+          autoplay: true,
+          startAt: null,
+          endAt: null,
+          posterBlockId: null,
+          videoContent: {
+            src: null
+          },
+          __typename: 'VideoBlock'
         }
       }
     }))
@@ -105,13 +117,17 @@ describe('Typography', () => {
         mocks={[
           {
             request: {
-              query: TYPOGRAPHY_BLOCK_CREATE,
+              query: VIDEO_BLOCK_CREATE,
               variables: {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: 'Add your text here...',
-                  variant: 'h1'
+                  autoplay: true,
+                  muted: false,
+                  videoContent: {
+                    src: null
+                  },
+                  title: ''
                 }
               }
             },
@@ -121,7 +137,7 @@ describe('Typography', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <Typography />
+            <NewVideoButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -129,8 +145,8 @@ describe('Typography', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'VideoBlock:videoBlockId' },
-      { __ref: 'TypographyBlock:typographyBlockId' }
+      { __ref: 'TypographyBlock:typographyBlockId' },
+      { __ref: 'VideoBlock:videoBlockId' }
     ])
   })
 })

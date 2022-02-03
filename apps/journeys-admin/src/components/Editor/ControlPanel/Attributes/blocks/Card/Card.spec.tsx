@@ -1,5 +1,6 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourney'
 import { Drawer } from '../../../../Drawer'
@@ -233,12 +234,14 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <Card {...card} />
-          </EditorProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider>
+              <Drawer />
+              <Card {...card} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       fireEvent.click(getByText('Default'))
       expect(getByText('Card Style Property')).toBeInTheDocument()
@@ -277,12 +280,14 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <Card {...card} />
-          </EditorProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider>
+              <Drawer />
+              <Card {...card} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       fireEvent.click(getByText('Contained'))
       expect(getByText('Card Layout Property')).toBeInTheDocument()

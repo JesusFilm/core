@@ -1,5 +1,6 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { TreeBlock } from '@core/journeys/ui'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
@@ -7,63 +8,218 @@ import {
 import { Attributes } from '.'
 
 describe('Attributes', () => {
-  it('should render card block', () => {
-    const step: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: 'image1.id',
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: true,
-      children: []
-    }
-    const { getByText } = render(<Attributes selected={step} />)
+  const card: TreeBlock<CardBlock> = {
+    id: 'card0.id',
+    __typename: 'CardBlock',
+    parentBlockId: 'step0.id',
+    parentOrder: 0,
+    coverBlockId: null,
+    backgroundColor: null,
+    themeMode: null,
+    themeName: null,
+    fullscreen: true,
+    children: []
+  }
+
+  const step: TreeBlock<StepBlock> = {
+    id: 'step0.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: null,
+    children: [card]
+  }
+
+  it('should render card properties', () => {
+    const { getByText, queryByText } = render(
+      <Attributes selected={card} step={card} />
+    )
+
+    expect(queryByText('Unlocked Card')).not.toBeInTheDocument()
     expect(getByText('Background Color')).toBeInTheDocument()
   })
 
-  it('should render step block with card block', () => {
-    const step: TreeBlock<StepBlock> = {
-      id: 'step.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      nextBlockId: null,
-      children: [
-        {
-          id: 'card1.id',
-          __typename: 'CardBlock',
-          parentBlockId: 'step1.id',
-          parentOrder: 0,
-          coverBlockId: 'image1.id',
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: true,
-          children: []
-        }
-      ]
-    }
-    const { getByText } = render(<Attributes selected={step} />)
+  it('should only render step properties only if no children', () => {
+    const stepOnly = { ...step, children: [] }
+    const { getByText, getAllByRole } = render(
+      <Attributes selected={stepOnly} step={stepOnly} />
+    )
+
+    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    expect(getAllByRole('button')).toHaveLength(1)
+  })
+
+  it('should render step properties with card properties', () => {
+    const { getByText } = render(<Attributes selected={step} step={step} />)
+
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(getByText('Background Color')).toBeInTheDocument()
   })
 
-  it('should render step block without card block', () => {
-    const step: TreeBlock<StepBlock> = {
-      id: 'step.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
+  const video: TreeBlock = {
+    __typename: 'VideoBlock',
+    id: 'video0.id',
+    parentBlockId: 'card0.id',
+    parentOrder: 0,
+    autoplay: false,
+    title: 'Video',
+    startAt: 10,
+    endAt: null,
+    muted: null,
+    posterBlockId: 'posterBlockId',
+    videoContent: {
+      __typename: 'VideoArclight',
+      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    },
+    children: []
+  }
+
+  it('should render step properties with video properties', () => {
+    const stepWithVideoOnly: TreeBlock = {
+      ...step,
+      children: [{ ...video, parentBlockId: 'step0.id' }]
+    }
+    const { getByText, queryByTestId } = render(
+      <MockedProvider>
+        <Attributes selected={stepWithVideoOnly} step={stepWithVideoOnly} />
+      </MockedProvider>
+    )
+
+    expect(getByText('Unlocked Card')).toBeInTheDocument()
+    expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
+    // TODO: Update this when adding Video Attributes
+    expect(getByText('Video Attributes')).toBeInTheDocument()
+  })
+
+  it('should render video properties with move buttons ', () => {
+    const stepWithVideo: TreeBlock = {
+      ...step,
+      children: [{ ...card, children: [video] }]
+    }
+    const { getByText, getByTestId, queryByText } = render(
+      <MockedProvider>
+        <Attributes selected={video} step={stepWithVideo} />
+      </MockedProvider>
+    )
+
+    expect(queryByText('Unlocked Card')).not.toBeInTheDocument()
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    // TODO: Update this when adding Video Attributes
+    expect(getByText('Video Attributes')).toBeInTheDocument()
+  })
+
+  it('should render typography properties with move buttons ', () => {
+    const block: TreeBlock = {
+      id: 'typographyBlockId1',
+      __typename: 'TypographyBlock',
+      parentBlockId: 'card0.id',
       parentOrder: 0,
-      locked: false,
-      nextBlockId: null,
+      align: null,
+      color: null,
+      content: 'Text1',
+      variant: null,
       children: []
     }
-    const { getByText, queryByText } = render(<Attributes selected={step} />)
-    expect(getByText('Unlocked Card')).toBeInTheDocument()
-    expect(queryByText('Background Color')).not.toBeInTheDocument()
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Variant Body 2' })
+    ).toBeInTheDocument()
+  })
+
+  it('should render button properties with move buttons ', () => {
+    const block: TreeBlock = {
+      id: 'button.id',
+      __typename: 'ButtonBlock',
+      parentBlockId: 'card0.id',
+      parentOrder: 0,
+      label: 'Button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIcon: null,
+      endIcon: null,
+      action: null,
+      children: []
+    }
+
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Button Size Medium' })
+    ).toBeInTheDocument()
+  })
+
+  it('should only render move buttons for Radio Question block', () => {
+    const block: TreeBlock = {
+      __typename: 'RadioQuestionBlock',
+      id: 'RadioQuestion1',
+      label: 'Label',
+      description: 'Description',
+      parentBlockId: 'RadioQuestion1',
+      parentOrder: 0,
+      children: []
+    }
+    const { getByRole, getAllByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByRole('button', { name: 'move-block-up' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'move-block-down' })).toBeInTheDocument()
+    expect(getAllByRole('button')).toHaveLength(2)
+  })
+
+  it('should render Radio Option properties with move buttons ', () => {
+    const block: TreeBlock = {
+      id: 'radio-option.id',
+      __typename: 'RadioOptionBlock',
+      parentBlockId: 'card0.id',
+      parentOrder: 0,
+      label: 'Radio Option',
+      action: null,
+      children: []
+    }
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+  })
+
+  it('should render Sign Up properties with move buttons ', () => {
+    const block: TreeBlock = {
+      id: 'signup.id',
+      __typename: 'SignUpBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      submitLabel: null,
+      action: null,
+      submitIcon: null,
+      children: []
+    }
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <Attributes selected={block} step={{ ...card, children: [block] }} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('move-block-buttons')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
   })
 })

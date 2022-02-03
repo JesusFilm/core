@@ -136,6 +136,31 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ButtonBlockUpdateInput {
+  color?: ButtonColor | null;
+  label?: string | null;
+  parentBlockId?: string | null;
+  size?: ButtonSize | null;
+  variant?: ButtonVariant | null;
+}
+
+export interface CardBlockUpdateInput {
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  fullscreen?: boolean | null;
+  parentBlockId?: string | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+}
+
+export interface ImageBlockCreateInput {
+  alt: string;
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  src?: string | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
@@ -144,6 +169,20 @@ export interface JourneyUpdateInput {
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   title?: string | null;
+}
+
+export interface RadioOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+}
+
+export interface RadioQuestionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
 }
 
 export interface RadioQuestionResponseCreateInput {
@@ -155,7 +194,7 @@ export interface RadioQuestionResponseCreateInput {
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   submitLabel: string;
 }
 
@@ -172,7 +211,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   variant?: TypographyVariant | null;
 }
 
@@ -182,6 +221,26 @@ export interface TypographyBlockUpdateInput {
   content?: string | null;
   parentBlockId?: string | null;
   variant?: TypographyVariant | null;
+}
+
+export interface VideoBlockCreateInput {
+  autoplay?: boolean | null;
+  description?: string | null;
+  endAt?: number | null;
+  id?: string | null;
+  journeyId: string;
+  muted?: boolean | null;
+  parentBlockId: string;
+  posterBlockId?: string | null;
+  startAt?: number | null;
+  title: string;
+  videoContent: VideoContentInput;
+}
+
+export interface VideoContentInput {
+  languageId?: string | null;
+  mediaComponentId?: string | null;
+  src?: string | null;
 }
 
 export interface VideoResponseCreateInput {

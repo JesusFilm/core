@@ -1,13 +1,21 @@
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, useEditor } from '@core/journeys/ui'
 import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import capitalize from 'lodash/capitalize'
+import {
+  ButtonSize,
+  ButtonColor,
+  ButtonVariant
+} from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { Color } from './Color'
+import { Size } from './Size'
+import { Variant } from './Variant'
 
 export function Button({
   id,
@@ -18,6 +26,7 @@ export function Button({
   endIcon,
   action
 }: TreeBlock<ButtonBlock>): ReactElement {
+  const { dispatch } = useEditor()
   return (
     <>
       <Attribute
@@ -33,27 +42,48 @@ export function Button({
         id={`${id}-button-color`}
         icon={<ColorDisplayIcon color={buttonColor} />}
         name="Color"
-        value={capitalize(buttonColor?.toString() ?? 'primary')}
+        value={capitalize(buttonColor?.toString() ?? ButtonColor.primary)}
         description="Background Color"
-        // onClick open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Button Color',
+            mobileOpen: true,
+            children: <Color />
+          })
+        }}
       />
 
       <Attribute
         id={`${id}-button-size`}
         icon={<ViewDayOutlinedIcon />}
         name="Button Size"
-        value={capitalize(size?.toString() ?? 'medium')}
+        value={capitalize(size?.toString() ?? ButtonSize.medium)}
         description="Button Size"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Button Size',
+            mobileOpen: true,
+            children: <Size />
+          })
+        }}
       />
 
       <Attribute
         id={`${id}-button-variant`}
         icon={<FormatShapesRoundedIcon />}
         name="Variant"
-        value={capitalize(buttonVariant?.toString() ?? 'text')}
+        value={capitalize(buttonVariant?.toString() ?? ButtonVariant.contained)}
         description="Button Variant"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Button Variant ',
+            mobileOpen: true,
+            children: <Variant />
+          })
+        }}
       />
 
       <Attribute

@@ -34,7 +34,7 @@ describe('Step', () => {
     journeyId: '2',
     __typename: 'StepBlock',
     parentBlockId: '3',
-    parentOrder: 0,
+    parentOrder: 2,
     locked: true,
     nextBlockId: '4'
   }
@@ -54,7 +54,7 @@ describe('Step', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => []),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -93,6 +93,7 @@ describe('Step', () => {
       await stepBlockResolver
         .stepBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
+      expect(service.getSiblings).toHaveBeenCalledWith(blockUpdate.journeyId)
       expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })

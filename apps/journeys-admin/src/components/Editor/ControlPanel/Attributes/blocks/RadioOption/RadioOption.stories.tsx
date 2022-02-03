@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { Stack } from '@mui/material'
+import Stack from '@mui/material/Stack'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { RadioOption } from '.'

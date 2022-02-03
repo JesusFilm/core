@@ -14,7 +14,7 @@ type StepBlock implements Block {
   """
   locked: Boolean!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 }
 
 input StepBlockCreateInput {
@@ -22,14 +22,11 @@ input StepBlockCreateInput {
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
-  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 extend type Mutation {

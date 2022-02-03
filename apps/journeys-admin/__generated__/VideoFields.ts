@@ -9,14 +9,14 @@
 
 export interface VideoFields_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string;
+  src: string | null;
 }
 
 export interface VideoFields {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;

@@ -29,7 +29,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Text Color',
             mobileOpen: true,
-            children: <Color id={id} color={color} />
+            children: <Color />
           })
         }}
       />
@@ -47,7 +47,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Text Variant',
             mobileOpen: true,
-            children: <Variant id={id} variant={variant} />
+            children: <Variant />
           })
         }}
       />
@@ -63,7 +63,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             type: 'SetDrawerPropsAction',
             title: 'Text Alignment',
             mobileOpen: true,
-            children: <Align id={id} align={align} />
+            children: <Align />
           })
         }}
       />

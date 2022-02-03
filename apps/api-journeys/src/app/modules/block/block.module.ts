@@ -13,14 +13,22 @@ import {
   VideoBlockResolvers,
   VideoContentResolvers
 } from './video/video.resolvers'
+import { ButtonBlockResolvers } from './button/button.resolvers'
+import {
+  RadioOptionBlockResolvers,
+  RadioQuestionBlockResolvers
+} from './radioQuestion/radioQuestion.resolvers'
 
 @Module({
   imports: [DatabaseModule],
   providers: [
     BlockService,
     BlockResolvers,
+    ButtonBlockResolvers,
     CardBlockResolvers,
     ImageBlockResolvers,
+    RadioOptionBlockResolvers,
+    RadioQuestionBlockResolvers,
     SignUpBlockResolvers,
     StepBlockResolvers,
     TypographyBlockResolvers,

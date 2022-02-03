@@ -20,7 +20,7 @@ type ButtonBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -28,4 +28,20 @@ type ButtonBlock implements Block {
   startIcon: Icon
   endIcon: Icon
   action: Action
+}
+
+input ButtonBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+}
+
+extend type Mutation {
+  buttonBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: ButtonBlockUpdateInput!
+  ): ButtonBlock
 }

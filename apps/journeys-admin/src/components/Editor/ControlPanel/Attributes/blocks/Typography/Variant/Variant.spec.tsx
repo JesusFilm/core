@@ -1,13 +1,29 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TYPOGRAPHY_BLOCK_UPDATE } from './Variant'
+import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 import { Variant } from '.'
 
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
+    const selectedBlock: TreeBlock<TypographyBlock> = {
+      __typename: 'TypographyBlock',
+      id: 'id',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      align: null,
+      color: null,
+      content: '',
+      variant: null,
+      children: []
+    }
     const { getByRole } = render(
       <MockedProvider>
-        <Variant id={'typograpghy-variant-id'} variant={null} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Variant />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Body 1' })).toBeInTheDocument()
@@ -23,41 +39,54 @@ describe('Typography variant selector', () => {
     expect(getByRole('button', { name: 'Caption' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Body 2' })).toHaveClass('Mui-selected')
   })
+
   it('should change the variant property', async () => {
+    const selectedBlock: TreeBlock<TypographyBlock> = {
+      __typename: 'TypographyBlock',
+      id: 'id',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      align: null,
+      color: null,
+      content: '',
+      variant: TypographyVariant.h1,
+      children: []
+    }
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: {
+          id: 'id',
+          variant: TypographyVariant.overline
+        }
+      }
+    }))
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: TYPOGRAPHY_BLOCK_UPDATE,
+              query: TYPOGRAPHY_BLOCK_UPDATE_VARIANT,
               variables: {
-                id: 'typography-variant-id',
+                id: 'id',
                 journeyId: undefined,
                 input: {
-                  variant: 'overline'
+                  variant: TypographyVariant.overline
                 }
               }
             },
-            result: {
-              data: {
-                typographyBlockUpdate: {
-                  id: 'typography-variant-id',
-                  variant: 'overline'
-                }
-              }
-            }
+            result
           }
         ]}
       >
-        <Variant id={'typography-variant-id'} variant={null} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Variant />
+        </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Body 2' })).toHaveClass('Mui-selected')
-    fireEvent.click(getByRole('button', { name: 'Overline' }))
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Overline' })).toHaveClass(
-        'Mui-selected'
-      )
+    expect(getByRole('button', { name: 'Header 1' })).toHaveClass(
+      'Mui-selected'
     )
+    fireEvent.click(getByRole('button', { name: 'Overline' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
