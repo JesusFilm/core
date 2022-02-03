@@ -90,7 +90,12 @@ export function CardLayout(): ReactElement {
           onChange={async (val) => await handleLayoutChange(val === 'true')}
           id={cardBlock.fullscreen.toString()}
         >
-          <Box sx={{ py: 1, px: 1 }} id="false" key="false" data-testid="false">
+          <Box
+            sx={{ diplay: 'flex', py: 1, px: 1 }}
+            id="false"
+            key="false"
+            data-testid="false"
+          >
             <Image
               src={cardLayoutContained}
               alt="Contained"
@@ -98,7 +103,12 @@ export function CardLayout(): ReactElement {
               height={137}
             />
           </Box>
-          <Box sx={{ py: 1, px: 1 }} id="true" key="true" data-testid="true">
+          <Box
+            sx={{ diplay: 'flex', py: 1, px: 1 }}
+            id="true"
+            key="true"
+            data-testid="true"
+          >
             <Image
               src={cardLayoutExpanded}
               alt="Expanded"
