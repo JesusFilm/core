@@ -1,7 +1,10 @@
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '../../index'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../components/ThemeProvider/ThemeProvider'
 import { globalTypes } from '../../../../../../.storybook/preview'
 import { themes } from '../themes'
 
