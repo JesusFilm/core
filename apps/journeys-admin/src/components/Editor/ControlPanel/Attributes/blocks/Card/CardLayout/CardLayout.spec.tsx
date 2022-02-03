@@ -5,7 +5,8 @@ import { InMemoryCache } from '@apollo/client'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -81,6 +82,40 @@ describe('CardLayout', () => {
       </MockedProvider>
     )
     expect(getByText('Expanded')).toBeInTheDocument()
+  })
+
+  it('works in a step block', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      locked: false,
+      nextBlockId: null,
+      parentOrder: 0,
+      children: [card]
+    }
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider value={journey}>
+          <EditorProvider initialState={{ selectedBlock: step }}>
+            <CardLayout />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Contained')).toBeInTheDocument()
   })
 
   it('changes to gql selection', async () => {
