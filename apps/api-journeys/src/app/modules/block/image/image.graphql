@@ -2,7 +2,7 @@ type ImageBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   src: String
   width: Int!
   height: Int!

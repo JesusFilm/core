@@ -62,8 +62,7 @@ export async function nua2(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'What about the resurrection',
-    parentOrder: 0
+    title: 'What about the resurrection'
   })
   await db
     .collection('blocks')
@@ -197,8 +196,7 @@ export async function nua2(): Promise<void> {
     alt: 'Where did his body go?',
     width: 1920,
     height: 1080,
-    blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-',
-    parentOrder: 0
+    blurhash: 'LFC$sANy00xF_NWF8_af9[n,xtR-'
   })
   await db.collection('blocks').update(card3._key, { coverBlockId: image._key })
 
@@ -210,7 +208,7 @@ export async function nua2(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const question2 = await db.collection('blocks').save({
@@ -218,7 +216,7 @@ export async function nua2(): Promise<void> {
     __typename: 'RadioQuestionBlock',
     parentBlockId: card3._key,
     label: 'Where did his body go?',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   // fourth step
@@ -320,7 +318,7 @@ export async function nua2(): Promise<void> {
       variant: 'h6',
       color: 'primary',
       align: 'left',
-      parentOrder: 1
+      parentOrder: 0
     },
     {
       journeyId: journey._key,
@@ -331,7 +329,7 @@ export async function nua2(): Promise<void> {
       variant: 'subtitle1',
       color: 'primary',
       align: 'left',
-      parentOrder: 2
+      parentOrder: 1
     },
     {
       journeyId: journey._key,
@@ -341,7 +339,7 @@ export async function nua2(): Promise<void> {
       variant: 'body1',
       color: 'primary',
       align: 'left',
-      parentOrder: 3
+      parentOrder: 2
     }
   ])
 
@@ -353,8 +351,7 @@ export async function nua2(): Promise<void> {
     alt: 'quote',
     width: 1920,
     height: 1080,
-    blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU',
-    parentOrder: 0
+    blurhash: 'L9Db$mOt008_}?oz58M{.8o#rqIU'
   })
   await db
     .collection('blocks')
@@ -440,8 +437,7 @@ export async function nua2(): Promise<void> {
     alt: 'Who was this Jesus?',
     width: 1920,
     height: 1080,
-    blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@',
-    parentOrder: 1
+    blurhash: 'L;KH$$-Rs-kA}ot4bZj@S3R,WWj@'
   })
   await db
     .collection('blocks')
@@ -455,7 +451,7 @@ export async function nua2(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const question5 = await db.collection('blocks').save({
@@ -467,7 +463,7 @@ export async function nua2(): Promise<void> {
       gtmEventName: 'click',
       journeyId: '3'
     },
-    parentOrder: 2
+    parentOrder: 1
   })
 
   await db.collection('blocks').saveAll([

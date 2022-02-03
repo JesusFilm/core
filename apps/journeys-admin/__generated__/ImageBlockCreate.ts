@@ -13,7 +13,7 @@ export interface ImageBlockCreate_imageBlockCreate {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   src: string | null;
   alt: string;
   width: number;

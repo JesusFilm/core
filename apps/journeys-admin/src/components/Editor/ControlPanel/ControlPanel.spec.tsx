@@ -9,7 +9,13 @@ import { JourneyProvider } from '../../../libs/context'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
 import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
+import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
 import { ControlPanel } from '.'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
 
 describe('ControlPanel', () => {
   const step1: TreeBlock<StepBlock> = {
@@ -205,6 +211,92 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Subscribe' }))
+    await waitFor(() =>
+      expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    )
+  })
+
+  it('should change to properties tab on poll button click', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  id: 'uuid',
+                  parentBlockId: 'cardId',
+                  label: 'Your Question Here?'
+                },
+                radioOptionBlockCreateInput1: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  label: 'Option 1'
+                },
+                radioOptionBlockCreateInput2: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  label: 'Option 2'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionBlockCreate: {
+                  __typename: 'RadioQuestionBlock',
+                  id: 'uuid',
+                  parentBlockId: 'cardId',
+                  journeyId: 'journeyId',
+                  label: 'Your Question Here?',
+                  description: null
+                },
+                radioOption1: {
+                  __typename: 'RadioOptionBlock',
+                  id: 'radioOptionBlockId1',
+                  parentBlockId: 'uuid',
+                  journeyId: 'journeyId',
+                  label: 'Option 1',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'def'
+                  }
+                },
+                radioOption2: {
+                  __typename: 'RadioOptionBlock',
+                  id: 'radioOptionBlockId2',
+                  parentBlockId: 'uuid',
+                  journeyId: 'journeyId',
+                  label: 'Option 2',
+                  action: {
+                    __typename: 'NavigateToBlockAction',
+                    gtmEventName: 'gtmEventName',
+                    blockId: 'def'
+                  }
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
+    fireEvent.click(getByTestId('preview-step3.id'))
+    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Add' }))
+    expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Poll' }))
     await waitFor(() =>
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
