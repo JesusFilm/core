@@ -47,22 +47,24 @@ export function CardStyling(): ReactElement {
   const { id: journeyId } = useJourney()
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId,
-        input: {
-          themeMode
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
+    if (cardBlock != null) {
+      await cardBlockUpdate({
+        variables: {
           id: cardBlock.id,
-          __typename: 'CardBlock',
-          themeMode
+          journeyId,
+          input: {
+            themeMode
+          }
+        },
+        optimisticResponse: {
+          cardBlockUpdate: {
+            id: cardBlock.id,
+            __typename: 'CardBlock',
+            themeMode
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (
@@ -85,9 +87,9 @@ export function CardStyling(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock.themeMode == null && 'Default'}
-              {cardBlock.themeMode === ThemeMode.light && 'Light'}
-              {cardBlock.themeMode === ThemeMode.dark && 'Dark'}
+              {cardBlock?.themeMode == null && 'Default'}
+              {cardBlock?.themeMode === ThemeMode.light && 'Light'}
+              {cardBlock?.themeMode === ThemeMode.dark && 'Dark'}
             </Typography>
             <Typography variant="caption">Card Style</Typography>
           </Stack>
@@ -97,7 +99,7 @@ export function CardStyling(): ReactElement {
       <Box>
         <HorizontalSelect
           onChange={handleChange}
-          id={cardBlock.themeMode ?? undefined}
+          id={cardBlock?.themeMode ?? undefined}
         >
           <Box
             id={ThemeMode.light}
