@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Stack from '@mui/material/Stack'
-import { Colorize } from '@mui/icons-material'
+import ColorizeIcon from '@mui/icons-material/Colorize'
 import { RgbaStringColorPicker } from 'react-colorful'
 import { Theme } from '@mui/material/styles'
 import { gql, useMutation } from '@apollo/client'
@@ -112,7 +112,7 @@ export function BackgroundColor(): ReactElement {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Colorize
+                  <ColorizeIcon
                     onClick={(e) => handleTabChange(e, 1)}
                     style={{ cursor: 'pointer' }}
                   />
