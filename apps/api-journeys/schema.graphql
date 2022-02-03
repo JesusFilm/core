@@ -334,7 +334,6 @@ input StepBlockCreateInput {
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 enum TypographyVariant {

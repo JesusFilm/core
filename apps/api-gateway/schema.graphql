@@ -467,7 +467,6 @@ input StepBlockCreateInput {
 input StepBlockUpdateInput {
   locked: Boolean
   nextBlockId: ID
-  parentBlockId: ID
 }
 
 enum ThemeMode {

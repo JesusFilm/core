@@ -27,7 +27,6 @@ input StepBlockCreateInput {
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 extend type Mutation {

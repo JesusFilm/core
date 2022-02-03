@@ -190,7 +190,6 @@ export class StepBlockCreateInput {
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
-    parentBlockId?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
