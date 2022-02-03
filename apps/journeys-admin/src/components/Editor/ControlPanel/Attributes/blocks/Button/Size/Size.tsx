@@ -53,17 +53,14 @@ export function Size(): ReactElement {
     {
       value: ButtonSize.small,
       label: 'Small'
-      // icon
     },
     {
       value: ButtonSize.medium,
       label: 'Medium'
-      // icon
     },
     {
       value: ButtonSize.large,
       label: 'Large'
-      // icon
     }
   ]
 

@@ -12,8 +12,7 @@ export {
   Step,
   Typography,
   Video,
-  VideoTrigger,
-  Icon
+  VideoTrigger
 } from './components'
 export {
   handleAction,
