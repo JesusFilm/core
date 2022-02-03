@@ -22,11 +22,11 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: lint,type-check
-      - uses: mansagroup/nrwl-nx-action@v2
-        with:
           targets: codegen
           all: true
+      - uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: lint,type-check
       - name: Prettier
         run: npx prettier --check .
       - name: Check for changes
