@@ -12,6 +12,7 @@ const JourneyViewStory = {
   component: JourneyView,
   title: 'Journeys-Admin/JourneyView',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }

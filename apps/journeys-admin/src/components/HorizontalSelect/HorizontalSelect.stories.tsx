@@ -9,6 +9,7 @@ const HorizontalSelectStory = {
   component: HorizontalSelect,
   title: 'Journeys-Admin/HorizontalSelect',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }

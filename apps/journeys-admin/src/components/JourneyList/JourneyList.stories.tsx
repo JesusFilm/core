@@ -17,6 +17,7 @@ const JourneyListStory = {
   component: JourneyList,
   title: 'Journeys-Admin/JourneyList',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
