@@ -18,7 +18,7 @@ export interface VideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   title: string;
   muted: boolean | null;
   autoplay: boolean | null;
