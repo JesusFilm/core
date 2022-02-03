@@ -2,7 +2,15 @@ import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { themes } from '../../libs/themes/index'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+
+export enum ThemeMode {
+  dark = 'dark',
+  light = 'light'
+}
+
+export enum ThemeName {
+  base = 'base'
+}
 
 interface ThemeProviderProps {
   children: ReactNode

@@ -99,6 +99,9 @@
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
           },
           {
+            "command": "rm -rf apps/journeys/__generated__"
+          },
+          {
             "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
           }
         ]

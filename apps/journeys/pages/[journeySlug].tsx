@@ -26,7 +26,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           title: journey.title,
           description: journey.description ?? undefined,
           images:
-            journey.primaryImageBlock != null
+            journey.primaryImageBlock?.src != null
               ? [{ url: journey.primaryImageBlock.src }]
               : []
         }}
