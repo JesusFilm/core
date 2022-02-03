@@ -142,7 +142,6 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
@@ -174,6 +173,31 @@ export class ImageBlockUpdateInput {
     alt?: Nullable<string>;
 }
 
+export class RadioOptionBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+}
+
+export class RadioQuestionBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+}
+
+export class RadioOptionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+}
+
+export class RadioQuestionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+    description?: Nullable<string>;
+}
+
 export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -187,7 +211,6 @@ export class StepBlockCreateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
 }
 
 export class StepBlockUpdateInput {
@@ -557,6 +580,14 @@ export abstract class IMutation {
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
     abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+
+    abstract radioOptionBlockCreate(input: RadioOptionBlockCreateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
+
+    abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+
+    abstract radioOptionBlockUpdate(id: string, journeyId: string, input: RadioOptionBlockUpdateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
+
+    abstract radioQuestionBlockUpdate(id: string, journeyId: string, input: RadioQuestionBlockUpdateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 

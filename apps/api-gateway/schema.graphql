@@ -101,7 +101,6 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
   themeMode: ThemeMode
   themeName: ThemeName
 }
@@ -318,6 +317,10 @@ type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
@@ -370,6 +373,18 @@ type RadioOptionBlock implements Block {
   parentOrder: Int
 }
 
+input RadioOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+}
+
+input RadioOptionBlockUpdateInput {
+  label: String
+  parentBlockId: ID
+}
+
 type RadioQuestionBlock implements Block {
   description: String
   id: ID!
@@ -377,6 +392,19 @@ type RadioQuestionBlock implements Block {
   label: String!
   parentBlockId: ID
   parentOrder: Int
+}
+
+input RadioQuestionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+}
+
+input RadioQuestionBlockUpdateInput {
+  description: String
+  label: String
+  parentBlockId: ID
 }
 
 type RadioQuestionResponse implements Response {
@@ -464,7 +492,6 @@ input StepBlockCreateInput {
   locked: Boolean
   nextBlockId: ID
   parentBlockId: ID
-  parentOrder: Int!
 }
 
 input StepBlockUpdateInput {

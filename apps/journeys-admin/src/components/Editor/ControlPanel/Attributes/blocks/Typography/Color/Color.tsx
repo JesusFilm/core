@@ -1,20 +1,14 @@
-import { ReactElement, useState } from 'react'
-import capitalize from 'lodash/capitalize'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
-import { StyledToggleButton } from '../../../../StyledToggleButton'
-import { TypographyBlockUpdate } from '../../../../../../../../__generated__/TypographyBlockUpdate'
 import { useJourney } from '../../../../../../../libs/context'
+import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
+import { TypographyBlockUpdateColor } from '../../../../../../../../__generated__/TypographyBlockUpdateColor'
 
-interface ColorProps {
-  id: string
-  color: TypographyColor | null
-}
-
-export const TYPOGRAPHY_BLOCK_UPDATE = gql`
+export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(
     $id: ID!
     $journeyId: ID!
@@ -27,59 +21,59 @@ export const TYPOGRAPHY_BLOCK_UPDATE = gql`
   }
 `
 
-export function Color({ id, color }: ColorProps): ReactElement {
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdate>(
-    TYPOGRAPHY_BLOCK_UPDATE
+export function Color(): ReactElement {
+  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateColor>(
+    TYPOGRAPHY_BLOCK_UPDATE_COLOR
   )
 
   const journey = useJourney()
-  const [selected, setSelected] = useState(color ?? 'primary')
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<TypographyBlock>
+    | undefined
 
-  async function handleChange(
-    event: React.MouseEvent<HTMLElement>,
-    color: TypographyColor
-  ): Promise<void> {
-    if (color != null) {
+  async function handleChange(color: TypographyColor): Promise<void> {
+    if (selectedBlock != null && color != null) {
       await typographyBlockUpdate({
         variables: {
-          id,
+          id: selectedBlock.id,
           journeyId: journey.id,
           input: { color }
+        },
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id: selectedBlock.id,
+            color,
+            __typename: 'TypographyBlock'
+          }
         }
       })
-      setSelected(color)
     }
   }
 
-  const order = ['primary', 'secondary', 'error']
-  const sorted = Object.values(TypographyColor).sort(
-    (a, b) => order.indexOf(a) - order.indexOf(b)
-  )
+  const options = [
+    {
+      value: TypographyColor.primary,
+      label: 'Primary',
+      icon: <ColorDisplayIcon color={TypographyColor.primary} />
+    },
+    {
+      value: TypographyColor.secondary,
+      label: 'Secondary',
+      icon: <ColorDisplayIcon color={TypographyColor.secondary} />
+    },
+    {
+      value: TypographyColor.error,
+      label: 'Error',
+      icon: <ColorDisplayIcon color={TypographyColor.error} />
+    }
+  ]
 
   return (
     <ToggleButtonGroup
-      orientation="vertical"
-      value={selected}
-      exclusive
+      value={selectedBlock?.color ?? TypographyColor.primary}
       onChange={handleChange}
-      fullWidth
-      sx={{ display: 'flex', px: 6, py: 4 }}
-      color="primary"
-    >
-      {sorted.map((color) => {
-        return (
-          <StyledToggleButton
-            value={color}
-            key={`$typography-color-${color}`}
-            sx={{ justifyContent: 'flex-start' }}
-          >
-            <ColorDisplayIcon color={color} />
-            <Typography variant="subtitle2" sx={{ pl: 2 }}>
-              {capitalize(color)}
-            </Typography>
-          </StyledToggleButton>
-        )
-      })}
-    </ToggleButtonGroup>
+      options={options}
+    />
   )
 }
