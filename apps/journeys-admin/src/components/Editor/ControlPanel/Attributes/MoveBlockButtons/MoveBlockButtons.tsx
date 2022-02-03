@@ -68,17 +68,19 @@ export function MoveBlockButtons({
       ? searchBlocks(selectedStep.children, selectedBlock.parentBlockId)
       : selectedStep
 
-  const handleMove = async (move: 'up' | 'down'): Promise<void> => {
-    if (selectedBlock?.parentOrder != null) {
-      const moveBy = move === 'up' ? -1 : 1
+  const handleMove = (move: 'up' | 'down'): (() => Promise<void>) => {
+    return async () => {
+      if (selectedBlock?.parentOrder != null) {
+        const moveBy = move === 'up' ? -1 : 1
 
-      await blockOrderUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          parentOrder: selectedBlock.parentOrder + moveBy
-        }
-      })
+        await blockOrderUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            parentOrder: selectedBlock.parentOrder + moveBy
+          }
+        })
+      }
     }
   }
 
@@ -95,18 +97,14 @@ export function MoveBlockButtons({
         <StyledMoveButton
           aria-label="move-block-up"
           disabled={selectedBlock.parentOrder === 0}
-          onClick={() => {
-            void handleMove('up')
-          }}
+          onClick={handleMove('up')}
         >
           <KeyboardArrowUpRoundedIcon />
         </StyledMoveButton>
         <StyledMoveButton
           aria-label="move-block-down"
           disabled={selectedBlock.parentOrder === lastBlockIndex}
-          onClick={() => {
-            void handleMove('down')
-          }}
+          onClick={handleMove('down')}
         >
           <KeyboardArrowDownRoundedIcon />
         </StyledMoveButton>
