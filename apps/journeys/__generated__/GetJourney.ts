@@ -11,7 +11,7 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName,
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
-  src: string;
+  src: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
@@ -132,7 +132,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  src: string;
+  src: string | null;
   alt: string;
   width: number;
   height: number;
@@ -272,7 +272,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
 
 export interface GetJourney_journey_blocks_VideoBlock_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string;
+  src: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock {

@@ -267,7 +267,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
 
 export interface GetJourney_journey_blocks_VideoBlock_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string;
+  src: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock {

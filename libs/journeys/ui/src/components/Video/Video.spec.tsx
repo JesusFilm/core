@@ -154,6 +154,21 @@ describe('Video', () => {
       'background-image: url(https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920);'
     )
   })
+
+  it('should render an image if src is null', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Video
+          {...block}
+          videoContent={{
+            __typename: 'VideoGeneric',
+            src: null
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')
+  })
 })
 
 describe('Admin Video', () => {

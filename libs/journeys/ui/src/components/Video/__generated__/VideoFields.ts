@@ -9,7 +9,7 @@
 
 export interface VideoFields_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string;
+  src: string | null;
 }
 
 export interface VideoFields {

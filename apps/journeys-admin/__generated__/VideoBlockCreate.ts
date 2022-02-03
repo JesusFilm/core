@@ -3,16 +3,18 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { VideoBlockCreateInput } from "./globalTypes";
+
 // ====================================================
-// GraphQL fragment: VideoFields
+// GraphQL mutation operation: VideoBlockCreate
 // ====================================================
 
-export interface VideoFields_videoContent {
+export interface VideoBlockCreate_videoBlockCreate_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
   src: string | null;
 }
 
-export interface VideoFields {
+export interface VideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -34,5 +36,13 @@ export interface VideoFields {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
-  videoContent: VideoFields_videoContent;
+  videoContent: VideoBlockCreate_videoBlockCreate_videoContent;
+}
+
+export interface VideoBlockCreate {
+  videoBlockCreate: VideoBlockCreate_videoBlockCreate;
+}
+
+export interface VideoBlockCreateVariables {
+  input: VideoBlockCreateInput;
 }

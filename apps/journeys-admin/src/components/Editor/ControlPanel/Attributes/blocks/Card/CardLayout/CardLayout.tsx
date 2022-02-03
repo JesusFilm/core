@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
-import { Box, Divider, Stack } from '@mui/material'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
 import { VerticalSplit } from '@mui/icons-material'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
