@@ -5,16 +5,28 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { ColorLens } from '@mui/icons-material'
 import Image from 'next/image'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
-import { CardBlockUpdate } from '../../../../../../../../__generated__/CardBlockUpdate'
 import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
 import { useJourney } from '../../../../../../../libs/context'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
+import { CardBlockThemeUpdate } from '../../../../../../../../__generated__/CardBlockThemeUpdate'
+
+export const CARD_BLOCK_THEME_UPDATE = gql`
+  mutation CardBlockThemeUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      themeMode
+    }
+  }
+`
 
 export function CardStyling(): ReactElement {
   const {
@@ -27,21 +39,32 @@ export function CardStyling(): ReactElement {
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock> | undefined
+  ) as TreeBlock<CardBlock>
 
-  const [cardBlockUpdate] = useMutation<CardBlockUpdate>(CARD_BLOCK_UPDATE)
+  const [cardBlockUpdate] = useMutation<CardBlockThemeUpdate>(
+    CARD_BLOCK_THEME_UPDATE
+  )
   const { id: journeyId } = useJourney()
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock?.id,
-        journeyId,
-        input: {
-          themeMode
+    if (cardBlock != null) {
+      await cardBlockUpdate({
+        variables: {
+          id: cardBlock.id,
+          journeyId,
+          input: {
+            themeMode
+          }
+        },
+        optimisticResponse: {
+          cardBlockUpdate: {
+            id: cardBlock.id,
+            __typename: 'CardBlock',
+            themeMode
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (

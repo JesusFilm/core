@@ -11,9 +11,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { CARD_BLOCK_UPDATE } from '../CardBlockUpdate'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import { CardStyling } from '.'
+import { CardStyling, CARD_BLOCK_THEME_UPDATE } from './CardStyling'
 
 const initialBlock: TreeBlock<CardBlock> = {
   id: 'card1.id',
@@ -134,7 +133,7 @@ describe('CardStyling', () => {
         mocks={[
           {
             request: {
-              query: CARD_BLOCK_UPDATE,
+              query: CARD_BLOCK_THEME_UPDATE,
               variables: {
                 id: 'card1.id',
                 journeyId: 'journeyId',
