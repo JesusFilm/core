@@ -151,13 +151,13 @@ export function Icon({ iconType }: IconProps): ReactElement {
   }
 
   return (
-    <Box sx={{ px: 6 }}>
-      <Box sx={{ display: 'flex', pt: 4, flexDirection: 'column' }}>
+    <>
+      <Box sx={{ display: 'flex', pt: 4, px: 6, flexDirection: 'column' }}>
         <Typography variant="subtitle2">Show Icon</Typography>
         <Typography variant="caption">Show/Hide Icon on Button</Typography>
       </Box>
 
-      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 9 }}>
+      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 9, px: 6 }}>
         <Select
           labelId="icon-name-select"
           id="icon-name-select"
@@ -190,12 +190,16 @@ export function Icon({ iconType }: IconProps): ReactElement {
 
       {showProps && (
         <Box>
-          <Typography variant="subtitle2">Color</Typography>
+          <Typography variant="subtitle2" sx={{ px: 6 }}>
+            Color
+          </Typography>
           <ColorToggleGroup type={iconType} />
-          <Typography variant="subtitle2">Size</Typography>
+          <Typography variant="subtitle2" sx={{ px: 6 }}>
+            Size
+          </Typography>
           <SizeToggleGroup type={iconType} />
         </Box>
       )}
-    </Box>
+    </>
   )
 }
