@@ -33,11 +33,9 @@ describe('Button icon size selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
-    expect(getByRole('button', { name: 'Medium' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
     expect(getByRole('button', { name: 'Large' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Small' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Extra Large' })).toBeInTheDocument()
   })
   it('should change the start icon size property', async () => {
     const result = jest.fn(() => ({
@@ -74,7 +72,7 @@ describe('Button icon size selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
+    expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Small' }))
     await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
   })
@@ -114,7 +112,7 @@ describe('Button icon size selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
+    expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Small' }))
     await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
   })

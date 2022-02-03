@@ -37,8 +37,6 @@ describe('Button color selector', () => {
     expect(getByRole('button', { name: 'Primary' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Action' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Disabled' })).toBeInTheDocument()
   })
 
   it('should change the start icon color property', async () => {
