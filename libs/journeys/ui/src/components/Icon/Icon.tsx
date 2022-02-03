@@ -28,7 +28,7 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
       ? '28px'
       : size === 'xl'
       ? '48px'
-      : 'inherit'
+      : '20px'
 
   const icons = {
     CheckCircleRounded,
