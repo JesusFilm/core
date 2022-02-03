@@ -25,11 +25,12 @@ Default.args = {
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
 }
 
-export const NoImageSource: Story<TreeBlock<ImageFields>> = DefaultTemplate.bind({})
+export const NoImageSource: Story<TreeBlock<ImageFields>> =
+  DefaultTemplate.bind({})
 NoImageSource.args = {
   id: 'Image',
   src: null,
-  alt: 'Default Image Icon',
+  alt: 'Default Image Icon'
 }
 
 export default Demo as Meta
