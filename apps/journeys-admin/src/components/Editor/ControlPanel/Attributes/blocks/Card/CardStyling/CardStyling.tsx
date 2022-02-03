@@ -13,10 +13,10 @@ import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
 import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
-import { CardBlockThemeUpdate } from '../../../../../../../../__generated__/CardBlockThemeUpdate'
+import { CardBlockThemeModeUpdate } from '../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 
-export const CARD_BLOCK_THEME_UPDATE = gql`
-  mutation CardBlockThemeUpdate(
+export const CARD_BLOCK_THEMEMODE_UPDATE = gql`
+  mutation CardBlockThemeModeUpdate(
     $id: ID!
     $journeyId: ID!
     $input: CardBlockUpdateInput!
@@ -41,8 +41,8 @@ export function CardStyling(): ReactElement {
         )
   ) as TreeBlock<CardBlock>
 
-  const [cardBlockUpdate] = useMutation<CardBlockThemeUpdate>(
-    CARD_BLOCK_THEME_UPDATE
+  const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
+    CARD_BLOCK_THEMEMODE_UPDATE
   )
   const { id: journeyId } = useJourney()
 
