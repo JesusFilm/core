@@ -1,8 +1,9 @@
 import videojs from 'video.js'
 import { ReactElement, useEffect, useRef, useCallback, MouseEvent } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import NextImage from 'next/image'
 import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
@@ -218,13 +219,20 @@ export function Video({
           }}
           onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
         >
-          <NextImage
-            src="/DefaultVideoIcon.png"
-            alt="DefaultVideoIcon"
-            height={100}
-            width={100}
-            objectFit="cover"
-          />
+          <Paper
+            sx={{
+              borderRadius: (theme) => theme.spacing(4),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 200,
+              fontSize: 100
+            }}
+            elevation={0}
+            variant="outlined"
+          >
+            <VideocamRounded fontSize="inherit" />
+          </Paper>
         </Box>
       )}
     </>

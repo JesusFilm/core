@@ -156,7 +156,7 @@ describe('Video', () => {
   })
 
   it('should render an image if src is null', () => {
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <MockedProvider>
         <Video
           {...block}
@@ -167,7 +167,7 @@ describe('Video', () => {
         />
       </MockedProvider>
     )
-    expect(getByRole('img')).toHaveAttribute('alt', 'DefaultVideoIcon')
+    expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })
 })
 
