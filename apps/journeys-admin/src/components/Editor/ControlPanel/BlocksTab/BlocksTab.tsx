@@ -1,9 +1,8 @@
 import { ReactElement } from 'react'
-import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
-import { Button } from '../Button'
+import { NewVideoButton } from './NewVideoButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
@@ -23,7 +22,7 @@ export function BlocksTab(): ReactElement {
       >
         <NewTypographyButton />
         <NewImageButton />
-        <Button icon={<VideocamRounded />} value="Video" />
+        <NewVideoButton />
         <NewRadioQuestionButton />
         <NewSignUpButton />
       </Stack>

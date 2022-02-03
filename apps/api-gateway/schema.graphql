@@ -604,7 +604,7 @@ enum UserJourneyRole {
 type VideoArclight implements VideoContent {
   languageId: String!
   mediaComponentId: String!
-  src: String!
+  src: String
 }
 
 type VideoBlock implements Block {
@@ -642,7 +642,6 @@ input VideoBlockCreateInput {
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID!
-  parentOrder: Int!
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -680,7 +679,7 @@ input VideoBlockUpdateInput {
 }
 
 interface VideoContent {
-  src: String!
+  src: String
 }
 
 input VideoContentInput {
@@ -690,7 +689,7 @@ input VideoContentInput {
 }
 
 type VideoGeneric implements VideoContent {
-  src: String!
+  src: String
 }
 
 type VideoResponse implements Response {
