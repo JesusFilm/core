@@ -56,7 +56,9 @@ describe('Button', () => {
     color: ButtonColor.primary,
     size: ButtonSize.large,
     startIcon: {
-      name: 'ArrowForwardRounded'
+      name: IconName.ArrowForwardRounded,
+      color: IconColor.secondary,
+      size: IconSize.lg
     },
     endIcon: {
       name: IconName.LockOpenRounded,
