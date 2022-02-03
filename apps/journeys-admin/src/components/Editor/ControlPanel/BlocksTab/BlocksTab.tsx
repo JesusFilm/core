@@ -25,7 +25,7 @@ export function BlocksTab(): ReactElement {
         <NewVideoButton />
         <NewRadioQuestionButton />
         <NewSignUpButton />
-      </Stack >
+      </Stack>
       <Box
         sx={{
           py: 4.25,
