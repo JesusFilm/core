@@ -36,29 +36,31 @@ export function CardLayout(): ReactElement {
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock>
+  ) as TreeBlock<CardBlock> | undefined
 
   const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
     CARD_BLOCK_LAYOUT_UPDATE
   )
   const { id: journeyId } = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journeyId,
-        input: {
-          fullscreen: selected
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
+    if (cardBlock != null) {
+      await cardBlockUpdate({
+        variables: {
           id: cardBlock.id,
-          __typename: 'CardBlock',
-          fullscreen: selected
+          journeyId: journeyId,
+          input: {
+            fullscreen: selected
+          }
+        },
+        optimisticResponse: {
+          cardBlockUpdate: {
+            id: cardBlock.id,
+            __typename: 'CardBlock',
+            fullscreen: selected
+          }
         }
-      }
-    })
+      })
+    }
   }
   return (
     <>
@@ -78,7 +80,7 @@ export function CardLayout(): ReactElement {
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
-              {cardBlock.fullscreen ?? false ? 'Expanded' : 'Contained'}
+              {cardBlock?.fullscreen ?? false ? 'Expanded' : 'Contained'}
             </Typography>
             <Typography variant="caption">Card Layout</Typography>
           </Stack>
@@ -88,9 +90,14 @@ export function CardLayout(): ReactElement {
       <Box>
         <HorizontalSelect
           onChange={async (val) => await handleLayoutChange(val === 'true')}
-          id={cardBlock.fullscreen.toString()}
+          id={cardBlock?.fullscreen.toString()}
         >
-          <Box sx={{ py: 1, px: 1 }} id="false" key="false" data-testid="false">
+          <Box
+            sx={{ diplay: 'flex', py: 1, px: 1 }}
+            id="false"
+            key="false"
+            data-testid="false"
+          >
             <Image
               src={cardLayoutContained}
               alt="Contained"
@@ -98,7 +105,12 @@ export function CardLayout(): ReactElement {
               height={137}
             />
           </Box>
-          <Box sx={{ py: 1, px: 1 }} id="true" key="true" data-testid="true">
+          <Box
+            sx={{ diplay: 'flex', py: 1, px: 1 }}
+            id="true"
+            key="true"
+            data-testid="true"
+          >
             <Image
               src={cardLayoutExpanded}
               alt="Expanded"
