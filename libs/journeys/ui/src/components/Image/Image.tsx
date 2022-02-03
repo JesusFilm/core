@@ -3,6 +3,8 @@ import NextImage from 'next/image'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Theme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import ImageIcon from '@mui/icons-material/Image'
 import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
@@ -47,7 +49,7 @@ export function Image({
         overflow: 'hidden',
         mb: 4,
         ...sx,
-        '> div': {
+        '> div:not(.MuiPaper-root)': {
           display: 'block !important'
         },
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
@@ -64,13 +66,19 @@ export function Image({
           objectFit="cover"
         />
       ) : (
-        <NextImage
-          src="/DefaultImageIcon.png"
-          height={100}
-          width={100}
-          alt={alt}
-          objectFit="cover"
-        />
+        <Paper
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 200,
+            fontSize: 100
+          }}
+          elevation={0}
+          variant="outlined"
+        >
+          <ImageIcon fontSize="inherit" />
+        </Paper>
       )}
     </Box>
   )
