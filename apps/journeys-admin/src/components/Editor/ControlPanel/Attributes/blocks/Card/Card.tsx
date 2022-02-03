@@ -123,7 +123,7 @@ export function Card({
             type: 'SetDrawerPropsAction',
             title: 'Card Style Property',
             mobileOpen: true,
-            children: <CardStyling id={id} themeMode={themeMode} />
+            children: <CardStyling />
           })
         }}
       />
