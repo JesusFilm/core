@@ -101,7 +101,9 @@ export function ControlPanel(): ReactElement {
         />
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
-        {selectedBlock !== undefined && <Attributes selected={selectedBlock} />}
+        {selectedBlock !== undefined && selectedStep !== undefined && (
+          <Attributes selected={selectedBlock} step={selectedStep} />
+        )}
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
         <BlocksTab />

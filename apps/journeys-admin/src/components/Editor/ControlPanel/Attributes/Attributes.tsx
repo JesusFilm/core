@@ -1,13 +1,25 @@
 import { TreeBlock, useEditor } from '@core/journeys/ui'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
 import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
+import { MoveBlockButtons } from './MoveBlockButtons'
 
-function AttributesContent({ selected }: AttributesProps): ReactElement {
-  switch (selected?.__typename) {
+function AttributesContent({ selected, step }: AttributesProps): ReactElement {
+  const withMoveButtons = (block: ReactElement): ReactElement => {
+    return (
+      <>
+        <MoveBlockButtons selectedBlock={selected} selectedStep={step} />
+        <Divider orientation="vertical" variant="middle" flexItem />
+        {block}
+      </>
+    )
+  }
+
+  switch (selected.__typename) {
     case 'CardBlock':
       return <Card {...selected} />
 
@@ -19,29 +31,38 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
       return (
         <>
           <Step {...selected} />
-          {block != null && <AttributesContent selected={block} />}
+          <Divider orientation="vertical" variant="middle" flexItem />
+          {block != null && <AttributesContent selected={block} step={step} />}
         </>
       )
     }
 
+    case 'VideoBlock': {
+      return step.id === selected.parentBlockId ? (
+        <p>Video Attributes</p>
+      ) : (
+        withMoveButtons(<p>Video Attributes</p>)
+      )
+    }
+
     case 'TypographyBlock': {
-      return <Typography {...selected} />
+      return withMoveButtons(<Typography {...selected} />)
     }
 
     case 'ButtonBlock': {
-      return <Button {...selected} />
+      return withMoveButtons(<Button {...selected} />)
     }
 
-    case 'SignUpBlock': {
-      return <SignUp {...selected} />
+    case 'RadioQuestionBlock': {
+      return withMoveButtons(<></>)
     }
 
     case 'RadioOptionBlock': {
-      return <RadioOption {...selected} />
+      return withMoveButtons(<RadioOption {...selected} />)
     }
 
-    case 'VideoBlock': {
-      return <p>Video Attributes</p>
+    case 'SignUpBlock': {
+      return withMoveButtons(<SignUp {...selected} />)
     }
 
     default:
@@ -51,9 +72,10 @@ function AttributesContent({ selected }: AttributesProps): ReactElement {
 
 interface AttributesProps {
   selected: TreeBlock
+  step: TreeBlock
 }
 
-export function Attributes({ selected }: AttributesProps): ReactElement {
+export function Attributes({ selected, step }: AttributesProps): ReactElement {
   const { dispatch } = useEditor()
   useEffect(() => {
     dispatch({
@@ -74,7 +96,7 @@ export function Attributes({ selected }: AttributesProps): ReactElement {
           px: 6
         }}
       >
-        <AttributesContent selected={selected} />
+        <AttributesContent selected={selected} step={step} />
       </Stack>
       <Box
         sx={{

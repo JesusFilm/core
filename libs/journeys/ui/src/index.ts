@@ -19,6 +19,7 @@ export {
   useEditor,
   EditorProvider,
   ActiveTab,
+  searchBlocks,
   journeyUiConfig,
   simpleComponentConfig,
   StoryCard,
