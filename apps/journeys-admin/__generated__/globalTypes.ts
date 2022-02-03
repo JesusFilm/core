@@ -231,6 +231,26 @@ export interface TypographyBlockUpdateInput {
   variant?: TypographyVariant | null;
 }
 
+export interface VideoBlockCreateInput {
+  autoplay?: boolean | null;
+  description?: string | null;
+  endAt?: number | null;
+  id?: string | null;
+  journeyId: string;
+  muted?: boolean | null;
+  parentBlockId: string;
+  posterBlockId?: string | null;
+  startAt?: number | null;
+  title: string;
+  videoContent: VideoContentInput;
+}
+
+export interface VideoContentInput {
+  languageId?: string | null;
+  mediaComponentId?: string | null;
+  src?: string | null;
+}
+
 export interface VideoResponseCreateInput {
   blockId: string;
   id?: string | null;

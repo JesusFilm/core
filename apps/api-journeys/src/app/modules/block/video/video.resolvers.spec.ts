@@ -44,7 +44,7 @@ describe('VideoContentResolvers', () => {
     journeyId: '2',
     __typename: 'VideoBlock',
     parentBlockId: '3',
-    parentOrder: 0,
+    parentOrder: 1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
       languageId: '529'
@@ -150,7 +150,7 @@ describe('VideoContentResolvers', () => {
         useFactory: () => ({
           save: jest.fn((input) => input),
           update: jest.fn((input) => input),
-          getSiblings: jest.fn(() => [])
+          getSiblings: jest.fn(() => [block1])
         })
       }
 
@@ -175,6 +175,10 @@ describe('VideoContentResolvers', () => {
         await videoBlockResolver
           .videoBlockCreate(blockUpdate)
           .catch((err) => console.log(err))
+        expect(service.getSiblings).toHaveBeenCalledWith(
+          blockUpdate.journeyId,
+          blockUpdate.parentBlockId
+        )
         expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
       })
     })
