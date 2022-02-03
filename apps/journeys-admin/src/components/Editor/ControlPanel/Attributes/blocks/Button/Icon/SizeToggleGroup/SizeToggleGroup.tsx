@@ -101,7 +101,6 @@ export function SizeToggleGroup({ type }: SizeToggleGroupProps): ReactElement {
     }
   ]
 
-  // Inherit size currently 0 by default
   return (
     <ToggleButtonGroup
       value={
