@@ -1,12 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
+import { Database } from 'arangojs'
 import { JourneyStatus } from '../../../__generated__/graphql'
 import { BlockResolvers } from '../../block/block.resolvers'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
+import { ActionResolver } from '../action.resolvers'
+import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolvers'
 
 describe('ActionResolvers', () => {
-  let resolver: NavigateToJourneyActionResolver, blockresolver: BlockResolvers
+  let resolver: NavigateToJourneyActionResolver,
+    blockresolver: BlockResolvers,
+    service: BlockService
 
   const block = {
     _key: '1',
@@ -56,10 +62,19 @@ describe('ActionResolvers', () => {
     slug: 'fact-or-fiction'
   }
 
+  const navigateToJourneyInput = {
+    gtmEventName: 'gtmEventName',
+    journeyId: '4',
+    blockId: null,
+    url: null,
+    target: null
+  }
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block)
+      get: jest.fn(() => block),
+      update: jest.fn((navigateToJourneyInput) => navigateToJourneyInput)
     })
   }
   const journeyService = {
@@ -75,13 +90,20 @@ describe('ActionResolvers', () => {
         BlockResolvers,
         NavigateToJourneyActionResolver,
         blockService,
-        journeyService
+        journeyService,
+        ActionResolver,
+        UserJourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
       ]
     }).compile()
     resolver = module.get<NavigateToJourneyActionResolver>(
       NavigateToJourneyActionResolver
     )
     blockresolver = module.get<BlockResolvers>(BlockResolvers)
+    service = await module.resolve(BlockService)
   })
 
   describe('NavigateToJourneyAction', () => {
@@ -91,6 +113,17 @@ describe('ActionResolvers', () => {
 
     it('returns Journey from action', async () => {
       expect(await resolver.journey(block.action)).toEqual(journeyresponse)
+    })
+
+    it('updates the navigate to journey action', async () => {
+      await resolver.blockUpdateNavigateToJourneyAction(
+        block._key,
+        block.journeyId,
+        navigateToJourneyInput
+      )
+      expect(service.update).toHaveBeenCalledWith(block._key, {
+        action: { ...navigateToJourneyInput }
+      })
     })
   })
 })

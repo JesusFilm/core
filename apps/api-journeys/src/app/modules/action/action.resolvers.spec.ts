@@ -8,9 +8,7 @@ import { UserJourneyService } from '../userJourney/userJourney.service'
 import { ActionResolver } from './action.resolvers'
 
 describe('ActionResolvers', () => {
-  let resolver: BlockResolvers,
-    actionResolver: ActionResolver,
-    service: BlockService
+  let resolver: BlockResolvers, actionResolver: ActionResolver
 
   const block1 = {
     _key: '1',
@@ -124,37 +122,6 @@ describe('ActionResolvers', () => {
     }
   }
 
-  const navigateToBlockInput = {
-    gtmEventName: 'gtmEventName',
-    blockId: '4',
-    journeyId: null,
-    url: null,
-    target: null
-  }
-
-  const navigateToJourneyInput = {
-    gtmEventName: 'gtmEventName',
-    journeyId: '4',
-    blockId: null,
-    url: null,
-    target: null
-  }
-
-  const linkActionInput = {
-    gtmEventName: 'gtmEventName',
-    url: 'https://google.com',
-    blockId: null,
-    journeyId: null
-  }
-
-  const navigateActionInput = {
-    gtmEventName: 'gtmEventName',
-    blockId: null,
-    journeyId: null,
-    url: null,
-    target: null
-  }
-
   describe('__resolveType', () => {
     beforeEach(async () => {
       const blockService = {
@@ -178,9 +145,46 @@ describe('ActionResolvers', () => {
       actionResolver = module.get<ActionResolver>(ActionResolver)
     })
 
-    it('returns NavigateAction when blockId is null', () => {
-      const action = { blockId: null } as unknown as Action
+    it('returns NavigateAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: null,
+        url: null,
+        target: null
+      } as unknown as Action
       expect(actionResolver.__resolveType(action)).toBe('NavigateAction')
+    })
+
+    it('returns NavigateToBlockAction', () => {
+      const action = {
+        blockId: '4',
+        journeyId: null,
+        url: null,
+        target: null
+      } as unknown as Action
+      expect(actionResolver.__resolveType(action)).toBe('NavigateToBlockAction')
+    })
+
+    it('returns NavigateToJourneyAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: '4',
+        url: null,
+        target: null
+      } as unknown as Action
+      expect(actionResolver.__resolveType(action)).toBe(
+        'NavigateToJourneyAction'
+      )
+    })
+
+    it('returns LinkAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: null,
+        url: 'https://google.com',
+        target: 'target'
+      } as unknown as Action
+      expect(actionResolver.__resolveType(action)).toBe('LinkAction')
     })
   })
 
@@ -194,37 +198,15 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolvers,
-          blockService,
-          ActionResolver,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
+        providers: [BlockResolvers, blockService]
       }).compile()
-      actionResolver = module.get<ActionResolver>(ActionResolver)
       resolver = module.get<BlockResolvers>(BlockResolvers)
-      service = await module.resolve(BlockService)
     })
     it('returns NavigateToBlockAction', async () => {
       expect(await resolver.block('1')).toEqual(block1response)
       expect(
         ((await resolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('blockId')
-    })
-
-    it('updates the navigate to block action', async () => {
-      await actionResolver.blockUpdateNavigateToBlockAction(
-        block1._key,
-        block1.journeyId,
-        navigateToBlockInput
-      )
-      expect(service.update).toHaveBeenCalledWith(block1._key, {
-        action: { ...navigateToBlockInput }
-      })
     })
   })
 
@@ -238,37 +220,15 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolvers,
-          blockService,
-          ActionResolver,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
+        providers: [BlockResolvers, blockService]
       }).compile()
-      actionResolver = module.get<ActionResolver>(ActionResolver)
       resolver = module.get<BlockResolvers>(BlockResolvers)
-      service = await module.resolve(BlockService)
     })
     it('returns NavigateToBlockAction', async () => {
       expect(await resolver.block('1')).toEqual(block2response)
       expect(
         ((await resolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('journeyId')
-    })
-
-    it('updates the navigate to journey action', async () => {
-      await actionResolver.blockUpdateNavigateToJourneyAction(
-        block2._key,
-        block2.journeyId,
-        navigateToJourneyInput
-      )
-      expect(service.update).toHaveBeenCalledWith(block2._key, {
-        action: { ...navigateToJourneyInput }
-      })
     })
   })
 
@@ -282,37 +242,15 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolvers,
-          blockService,
-          ActionResolver,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
+        providers: [BlockResolvers, blockService]
       }).compile()
-      actionResolver = module.get<ActionResolver>(ActionResolver)
       resolver = module.get<BlockResolvers>(BlockResolvers)
-      service = await module.resolve(BlockService)
     })
     it('returns LinkAction', async () => {
       expect(await resolver.block('1')).toEqual(block3response)
       expect(
         ((await resolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
-    })
-
-    it('updates link action', async () => {
-      await actionResolver.blockUpdateLinkAction(
-        block3._key,
-        block3.journeyId,
-        linkActionInput
-      )
-      expect(service.update).toHaveBeenCalledWith(block3._key, {
-        action: { ...linkActionInput }
-      })
     })
   })
 
@@ -321,39 +259,16 @@ describe('ActionResolvers', () => {
       const blockService = {
         provide: BlockService,
         useFactory: () => ({
-          get: jest.fn(() => block4),
-          update: jest.fn((navigateActionInput) => navigateActionInput)
+          get: jest.fn(() => block4)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolvers,
-          blockService,
-          ActionResolver,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
+        providers: [BlockResolvers, blockService]
       }).compile()
-      actionResolver = module.get<ActionResolver>(ActionResolver)
       resolver = module.get<BlockResolvers>(BlockResolvers)
-      service = await module.resolve(BlockService)
     })
     it('returns NavigateAction', async () => {
       expect(await resolver.block('1')).toEqual(block4response)
-    })
-
-    it('updates navigate action', async () => {
-      await actionResolver.blockUpdateNavigateAction(
-        block4._key,
-        block4.journeyId,
-        navigateActionInput
-      )
-      expect(service.update).toHaveBeenCalledWith(block4._key, {
-        action: { ...navigateActionInput }
-      })
     })
   })
 })
