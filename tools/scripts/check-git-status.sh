@@ -6,9 +6,9 @@
 if [[ `git status --porcelain` ]]; then
   # Changes
   echo "🛑 - run codegen and linting locally and commit changes"
-  exit 0
+  exit 1
 else
   # No changes
   echo "✅ - codegen and linting did not generate changes"
-  exit 1
+  exit 0
 fi
