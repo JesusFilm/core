@@ -1,13 +1,13 @@
-import { Box, Typography } from '@mui/material'
-import PropTypes from 'prop-types'
 import { ReactElement, ReactNode } from 'react'
 
 interface TabPanelProps {
+  name: string
   children?: ReactNode
   value: number
   index: number
 }
 export function TabPanel({
+  name,
   children,
   value,
   index,
@@ -17,31 +17,24 @@ export function TabPanel({
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={`${name}-tabpanel-${index}`}
+      aria-labelledby={`${name}-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {children}
     </div>
   )
 }
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired
-}
-
-export function tabProps(index: number): {
+export function tabA11yProps(
+  name: string,
+  index: number
+): {
   id: string
   'aria-controls': string
 } {
   return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`
+    id: `${name}-tab-${index}`,
+    'aria-controls': `${name}-tabpanel-${index}`
   }
 }
