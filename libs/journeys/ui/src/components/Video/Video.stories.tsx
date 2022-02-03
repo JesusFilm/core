@@ -10,7 +10,11 @@ const Demo = {
   component: Video,
   title: 'Journeys-Ui/Video',
   parameters: {
-    chromatic: { disableSnapshot: true }
+    ...journeyUiConfig.parameters,
+    chromatic: {
+      ...journeyUiConfig.parameters.chromatic,
+      disableSnapshot: true
+    }
   }
 }
 

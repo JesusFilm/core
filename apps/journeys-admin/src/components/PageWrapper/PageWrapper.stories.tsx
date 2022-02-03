@@ -12,6 +12,7 @@ const PageWrapperStory = {
   component: PageWrapper,
   title: 'Journeys-Admin/PageWrapper',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }

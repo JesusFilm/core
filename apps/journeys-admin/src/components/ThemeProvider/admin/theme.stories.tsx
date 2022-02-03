@@ -15,7 +15,9 @@ const AdminThemeDemo = {
   component: Typography,
   title: 'Admin Theme',
   parameters: {
+    ...journeysAdminConfig.parameters,
     chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
       viewports: [600]
     }
   }

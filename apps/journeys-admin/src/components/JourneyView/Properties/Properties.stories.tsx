@@ -10,6 +10,7 @@ const PropertiesStory = {
   component: Properties,
   title: 'Journeys-Admin/JourneyView/Properties',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
