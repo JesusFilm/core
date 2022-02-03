@@ -29,7 +29,7 @@ type TypographyBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -39,7 +39,7 @@ type TypographyBlock implements Block {
 input TypographyBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   content: String!
   variant: TypographyVariant
   color: TypographyColor
