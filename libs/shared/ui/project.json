@@ -47,6 +47,9 @@
             "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
           },
           {
+            "command": "rm -rf libs/shared/ui/__generated__"
+          },
+          {
             "command": "npx apollo client:codegen --config libs/shared/ui/apollo.config.js --target typescript  --globalTypesFile=libs/shared/ui/__generated__/globalTypes.ts"
           }
         ]

@@ -22,9 +22,15 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: generate,lint,type-check
+          targets: lint,type-check
+      - uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: codegen
+          all: true
       - name: Prettier
         run: npx prettier --check .
+      - name: Check for changes
+        run: ./tools/scripts/check-git-status.sh
   build:
     runs-on: ubuntu-latest
     steps:
