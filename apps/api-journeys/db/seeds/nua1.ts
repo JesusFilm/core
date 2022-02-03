@@ -64,8 +64,7 @@ export async function nua1(): Promise<void> {
     startAt: 11,
     title: 'Fact or fiction',
     description:
-      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
-    parentOrder: 0
+      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
   })
   await db
     .collection('blocks')
@@ -201,8 +200,7 @@ export async function nua1(): Promise<void> {
     alt: 'Can we trust the story of Jesus?',
     width: 1920,
     height: 1080,
-    blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG',
-    parentOrder: 0
+    blurhash: 'LQEVc~^kXkI.*IyD$RnOyXTJRjjG'
   })
   await db.collection('blocks').update(card3._key, { coverBlockId: image._key })
 
@@ -214,7 +212,7 @@ export async function nua1(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const question2 = await db.collection('blocks').save({
@@ -222,7 +220,7 @@ export async function nua1(): Promise<void> {
     __typename: 'RadioQuestionBlock',
     parentBlockId: card3._key,
     label: 'Can we trust the story of Jesus?',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   // fourth step
@@ -313,7 +311,7 @@ export async function nua1(): Promise<void> {
       variant: 'h6',
       color: 'primary',
       align: 'left',
-      parentOrder: 1
+      parentOrder: 0
     },
     {
       journeyId: journey._key,
@@ -323,7 +321,7 @@ export async function nua1(): Promise<void> {
       variant: 'h2',
       color: 'primary',
       align: 'left',
-      parentOrder: 2
+      parentOrder: 1
     },
     {
       journeyId: journey._key,
@@ -334,7 +332,7 @@ export async function nua1(): Promise<void> {
       variant: 'body1',
       color: 'primary',
       align: 'left',
-      parentOrder: 3
+      parentOrder: 2
     }
   ])
 
@@ -346,8 +344,7 @@ export async function nua1(): Promise<void> {
     alt: 'Jesus In History',
     width: 1920,
     height: 1080,
-    blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW',
-    parentOrder: 0
+    blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW'
   })
   await db
     .collection('blocks')
@@ -429,8 +426,7 @@ export async function nua1(): Promise<void> {
     alt: 'Who was this Jesus?',
     width: 1920,
     height: 1080,
-    blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW',
-    parentOrder: 1
+    blurhash: 'LBAdAn~qOFbIWBofxuofsmWBRjWW'
   })
   await db
     .collection('blocks')

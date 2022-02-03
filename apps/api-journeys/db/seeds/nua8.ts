@@ -62,8 +62,7 @@ export async function nua8(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'Decision',
-    parentOrder: 0
+    title: 'Decision'
   })
   await db
     .collection('blocks')
@@ -196,8 +195,7 @@ export async function nua8(): Promise<void> {
     alt: "What's Jesus Got to Do With Me?",
     width: 1920,
     height: 1080,
-    blurhash: 'L3B|d2_N%$9F-B?b00NG4nIV00IA',
-    parentOrder: 0
+    blurhash: 'L3B|d2_N%$9F-B?b00NG4nIV00IA'
   })
   await db.collection('blocks').update(card3._key, { coverBlockId: image._key })
 
@@ -209,7 +207,7 @@ export async function nua8(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const question2 = await db.collection('blocks').save({
@@ -217,7 +215,7 @@ export async function nua8(): Promise<void> {
     __typename: 'RadioQuestionBlock',
     parentBlockId: card3._key,
     label: 'Do you need to change to be good enough for God?',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   // fourth step
@@ -308,7 +306,7 @@ export async function nua8(): Promise<void> {
       variant: 'h6',
       color: 'primary',
       align: 'left',
-      parentOrder: 1
+      parentOrder: 0
     },
     {
       journeyId: journey._key,
@@ -319,7 +317,7 @@ export async function nua8(): Promise<void> {
       variant: 'subtitle1',
       color: 'primary',
       align: 'left',
-      parentOrder: 2
+      parentOrder: 1
     },
     {
       journeyId: journey._key,
@@ -329,7 +327,7 @@ export async function nua8(): Promise<void> {
       variant: 'body1',
       color: 'primary',
       align: 'left',
-      parentOrder: 3
+      parentOrder: 2
     }
   ])
 
@@ -341,8 +339,7 @@ export async function nua8(): Promise<void> {
     alt: 'quote',
     width: 1920,
     height: 1080,
-    blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
-    parentOrder: 0
+    blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
   })
   await db
     .collection('blocks')
@@ -459,8 +456,7 @@ export async function nua8(): Promise<void> {
     alt: 'Who was this Jesus?',
     width: 1920,
     height: 1080,
-    blurhash: 'L5AwUX~5080QHwNdD.%I0%E5%b$~',
-    parentOrder: 1
+    blurhash: 'L5AwUX~5080QHwNdD.%I0%E5%b$~'
   })
   await db
     .collection('blocks')

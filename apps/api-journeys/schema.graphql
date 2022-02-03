@@ -85,7 +85,7 @@ interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 }
 
 type Journey @key(fields: "id") {
@@ -126,7 +126,7 @@ type ButtonBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -148,7 +148,7 @@ type CardBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String
@@ -183,7 +183,7 @@ type CardBlock implements Block {
 input CardBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -224,7 +224,7 @@ type GridContainerBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   spacing: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
@@ -235,7 +235,7 @@ type GridItemBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   xl: Int!
   lg: Int!
   sm: Int!
@@ -245,7 +245,7 @@ type ImageBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   src: String!
   width: Int!
   height: Int!
@@ -263,7 +263,7 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  parentBlockId: ID
+  parentBlockId: ID!
   journeyId: ID!
   parentOrder: Int!
   src: String!
@@ -280,7 +280,7 @@ type RadioOptionBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   label: String!
   action: Action
 }
@@ -289,8 +289,33 @@ type RadioQuestionBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   label: String!
+  description: String
+}
+
+input RadioOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input RadioQuestionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input RadioOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+}
+
+input RadioQuestionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
   description: String
 }
 
@@ -298,7 +323,7 @@ type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   action: Action
   submitIcon: Icon
   submitLabel: String
@@ -307,7 +332,7 @@ type SignUpBlock implements Block {
 input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   submitLabel: String!
 }
 
@@ -329,7 +354,7 @@ type StepBlock implements Block {
   """
   locked: Boolean!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 }
 
 input StepBlockCreateInput {
@@ -337,13 +362,11 @@ input StepBlockCreateInput {
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 enum TypographyVariant {
@@ -377,7 +400,7 @@ type TypographyBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -387,7 +410,7 @@ type TypographyBlock implements Block {
 input TypographyBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -420,7 +443,7 @@ type VideoBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   title: String!
 
   """startAt dictates at which point of time the video should start playing"""
@@ -450,7 +473,7 @@ input VideoContentInput {
 input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
   title: String!
 
@@ -502,7 +525,7 @@ type VideoTriggerBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 
   """
   triggerStart sets the time as to when a video navigates to the next block,
@@ -636,6 +659,10 @@ extend type Mutation {
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
+  radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, input: RadioQuestionBlockUpdateInput!): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!

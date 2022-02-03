@@ -149,7 +149,7 @@ export class ButtonBlockUpdateInput {
 export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
@@ -168,7 +168,7 @@ export class CardBlockUpdateInput {
 
 export class ImageBlockCreateInput {
     id?: Nullable<string>;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     journeyId: string;
     parentOrder: number;
     src: string;
@@ -181,10 +181,35 @@ export class ImageBlockUpdateInput {
     alt?: Nullable<string>;
 }
 
+export class RadioOptionBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+}
+
+export class RadioQuestionBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+}
+
+export class RadioOptionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+}
+
+export class RadioQuestionBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+    description?: Nullable<string>;
+}
+
 export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     submitLabel: string;
 }
 
@@ -193,19 +218,17 @@ export class StepBlockCreateInput {
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
-    parentBlockId?: Nullable<string>;
 }
 
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
-    parentBlockId?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -229,7 +252,7 @@ export class VideoContentInput {
 export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     parentOrder: number;
     title: string;
     startAt?: Nullable<number>;
@@ -301,7 +324,7 @@ export interface Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
 }
 
 export interface VideoContent {
@@ -367,7 +390,7 @@ export class ButtonBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -382,7 +405,7 @@ export class CardBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen: boolean;
@@ -395,7 +418,7 @@ export class GridContainerBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     spacing: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
@@ -407,7 +430,7 @@ export class GridItemBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     xl: number;
     lg: number;
     sm: number;
@@ -418,7 +441,7 @@ export class ImageBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     src: string;
     width: number;
     height: number;
@@ -431,7 +454,7 @@ export class RadioOptionBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     label: string;
     action?: Nullable<Action>;
 }
@@ -441,7 +464,7 @@ export class RadioQuestionBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     label: string;
     description?: Nullable<string>;
 }
@@ -451,7 +474,7 @@ export class SignUpBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
     submitIcon?: Nullable<Icon>;
     submitLabel?: Nullable<string>;
@@ -464,7 +487,7 @@ export class StepBlock implements Block {
     nextBlockId?: Nullable<string>;
     locked: boolean;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
 }
 
 export class TypographyBlock implements Block {
@@ -472,7 +495,7 @@ export class TypographyBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -496,7 +519,7 @@ export class VideoBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
@@ -512,7 +535,7 @@ export class VideoTriggerBlock implements Block {
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
-    parentOrder: number;
+    parentOrder?: Nullable<number>;
     triggerStart: number;
     action: Action;
 }
@@ -565,6 +588,14 @@ export abstract class IMutation {
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 
     abstract imageBlockUpdate(id: string, journeyId: string, input: ImageBlockUpdateInput): ImageBlock | Promise<ImageBlock>;
+
+    abstract radioOptionBlockCreate(input: RadioOptionBlockCreateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
+
+    abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+
+    abstract radioOptionBlockUpdate(id: string, journeyId: string, input: RadioOptionBlockUpdateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
+
+    abstract radioQuestionBlockUpdate(id: string, journeyId: string, input: RadioQuestionBlockUpdateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 

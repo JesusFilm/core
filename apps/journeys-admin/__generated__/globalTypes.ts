@@ -154,6 +154,20 @@ export interface JourneyUpdateInput {
   title?: string | null;
 }
 
+export interface RadioOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+}
+
+export interface RadioQuestionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+}
+
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;
@@ -163,7 +177,7 @@ export interface RadioQuestionResponseCreateInput {
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   submitLabel: string;
 }
 
@@ -180,7 +194,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   variant?: TypographyVariant | null;
 }
 

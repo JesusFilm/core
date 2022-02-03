@@ -24,7 +24,7 @@ interface Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 }
 
 type ButtonBlock implements Block {
@@ -35,7 +35,7 @@ type ButtonBlock implements Block {
   journeyId: ID!
   label: String!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   size: ButtonSize
   startIcon: Icon
   variant: ButtonVariant
@@ -87,7 +87,7 @@ type CardBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 
   """
   themeMode can override journey themeMode. If nothing is set then use
@@ -108,7 +108,7 @@ input CardBlockCreateInput {
   fullscreen: Boolean
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   themeMode: ThemeMode
   themeName: ThemeName
 }
@@ -139,7 +139,7 @@ type GridContainerBlock implements Block {
   journeyId: ID!
   justifyContent: GridJustifyContent!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   spacing: Int!
 }
 
@@ -155,7 +155,7 @@ type GridItemBlock implements Block {
   journeyId: ID!
   lg: Int!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   sm: Int!
   xl: Int!
 }
@@ -225,7 +225,7 @@ type ImageBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   src: String!
   width: Int!
 }
@@ -238,7 +238,7 @@ input ImageBlockCreateInput {
   """
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
   src: String!
 }
@@ -326,6 +326,10 @@ type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
+  radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
@@ -375,7 +379,19 @@ type RadioOptionBlock implements Block {
   journeyId: ID!
   label: String!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
+}
+
+input RadioOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+}
+
+input RadioOptionBlockUpdateInput {
+  label: String
+  parentBlockId: ID
 }
 
 type RadioQuestionBlock implements Block {
@@ -384,7 +400,20 @@ type RadioQuestionBlock implements Block {
   journeyId: ID!
   label: String!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
+}
+
+input RadioQuestionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+}
+
+input RadioQuestionBlockUpdateInput {
+  description: String
+  label: String
+  parentBlockId: ID
 }
 
 type RadioQuestionResponse implements Response {
@@ -414,7 +443,7 @@ type SignUpBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   submitIcon: Icon
   submitLabel: String
 }
@@ -422,7 +451,7 @@ type SignUpBlock implements Block {
 input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   submitLabel: String!
 }
 
@@ -463,7 +492,7 @@ type StepBlock implements Block {
   """
   nextBlockId: ID
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 }
 
 input StepBlockCreateInput {
@@ -471,13 +500,11 @@ input StepBlockCreateInput {
   journeyId: ID!
   locked: Boolean
   nextBlockId: ID
-  parentBlockId: ID
 }
 
 input StepBlockUpdateInput {
   locked: Boolean
   nextBlockId: ID
-  parentBlockId: ID
 }
 
 enum ThemeMode {
@@ -502,7 +529,7 @@ type TypographyBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   variant: TypographyVariant
 }
 
@@ -512,7 +539,7 @@ input TypographyBlockCreateInput {
   content: String!
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   variant: TypographyVariant
 }
 
@@ -591,7 +618,7 @@ type VideoBlock implements Block {
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -615,7 +642,7 @@ input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   muted: Boolean
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
 
   """
@@ -701,7 +728,7 @@ type VideoTriggerBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
 
   """
   triggerStart sets the time as to when a video navigates to the next block,

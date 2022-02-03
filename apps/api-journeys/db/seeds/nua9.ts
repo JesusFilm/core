@@ -68,8 +68,7 @@ export async function nua9(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'Decision',
-    parentOrder: 3
+    title: 'Decision'
   })
 
   await db.collection('blocks').save({
@@ -234,8 +233,7 @@ export async function nua9(): Promise<void> {
     alt: 'Who was this Jesus?',
     width: 1920,
     height: 1080,
-    blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE',
-    parentOrder: 1
+    blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE'
   })
 
   await db.collection('blocks').save({
@@ -302,8 +300,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE',
-    parentOrder: 0
+    blurhash: 'L5AVCm=Z4VIW004T.Awb8w_2b_jE'
   })
 
   await db.collection('blocks').save({
@@ -314,7 +311,7 @@ export async function nua9(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'right',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -326,7 +323,7 @@ export async function nua9(): Promise<void> {
     variant: 'subtitle1',
     color: 'primary',
     align: 'left',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   // Second part of the prayer
@@ -379,8 +376,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'L3D+P*1%00V]0H:%}+^NKHw?^0M|',
-    parentOrder: 0
+    blurhash: 'L3D+P*1%00V]0H:%}+^NKHw?^0M|'
   })
 
   await db.collection('blocks').save({
@@ -391,7 +387,7 @@ export async function nua9(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'right',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -456,8 +452,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH',
-    parentOrder: 0
+    blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
   })
 
   await db.collection('blocks').save({
@@ -468,7 +463,7 @@ export async function nua9(): Promise<void> {
     variant: 'h6',
     color: 'primary',
     align: 'right',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -533,8 +528,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH',
-    parentOrder: 0
+    blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
   })
 
   const prayerGridContainer = await db.collection('blocks').save({
@@ -634,7 +628,7 @@ export async function nua9(): Promise<void> {
     variant: 'overline',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -645,7 +639,7 @@ export async function nua9(): Promise<void> {
     variant: 'h5',
     color: 'primary',
     align: 'left',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   await db.collection('blocks').save({
@@ -656,7 +650,7 @@ export async function nua9(): Promise<void> {
     variant: 'body1',
     color: 'primary',
     align: 'left',
-    parentOrder: 3
+    parentOrder: 2
   })
 
   await db.collection('blocks').save({
@@ -668,8 +662,7 @@ export async function nua9(): Promise<void> {
     alt: 'Jesus In History',
     width: 1920,
     height: 1080,
-    blurhash: 'LRHUFAIp5qnN~UX8IUoI00xaZ$of',
-    parentOrder: 0
+    blurhash: 'LRHUFAIp5qnN~UX8IUoI00xaZ$of'
   })
 
   // I already have final card
@@ -722,8 +715,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH',
-    parentOrder: 0
+    blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
   })
 
   const alreadyGridContainer = await db.collection('blocks').save({
@@ -734,7 +726,7 @@ export async function nua9(): Promise<void> {
     direction: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const alreadyGridItemLeft = await db.collection('blocks').save({
@@ -822,7 +814,7 @@ export async function nua9(): Promise<void> {
     variant: 'overline',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -833,7 +825,7 @@ export async function nua9(): Promise<void> {
     variant: 'h5',
     color: 'primary',
     align: 'left',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   await db.collection('blocks').save({
@@ -844,7 +836,7 @@ export async function nua9(): Promise<void> {
     variant: 'body1',
     color: 'primary',
     align: 'left',
-    parentOrder: 3
+    parentOrder: 2
   })
 
   await db.collection('blocks').save({
@@ -856,8 +848,7 @@ export async function nua9(): Promise<void> {
     alt: 'No Thanks',
     width: 1920,
     height: 1080,
-    blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC',
-    parentOrder: 0
+    blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
   })
 
   // No thanks final card
@@ -910,8 +901,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC',
-    parentOrder: 1
+    blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
   })
 
   const noThanksGridContainer = await db.collection('blocks').save({
@@ -922,7 +912,7 @@ export async function nua9(): Promise<void> {
     direction: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const noThanksGridItemLeft = await db.collection('blocks').save({
@@ -1010,7 +1000,7 @@ export async function nua9(): Promise<void> {
     variant: 'overline',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -1021,7 +1011,7 @@ export async function nua9(): Promise<void> {
     variant: 'h5',
     color: 'primary',
     align: 'left',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   await db.collection('blocks').save({
@@ -1032,7 +1022,7 @@ export async function nua9(): Promise<void> {
     variant: 'body1',
     color: 'primary',
     align: 'left',
-    parentOrder: 3
+    parentOrder: 2
   })
 
   await db.collection('blocks').save({
@@ -1044,8 +1034,7 @@ export async function nua9(): Promise<void> {
     alt: 'Not sure',
     width: 1920,
     height: 1080,
-    blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.',
-    parentOrder: 0
+    blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
   })
 
   // step I'm not sure final card
@@ -1098,8 +1087,7 @@ export async function nua9(): Promise<void> {
     alt: 'Decision',
     width: 1920,
     height: 1080,
-    blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.',
-    parentOrder: 0
+    blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
   })
 
   const notSureGridContainer = await db.collection('blocks').save({
@@ -1110,7 +1098,7 @@ export async function nua9(): Promise<void> {
     direction: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   const notSureGridItemLeft = await db.collection('blocks').save({
@@ -1246,7 +1234,7 @@ export async function nua9(): Promise<void> {
     variant: 'overline',
     color: 'primary',
     align: 'left',
-    parentOrder: 1
+    parentOrder: 0
   })
 
   await db.collection('blocks').save({
@@ -1257,7 +1245,7 @@ export async function nua9(): Promise<void> {
     variant: 'subtitle1',
     color: 'primary',
     align: 'left',
-    parentOrder: 2
+    parentOrder: 1
   })
 
   await db.collection('blocks').save({
@@ -1269,8 +1257,7 @@ export async function nua9(): Promise<void> {
     alt: 'Not sure',
     width: 1920,
     height: 1080,
-    blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.',
-    parentOrder: 0
+    blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
   })
 
   await db.collection('blocks').save({
@@ -1288,6 +1275,6 @@ export async function nua9(): Promise<void> {
       gtmEvenName: 'click',
       blockId: stepNoThanks2._key
     },
-    parentOrder: 3
+    parentOrder: 2
   })
 }
