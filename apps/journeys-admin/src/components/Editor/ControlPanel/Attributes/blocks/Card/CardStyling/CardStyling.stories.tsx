@@ -20,6 +20,7 @@ const CardStylingStory = {
   component: CardStyling,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardStyling',
   parameters: {
+    ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
   }
 }
