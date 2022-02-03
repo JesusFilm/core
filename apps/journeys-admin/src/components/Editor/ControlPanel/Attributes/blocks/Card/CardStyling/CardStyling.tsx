@@ -15,7 +15,7 @@ import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { CardBlockThemeModeUpdate } from '../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 
-export const CARD_BLOCK_THEMEMODE_UPDATE = gql`
+export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
   mutation CardBlockThemeModeUpdate(
     $id: ID!
     $journeyId: ID!
@@ -42,7 +42,7 @@ export function CardStyling(): ReactElement {
   ) as TreeBlock<CardBlock>
 
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
-    CARD_BLOCK_THEMEMODE_UPDATE
+    CARD_BLOCK_THEME_MODE_UPDATE
   )
   const { id: journeyId } = useJourney()
 
