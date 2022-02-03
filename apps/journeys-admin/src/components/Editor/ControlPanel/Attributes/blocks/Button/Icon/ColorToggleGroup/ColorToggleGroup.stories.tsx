@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { IconType } from '..'
 import { ColorToggleGroup } from '.'
 
 const ColorToggleGroupStory = {
@@ -13,7 +14,7 @@ const ColorToggleGroupStory = {
 export const Default: Story = () => {
   return (
     <MockedProvider>
-      <ColorToggleGroup id={'button-color-id'} color={null} />
+      <ColorToggleGroup type={IconType.start} />
     </MockedProvider>
   )
 }
