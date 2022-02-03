@@ -13,7 +13,7 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   label: string;
   description: string | null;
 }
@@ -53,7 +53,7 @@ export interface RadioQuestionBlockCreate_radioOption1 {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   label: string;
   action: RadioQuestionBlockCreate_radioOption1_action | null;
 }
@@ -93,7 +93,7 @@ export interface RadioQuestionBlockCreate_radioOption2 {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number;
+  parentOrder: number | null;
   label: string;
   action: RadioQuestionBlockCreate_radioOption2_action | null;
 }

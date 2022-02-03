@@ -238,7 +238,7 @@ type ImageBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  src: String!
+  src: String
   width: Int!
   height: Int!
   alt: String!
@@ -257,8 +257,7 @@ input ImageBlockCreateInput {
   id: ID
   parentBlockId: ID!
   journeyId: ID!
-  parentOrder: Int!
-  src: String!
+  src: String
   alt: String!
 }
 
