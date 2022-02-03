@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled'
 import { ToggleButtonGroup } from '.'
 
 describe('ToggleButtonGroup', () => {
@@ -6,13 +7,11 @@ describe('ToggleButtonGroup', () => {
     const options = [
       {
         value: 'abc',
-        label: 'ABC',
-        icon: <></>
+        label: 'ABC'
       },
       {
         value: 'def',
-        label: 'DEF',
-        icon: <></>
+        label: 'DEF'
       }
     ]
     const { getByText, rerender } = render(
@@ -32,8 +31,7 @@ describe('ToggleButtonGroup', () => {
     const options = [
       {
         value: 'abc',
-        label: 'ABC',
-        icon: <></>
+        label: 'ABC'
       }
     ]
     const { getByRole } = render(
@@ -51,13 +49,30 @@ describe('ToggleButtonGroup', () => {
     const options = [
       {
         value: 'abc',
-        label: <div data-testid="abc-content">ABC</div>,
-        icon: <></>
+        label: <div data-testid="abc-content">ABC</div>
       }
     ]
     const { getByTestId } = render(
       <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
     )
     expect(getByTestId('abc-content')).toBeInTheDocument()
+  })
+  it('renders icon', () => {
+    const options = [
+      {
+        value: 'abc',
+        label: 'ABC',
+        icon: <AccessTimeFilledIcon />
+      },
+      {
+        value: 'def',
+        label: 'DEF',
+        icon: <AccessTimeFilledIcon />
+      }
+    ]
+    const { getAllByTestId } = render(
+      <ToggleButtonGroup options={options} value="abc" onChange={jest.fn()} />
+    )
+    expect(getAllByTestId('AccessTimeFilledIcon')).toHaveLength(2)
   })
 })

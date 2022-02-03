@@ -9,7 +9,7 @@ interface ToggleButtonGroupProps<T = unknown> {
   options: Array<{
     value: T
     label: string | ReactElement
-    icon: ReactElement
+    icon?: ReactElement
   }>
   onChange: (value: T) => void
 }
@@ -60,16 +60,18 @@ export function ToggleButtonGroup({
             }
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              ml: 1,
-              mr: 2
-            }}
-          >
-            {icon}
-          </Box>
+          {icon != null && (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                ml: 1,
+                mr: 2
+              }}
+            >
+              {icon}
+            </Box>
+          )}
           {typeof label === 'string' ? (
             <Typography variant="subtitle2">{label}</Typography>
           ) : (

@@ -136,6 +136,14 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ButtonBlockUpdateInput {
+  color?: ButtonColor | null;
+  label?: string | null;
+  parentBlockId?: string | null;
+  size?: ButtonSize | null;
+  variant?: ButtonVariant | null;
+}
+
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
   coverBlockId?: string | null;
