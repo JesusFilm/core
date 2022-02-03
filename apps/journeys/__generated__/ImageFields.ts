@@ -12,7 +12,7 @@ export interface ImageFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  src: string;
+  src: string | null;
   alt: string;
   width: number;
   height: number;

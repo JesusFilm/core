@@ -127,7 +127,7 @@ export interface BlockFields_ImageBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  src: string;
+  src: string | null;
   alt: string;
   width: number;
   height: number;
@@ -267,7 +267,7 @@ export interface BlockFields_TypographyBlock {
 
 export interface BlockFields_VideoBlock_videoContent {
   __typename: "VideoArclight" | "VideoGeneric";
-  src: string;
+  src: string | null;
 }
 
 export interface BlockFields_VideoBlock {
