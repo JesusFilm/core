@@ -68,6 +68,7 @@ export function Image({
       ) : (
         <Paper
           sx={{
+            borderRadius: (theme) => theme.spacing(4),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
