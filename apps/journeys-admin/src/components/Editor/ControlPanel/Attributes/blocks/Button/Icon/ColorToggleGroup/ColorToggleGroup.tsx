@@ -125,7 +125,7 @@ export function ColorToggleGroup({
   return (
     <ToggleButtonGroup
       value={
-        type === 'start'
+        type === IconType.start
           ? selectedBlock?.startIcon?.color ?? IconColor.inherit
           : selectedBlock?.endIcon?.color ?? IconColor.inherit
       }
