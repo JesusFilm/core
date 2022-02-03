@@ -19,7 +19,7 @@ import {
 import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
 
 export function Icon({ name, color, size }: IconType): ReactElement | null {
-  const fontSize =
+  const iconSize =
     size === 'sm'
       ? '16px'
       : size === 'md'
@@ -50,6 +50,6 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
 
   return createElement(icons[name], {
     color: color ?? undefined,
-    sx: { width: fontSize, height: fontSize }
+    sx: { width: iconSize, height: iconSize }
   })
 }
