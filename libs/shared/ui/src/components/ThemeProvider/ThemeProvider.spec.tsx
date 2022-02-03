@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { themes } from '../../libs/themes'
+import { ThemeName, ThemeMode } from './ThemeProvider'
 import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {
