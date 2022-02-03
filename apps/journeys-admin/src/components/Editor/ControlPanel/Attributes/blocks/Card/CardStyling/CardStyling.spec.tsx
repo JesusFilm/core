@@ -109,7 +109,7 @@ describe('CardStyling', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider value={journey}>
-          <EditorProvider initialState={{ selectedBlock: card }}>
+          <EditorProvider initialState={{ selectedBlock: step }}>
             <CardStyling />
           </EditorProvider>
         </JourneyProvider>
