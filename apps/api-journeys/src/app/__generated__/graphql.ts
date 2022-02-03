@@ -141,7 +141,7 @@ export enum UserJourneyRole {
 export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     backgroundColor?: Nullable<string>;
     coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
@@ -200,7 +200,7 @@ export class RadioQuestionBlockUpdateInput {
 export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     submitLabel: string;
 }
 
@@ -209,13 +209,11 @@ export class StepBlockCreateInput {
     journeyId: string;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
-    parentBlockId?: Nullable<string>;
 }
 
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
-    parentBlockId?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -245,7 +243,7 @@ export class VideoContentInput {
 export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentBlockId?: Nullable<string>;
+    parentBlockId: string;
     parentOrder: number;
     title: string;
     startAt?: Nullable<number>;

@@ -175,7 +175,7 @@ type CardBlock implements Block {
 input CardBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
@@ -323,7 +323,7 @@ type SignUpBlock implements Block {
 input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   submitLabel: String!
 }
 
@@ -353,13 +353,11 @@ input StepBlockCreateInput {
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 enum TypographyVariant {
@@ -466,7 +464,7 @@ input VideoContentInput {
 input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
   title: String!
 

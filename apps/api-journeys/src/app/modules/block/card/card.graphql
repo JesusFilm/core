@@ -34,7 +34,7 @@ type CardBlock implements Block {
 input CardBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   backgroundColor: String
   coverBlockId: ID
   fullscreen: Boolean
