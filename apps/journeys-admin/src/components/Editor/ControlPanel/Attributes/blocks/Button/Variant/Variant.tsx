@@ -53,12 +53,10 @@ export function Variant(): ReactElement {
     {
       value: ButtonVariant.contained,
       label: 'Contained'
-      // icon
     },
     {
       value: ButtonVariant.text,
       label: 'Text'
-      // icon
     }
   ]
 

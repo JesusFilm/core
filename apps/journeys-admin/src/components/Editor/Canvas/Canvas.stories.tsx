@@ -18,6 +18,7 @@ const CanvasStory = {
   component: Canvas,
   title: 'Journeys-Admin/Editor/Canvas',
   parameters: {
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }

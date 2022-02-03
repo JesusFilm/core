@@ -73,7 +73,7 @@ export function Card({
           })
         }}
       />
-      {coverBlock?.__typename === 'ImageBlock' && (
+      {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
         <Attribute
           id={`${id}-cover-block`}
           icon={<ImageIcon />}
@@ -138,7 +138,7 @@ export function Card({
             type: 'SetDrawerPropsAction',
             title: 'Card Layout Property',
             mobileOpen: true,
-            children: <CardLayout id={id} fullscreen={fullscreen} />
+            children: <CardLayout />
           })
         }}
       />

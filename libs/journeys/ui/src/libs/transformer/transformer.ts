@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash'
 import { BlockFields as Block } from './__generated__/BlockFields'
 
 export type TreeBlock<T = Block> = T & {
@@ -7,7 +8,8 @@ export type TreeBlock<T = Block> = T & {
 export function transformer(data: Block[]): TreeBlock[] {
   const tree: TreeBlock[] = []
   const childrenOf: Record<string, TreeBlock[] | undefined> = {}
-  data.forEach((item) => {
+  const sortedData = sortBy(data, 'parentOrder')
+  sortedData.forEach((item) => {
     const newNode: TreeBlock = {
       ...item,
       children: []

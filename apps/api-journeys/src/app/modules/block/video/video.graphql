@@ -16,7 +16,7 @@ type VideoBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
-  parentOrder: Int!
+  parentOrder: Int
   title: String!
   """
   startAt dictates at which point of time the video should start playing
@@ -47,7 +47,7 @@ input VideoContentInput {
 input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
   title: String!
   """

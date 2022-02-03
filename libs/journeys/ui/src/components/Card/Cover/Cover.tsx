@@ -97,15 +97,17 @@ export function Cover({
           </video>
         </Box>
       ) : (
-        <Box
-          data-testid="CardImageCover"
-          sx={{
-            flexGrow: 1,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundImage: `url(${imageBlock.src})`
-          }}
-        />
+        imageBlock.src != null && (
+          <Box
+            data-testid="CardImageCover"
+            sx={{
+              flexGrow: 1,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundImage: `url(${imageBlock.src})`
+            }}
+          />
+        )
       )}
       <Box
         sx={{
