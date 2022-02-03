@@ -22,13 +22,11 @@ input StepBlockCreateInput {
   journeyId: ID!
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 input StepBlockUpdateInput {
   nextBlockId: ID
   locked: Boolean
-  parentBlockId: ID
 }
 
 extend type Mutation {

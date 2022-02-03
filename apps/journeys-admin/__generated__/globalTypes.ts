@@ -169,7 +169,7 @@ export interface RadioQuestionResponseCreateInput {
 export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   submitLabel: string;
 }
 
@@ -186,7 +186,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   id?: string | null;
   journeyId: string;
-  parentBlockId?: string | null;
+  parentBlockId: string;
   variant?: TypographyVariant | null;
 }
 

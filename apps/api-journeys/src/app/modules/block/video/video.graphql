@@ -47,7 +47,7 @@ input VideoContentInput {
 input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   parentOrder: Int!
   title: String!
   """

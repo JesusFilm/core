@@ -11,7 +11,7 @@ type SignUpBlock implements Block {
 input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentBlockId: ID
+  parentBlockId: ID!
   submitLabel: String!
 }
 
