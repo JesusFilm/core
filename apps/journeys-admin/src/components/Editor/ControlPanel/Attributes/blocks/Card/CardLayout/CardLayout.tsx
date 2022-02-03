@@ -93,7 +93,7 @@ export function CardLayout(): ReactElement {
           id={cardBlock?.fullscreen.toString()}
         >
           <Box
-            sx={{ diplay: 'flex', py: 1, px: 1 }}
+            sx={{ display: 'flex', py: 1, px: 1 }}
             id="false"
             key="false"
             data-testid="false"
@@ -106,7 +106,7 @@ export function CardLayout(): ReactElement {
             />
           </Box>
           <Box
-            sx={{ diplay: 'flex', py: 1, px: 1 }}
+            sx={{ display: 'flex', py: 1, px: 1 }}
             id="true"
             key="true"
             data-testid="true"
