@@ -6,10 +6,10 @@
 import { CardBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CardBlockBgColorUpdate
+// GraphQL mutation operation: CardBlockBackgroundColorUpdate
 // ====================================================
 
-export interface CardBlockBgColorUpdate_cardBlockUpdate {
+export interface CardBlockBackgroundColorUpdate_cardBlockUpdate {
   __typename: "CardBlock";
   id: string;
   /**
@@ -18,11 +18,11 @@ export interface CardBlockBgColorUpdate_cardBlockUpdate {
   backgroundColor: string | null;
 }
 
-export interface CardBlockBgColorUpdate {
-  cardBlockUpdate: CardBlockBgColorUpdate_cardBlockUpdate;
+export interface CardBlockBackgroundColorUpdate {
+  cardBlockUpdate: CardBlockBackgroundColorUpdate_cardBlockUpdate;
 }
 
-export interface CardBlockBgColorUpdateVariables {
+export interface CardBlockBackgroundColorUpdateVariables {
   id: string;
   journeyId: string;
   input: CardBlockUpdateInput;

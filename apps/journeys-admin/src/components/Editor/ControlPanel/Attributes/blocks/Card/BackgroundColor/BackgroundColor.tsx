@@ -17,7 +17,7 @@ import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
-import { CardBlockBgColorUpdate } from '../../../../../../../../__generated__/CardBlockBgColorUpdate'
+import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 
 const themeColors = [
   'null',
@@ -31,8 +31,8 @@ const themeColors = [
   '#CC4530'
 ]
 
-export const CARD_BLOCK_BGCOLOR_UPDATE = gql`
-  mutation CardBlockBgColorUpdate(
+export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
+  mutation CardBlockBackgroundColorUpdate(
     $id: ID!
     $journeyId: ID!
     $input: CardBlockUpdateInput!
@@ -60,10 +60,10 @@ export function BackgroundColor(): ReactElement {
 
   const [tabValue, setTabValue] = useState(0)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [cardBlockUpdate] = useMutation<CardBlockBgColorUpdate>(
-    CARD_BLOCK_BGCOLOR_UPDATE
+  const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
+    CARD_BLOCK_BACKGROUND_COLOR_UPDATE
   )
-  const handleTabChange = (event, newValue): void => {
+  const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
   }
 
