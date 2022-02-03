@@ -38,7 +38,9 @@ export function Card({
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundImage:
-          coverBlock != null && coverBlock.__typename === 'ImageBlock'
+          coverBlock != null &&
+          coverBlock.__typename === 'ImageBlock' &&
+          coverBlock.src != null
             ? `url(${coverBlock.src})`
             : undefined
       }}

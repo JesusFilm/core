@@ -24,6 +24,13 @@ describe('Image', () => {
       'random image from unsplash'
     )
   })
+
+  it('should render the default image', () => {
+    const { getByTestId } = render(
+      <Image {...block} src={null} alt="defaultImageIcon" />
+    )
+    expect(getByTestId('ImageIcon')).toHaveClass('MuiSvgIcon-root')
+  })
 })
 
 describe('Admin Image', () => {

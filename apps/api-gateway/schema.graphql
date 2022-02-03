@@ -226,7 +226,7 @@ type ImageBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  src: String!
+  src: String
   width: Int!
 }
 
@@ -239,8 +239,7 @@ input ImageBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  parentOrder: Int!
-  src: String!
+  src: String
 }
 
 input ImageBlockUpdateInput {

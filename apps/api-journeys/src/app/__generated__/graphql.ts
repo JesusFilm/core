@@ -170,8 +170,7 @@ export class ImageBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
     journeyId: string;
-    parentOrder: number;
-    src: string;
+    src?: Nullable<string>;
     alt: string;
 }
 
@@ -442,7 +441,7 @@ export class ImageBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    src: string;
+    src?: Nullable<string>;
     width: number;
     height: number;
     alt: string;
