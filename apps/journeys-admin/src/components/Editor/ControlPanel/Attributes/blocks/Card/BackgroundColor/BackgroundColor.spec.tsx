@@ -14,7 +14,10 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import { BackgroundColor, CARD_BLOCK_BACKGROUND_COLOR_UPDATE } from './BackgroundColor'
+import {
+  BackgroundColor,
+  CARD_BLOCK_BACKGROUND_COLOR_UPDATE
+} from './BackgroundColor'
 
 const journey: Journey = {
   __typename: 'Journey',
