@@ -143,6 +143,16 @@ export interface ButtonBlockUpdateInput {
   size?: ButtonSize | null;
   variant?: ButtonVariant | null;
 }
+
+export interface CardBlockUpdateInput {
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  fullscreen?: boolean | null;
+  parentBlockId?: string | null;
+  themeMode?: ThemeMode | null;
+  themeName?: ThemeName | null;
+}
+
 export interface ImageBlockCreateInput {
   alt: string;
   id?: string | null;
