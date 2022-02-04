@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { RadioOptionBlock } from '../../__generated__/graphql'
-import { BlockResolvers } from '../block/block.resolvers'
+import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 
-describe('ActionResolvers', () => {
-  let resolver: BlockResolvers
+describe('ActionResolver', () => {
+  let blockResolver: BlockResolver
 
   const block1 = {
     _key: '1',
@@ -20,7 +20,7 @@ describe('ActionResolvers', () => {
     }
   }
 
-  const block1response = {
+  const blockResponse1 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -48,7 +48,7 @@ describe('ActionResolvers', () => {
     }
   }
 
-  const block2response = {
+  const blockResponse2 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -76,7 +76,7 @@ describe('ActionResolvers', () => {
     }
   }
 
-  const block3response = {
+  const blockResponse3 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -104,7 +104,7 @@ describe('ActionResolvers', () => {
     }
   }
 
-  const block4response = {
+  const blockResponse4 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -127,14 +127,14 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block('1')).toEqual(block1response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse1)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('blockId')
     })
   })
@@ -148,14 +148,14 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block('1')).toEqual(block2response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse2)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('journeyId')
     })
   })
@@ -169,14 +169,14 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns LinkAction', async () => {
-      expect(await resolver.block('1')).toEqual(block3response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse3)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
     })
   })
@@ -190,12 +190,12 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateAction', async () => {
-      expect(await resolver.block('1')).toEqual(block4response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse4)
     })
   })
 })

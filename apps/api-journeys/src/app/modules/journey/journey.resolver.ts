@@ -37,7 +37,7 @@ function resolveStatus(journey: Journey): Journey {
 }
 
 @Resolver('Journey')
-export class JourneyResolvers {
+export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,

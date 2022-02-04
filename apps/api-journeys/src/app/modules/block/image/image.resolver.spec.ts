@@ -3,13 +3,13 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { ImageBlockCreateInput } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { ImageBlockResolvers } from './image.resolvers'
+import { ImageBlockResolver } from './image.resolver'
 
-describe('Image', () => {
-  let blockResolver: BlockResolvers,
-    resolver: ImageBlockResolvers,
+describe('ImageBlockResolver', () => {
+  let resolver: ImageBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -23,7 +23,7 @@ describe('Image', () => {
     width: 1920,
     height: 1080
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'ImageBlock',
@@ -51,7 +51,7 @@ describe('Image', () => {
     alt: 'grid image'
   }
 
-  const imageblockresponse = {
+  const imageBlockResponse = {
     _key: input.id,
     parentBlockId: input.parentBlockId,
     parentOrder: 2,
@@ -64,7 +64,7 @@ describe('Image', () => {
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
-  const imageblockupdateresponse = {
+  const imageBlockUpdateResponse = {
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
     src: input.src,
@@ -87,9 +87,9 @@ describe('Image', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        ImageBlockResolvers,
+        ImageBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -97,17 +97,17 @@ describe('Image', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('ImageBlock', () => {
     it('returns ImageBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })
@@ -119,14 +119,14 @@ describe('Image', () => {
         input.journeyId,
         input.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(imageblockresponse)
+      expect(service.save).toHaveBeenCalledWith(imageBlockResponse)
     })
   })
 
   describe('imageBlockUpdate', () => {
     it('updates an ImageBlock', async () => {
       await resolver.imageBlockUpdate('1', '2', inputUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', imageblockupdateresponse)
+      expect(service.update).toHaveBeenCalledWith('1', imageBlockUpdateResponse)
     })
   })
 })

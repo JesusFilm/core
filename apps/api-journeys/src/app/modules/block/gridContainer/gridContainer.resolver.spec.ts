@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 
-describe('GridContainer', () => {
-  let resolver: BlockResolvers
+describe('GridContainerResolver', () => {
+  let resolver: BlockResolver
 
   const block = {
     _key: '1',
@@ -16,7 +16,7 @@ describe('GridContainer', () => {
     justifyContent: 'flexStart',
     alignItems: 'center'
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'GridContainerBlock',
@@ -38,15 +38,15 @@ describe('GridContainer', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService]
+      providers: [BlockResolver, blockService]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
+    resolver = module.get<BlockResolver>(BlockResolver)
   })
 
   describe('GridContainerBlock', () => {
     it('returns GridContainerBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockResponse)
+      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
     })
   })
 })

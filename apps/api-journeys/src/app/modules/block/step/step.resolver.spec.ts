@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { StepBlockResolvers } from './step.resolvers'
+import { StepBlockResolver } from './step.resolver'
 
-describe('Step', () => {
-  let blockResolver: BlockResolvers,
-    stepBlockResolver: StepBlockResolvers,
+describe('StepBlockResolver', () => {
+  let resolver: StepBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -39,7 +39,7 @@ describe('Step', () => {
     nextBlockId: '4'
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'StepBlock',
@@ -63,9 +63,9 @@ describe('Step', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        StepBlockResolvers,
+        StepBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -73,24 +73,24 @@ describe('Step', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    stepBlockResolver = module.get<StepBlockResolvers>(StepBlockResolvers)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<StepBlockResolver>(StepBlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('StepBlock', () => {
     it('returns StepBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })
 
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
-      await stepBlockResolver
+      await resolver
         .stepBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
       expect(service.getSiblings).toHaveBeenCalledWith(blockUpdate.journeyId)
@@ -100,7 +100,7 @@ describe('Step', () => {
 
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
-      stepBlockResolver
+      resolver
         .stepBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)

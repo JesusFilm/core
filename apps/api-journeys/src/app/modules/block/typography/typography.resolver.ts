@@ -11,7 +11,7 @@ import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 @Resolver('TypographyBlock')
-export class TypographyBlockResolvers {
+export class TypographyBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(
