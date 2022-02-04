@@ -1,10 +1,4 @@
-import {
-  ReactElement,
-  useState,
-  ChangeEvent,
-  FocusEvent,
-  ClipboardEvent
-} from 'react'
+import { ReactElement, useState, ChangeEvent, ClipboardEvent } from 'react'
 import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
@@ -30,7 +24,7 @@ import {
 import Image from 'next/image'
 import { TabPanel, tabProps } from '@core/shared/ui'
 import TimeField from 'react-simple-timefield'
-import AwesomeDebouncePromise from 'awesome-debounce-promise'
+import { debounce } from 'lodash'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -125,7 +119,7 @@ export function BackgroundMediaVideo({
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
   )
 
-  const [imageBlock] = useState(
+  const [imageBlock, setImageBlock] = useState(
     (coverBlock?.children.find(
       (child) => child.id === (coverBlock as VideoBlock).posterBlockId
     ) as ImageBlock) ?? null
@@ -161,12 +155,26 @@ export function BackgroundMediaVideo({
     await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
-  const handleVideoSrcChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    const block = {
+  const handleVideoSrcChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    let block = {
       ...videoBlock,
       videoContent: { src: event.target.value }
     }
+    if (coverBlock == null)
+      block = {
+        ...block,
+        journeyId,
+        parentBlockId: cardBlock.id,
+        title: block.videoContent.src,
+        autoplay: true,
+        muted: cardBlock.parentOrder === 0,
+        startAt: 0,
+        endAt: null
+      }
     setVideoBlock(block as TreeBlock<VideoBlock>)
+    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
   const handleVideoChangeClick = async (): Promise<void> => {
@@ -174,6 +182,8 @@ export function BackgroundMediaVideo({
   }
 
   const handleVideoDelete = async (): Promise<void> => {
+    setImageBlock(null)
+    setVideoBlock(null)
     await handleChange(null)
   }
 
@@ -211,6 +221,14 @@ export function BackgroundMediaVideo({
         variables: {
           id: coverBlock.id,
           journeyId: journeyId
+        },
+        update(cache) {
+          const id = cache.identify({
+            id: coverBlock.id,
+            __typename: coverBlock.__typename
+          })
+          cache.evict({ id })
+          cache.gc()
         }
       })
       if (block == null) {
@@ -270,27 +288,25 @@ export function BackgroundMediaVideo({
           }
         }
       }))
-      ;({ data } = await cardBlockUpdate({
+      await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
           journeyId: journeyId,
           input: {
-            coverBlockId: data.id
+            coverBlockId: data.videoBlockCreate.id
           }
         },
         optimisticResponse: {
           cardBlockUpdate: {
             id: cardBlock.id,
-            coverBlockId: data.id,
+            coverBlockId: data.videoBlockCreate.id,
             __typename: 'CardBlock'
           }
         }
-      }))
+      })
     } else if (block != null) {
       const videoContent = {
-        src: block.videoContent.src,
-        mediaComponentId: block.videoContent.mediaComponentId,
-        languageId: block.videoContent.languageId
+        src: block.videoContent.src
       }
       ;({ data } = await VideoBlockUpdate({
         variables: {
@@ -325,12 +341,12 @@ export function BackgroundMediaVideo({
     }
   }
 
-  const handleChangeDebounced = AwesomeDebouncePromise(handleChange, 2000)
+  const handleChangeDebounced = debounce(handleChange, 2000)
 
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
-        {videoBlock?.videoContent?.src != null && (
+        {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src != null && (
           <Stack direction="row" spacing="3" justifyContent="space-between">
             <div
               style={{
@@ -348,6 +364,20 @@ export function BackgroundMediaVideo({
                   height={55}
                 ></Image>
               )}
+              {imageBlock?.src == null && (
+                <Box
+                  borderRadius={2}
+                  sx={{
+                    width: 55,
+                    height: 55,
+                    bgcolor: '#DCDDE5',
+                    verticalAlign: 'center'
+                  }}
+                  justifyContent="center"
+                >
+                  <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }}></ImageIcon>
+                </Box>
+              )}
             </div>
             <Stack direction="column" justifyContent="center">
               <Typography
@@ -359,7 +389,7 @@ export function BackgroundMediaVideo({
                   overflow: 'hidden'
                 }}
               >
-                {videoBlock.videoContent.src}
+                {(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src}
               </Typography>
             </Stack>
             <Stack direction="column" justifyContent="center">
@@ -371,14 +401,23 @@ export function BackgroundMediaVideo({
             </Stack>
           </Stack>
         )}
-        {videoBlock?.videoContent.src == null && (
-          <Stack direction="row" spacing="3">
-            <Box sx={{ width: 55, height: 55 }}>
-              <ImageIcon></ImageIcon>
+        {(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src == null && (
+          <Stack direction="row" spacing={3}>
+            <Box
+              borderRadius={2}
+              sx={{
+                width: 55,
+                height: 55,
+                bgcolor: '#DCDDE5',
+                verticalAlign: 'center'
+              }}
+              justifyContent="center"
+            >
+              <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }}></ImageIcon>
             </Box>
-            <Stack direction="column">
-              <span>Select Image File</span>
-              <span>Min width 1024px</span>
+            <Stack direction="column" justifyContent="center">
+              <Typography variant="subtitle2">Select Video File</Typography>
+              <Typography variant="caption">Formats: MP4, HLS</Typography>
             </Stack>
           </Stack>
         )}
@@ -391,14 +430,20 @@ export function BackgroundMediaVideo({
         variant="fullWidth"
       >
         <Tab label="Source" {...tabProps(0)}></Tab>
-        <Tab label="Settings" {...tabProps(1)}></Tab>
+        <Tab
+          label="Settings"
+          {...tabProps(1)}
+          disabled={
+            (coverBlock as TreeBlock<VideoBlock>)?.videoContent.src == null
+          }
+        ></Tab>
       </Tabs>
       <TabPanel value={tabValue} index={0}>
         <Box sx={{ py: 3 }}>
           <TextField
             name="videoContent.src"
             variant="filled"
-            value={videoBlock?.videoContent.src}
+            value={(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src}
             onChange={handleVideoSrcChange}
             onPaste={handlePaste}
             data-testid="videoSrcTextField"
@@ -425,13 +470,13 @@ export function BackgroundMediaVideo({
         <Stack direction="column" spacing={3}>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">
-              <Typography>Autoplay</Typography>
+              <Typography variant="subtitle2">Autoplay</Typography>
               <Typography variant="caption">
                 Start video automatically when card appears
               </Typography>
             </Stack>
             <Switch
-              checked={coverBlock?.autoplay ?? true}
+              checked={(coverBlock as TreeBlock<VideoBlock>)?.autoplay ?? true}
               name="autoplay"
               onChange={handleSwitchChange}
             ></Switch>
@@ -439,13 +484,16 @@ export function BackgroundMediaVideo({
           <Divider />
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">
-              <Typography>Muted</Typography>
+              <Typography variant="subtitle2">Muted</Typography>
               <Typography variant="caption">
                 Video always muted on the first card
               </Typography>
             </Stack>
             <Switch
-              checked={coverBlock?.muted ?? false}
+              checked={
+                (coverBlock as TreeBlock<VideoBlock>)?.muted ??
+                cardBlock?.parentOrder === 0
+              }
               name="muted"
               onChange={handleSwitchChange}
             ></Switch>
@@ -527,6 +575,21 @@ export function BackgroundMediaVideo({
                       width={55}
                       height={55}
                     ></Image>
+                  )}
+                  {imageBlock?.src == null && (
+                    <Box
+                      borderRadius={2}
+                      sx={{
+                        width: 55,
+                        height: 55,
+                        verticalAlign: 'center'
+                      }}
+                      justifyContent="center"
+                    >
+                      <ImageIcon
+                        sx={{ marginTop: 4, marginLeft: 4 }}
+                      ></ImageIcon>
+                    </Box>
                   )}
                 </div>
                 <Stack

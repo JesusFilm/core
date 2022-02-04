@@ -111,10 +111,6 @@ export function BackgroundMediaImage({
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
   )
 
-  useEffect(() => {
-    setImageBlock(coverBlock.__typename === 'ImageBlock' ? coverBlock : null)
-  }, [coverBlock, setImageBlock])
-
   const handleTabChange = (event, newValue): void => {
     setTabValue(newValue)
   }
