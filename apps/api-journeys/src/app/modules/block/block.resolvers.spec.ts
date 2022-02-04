@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { UserJourneyService } from '../userJourney/userJourney.service'
 import { BlockResolvers } from './block.resolvers'
 import { BlockService } from './block.service'
 
@@ -48,13 +49,15 @@ describe('Image', () => {
     useFactory: () => ({
       get: jest.fn(() => image1),
       getSiblings: jest.fn(() => [image1, image2, image3]),
-      update: jest.fn((input) => input)
+      update: jest.fn((input) => input),
+      removeBlockAndChildren: jest.fn(() => [image1, image2, image3])
     })
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BlockResolvers,
+        UserJourneyService,
         blockService,
         {
           provide: 'DATABASE',
@@ -64,6 +67,23 @@ describe('Image', () => {
     }).compile()
     resolver = module.get<BlockResolvers>(BlockResolvers)
     service = await module.resolve(BlockService)
+  })
+
+  describe('blockRemove', () => {
+    it('removes the block and its children', async () => {
+      const data = await resolver.blockRemove('image1', '2')
+
+      expect(service.removeBlockAndChildren).toBeCalledTimes(1)
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith('image1')
+      expect(data).toEqual([image1, image2, image3])
+    })
+
+    it('does not remove if block not part of current journey', async () => {
+      const data = await resolver.blockRemove('image1', '1')
+
+      expect(service.removeBlockAndChildren).toBeCalledTimes(0)
+      expect(data).toEqual([])
+    })
   })
 
   describe('blockOrderUpdate', () => {
@@ -101,6 +121,7 @@ describe('Image', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [
           BlockResolvers,
+          UserJourneyService,
           blockService,
           {
             provide: 'DATABASE',

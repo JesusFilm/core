@@ -42,7 +42,7 @@ export class BlockService extends BaseService {
     return await res.all()
   }
 
-  async removeAllBlocksForParentId(
+  private async removeAllBlocksForParentId(
     parentIds: string[],
     blockArray: Block[] = []
   ): Promise<Block[]> {

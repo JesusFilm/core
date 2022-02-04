@@ -59,10 +59,18 @@ export const CARD_BLOCK_COVER_VIDEO_UPDATE = gql`
 `
 
 export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
-  ${VIDEO_FIELDS}
   mutation CardBlockVideoBlockCreate($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
-      ...VideoFields
+      id
+      title
+      startAt
+      endAt
+      muted
+      autoplay
+      videoContent {
+        src
+      }
+      posterBlockId
     }
   }
 `
@@ -264,27 +272,26 @@ export function BackgroundMediaVideo({
             autoplay: block.autoplay,
             videoContent: block.videoContent,
             posterBlockId: block.posterBlockId
-          },
-          update(cache, { data }) {
-            console.log(data)
-            if (data?.videoBlockCreate != null) {
-              cache.modify({
-                id: cache.identify({ __typename: 'Journey', id: journeyId }),
-                fields: {
-                  blocks(existingBlockRefs = []) {
-                    const newBlockRef = cache.writeFragment({
-                      data: data.videoBlockCreate,
-                      fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                    })
-                    return [...existingBlockRefs, newBlockRef]
-                  }
+          }
+        },
+        update(cache, { data }) {
+          if (data?.videoBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.videoBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
                 }
-              })
-            }
+              }
+            })
           }
         }
       }))
