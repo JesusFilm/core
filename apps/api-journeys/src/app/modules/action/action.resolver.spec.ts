@@ -1,10 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { RadioOptionBlock } from '../../__generated__/graphql'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
+import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
+import { UserJourneyService } from '../userJourney/userJourney.service'
+import { ActionResolver } from './action.resolver'
 
 describe('ActionResolver', () => {
-  let blockResolver: BlockResolver
+  let resolver: ActionResolver, blockResolver: BlockResolver
 
   const block1 = {
     _key: '1',
@@ -117,6 +121,69 @@ describe('ActionResolver', () => {
       url: 'https://google.com'
     }
   }
+
+  describe('__resolveType', () => {
+    beforeEach(async () => {
+      const blockService = {
+        provide: BlockService,
+        useFactory: () => ({
+          get: jest.fn(() => block1)
+        })
+      }
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          blockService,
+          ActionResolver,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
+      }).compile()
+      resolver = module.get<ActionResolver>(ActionResolver)
+    })
+
+    it('returns NavigateAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: null,
+        url: null,
+        target: null
+      } as unknown as Action
+      expect(resolver.__resolveType(action)).toBe('NavigateAction')
+    })
+
+    it('returns NavigateToBlockAction', () => {
+      const action = {
+        blockId: '4',
+        journeyId: null,
+        url: null,
+        target: null
+      } as unknown as Action
+      expect(resolver.__resolveType(action)).toBe('NavigateToBlockAction')
+    })
+
+    it('returns NavigateToJourneyAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: '4',
+        url: null,
+        target: null
+      } as unknown as Action
+      expect(resolver.__resolveType(action)).toBe('NavigateToJourneyAction')
+    })
+
+    it('returns LinkAction', () => {
+      const action = {
+        blockId: null,
+        journeyId: null,
+        url: 'https://google.com',
+        target: 'target'
+      } as unknown as Action
+      expect(resolver.__resolveType(action)).toBe('LinkAction')
+    })
+  })
 
   describe('NavigateToBlockAction', () => {
     beforeEach(async () => {

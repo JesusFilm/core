@@ -144,6 +144,26 @@ export class IconUpdateInput {
     size?: Nullable<IconSize>;
 }
 
+export class NavigateActionInput {
+    gtmEventName?: Nullable<string>;
+}
+
+export class NavigateToBlockActionInput {
+    gtmEventName?: Nullable<string>;
+    blockId: string;
+}
+
+export class NavigateToJourneyActionInput {
+    gtmEventName?: Nullable<string>;
+    journeyId: string;
+}
+
+export class LinkActionInput {
+    gtmEventName?: Nullable<string>;
+    url: string;
+    target?: Nullable<string>;
+}
+
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
@@ -587,6 +607,14 @@ export class VideoResponse implements Response {
 }
 
 export abstract class IMutation {
+    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): Block | Promise<Block>;
+
+    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): Block | Promise<Block>;
+
+    abstract blockUpdateNavigateToJourneyActionInput(id: string, journeyId: string, input: NavigateToJourneyActionInput): Block | Promise<Block>;
+
+    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): Block | Promise<Block>;
+
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
 
     abstract buttonBlockUpdate(id: string, journeyId: string, input: ButtonBlockUpdateInput): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;

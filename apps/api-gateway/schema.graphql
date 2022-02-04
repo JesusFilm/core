@@ -321,8 +321,18 @@ type LinkAction implements Action {
   url: String!
 }
 
+input LinkActionInput {
+  gtmEventName: String
+  target: String
+  url: String!
+}
+
 type Mutation {
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToJourneyActionInput(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
@@ -360,7 +370,16 @@ type NavigateAction implements Action {
   gtmEventName: String
 }
 
+input NavigateActionInput {
+  gtmEventName: String
+}
+
 type NavigateToBlockAction implements Action {
+  blockId: String!
+  gtmEventName: String
+}
+
+input NavigateToBlockActionInput {
   blockId: String!
   gtmEventName: String
 }
@@ -368,6 +387,11 @@ type NavigateToBlockAction implements Action {
 type NavigateToJourneyAction implements Action {
   gtmEventName: String
   journey: Journey
+  journeyId: String!
+}
+
+input NavigateToJourneyActionInput {
+  gtmEventName: String
   journeyId: String!
 }
 
