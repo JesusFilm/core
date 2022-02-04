@@ -49,7 +49,7 @@ describe('CardBlockResolver', () => {
     fullscreen: true
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'CardBlock',
@@ -93,10 +93,10 @@ describe('CardBlockResolver', () => {
 
   describe('CardBlock', () => {
     it('returns CardBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })

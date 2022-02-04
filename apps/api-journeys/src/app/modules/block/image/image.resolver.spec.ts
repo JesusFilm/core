@@ -23,7 +23,7 @@ describe('ImageBlockResolver', () => {
     width: 1920,
     height: 1080
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'ImageBlock',
@@ -51,7 +51,7 @@ describe('ImageBlockResolver', () => {
     alt: 'grid image'
   }
 
-  const imageblockresponse = {
+  const imageBlockResponse = {
     _key: input.id,
     parentBlockId: input.parentBlockId,
     parentOrder: 2,
@@ -64,7 +64,7 @@ describe('ImageBlockResolver', () => {
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
-  const imageblockupdateresponse = {
+  const imageBlockUpdateResponse = {
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
     src: input.src,
@@ -104,10 +104,10 @@ describe('ImageBlockResolver', () => {
 
   describe('ImageBlock', () => {
     it('returns ImageBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })
@@ -119,14 +119,14 @@ describe('ImageBlockResolver', () => {
         input.journeyId,
         input.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(imageblockresponse)
+      expect(service.save).toHaveBeenCalledWith(imageBlockResponse)
     })
   })
 
   describe('imageBlockUpdate', () => {
     it('updates an ImageBlock', async () => {
       await resolver.imageBlockUpdate('1', '2', inputUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', imageblockupdateresponse)
+      expect(service.update).toHaveBeenCalledWith('1', imageBlockUpdateResponse)
     })
   })
 })

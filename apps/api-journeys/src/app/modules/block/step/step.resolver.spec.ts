@@ -39,7 +39,7 @@ describe('StepBlockResolver', () => {
     nextBlockId: '4'
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'StepBlock',
@@ -80,10 +80,10 @@ describe('StepBlockResolver', () => {
 
   describe('StepBlock', () => {
     it('returns StepBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })

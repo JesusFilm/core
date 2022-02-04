@@ -14,7 +14,7 @@ describe('SignUpResponseResolver', () => {
     email: 'robert.smith@jesusfilm.org'
   }
 
-  const responseresponse = {
+  const responseResponse = {
     id: '1',
     __typename: 'SignUpResponse',
     blockId: '2',
@@ -40,7 +40,7 @@ describe('SignUpResponseResolver', () => {
   describe('SignUpResponse', () => {
     it('returns SignUpResponse', async () => {
       expect(await resolver.signUpResponseCreate(response)).toEqual(
-        responseresponse
+        responseResponse
       )
     })
   })

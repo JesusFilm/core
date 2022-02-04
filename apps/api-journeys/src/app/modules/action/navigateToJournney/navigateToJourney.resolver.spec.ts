@@ -22,7 +22,7 @@ describe('NavigateToJourneyActionResolver', () => {
     }
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -86,7 +86,7 @@ describe('NavigateToJourneyActionResolver', () => {
 
   describe('NavigateToJourneyAction', () => {
     it('returns NavigateToJourneyAction', async () => {
-      expect(await blockresolver.block('1')).toEqual(blockresponse)
+      expect(await blockresolver.block('1')).toEqual(blockResponse)
     })
 
     it('returns Journey from action', async () => {

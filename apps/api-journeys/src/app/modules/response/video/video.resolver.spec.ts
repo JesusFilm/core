@@ -15,7 +15,7 @@ describe('VideoResponseResolver', () => {
     position: 30
   }
 
-  const responseresponse = {
+  const responseResponse = {
     id: '1',
     __typename: 'VideoResponse',
     blockId: '2',
@@ -41,7 +41,7 @@ describe('VideoResponseResolver', () => {
   describe('videoResponseCreate', () => {
     it('returns VideoResponse', async () => {
       expect(await resolver.videoResponseCreate(response)).toEqual(
-        responseresponse
+        responseResponse
       )
     })
   })

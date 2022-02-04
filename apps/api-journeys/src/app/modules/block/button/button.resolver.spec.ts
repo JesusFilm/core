@@ -42,7 +42,7 @@ describe('Button', () => {
       target: 'target'
     }
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'ButtonBlock',
@@ -125,8 +125,8 @@ describe('Button', () => {
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockResponse)
+      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
     })
   })
 

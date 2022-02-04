@@ -53,7 +53,7 @@ describe('VideoBlockResolver', () => {
     posterBlockId: 'posterBlockId'
   }
 
-  const block1response = {
+  const blockResponse1 = {
     id: '1',
     journeyId: '2',
     __typename: 'VideoBlock',
@@ -81,7 +81,7 @@ describe('VideoBlockResolver', () => {
     posterBlockId: 'posterBlockId'
   }
 
-  const block2response = {
+  const blockResponse2 = {
     id: '1',
     journeyId: '2',
     __typename: 'VideoBlock',
@@ -112,7 +112,7 @@ describe('VideoBlockResolver', () => {
     })
     it('returns VideoBlock with Arclight', async () => {
       expect(await videoArclightResolver.src(block1.videoContent)).toEqual(
-        block1response.videoContent.src
+        blockResponse1.videoContent.src
       )
     })
   })
@@ -139,7 +139,7 @@ describe('VideoBlockResolver', () => {
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns VideoBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block2response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse2)
     })
   })
 

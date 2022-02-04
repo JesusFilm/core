@@ -16,7 +16,7 @@ describe('GridContainerResolver', () => {
     justifyContent: 'flexStart',
     alignItems: 'center'
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'GridContainerBlock',
@@ -45,8 +45,8 @@ describe('GridContainerResolver', () => {
 
   describe('GridContainerBlock', () => {
     it('returns GridContainerBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockResponse)
+      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
     })
   })
 })

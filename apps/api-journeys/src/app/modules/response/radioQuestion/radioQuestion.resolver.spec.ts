@@ -13,7 +13,7 @@ describe('RadioQuestionResponseResolver', () => {
     radioOptionBlockId: '4'
   }
 
-  const responseresponse = {
+  const responseResponse = {
     id: '1',
     __typename: 'RadioQuestionResponse',
     blockId: '2',
@@ -40,7 +40,7 @@ describe('RadioQuestionResponseResolver', () => {
   describe('radioQuestionResponseCreate', () => {
     it('returns RadioQuestionResponse', async () => {
       expect(await resolver.radioQuestionResponseCreate(response)).toEqual(
-        responseresponse
+        responseResponse
       )
     })
   })

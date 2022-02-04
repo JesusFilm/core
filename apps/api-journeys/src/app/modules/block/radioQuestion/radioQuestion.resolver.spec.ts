@@ -29,7 +29,7 @@ describe('RadioQuestionBlockResolver', () => {
     }
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -108,10 +108,10 @@ describe('RadioQuestionBlockResolver', () => {
 
   describe('RadioQuestionBlock', () => {
     it('returns RadioQuestionBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })

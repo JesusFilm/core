@@ -15,7 +15,7 @@ describe('GridItemResolver', () => {
     lg: 6,
     sm: 6
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'GridItemBlock',
@@ -43,8 +43,8 @@ describe('GridItemResolver', () => {
 
   describe('GridItemBlock', () => {
     it('returns GridItemBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockResponse)
+      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
     })
   })
 })

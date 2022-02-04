@@ -20,7 +20,7 @@ describe('ActionResolver', () => {
     }
   }
 
-  const block1response = {
+  const blockResponse1 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -48,7 +48,7 @@ describe('ActionResolver', () => {
     }
   }
 
-  const block2response = {
+  const blockResponse2 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -76,7 +76,7 @@ describe('ActionResolver', () => {
     }
   }
 
-  const block3response = {
+  const blockResponse3 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -104,7 +104,7 @@ describe('ActionResolver', () => {
     }
   }
 
-  const block4response = {
+  const blockResponse4 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -132,7 +132,7 @@ describe('ActionResolver', () => {
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block1response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse1)
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('blockId')
@@ -153,7 +153,7 @@ describe('ActionResolver', () => {
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block2response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse2)
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('journeyId')
@@ -174,7 +174,7 @@ describe('ActionResolver', () => {
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns LinkAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block3response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse3)
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
@@ -195,7 +195,7 @@ describe('ActionResolver', () => {
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(block4response)
+      expect(await blockResolver.block('1')).toEqual(blockResponse4)
     })
   })
 })

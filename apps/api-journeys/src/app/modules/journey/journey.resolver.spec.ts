@@ -45,7 +45,7 @@ describe('JourneyResolver', () => {
     height: 1080
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '2',
     journeyId: '1',
     __typename: 'ImageBlock',
@@ -255,7 +255,7 @@ describe('JourneyResolver', () => {
 
   describe('Blocks', () => {
     it('returns Block', async () => {
-      expect(await resolver.blocks(journeyResponse)).toEqual([blockresponse])
+      expect(await resolver.blocks(journeyResponse)).toEqual([blockResponse])
     })
   })
 
@@ -263,7 +263,7 @@ describe('JourneyResolver', () => {
   describe('primaryImageBlock', () => {
     it('returns primaryImageBlock', async () => {
       expect(await resolver.primaryImageBlock(pijourneyResponse)).toEqual(
-        blockresponse
+        blockResponse
       )
     })
     it('should return null', async () => {

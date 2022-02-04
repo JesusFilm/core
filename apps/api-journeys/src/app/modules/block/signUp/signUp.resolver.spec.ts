@@ -29,7 +29,7 @@ describe('SignUpBlockResolver', () => {
     },
     submitLabel: 'Unlock Now!'
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     parentBlockId: '0',
@@ -94,10 +94,10 @@ describe('SignUpBlockResolver', () => {
 
   describe('SignUpBlock', () => {
     it('returns SignUpBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockresponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
-        blockresponse,
-        blockresponse
+        blockResponse,
+        blockResponse
       ])
     })
   })
