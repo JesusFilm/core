@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { JourneyStatus } from '../../../__generated__/graphql'
-import { BlockResolvers } from '../../block/block.resolvers'
+import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
-import { NavigateToJourneyActionResolver } from './navigateToJourney.resolvers'
+import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
-describe('ActionResolvers', () => {
-  let resolver: NavigateToJourneyActionResolver, blockresolver: BlockResolvers
+describe('NavigateToJourneyActionResolver', () => {
+  let resolver: NavigateToJourneyActionResolver, blockresolver: BlockResolver
 
   const block = {
     _key: '1',
@@ -46,7 +46,7 @@ describe('ActionResolvers', () => {
     slug: 'fact-or-fiction'
   }
 
-  const journeyresponse = {
+  const journeyResponse = {
     id: '4',
     title: 'Fact or Fiction',
     status: JourneyStatus.published,
@@ -72,7 +72,7 @@ describe('ActionResolvers', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         NavigateToJourneyActionResolver,
         blockService,
         journeyService
@@ -81,7 +81,7 @@ describe('ActionResolvers', () => {
     resolver = module.get<NavigateToJourneyActionResolver>(
       NavigateToJourneyActionResolver
     )
-    blockresolver = module.get<BlockResolvers>(BlockResolvers)
+    blockresolver = module.get<BlockResolver>(BlockResolver)
   })
 
   describe('NavigateToJourneyAction', () => {
@@ -90,7 +90,7 @@ describe('ActionResolvers', () => {
     })
 
     it('returns Journey from action', async () => {
-      expect(await resolver.journey(block.action)).toEqual(journeyresponse)
+      expect(await resolver.journey(block.action)).toEqual(journeyResponse)
     })
   })
 })

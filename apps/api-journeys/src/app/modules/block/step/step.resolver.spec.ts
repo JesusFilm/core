@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { StepBlockResolvers } from './step.resolvers'
+import { StepBlockResolver } from './step.resolver'
 
-describe('Step', () => {
-  let blockResolver: BlockResolvers,
-    stepBlockResolver: StepBlockResolvers,
+describe('StepBlockResolver', () => {
+  let resolver: StepBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -63,9 +63,9 @@ describe('Step', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        StepBlockResolvers,
+        StepBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -73,8 +73,8 @@ describe('Step', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    stepBlockResolver = module.get<StepBlockResolvers>(StepBlockResolvers)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<StepBlockResolver>(StepBlockResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -90,7 +90,7 @@ describe('Step', () => {
 
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
-      await stepBlockResolver
+      await resolver
         .stepBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
       expect(service.getSiblings).toHaveBeenCalledWith(blockUpdate.journeyId)
@@ -100,7 +100,7 @@ describe('Step', () => {
 
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
-      stepBlockResolver
+      resolver
         .stepBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)

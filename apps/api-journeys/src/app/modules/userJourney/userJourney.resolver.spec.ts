@@ -11,7 +11,7 @@ import { UserJourneyService } from '../userJourney/userJourney.service'
 import { JourneyService } from '../journey/journey.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
-describe('Step', () => {
+describe('UserJourneyResolver', () => {
   let resolver: UserJourneyResolver, service: UserJourneyService
 
   const userJourney = {

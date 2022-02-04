@@ -1,38 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 
-describe('VideoTriggerBlock', () => {
-  let resolver: BlockResolvers
+describe('GridItemResolver', () => {
+  let resolver: BlockResolver
 
   const block = {
     _key: '1',
     journeyId: '2',
-    __typename: 'VideoTriggerBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: '3',
-    parentOrder: 0,
-    extraAttrs: {
-      triggerStart: 5,
-      action: {
-        gtmEventName: 'gtmEventName',
-        journeyId: '4'
-      }
-    }
+    parentOrder: 2,
+    xl: 6,
+    lg: 6,
+    sm: 6
   }
-
   const blockresponse = {
     id: '1',
     journeyId: '2',
-    __typename: 'VideoTriggerBlock',
+    __typename: 'GridItemBlock',
     parentBlockId: '3',
-    parentOrder: 0,
-    extraAttrs: {
-      triggerStart: 5,
-      action: {
-        gtmEventName: 'gtmEventName',
-        journeyId: '4'
-      }
-    }
+    parentOrder: 2,
+    xl: 6,
+    lg: 6,
+    sm: 6
   }
 
   const blockService = {
@@ -45,13 +36,13 @@ describe('VideoTriggerBlock', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService]
+      providers: [BlockResolver, blockService]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
+    resolver = module.get<BlockResolver>(BlockResolver)
   })
 
-  describe('VideoTriggerBlock', () => {
-    it('returns VideoTriggerBlock', async () => {
+  describe('GridItemBlock', () => {
+    it('returns GridItemBlock', async () => {
       expect(await resolver.block('1')).toEqual(blockresponse)
       expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
     })

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { VideoResponseStateEnum } from '../../../__generated__/graphql'
 import { ResponseService } from '../response.service'
-import { VideoResponseResolver } from './video.resolvers'
+import { VideoResponseResolver } from './video.resolver'
 
-describe('VideoResponse', () => {
+describe('VideoResponseResolver', () => {
   let resolver: VideoResponseResolver
 
   const response = {

@@ -3,13 +3,13 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { SignUpBlockCreateInput } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { SignUpBlockResolvers } from './signUp.resolvers'
+import { SignUpBlockResolver } from './signUp.resolver'
 
-describe('SignUp', () => {
-  let blockResolver: BlockResolvers,
-    signUpResolver: SignUpBlockResolvers,
+describe('SignUpBlockResolver', () => {
+  let resolver: SignUpBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -77,9 +77,9 @@ describe('SignUp', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        SignUpBlockResolvers,
+        SignUpBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -87,8 +87,8 @@ describe('SignUp', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    signUpResolver = module.get<SignUpBlockResolvers>(SignUpBlockResolvers)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<SignUpBlockResolver>(SignUpBlockResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -104,7 +104,7 @@ describe('SignUp', () => {
 
   describe('SignUpBlockCreate', () => {
     it('creates a SignUpBlock', async () => {
-      await signUpResolver.signUpBlockCreate(input)
+      await resolver.signUpBlockCreate(input)
       expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
     })
   })

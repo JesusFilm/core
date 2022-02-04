@@ -2,16 +2,16 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
-  StepBlock,
-  StepBlockCreateInput,
-  StepBlockUpdateInput,
+  CardBlock,
+  CardBlockCreateInput,
+  CardBlockUpdateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
-@Resolver('StepBlock')
-export class StepBlockResolvers {
+@Resolver('CardBlock')
+export class CardBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(
@@ -21,11 +21,14 @@ export class StepBlockResolvers {
     ])
   )
   @IdAsKey()
-  async stepBlockCreate(
-    @Args('input') input: StepBlockCreateInput & { __typename }
-  ): Promise<StepBlock> {
-    input.__typename = 'StepBlock'
-    const siblings = await this.blockService.getSiblings(input.journeyId)
+  async cardBlockCreate(
+    @Args('input') input: CardBlockCreateInput & { __typename }
+  ): Promise<CardBlock> {
+    input.__typename = 'CardBlock'
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
+    )
     return await this.blockService.save({
       ...input,
       parentOrder: siblings.length
@@ -33,15 +36,15 @@ export class StepBlockResolvers {
   }
 
   @Mutation()
+  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @KeyAsId()
-  async stepBlockUpdate(
+  async cardBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
-    @Args('input') input: StepBlockUpdateInput
-  ): Promise<StepBlock> {
+    @Args('input') input: CardBlockUpdateInput
+  ): Promise<CardBlock> {
     return await this.blockService.update(id, input)
   }
 }

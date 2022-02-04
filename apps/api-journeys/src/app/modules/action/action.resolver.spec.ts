@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { RadioOptionBlock } from '../../__generated__/graphql'
-import { BlockResolvers } from '../block/block.resolvers'
+import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 
-describe('ActionResolvers', () => {
-  let resolver: BlockResolvers
+describe('ActionResolver', () => {
+  let resolver: BlockResolver
 
   const block1 = {
     _key: '1',
@@ -127,9 +127,9 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      resolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
       expect(await resolver.block('1')).toEqual(block1response)
@@ -148,9 +148,9 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      resolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
       expect(await resolver.block('1')).toEqual(block2response)
@@ -169,9 +169,9 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      resolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns LinkAction', async () => {
       expect(await resolver.block('1')).toEqual(block3response)
@@ -190,9 +190,9 @@ describe('ActionResolvers', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolvers, blockService]
+        providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      resolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateAction', async () => {
       expect(await resolver.block('1')).toEqual(block4response)

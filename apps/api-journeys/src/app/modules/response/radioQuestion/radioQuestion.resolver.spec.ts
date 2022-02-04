@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ResponseService } from '../response.service'
-import { RadioQuestionResponseResolver } from './radioQuestion.resolvers'
+import { RadioQuestionResponseResolver } from './radioQuestion.resolver'
 
-describe('RadioQuestion', () => {
+describe('RadioQuestionResponseResolver', () => {
   let resolver: RadioQuestionResponseResolver
 
   const response = {

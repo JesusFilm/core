@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { VideoBlockResolvers, VideoArclightResolvers } from './video.resolvers'
+import { VideoBlockResolver, VideoArclightResolver } from './video.resolver'
 
-describe('VideoContentResolvers', () => {
-  let blockResolver: BlockResolvers,
-    videoBlockResolver: VideoBlockResolvers,
-    videoArclightResolvers: VideoArclightResolvers,
+describe('VideoBlockResolver', () => {
+  let blockResolver: BlockResolver,
+    resolver: VideoBlockResolver,
+    videoArclightResolver: VideoArclightResolver,
     service: BlockService
 
   const block1 = {
@@ -98,7 +98,7 @@ describe('VideoContentResolvers', () => {
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [
-          VideoArclightResolvers,
+          VideoArclightResolver,
           UserJourneyService,
           {
             provide: 'DATABASE',
@@ -106,12 +106,12 @@ describe('VideoContentResolvers', () => {
           }
         ]
       }).compile()
-      videoArclightResolvers = module.get<VideoArclightResolvers>(
-        VideoArclightResolvers
+      videoArclightResolver = module.get<VideoArclightResolver>(
+        VideoArclightResolver
       )
     })
     it('returns VideoBlock with Arclight', async () => {
-      expect(await videoArclightResolvers.src(block1.videoContent)).toEqual(
+      expect(await videoArclightResolver.src(block1.videoContent)).toEqual(
         block1response.videoContent.src
       )
     })
@@ -127,7 +127,7 @@ describe('VideoContentResolvers', () => {
       }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
-          BlockResolvers,
+          BlockResolver,
           blockService,
           UserJourneyService,
           {
@@ -136,7 +136,7 @@ describe('VideoContentResolvers', () => {
           }
         ]
       }).compile()
-      blockResolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns VideoBlock', async () => {
       expect(await blockResolver.block('1')).toEqual(block2response)
@@ -156,9 +156,9 @@ describe('VideoContentResolvers', () => {
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [
-          BlockResolvers,
+          BlockResolver,
           blockService,
-          VideoBlockResolvers,
+          VideoBlockResolver,
           UserJourneyService,
           {
             provide: 'DATABASE',
@@ -166,13 +166,13 @@ describe('VideoContentResolvers', () => {
           }
         ]
       }).compile()
-      blockResolver = module.get<BlockResolvers>(BlockResolvers)
-      videoBlockResolver = module.get<VideoBlockResolvers>(VideoBlockResolvers)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
+      resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
       service = await module.resolve(BlockService)
     })
     describe('videoBlockCreate', () => {
       it('creates a VideoBlock', async () => {
-        await videoBlockResolver
+        await resolver
           .videoBlockCreate(blockUpdate)
           .catch((err) => console.log(err))
         expect(service.getSiblings).toHaveBeenCalledWith(
@@ -185,7 +185,7 @@ describe('VideoContentResolvers', () => {
 
     describe('videoBlockUpdate', () => {
       it('updates a VideoBlock', async () => {
-        videoBlockResolver
+        resolver
           .videoBlockUpdate('1', '2', blockUpdate)
           .catch((err) => console.log(err))
         expect(service.update).toHaveBeenCalledWith('1', blockUpdate)

@@ -3,13 +3,13 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { CardBlockResolvers } from './card.resolvers'
+import { CardBlockResolver } from './card.resolver'
 
-describe('Card', () => {
-  let blockResolver: BlockResolvers,
-    cardBlockResolver: CardBlockResolvers,
+describe('CardBlockResolver', () => {
+  let resolver: CardBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -76,9 +76,9 @@ describe('Card', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        CardBlockResolvers,
+        CardBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -86,8 +86,8 @@ describe('Card', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    cardBlockResolver = module.get<CardBlockResolvers>(CardBlockResolvers)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<CardBlockResolver>(CardBlockResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -103,7 +103,7 @@ describe('Card', () => {
 
   describe('cardBlockCreate', () => {
     it('creates a CardBlock', async () => {
-      await cardBlockResolver
+      await resolver
         .cardBlockCreate(blockUpdate)
         .catch((err) => console.log(err))
       expect(service.getSiblings).toHaveBeenCalledWith(
@@ -116,7 +116,7 @@ describe('Card', () => {
 
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
-      cardBlockResolver
+      resolver
         .cardBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)

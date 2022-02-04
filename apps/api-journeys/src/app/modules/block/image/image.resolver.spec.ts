@@ -3,13 +3,13 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { ImageBlockCreateInput } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { ImageBlockResolvers } from './image.resolvers'
+import { ImageBlockResolver } from './image.resolver'
 
-describe('Image', () => {
-  let blockResolver: BlockResolvers,
-    resolver: ImageBlockResolvers,
+describe('ImageBlockResolver', () => {
+  let resolver: ImageBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -87,9 +87,9 @@ describe('Image', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        ImageBlockResolvers,
+        ImageBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -97,8 +97,8 @@ describe('Image', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    resolver = module.get<ImageBlockResolvers>(ImageBlockResolvers)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
   })
 

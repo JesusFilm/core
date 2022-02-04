@@ -2,17 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
-  RadioOptionBlockResolvers,
-  RadioQuestionBlockResolvers
-} from './radioQuestion.resolvers'
+  RadioOptionBlockResolver,
+  RadioQuestionBlockResolver
+} from './radioQuestion.resolver'
 
-describe('RadioQuestion', () => {
-  let blockResolver: BlockResolvers,
-    radioOptionBlockResolver: RadioOptionBlockResolvers,
-    radioQuestionBlockResolver: RadioQuestionBlockResolvers,
+describe('RadioQuestionBlockResolver', () => {
+  let resolver: RadioQuestionBlockResolver,
+    blockResolver: BlockResolver,
+    radioOptionBlockResolver: RadioOptionBlockResolver,
     service: BlockService
 
   const block = {
@@ -85,10 +85,10 @@ describe('RadioQuestion', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        RadioQuestionBlockResolvers,
-        RadioOptionBlockResolvers,
+        RadioQuestionBlockResolver,
+        RadioOptionBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -96,12 +96,12 @@ describe('RadioQuestion', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    radioOptionBlockResolver = module.get<RadioOptionBlockResolvers>(
-      RadioOptionBlockResolvers
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    radioOptionBlockResolver = module.get<RadioOptionBlockResolver>(
+      RadioOptionBlockResolver
     )
-    radioQuestionBlockResolver = module.get<RadioQuestionBlockResolvers>(
-      RadioQuestionBlockResolvers
+    resolver = module.get<RadioQuestionBlockResolver>(
+      RadioQuestionBlockResolver
     )
     service = await module.resolve(BlockService)
   })
@@ -129,9 +129,7 @@ describe('RadioQuestion', () => {
 
   describe('radioQuestionBlockCreate', () => {
     it('creates a RadioQuestionBlock', async () => {
-      await radioQuestionBlockResolver.radioQuestionBlockCreate(
-        radioQuestionInput
-      )
+      await resolver.radioQuestionBlockCreate(radioQuestionInput)
       expect(service.getSiblings).toHaveBeenCalledWith(
         radioQuestionInput.journeyId,
         radioQuestionInput.parentBlockId
@@ -153,7 +151,7 @@ describe('RadioQuestion', () => {
 
   describe('radioQuestionBlockUpdate', () => {
     it('updates a RadioQuestionBlock', async () => {
-      await radioQuestionBlockResolver.radioQuestionBlockUpdate(
+      await resolver.radioQuestionBlockUpdate(
         block._key,
         block.journeyId,
         radioQuestionInput
