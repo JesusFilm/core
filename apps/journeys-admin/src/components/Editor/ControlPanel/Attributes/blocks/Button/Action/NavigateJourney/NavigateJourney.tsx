@@ -13,20 +13,15 @@ export function NavigateJourney(): ReactElement {
   }
 
   return (
-    <>
-      <FormControl variant="filled" hiddenLabel>
-        <Select displayEmpty onChange={handleChange} value={journeyName}>
-          <MenuItem value="">Select the Journey...</MenuItem>
-          {journeysList.map((journey) => (
-            <MenuItem
-              key={`button-navigate-journey-${journey}`}
-              value="journey"
-            >
-              {journey}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </>
+    <FormControl variant="filled" hiddenLabel>
+      <Select displayEmpty onChange={handleChange} value={journeyName}>
+        <MenuItem value="">Select the Journey...</MenuItem>
+        {journeysList.map((journey) => (
+          <MenuItem key={`button-navigate-journey-${journey}`} value="journey">
+            {journey}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   )
 }
