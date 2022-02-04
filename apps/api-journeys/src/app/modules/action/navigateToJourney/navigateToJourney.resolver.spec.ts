@@ -5,9 +5,9 @@ import { JourneyStatus } from '../../../__generated__/graphql'
 import { BlockResolvers } from '../../block/block.resolvers'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
-import { ActionResolver } from '../action.resolvers'
+import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { NavigateToJourneyActionResolver } from './navigateToJourney.resolvers'
+import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
 describe('ActionResolvers', () => {
   let resolver: NavigateToJourneyActionResolver,

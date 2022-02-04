@@ -5,10 +5,10 @@ import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolvers } from '../block/block.resolvers'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { ActionResolver } from './action.resolvers'
+import { ActionResolver } from './action.resolver'
 
-describe('ActionResolvers', () => {
-  let resolver: BlockResolvers, actionResolver: ActionResolver
+describe('ActionResolver', () => {
+  let resolver: ActionResolver, blockResolver: BlockResolvers
 
   const block1 = {
     _key: '1',
@@ -127,8 +127,7 @@ describe('ActionResolvers', () => {
       const blockService = {
         provide: BlockService,
         useFactory: () => ({
-          get: jest.fn(() => block1),
-          update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
+          get: jest.fn(() => block1)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
@@ -142,7 +141,7 @@ describe('ActionResolvers', () => {
           }
         ]
       }).compile()
-      actionResolver = module.get<ActionResolver>(ActionResolver)
+      resolver = module.get<ActionResolver>(ActionResolver)
     })
 
     it('returns NavigateAction', () => {
@@ -152,7 +151,7 @@ describe('ActionResolvers', () => {
         url: null,
         target: null
       } as unknown as Action
-      expect(actionResolver.__resolveType(action)).toBe('NavigateAction')
+      expect(resolver.__resolveType(action)).toBe('NavigateAction')
     })
 
     it('returns NavigateToBlockAction', () => {
@@ -162,7 +161,7 @@ describe('ActionResolvers', () => {
         url: null,
         target: null
       } as unknown as Action
-      expect(actionResolver.__resolveType(action)).toBe('NavigateToBlockAction')
+      expect(resolver.__resolveType(action)).toBe('NavigateToBlockAction')
     })
 
     it('returns NavigateToJourneyAction', () => {
@@ -172,9 +171,7 @@ describe('ActionResolvers', () => {
         url: null,
         target: null
       } as unknown as Action
-      expect(actionResolver.__resolveType(action)).toBe(
-        'NavigateToJourneyAction'
-      )
+      expect(resolver.__resolveType(action)).toBe('NavigateToJourneyAction')
     })
 
     it('returns LinkAction', () => {
@@ -184,7 +181,7 @@ describe('ActionResolvers', () => {
         url: 'https://google.com',
         target: 'target'
       } as unknown as Action
-      expect(actionResolver.__resolveType(action)).toBe('LinkAction')
+      expect(resolver.__resolveType(action)).toBe('LinkAction')
     })
   })
 
@@ -193,19 +190,18 @@ describe('ActionResolvers', () => {
       const blockService = {
         provide: BlockService,
         useFactory: () => ({
-          get: jest.fn(() => block1),
-          update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
+          get: jest.fn(() => block1)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block('1')).toEqual(block1response)
+      expect(await blockResolver.block('1')).toEqual(block1response)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('blockId')
     })
   })
@@ -222,12 +218,12 @@ describe('ActionResolvers', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block('1')).toEqual(block2response)
+      expect(await blockResolver.block('1')).toEqual(block2response)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('journeyId')
     })
   })
@@ -237,19 +233,18 @@ describe('ActionResolvers', () => {
       const blockService = {
         provide: BlockService,
         useFactory: () => ({
-          get: jest.fn(() => block3),
-          update: jest.fn((linkActionInput) => linkActionInput)
+          get: jest.fn(() => block3)
         })
       }
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns LinkAction', async () => {
-      expect(await resolver.block('1')).toEqual(block3response)
+      expect(await blockResolver.block('1')).toEqual(block3response)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
     })
   })
@@ -265,10 +260,10 @@ describe('ActionResolvers', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolvers, blockService]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      blockResolver = module.get<BlockResolvers>(BlockResolvers)
     })
     it('returns NavigateAction', async () => {
-      expect(await resolver.block('1')).toEqual(block4response)
+      expect(await blockResolver.block('1')).toEqual(block4response)
     })
   })
 })

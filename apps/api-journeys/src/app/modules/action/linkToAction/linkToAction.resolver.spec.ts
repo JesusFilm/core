@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { BlockResolvers } from '../../block/block.resolvers'
 import { BlockService } from '../../block/block.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { ActionResolver } from '../action.resolvers'
-import { NavigateActionResolver } from './navigateAction.resolvers'
+import { ActionResolver } from '../action.resolver'
+import { LinkToActionResolver } from './linkToAction.resolver'
 
 describe('ActionResolvers', () => {
-  let resolver: NavigateActionResolver, service: BlockService
+  let resolver: LinkToActionResolver, service: BlockService
 
   const block = {
     _key: '1',
@@ -18,29 +19,30 @@ describe('ActionResolvers', () => {
     label: 'label',
     description: 'description',
     action: {
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      url: 'https://google.com'
     }
   }
 
-  const navigateActionInput = {
+  const linkActionInput = {
     gtmEventName: 'gtmEventName',
+    url: 'https://google.com',
     blockId: null,
-    journeyId: null,
-    url: null,
-    target: null
+    journeyId: null
   }
 
   beforeEach(async () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
-        update: jest.fn((navigateActionInput) => navigateActionInput)
+        update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        BlockResolvers,
         blockService,
-        NavigateActionResolver,
+        LinkToActionResolver,
         ActionResolver,
         UserJourneyService,
         {
@@ -49,18 +51,18 @@ describe('ActionResolvers', () => {
         }
       ]
     }).compile()
-    resolver = module.get<NavigateActionResolver>(NavigateActionResolver)
+    resolver = module.get<LinkToActionResolver>(LinkToActionResolver)
     service = await module.resolve(BlockService)
   })
 
-  it('updates navigate action', async () => {
-    await resolver.blockUpdateNavigateAction(
+  it('updates link action', async () => {
+    await resolver.blockUpdateLinkAction(
       block._key,
       block.journeyId,
-      navigateActionInput
+      linkActionInput
     )
     expect(service.update).toHaveBeenCalledWith(block._key, {
-      action: { ...navigateActionInput }
+      action: { ...linkActionInput }
     })
   })
 })

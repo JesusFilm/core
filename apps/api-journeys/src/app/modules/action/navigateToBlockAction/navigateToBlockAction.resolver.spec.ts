@@ -3,8 +3,8 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { BlockService } from '../../block/block.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { ActionResolver } from '../action.resolvers'
-import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolvers'
+import { ActionResolver } from '../action.resolver'
+import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolver'
 
 describe('ActionResolvers', () => {
   let resolver: NavigateToBlockActionResolver, service: BlockService
