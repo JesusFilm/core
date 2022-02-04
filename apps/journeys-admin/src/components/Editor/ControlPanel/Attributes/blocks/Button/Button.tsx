@@ -16,6 +16,7 @@ import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
+import { Action } from './Action'
 
 export function Button({
   id,
@@ -35,7 +36,14 @@ export function Button({
         name="Action"
         value={action?.__typename?.toString() ?? 'None'}
         description="Action"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Action',
+            mobileOpen: true,
+            children: <Action />
+          })
+        }}
       />
 
       <Attribute
