@@ -120,9 +120,9 @@ export function BackgroundMediaVideo({
   )
 
   const [imageBlock, setImageBlock] = useState(
-    (coverBlock?.children.find(
+    coverBlock?.children.find(
       (child) => child.id === (coverBlock as VideoBlock).posterBlockId
-    ) as ImageBlock) ?? null
+    ) as ImageBlock | null
   )
 
   const secondsToTimeFormat = (seconds: number): string => {
@@ -151,7 +151,7 @@ export function BackgroundMediaVideo({
       ...videoBlock,
       [target]: timeFormatToSeconds(time)
     }
-    setVideoBlock(block)
+    setVideoBlock(block as TreeBlock<VideoBlock>)
     await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
@@ -165,7 +165,6 @@ export function BackgroundMediaVideo({
     if (coverBlock == null)
       block = {
         ...block,
-        journeyId,
         parentBlockId: cardBlock.id,
         title: block.videoContent.src,
         autoplay: true,
@@ -204,7 +203,7 @@ export function BackgroundMediaVideo({
       ...videoBlock,
       videoContent: { src: event.clipboardData.getData('text') }
     }
-    await handleChange(block)
+    await handleChange(block as TreeBlock<VideoBlock>)
   }
 
   const handleChange = async (
@@ -267,7 +266,8 @@ export function BackgroundMediaVideo({
             posterBlockId: block.posterBlockId
           },
           update(cache, { data }) {
-            if (data?.typographyBlockCreate != null) {
+            console.log(data)
+            if (data?.videoBlockCreate != null) {
               cache.modify({
                 id: cache.identify({ __typename: 'Journey', id: journeyId }),
                 fields: {
