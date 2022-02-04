@@ -150,7 +150,6 @@ export function BackgroundColor(): ReactElement {
                   key={col}
                   sx={{
                     backgroundColor: col === 'null' ? '#FFFFFF' : col,
-                    m: 0.5,
                     width: 60,
                     height: 60,
                     borderRadius: 2,
@@ -190,7 +189,6 @@ export function BackgroundColor(): ReactElement {
                 key={col}
                 sx={{
                   backgroundColor: col === 'null' ? '#FFFFFF' : col,
-                  m: 0.5,
                   width: 60,
                   height: 60,
                   borderRadius: 2,

@@ -10,16 +10,22 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../../../libs/context'
+import { Drawer } from '../../../../../Drawer'
 import { BackgroundColor } from '.'
 
 const BackgroundColorStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: BackgroundColor,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor',
   parameters: {
-    ...journeysAdminConfig.parameters
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen',
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      viewports: [360, 600]
+    }
   }
 }
 
@@ -57,8 +63,15 @@ export const Default: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <BackgroundColor />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <BackgroundColor />,
+            drawerTitle: 'Background Color Properties',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
@@ -82,8 +95,15 @@ export const Colored: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <BackgroundColor />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <BackgroundColor />,
+            drawerTitle: 'Background Color Properties',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>

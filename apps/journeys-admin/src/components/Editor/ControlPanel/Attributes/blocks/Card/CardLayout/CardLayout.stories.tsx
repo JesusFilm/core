@@ -13,6 +13,7 @@ import {
   ThemeName,
   JourneyStatus
 } from '../../../../../../../../__generated__/globalTypes'
+import { Drawer } from '../../../../../Drawer'
 import { CardLayout } from '.'
 
 const CardLayoutStory = {
@@ -21,7 +22,11 @@ const CardLayoutStory = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardLayout',
   parameters: {
     ...simpleComponentConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      viewports: [360, 600]
+    }
   }
 }
 
@@ -59,8 +64,15 @@ export const Default: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <CardLayout />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <CardLayout />,
+            drawerTitle: 'Card Layout Property',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
@@ -84,8 +96,15 @@ export const FullScreen: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <CardLayout />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <CardLayout />,
+            drawerTitle: 'Card Layout Property',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
