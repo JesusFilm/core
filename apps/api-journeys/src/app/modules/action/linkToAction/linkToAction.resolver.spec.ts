@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { BlockResolvers } from '../../block/block.resolvers'
+import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ActionResolver } from '../action.resolver'
@@ -40,7 +40,7 @@ describe('ActionResolvers', () => {
     }
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
         LinkToActionResolver,
         ActionResolver,
