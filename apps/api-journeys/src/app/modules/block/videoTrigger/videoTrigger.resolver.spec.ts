@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 
-describe('VideoTriggerBlock', () => {
-  let resolver: BlockResolvers
+describe('VideoTriggerBlockResolver', () => {
+  let resolver: BlockResolver
 
   const block = {
     _key: '1',
@@ -20,7 +20,7 @@ describe('VideoTriggerBlock', () => {
     }
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'VideoTriggerBlock',
@@ -45,15 +45,15 @@ describe('VideoTriggerBlock', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolvers, blockService]
+      providers: [BlockResolver, blockService]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
+    resolver = module.get<BlockResolver>(BlockResolver)
   })
 
   describe('VideoTriggerBlock', () => {
     it('returns VideoTriggerBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockResponse)
+      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
     })
   })
 })

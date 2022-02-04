@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { UserResolver } from './user.resolver'
 import { UserService } from './user.service'
 
-describe('User', () => {
+describe('UserResolver', () => {
   let resolver: UserResolver
 
   const user = {

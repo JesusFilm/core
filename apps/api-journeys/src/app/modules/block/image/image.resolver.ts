@@ -56,7 +56,7 @@ async function handleImage(
   return block
 }
 @Resolver('ImageBlock')
-export class ImageBlockResolvers {
+export class ImageBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(

@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { BlockResolvers } from './block.resolvers'
+import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
-describe('Image', () => {
-  let resolver: BlockResolvers, service: BlockService
+describe('BlockResolver', () => {
+  let resolver: BlockResolver, service: BlockService
 
   const image1 = {
     id: 'image1',
@@ -54,7 +54,7 @@ describe('Image', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
         {
           provide: 'DATABASE',
@@ -62,7 +62,7 @@ describe('Image', () => {
         }
       ]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
+    resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -100,7 +100,7 @@ describe('Image', () => {
       }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
-          BlockResolvers,
+          BlockResolver,
           blockService,
           {
             provide: 'DATABASE',
@@ -108,7 +108,7 @@ describe('Image', () => {
           }
         ]
       }).compile()
-      resolver = module.get<BlockResolvers>(BlockResolvers)
+      resolver = module.get<BlockResolver>(BlockResolver)
       service = await module.resolve(BlockService)
 
       const data = await resolver.blockOrderUpdate('image1', '1', 2)

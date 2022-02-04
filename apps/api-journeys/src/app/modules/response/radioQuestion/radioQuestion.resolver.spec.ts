@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ResponseService } from '../response.service'
-import { RadioQuestionResponseResolver } from './radioQuestion.resolvers'
+import { RadioQuestionResponseResolver } from './radioQuestion.resolver'
 
-describe('RadioQuestion', () => {
+describe('RadioQuestionResponseResolver', () => {
   let resolver: RadioQuestionResponseResolver
 
   const response = {
@@ -13,7 +13,7 @@ describe('RadioQuestion', () => {
     radioOptionBlockId: '4'
   }
 
-  const responseresponse = {
+  const responseResponse = {
     id: '1',
     __typename: 'RadioQuestionResponse',
     blockId: '2',
@@ -40,7 +40,7 @@ describe('RadioQuestion', () => {
   describe('radioQuestionResponseCreate', () => {
     it('returns RadioQuestionResponse', async () => {
       expect(await resolver.radioQuestionResponseCreate(response)).toEqual(
-        responseresponse
+        responseResponse
       )
     })
   })

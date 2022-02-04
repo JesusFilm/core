@@ -14,7 +14,7 @@ import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 @Resolver('RadioOptionBlock')
-export class RadioOptionBlockResolvers {
+export class RadioOptionBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(
@@ -53,7 +53,7 @@ export class RadioOptionBlockResolvers {
 }
 
 @Resolver('RadioQuestionBlock')
-export class RadioQuestionBlockResolvers {
+export class RadioQuestionBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(

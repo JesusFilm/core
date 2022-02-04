@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
   ButtonVariant,
@@ -9,11 +9,11 @@ import {
   ButtonSize
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { ButtonBlockResolvers } from './button.resolvers'
+import { ButtonBlockResolver } from './button.resolver'
 
 describe('Button', () => {
-  let resolver: BlockResolvers,
-    buttonBlockResolver: ButtonBlockResolvers,
+  let resolver: BlockResolver,
+    buttonBlockResolver: ButtonBlockResolver,
     service: BlockService
 
   const block = {
@@ -42,7 +42,7 @@ describe('Button', () => {
       target: 'target'
     }
   }
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'ButtonBlock',
@@ -107,9 +107,9 @@ describe('Button', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        ButtonBlockResolvers,
+        ButtonBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -117,16 +117,16 @@ describe('Button', () => {
         }
       ]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
-    buttonBlockResolver = module.get<ButtonBlockResolvers>(ButtonBlockResolvers)
-    resolver = module.get<BlockResolvers>(BlockResolvers)
+    resolver = module.get<BlockResolver>(BlockResolver)
+    buttonBlockResolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
+    resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockresponse)
-      expect(await resolver.blocks()).toEqual([blockresponse, blockresponse])
+      expect(await resolver.block('1')).toEqual(blockResponse)
+      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
     })
   })
 

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { mockDeep } from 'jest-mock-extended'
 import { Database } from 'arangojs'
 import { JourneyStatus } from '../../../__generated__/graphql'
-import { BlockResolvers } from '../../block/block.resolvers'
+import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
 import { ActionResolver } from '../action.resolver'
@@ -11,7 +11,7 @@ import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
 describe('ActionResolvers', () => {
   let resolver: NavigateToJourneyActionResolver,
-    blockresolver: BlockResolvers,
+    blockresolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -28,7 +28,7 @@ describe('ActionResolvers', () => {
     }
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -52,7 +52,7 @@ describe('ActionResolvers', () => {
     slug: 'fact-or-fiction'
   }
 
-  const journeyresponse = {
+  const journeyResponse = {
     id: '4',
     title: 'Fact or Fiction',
     status: JourneyStatus.published,
@@ -87,7 +87,7 @@ describe('ActionResolvers', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         NavigateToJourneyActionResolver,
         blockService,
         journeyService,
@@ -102,17 +102,17 @@ describe('ActionResolvers', () => {
     resolver = module.get<NavigateToJourneyActionResolver>(
       NavigateToJourneyActionResolver
     )
-    blockresolver = module.get<BlockResolvers>(BlockResolvers)
+    blockresolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('NavigateToJourneyAction', () => {
     it('returns NavigateToJourneyAction', async () => {
-      expect(await blockresolver.block('1')).toEqual(blockresponse)
+      expect(await blockresolver.block('1')).toEqual(blockResponse)
     })
 
     it('returns Journey from action', async () => {
-      expect(await resolver.journey(block.action)).toEqual(journeyresponse)
+      expect(await resolver.journey(block.action)).toEqual(journeyResponse)
     })
 
     it('updates the navigate to journey action', async () => {
