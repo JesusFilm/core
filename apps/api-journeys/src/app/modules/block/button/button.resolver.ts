@@ -10,7 +10,7 @@ import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 @Resolver('ButtonBlock')
-export class ButtonBlockResolvers {
+export class ButtonBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @KeyAsId()

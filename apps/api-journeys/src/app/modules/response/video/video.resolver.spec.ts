@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { VideoResponseStateEnum } from '../../../__generated__/graphql'
 import { ResponseService } from '../response.service'
-import { VideoResponseResolver } from './video.resolvers'
+import { VideoResponseResolver } from './video.resolver'
 
-describe('VideoResponse', () => {
+describe('VideoResponseResolver', () => {
   let resolver: VideoResponseResolver
 
   const response = {
@@ -15,7 +15,7 @@ describe('VideoResponse', () => {
     position: 30
   }
 
-  const responseresponse = {
+  const responseResponse = {
     id: '1',
     __typename: 'VideoResponse',
     blockId: '2',
@@ -41,7 +41,7 @@ describe('VideoResponse', () => {
   describe('videoResponseCreate', () => {
     it('returns VideoResponse', async () => {
       expect(await resolver.videoResponseCreate(response)).toEqual(
-        responseresponse
+        responseResponse
       )
     })
   })

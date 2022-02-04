@@ -18,7 +18,7 @@ interface DbBlock extends Block {
   __typename: string
 }
 @Resolver('Block')
-export class BlockResolvers {
+export class BlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @ResolveField()
   __resolveType(obj: DbBlock): string {

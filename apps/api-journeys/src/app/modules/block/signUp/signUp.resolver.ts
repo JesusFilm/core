@@ -2,16 +2,16 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
-  TypographyBlock,
-  TypographyBlockCreateInput,
-  TypographyBlockUpdateInput,
+  SignUpBlock,
+  SignUpBlockCreateInput,
+  SignUpBlockUpdateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
-@Resolver('TypographyBlock')
-export class TypographyBlockResolvers {
+@Resolver('SignUpBlock')
+export class SignUpBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(
@@ -21,10 +21,10 @@ export class TypographyBlockResolvers {
     ])
   )
   @IdAsKey()
-  async typographyBlockCreate(
-    @Args('input') input: TypographyBlockCreateInput & { __typename }
-  ): Promise<TypographyBlock> {
-    input.__typename = 'TypographyBlock'
+  async signUpBlockCreate(
+    @Args('input') input: SignUpBlockCreateInput & { __typename }
+  ): Promise<SignUpBlock> {
+    input.__typename = 'SignUpBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
@@ -36,15 +36,15 @@ export class TypographyBlockResolvers {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  async typographyBlockUpdate(
+  @KeyAsId()
+  async signUpBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
-    @Args('input') input: TypographyBlockUpdateInput
-  ): Promise<TypographyBlock> {
+    @Args('input') input: SignUpBlockUpdateInput
+  ): Promise<SignUpBlock> {
     return await this.blockService.update(id, input)
   }
 }

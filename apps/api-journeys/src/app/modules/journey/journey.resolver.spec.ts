@@ -6,14 +6,14 @@ import {
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
-import { BlockResolvers } from '../block/block.resolvers'
+import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { JourneyResolvers } from './journey.resolvers'
+import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
-describe('Journey', () => {
-  let resolver: JourneyResolvers,
+describe('JourneyResolver', () => {
+  let resolver: JourneyResolver,
     service: JourneyService,
     ujService: UserJourneyService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
@@ -45,7 +45,7 @@ describe('Journey', () => {
     height: 1080
   }
 
-  const blockresponse = {
+  const blockResponse = {
     id: '2',
     journeyId: '1',
     __typename: 'ImageBlock',
@@ -67,7 +67,7 @@ describe('Journey', () => {
     slug: 'published-slug'
   }
 
-  const journeyresponse = {
+  const journeyResponse = {
     id: '1',
     title: 'published',
     locale: 'en-US',
@@ -81,7 +81,7 @@ describe('Journey', () => {
     status: JourneyStatus.published
   }
 
-  const pijourneyresponse = {
+  const pijourneyResponse = {
     id: '1',
     title: 'published',
     locale: 'en-US',
@@ -104,7 +104,7 @@ describe('Journey', () => {
     status: JourneyStatus.published
   }
 
-  const pijourneyresponsenull = {
+  const pijourneyResponsenull = {
     id: '1',
     title: 'published',
     locale: 'en-US',
@@ -189,21 +189,21 @@ describe('Journey', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        JourneyResolvers,
+        JourneyResolver,
         journeyService,
         blockService,
-        BlockResolvers,
+        BlockResolver,
         userJourneyService
       ]
     }).compile()
-    resolver = module.get<JourneyResolvers>(JourneyResolvers)
+    resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
   })
 
   describe('adminJourney', () => {
     it('returns Journey', async () => {
-      expect(await resolver.adminJourney('2', 'slug')).toEqual(journeyresponse)
+      expect(await resolver.adminJourney('2', 'slug')).toEqual(journeyResponse)
       expect(service.getBySlug).toHaveBeenCalledWith('slug')
       expect(ujService.forJourneyUser).toHaveBeenCalledWith(
         userJourneyResponse.journeyId,
@@ -213,7 +213,7 @@ describe('Journey', () => {
 
     it('returns Journey by id', async () => {
       expect(await resolver.adminJourney('2', '1', IdType.databaseId)).toEqual(
-        journeyresponse
+        journeyResponse
       )
       expect(service.get).toHaveBeenCalledWith('1')
     })
@@ -221,13 +221,13 @@ describe('Journey', () => {
 
   describe('journey', () => {
     it('returns Journey', async () => {
-      expect(await resolver.journey('slug')).toEqual(journeyresponse)
+      expect(await resolver.journey('slug')).toEqual(journeyResponse)
       expect(service.getBySlug).toHaveBeenCalledWith('slug')
     })
 
     it('returns Journey by id', async () => {
       expect(await resolver.journey('1', IdType.databaseId)).toEqual(
-        journeyresponse
+        journeyResponse
       )
       expect(service.get).toHaveBeenCalledWith('1')
     })
@@ -236,8 +236,8 @@ describe('Journey', () => {
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
       expect(await resolver.adminJourneys('1')).toEqual([
-        journeyresponse,
-        journeyresponse
+        journeyResponse,
+        journeyResponse
       ])
       expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('1')
     })
@@ -246,8 +246,8 @@ describe('Journey', () => {
   describe('journeys', () => {
     it('should get published journeys', async () => {
       expect(await resolver.journeys()).toEqual([
-        journeyresponse,
-        journeyresponse
+        journeyResponse,
+        journeyResponse
       ])
       expect(service.getAllPublishedJourneys).toHaveBeenCalled()
     })
@@ -255,19 +255,19 @@ describe('Journey', () => {
 
   describe('Blocks', () => {
     it('returns Block', async () => {
-      expect(await resolver.blocks(journeyresponse)).toEqual([blockresponse])
+      expect(await resolver.blocks(journeyResponse)).toEqual([blockResponse])
     })
   })
 
   // need working example to diagnose
   describe('primaryImageBlock', () => {
     it('returns primaryImageBlock', async () => {
-      expect(await resolver.primaryImageBlock(pijourneyresponse)).toEqual(
-        blockresponse
+      expect(await resolver.primaryImageBlock(pijourneyResponse)).toEqual(
+        blockResponse
       )
     })
     it('should return null', async () => {
-      expect(await resolver.primaryImageBlock(pijourneyresponsenull)).toEqual(
+      expect(await resolver.primaryImageBlock(pijourneyResponsenull)).toEqual(
         null
       )
     })
@@ -277,7 +277,7 @@ describe('Journey', () => {
     it('creates a Journey and UserJourney', async () => {
       expect(
         await resolver.journeyCreate(journey, ownerUserJourney._key)
-      ).toEqual(journeyresponse)
+      ).toEqual(journeyResponse)
       expect(ujService.save).toHaveBeenCalledWith({
         userId: ownerUserJourney._key,
         journeyId: journey._key,
@@ -315,11 +315,11 @@ describe('Journey', () => {
 
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
-      expect(await resolver.userJourneys(journeyresponse)).toEqual([
+      expect(await resolver.userJourneys(journeyResponse)).toEqual([
         userJourneyResponse,
         userJourneyResponse
       ])
-      expect(ujService.forJourney).toHaveBeenCalledWith(journeyresponse)
+      expect(ujService.forJourney).toHaveBeenCalledWith(journeyResponse)
     })
   })
 })

@@ -7,13 +7,13 @@ import {
   TypographyVariant
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
-import { BlockResolvers } from '../block.resolvers'
+import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { TypographyBlockResolvers } from './typography.resolvers'
+import { TypographyBlockResolver } from './typography.resolver'
 
-describe('Typography', () => {
-  let resolver: BlockResolvers,
-    typographyBlockResolver: TypographyBlockResolvers,
+describe('TypographyBlockResolver', () => {
+  let resolver: TypographyBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -76,9 +76,9 @@ describe('Typography', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BlockResolvers,
+        BlockResolver,
         blockService,
-        TypographyBlockResolvers,
+        TypographyBlockResolver,
         UserJourneyService,
         {
           provide: 'DATABASE',
@@ -86,23 +86,24 @@ describe('Typography', () => {
         }
       ]
     }).compile()
-    resolver = module.get<BlockResolvers>(BlockResolvers)
-    typographyBlockResolver = module.get<TypographyBlockResolvers>(
-      TypographyBlockResolvers
-    )
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<TypographyBlockResolver>(TypographyBlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('TypographyBlock', () => {
     it('returns TypographyBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockResponse)
-      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
+      expect(await blockResolver.blocks()).toEqual([
+        blockResponse,
+        blockResponse
+      ])
     })
   })
 
   describe('typographyBlockCreate', () => {
     it('creates a TypographyBlock', async () => {
-      await typographyBlockResolver.typographyBlockCreate(blockUpdate)
+      await resolver.typographyBlockCreate(blockUpdate)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockUpdate.journeyId,
         blockUpdate.parentBlockId
@@ -113,7 +114,7 @@ describe('Typography', () => {
 
   describe('typographyBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
-      void typographyBlockResolver.typographyBlockUpdate(
+      void resolver.typographyBlockUpdate(
         block._key,
         block.journeyId,
         blockUpdate

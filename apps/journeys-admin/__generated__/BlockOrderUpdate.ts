@@ -10,7 +10,7 @@
 export interface BlockOrderUpdate_blockOrderUpdate {
   __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
-  parentOrder: number;
+  parentOrder: number | null;
 }
 
 export interface BlockOrderUpdate {

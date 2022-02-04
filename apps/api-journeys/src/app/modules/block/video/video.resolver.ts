@@ -22,7 +22,7 @@ function checkVideoContentInput(input: VideoContentInput): boolean {
   )
 }
 @Resolver('VideoContent')
-export class VideoContentResolvers {
+export class VideoContentResolver {
   @ResolveField()
   __resolveType(obj: VideoContent): string {
     if (has(obj, ['mediaComponentId'])) return 'VideoArclight'
@@ -31,7 +31,7 @@ export class VideoContentResolvers {
 }
 
 @Resolver('VideoArclight')
-export class VideoArclightResolvers {
+export class VideoArclightResolver {
   @ResolveField()
   src(@Parent() obj: VideoArclight): string {
     return `https://arc.gt/hls/${obj.mediaComponentId}/${obj.languageId}`
@@ -39,7 +39,7 @@ export class VideoArclightResolvers {
 }
 
 @Resolver('VideoBlock')
-export class VideoBlockResolvers {
+export class VideoBlockResolver {
   constructor(private readonly blockService: BlockService) {}
   @Mutation()
   @UseGuards(
