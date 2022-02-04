@@ -6,6 +6,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 export function NavigateJourney(): ReactElement {
   const [journeyName, setJourneyName] = useState('')
 
+  // add query to get all journeys
   const journeysList = ['hello', 'world']
 
   function handleChange(event: SelectChangeEvent): void {
