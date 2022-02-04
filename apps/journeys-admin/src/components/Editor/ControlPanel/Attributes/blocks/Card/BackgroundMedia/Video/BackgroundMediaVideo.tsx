@@ -1,4 +1,10 @@
-import { ReactElement, useState, ChangeEvent, FocusEvent } from 'react'
+import {
+  ReactElement,
+  useState,
+  ChangeEvent,
+  FocusEvent,
+  ClipboardEvent
+} from 'react'
 import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
@@ -24,6 +30,7 @@ import {
 import Image from 'next/image'
 import { TabPanel, tabProps } from '@core/shared/ui'
 import TimeField from 'react-simple-timefield'
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -98,6 +105,7 @@ export function BackgroundMediaVideo({
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
+  console.log(coverBlock)
 
   const [tabValue, setTabValue] = useState(0)
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundVideoUpdate>(
@@ -114,11 +122,11 @@ export function BackgroundMediaVideo({
   )
   const { id: journeyId } = useJourney()
   const [videoBlock, setVideoBlock] = useState(
-    coverBlock.__typename === 'VideoBlock' ? coverBlock : null
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
   )
 
-  const [imageBlock, setImageBlock] = useState(
-    (coverBlock.children.find(
+  const [imageBlock] = useState(
+    (coverBlock?.children.find(
       (child) => child.id === (coverBlock as VideoBlock).posterBlockId
     ) as ImageBlock) ?? null
   )
@@ -129,38 +137,34 @@ export function BackgroundMediaVideo({
   }
 
   const timeFormatToSeconds = (time: string): number => {
-    const date = new Date(0)
-    const timeArray = time.split(':').map((s) => parseInt(s))
-    date.setHours(timeArray[0])
-    date.setMinutes(timeArray[1])
-    date.setSeconds(timeArray[2])
-    return date.getTime() / 1000
+    const [hours, minutes, seconds] = time.split(':')
+    return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds)
   }
 
-  const [startAt, setStartAt] = useState(
-    secondsToTimeFormat(videoBlock?.startAt ?? 0)
-  )
+  const [startAt] = useState(secondsToTimeFormat(videoBlock?.startAt ?? 0))
 
-  const [endAt, setEndAt] = useState(
-    secondsToTimeFormat(videoBlock?.endAt ?? 0)
-  )
+  const [endAt] = useState(secondsToTimeFormat(videoBlock?.endAt ?? 0))
 
   const handleTabChange = (event, newValue): void => {
     setTabValue(newValue)
   }
 
-  const handleTimeChange = (event: FocusEvent<HTMLInputElement>): void => {
+  const handleTimeChange = async (
+    target: string,
+    time: string
+  ): Promise<void> => {
     const block = {
       ...videoBlock,
-      [event.target.name]: timeFormatToSeconds(event.target.value)
+      [target]: timeFormatToSeconds(time)
     }
-    setVideoBlock(block as TreeBlock<VideoBlock>)
+    setVideoBlock(block)
+    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
-  const handleVideoChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleVideoSrcChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const block = {
       ...videoBlock,
-      [event.target.name]: event.target.value
+      videoContent: { src: event.target.value }
     }
     setVideoBlock(block as TreeBlock<VideoBlock>)
   }
@@ -183,6 +187,16 @@ export function BackgroundMediaVideo({
     await handleChange(block as TreeBlock<VideoBlock>)
   }
 
+  const handlePaste = async (
+    event: ClipboardEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const block = {
+      ...videoBlock,
+      videoContent: { src: event.clipboardData.getData('text') }
+    }
+    await handleChange(block)
+  }
+
   const handleChange = async (
     block: TreeBlock<VideoBlock> | null
   ): Promise<void> => {
@@ -199,6 +213,24 @@ export function BackgroundMediaVideo({
           journeyId: journeyId
         }
       })
+      if (block == null) {
+        await cardBlockUpdate({
+          variables: {
+            id: cardBlock.id,
+            journeyId: journeyId,
+            input: {
+              coverBlockId: null
+            }
+          },
+          optimisticResponse: {
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              coverBlockId: null,
+              __typename: 'CardBlock'
+            }
+          }
+        })
+      }
     }
     let data
     if ((coverBlock == null || blockTypeChanged) && block != null) {
@@ -207,7 +239,7 @@ export function BackgroundMediaVideo({
           input: {
             journeyId: journeyId,
             parentBlockId: cardBlock.id,
-            title: block.title,
+            title: block.title ?? block.videoContent.src,
             startAt: block.startAt,
             endAt:
               (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
@@ -255,9 +287,14 @@ export function BackgroundMediaVideo({
         }
       }))
     } else if (block != null) {
+      const videoContent = {
+        src: block.videoContent.src,
+        mediaComponentId: block.videoContent.mediaComponentId,
+        languageId: block.videoContent.languageId
+      }
       ;({ data } = await VideoBlockUpdate({
         variables: {
-          id: cardBlock.id,
+          id: coverBlock.id,
           journeyId: journeyId,
           input: {
             title: block.title,
@@ -266,13 +303,13 @@ export function BackgroundMediaVideo({
               (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
             muted: block.muted,
             autoplay: block.autoplay,
-            videoContent: block.videoContent,
+            videoContent: videoContent,
             posterBlockId: block.posterBlockId
           }
         },
         optimisticResponse: {
           videoBlockUpdate: {
-            id: cardBlock.id,
+            id: coverBlock.id,
             __typename: 'VideoBlock',
             title: block.title,
             startAt: block.startAt,
@@ -286,9 +323,9 @@ export function BackgroundMediaVideo({
         }
       }))
     }
-    setEndAt(secondsToTimeFormat(data.endAt))
-    setStartAt(secondsToTimeFormat(data.startAt))
   }
+
+  const handleChangeDebounced = AwesomeDebouncePromise(handleChange, 2000)
 
   return (
     <>
@@ -303,7 +340,7 @@ export function BackgroundMediaVideo({
                 width: 55
               }}
             >
-              {imageBlock != null && (
+              {imageBlock?.src != null && (
                 <Image
                   src={imageBlock.src}
                   alt={imageBlock.alt}
@@ -359,11 +396,12 @@ export function BackgroundMediaVideo({
       <TabPanel value={tabValue} index={0}>
         <Box sx={{ py: 3 }}>
           <TextField
-            name="src"
+            name="videoContent.src"
             variant="filled"
             value={videoBlock?.videoContent.src}
-            onChange={handleVideoChange}
-            data-testid="imgSrcTextField"
+            onChange={handleVideoSrcChange}
+            onPaste={handlePaste}
+            data-testid="videoSrcTextField"
             label="Paste URL of video..."
             InputProps={{
               startAdornment: (
@@ -393,7 +431,7 @@ export function BackgroundMediaVideo({
               </Typography>
             </Stack>
             <Switch
-              checked={videoBlock?.autoplay ?? true}
+              checked={coverBlock?.autoplay ?? true}
               name="autoplay"
               onChange={handleSwitchChange}
             ></Switch>
@@ -407,7 +445,7 @@ export function BackgroundMediaVideo({
               </Typography>
             </Stack>
             <Switch
-              checked={videoBlock?.muted ?? false}
+              checked={coverBlock?.muted ?? false}
               name="muted"
               onChange={handleSwitchChange}
             ></Switch>
@@ -418,11 +456,13 @@ export function BackgroundMediaVideo({
               showSeconds
               value={startAt}
               style={{ width: 120 }}
+              onChange={async (event, time: string) =>
+                await handleTimeChange('startAt', time)
+              }
               input={
                 <TextField
                   label="Starts At"
                   value={startAt}
-                  onBlur={handleTimeChange}
                   variant="filled"
                   InputProps={{
                     startAdornment: (
@@ -437,12 +477,14 @@ export function BackgroundMediaVideo({
             <TimeField
               showSeconds
               value={endAt}
+              onChange={async (event, time: string) =>
+                await handleTimeChange('endAt', time)
+              }
               style={{ width: 120 }}
               input={
                 <TextField
                   label="Ends At"
                   value={endAt}
-                  onBlur={handleTimeChange}
                   variant="filled"
                   InputProps={{
                     startAdornment: (
@@ -478,7 +520,7 @@ export function BackgroundMediaVideo({
                     width: 55
                   }}
                 >
-                  {imageBlock != null && (
+                  {imageBlock?.src != null && (
                     <Image
                       src={imageBlock.src}
                       alt={imageBlock.alt}

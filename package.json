@@ -49,6 +49,7 @@
     "apollo-datasource": "^3.0.3",
     "apollo-server": "^3.5.0",
     "arangojs": "^7.6.1",
+    "awesome-debounce-promise": "^2.1.0",
     "aws-sdk": "^2.1062.0",
     "blurhash": "^1.1.4",
     "canvas": "^2.8.0",

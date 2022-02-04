@@ -1,6 +1,12 @@
-import { ReactElement, useEffect, useState, ChangeEvent } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useState,
+  ChangeEvent,
+  ClipboardEvent
+} from 'react'
 import Box from '@mui/material/Box'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import {
   InputAdornment,
   Stack,
@@ -17,7 +23,7 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TabPanel, tabProps } from '@core/shared/ui'
-import { TreeBlock } from '@core/journeys/ui'
+import { IMAGE_FIELDS, TreeBlock } from '@core/journeys/ui'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -25,16 +31,54 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import { useJourney } from '../../../../../../../../libs/context'
-import { CARD_BLOCK_UPDATE } from '../../CardBlockUpdate'
-import {
-  CardBlockUpdateInput,
-  ImageBlockCreateInput,
-  ImageBlockUpdateInput
-} from '../../../../../../../../../__generated__/globalTypes'
-import { IMAGE_BLOCK_UPDATE } from '../../../Image/ImageBlockUpdate'
-import { BLOCK_REMOVE } from '../../../BlockRemove'
-import { IMAGE_BLOCK_CREATE } from '../../../Image/ImageBlockCreate'
+import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundImageUpdate'
+import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
+import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
+import { BlockRemoveForBackgroundImage } from '../../../../../../../../../__generated__/BlockRemoveForBackgroundImage'
 
+export const BLOCK_REMOVE_FOR_BACKGROUND_IMAGE = gql`
+  mutation BlockRemoveForBackgroundImage($id: ID!, $journeyId: ID!) {
+    blockRemove(id: $id, journeyId: $journeyId) {
+      id
+    }
+  }
+`
+
+export const CARD_BLOCK_COVER_IMAGE_UPDATE = gql`
+  mutation CardBlockBackgroundImageUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: CardBlockUpdateInput!
+  ) {
+    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      coverBlockId
+    }
+  }
+`
+
+export const CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE = gql`
+  ${IMAGE_FIELDS}
+  mutation CardBlockImageBlockCreate($input: ImageBlockCreateInput!) {
+    imageBlockCreate(input: $input) {
+      ...ImageFields
+    }
+  }
+`
+
+export const CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE = gql`
+  mutation CardBlockImageBlockUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: ImageBlockUpdateInput!
+  ) {
+    imageBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      src
+      alt
+    }
+  }
+`
 interface BackgroundMediaImageProps {
   cardBlock: TreeBlock<CardBlock>
 }
@@ -50,16 +94,21 @@ export function BackgroundMediaImage({
   const [tabValue, setTabValue] = useState(
     (coverBlock as TreeBlock<ImageBlock>)?.src == null ? 0 : 1
   )
-  const [cardBlockUpdate] =
-    useMutation<{ cardBlockUpdate: CardBlockUpdateInput }>(CARD_BLOCK_UPDATE)
-  const [imageBlockCreate] =
-    useMutation<{ imageBlockCreate: ImageBlockCreateInput }>(IMAGE_BLOCK_CREATE)
-  const [imageBlockUpdate] =
-    useMutation<{ imageBlockUpdate: ImageBlockUpdateInput }>(IMAGE_BLOCK_UPDATE)
-  const [blockRemove] = useMutation(BLOCK_REMOVE)
-  const journey = useJourney()
+  const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
+    CARD_BLOCK_COVER_IMAGE_UPDATE
+  )
+  const [imageBlockCreate] = useMutation<CardBlockImageBlockCreate>(
+    CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE
+  )
+  const [imageBlockUpdate] = useMutation<CardBlockImageBlockUpdate>(
+    CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
+  )
+  const [blockRemove] = useMutation<BlockRemoveForBackgroundImage>(
+    BLOCK_REMOVE_FOR_BACKGROUND_IMAGE
+  )
+  const { id: journeyId } = useJourney()
   const [imageBlock, setImageBlock] = useState(
-    coverBlock.__typename === 'ImageBlock' ? coverBlock : null
+    coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
   )
 
   useEffect(() => {
@@ -86,6 +135,16 @@ export function BackgroundMediaImage({
     await handleChange(null)
   }
 
+  const handlePaste = async (
+    event: ClipboardEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const block = {
+      ...imageBlock,
+      src: event.clipboardData.getData('text')
+    }
+    await handleChange(block)
+  }
+
   const handleChange = async (block: ImageBlock | null): Promise<void> => {
     let blockTypeChanged = false
     if (
@@ -93,26 +152,11 @@ export function BackgroundMediaImage({
       (block == null || coverBlock.__typename.toString() !== 'ImageBlock')
     ) {
       blockTypeChanged = true
-      // Remove existing video poster block if it exists
-      const posterBlock =
-        coverBlock.__typename === 'VideoBlock'
-          ? coverBlock.children.find(
-              (child) => child.id === coverBlock.posterBlockId
-            )
-          : null
-      if (posterBlock != null) {
-        await blockRemove({
-          variables: {
-            id: posterBlock.id,
-            journeyId: journey.id
-          }
-        })
-      }
       // remove existing cover block if type changed
       await blockRemove({
         variables: {
           id: coverBlock.id,
-          journeyId: journey.id
+          journeyId: journeyId
         }
       })
     }
@@ -121,19 +165,46 @@ export function BackgroundMediaImage({
       ;({ data } = await imageBlockCreate({
         variables: {
           input: {
-            journeyId: journey.id,
+            journeyId: journeyId,
             parentBlockId: cardBlock.id,
             src: block.src,
             alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
+          },
+          update(cache, { data }) {
+            if (data?.typographyBlockCreate != null) {
+              cache.modify({
+                id: cache.identify({ __typename: 'Journey', id: journeyId }),
+                fields: {
+                  blocks(existingBlockRefs = []) {
+                    const newBlockRef = cache.writeFragment({
+                      data: data.imageBlockCreate,
+                      fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingBlockRefs, newBlockRef]
+                  }
+                }
+              })
+            }
           }
         }
       }))
       ;({ data } = await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
-          journeyId: journey.id,
+          journeyId: journeyId,
           input: {
             coverBlockId: data.id
+          }
+        },
+        optimisticResponse: {
+          cardBlockUpdate: {
+            id: cardBlock.id,
+            coverBlockId: data.id,
+            __typename: 'CardBlock'
           }
         }
       }))
@@ -141,8 +212,16 @@ export function BackgroundMediaImage({
       ;({ data } = await imageBlockUpdate({
         variables: {
           id: coverBlock.id,
-          journeyId: journey.id,
+          journeyId: journeyId,
           input: {
+            src: block.src,
+            alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
+          }
+        },
+        optimisticResponse: {
+          imageBlockUpdate: {
+            id: cardBlock.id,
+            __typename: 'ImageBlock',
             src: block.src,
             alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
           }
@@ -225,6 +304,7 @@ export function BackgroundMediaImage({
             variant="filled"
             value={imageBlock?.src}
             onChange={handleImageChange}
+            onPaste={handlePaste}
             data-testid="imgSrcTextField"
             label="Paste URL of image..."
             InputProps={{
