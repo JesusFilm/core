@@ -9,9 +9,9 @@ import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
-describe('ActionResolvers', () => {
+describe('NavigateToJourneyActionResolver', () => {
   let resolver: NavigateToJourneyActionResolver,
-    blockresolver: BlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -102,13 +102,13 @@ describe('ActionResolvers', () => {
     resolver = module.get<NavigateToJourneyActionResolver>(
       NavigateToJourneyActionResolver
     )
-    blockresolver = module.get<BlockResolver>(BlockResolver)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('NavigateToJourneyAction', () => {
     it('returns NavigateToJourneyAction', async () => {
-      expect(await blockresolver.block('1')).toEqual(blockResponse)
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
     })
 
     it('returns Journey from action', async () => {

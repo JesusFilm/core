@@ -9,7 +9,7 @@ import {
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 
-@Resolver('NavigateToBlockAction')
+@Resolver('NavigateToBlockActionResolver')
 export class NavigateToBlockActionResolver {
   constructor(private readonly blockService: BlockService) {}
 

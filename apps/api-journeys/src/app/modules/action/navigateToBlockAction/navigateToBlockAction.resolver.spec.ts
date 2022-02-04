@@ -6,7 +6,7 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ActionResolver } from '../action.resolver'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolver'
 
-describe('ActionResolvers', () => {
+describe('NavigateToBlockActionResolver', () => {
   let resolver: NavigateToBlockActionResolver, service: BlockService
 
   const block = {

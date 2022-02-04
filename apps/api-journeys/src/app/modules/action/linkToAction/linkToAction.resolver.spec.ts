@@ -7,7 +7,7 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ActionResolver } from '../action.resolver'
 import { LinkToActionResolver } from './linkToAction.resolver'
 
-describe('ActionResolvers', () => {
+describe('LinkToActionResolver', () => {
   let resolver: LinkToActionResolver, service: BlockService
 
   const block = {

@@ -9,7 +9,7 @@ import {
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 
-@Resolver('LinkToAction')
+@Resolver('LinkToActionResolver')
 export class LinkToActionResolver {
   constructor(private readonly blockService: BlockService) {}
 
