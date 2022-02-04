@@ -4,7 +4,7 @@ import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 
 describe('ActionResolver', () => {
-  let resolver: BlockResolver
+  let blockResolver: BlockResolver
 
   const block1 = {
     _key: '1',
@@ -129,12 +129,12 @@ describe('ActionResolver', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolver>(BlockResolver)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block('1')).toEqual(block1response)
+      expect(await blockResolver.block('1')).toEqual(block1response)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('blockId')
     })
   })
@@ -150,12 +150,12 @@ describe('ActionResolver', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolver>(BlockResolver)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await resolver.block('1')).toEqual(block2response)
+      expect(await blockResolver.block('1')).toEqual(block2response)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('journeyId')
     })
   })
@@ -171,12 +171,12 @@ describe('ActionResolver', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolver>(BlockResolver)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns LinkAction', async () => {
-      expect(await resolver.block('1')).toEqual(block3response)
+      expect(await blockResolver.block('1')).toEqual(block3response)
       expect(
-        ((await resolver.block('1')) as RadioOptionBlock).action
+        ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
     })
   })
@@ -192,10 +192,10 @@ describe('ActionResolver', () => {
       const module: TestingModule = await Test.createTestingModule({
         providers: [BlockResolver, blockService]
       }).compile()
-      resolver = module.get<BlockResolver>(BlockResolver)
+      blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateAction', async () => {
-      expect(await resolver.block('1')).toEqual(block4response)
+      expect(await blockResolver.block('1')).toEqual(block4response)
     })
   })
 })
