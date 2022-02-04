@@ -14,7 +14,7 @@ import { SignUpBlockResolvers } from './signUp.resolvers'
 
 describe('SignUp', () => {
   let blockResolver: BlockResolvers,
-    signUpResolver: SignUpBlockResolvers,
+    resolver: SignUpBlockResolvers,
     service: BlockService
 
   const block = {
@@ -98,6 +98,20 @@ describe('SignUp', () => {
     submitLabel: 'Unlock Now!'
   }
 
+  const blockWithNoIcon = {
+    _key: '1',
+    journeyId: '2',
+    parentBlockId: '0',
+    __typename: 'SignUpBlock',
+    parentOrder: 2,
+    action: {
+      gtmEventName: 'gtmEventName',
+      journeyId: '2'
+    },
+    submitIcon: null,
+    submitLabel: 'Unlock Now!'
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -112,7 +126,7 @@ describe('SignUp', () => {
       ]
     }).compile()
     blockResolver = module.get<BlockResolvers>(BlockResolvers)
-    signUpResolver = module.get<SignUpBlockResolvers>(SignUpBlockResolvers)
+    resolver = module.get<SignUpBlockResolvers>(SignUpBlockResolvers)
     service = await module.resolve(BlockService)
   })
 
@@ -128,18 +142,26 @@ describe('SignUp', () => {
 
   describe('SignUpBlockCreate', () => {
     it('creates a SignUpBlock', async () => {
-      await signUpResolver.signUpBlockCreate(input)
+      await resolver.signUpBlockCreate(input)
       expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
     })
   })
 
   describe('SignUpBlockUpdate', () => {
     it('updates a SignUpBlock', async () => {
-      await signUpResolver.signUpBlockUpdate(block._key, block.journeyId, block)
+      await resolver.signUpBlockUpdate(block._key, block.journeyId, block)
       expect(service.update).toHaveBeenCalledWith(
         block._key,
         blockupdateresponse
       )
+    })
+
+    it('removes the icon from sign up block', async () => {
+      await resolver.signUpBlockUpdate(block._key, block.journeyId, {
+        ...block,
+        submitIcon: null
+      })
+      expect(service.update).toHaveBeenCalledWith(block._key, blockWithNoIcon)
     })
   })
 })
