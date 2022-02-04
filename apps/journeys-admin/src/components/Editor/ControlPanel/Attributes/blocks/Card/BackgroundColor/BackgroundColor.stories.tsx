@@ -1,25 +1,24 @@
 import { Story, Meta } from '@storybook/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../../__generated__/GetJourney'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../../../libs/context'
-import {
-  ThemeMode,
-  ThemeName,
-  JourneyStatus
-} from '../../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../../../../Drawer'
-import { CardLayout } from '.'
+import { BackgroundColor } from '.'
 
-const CardLayoutStory = {
+const BackgroundColorStory = {
   ...simpleComponentConfig,
-  component: CardLayout,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardLayout',
+  component: BackgroundColor,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen',
@@ -67,8 +66,8 @@ export const Default: Story = () => {
         <EditorProvider
           initialState={{
             selectedBlock: block,
-            drawerChildren: <CardLayout />,
-            drawerTitle: 'Card Layout Property',
+            drawerChildren: <BackgroundColor />,
+            drawerTitle: 'Background Color Properties',
             drawerMobileOpen: true
           }}
         >
@@ -79,17 +78,17 @@ export const Default: Story = () => {
   )
 }
 
-export const FullScreen: Story = () => {
+export const Colored: Story = () => {
   const block: TreeBlock<CardBlock> = {
     id: 'card1.id',
     __typename: 'CardBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
     coverBlockId: null,
-    backgroundColor: null,
-    themeMode: ThemeMode.light,
+    backgroundColor: '#DCDDE5',
+    themeMode: null,
     themeName: null,
-    fullscreen: true,
+    fullscreen: false,
     children: []
   }
 
@@ -99,8 +98,8 @@ export const FullScreen: Story = () => {
         <EditorProvider
           initialState={{
             selectedBlock: block,
-            drawerChildren: <CardLayout />,
-            drawerTitle: 'Card Layout Property',
+            drawerChildren: <BackgroundColor />,
+            drawerTitle: 'Background Color Properties',
             drawerMobileOpen: true
           }}
         >
@@ -111,4 +110,4 @@ export const FullScreen: Story = () => {
   )
 }
 
-export default CardLayoutStory as Meta
+export default BackgroundColorStory as Meta

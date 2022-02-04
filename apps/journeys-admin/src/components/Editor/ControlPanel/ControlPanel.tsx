@@ -1,45 +1,14 @@
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { ReactElement, ReactNode, SyntheticEvent } from 'react'
+import { ReactElement, SyntheticEvent } from 'react'
 import { TreeBlock, useEditor, ActiveTab } from '@core/journeys/ui'
+import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
 import { AddFab } from './AddFab'
-
-interface TabPanelProps {
-  children?: ReactNode
-  value: number
-  index: number
-}
-
-function TabPanel({
-  children,
-  value,
-  index,
-  ...other
-}: TabPanelProps): ReactElement {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`journeys-admin-editor-tabpanel-${index}`}
-      aria-labelledby={`journeys-admin-editor-tab-${index}`}
-      {...other}
-    >
-      {children}
-    </div>
-  )
-}
-
-function a11yProps(index: number): { id: string; 'aria-controls': string } {
-  return {
-    id: `journeys-admin-editor-tab-${index}`,
-    'aria-controls': `journeys-admin-editor-tabpanel-${index}`
-  }
-}
 
 export function ControlPanel(): ReactElement {
   const {
@@ -83,29 +52,37 @@ export function ControlPanel(): ReactElement {
           onChange={handleChange}
           aria-label="editor tabs"
         >
-          <Tab label="Cards" {...a11yProps(0)} sx={{ flexGrow: 1 }} />
+          <Tab
+            label="Cards"
+            {...tabA11yProps('control-panel', 0)}
+            sx={{ flexGrow: 1 }}
+          />
           <Tab
             label="Properties"
-            {...a11yProps(1)}
+            {...tabA11yProps('control-panel', 1)}
             sx={{ flexGrow: 1 }}
             disabled={selectedBlock == null}
           />
-          <Tab label="Blocks" {...a11yProps(2)} sx={{ flexGrow: 1 }} />
+          <Tab
+            label="Blocks"
+            {...tabA11yProps('control-panel', 2)}
+            sx={{ flexGrow: 1 }}
+          />
         </Tabs>
       </Box>
-      <TabPanel value={activeTab} index={0}>
+      <TabPanel name="control-panel" value={activeTab} index={0}>
         <CardPreview
           selected={selectedStep}
           onSelect={handleSelectStep}
           steps={steps}
         />
       </TabPanel>
-      <TabPanel value={activeTab} index={1}>
+      <TabPanel name="control-panel" value={activeTab} index={1}>
         {selectedBlock !== undefined && selectedStep !== undefined && (
           <Attributes selected={selectedBlock} step={selectedStep} />
         )}
       </TabPanel>
-      <TabPanel value={activeTab} index={2}>
+      <TabPanel name="control-panel" value={activeTab} index={2}>
         <BlocksTab />
       </TabPanel>
     </Box>
