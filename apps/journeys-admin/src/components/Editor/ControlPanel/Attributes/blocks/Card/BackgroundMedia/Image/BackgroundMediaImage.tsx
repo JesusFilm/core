@@ -1,10 +1,4 @@
-import {
-  ReactElement,
-  useEffect,
-  useState,
-  ChangeEvent,
-  ClipboardEvent
-} from 'react'
+import { ReactElement, useState, ChangeEvent, ClipboardEvent } from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import {
@@ -22,7 +16,7 @@ import {
   Link as LinkIcon
 } from '@mui/icons-material'
 import Image from 'next/image'
-import { TabPanel, tabProps } from '@core/shared/ui'
+import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { IMAGE_FIELDS, TreeBlock } from '@core/journeys/ui'
 
 import {
@@ -138,7 +132,7 @@ export function BackgroundMediaImage({
       ...imageBlock,
       src: event.clipboardData.getData('text')
     }
-    await handleChange(block)
+    await handleChange(block as ImageBlock)
   }
 
   const handleChange = async (block: ImageBlock | null): Promise<void> => {
@@ -219,7 +213,7 @@ export function BackgroundMediaImage({
             id: cardBlock.id,
             __typename: 'ImageBlock',
             src: block.src,
-            alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
+            alt: block.src ?? '' // per Vlad 26/1/22, we are hardcoding the image alt for now
           }
         }
       }))
@@ -287,13 +281,13 @@ export function BackgroundMediaImage({
         variant="fullWidth"
         centered
       >
-        <Tab label="Upload" {...tabProps(0)}></Tab>
-        <Tab label="By URL" {...tabProps(1)}></Tab>
+        <Tab label="Upload" {...tabA11yProps('imageUpload', 0)}></Tab>
+        <Tab label="By URL" {...tabA11yProps('imageSrc', 1)}></Tab>
       </Tabs>
-      <TabPanel value={tabValue} index={0}>
+      <TabPanel name="imageUpload" value={tabValue} index={0}>
         Not yet implemented
       </TabPanel>
-      <TabPanel value={tabValue} index={1}>
+      <TabPanel name="imageSrc" value={tabValue} index={1}>
         <Box sx={{ py: 3 }}>
           <TextField
             name="src"

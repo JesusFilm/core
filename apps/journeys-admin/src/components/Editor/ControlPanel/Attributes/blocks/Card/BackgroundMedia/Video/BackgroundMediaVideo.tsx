@@ -22,7 +22,7 @@ import {
   StopCircle
 } from '@mui/icons-material'
 import Image from 'next/image'
-import { TabPanel, tabProps } from '@core/shared/ui'
+import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import TimeField from 'react-simple-timefield'
 import { debounce } from 'lodash'
 
@@ -436,16 +436,16 @@ export function BackgroundMediaVideo({
         centered
         variant="fullWidth"
       >
-        <Tab label="Source" {...tabProps(0)}></Tab>
+        <Tab label="Source" {...tabA11yProps('videSrc', 0)}></Tab>
         <Tab
           label="Settings"
-          {...tabProps(1)}
+          {...tabA11yProps('videoSettings', 1)}
           disabled={
             (coverBlock as TreeBlock<VideoBlock>)?.videoContent.src == null
           }
         ></Tab>
       </Tabs>
-      <TabPanel value={tabValue} index={0}>
+      <TabPanel name="videoSrc" value={tabValue} index={0}>
         <Box sx={{ py: 3 }}>
           <TextField
             name="videoContent.src"
@@ -473,7 +473,7 @@ export function BackgroundMediaVideo({
           ></TextField>
         </Box>
       </TabPanel>
-      <TabPanel value={tabValue} index={1}>
+      <TabPanel name="videoSettings" value={tabValue} index={1}>
         <Stack direction="column" spacing={3}>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">
