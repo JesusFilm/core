@@ -77,13 +77,6 @@ describe('Image', () => {
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith('image1')
       expect(data).toEqual([image1, image2, image3])
     })
-
-    it('does not remove if block not part of current journey', async () => {
-      const data = await resolver.blockRemove('image1', '1')
-
-      expect(service.removeBlockAndChildren).toBeCalledTimes(0)
-      expect(data).toEqual([])
-    })
   })
 
   describe('blockOrderUpdate', () => {

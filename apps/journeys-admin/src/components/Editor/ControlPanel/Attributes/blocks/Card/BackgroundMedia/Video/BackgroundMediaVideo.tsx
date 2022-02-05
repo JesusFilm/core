@@ -1,5 +1,5 @@
 import { ReactElement, useState, ChangeEvent, ClipboardEvent } from 'react'
-import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
+import { TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import {

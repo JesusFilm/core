@@ -137,4 +137,19 @@ describe('BlockService', () => {
       expect(await service.update(block._key, block)).toEqual(block)
     })
   })
+
+  describe('removeBlockAndChildren', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [block, block])
+      )
+    })
+
+    it('should remove blocks', async () => {
+      expect(await service.removeBlockAndChildren(block._key)).toEqual([
+        block,
+        block
+      ])
+    })
+  })
 })
