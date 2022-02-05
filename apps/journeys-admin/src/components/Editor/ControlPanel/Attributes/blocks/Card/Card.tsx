@@ -45,7 +45,7 @@ export function Card({
       <Attribute
         id={`${id}-background-color`}
         icon={
-          <Paper sx={{ borderRadius: 1000, overflow: 'hidden' }}>
+          <Paper sx={{ borderRadius: 1000, flexShrink: 0 }}>
             <Box
               data-testid="backgroundColorIcon"
               sx={{

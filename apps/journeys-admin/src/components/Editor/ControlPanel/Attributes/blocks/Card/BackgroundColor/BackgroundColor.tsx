@@ -1,25 +1,23 @@
 import { ReactElement, useState } from 'react'
-import {
-  Box,
-  Divider,
-  InputAdornment,
-  Tab,
-  Tabs,
-  TextField,
-  Theme,
-  Typography,
-  useMediaQuery
-} from '@mui/material'
-import { Colorize } from '@mui/icons-material'
-import { RgbaStringColorPicker } from 'react-colorful'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import InputAdornment from '@mui/material/InputAdornment'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import Stack from '@mui/material/Stack'
+import ColorizeIcon from '@mui/icons-material/Colorize'
+import { RgbaStringColorPicker } from 'react-colorful'
+import { Theme } from '@mui/material/styles'
 import { gql, useMutation } from '@apollo/client'
-import { TabPanel, tabProps } from '@core/shared/ui'
+import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
-import { CardBlockBgColorUpdate } from '../../../../../../../../__generated__/CardBlockBgColorUpdate'
+import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 
 const themeColors = [
   'null',
@@ -33,8 +31,8 @@ const themeColors = [
   '#CC4530'
 ]
 
-export const CARD_BLOCK_BGCOLOR_UPDATE = gql`
-  mutation CardBlockBgColorUpdate(
+export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
+  mutation CardBlockBackgroundColorUpdate(
     $id: ID!
     $journeyId: ID!
     $input: CardBlockUpdateInput!
@@ -62,10 +60,10 @@ export function BackgroundColor(): ReactElement {
 
   const [tabValue, setTabValue] = useState(0)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [cardBlockUpdate] = useMutation<CardBlockBgColorUpdate>(
-    CARD_BLOCK_BGCOLOR_UPDATE
+  const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
+    CARD_BLOCK_BACKGROUND_COLOR_UPDATE
   )
-  const handleTabChange = (event, newValue): void => {
+  const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
   }
 
@@ -91,7 +89,7 @@ export function BackgroundColor(): ReactElement {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <>
       <Box sx={{ px: 6, py: 4 }}>
         <Stack spacing={3} direction="row">
           <Box
@@ -99,22 +97,25 @@ export function BackgroundColor(): ReactElement {
               backgroundColor: cardBlock?.backgroundColor ?? '#FFFFFF',
               width: 56,
               height: 56,
-              border: 1,
-              borderRadius: 2
+              borderRadius: 2,
+              outline: '1px solid rgba(0, 0, 0, 0.2)',
+              outlineOffset: '-1px'
             }}
           />
           <TextField
-            variant="outlined"
+            variant="filled"
+            hiddenLabel
             value={cardBlock?.backgroundColor ?? 'Default'}
             onChange={async (e) => await handleColorChange(e.target.value)}
             data-testid="bgColorTextField"
+            sx={{ flexGrow: 1 }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Colorize
+                  <ColorizeIcon
                     onClick={(e) => handleTabChange(e, 1)}
                     style={{ cursor: 'pointer' }}
-                  ></Colorize>
+                  />
                 </InputAdornment>
               )
             }}
@@ -130,13 +131,18 @@ export function BackgroundColor(): ReactElement {
             variant="fullWidth"
             centered
           >
-            <Tab label="Theme" {...tabProps(0)}></Tab>
-            <Tab label="Custom" {...tabProps(1)}></Tab>
+            <Tab label="Theme" {...tabA11yProps('background-color', 0)}></Tab>
+            <Tab label="Custom" {...tabA11yProps('background-color', 1)}></Tab>
           </Tabs>
-          <TabPanel value={tabValue} index={0}>
+          <Divider />
+          <TabPanel name="background-color" value={tabValue} index={0}>
             <HorizontalSelect
               onChange={handleColorChange}
               id={cardBlock?.backgroundColor ?? 'null'}
+              sx={{
+                height: 134,
+                alignItems: 'center'
+              }}
             >
               {themeColors.map((col) => (
                 <Box
@@ -144,24 +150,26 @@ export function BackgroundColor(): ReactElement {
                   key={col}
                   sx={{
                     backgroundColor: col === 'null' ? '#FFFFFF' : col,
-                    width: 56,
-                    height: 56,
-                    border: 1,
+                    width: 60,
+                    height: 60,
                     borderRadius: 2,
-                    margin: 1,
+                    outline: '1px solid rgba(0, 0, 0, 0.2)',
+                    outlineOffset: '-1px',
                     cursor: 'pointer'
                   }}
                 />
               ))}
             </HorizontalSelect>
           </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <RgbaStringColorPicker
-              data-testid="bgColorPicker"
-              color={cardBlock?.backgroundColor ?? '#FFFFFF'}
-              onChange={handleColorChange}
-              style={{ width: 'auto', height: 125 }}
-            />
+          <TabPanel name="background-color" value={tabValue} index={1}>
+            <Box sx={{ display: 'flex', px: 6, py: 4, height: 134 }}>
+              <RgbaStringColorPicker
+                data-testid="bgColorPicker"
+                color={cardBlock?.backgroundColor ?? '#FFFFFF'}
+                onChange={handleColorChange}
+                style={{ height: '100%', width: '100%' }}
+              />
+            </Box>
           </TabPanel>
         </>
       )}
@@ -181,11 +189,11 @@ export function BackgroundColor(): ReactElement {
                 key={col}
                 sx={{
                   backgroundColor: col === 'null' ? '#FFFFFF' : col,
-                  width: 56,
-                  height: 56,
-                  border: 1,
+                  width: 60,
+                  height: 60,
                   borderRadius: 2,
-                  margin: 1,
+                  outline: '1px solid rgba(0, 0, 0, 0.2)',
+                  outlineOffset: '-1px',
                   cursor: 'pointer'
                 }}
                 data-testid={col}
@@ -206,6 +214,6 @@ export function BackgroundColor(): ReactElement {
           </Box>
         </>
       )}
-    </Box>
+    </>
   )
 }
