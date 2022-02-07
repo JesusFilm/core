@@ -152,12 +152,7 @@ export function Icon({ iconType }: IconProps): ReactElement {
 
   return (
     <>
-      <Box sx={{ display: 'flex', pt: 4, px: 6, flexDirection: 'column' }}>
-        <Typography variant="subtitle2">Show Icon</Typography>
-        <Typography variant="caption">Show/Hide Icon on Button</Typography>
-      </Box>
-
-      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 9, px: 6 }}>
+      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 6, px: 6 }}>
         <Select
           labelId="icon-name-select"
           id="icon-name-select"
