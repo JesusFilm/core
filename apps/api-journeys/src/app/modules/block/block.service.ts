@@ -52,7 +52,7 @@ export class BlockService extends BaseService {
     const res = await this.db.query(aql`
       FOR block IN ${this.collection}
         FILTER block.parentBlockId IN ${parentIds}
-        REMOVE block IN ${this.collection}
+        REMOVE block IN ${this.collection} RETURN OLD
     `)
     const blocks = await res.all()
     const blockIds = blocks.map((block) => block._key)
@@ -63,7 +63,8 @@ export class BlockService extends BaseService {
   }
 
   async removeBlockAndChildren(blockId: string): Promise<Block[]> {
-    return await this.removeAllBlocksForParentId([blockId])
+    const res: Block = await this.remove(blockId)
+    return await this.removeAllBlocksForParentId([blockId], [res])
   }
 
   collection: DocumentCollection = this.db.collection('blocks')

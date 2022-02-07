@@ -118,11 +118,11 @@ export function BackgroundMediaImage({
   }
 
   const handleImageChangeClick = async (): Promise<void> => {
-    await handleChange(imageBlock)
+    await handleChange(imageBlock as ImageBlock)
   }
 
   const handleImageDelete = async (): Promise<void> => {
-    await handleChange(null)
+    await deleteCoverBlock()
   }
 
   const handlePaste = async (
@@ -135,23 +135,49 @@ export function BackgroundMediaImage({
     await handleChange(block as ImageBlock)
   }
 
-  const handleChange = async (block: ImageBlock | null): Promise<void> => {
+  const deleteCoverBlock = async (): Promise<void> => {
+    await blockRemove({
+      variables: {
+        id: coverBlock.id,
+        journeyId: journeyId
+      },
+      update(cache, { data }) {
+        data?.blockRemove.forEach((block) => {
+          cache.evict({ id: block.id })
+        })
+        cache.gc()
+      }
+    })
+    await cardBlockUpdate({
+      variables: {
+        id: cardBlock.id,
+        journeyId: journeyId,
+        input: {
+          coverBlockId: null
+        }
+      },
+      optimisticResponse: {
+        cardBlockUpdate: {
+          id: cardBlock.id,
+          coverBlockId: null,
+          __typename: 'CardBlock'
+        }
+      }
+    })
+  }
+
+  const handleChange = async (block: ImageBlock): Promise<void> => {
     let blockTypeChanged = false
     if (
       coverBlock != null &&
-      (block == null || coverBlock.__typename.toString() !== 'ImageBlock')
+      coverBlock.__typename.toString() !== 'ImageBlock'
     ) {
       blockTypeChanged = true
       // remove existing cover block if type changed
-      await blockRemove({
-        variables: {
-          id: coverBlock.id,
-          journeyId: journeyId
-        }
-      })
+      await deleteCoverBlock()
     }
     let data
-    if (block != null && (coverBlock == null || blockTypeChanged)) {
+    if (coverBlock == null || blockTypeChanged) {
       ;({ data } = await imageBlockCreate({
         variables: {
           input: {
@@ -288,34 +314,36 @@ export function BackgroundMediaImage({
         Not yet implemented
       </TabPanel>
       <TabPanel name="imageSrc" value={tabValue} index={1}>
-        <Box sx={{ py: 3 }}>
-          <TextField
-            name="src"
-            variant="filled"
-            value={imageBlock?.src}
-            onChange={handleImageChange}
-            onPaste={handlePaste}
-            data-testid="imgSrcTextField"
-            label="Paste URL of image..."
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LinkIcon></LinkIcon>
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <CheckCircle
-                    onClick={handleImageChangeClick}
-                    style={{ cursor: 'pointer' }}
-                  ></CheckCircle>
-                </InputAdornment>
-              )
-            }}
-          ></TextField>
-          <Typography variant="caption">
-            Make sure image address is permanent
-          </Typography>
+        <Box sx={{ px: 'auto' }}>
+          <Stack direction="column">
+            <TextField
+              name="src"
+              variant="filled"
+              value={imageBlock?.src}
+              onChange={handleImageChange}
+              onPaste={handlePaste}
+              data-testid="imgSrcTextField"
+              label="Paste URL of image..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LinkIcon></LinkIcon>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <CheckCircle
+                      onClick={handleImageChangeClick}
+                      style={{ cursor: 'pointer' }}
+                    ></CheckCircle>
+                  </InputAdornment>
+                )
+              }}
+            ></TextField>
+            <Typography variant="caption">
+              Make sure image address is permanent
+            </Typography>
+          </Stack>
         </Box>
       </TabPanel>
     </>

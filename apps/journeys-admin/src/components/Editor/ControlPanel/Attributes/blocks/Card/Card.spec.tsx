@@ -101,7 +101,16 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider>
+              <Drawer />
+              <Card {...card} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
       expect(getByText('Background Image')).toBeInTheDocument()
       expect(getByText('07iLnvN.jpg')).toBeInTheDocument()
     })
@@ -137,7 +146,16 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText } = render(<Card {...card} />)
+      const { getByText } = render(
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider>
+              <Drawer />
+              <Card {...card} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
       expect(getByText('Background Video')).toBeInTheDocument()
       expect(getByText('#FallingPlates')).toBeInTheDocument()
     })
@@ -174,12 +192,14 @@ describe('Card', () => {
         ]
       }
       const { getByText } = render(
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <Card {...card} />
-          </EditorProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider>
+              <Drawer />
+              <Card {...card} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       fireEvent.click(getByText('#FallingPlates'))
       expect(getByText('Background Media Properties')).toBeInTheDocument()

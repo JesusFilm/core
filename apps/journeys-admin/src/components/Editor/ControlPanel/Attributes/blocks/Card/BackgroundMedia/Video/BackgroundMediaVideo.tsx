@@ -32,6 +32,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
 import { useJourney } from '../../../../../../../../libs/context'
+import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { BlockRemoveForBackgroundVideo } from '../../../../../../../../../__generated__/BlockRemoveForBackgroundVideo'
 import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundVideoUpdate'
 import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
@@ -191,7 +192,8 @@ export function BackgroundMediaVideo({
   const handleVideoDelete = async (): Promise<void> => {
     setImageBlock(null)
     setVideoBlock(null)
-    await handleChange(null)
+    setTabValue(0)
+    await deleteCoverBlock()
   }
 
   const handleSwitchChange = async (
@@ -214,51 +216,49 @@ export function BackgroundMediaVideo({
     await handleChange(block as TreeBlock<VideoBlock>)
   }
 
-  const handleChange = async (
-    block: TreeBlock<VideoBlock> | null
-  ): Promise<void> => {
+  const deleteCoverBlock = async (): Promise<void> => {
+    await blockRemove({
+      variables: {
+        id: coverBlock.id,
+        journeyId: journeyId
+      },
+      update(cache, { data }) {
+        data?.blockRemove.forEach((block) => {
+          cache.evict({ id: block.id })
+        })
+        cache.gc()
+      }
+    })
+    await cardBlockUpdate({
+      variables: {
+        id: cardBlock.id,
+        journeyId: journeyId,
+        input: {
+          coverBlockId: null
+        }
+      },
+      optimisticResponse: {
+        cardBlockUpdate: {
+          id: cardBlock.id,
+          coverBlockId: null,
+          __typename: 'CardBlock'
+        }
+      }
+    })
+  }
+
+  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
     let blockTypeChanged = false
     if (
       coverBlock != null &&
-      (coverBlock?.__typename.toString() !== 'VideoBlock' || block == null)
+      coverBlock?.__typename.toString() !== 'VideoBlock'
     ) {
       blockTypeChanged = true
       // remove existing cover block if type changed
-      await blockRemove({
-        variables: {
-          id: coverBlock.id,
-          journeyId: journeyId
-        },
-        update(cache) {
-          const id = cache.identify({
-            id: coverBlock.id,
-            __typename: coverBlock.__typename
-          })
-          cache.evict({ id })
-          cache.gc()
-        }
-      })
-      if (block == null) {
-        await cardBlockUpdate({
-          variables: {
-            id: cardBlock.id,
-            journeyId: journeyId,
-            input: {
-              coverBlockId: null
-            }
-          },
-          optimisticResponse: {
-            cardBlockUpdate: {
-              id: cardBlock.id,
-              coverBlockId: null,
-              __typename: 'CardBlock'
-            }
-          }
-        })
-      }
+      await deleteCoverBlock()
     }
     let data
-    if ((coverBlock == null || blockTypeChanged) && block != null) {
+    if (coverBlock == null || blockTypeChanged) {
       ;({ data } = await VideoBlockCreate({
         variables: {
           input: {
@@ -311,25 +311,37 @@ export function BackgroundMediaVideo({
           }
         }
       })
-    } else if (block != null) {
+    } else {
       const videoContent = {
         src: block.videoContent.src
       }
+      let variables: {
+        id: string
+        journeyId: string
+        input: VideoBlockUpdateInput
+      } = {
+        id: coverBlock.id,
+        journeyId: journeyId,
+        input: {
+          title: block.title,
+          startAt: block.startAt,
+          endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
+          muted: block.muted,
+          autoplay: block.autoplay,
+          posterBlockId: block.posterBlockId
+        }
+      }
+      // Don't update Arclight with src
+      if (
+        videoContent.src !==
+        (coverBlock as TreeBlock<VideoBlock>).videoContent.src
+      )
+        variables = {
+          ...variables,
+          input: { ...variables.input, videoContent }
+        }
       ;({ data } = await VideoBlockUpdate({
-        variables: {
-          id: coverBlock.id,
-          journeyId: journeyId,
-          input: {
-            title: block.title,
-            startAt: block.startAt,
-            endAt:
-              (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-            muted: block.muted,
-            autoplay: block.autoplay,
-            videoContent: videoContent,
-            posterBlockId: block.posterBlockId
-          }
-        },
+        variables,
         optimisticResponse: {
           videoBlockUpdate: {
             id: coverBlock.id,
@@ -446,11 +458,10 @@ export function BackgroundMediaVideo({
         ></Tab>
       </Tabs>
       <TabPanel name="videoSrc" value={tabValue} index={0}>
-        <Box sx={{ py: 3 }}>
+        <Box sx={{ py: 3, width: '100%', textAlign: 'center' }}>
           <TextField
-            name="videoContent.src"
             variant="filled"
-            value={(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src}
+            value={videoBlock?.videoContent.src ?? ''}
             onChange={handleVideoSrcChange}
             onPaste={handlePaste}
             data-testid="videoSrcTextField"
@@ -474,142 +485,146 @@ export function BackgroundMediaVideo({
         </Box>
       </TabPanel>
       <TabPanel name="videoSettings" value={tabValue} index={1}>
-        <Stack direction="column" spacing={3}>
-          <Stack direction="row" justifyContent="space-between">
-            <Stack direction="column">
-              <Typography variant="subtitle2">Autoplay</Typography>
-              <Typography variant="caption">
-                Start video automatically when card appears
-              </Typography>
-            </Stack>
-            <Switch
-              checked={(coverBlock as TreeBlock<VideoBlock>)?.autoplay ?? true}
-              name="autoplay"
-              onChange={handleSwitchChange}
-            ></Switch>
-          </Stack>
-          <Divider />
-          <Stack direction="row" justifyContent="space-between">
-            <Stack direction="column">
-              <Typography variant="subtitle2">Muted</Typography>
-              <Typography variant="caption">
-                Video always muted on the first card
-              </Typography>
-            </Stack>
-            <Switch
-              checked={
-                (coverBlock as TreeBlock<VideoBlock>)?.muted ??
-                cardBlock?.parentOrder === 0
-              }
-              name="muted"
-              onChange={handleSwitchChange}
-            ></Switch>
-          </Stack>
-          <Divider />
-          <Stack direction="row" justifyContent="space-around">
-            <TimeField
-              showSeconds
-              value={startAt}
-              style={{ width: 120 }}
-              onChange={async (event, time: string) =>
-                await handleTimeChange('startAt', time)
-              }
-              input={
-                <TextField
-                  label="Starts At"
-                  value={startAt}
-                  variant="filled"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PlayCircle></PlayCircle>
-                      </InputAdornment>
-                    )
-                  }}
-                />
-              }
-            />
-            <TimeField
-              showSeconds
-              value={endAt}
-              onChange={async (event, time: string) =>
-                await handleTimeChange('endAt', time)
-              }
-              style={{ width: 120 }}
-              input={
-                <TextField
-                  label="Ends At"
-                  value={endAt}
-                  variant="filled"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <StopCircle></StopCircle>
-                      </InputAdornment>
-                    )
-                  }}
-                />
-              }
-            />
-          </Stack>
-          <Divider />
-          <Stack direction="row" justifyContent="space-between">
-            <Stack direction="column" justifyContent="center">
-              <Typography variant="subtitle2">Cover Image</Typography>
-              <Typography variant="caption">
-                Appears while video is loading
-              </Typography>
-            </Stack>
-            <Box
-              width={95}
-              height={62}
-              sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', py: 1 }}
-              borderRadius={2}
-            >
-              <Stack direction="row" justifyContent="space-around">
-                <div
-                  style={{
-                    overflow: 'hidden',
-                    borderRadius: 8,
-                    height: 55,
-                    width: 55
-                  }}
-                >
-                  {imageBlock?.src != null && (
-                    <Image
-                      src={imageBlock.src}
-                      alt={imageBlock.alt}
-                      width={55}
-                      height={55}
-                    ></Image>
-                  )}
-                  {imageBlock?.src == null && (
-                    <Box
-                      borderRadius={2}
-                      sx={{
-                        width: 55,
-                        height: 55,
-                        verticalAlign: 'center'
-                      }}
-                      justifyContent="center"
-                    >
-                      <ImageIcon
-                        sx={{ marginTop: 4, marginLeft: 4 }}
-                      ></ImageIcon>
-                    </Box>
-                  )}
-                </div>
-                <Stack
-                  direction="column"
-                  justifyContent="center"
-                  sx={{ paddingRight: 1 }}
-                >
-                  <Create color="primary"></Create>
-                </Stack>
+        <Box sx={{ p: 3, width: '100%' }}>
+          <Stack direction="column" spacing={3}>
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="column">
+                <Typography variant="subtitle2">Autoplay</Typography>
+                <Typography variant="caption">
+                  Start video automatically when card appears
+                </Typography>
               </Stack>
-            </Box>
+              <Switch
+                checked={
+                  (coverBlock as TreeBlock<VideoBlock>)?.autoplay ?? true
+                }
+                name="autoplay"
+                onChange={handleSwitchChange}
+              ></Switch>
+            </Stack>
+            <Divider />
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="column">
+                <Typography variant="subtitle2">Muted</Typography>
+                <Typography variant="caption">
+                  Video always muted on the first card
+                </Typography>
+              </Stack>
+              <Switch
+                checked={
+                  (coverBlock as TreeBlock<VideoBlock>)?.muted ??
+                  cardBlock?.parentOrder === 0
+                }
+                name="muted"
+                onChange={handleSwitchChange}
+              ></Switch>
+            </Stack>
+            <Divider />
+            <Stack direction="row" justifyContent="space-around">
+              <TimeField
+                showSeconds
+                value={startAt}
+                style={{ width: 120 }}
+                onChange={async (event, time: string) =>
+                  await handleTimeChange('startAt', time)
+                }
+                input={
+                  <TextField
+                    label="Starts At"
+                    value={startAt}
+                    variant="filled"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PlayCircle></PlayCircle>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                }
+              />
+              <TimeField
+                showSeconds
+                value={endAt}
+                onChange={async (event, time: string) =>
+                  await handleTimeChange('endAt', time)
+                }
+                style={{ width: 120 }}
+                input={
+                  <TextField
+                    label="Ends At"
+                    value={endAt}
+                    variant="filled"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <StopCircle></StopCircle>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                }
+              />
+            </Stack>
+            <Divider />
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="column" justifyContent="center">
+                <Typography variant="subtitle2">Cover Image</Typography>
+                <Typography variant="caption">
+                  Appears while video is loading
+                </Typography>
+              </Stack>
+              <Box
+                width={95}
+                height={62}
+                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', py: 1 }}
+                borderRadius={2}
+              >
+                <Stack direction="row" justifyContent="space-around">
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      borderRadius: 8,
+                      height: 55,
+                      width: 55
+                    }}
+                  >
+                    {imageBlock?.src != null && (
+                      <Image
+                        src={imageBlock.src}
+                        alt={imageBlock.alt}
+                        width={55}
+                        height={55}
+                      ></Image>
+                    )}
+                    {imageBlock?.src == null && (
+                      <Box
+                        borderRadius={2}
+                        sx={{
+                          width: 55,
+                          height: 55,
+                          verticalAlign: 'center'
+                        }}
+                        justifyContent="center"
+                      >
+                        <ImageIcon
+                          sx={{ marginTop: 4, marginLeft: 4 }}
+                        ></ImageIcon>
+                      </Box>
+                    )}
+                  </div>
+                  <Stack
+                    direction="column"
+                    justifyContent="center"
+                    sx={{ paddingRight: 1 }}
+                  >
+                    <Create color="primary"></Create>
+                  </Stack>
+                </Stack>
+              </Box>
+            </Stack>
           </Stack>
-        </Stack>
+        </Box>
       </TabPanel>
     </>
   )

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
+  mockCollectionRemoveResult,
   mockCollectionSaveResult,
   mockDbQueryResult
 } from '@core/nest/database'
@@ -143,10 +144,16 @@ describe('BlockService', () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [block, block])
       )
+      ;(
+        service.collection as DeepMockProxy<DocumentCollection>
+      ).remove.mockReturnValue(
+        mockCollectionRemoveResult(service.collection, block)
+      )
     })
 
     it('should remove blocks', async () => {
       expect(await service.removeBlockAndChildren(block._key)).toEqual([
+        block,
         block,
         block
       ])

@@ -55,10 +55,18 @@ export function BackgroundMedia(): ReactElement {
           aria-label="block type"
           exclusive
         >
-          <ToggleButton value="VideoBlock" aria-label="image">
+          <ToggleButton
+            value="VideoBlock"
+            aria-label="video"
+            data-testid="bgvideo-video-tab"
+          >
             <Videocam></Videocam> Video
           </ToggleButton>
-          <ToggleButton value="ImageBlock" aria-label="image">
+          <ToggleButton
+            value="ImageBlock"
+            aria-label="image"
+            data-testid="bgvideo-image-tab"
+          >
             <ImageIcon></ImageIcon> Image
           </ToggleButton>
         </ToggleButtonGroup>
