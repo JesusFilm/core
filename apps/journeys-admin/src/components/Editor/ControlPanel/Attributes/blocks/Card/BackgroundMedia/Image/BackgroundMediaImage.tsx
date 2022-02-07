@@ -16,8 +16,9 @@ import {
   Link as LinkIcon
 } from '@mui/icons-material'
 import Image from 'next/image'
+import { TreeBlock } from '@core/journeys/ui'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
-import { IMAGE_FIELDS, TreeBlock } from '@core/journeys/ui'
+import { debounce } from 'lodash'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -52,10 +53,11 @@ export const CARD_BLOCK_COVER_IMAGE_UPDATE = gql`
 `
 
 export const CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE = gql`
-  ${IMAGE_FIELDS}
   mutation CardBlockImageBlockCreate($input: ImageBlockCreateInput!) {
     imageBlockCreate(input: $input) {
-      ...ImageFields
+      id
+      src
+      alt
     }
   }
 `
@@ -109,12 +111,15 @@ export function BackgroundMediaImage({
     setTabValue(newValue)
   }
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleImageChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
     const block = {
       ...imageBlock,
       [event.target.name]: event.target.value
     }
     setImageBlock(block as TreeBlock<ImageBlock>)
+    await handleChangeDebounced(block as TreeBlock<ImageBlock>)
   }
 
   const handleImageChangeClick = async (): Promise<void> => {
@@ -187,7 +192,7 @@ export function BackgroundMediaImage({
             alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
           },
           update(cache, { data }) {
-            if (data?.typographyBlockCreate != null) {
+            if (data?.imageBlockCreate != null) {
               cache.modify({
                 id: cache.identify({ __typename: 'Journey', id: journeyId }),
                 fields: {
@@ -213,18 +218,18 @@ export function BackgroundMediaImage({
           id: cardBlock.id,
           journeyId: journeyId,
           input: {
-            coverBlockId: data.id
+            coverBlockId: data.imageBlockCreate.id
           }
         },
         optimisticResponse: {
           cardBlockUpdate: {
             id: cardBlock.id,
-            coverBlockId: data.id,
+            coverBlockId: data.imageBlockCreate.id,
             __typename: 'CardBlock'
           }
         }
       }))
-    } else if (block != null) {
+    } else {
       ;({ data } = await imageBlockUpdate({
         variables: {
           id: coverBlock.id,
@@ -245,6 +250,7 @@ export function BackgroundMediaImage({
       }))
     }
   }
+  const handleChangeDebounced = debounce(handleChange, 2000)
 
   return (
     <>
@@ -314,36 +320,38 @@ export function BackgroundMediaImage({
         Not yet implemented
       </TabPanel>
       <TabPanel name="imageSrc" value={tabValue} index={1}>
-        <Box sx={{ px: 'auto' }}>
-          <Stack direction="column">
-            <TextField
-              name="src"
-              variant="filled"
-              value={imageBlock?.src}
-              onChange={handleImageChange}
-              onPaste={handlePaste}
-              data-testid="imgSrcTextField"
-              label="Paste URL of image..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LinkIcon></LinkIcon>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <CheckCircle
-                      onClick={handleImageChangeClick}
-                      style={{ cursor: 'pointer' }}
-                    ></CheckCircle>
-                  </InputAdornment>
-                )
-              }}
-            ></TextField>
-            <Typography variant="caption">
-              Make sure image address is permanent
-            </Typography>
-          </Stack>
+        <Box sx={{ p: 3 }}>
+          <Box sx={{ px: 'auto' }}>
+            <Stack direction="column">
+              <TextField
+                name="src"
+                variant="filled"
+                value={imageBlock?.src}
+                onChange={handleImageChange}
+                onPaste={handlePaste}
+                data-testid="imgSrcTextField"
+                label="Paste URL of image..."
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LinkIcon></LinkIcon>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <CheckCircle
+                        onClick={handleImageChangeClick}
+                        style={{ cursor: 'pointer' }}
+                      ></CheckCircle>
+                    </InputAdornment>
+                  )
+                }}
+              ></TextField>
+              <Typography variant="caption">
+                Make sure image address is permanent
+              </Typography>
+            </Stack>
+          </Box>
         </Box>
       </TabPanel>
     </>

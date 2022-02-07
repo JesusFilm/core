@@ -420,7 +420,7 @@ export function BackgroundMediaVideo({
             </Stack>
           </Stack>
         )}
-        {(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src == null && (
+        {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null && (
           <Stack direction="row" spacing={3}>
             <Box
               borderRadius={2}
