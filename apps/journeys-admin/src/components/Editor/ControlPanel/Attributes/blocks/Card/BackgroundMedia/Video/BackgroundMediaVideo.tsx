@@ -453,7 +453,7 @@ export function BackgroundMediaVideo({
           label="Settings"
           {...tabA11yProps('videoSettings', 1)}
           disabled={
-            (coverBlock as TreeBlock<VideoBlock>)?.videoContent.src == null
+            (coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null
           }
         ></Tab>
       </Tabs>
