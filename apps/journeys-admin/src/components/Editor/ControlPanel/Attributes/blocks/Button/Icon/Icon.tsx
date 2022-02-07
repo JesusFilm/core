@@ -6,7 +6,6 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
 import {
   IconSize,
@@ -27,6 +26,25 @@ export enum IconType {
   start = 'start',
   end = 'end'
 }
+
+// icons is equivalent to IconName from global types"
+const icons = [
+  { value: IconName.ArrowForwardRounded, label: 'ArrowForward' },
+  { value: IconName.BeenhereRounded, label: 'BeenHere' },
+  { value: IconName.ChatBubbleOutlineRounded, label: 'ChatBublle' },
+  { value: IconName.CheckCircleRounded, label: 'CheckCircle' },
+  { value: IconName.ChevronRightRounded, label: 'ChevronRight' },
+  { value: IconName.ContactSupportRounded, label: 'ContactSupport' },
+  { value: IconName.FormatQuoteRounded, label: 'FormatQuote' },
+  { value: IconName.LiveTvRounded, label: 'LiveTv' },
+  { value: IconName.LockOpenRounded, label: 'LockOpen' },
+  { value: IconName.MenuBookRounded, label: 'MenuBook' },
+  { value: IconName.PlayArrowRounded, label: 'PlayArrow' },
+  { value: IconName.RadioButtonUncheckedRounded, label: 'RadioButtonUncheked' },
+  { value: IconName.SendRounded, label: 'Send' },
+  { value: IconName.SubscriptionsRounded, label: 'Subscription' },
+  { value: IconName.TranslateRounded, label: 'Translate' }
+]
 
 export const START_ICON_UPDATE = gql`
   mutation ButtonBlockStartIconUpdate(
@@ -164,18 +182,18 @@ export function Icon({ iconType }: IconProps): ReactElement {
           inputProps={{ 'aria-label': 'icon-name-select' }}
         >
           <MenuItem value="">Select an icon...</MenuItem>
-          {Object.values(IconName).map((name) => {
+          {icons.map(({ value, label }) => {
             return (
-              <MenuItem key={`button-icon-name-${name}`} value={name}>
+              <MenuItem key={`button-icon-name-${value}`} value={value}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <CoreIcon
                     __typename={'Icon'}
-                    name={name}
+                    name={value}
                     color={null}
                     size={IconSize.md}
                   />
 
-                  <Typography sx={{ pl: 3 }}>{capitalize(name)}</Typography>
+                  <Typography sx={{ pl: 3 }}>{label}</Typography>
                 </Box>
               </MenuItem>
             )
