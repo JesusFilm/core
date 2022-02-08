@@ -21,17 +21,6 @@ describe('Button Icon selector', () => {
     action: null,
     children: []
   }
-  it('should show button button for drop down', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Icon iconType={IconType.start} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(getByText('Show Icon')).toBeInTheDocument()
-    expect(getByText('Show/Hide Icon on Button')).toBeInTheDocument()
-  })
 
   it('should open menu when an icon is selected', async () => {
     const { getByRole, getByText, queryByText } = render(
@@ -69,7 +58,7 @@ describe('Button Icon selector', () => {
     expect(queryByText('Size')).not.toBeInTheDocument()
 
     fireEvent.mouseDown(getByRole('button', { name: 'icon-name-select' }))
-    fireEvent.click(getByRole('option', { name: 'Arrowforwardrounded' }))
+    fireEvent.click(getByRole('option', { name: 'Arrow Forward' }))
 
     await waitFor(() => expect(getByText('Color')).toBeInTheDocument())
     await waitFor(() => expect(getByText('Size')).toBeInTheDocument())

@@ -29,18 +29,21 @@ export enum IconType {
 
 // icons is equivalent to IconName from global types"
 const icons = [
-  { value: IconName.ArrowForwardRounded, label: 'ArrowForward' },
-  { value: IconName.BeenhereRounded, label: 'BeenHere' },
-  { value: IconName.ChatBubbleOutlineRounded, label: 'ChatBublle' },
-  { value: IconName.CheckCircleRounded, label: 'CheckCircle' },
-  { value: IconName.ChevronRightRounded, label: 'ChevronRight' },
-  { value: IconName.ContactSupportRounded, label: 'ContactSupport' },
-  { value: IconName.FormatQuoteRounded, label: 'FormatQuote' },
-  { value: IconName.LiveTvRounded, label: 'LiveTv' },
-  { value: IconName.LockOpenRounded, label: 'LockOpen' },
-  { value: IconName.MenuBookRounded, label: 'MenuBook' },
-  { value: IconName.PlayArrowRounded, label: 'PlayArrow' },
-  { value: IconName.RadioButtonUncheckedRounded, label: 'RadioButtonUncheked' },
+  { value: IconName.ArrowForwardRounded, label: 'Arrow Forward' },
+  { value: IconName.BeenhereRounded, label: 'Been Here' },
+  { value: IconName.ChatBubbleOutlineRounded, label: 'Chat Bubblle' },
+  { value: IconName.CheckCircleRounded, label: 'Check Circle' },
+  { value: IconName.ChevronRightRounded, label: 'Chevron Right' },
+  { value: IconName.ContactSupportRounded, label: 'Contact Support' },
+  { value: IconName.FormatQuoteRounded, label: 'Format Quote' },
+  { value: IconName.LiveTvRounded, label: 'Live Tv' },
+  { value: IconName.LockOpenRounded, label: 'Lock Open' },
+  { value: IconName.MenuBookRounded, label: 'Menu Book' },
+  { value: IconName.PlayArrowRounded, label: 'Play Arrow' },
+  {
+    value: IconName.RadioButtonUncheckedRounded,
+    label: 'Radio Button Uncheked'
+  },
   { value: IconName.SendRounded, label: 'Send' },
   { value: IconName.SubscriptionsRounded, label: 'Subscription' },
   { value: IconName.TranslateRounded, label: 'Translate' }
