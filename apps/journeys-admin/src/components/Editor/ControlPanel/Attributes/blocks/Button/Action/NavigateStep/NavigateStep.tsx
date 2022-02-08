@@ -5,6 +5,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../..
 
 export function NavigateStep(): ReactElement {
   const { state } = useEditor()
+  // add go get step from store or default to selectedStep
   const [selection, setSelection] = useState(state.selectedStep)
 
   function handleSelectStep(step: TreeBlock<StepBlock>): void {

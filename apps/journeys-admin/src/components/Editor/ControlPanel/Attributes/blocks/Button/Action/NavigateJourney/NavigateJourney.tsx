@@ -1,9 +1,11 @@
 import { ReactElement, useState } from 'react'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import { gql, useQuery } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { GetJourneysNames } from '../../../../../../../../../__generated__/GetJourneysNames'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 
 const GET_JOURNEYS_NAMES = gql`
   query GetJourneysNames {
@@ -15,8 +17,18 @@ const GET_JOURNEYS_NAMES = gql`
 `
 
 export function NavigateJourney(): ReactElement {
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
+
   const { data } = useQuery<GetJourneysNames>(GET_JOURNEYS_NAMES)
-  const [journeyName, setJourneyName] = useState('')
+
+  const currentJourneyName = data?.journeys.find(
+    ({ id }) => id === selectedBlock?.id
+  )?.title
+
+  const [journeyName, setJourneyName] = useState(currentJourneyName ?? '')
   const journeysList = data?.journeys
 
   function handleChange(event: SelectChangeEvent): void {
