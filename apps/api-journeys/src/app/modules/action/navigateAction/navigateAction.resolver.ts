@@ -33,7 +33,7 @@ export class NavigateActionResolver {
         block.__typename
       )
     ) {
-      throw new UserInputError('This block does not support navigate actions.')
+      throw new UserInputError('This block does not support navigate actions')
     }
 
     return await this.blockService.update(id, {

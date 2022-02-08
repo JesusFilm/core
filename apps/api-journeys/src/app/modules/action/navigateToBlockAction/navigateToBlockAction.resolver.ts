@@ -34,7 +34,7 @@ export class NavigateToBlockActionResolver {
       )
     ) {
       throw new UserInputError(
-        'This block does not support navigate to block actions.'
+        'This block does not support navigate to block actions'
       )
     }
 

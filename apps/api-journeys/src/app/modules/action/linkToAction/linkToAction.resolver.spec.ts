@@ -66,4 +66,19 @@ describe('LinkToActionResolver', () => {
       action: { ...linkActionInput }
     })
   })
+
+  it('throws an error if typename is wrong', async () => {
+    const wrongBlock = {
+      ...block,
+      __typename: 'WrongBlock'
+    }
+    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    await resolver
+      .blockUpdateLinkAction(block._key, block.journeyId, linkActionInput)
+      .catch((error) => {
+        expect(error.message).toEqual(
+          'This block does not support link actions'
+        )
+      })
+  })
 })
