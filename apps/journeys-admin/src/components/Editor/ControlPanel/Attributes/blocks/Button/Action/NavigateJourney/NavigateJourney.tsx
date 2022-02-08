@@ -17,13 +17,10 @@ const GET_JOURNEYS_NAMES = gql`
 export function NavigateJourney(): ReactElement {
   const { data } = useQuery<GetJourneysNames>(GET_JOURNEYS_NAMES)
   const [journeyName, setJourneyName] = useState('')
-
-  // add query to get all journeys
-  // const journeysList = ['hello', 'world']
-  const journeysList = data.journeys
-  console.log(journeysList)
+  const journeysList = data?.journeys
 
   function handleChange(event: SelectChangeEvent): void {
+    // Add backend update
     setJourneyName(event.target.value)
   }
 
@@ -31,9 +28,9 @@ export function NavigateJourney(): ReactElement {
     <FormControl variant="filled" hiddenLabel>
       <Select displayEmpty onChange={handleChange} value={journeyName}>
         <MenuItem value="">Select the Journey...</MenuItem>
-        {journeysList.map((journey) => (
-          <MenuItem key={`button-navigate-journey-${journey}`} value="journey">
-            {journey}
+        {journeysList?.map(({ title }) => (
+          <MenuItem key={`button-navigate-journey-${title}`} value={title}>
+            {title}
           </MenuItem>
         ))}
       </Select>
