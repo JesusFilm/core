@@ -14,17 +14,16 @@ export function NavigateNext(): ReactElement {
 
   return (
     <>
-      {nextStep != null ? (
-        <Box
-          sx={{
-            display: 'absolute',
-            backgroundColor: 'white',
-            opacity: '40%'
-          }}
-        >
-          <CardPreview selected={nextStep} steps={state.steps} />
-        </Box>
-      ) : (
+      <Box
+        sx={{
+          display: 'absolute',
+          backgroundColor: 'white',
+          opacity: '40%'
+        }}
+      >
+        <CardPreview selected={nextStep} steps={state.steps} />
+      </Box>
+      {nextStep == null && (
         <Typography variant="caption">No next step</Typography>
       )}
     </>
