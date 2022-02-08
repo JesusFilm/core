@@ -101,7 +101,7 @@ export function Icon({ iconType }: IconProps): ReactElement {
     setName(iconName != null ? iconName : '')
   }, [iconName])
 
-  async function updateIcon(name: string, type: IconType): Promise<void> {
+  async function updateIcon(name: IconName, type: IconType): Promise<void> {
     if (selectedBlock != null) {
       if (type === IconType.start) {
         await buttonBlockStartIconUpdate({
@@ -110,7 +110,17 @@ export function Icon({ iconType }: IconProps): ReactElement {
             journeyId: journey.id,
             input: {
               startIcon: {
-                name: name
+                name
+              }
+            }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              startIcon: {
+                __typename: 'Icon',
+                name
               }
             }
           }
@@ -122,7 +132,17 @@ export function Icon({ iconType }: IconProps): ReactElement {
             journeyId: journey.id,
             input: {
               endIcon: {
-                name: name
+                name
+              }
+            }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              endIcon: {
+                __typename: 'Icon',
+                name
               }
             }
           }
@@ -141,6 +161,13 @@ export function Icon({ iconType }: IconProps): ReactElement {
             input: {
               startIcon: null
             }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              startIcon: null
+            }
           }
         })
       } else {
@@ -151,6 +178,13 @@ export function Icon({ iconType }: IconProps): ReactElement {
             input: {
               endIcon: null
             }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              endIcon: null
+            }
           }
         })
       }
@@ -158,14 +192,14 @@ export function Icon({ iconType }: IconProps): ReactElement {
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    const newName = event.target.value
-    if (newName === '') {
+    const newName = event.target.value as IconName
+    if (event.target.value === '') {
       await removeIcon(iconType)
     } else if (newName !== name) {
       await updateIcon(newName, iconType)
     }
     setName(newName)
-    setShowProps(newName !== '')
+    setShowProps(event.target.value !== '')
   }
 
   return (
