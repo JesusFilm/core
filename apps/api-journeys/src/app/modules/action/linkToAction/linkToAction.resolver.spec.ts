@@ -35,6 +35,7 @@ describe('LinkToActionResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
+        get: jest.fn().mockResolvedValue(block),
         update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
       })
     }
