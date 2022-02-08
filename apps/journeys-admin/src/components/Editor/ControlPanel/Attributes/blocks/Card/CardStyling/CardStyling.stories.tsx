@@ -13,6 +13,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
+import { Drawer } from '../../../../../Drawer'
 import { CardStyling } from '.'
 
 const CardStylingStory = {
@@ -21,7 +22,11 @@ const CardStylingStory = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardStyling',
   parameters: {
     ...simpleComponentConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      viewports: [360, 600]
+    }
   }
 }
 
@@ -59,8 +64,15 @@ export const Default: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <CardStyling />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <CardStyling />,
+            drawerTitle: 'Card Style Property',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
@@ -84,8 +96,15 @@ export const Light: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <CardStyling />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <CardStyling />,
+            drawerTitle: 'Card Style Property',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
@@ -109,8 +128,15 @@ export const Dark: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <CardStyling />
+        <EditorProvider
+          initialState={{
+            selectedBlock: block,
+            drawerChildren: <CardStyling />,
+            drawerTitle: 'Card Style Property',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>

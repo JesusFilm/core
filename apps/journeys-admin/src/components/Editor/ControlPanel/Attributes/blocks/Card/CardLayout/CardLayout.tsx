@@ -95,7 +95,7 @@ export function CardLayout(): ReactElement {
           id={cardBlock?.fullscreen.toString()}
         >
           <Box
-            sx={{ display: 'flex', py: 1, px: 1 }}
+            sx={{ display: 'flex' }}
             id="false"
             key="false"
             data-testid="false"
@@ -107,12 +107,7 @@ export function CardLayout(): ReactElement {
               height={137}
             />
           </Box>
-          <Box
-            sx={{ display: 'flex', py: 1, px: 1 }}
-            id="true"
-            key="true"
-            data-testid="true"
-          >
+          <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
             <Image
               src={cardLayoutExpanded}
               alt="Expanded"

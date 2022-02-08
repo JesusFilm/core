@@ -16,15 +16,14 @@ describe('HorizontalSelect', () => {
   })
 
   it('should show border around selected', () => {
-    const onChange = jest.fn()
     const { getByText } = render(
-      <HorizontalSelect onChange={onChange} id="step1.id">
+      <HorizontalSelect onChange={jest.fn()} id="step1.id">
         <Box id="step1.id">Option 1</Box>
         <Box id="step2.id">Option 2</Box>
       </HorizontalSelect>
     )
     expect(getByText('Option 1').parentElement).toHaveStyle(
-      'border: 3px solid #1976d2'
+      'outline: 2px solid #1976d2'
     )
   })
 })
