@@ -135,8 +135,8 @@ describe('NavigateToJourneyActionResolver', () => {
     service.get = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateNavigateToJourneyAction(
-        block._key,
-        block.journeyId,
+        wrongBlock._key,
+        wrongBlock.journeyId,
         navigateToJourneyInput
       )
       .catch((error) => {

@@ -74,7 +74,11 @@ describe('LinkToActionResolver', () => {
     }
     service.get = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
-      .blockUpdateLinkAction(block._key, block.journeyId, linkActionInput)
+      .blockUpdateLinkAction(
+        wrongBlock._key,
+        wrongBlock.journeyId,
+        linkActionInput
+      )
       .catch((error) => {
         expect(error.message).toEqual(
           'This block does not support link actions'
