@@ -6,7 +6,6 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-import capitalize from 'lodash/capitalize'
 import { gql, useMutation } from '@apollo/client'
 import {
   IconSize,
@@ -27,6 +26,25 @@ export enum IconType {
   start = 'start',
   end = 'end'
 }
+
+// icons is equivalent to IconName from global types"
+const icons = [
+  { value: IconName.ArrowForwardRounded, label: 'ArrowForward' },
+  { value: IconName.BeenhereRounded, label: 'BeenHere' },
+  { value: IconName.ChatBubbleOutlineRounded, label: 'ChatBublle' },
+  { value: IconName.CheckCircleRounded, label: 'CheckCircle' },
+  { value: IconName.ChevronRightRounded, label: 'ChevronRight' },
+  { value: IconName.ContactSupportRounded, label: 'ContactSupport' },
+  { value: IconName.FormatQuoteRounded, label: 'FormatQuote' },
+  { value: IconName.LiveTvRounded, label: 'LiveTv' },
+  { value: IconName.LockOpenRounded, label: 'LockOpen' },
+  { value: IconName.MenuBookRounded, label: 'MenuBook' },
+  { value: IconName.PlayArrowRounded, label: 'PlayArrow' },
+  { value: IconName.RadioButtonUncheckedRounded, label: 'RadioButtonUncheked' },
+  { value: IconName.SendRounded, label: 'Send' },
+  { value: IconName.SubscriptionsRounded, label: 'Subscription' },
+  { value: IconName.TranslateRounded, label: 'Translate' }
+]
 
 export const START_ICON_UPDATE = gql`
   mutation ButtonBlockStartIconUpdate(
@@ -83,7 +101,7 @@ export function Icon({ iconType }: IconProps): ReactElement {
     setName(iconName != null ? iconName : '')
   }, [iconName])
 
-  async function updateIcon(name: string, type: IconType): Promise<void> {
+  async function updateIcon(name: IconName, type: IconType): Promise<void> {
     if (selectedBlock != null) {
       if (type === IconType.start) {
         await buttonBlockStartIconUpdate({
@@ -92,7 +110,17 @@ export function Icon({ iconType }: IconProps): ReactElement {
             journeyId: journey.id,
             input: {
               startIcon: {
-                name: name
+                name
+              }
+            }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              startIcon: {
+                __typename: 'Icon',
+                name
               }
             }
           }
@@ -104,7 +132,17 @@ export function Icon({ iconType }: IconProps): ReactElement {
             journeyId: journey.id,
             input: {
               endIcon: {
-                name: name
+                name
+              }
+            }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              endIcon: {
+                __typename: 'Icon',
+                name
               }
             }
           }
@@ -123,6 +161,13 @@ export function Icon({ iconType }: IconProps): ReactElement {
             input: {
               startIcon: null
             }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              startIcon: null
+            }
           }
         })
       } else {
@@ -133,6 +178,13 @@ export function Icon({ iconType }: IconProps): ReactElement {
             input: {
               endIcon: null
             }
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'ButtonBlock',
+              endIcon: null
+            }
           }
         })
       }
@@ -140,24 +192,19 @@ export function Icon({ iconType }: IconProps): ReactElement {
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    const newName = event.target.value
-    if (newName === '') {
+    const newName = event.target.value as IconName
+    if (event.target.value === '') {
       await removeIcon(iconType)
     } else if (newName !== name) {
       await updateIcon(newName, iconType)
     }
     setName(newName)
-    setShowProps(newName !== '')
+    setShowProps(event.target.value !== '')
   }
 
   return (
     <>
-      <Box sx={{ display: 'flex', pt: 4, px: 6, flexDirection: 'column' }}>
-        <Typography variant="subtitle2">Show Icon</Typography>
-        <Typography variant="caption">Show/Hide Icon on Button</Typography>
-      </Box>
-
-      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 9, px: 6 }}>
+      <FormControl fullWidth hiddenLabel sx={{ pt: 4, pb: 6, px: 6 }}>
         <Select
           labelId="icon-name-select"
           id="icon-name-select"
@@ -169,18 +216,18 @@ export function Icon({ iconType }: IconProps): ReactElement {
           inputProps={{ 'aria-label': 'icon-name-select' }}
         >
           <MenuItem value="">Select an icon...</MenuItem>
-          {Object.values(IconName).map((name) => {
+          {icons.map(({ value, label }) => {
             return (
-              <MenuItem key={`button-icon-name-${name}`} value={name}>
+              <MenuItem key={`button-icon-name-${value}`} value={value}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <CoreIcon
                     __typename={'Icon'}
-                    name={name}
+                    name={value}
                     color={null}
                     size={IconSize.md}
                   />
 
-                  <Typography sx={{ pl: 3 }}>{capitalize(name)}</Typography>
+                  <Typography sx={{ pl: 3 }}>{label}</Typography>
                 </Box>
               </MenuItem>
             )
