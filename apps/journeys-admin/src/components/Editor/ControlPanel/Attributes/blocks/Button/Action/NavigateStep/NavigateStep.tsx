@@ -1,12 +1,25 @@
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { ReactElement, useState } from 'react'
 import { CardPreview } from '../../../../../../../CardPreview'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
+} from '../../../../../../../../../__generated__/GetJourney'
 
 export function NavigateStep(): ReactElement {
   const { state } = useEditor()
-  // add go get step from store or default to selectedStep
-  const [selection, setSelection] = useState(state.selectedStep)
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
+
+  const currentActionStep =
+    state.steps.find(
+      ({ id }) =>
+        selectedBlock?.action?.__typename === 'NavigateToBlockAction' &&
+        id === selectedBlock?.action?.blockId
+    ) ?? undefined
+
+  const [selection, setSelection] = useState(currentActionStep)
 
   function handleSelectStep(step: TreeBlock<StepBlock>): void {
     // update mutation to set action to navigate to next step

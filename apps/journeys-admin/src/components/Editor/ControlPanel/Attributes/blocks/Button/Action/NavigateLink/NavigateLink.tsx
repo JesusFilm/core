@@ -1,9 +1,20 @@
 import { ReactElement, useState, ChangeEvent } from 'react'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import TextField from '@mui/material/TextField'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 
 export function NavigateLink(): ReactElement {
-  // get default value from store or nothing
-  const [link, setLink] = useState('')
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
+
+  const currentActionLink =
+    selectedBlock?.action?.__typename === 'LinkAction'
+      ? selectedBlock?.action?.url
+      : ''
+
+  const [link, setLink] = useState(currentActionLink)
 
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
     setLink(event.target.value)

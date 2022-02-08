@@ -24,11 +24,10 @@ export function NavigateJourney(): ReactElement {
 
   const { data } = useQuery<GetJourneysNames>(GET_JOURNEYS_NAMES)
 
-  const currentJourneyName = data?.journeys.find(
-    ({ id }) => id === selectedBlock?.id
-  )?.title
+  const currentActionTitle =
+    data?.journeys.find(({ id }) => id === selectedBlock?.id)?.title ?? ''
 
-  const [journeyName, setJourneyName] = useState(currentJourneyName ?? '')
+  const [journeyName, setJourneyName] = useState(currentActionTitle)
   const journeysList = data?.journeys
 
   function handleChange(event: SelectChangeEvent): void {
