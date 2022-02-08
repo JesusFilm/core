@@ -52,11 +52,6 @@ export function Color(): ReactElement {
 
   const options = [
     {
-      value: ButtonColor.inherit,
-      label: 'Default',
-      icon: <ColorDisplayIcon color={ButtonColor.inherit} />
-    },
-    {
       value: ButtonColor.primary,
       label: 'Primary',
       icon: <ColorDisplayIcon color={ButtonColor.primary} />
