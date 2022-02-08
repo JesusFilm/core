@@ -59,12 +59,14 @@ describe('Card', () => {
         children: []
       }
       const { getByText } = render(
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <Card {...card} />
-          </EditorProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider>
+              <Drawer />
+              <Card {...card} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       fireEvent.click(getByText('#00FFCC'))
       expect(getByText('Background Color Properties')).toBeInTheDocument()

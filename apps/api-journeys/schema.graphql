@@ -87,6 +87,26 @@ type LinkAction implements Action {
   target: String
 }
 
+input NavigateActionInput {
+  gtmEventName: String
+}
+
+input NavigateToBlockActionInput {
+  gtmEventName: String
+  blockId: String!
+}
+
+input NavigateToJourneyActionInput {
+  gtmEventName: String
+  journeyId: String!
+}
+
+input LinkActionInput {
+  gtmEventName: String
+  url: String!
+  target: String
+}
+
 interface Block {
   id: ID!
   journeyId: ID!
@@ -659,6 +679,10 @@ enum UserJourneyRole {
 }
 
 extend type Mutation {
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): Block!
+  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): Block!
+  blockUpdateNavigateToJourneyActionInput(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
+  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
