@@ -1,4 +1,4 @@
-import { ReactElement, useState, ChangeEvent, ClipboardEvent } from 'react'
+import { ReactElement, useState, ChangeEvent } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
@@ -108,7 +108,6 @@ export function BackgroundMediaVideo({
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
-  console.log(coverBlock)
 
   const [tabValue, setTabValue] = useState(0)
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundVideoUpdate>(
@@ -185,10 +184,6 @@ export function BackgroundMediaVideo({
     await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
-  const handleVideoChangeClick = async (): Promise<void> => {
-    await handleChange(videoBlock as TreeBlock<VideoBlock>)
-  }
-
   const handleVideoDelete = async (): Promise<void> => {
     setImageBlock(null)
     setVideoBlock(null)
@@ -202,16 +197,6 @@ export function BackgroundMediaVideo({
     const block = {
       ...videoBlock,
       [event.target.name]: event.target.checked
-    }
-    await handleChange(block as TreeBlock<VideoBlock>)
-  }
-
-  const handlePaste = async (
-    event: ClipboardEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const block = {
-      ...videoBlock,
-      videoContent: { src: event.clipboardData.getData('text') }
     }
     await handleChange(block as TreeBlock<VideoBlock>)
   }
@@ -463,7 +448,6 @@ export function BackgroundMediaVideo({
             variant="filled"
             value={videoBlock?.videoContent.src ?? ''}
             onChange={handleVideoSrcChange}
-            onPaste={handlePaste}
             data-testid="videoSrcTextField"
             label="Paste URL of video..."
             InputProps={{
@@ -474,10 +458,7 @@ export function BackgroundMediaVideo({
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <CheckCircle
-                    onClick={handleVideoChangeClick}
-                    style={{ cursor: 'pointer' }}
-                  ></CheckCircle>
+                  <CheckCircle style={{ cursor: 'pointer' }}></CheckCircle>
                 </InputAdornment>
               )
             }}

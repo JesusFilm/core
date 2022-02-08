@@ -1,14 +1,7 @@
-import { ReactElement, useState, ChangeEvent, ClipboardEvent } from 'react'
+import { ReactElement, useState, ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
-import {
-  InputAdornment,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Typography
-} from '@mui/material'
+import { InputAdornment, Stack, TextField, Typography } from '@mui/material'
 import {
   CheckCircle,
   DeleteOutline,
@@ -17,7 +10,6 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { debounce } from 'lodash'
 
 import {
@@ -87,9 +79,6 @@ export function BackgroundMediaImage({
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
-  const [tabValue, setTabValue] = useState(
-    (coverBlock as TreeBlock<ImageBlock>)?.src == null ? 0 : 1
-  )
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
     CARD_BLOCK_COVER_IMAGE_UPDATE
   )
@@ -107,10 +96,6 @@ export function BackgroundMediaImage({
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
   )
 
-  const handleTabChange = (event, newValue): void => {
-    setTabValue(newValue)
-  }
-
   const handleImageChange = async (
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
@@ -122,22 +107,8 @@ export function BackgroundMediaImage({
     await handleChangeDebounced(block as TreeBlock<ImageBlock>)
   }
 
-  const handleImageChangeClick = async (): Promise<void> => {
-    await handleChange(imageBlock as ImageBlock)
-  }
-
   const handleImageDelete = async (): Promise<void> => {
     await deleteCoverBlock()
-  }
-
-  const handlePaste = async (
-    event: ClipboardEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const block = {
-      ...imageBlock,
-      src: event.clipboardData.getData('text')
-    }
-    await handleChange(block as ImageBlock)
   }
 
   const deleteCoverBlock = async (): Promise<void> => {
@@ -250,13 +221,18 @@ export function BackgroundMediaImage({
       }))
     }
   }
-  const handleChangeDebounced = debounce(handleChange, 2000)
+  const handleChangeDebounced = debounce(handleChange, 1000)
 
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
         {imageBlock?.src != null && (
-          <Stack direction="row" spacing="3" justifyContent="space-between">
+          <Stack
+            direction="row"
+            spacing="3"
+            justifyContent="space-between"
+            data-testid="imageSrcStack"
+          >
             <div
               style={{
                 overflow: 'hidden',
@@ -295,7 +271,12 @@ export function BackgroundMediaImage({
           </Stack>
         )}
         {imageBlock?.src == null && (
-          <Stack direction="row" spacing="3" justifyContent="center">
+          <Stack
+            direction="row"
+            spacing="3"
+            justifyContent="center"
+            data-testid="imagePlaceholderStack"
+          >
             <Box sx={{ width: 55, height: 55 }}>
               <ImageIcon></ImageIcon>
             </Box>
@@ -306,54 +287,37 @@ export function BackgroundMediaImage({
           </Stack>
         )}
       </Box>
-      <Tabs
-        value={tabValue}
-        onChange={handleTabChange}
-        aria-label="background tabs"
-        variant="fullWidth"
-        centered
-      >
-        <Tab label="Upload" {...tabA11yProps('imageUpload', 0)}></Tab>
-        <Tab label="By URL" {...tabA11yProps('imageSrc', 1)}></Tab>
-      </Tabs>
-      <TabPanel name="imageUpload" value={tabValue} index={0}>
-        Not yet implemented
-      </TabPanel>
-      <TabPanel name="imageSrc" value={tabValue} index={1}>
-        <Box sx={{ p: 3 }}>
-          <Box sx={{ px: 'auto' }}>
-            <Stack direction="column">
-              <TextField
-                name="src"
-                variant="filled"
-                value={imageBlock?.src}
-                onChange={handleImageChange}
-                onPaste={handlePaste}
-                data-testid="imgSrcTextField"
-                label="Paste URL of image..."
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LinkIcon></LinkIcon>
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <CheckCircle
-                        onClick={handleImageChangeClick}
-                        style={{ cursor: 'pointer' }}
-                      ></CheckCircle>
-                    </InputAdornment>
-                  )
-                }}
-              ></TextField>
-              <Typography variant="caption">
-                Make sure image address is permanent
-              </Typography>
-            </Stack>
-          </Box>
+
+      <Box sx={{ p: 3 }}>
+        <Box sx={{ px: 'auto' }}>
+          <Stack direction="column">
+            <TextField
+              id="imageSrc"
+              name="src"
+              variant="filled"
+              value={imageBlock?.src}
+              onChange={handleImageChange}
+              data-testid="imgSrcTextField"
+              label="Paste URL of image..."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LinkIcon></LinkIcon>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <CheckCircle style={{ cursor: 'pointer' }}></CheckCircle>
+                  </InputAdornment>
+                )
+              }}
+            ></TextField>
+            <Typography variant="caption">
+              Make sure image address is permanent
+            </Typography>
+          </Stack>
         </Box>
-      </TabPanel>
+      </Box>
     </>
   )
 }
