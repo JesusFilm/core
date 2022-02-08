@@ -147,7 +147,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 >
                   {activeBlock?.id === block.id ||
                   previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
-                    <BlockRenderer {...block} />
+                    <BlockRenderer block={block} />
                   ) : (
                     <CardWrapper
                       id={block.id}

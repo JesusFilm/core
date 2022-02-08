@@ -1,13 +1,17 @@
 import { ReactElement } from 'react'
 import { TreeBlock } from '../..'
-import { BlockRenderer } from '../BlockRenderer'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { StepFields } from './__generated__/StepFields'
 
-export function Step({ children }: TreeBlock<StepFields>): ReactElement {
+interface StepProps extends TreeBlock<StepFields> {
+  wrappers?: WrappersProps
+}
+
+export function Step({ children, wrappers }: StepProps): ReactElement {
   return (
     <>
       {children.map((block) => (
-        <BlockRenderer {...block} key={block.id} />
+        <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}
     </>
   )

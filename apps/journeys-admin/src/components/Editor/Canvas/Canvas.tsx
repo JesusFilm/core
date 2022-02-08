@@ -128,7 +128,7 @@ export function Canvas(): ReactElement {
                   themeMode={ThemeMode.light}
                 >
                   <Box sx={{ p: 1, height: '100%' }}>
-                    <BlockRenderer {...step} />
+                    <BlockRenderer block={step} />
                   </Box>
                 </ThemeProvider>
               </FramePortal>
