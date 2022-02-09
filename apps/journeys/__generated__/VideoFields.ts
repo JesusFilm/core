@@ -34,5 +34,6 @@ export interface VideoFields {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
+  fullsize: boolean | null;
   videoContent: VideoFields_videoContent;
 }

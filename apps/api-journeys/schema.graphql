@@ -481,6 +481,7 @@ type VideoBlock implements Block {
   as the video poster. PosterBlock should be of type ImageBlock.
   """
   posterBlockId: ID
+  fullsize: Boolean
 }
 
 input VideoContentInput {
@@ -511,6 +512,7 @@ input VideoBlockCreateInput {
   as the video poster. PosterBlock should be of type ImageBlock.
   """
   posterBlockId: ID
+  fullsize: Boolean
 }
 
 input VideoBlockUpdateInput {
@@ -533,6 +535,7 @@ input VideoBlockUpdateInput {
   as the video poster. PosterBlock should be of type ImageBlock.
   """
   posterBlockId: ID
+  fullsize: Boolean
 }
 
 """

@@ -637,6 +637,7 @@ type VideoBlock implements Block {
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  fullsize: Boolean
   id: ID!
   journeyId: ID!
   muted: Boolean
@@ -662,6 +663,7 @@ input VideoBlockCreateInput {
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  fullsize: Boolean
   id: ID
   journeyId: ID!
   muted: Boolean
@@ -686,6 +688,7 @@ input VideoBlockUpdateInput {
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
+  fullsize: Boolean
   muted: Boolean
   parentBlockId: ID
 

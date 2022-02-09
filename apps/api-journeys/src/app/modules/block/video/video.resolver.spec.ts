@@ -24,7 +24,8 @@ describe('VideoBlockResolver', () => {
       src: ''
     },
     title: 'title',
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    fullsize: null
   }
 
   const blockUpdate = {
@@ -37,7 +38,8 @@ describe('VideoBlockResolver', () => {
       languageId: '529'
     },
     title: 'title',
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    fullsize: null
   }
 
   const blockCreateResponse = {
@@ -50,7 +52,8 @@ describe('VideoBlockResolver', () => {
       languageId: '529'
     },
     title: 'title',
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    fullsize: null
   }
 
   const blockResponse1 = {
@@ -65,7 +68,8 @@ describe('VideoBlockResolver', () => {
       src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     title: 'title',
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    fullsize: null
   }
 
   const block2 = {
@@ -78,7 +82,8 @@ describe('VideoBlockResolver', () => {
       src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     title: 'title',
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    fullsize: null
   }
 
   const blockResponse2 = {
@@ -91,7 +96,8 @@ describe('VideoBlockResolver', () => {
       src: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
     title: 'title',
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    fullsize: null
   }
 
   describe('VideoBlock Arclight', () => {

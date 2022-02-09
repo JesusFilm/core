@@ -71,6 +71,7 @@ export function Card({
             flexGrow: 1,
             overflow: 'auto',
             display: 'flex',
+            position: 'relative',
             backdropFilter: coverBlock != null ? 'blur(54px)' : undefined,
             backgroundColor: (theme) =>
               coverBlock != null

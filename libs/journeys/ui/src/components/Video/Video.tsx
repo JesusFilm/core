@@ -4,7 +4,6 @@ import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, useEditor, ActiveTab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -16,7 +15,6 @@ import { VideoFields } from './__generated__/VideoFields'
 export const VIDEO_RESPONSE_CREATE = gql`
   mutation VideoResponseCreate($input: VideoResponseCreateInput!) {
     videoResponseCreate(input: $input) {
-      id
       state
       position
     }
@@ -34,7 +32,7 @@ export function Video({
   startAt,
   muted,
   posterBlockId,
-  uuid = uuidv4,
+  fullsize,
   children,
   ...props
 }: VideoProps): ReactElement {
@@ -55,13 +53,11 @@ export function Video({
 
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
-      const id = uuid()
       const position = videoPosition != null ? Math.floor(videoPosition) : 0
 
       void videoResponseCreate({
         variables: {
           input: {
-            id,
             blockId,
             state: videoState,
             position
@@ -69,7 +65,6 @@ export function Video({
         },
         optimisticResponse: {
           videoResponseCreate: {
-            id,
             __typename: 'VideoResponse',
             state: videoState,
             position
@@ -77,7 +72,7 @@ export function Video({
         }
       })
     },
-    [blockId, uuid, videoResponseCreate]
+    [blockId, videoResponseCreate]
   )
 
   useEffect(() => {
@@ -153,6 +148,7 @@ export function Video({
         muted,
         posterBlockId,
         children,
+        fullsize,
         ...props
       }
 
@@ -178,11 +174,16 @@ export function Video({
             backgroundColor: '#000000',
             borderRadius: 4,
             overflow: 'hidden',
+            position: fullsize === true ? 'absolute' : null,
+            top: fullsize === true ? 0 : null,
+            right: fullsize === true ? 0 : null,
+            bottom: fullsize === true ? 0 : null,
+            left: fullsize === true ? 0 : null,
             m: 0,
             outline:
               selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
             outlineOffset: '5px',
-            '> div': {
+            '> .video-js': {
               width: '100%'
             }
           }}
