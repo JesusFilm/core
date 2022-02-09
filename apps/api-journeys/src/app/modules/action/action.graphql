@@ -57,7 +57,7 @@ extend type Mutation {
     journeyId: ID!
     input: NavigateToBlockActionInput!
   ): Block!
-  blockUpdateNavigateToJourneyActionInput(
+  blockUpdateNavigateToJourneyAction(
     id: ID!
     journeyId: ID!
     input: NavigateToJourneyActionInput!
