@@ -74,7 +74,6 @@ export function NavigateJourney(): ReactElement {
     const linkJourney = data?.journeys.find(
       ({ title }) => title === event.target.value
     )
-    console.log(event)
     if (selectedBlock != null && linkJourney != null) {
       await navigateToJourneyActionUpdate({
         variables: {
