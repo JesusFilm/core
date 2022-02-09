@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import {
   Button,
   Card,
@@ -55,22 +55,24 @@ interface BlockRenderProps {
   wrappers?: WrappersProps
 }
 
+const DefaultWrapper: WrapperFn = ({ children }) => <>{children}</>
+
 export function BlockRenderer({
   block,
   wrappers
 }: BlockRenderProps): ReactElement {
-  const Wrapper = wrappers?.Wrapper ?? Fragment
-  const ButtonWrapper = wrappers?.ButtonWrapper ?? Fragment
-  const CardWrapper = wrappers?.CardWrapper ?? Fragment
-  const GridItemWrapper = wrappers?.GridItemWrapper ?? Fragment
-  const GridContainerWrapper = wrappers?.GridContainerWrapper ?? Fragment
-  const ImageWrapper = wrappers?.ImageWrapper ?? Fragment
-  const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? Fragment
-  const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? Fragment
-  const SignUpWrapper = wrappers?.SignUpWrapper ?? Fragment
-  const StepWrapper = wrappers?.StepWrapper ?? Fragment
-  const TypographyWrapper = wrappers?.TypographyWrapper ?? Fragment
-  const VideoWrapper = wrappers?.VideoWrapper ?? Fragment
+  const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
+  const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
+  const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
+  const GridItemWrapper = wrappers?.GridItemWrapper ?? DefaultWrapper
+  const GridContainerWrapper = wrappers?.GridContainerWrapper ?? DefaultWrapper
+  const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
+  const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
+  const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
+  const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper
+  const StepWrapper = wrappers?.StepWrapper ?? DefaultWrapper
+  const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
+  const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
 
   switch (block.__typename) {
     case 'ButtonBlock':
