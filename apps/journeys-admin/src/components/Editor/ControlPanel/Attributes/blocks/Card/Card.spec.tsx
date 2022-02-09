@@ -133,6 +133,7 @@ describe('Card', () => {
             autoplay: true,
             startAt: null,
             endAt: null,
+            fullsize: null,
             children: []
           }
         ]
@@ -169,6 +170,7 @@ describe('Card', () => {
             autoplay: true,
             startAt: null,
             endAt: null,
+            fullsize: null,
             children: []
           }
         ]
