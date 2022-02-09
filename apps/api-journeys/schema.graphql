@@ -673,7 +673,7 @@ enum UserJourneyRole {
 extend type Mutation {
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): Block!
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): Block!
-  blockUpdateNavigateToJourneyActionInput(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
+  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
