@@ -181,6 +181,11 @@ export interface NavigateActionInput {
   gtmEventName?: string | null;
 }
 
+export interface NavigateToBlockActionInput {
+  blockId: string;
+  gtmEventName?: string | null;
+}
+
 export interface NavigateToJourneyActionInput {
   gtmEventName?: string | null;
   journeyId: string;
