@@ -24,7 +24,7 @@ export function NavigateNext(): ReactElement {
         <CardPreview selected={nextStep} steps={state.steps} />
       </Box>
       {nextStep == null && (
-        <Typography variant="caption">No next step</Typography>
+        <Typography variant="caption">No next card</Typography>
       )}
     </>
   )
