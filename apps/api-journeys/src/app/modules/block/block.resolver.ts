@@ -74,7 +74,7 @@ export class BlockResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  async blockRemove(
+  async blockDelete(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<Block[]> {

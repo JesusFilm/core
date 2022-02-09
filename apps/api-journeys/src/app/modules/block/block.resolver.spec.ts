@@ -69,9 +69,9 @@ describe('BlockResolver', () => {
     service = await module.resolve(BlockService)
   })
 
-  describe('blockRemove', () => {
+  describe('blockDelete', () => {
     it('removes the block and its children', async () => {
-      const data = await resolver.blockRemove('image1', '2')
+      const data = await resolver.blockDelete('image1', '2')
 
       expect(service.removeBlockAndChildren).toBeCalledTimes(1)
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith('image1')

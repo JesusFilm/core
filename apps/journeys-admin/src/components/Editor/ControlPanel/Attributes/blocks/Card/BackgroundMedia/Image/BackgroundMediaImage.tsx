@@ -1,4 +1,11 @@
-import { ReactElement, useState, ChangeEvent } from 'react'
+import {
+  ReactElement,
+  useState,
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef
+} from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import { InputAdornment, Stack, TextField, Typography } from '@mui/material'
@@ -21,11 +28,11 @@ import { useJourney } from '../../../../../../../../libs/context'
 import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundImageUpdate'
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
-import { BlockRemoveForBackgroundImage } from '../../../../../../../../../__generated__/BlockRemoveForBackgroundImage'
+import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
 
-export const BLOCK_REMOVE_FOR_BACKGROUND_IMAGE = gql`
-  mutation BlockRemoveForBackgroundImage($id: ID!, $journeyId: ID!) {
-    blockRemove(id: $id, journeyId: $journeyId) {
+export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
+  mutation BlockDeleteForBackgroundImage($id: ID!, $journeyId: ID!) {
+    blockDelete(id: $id, journeyId: $journeyId) {
       id
     }
   }
@@ -69,10 +76,12 @@ export const CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE = gql`
 `
 interface BackgroundMediaImageProps {
   cardBlock: TreeBlock<CardBlock>
+  debounceTime?: number
 }
 
 export function BackgroundMediaImage({
-  cardBlock
+  cardBlock,
+  debounceTime = 1000
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
@@ -88,8 +97,8 @@ export function BackgroundMediaImage({
   const [imageBlockUpdate] = useMutation<CardBlockImageBlockUpdate>(
     CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
   )
-  const [blockRemove] = useMutation<BlockRemoveForBackgroundImage>(
-    BLOCK_REMOVE_FOR_BACKGROUND_IMAGE
+  const [blockRemove] = useMutation<BlockDeleteForBackgroundImage>(
+    BLOCK_DELETE_FOR_BACKGROUND_IMAGE
   )
   const { id: journeyId } = useJourney()
   const [imageBlock, setImageBlock] = useState(
@@ -101,10 +110,10 @@ export function BackgroundMediaImage({
   ): Promise<void> => {
     const block = {
       ...imageBlock,
-      [event.target.name]: event.target.value
+      src: event.target.value,
+      alt: event.target.value // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     setImageBlock(block as TreeBlock<ImageBlock>)
-    await handleChangeDebounced(block as TreeBlock<ImageBlock>)
   }
 
   const handleImageDelete = async (): Promise<void> => {
@@ -118,7 +127,7 @@ export function BackgroundMediaImage({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        data?.blockRemove.forEach((block) => {
+        data?.blockDelete.forEach((block) => {
           cache.evict({ id: block.id })
         })
         cache.gc()
@@ -152,15 +161,14 @@ export function BackgroundMediaImage({
       // remove existing cover block if type changed
       await deleteCoverBlock()
     }
-    let data
     if (coverBlock == null || blockTypeChanged) {
-      ;({ data } = await imageBlockCreate({
+      const { data } = await imageBlockCreate({
         variables: {
           input: {
             journeyId: journeyId,
             parentBlockId: cardBlock.id,
             src: block.src,
-            alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
+            alt: block.alt
           },
           update(cache, { data }) {
             if (data?.imageBlockCreate != null) {
@@ -183,8 +191,8 @@ export function BackgroundMediaImage({
             }
           }
         }
-      }))
-      ;({ data } = await cardBlockUpdate({
+      })
+      await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
           journeyId: journeyId,
@@ -199,15 +207,15 @@ export function BackgroundMediaImage({
             __typename: 'CardBlock'
           }
         }
-      }))
+      })
     } else {
-      ;({ data } = await imageBlockUpdate({
+      await imageBlockUpdate({
         variables: {
           id: coverBlock.id,
           journeyId: journeyId,
           input: {
             src: block.src,
-            alt: block.src // per Vlad 26/1/22, we are hardcoding the image alt for now
+            alt: block.alt
           }
         },
         optimisticResponse: {
@@ -215,13 +223,27 @@ export function BackgroundMediaImage({
             id: cardBlock.id,
             __typename: 'ImageBlock',
             src: block.src,
-            alt: block.src ?? '' // per Vlad 26/1/22, we are hardcoding the image alt for now
+            alt: block.alt
           }
         }
-      }))
+      })
     }
   }
-  const handleChangeDebounced = debounce(handleChange, 1000)
+  const handleChangeDebounced = useCallback(
+    debounce(handleChange, debounceTime),
+    []
+  )
+
+  const firstUpdate = useRef(true)
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false
+      return
+    }
+    // only way to call async inside useEffect
+    // eslint-disable-next-line
+    handleChangeDebounced(imageBlock as ImageBlock)
+  }, [imageBlock, handleChangeDebounced])
 
   return (
     <>

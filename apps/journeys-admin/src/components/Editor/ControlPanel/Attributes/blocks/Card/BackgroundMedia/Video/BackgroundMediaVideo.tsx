@@ -1,4 +1,11 @@
-import { ReactElement, useState, ChangeEvent } from 'react'
+import {
+  ReactElement,
+  useState,
+  ChangeEvent,
+  useEffect,
+  useCallback,
+  useRef
+} from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
@@ -33,14 +40,14 @@ import {
 } from '../../../../../../../../../__generated__/GetJourney'
 import { useJourney } from '../../../../../../../../libs/context'
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
-import { BlockRemoveForBackgroundVideo } from '../../../../../../../../../__generated__/BlockRemoveForBackgroundVideo'
+import { BlockDeleteForBackgroundVideo } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundVideo'
 import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundVideoUpdate'
 import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
 import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 
-export const BLOCK_REMOVE_FOR_BACKGROUND_VIDEO = gql`
-  mutation BlockRemoveForBackgroundVideo($id: ID!, $journeyId: ID!) {
-    blockRemove(id: $id, journeyId: $journeyId) {
+export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
+  mutation BlockDeleteForBackgroundVideo($id: ID!, $journeyId: ID!) {
+    blockDelete(id: $id, journeyId: $journeyId) {
       id
     }
   }
@@ -99,10 +106,12 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
 
 interface BackgroundMediaVideoProps {
   cardBlock: TreeBlock<CardBlock>
+  debounceTime?: number
 }
 
 export function BackgroundMediaVideo({
-  cardBlock
+  cardBlock,
+  debounceTime = 1000
 }: BackgroundMediaVideoProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
@@ -119,8 +128,8 @@ export function BackgroundMediaVideo({
   const [VideoBlockUpdate] = useMutation<CardBlockVideoBlockUpdate>(
     CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE
   )
-  const [blockRemove] = useMutation<BlockRemoveForBackgroundVideo>(
-    BLOCK_REMOVE_FOR_BACKGROUND_VIDEO
+  const [blockRemove] = useMutation<BlockDeleteForBackgroundVideo>(
+    BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
   const { id: journeyId } = useJourney()
   const [videoBlock, setVideoBlock] = useState(
@@ -160,7 +169,6 @@ export function BackgroundMediaVideo({
       [target]: timeFormatToSeconds(time)
     }
     setVideoBlock(block as TreeBlock<VideoBlock>)
-    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
   const handleVideoSrcChange = async (
@@ -181,7 +189,6 @@ export function BackgroundMediaVideo({
         endAt: null
       }
     setVideoBlock(block as TreeBlock<VideoBlock>)
-    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
   const handleVideoDelete = async (): Promise<void> => {
@@ -198,7 +205,7 @@ export function BackgroundMediaVideo({
       ...videoBlock,
       [event.target.name]: event.target.checked
     }
-    await handleChange(block as TreeBlock<VideoBlock>)
+    setVideoBlock(block as TreeBlock<VideoBlock>)
   }
 
   const deleteCoverBlock = async (): Promise<void> => {
@@ -208,7 +215,7 @@ export function BackgroundMediaVideo({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        data?.blockRemove.forEach((block) => {
+        data?.blockDelete.forEach((block) => {
           cache.evict({ id: block.id })
         })
         cache.gc()
@@ -232,126 +239,146 @@ export function BackgroundMediaVideo({
     })
   }
 
-  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
-    let blockTypeChanged = false
-    if (
-      coverBlock != null &&
-      coverBlock?.__typename.toString() !== 'VideoBlock'
-    ) {
-      blockTypeChanged = true
-      // remove existing cover block if type changed
-      await deleteCoverBlock()
-    }
-    let data
-    if (coverBlock == null || blockTypeChanged) {
-      ;({ data } = await VideoBlockCreate({
-        variables: {
-          input: {
-            journeyId: journeyId,
-            parentBlockId: cardBlock.id,
-            title: block.title ?? block.videoContent.src,
-            startAt: block.startAt,
-            endAt:
-              (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-            muted: block.muted,
-            autoplay: block.autoplay,
-            videoContent: block.videoContent,
-            posterBlockId: block.posterBlockId
-          }
-        },
-        update(cache, { data }) {
-          if (data?.videoBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.videoBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      }))
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
+  const createVideoBlock = async (block): Promise<void> => {
+    const { data } = await VideoBlockCreate({
+      variables: {
+        input: {
           journeyId: journeyId,
-          input: {
-            coverBlockId: data.videoBlockCreate.id
-          }
-        },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            coverBlockId: data.videoBlockCreate.id,
-            __typename: 'CardBlock'
-          }
+          parentBlockId: cardBlock.id,
+          title: block.title ?? block.videoContent.src,
+          startAt: block.startAt,
+          endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
+          muted: block.muted,
+          autoplay: block.autoplay,
+          posterBlockId: block.posterBlockId,
+          videoContent: block.videoContent
         }
-      })
-    } else {
-      const videoContent = {
-        src: block.videoContent.src
+      },
+      update(cache, { data }) {
+        if (data?.videoBlockCreate != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            fields: {
+              blocks(existingBlockRefs = []) {
+                const newBlockRef = cache.writeFragment({
+                  data: data.videoBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                return [...existingBlockRefs, newBlockRef]
+              }
+            }
+          })
+        }
       }
-      let variables: {
-        id: string
-        journeyId: string
-        input: VideoBlockUpdateInput
-      } = {
-        id: coverBlock.id,
+    })
+    await cardBlockUpdate({
+      variables: {
+        id: cardBlock.id,
         journeyId: journeyId,
         input: {
+          coverBlockId: data.videoBlockCreate.id
+        }
+      },
+      optimisticResponse: {
+        cardBlockUpdate: {
+          id: cardBlock.id,
+          coverBlockId: data.videoBlockCreate.id,
+          __typename: 'CardBlock'
+        }
+      }
+    })
+  }
+
+  const updateVideoBlock = async (block): Promise<void> => {
+    const videoContent = {
+      src: block.videoContent.src
+    }
+    let variables: {
+      id: string
+      journeyId: string
+      input: VideoBlockUpdateInput
+    } = {
+      id: coverBlock.id,
+      journeyId: journeyId,
+      input: {
+        title: block.title,
+        startAt: block.startAt,
+        endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
+        muted: block.muted,
+        autoplay: block.autoplay,
+        posterBlockId: block.posterBlockId
+      }
+    }
+    // Don't update Arclight with src
+    if (
+      videoContent.src !==
+      (coverBlock as TreeBlock<VideoBlock>).videoContent.src
+    )
+      variables = {
+        ...variables,
+        input: { ...variables.input, videoContent }
+      }
+    await VideoBlockUpdate({
+      variables,
+      optimisticResponse: {
+        videoBlockUpdate: {
+          id: coverBlock.id,
+          __typename: 'VideoBlock',
           title: block.title,
           startAt: block.startAt,
           endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
           muted: block.muted,
           autoplay: block.autoplay,
-          posterBlockId: block.posterBlockId
+          posterBlockId: block.posterBlockId,
+          videoContent: block.videoContent
         }
       }
-      // Don't update Arclight with src
-      if (
-        videoContent.src !==
-        (coverBlock as TreeBlock<VideoBlock>).videoContent.src
-      )
-        variables = {
-          ...variables,
-          input: { ...variables.input, videoContent }
-        }
-      ;({ data } = await VideoBlockUpdate({
-        variables,
-        optimisticResponse: {
-          videoBlockUpdate: {
-            id: coverBlock.id,
-            __typename: 'VideoBlock',
-            title: block.title,
-            startAt: block.startAt,
-            endAt:
-              (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-            muted: block.muted,
-            autoplay: block.autoplay,
-            videoContent: block.videoContent,
-            posterBlockId: block.posterBlockId
-          }
-        }
-      }))
+    })
+  }
+
+  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
+    const blockTypeChanged = coverBlock?.__typename.toString() !== 'VideoBlock'
+    if (coverBlock != null && blockTypeChanged) {
+      // remove existing cover block if type changed
+      await deleteCoverBlock()
+    }
+    if (coverBlock == null || blockTypeChanged) {
+      await createVideoBlock(block)
+    } else {
+      await updateVideoBlock(block)
     }
   }
 
-  const handleChangeDebounced = debounce(handleChange, 2000)
+  const handleChangeDebounced = useCallback(
+    debounce(handleChange, debounceTime),
+    []
+  )
+
+  const firstUpdate = useRef(true)
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false
+      return
+    }
+    // only way to call async inside useEffect
+    // eslint-disable-next-line
+    handleChangeDebounced(videoBlock as TreeBlock<VideoBlock>)
+  }, [videoBlock, handleChangeDebounced])
 
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
         {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src != null && (
-          <Stack direction="row" spacing="3" justifyContent="space-between">
+          <Stack
+            direction="row"
+            spacing="3"
+            justifyContent="space-between"
+            data-testid="videoSrcStack"
+          >
             <div
               style={{
                 overflow: 'hidden',
@@ -406,7 +433,11 @@ export function BackgroundMediaVideo({
           </Stack>
         )}
         {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null && (
-          <Stack direction="row" spacing={3}>
+          <Stack
+            direction="row"
+            spacing={3}
+            data-testid="videoPlaceholderStack"
+          >
             <Box
               borderRadius={2}
               sx={{

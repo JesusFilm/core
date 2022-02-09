@@ -605,7 +605,7 @@ export abstract class IMutation {
 
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
 
-    abstract blockRemove(id: string, journeyId: string): Block[] | Promise<Block[]>;
+    abstract blockDelete(id: string, journeyId: string): Block[] | Promise<Block[]>;
 
     abstract buttonBlockUpdate(id: string, journeyId: string, input: ButtonBlockUpdateInput): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 

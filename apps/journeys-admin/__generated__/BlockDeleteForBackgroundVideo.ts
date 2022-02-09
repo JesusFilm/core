@@ -4,19 +4,19 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: BlockRemoveForBackgroundImage
+// GraphQL mutation operation: BlockDeleteForBackgroundVideo
 // ====================================================
 
-export interface BlockRemoveForBackgroundImage_blockRemove {
+export interface BlockDeleteForBackgroundVideo_blockDelete {
   __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
 }
 
-export interface BlockRemoveForBackgroundImage {
-  blockRemove: BlockRemoveForBackgroundImage_blockRemove[];
+export interface BlockDeleteForBackgroundVideo {
+  blockDelete: BlockDeleteForBackgroundVideo_blockDelete[];
 }
 
-export interface BlockRemoveForBackgroundImageVariables {
+export interface BlockDeleteForBackgroundVideoVariables {
   id: string;
   journeyId: string;
 }

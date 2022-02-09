@@ -676,7 +676,7 @@ extend type Mutation {
   blockUpdateNavigateToJourneyActionInput(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
-  blockRemove(id: ID!, journeyId: ID!): [Block!]!
+  blockDelete(id: ID!, journeyId: ID!): [Block!]!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!

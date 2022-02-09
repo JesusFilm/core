@@ -36,7 +36,7 @@ describe('AccessAvatars', () => {
   })
 
   it('should use first name and last as tooltip', () => {
-    const { getByLabelText } = render(
+    const { getByRole: getByLabelText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>

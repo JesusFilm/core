@@ -9,7 +9,7 @@ export const JourneySortMock = (): ReactElement => {
 
 describe('JourneyList/JourneySort', () => {
   it('should sort by date created by default', () => {
-    const { getByRole, getByLabelText } = render(<JourneySortMock />)
+    const { getByRole, getByRole: getByLabelText } = render(<JourneySortMock />)
 
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
 
@@ -17,7 +17,7 @@ describe('JourneyList/JourneySort', () => {
   })
 
   it('should sort by name', async () => {
-    const { getByRole, getByLabelText } = render(<JourneySortMock />)
+    const { getByRole, getByRole: getByLabelText } = render(<JourneySortMock />)
 
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByLabelText('Name'))
@@ -26,7 +26,7 @@ describe('JourneyList/JourneySort', () => {
   })
 
   it('should sort by date created', () => {
-    const { getByRole, getByLabelText } = render(<JourneySortMock />)
+    const { getByRole, getByRole: getByLabelText } = render(<JourneySortMock />)
 
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByLabelText('Name'))

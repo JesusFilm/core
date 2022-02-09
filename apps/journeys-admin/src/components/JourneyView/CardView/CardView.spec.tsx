@@ -21,7 +21,7 @@ describe('JourneyView/CardView', () => {
     expect(getByText('1 card in this journey')).toBeInTheDocument()
   })
   it('should add a card when no cards are present', () => {
-    const { getByLabelText } = render(
+    const { getByRole: getByLabelText } = render(
       <MockedProvider>
         <CardView slug="my-journey" blocks={[]} />
       </MockedProvider>
