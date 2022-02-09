@@ -233,24 +233,26 @@ VideoCover.parameters = {
 export const VideoContent: Story<TreeBlock<CardFields>> = Template.bind({})
 VideoContent.args = {
   coverBlockId: 'videoBlockId1',
-  children: [{
-    __typename: 'VideoBlock',
-    id: 'video1.id',
-    parentBlockId: null,
-    parentOrder: 0,
-    autoplay: false,
-    muted: true,
-    title: 'video1',
-    videoContent: {
-      __typename: 'VideoArclight',
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    startAt: null,
-    endAt: null,
-    posterBlockId: null,
-    fullsize: true,
-    children: []
-  }]
+  children: [
+    {
+      __typename: 'VideoBlock',
+      id: 'video1.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      autoplay: false,
+      muted: true,
+      title: 'video1',
+      videoContent: {
+        __typename: 'VideoArclight',
+        src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      },
+      startAt: null,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: true,
+      children: []
+    }
+  ]
 }
 
 export const ImageBlur: Story<TreeBlock<CardFields>> = Template.bind({})

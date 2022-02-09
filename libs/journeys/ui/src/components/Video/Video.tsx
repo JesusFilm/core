@@ -178,8 +178,7 @@ export function Video({
         right: fullsize === true ? 0 : null,
         bottom: fullsize === true ? 0 : null,
         left: fullsize === true ? 0 : null,
-        outline:
-          selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
         outlineOffset: fullsize === true ? '-3px' : null,
         '> .video-js': {
           width: '100%'
