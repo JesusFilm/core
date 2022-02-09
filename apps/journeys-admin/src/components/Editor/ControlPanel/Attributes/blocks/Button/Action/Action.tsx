@@ -4,10 +4,8 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import InputLabel from '@mui/material/InputLabel'
-// import Input from '@mui/material/Input'
-// import InputAdornment from '@mui/material/InputAdornment'
-// import FollowTheSignsRoundedIcon from '@mui/icons-material/FollowTheSignsRounded'
 import { Typography } from '@mui/material'
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Stack from '@mui/material/Stack'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { NavigateNext } from './NavigateNext'
@@ -44,8 +42,11 @@ export function Action(): ReactElement {
         <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
           Navigate to:
         </InputLabel>
-        {/* <FollowTheSignsRoundedIcon /> */}
-        <Select onChange={handleChange} value={action}>
+        <Select
+          onChange={handleChange}
+          value={action}
+          IconComponent={KeyboardArrowDownRoundedIcon}
+        >
           {Object.values(actions).map((action) => {
             return (
               <MenuItem key={`button-action-${action}`} value={action}>
