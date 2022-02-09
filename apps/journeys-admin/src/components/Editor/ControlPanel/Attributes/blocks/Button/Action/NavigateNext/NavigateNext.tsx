@@ -49,6 +49,13 @@ export function NavigateNext(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: { gtmEventName: 'gtmEventName' }
+        },
+        // optimistic response cache issues
+        optimisticResponse: {
+          blockUpdateNavigateAction: {
+            id: selectedBlock.id,
+            __typename: 'ButtonBlock'
+          }
         }
       })
     }

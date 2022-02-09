@@ -53,6 +53,17 @@ export function NavigateLink(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: { url: event.target.value }
+        },
+        // optimistic response causing cache issue
+        optimisticResponse: {
+          blockUpdateLinkAction: {
+            id: selectedBlock.id,
+            __typename: 'ButtonBlock',
+            action: {
+              __typename: 'LinkAction',
+              url: event.target.value
+            }
+          }
         }
       })
       setLink(event.target.value)

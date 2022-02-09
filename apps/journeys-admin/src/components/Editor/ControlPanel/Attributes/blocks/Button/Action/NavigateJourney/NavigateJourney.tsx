@@ -80,6 +80,17 @@ export function NavigateJourney(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: { journeyId: linkJourney.id }
+        },
+        // optimistic response causing cache issues
+        optimisticResponse: {
+          blockUpdateNavigateToJourneyAction: {
+            id: selectedBlock.id,
+            __typename: 'ButtonBlock',
+            action: {
+              __typename: 'NavigateToJourneyAction',
+              journeyId: linkJourney.id
+            }
+          }
         }
       })
     }

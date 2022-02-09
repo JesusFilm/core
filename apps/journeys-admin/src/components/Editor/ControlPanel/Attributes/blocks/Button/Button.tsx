@@ -34,7 +34,7 @@ export function Button({
         id={`${id}-button-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        value={action?.__typename?.toString() ?? 'None'}
+        value={action?.__typename?.toString() ?? 'None'} // change how the name is displayed
         description="Action"
         onClick={() => {
           dispatch({
