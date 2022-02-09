@@ -1,4 +1,4 @@
-import { ReactElement, useState, ChangeEvent } from 'react'
+import { ReactElement, useState, ChangeEvent, FocusEvent } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
@@ -43,9 +43,8 @@ export function NavigateLink(): ReactElement {
 
   const [link, setLink] = useState(currentActionLink)
 
-  // change to on blur
-  async function handleChange(
-    event: ChangeEvent<HTMLInputElement>
+  async function handleBlur(
+    event: FocusEvent<HTMLInputElement>
   ): Promise<void> {
     if (selectedBlock != null) {
       await navigateToLinkActionUpdate({
@@ -53,21 +52,25 @@ export function NavigateLink(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: { url: event.target.value }
-        },
-        // optimistic response causing cache issue
-        optimisticResponse: {
-          blockUpdateLinkAction: {
-            id: selectedBlock.id,
-            __typename: 'ButtonBlock',
-            action: {
-              __typename: 'LinkAction',
-              url: event.target.value
-            }
-          }
         }
+        // optimistic response causing cache issue
+        // optimisticResponse: {
+        //   blockUpdateLinkAction: {
+        //     id: selectedBlock.id,
+        //     __typename: 'ButtonBlock',
+        //     action: {
+        //       __typename: 'LinkAction',
+        //       url: event.target.value
+        //     }
+        //   }
+        // }
       })
-      setLink(event.target.value)
     }
+    console.log('Url saved')
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+    setLink(event.target.value)
   }
 
   return (
@@ -76,6 +79,7 @@ export function NavigateLink(): ReactElement {
       variant="filled"
       hiddenLabel
       value={link}
+      onBlur={handleBlur}
       onChange={handleChange}
     />
   )

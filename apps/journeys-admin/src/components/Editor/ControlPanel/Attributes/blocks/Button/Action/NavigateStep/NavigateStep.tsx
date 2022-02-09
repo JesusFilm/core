@@ -59,20 +59,21 @@ export function NavigateStep(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: { blockId: step.id }
-        },
-        // also cache issues, kinda
-        optimisticResponse: {
-          blockUpdateNavigateToBlockAction: {
-            id: selectedBlock.id,
-            __typename: 'ButtonBlock',
-            action: {
-              __typename: 'NavigateToBlockAction',
-              blockId: step.id
-            }
-          }
         }
+        // also cache issues, kinda
+        // optimisticResponse: {
+        //   blockUpdateNavigateToBlockAction: {
+        //     id: selectedBlock.id,
+        //     __typename: 'ButtonBlock',
+        //     action: {
+        //       __typename: 'NavigateToBlockAction',
+        //       blockId: step.id
+        //     }
+        //   }
+        // }
       })
     }
+    console.log('Selected step saved')
     setSelection(step)
   }
 

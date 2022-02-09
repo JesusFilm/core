@@ -49,17 +49,29 @@ export function NavigateNext(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: { gtmEventName: 'gtmEventName' }
-        },
-        // optimistic response cache issues
-        optimisticResponse: {
-          blockUpdateNavigateAction: {
-            id: selectedBlock.id,
-            __typename: 'ButtonBlock'
-          }
         }
+        // optimistic response cache issues
+        // optimisticResponse: {
+        //   blockUpdateNavigateAction: {
+        //     id: selectedBlock.id,
+        //     __typename: 'ButtonBlock'
+        //   }
+        // }
       })
     }
+    console.log('Next step saved')
   }
+
+  // if (selectedBlock != null) {
+  //   await navigateActionUpdate({
+  //     variables: {
+  //       id: selectedBlock.id,
+  //       journeyId: journey.id,
+  //       input: { gtmEventName: 'gtmEventName' }
+  //     }
+  //   })
+  //   console.log('Next step saved')
+  // }
 
   return (
     <>
