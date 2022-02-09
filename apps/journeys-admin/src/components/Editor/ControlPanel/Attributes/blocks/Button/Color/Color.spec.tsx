@@ -30,7 +30,6 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Default' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
     expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()

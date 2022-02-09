@@ -1,17 +1,21 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Theme } from '@mui/material/styles'
 import { ReactElement, Children, ReactNode, isValidElement } from 'react'
 
 export interface HorizontalSelectProps {
   onChange?: (id: string) => void
   id?: string
   children: ReactNode
+  sx?: SxProps<Theme>
 }
 
 export function HorizontalSelect({
   children,
   id,
-  onChange
+  onChange,
+  sx
 }: HorizontalSelectProps): ReactElement {
   return (
     <Stack
@@ -21,7 +25,8 @@ export function HorizontalSelect({
         overflowX: 'auto',
         overflowY: 'hidden',
         py: 5,
-        px: 6
+        px: 6,
+        ...sx
       }}
     >
       {Children.toArray(children).map(
@@ -33,10 +38,11 @@ export function HorizontalSelect({
                 borderRadius: 2,
                 transition: '0.2s border-color ease-out',
                 position: 'relative',
-                border: (theme) =>
+                outline: (theme) =>
                   id === child.props.id
-                    ? `3px solid ${theme.palette.primary.main} `
-                    : '3px solid transparent'
+                    ? `2px solid ${theme.palette.primary.main} `
+                    : '2px solid transparent',
+                border: '3px solid transparent'
               }}
               onClick={() => onChange?.(child.props.id)}
             >
