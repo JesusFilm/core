@@ -2,10 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-import {
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey as Journey
-} from '../../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   ButtonVariant,
@@ -471,21 +468,13 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 export const Default: Story = () => {
-  const selectedBlock: TreeBlock<ButtonBlock> = {
-    __typename: 'ButtonBlock',
-    id: 'id',
-    parentBlockId: 'parentBlockId',
+  const selectedStep: TreeBlock<StepBlock> = {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
     parentOrder: 0,
-    label: 'test button',
-    buttonVariant: null,
-    buttonColor: null,
-    size: null,
-    startIcon: null,
-    endIcon: null,
-    action: {
-      __typename: 'NavigateAction',
-      gtmEventName: 'gtmEventName'
-    },
+    locked: false,
+    nextBlockId: null,
     children: []
   }
 
@@ -504,7 +493,7 @@ export const Default: Story = () => {
         }
       ]}
     >
-      <EditorProvider initialState={{ selectedBlock, steps }}>
+      <EditorProvider initialState={{ steps, selectedStep }}>
         <Action />
       </EditorProvider>
     </MockedProvider>
