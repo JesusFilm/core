@@ -394,6 +394,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startAt: null,
             endAt: null,
             posterBlockId: null,
+            fullsize: null,
             children: []
           }
         ]

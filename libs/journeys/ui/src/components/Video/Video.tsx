@@ -163,32 +163,32 @@ export function Video({
   }
 
   return (
-    <>
+    <Box
+      data-testid={`video-${blockId}`}
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000000',
+        borderRadius: 4,
+        overflow: 'hidden',
+        m: 0,
+        position: fullsize === true ? 'absolute' : null,
+        top: fullsize === true ? 0 : null,
+        right: fullsize === true ? 0 : null,
+        bottom: fullsize === true ? 0 : null,
+        left: fullsize === true ? 0 : null,
+        outline:
+          selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+        outlineOffset: fullsize === true ? '-3px' : null,
+        '> .video-js': {
+          width: '100%'
+        }
+      }}
+      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
+    >
       {videoContent.src != null ? (
-        <Box
-          data-testid={`video-${blockId}`}
-          sx={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            backgroundColor: '#000000',
-            borderRadius: 4,
-            overflow: 'hidden',
-            position: fullsize === true ? 'absolute' : null,
-            top: fullsize === true ? 0 : null,
-            right: fullsize === true ? 0 : null,
-            bottom: fullsize === true ? 0 : null,
-            left: fullsize === true ? 0 : null,
-            m: 0,
-            outline:
-              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-            outlineOffset: '5px',
-            '> .video-js': {
-              width: '100%'
-            }
-          }}
-          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
-        >
+        <>
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
@@ -210,23 +210,17 @@ export function Video({
                 <VideoTrigger player={playerRef.current} {...option} />
               )
           )}
-        </Box>
+        </>
       ) : (
-        <Box
-          sx={{
-            outline:
-              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-            outlineOffset: '5px'
-          }}
-          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
-        >
+        <>
           <Paper
             sx={{
               borderRadius: (theme) => theme.spacing(4),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: 200,
+              height: '100%',
+              width: '100%',
               fontSize: 100
             }}
             elevation={0}
@@ -234,8 +228,8 @@ export function Video({
           >
             <VideocamRounded fontSize="inherit" />
           </Paper>
-        </Box>
+        </>
       )}
-    </>
+    </Box>
   )
 }
