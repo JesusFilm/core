@@ -599,7 +599,7 @@ export abstract class IMutation {
 
     abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): Block | Promise<Block>;
 
-    abstract blockUpdateNavigateToJourneyActionInput(id: string, journeyId: string, input: NavigateToJourneyActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): Block | Promise<Block>;
 
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): Block | Promise<Block>;
 
