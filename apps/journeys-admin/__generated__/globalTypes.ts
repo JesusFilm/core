@@ -177,6 +177,10 @@ export interface LinkActionInput {
   url: string;
 }
 
+export interface NavigateActionInput {
+  gtmEventName?: string | null;
+}
+
 export interface NavigateToJourneyActionInput {
   gtmEventName?: string | null;
   journeyId: string;
