@@ -1,11 +1,4 @@
-import {
-  ReactElement,
-  useState,
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef
-} from 'react'
+import { ReactElement, useState, ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import { InputAdornment, Stack, TextField, Typography } from '@mui/material'
@@ -17,7 +10,7 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { debounce } from 'lodash'
+import { debounce, reject } from 'lodash'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -113,6 +106,7 @@ export function BackgroundMediaImage({
       src: event.target.value,
       alt: event.target.value // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
+    await handleChangeDebounced(block as ImageBlock)
     setImageBlock(block as TreeBlock<ImageBlock>)
   }
 
@@ -127,10 +121,22 @@ export function BackgroundMediaImage({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        data?.blockDelete.forEach((block) => {
-          cache.evict({ id: block.id })
-        })
-        cache.gc()
+        if (data?.blockDelete != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            fields: {
+              blocks(existingBlockRefs = []) {
+                const blockIds = data.blockDelete.map(
+                  (deletedBlock) =>
+                    `${deletedBlock.__typename}:${deletedBlock.id}`
+                )
+                return reject(existingBlockRefs, (block) => {
+                  return blockIds.includes(block.__ref)
+                })
+              }
+            }
+          })
+        }
       }
     })
     await cardBlockUpdate({
@@ -151,99 +157,90 @@ export function BackgroundMediaImage({
     })
   }
 
+  const createImageBlock = async (block): Promise<void> => {
+    const { data } = await imageBlockCreate({
+      variables: {
+        input: {
+          journeyId: journeyId,
+          parentBlockId: cardBlock.id,
+          src: block.src,
+          alt: block.alt
+        },
+        update(cache, { data }) {
+          if (data?.imageBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.imageBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
+          }
+        }
+      }
+    })
+    await cardBlockUpdate({
+      variables: {
+        id: cardBlock.id,
+        journeyId: journeyId,
+        input: {
+          coverBlockId: data?.imageBlockCreate.id ?? null
+        }
+      },
+      optimisticResponse: {
+        cardBlockUpdate: {
+          id: cardBlock.id,
+          coverBlockId: data?.imageBlockCreate.id ?? null,
+          __typename: 'CardBlock'
+        }
+      }
+    })
+  }
+
+  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+    await imageBlockUpdate({
+      variables: {
+        id: coverBlock.id,
+        journeyId: journeyId,
+        input: {
+          src: block.src,
+          alt: block.alt
+        }
+      },
+      optimisticResponse: {
+        imageBlockUpdate: {
+          id: cardBlock.id,
+          __typename: 'ImageBlock',
+          src: block.src,
+          alt: block.alt
+        }
+      }
+    })
+  }
   const handleChange = async (block: ImageBlock): Promise<void> => {
-    let blockTypeChanged = false
     if (
       coverBlock != null &&
-      coverBlock.__typename.toString() !== 'ImageBlock'
+      coverBlock?.__typename.toString() !== 'ImageBlock'
     ) {
-      blockTypeChanged = true
       // remove existing cover block if type changed
       await deleteCoverBlock()
     }
-    if (coverBlock == null || blockTypeChanged) {
-      const { data } = await imageBlockCreate({
-        variables: {
-          input: {
-            journeyId: journeyId,
-            parentBlockId: cardBlock.id,
-            src: block.src,
-            alt: block.alt
-          },
-          update(cache, { data }) {
-            if (data?.imageBlockCreate != null) {
-              cache.modify({
-                id: cache.identify({ __typename: 'Journey', id: journeyId }),
-                fields: {
-                  blocks(existingBlockRefs = []) {
-                    const newBlockRef = cache.writeFragment({
-                      data: data.imageBlockCreate,
-                      fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                    })
-                    return [...existingBlockRefs, newBlockRef]
-                  }
-                }
-              })
-            }
-          }
-        }
-      })
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journeyId,
-          input: {
-            coverBlockId: data.imageBlockCreate.id
-          }
-        },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            coverBlockId: data.imageBlockCreate.id,
-            __typename: 'CardBlock'
-          }
-        }
-      })
+    if (imageBlock == null) {
+      await createImageBlock(block)
     } else {
-      await imageBlockUpdate({
-        variables: {
-          id: coverBlock.id,
-          journeyId: journeyId,
-          input: {
-            src: block.src,
-            alt: block.alt
-          }
-        },
-        optimisticResponse: {
-          imageBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'ImageBlock',
-            src: block.src,
-            alt: block.alt
-          }
-        }
-      })
+      await updateImageBlock(block)
     }
   }
-  const handleChangeDebounced = useCallback(
-    debounce(handleChange, debounceTime),
-    []
-  )
-
-  const firstUpdate = useRef(true)
-  useEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false
-      return
-    }
-    // only way to call async inside useEffect
-    // eslint-disable-next-line
-    handleChangeDebounced(imageBlock as ImageBlock)
-  }, [imageBlock, handleChangeDebounced])
+  const handleChangeDebounced = debounce(handleChange, debounceTime)
 
   return (
     <>
@@ -285,6 +282,7 @@ export function BackgroundMediaImage({
             </Stack>
             <Stack direction="column" justifyContent="center">
               <DeleteOutline
+                data-testid="deleteImage"
                 color="primary"
                 onClick={handleImageDelete}
                 style={{ cursor: 'pointer' }}

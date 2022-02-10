@@ -67,7 +67,7 @@ const image: TreeBlock<ImageBlock> = {
 
 describe('BackgroundMediaImage', () => {
   describe('No existing cover', () => {
-    it('shows placeholders on null', () => {
+    it('shows placeholders on null', async () => {
       const { getByTestId } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
@@ -75,7 +75,7 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      expect(getByTestId('imagePlaceholderStack')).toBeInTheDocument()
+      expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
     })
 
     xit('creates a new image cover block', async () => {
@@ -118,7 +118,7 @@ describe('BackgroundMediaImage', () => {
                     journeyId: journey.id,
                     parentBlockId: card.id,
                     src: image.src,
-                    alt: image.src
+                    alt: image.alt
                   }
                 }
               },
@@ -144,7 +144,7 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = getByRole('textbox')
+      const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
@@ -170,7 +170,7 @@ describe('BackgroundMediaImage', () => {
       posterBlockId: 'poster1.id',
       children: []
     }
-    it('shows placeholders on VideoBlock', () => {
+    it('shows placeholders on VideoBlock', async () => {
       const videoCard: TreeBlock<CardBlock> = {
         ...card,
         children: [video]
@@ -182,7 +182,7 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      expect(getByTestId('imagePlaceholderStack')).toBeInTheDocument()
+      expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
     })
     xit('creates a new image cover block', async () => {
       const videoCard: TreeBlock<CardBlock> = {
@@ -288,12 +288,16 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = getByRole('textbox')
+      const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
     })
   })
   describe('Existing image cover', () => {
@@ -308,7 +312,7 @@ describe('BackgroundMediaImage', () => {
         }
       ]
     }
-    it('shows placeholders', () => {
+    it('shows placeholders', async () => {
       const { getByTestId, getByRole } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
@@ -319,10 +323,10 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      expect(getByTestId('imageSrcStack')).toBeInTheDocument()
-      const textBox = getByRole('textbox')
+      expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
+      const textBox = await getByRole('textbox')
       expect(textBox).toHaveValue('https://example.com/image2.jpg')
-      const img = getByRole('img')
+      const img = await getByRole('img')
       expect(img).toHaveAttribute('src', 'https://example.com/image2.jpg')
       expect(img).toHaveAttribute('alt', 'https://example.com/image2.jpg')
     })
@@ -357,8 +361,8 @@ describe('BackgroundMediaImage', () => {
               request: {
                 query: CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
                 variables: {
-                  journeyId: journey.id,
                   id: image.id,
+                  journeyId: journey.id,
                   input: {
                     src: image.src,
                     alt: image.src
@@ -377,15 +381,95 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = getByRole('textbox')
+      const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       expect(textBox).toHaveValue(image.src)
-      const img = getByRole('img')
+      const img = await getByRole('img')
       expect(img).toHaveAttribute('src', image.src)
       expect(img).toHaveAttribute('alt', image.src)
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    })
+    it('deletes an image block', async () => {
+      const cache = new InMemoryCache()
+      cache.restore({
+        ['Journey:' + journey.id]: {
+          blocks: [
+            { __ref: `CardBlock:${card.id}` },
+            { __ref: `ImageBlock:${image.id}` }
+          ],
+          id: journey.id,
+          __typename: 'Journey'
+        }
+      })
+      const cardBlockResult = jest.fn(() => ({
+        data: {
+          cardBlockUpdate: {
+            id: card.id,
+            coverBlockId: null,
+            __typename: 'CardBlock'
+          }
+        }
+      }))
+      const blockDeleteResult = jest.fn(() => ({
+        data: {
+          blockDelete: [
+            {
+              id: image.id,
+              __typename: 'ImageBlock'
+            }
+          ]
+        }
+      }))
+      const { getByTestId } = render(
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            {
+              request: {
+                query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
+                variables: {
+                  id: image.id,
+                  journeyId: journey.id
+                }
+              },
+              result: blockDeleteResult
+            },
+            {
+              request: {
+                query: CARD_BLOCK_COVER_IMAGE_UPDATE,
+                variables: {
+                  id: card.id,
+                  journeyId: journey.id,
+                  input: {
+                    coverBlockId: null
+                  }
+                }
+              },
+              result: cardBlockResult
+            }
+          ]}
+        >
+          <JourneyProvider value={journey}>
+            <BackgroundMediaImage
+              cardBlock={existingCoverBlock}
+              debounceTime={0}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      const button = await getByTestId('deleteImage')
+      fireEvent.click(button)
+      await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+      expect(blockDeleteResult).toHaveBeenCalled()
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
     })
   })
 })
