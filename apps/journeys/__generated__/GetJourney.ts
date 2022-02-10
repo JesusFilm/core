@@ -118,9 +118,9 @@ export interface GetJourney_journey_blocks_IconBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  name: IconName;
-  size: IconSize | null;
-  color: IconColor | null;
+  iconName: IconName;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
