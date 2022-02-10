@@ -35,6 +35,7 @@ export function Video({
   muted,
   posterBlockId,
   uuid = uuidv4,
+  fullsize,
   children,
   ...props
 }: VideoProps): ReactElement {
@@ -153,6 +154,7 @@ export function Video({
         muted,
         posterBlockId,
         children,
+        fullsize,
         ...props
       }
 

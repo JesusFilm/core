@@ -6,6 +6,7 @@ import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../HorizontalSelect'
+import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
 
 export interface CardPreviewProps {
   onSelect?: (card: TreeBlock<StepBlock>) => void
@@ -46,7 +47,7 @@ export function CardPreview({
                 themeMode={ThemeMode.light}
               >
                 <Box sx={{ p: 4, height: '100%' }}>
-                  <BlockRenderer block={step} />
+                  <BlockRenderer block={step} wrappers={{ VideoWrapper }} />
                 </Box>
               </ThemeProvider>
             </FramePortal>

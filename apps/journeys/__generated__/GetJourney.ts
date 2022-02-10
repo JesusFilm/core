@@ -297,6 +297,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
+  fullsize: boolean | null;
   videoContent: GetJourney_journey_blocks_VideoBlock_videoContent;
 }
 

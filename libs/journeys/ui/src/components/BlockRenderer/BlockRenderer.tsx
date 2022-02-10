@@ -33,21 +33,21 @@ interface WrapperProps<T = Block> {
   children: ReactNode
 }
 
-type WrapperFn<T = Block> = (props: WrapperProps<T>) => ReactElement
+type WrapperFn<T = TreeBlock> = (props: WrapperProps<T>) => ReactElement
 
 export interface WrappersProps {
   Wrapper?: WrapperFn
-  ButtonWrapper?: WrapperFn<ButtonBlock>
-  CardWrapper?: WrapperFn<CardBlock>
-  GridItemWrapper?: WrapperFn<GridItemBlock>
-  GridContainerWrapper?: WrapperFn<GridContainerBlock>
-  ImageWrapper?: WrapperFn<ImageBlock>
-  RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
-  RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
-  SignUpWrapper?: WrapperFn<SignUpBlock>
-  StepWrapper?: WrapperFn<StepBlock>
-  TypographyWrapper?: WrapperFn<TypographyBlock>
-  VideoWrapper?: WrapperFn<VideoBlock>
+  ButtonWrapper?: WrapperFn<TreeBlock<ButtonBlock>>
+  CardWrapper?: WrapperFn<TreeBlock<CardBlock>>
+  GridItemWrapper?: WrapperFn<TreeBlock<GridItemBlock>>
+  GridContainerWrapper?: WrapperFn<TreeBlock<GridContainerBlock>>
+  ImageWrapper?: WrapperFn<TreeBlock<ImageBlock>>
+  RadioOptionWrapper?: WrapperFn<TreeBlock<RadioOptionBlock>>
+  RadioQuestionWrapper?: WrapperFn<TreeBlock<RadioQuestionBlock>>
+  SignUpWrapper?: WrapperFn<TreeBlock<SignUpBlock>>
+  StepWrapper?: WrapperFn<TreeBlock<StepBlock>>
+  TypographyWrapper?: WrapperFn<TreeBlock<TypographyBlock>>
+  VideoWrapper?: WrapperFn<TreeBlock<VideoBlock>>
 }
 
 interface BlockRenderProps {
