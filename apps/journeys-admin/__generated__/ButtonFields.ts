@@ -3,25 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
 // ====================================================
-
-export interface ButtonFields_startIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
-export interface ButtonFields_endIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
 
 export interface ButtonFields_action_NavigateAction {
   __typename: "NavigateAction";
@@ -63,7 +49,7 @@ export interface ButtonFields {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIcon: ButtonFields_startIcon | null;
-  endIcon: ButtonFields_endIcon | null;
+  startIconId: string | null;
+  endIconId: string | null;
   action: ButtonFields_action | null;
 }

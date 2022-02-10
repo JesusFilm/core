@@ -8,13 +8,9 @@ export const SIGN_UP_FIELDS = gql`
     parentBlockId
     parentOrder
     submitLabel
+    submitIconId
     action {
       ...ActionFields
-    }
-    submitIcon {
-      name
-      color
-      size
     }
   }
 `

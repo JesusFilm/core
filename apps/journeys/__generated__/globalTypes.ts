@@ -45,44 +45,6 @@ export enum GridJustifyContent {
   flexStart = "flexStart",
 }
 
-export enum IconColor {
-  action = "action",
-  disabled = "disabled",
-  error = "error",
-  inherit = "inherit",
-  primary = "primary",
-  secondary = "secondary",
-}
-
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
-export enum IconName {
-  ArrowForwardRounded = "ArrowForwardRounded",
-  BeenhereRounded = "BeenhereRounded",
-  ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
-  CheckCircleRounded = "CheckCircleRounded",
-  ChevronRightRounded = "ChevronRightRounded",
-  ContactSupportRounded = "ContactSupportRounded",
-  FormatQuoteRounded = "FormatQuoteRounded",
-  LiveTvRounded = "LiveTvRounded",
-  LockOpenRounded = "LockOpenRounded",
-  MenuBookRounded = "MenuBookRounded",
-  PlayArrowRounded = "PlayArrowRounded",
-  RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
-  SendRounded = "SendRounded",
-  SubscriptionsRounded = "SubscriptionsRounded",
-  TranslateRounded = "TranslateRounded",
-}
-
-export enum IconSize {
-  inherit = "inherit",
-  lg = "lg",
-  md = "md",
-  sm = "sm",
-  xl = "xl",
-}
-
 export enum ThemeMode {
   dark = "dark",
   light = "light",
