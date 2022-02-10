@@ -105,7 +105,7 @@ const block: TreeBlock<Block> = {
 const Template: Story = () => (
   <FramePortal width={356} height={536}>
     <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <BlockRenderer {...block} />
+      <BlockRenderer block={block} />
     </ThemeProvider>
   </FramePortal>
 )

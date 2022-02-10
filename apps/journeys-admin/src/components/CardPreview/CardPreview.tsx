@@ -46,7 +46,7 @@ export function CardPreview({
                 themeMode={ThemeMode.light}
               >
                 <Box sx={{ p: 4, height: '100%' }}>
-                  <BlockRenderer {...step} />
+                  <BlockRenderer block={step} />
                 </Box>
               </ThemeProvider>
             </FramePortal>

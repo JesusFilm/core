@@ -25,35 +25,7 @@ describe('VideoBlockResolver', () => {
     },
     title: 'title',
     posterBlockId: 'posterBlockId',
-    fullsize: null
-  }
-
-  const blockUpdate = {
-    __typename: '',
-    journeyId: '2',
-    parentBlockId: '3',
-    parentOrder: 0,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: null
-  }
-
-  const blockCreateResponse = {
-    journeyId: '2',
-    __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: null
+    fullsize: true
   }
 
   const blockResponse1 = {
@@ -69,7 +41,7 @@ describe('VideoBlockResolver', () => {
     },
     title: 'title',
     posterBlockId: 'posterBlockId',
-    fullsize: null
+    fullscreen: true
   }
 
   const block2 = {
@@ -83,7 +55,7 @@ describe('VideoBlockResolver', () => {
     },
     title: 'title',
     posterBlockId: 'posterBlockId',
-    fullsize: null
+    fullsize: true
   }
 
   const blockResponse2 = {
@@ -97,7 +69,63 @@ describe('VideoBlockResolver', () => {
     },
     title: 'title',
     posterBlockId: 'posterBlockId',
-    fullsize: null
+    fullsize: true
+  }
+
+  const blockCreate = {
+    __typename: '',
+    journeyId: '2',
+    parentBlockId: '3',
+    parentOrder: 0,
+    videoContent: {
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529'
+    },
+    title: 'title',
+    posterBlockId: 'posterBlockId',
+    fullsize: true
+  }
+
+  const blockCreateResponse = {
+    journeyId: '2',
+    __typename: 'VideoBlock',
+    parentBlockId: '3',
+    parentOrder: 1,
+    videoContent: {
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529'
+    },
+    title: 'title',
+    posterBlockId: 'posterBlockId',
+    fullsize: true
+  }
+
+  const blockUpdate = {
+    __typename: 'VideoBlock',
+    journeyId: '2',
+    parentBlockId: '3',
+    parentOrder: 0,
+    videoContent: {
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529'
+    },
+    title: 'title',
+    posterBlockId: 'posterBlockId',
+    fullsize: true
+  }
+
+  const blockUpdateResponse = {
+    __typename: 'VideoBlock',
+    journeyId: '2',
+    parentBlockId: '3',
+    parentOrder: 0,
+    videoContent: {
+      mediaComponentId: '2_0-FallingPlates',
+      languageId: '529'
+    },
+    title: 'title',
+    posterBlockId: 'posterBlockId',
+    fullsize: true
   }
 
   describe('VideoBlock Arclight', () => {
@@ -156,7 +184,7 @@ describe('VideoBlockResolver', () => {
         useFactory: () => ({
           save: jest.fn((input) => input),
           update: jest.fn((input) => input),
-          getSiblings: jest.fn(() => [block1])
+          getSiblings: jest.fn(() => [blockCreate])
         })
       }
 
@@ -179,11 +207,11 @@ describe('VideoBlockResolver', () => {
     describe('videoBlockCreate', () => {
       it('creates a VideoBlock', async () => {
         await resolver
-          .videoBlockCreate(blockUpdate)
+          .videoBlockCreate(blockCreate)
           .catch((err) => console.log(err))
         expect(service.getSiblings).toHaveBeenCalledWith(
-          blockUpdate.journeyId,
-          blockUpdate.parentBlockId
+          blockCreate.journeyId,
+          blockCreate.parentBlockId
         )
         expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
       })
@@ -194,7 +222,7 @@ describe('VideoBlockResolver', () => {
         resolver
           .videoBlockUpdate('1', '2', blockUpdate)
           .catch((err) => console.log(err))
-        expect(service.update).toHaveBeenCalledWith('1', blockUpdate)
+        expect(service.update).toHaveBeenCalledWith('1', blockUpdateResponse)
       })
     })
   })
