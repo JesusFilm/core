@@ -3,18 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
 // ====================================================
-
-export interface BlockFields_IconBlock {
-  __typename: "IconBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-}
 
 export interface BlockFields_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
@@ -113,6 +106,16 @@ export interface BlockFields_GridItemBlock {
   xl: number;
   lg: number;
   sm: number;
+}
+
+export interface BlockFields_IconBlock {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  name: IconName;
+  size: IconSize | null;
+  color: IconColor | null;
 }
 
 export interface BlockFields_ImageBlock {
@@ -325,4 +328,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_IconBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
