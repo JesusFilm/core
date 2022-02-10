@@ -8,8 +8,8 @@ import {
   IconSize,
   IconColor
 } from '../../../__generated__/globalTypes'
-import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
-import { journeyUiConfig, simpleComponentConfig } from '../..'
+import { journeyUiConfig, simpleComponentConfig, TreeBlock } from '../..'
+import { IconFields } from './__generated__/IconFields'
 import { Icon } from '.'
 
 const IconDemo = {
@@ -19,7 +19,7 @@ const IconDemo = {
   title: 'Journeys-Ui/Icon'
 }
 
-interface IconStoryProps extends IconType {
+interface IconStoryProps extends TreeBlock<IconFields> {
   variants: string[]
 }
 
@@ -38,7 +38,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
           justifyContent="center"
           alignItems="center"
         >
-          <Icon {...args} name={variant as IconName} />
+          <Icon {...args} iconName={variant as IconName} />
           <Typography mt={1} variant={'caption'}>{`${variant}`}</Typography>
         </Grid>
       ))}
@@ -48,9 +48,9 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
 
 export const Variant = VariantTemplate.bind({})
 Variant.args = {
-  __typename: 'Icon',
-  color: null,
-  size: IconSize.lg,
+  __typename: 'IconBlock',
+  iconColor: null,
+  iconSize: IconSize.lg,
   variants: [
     IconName.ArrowForwardRounded,
     IconName.BeenhereRounded,
@@ -82,7 +82,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
         }}
       >
         <Typography>{`${variant}`}</Typography>
-        <Icon {...args} color={variant as IconColor} />
+        <Icon {...args} iconColor={variant as IconColor} />
       </Box>
     ))}
   </Container>
@@ -90,9 +90,9 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
-  __typename: 'Icon',
-  name: IconName.CheckCircleRounded,
-  size: IconSize.lg,
+  __typename: 'IconBlock',
+  iconName: IconName.CheckCircleRounded,
+  iconSize: IconSize.lg,
   variants: [
     IconColor.inherit,
     IconColor.primary,
@@ -115,7 +115,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
         }}
       >
         <Typography>{`${variant}`}</Typography>
-        <Icon {...args} size={variant as IconSize} />
+        <Icon {...args} iconSize={variant as IconSize} />
       </Box>
     ))}
   </Container>
@@ -123,9 +123,10 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
 
 export const Size = SizeTemplate.bind({})
 Size.args = {
-  __typename: 'Icon',
-  name: IconName.CheckCircleRounded,
-  color: null,
+  id: 'icon',
+  __typename: 'IconBlock',
+  iconName: IconName.CheckCircleRounded,
+  iconColor: null,
   variants: [
     IconSize.inherit,
     IconSize.sm,

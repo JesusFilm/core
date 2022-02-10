@@ -192,7 +192,7 @@ describe('ControlPanel', () => {
                     gtmEventName: 'gtmEventName',
                     blockId: 'def'
                   },
-                  submitIcon: null
+                  submitIconId: null
                 }
               }
             }

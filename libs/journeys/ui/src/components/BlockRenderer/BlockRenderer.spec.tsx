@@ -14,8 +14,8 @@ describe('BlockRenderer', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -33,8 +33,8 @@ describe('BlockRenderer', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -303,7 +303,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       submitLabel: null,
-      submitIcon: null,
+      submitIconId: null,
       action: {
         __typename: 'NavigateAction',
         gtmEventName: 'gtmEventName'
@@ -326,7 +326,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       submitLabel: null,
-      submitIcon: null,
+      submitIconId: null,
       action: {
         __typename: 'NavigateAction',
         gtmEventName: 'gtmEventName'
@@ -377,8 +377,8 @@ describe('BlockRenderer', () => {
           buttonVariant: null,
           buttonColor: null,
           size: null,
-          startIcon: null,
-          endIcon: null,
+          startIconId: null,
+          endIconId: null,
           action: null,
           children: []
         }
@@ -406,8 +406,8 @@ describe('BlockRenderer', () => {
           buttonVariant: null,
           buttonColor: null,
           size: null,
-          startIcon: null,
-          endIcon: null,
+          startIconId: null,
+          endIconId: null,
           action: null,
           children: []
         }

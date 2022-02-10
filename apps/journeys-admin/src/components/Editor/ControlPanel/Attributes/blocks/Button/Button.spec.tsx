@@ -22,8 +22,8 @@ describe('Button attributes', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -54,24 +54,35 @@ describe('Button attributes', () => {
       buttonVariant: ButtonVariant.text,
       buttonColor: ButtonColor.secondary,
       size: ButtonSize.large,
-      startIcon: {
-        __typename: 'Icon',
-        name: IconName.ChatBubbleOutlineRounded,
-        color: IconColor.secondary,
-        size: IconSize.lg
-      },
-      endIcon: {
-        __typename: 'Icon',
-        name: IconName.ChevronRightRounded,
-        color: IconColor.secondary,
-        size: IconSize.lg
-      },
+      startIconId: 'icon1',
+      endIconId: 'icon2',
       action: {
         __typename: 'NavigateToBlockAction',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       },
-      children: []
+      children: [
+        {
+          id: 'icon1',
+          __typename: 'IconBlock',
+          parentBlockId: 'button',
+          parentOrder: 0,
+          iconName: IconName.ChatBubbleOutlineRounded,
+          iconColor: IconColor.secondary,
+          iconSize: IconSize.lg,
+          children: []
+        },
+        {
+          id: 'icon2',
+          __typename: 'IconBlock',
+          parentBlockId: 'button',
+          parentOrder: 1,
+          iconName: IconName.ChevronRightRounded,
+          iconColor: IconColor.secondary,
+          iconSize: IconSize.lg,
+          children: []
+        }
+      ]
     }
     const { getByRole } = render(<Button {...block} />)
     expect(
