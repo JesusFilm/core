@@ -73,7 +73,6 @@ export function NavigateStep(): ReactElement {
         // }
       })
     }
-    console.log('Selected step saved')
     setSelection(step)
   }
 

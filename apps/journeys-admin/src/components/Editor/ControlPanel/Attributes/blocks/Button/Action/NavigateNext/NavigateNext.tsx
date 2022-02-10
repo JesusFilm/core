@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -42,36 +42,27 @@ export function NavigateNext(): ReactElement {
     (step) => step.id === state.selectedStep?.nextBlockId
   )
 
-  async function navigateNext(): Promise<void> {
-    if (selectedBlock != null) {
-      await navigateActionUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: { gtmEventName: 'gtmEventName' }
-        }
-        // optimistic response cache issues
-        // optimisticResponse: {
-        //   blockUpdateNavigateAction: {
-        //     id: selectedBlock.id,
-        //     __typename: 'ButtonBlock'
-        //   }
-        // }
-      })
+  useEffect(() => {
+    const navigateNext = async (): Promise<void> => {
+      if (selectedBlock != null) {
+        await navigateActionUpdate({
+          variables: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            input: { gtmEventName: 'gtmEventName' }
+          }
+          // optimistic response cache issues
+          // optimisticResponse: {
+          //   blockUpdateNavigateAction: {
+          //     id: selectedBlock.id,
+          //     __typename: 'ButtonBlock'
+          //   }
+          // }
+        })
+      }
     }
-    console.log('Next step saved')
-  }
-
-  // if (selectedBlock != null) {
-  //   await navigateActionUpdate({
-  //     variables: {
-  //       id: selectedBlock.id,
-  //       journeyId: journey.id,
-  //       input: { gtmEventName: 'gtmEventName' }
-  //     }
-  //   })
-  //   console.log('Next step saved')
-  // }
+    void navigateNext()
+  }, [selectedBlock, navigateActionUpdate, journey])
 
   return (
     <>
@@ -83,8 +74,6 @@ export function NavigateNext(): ReactElement {
         }}
       >
         <CardPreview selected={nextStep} steps={state.steps} />
-        {/* Find a way to get rid of this button */}
-        <button onClick={navigateNext}>ok</button>
       </Box>
       {nextStep == null && (
         <Typography variant="caption">No next card</Typography>

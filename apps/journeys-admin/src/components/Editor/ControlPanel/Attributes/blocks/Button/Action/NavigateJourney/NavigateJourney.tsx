@@ -95,7 +95,6 @@ export function NavigateJourney(): ReactElement {
       })
     }
     setJourneyName(event.target.value)
-    console.log('Journey saved')
   }
 
   return (

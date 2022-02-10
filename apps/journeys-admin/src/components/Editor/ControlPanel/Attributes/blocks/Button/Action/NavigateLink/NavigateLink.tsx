@@ -66,7 +66,6 @@ export function NavigateLink(): ReactElement {
         // }
       })
     }
-    console.log('Url saved')
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
