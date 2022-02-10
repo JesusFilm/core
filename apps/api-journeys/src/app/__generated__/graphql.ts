@@ -7,41 +7,6 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum IconName {
-    PlayArrowRounded = "PlayArrowRounded",
-    TranslateRounded = "TranslateRounded",
-    CheckCircleRounded = "CheckCircleRounded",
-    RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
-    FormatQuoteRounded = "FormatQuoteRounded",
-    LockOpenRounded = "LockOpenRounded",
-    ArrowForwardRounded = "ArrowForwardRounded",
-    ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
-    LiveTvRounded = "LiveTvRounded",
-    MenuBookRounded = "MenuBookRounded",
-    ChevronRightRounded = "ChevronRightRounded",
-    BeenhereRounded = "BeenhereRounded",
-    SendRounded = "SendRounded",
-    SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
-}
-
-export enum IconColor {
-    primary = "primary",
-    secondary = "secondary",
-    action = "action",
-    error = "error",
-    disabled = "disabled",
-    inherit = "inherit"
-}
-
-export enum IconSize {
-    sm = "sm",
-    md = "md",
-    lg = "lg",
-    xl = "xl",
-    inherit = "inherit"
-}
-
 export enum ThemeMode {
     dark = "dark",
     light = "light"
@@ -87,6 +52,41 @@ export enum GridAlignItems {
     flexStart = "flexStart",
     flexEnd = "flexEnd",
     center = "center"
+}
+
+export enum IconName {
+    PlayArrowRounded = "PlayArrowRounded",
+    TranslateRounded = "TranslateRounded",
+    CheckCircleRounded = "CheckCircleRounded",
+    RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
+    FormatQuoteRounded = "FormatQuoteRounded",
+    LockOpenRounded = "LockOpenRounded",
+    ArrowForwardRounded = "ArrowForwardRounded",
+    ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
+    LiveTvRounded = "LiveTvRounded",
+    MenuBookRounded = "MenuBookRounded",
+    ChevronRightRounded = "ChevronRightRounded",
+    BeenhereRounded = "BeenhereRounded",
+    SendRounded = "SendRounded",
+    SubscriptionsRounded = "SubscriptionsRounded",
+    ContactSupportRounded = "ContactSupportRounded"
+}
+
+export enum IconColor {
+    primary = "primary",
+    secondary = "secondary",
+    action = "action",
+    error = "error",
+    disabled = "disabled",
+    inherit = "inherit"
+}
+
+export enum IconSize {
+    sm = "sm",
+    md = "md",
+    lg = "lg",
+    xl = "xl",
+    inherit = "inherit"
 }
 
 export enum TypographyVariant {
@@ -184,6 +184,22 @@ export class CardBlockUpdateInput {
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
+}
+
+export class IconBlockCreateInput {
+    id?: Nullable<string>;
+    parentBlockId: string;
+    journeyId: string;
+    name: IconName;
+    color?: Nullable<IconColor>;
+    size?: Nullable<IconSize>;
+}
+
+export class IconBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    name: IconName;
+    color?: Nullable<IconColor>;
+    size?: Nullable<IconSize>;
 }
 
 export class ImageBlockCreateInput {
@@ -354,13 +370,6 @@ export interface Response {
     userId: string;
 }
 
-export class Icon {
-    __typename?: 'Icon';
-    name: IconName;
-    color?: Nullable<IconColor>;
-    size?: Nullable<IconSize>;
-}
-
 export class NavigateAction implements Action {
     __typename?: 'NavigateAction';
     gtmEventName?: Nullable<string>;
@@ -413,8 +422,8 @@ export class ButtonBlock implements Block {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
-    startIcon?: Nullable<Icon>;
-    endIcon?: Nullable<Icon>;
+    startIconId?: Nullable<string>;
+    endIconId?: Nullable<string>;
     action?: Nullable<Action>;
 }
 
@@ -452,6 +461,17 @@ export class GridItemBlock implements Block {
     xl: number;
     lg: number;
     sm: number;
+}
+
+export class IconBlock implements Block {
+    __typename?: 'IconBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    name: IconName;
+    color?: Nullable<IconColor>;
+    size?: Nullable<IconSize>;
 }
 
 export class ImageBlock implements Block {
@@ -494,7 +514,7 @@ export class SignUpBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
-    submitIcon?: Nullable<Icon>;
+    submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
 
@@ -610,6 +630,10 @@ export abstract class IMutation {
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
     abstract cardBlockUpdate(id: string, journeyId: string, input: CardBlockUpdateInput): CardBlock | Promise<CardBlock>;
+
+    abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
+
+    abstract iconBlockUpdate(id: string, journeyId: string, input: IconBlockUpdateInput): IconBlock | Promise<IconBlock>;
 
     abstract imageBlockCreate(input: ImageBlockCreateInput): ImageBlock | Promise<ImageBlock>;
 

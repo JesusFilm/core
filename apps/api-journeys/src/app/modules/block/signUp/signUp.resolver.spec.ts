@@ -22,11 +22,7 @@ describe('SignUpBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
-    submitIcon: {
-      name: 'LockOpenRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
+    submitIconId: 'icon1',
     submitLabel: 'Unlock Now!'
   }
   const blockResponse = {
@@ -39,11 +35,7 @@ describe('SignUpBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
-    submitIcon: {
-      name: 'LockOpenRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
+    submitIconId: 'icon1',
     submitLabel: 'Unlock Now!'
   }
 
