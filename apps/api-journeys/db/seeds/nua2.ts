@@ -62,6 +62,7 @@ export async function nua2(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
+    fullsize: true,
     title: 'What about the resurrection'
   })
   await db
@@ -154,6 +155,7 @@ export async function nua2(): Promise<void> {
     },
     autoplay: true,
     title: 'What About The Ressurection?',
+    fullsize: true,
     parentOrder: 0
   })
 
@@ -275,6 +277,7 @@ export async function nua2(): Promise<void> {
     autoplay: true,
     title: 'What About The Ressurection?',
     startAt: 109,
+    fullsize: true,
     parentOrder: 0
   })
 
@@ -395,6 +398,7 @@ export async function nua2(): Promise<void> {
     autoplay: true,
     title: 'What About The Ressurection?',
     startAt: 272,
+    fullsize: true,
     parentOrder: 0
   })
 

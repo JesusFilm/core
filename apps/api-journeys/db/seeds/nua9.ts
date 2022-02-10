@@ -68,6 +68,7 @@ export async function nua9(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
+    fullsize: true,
     title: 'Decision'
   })
 
@@ -155,7 +156,8 @@ export async function nua9(): Promise<void> {
     },
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
-    parentOrder: 0
+    parentOrder: 0,
+    fullsize: true
   })
 
   // question step!

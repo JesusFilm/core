@@ -62,7 +62,8 @@ export async function nua8(): Promise<void> {
     muted: true,
     autoplay: true,
     startAt: 11,
-    title: 'Decision'
+    title: 'Decision',
+    fullsize: true
   })
   await db
     .collection('blocks')
@@ -153,7 +154,8 @@ export async function nua8(): Promise<void> {
     },
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
-    parentOrder: 0
+    parentOrder: 0,
+    fullsize: true
   })
 
   // third step
@@ -263,6 +265,7 @@ export async function nua8(): Promise<void> {
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
     startAt: 158,
+    fullsize: true,
     parentOrder: 0
   })
 
@@ -383,6 +386,7 @@ export async function nua8(): Promise<void> {
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
     startAt: 221,
+    fullsize: true,
     parentOrder: 0
   })
 

@@ -63,6 +63,7 @@ export async function nua1(): Promise<void> {
     autoplay: true,
     startAt: 11,
     title: 'Fact or fiction',
+    fullsize: true,
     description:
       'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
   })
@@ -158,6 +159,7 @@ export async function nua1(): Promise<void> {
     title: 'Fact or fiction',
     description:
       'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
+    fullsize: true,
     parentOrder: 0
   })
 
@@ -268,6 +270,7 @@ export async function nua1(): Promise<void> {
     autoplay: true,
     title: 'Fact or fiction',
     startAt: 134,
+    fullsize: true,
     parentOrder: 0
   })
 
