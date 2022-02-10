@@ -13,7 +13,7 @@ import { NavigateStep } from './NavigateStep'
 import { NavigateJourney } from './NavigateJourney'
 import { NavigateLink } from './NavigateLink'
 
-enum actions {
+export enum actions {
   NavigateAction = 'Next Step',
   NavigateToBlockAction = 'Selected Card',
   NavigateToJourneyAction = 'Another Journey',

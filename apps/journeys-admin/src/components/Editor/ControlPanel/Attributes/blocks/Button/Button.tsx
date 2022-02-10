@@ -13,6 +13,7 @@ import {
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { actions as buttonAction } from './Action/Action'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
@@ -28,13 +29,14 @@ export function Button({
   action
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
+  const actionName = action != null ? buttonAction[action.__typename] : 'None'
   return (
     <>
       <Attribute
         id={`${id}-button-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        value={action?.__typename?.toString() ?? 'None'} // change how the name is displayed
+        value={actionName}
         description="Action"
         onClick={() => {
           dispatch({
