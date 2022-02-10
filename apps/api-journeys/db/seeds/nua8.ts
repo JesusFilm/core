@@ -133,9 +133,6 @@ export async function nua8(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'large',
-    startIcon: {
-      name: 'PlayArrowRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: step2._key
@@ -375,9 +372,6 @@ export async function nua8(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'medium',
-    startIcon: {
-      name: 'ContactSupportRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: step6._key

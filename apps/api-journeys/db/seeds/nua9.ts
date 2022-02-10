@@ -1375,9 +1375,6 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'medium',
-    startIcon: {
-      name: 'SubscriptionsRounded'
-    },
     action: {
       gtmEvenName: 'click',
       blockId: stepNoThanks2._key
