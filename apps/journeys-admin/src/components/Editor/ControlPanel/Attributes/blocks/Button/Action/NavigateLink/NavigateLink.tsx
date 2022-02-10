@@ -74,7 +74,7 @@ export function NavigateLink(): ReactElement {
 
   return (
     <TextField
-      placeholder="Past URL here..."
+      placeholder="Paste URL here..."
       variant="filled"
       hiddenLabel
       value={link}
