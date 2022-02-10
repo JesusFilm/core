@@ -1,15 +1,20 @@
 import { ReactElement } from 'react'
 import MaterialGrid, { GridSize } from '@mui/material/Grid'
 import { TreeBlock } from '../../..'
-import { BlockRenderer } from '../../BlockRenderer'
+import { BlockRenderer, WrappersProps } from '../../BlockRenderer'
 import { GridItemFields } from './__generated__/GridItemFields'
+
+interface GridItemProps extends TreeBlock<GridItemFields> {
+  wrappers?: WrappersProps
+}
 
 export function GridItem({
   xl,
   lg,
   sm,
-  children
-}: TreeBlock<GridItemFields>): ReactElement {
+  children,
+  wrappers
+}: GridItemProps): ReactElement {
   return (
     <MaterialGrid
       item
@@ -20,7 +25,7 @@ export function GridItem({
       xs={12 as GridSize}
     >
       {children?.map((block) => (
-        <BlockRenderer {...block} key={block.id} />
+        <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}
     </MaterialGrid>
   )

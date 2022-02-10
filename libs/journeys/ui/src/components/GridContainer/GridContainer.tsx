@@ -2,16 +2,21 @@ import { ReactElement } from 'react'
 import { kebabCase } from 'lodash'
 import MaterialGrid, { GridDirection } from '@mui/material/Grid'
 import { TreeBlock } from '../..'
-import { BlockRenderer } from '../BlockRenderer'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { GridContainerFields } from './__generated__/GridContainerFields'
+
+interface GridContainerProps extends TreeBlock<GridContainerFields> {
+  wrappers?: WrappersProps
+}
 
 export function GridContainer({
   spacing,
   direction,
   justifyContent,
   alignItems,
-  children
-}: TreeBlock<GridContainerFields>): ReactElement {
+  children,
+  wrappers
+}: GridContainerProps): ReactElement {
   return (
     <MaterialGrid
       container
@@ -21,7 +26,7 @@ export function GridContainer({
       justifyContent={kebabCase(justifyContent)}
     >
       {children?.map((block) => (
-        <BlockRenderer {...block} key={block.id} />
+        <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}
     </MaterialGrid>
   )
