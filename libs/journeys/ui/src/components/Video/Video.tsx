@@ -191,7 +191,7 @@ export function Video({
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
-            style={{ display: 'flex', alignSelf: 'center' }}
+            style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
             playsInline
           >
             <source
