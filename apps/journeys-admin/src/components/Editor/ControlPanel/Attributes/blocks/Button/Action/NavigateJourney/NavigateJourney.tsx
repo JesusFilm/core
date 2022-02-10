@@ -71,15 +71,12 @@ export function NavigateJourney(): ReactElement {
   }, [currentActionTitle])
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    const linkJourney = data?.journeys.find(
-      ({ title }) => title === event.target.value
-    )
-    if (selectedBlock != null && linkJourney != null) {
+    if (selectedBlock != null) {
       await navigateToJourneyActionUpdate({
         variables: {
           id: selectedBlock.id,
           journeyId: journey.id,
-          input: { journeyId: linkJourney.id }
+          input: { journeyId: event.target.value }
         }
         // optimistic response causing cache issues
         // optimisticResponse: {
@@ -104,10 +101,11 @@ export function NavigateJourney(): ReactElement {
         onChange={handleChange}
         value={journeyName}
         IconComponent={KeyboardArrowDownRoundedIcon}
+        inputProps={{ 'aria-label': 'journey-name-select' }}
       >
         <MenuItem value="">Select the Journey...</MenuItem>
-        {journeysList?.map(({ title }) => (
-          <MenuItem key={`button-navigate-journey-${title}`} value={title}>
+        {journeysList?.map(({ id, title }) => (
+          <MenuItem key={`button-navigate-journey-${title}`} value={id}>
             {title}
           </MenuItem>
         ))}
