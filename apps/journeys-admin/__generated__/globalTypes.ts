@@ -227,6 +227,7 @@ export interface VideoBlockCreateInput {
   autoplay?: boolean | null;
   description?: string | null;
   endAt?: number | null;
+  fullsize?: boolean | null;
   id?: string | null;
   journeyId: string;
   muted?: boolean | null;
