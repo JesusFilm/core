@@ -44,7 +44,7 @@ export function NavigateNext(): ReactElement {
 
   useEffect(() => {
     const navigateNext = async (): Promise<void> => {
-      if (selectedBlock != null) {
+      if (selectedBlock != null && nextStep != null) {
         await navigateActionUpdate({
           variables: {
             id: selectedBlock.id,
@@ -62,7 +62,7 @@ export function NavigateNext(): ReactElement {
       }
     }
     void navigateNext()
-  }, [selectedBlock, navigateActionUpdate, journey])
+  }, [selectedBlock, navigateActionUpdate, journey, nextStep])
 
   return (
     <>

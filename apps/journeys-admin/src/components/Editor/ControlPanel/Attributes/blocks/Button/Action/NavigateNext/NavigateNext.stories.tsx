@@ -461,8 +461,8 @@ export const Default: Story = () => {
     <MockedProvider>
       <EditorProvider
         initialState={{
-          selectedStep,
-          steps
+          steps,
+          selectedStep
         }}
       >
         <NavigateNext />

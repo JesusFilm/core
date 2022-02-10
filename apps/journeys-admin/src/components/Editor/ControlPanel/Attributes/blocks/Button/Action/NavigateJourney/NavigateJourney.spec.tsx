@@ -115,23 +115,11 @@ describe('NavigateJourney', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateNavigateToJourneyAction: {
-          __typename: 'ButtonBlock',
           id: 'journeyId',
-          parentBlockId: 'parentBlockId',
-          parentOrder: 0,
-          label: 'test button',
-          buttonVariant: null,
-          buttonColor: null,
-          size: null,
-          startIcon: null,
-          endIcon: null,
           action: {
-            __typename: 'NavigateToJourneyAction',
-            gtmEventName: 'gtmEventName',
+            journeyId: 'journeyId',
             journey: {
-              __typename: 'Journey',
-              id: journey.id,
-              slug: journey.slug
+              id: journey.id
             }
           }
         }

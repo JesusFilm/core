@@ -62,19 +62,8 @@ describe('NavigateLink', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
-          __typename: 'ButtonBlock',
           id: 'journeyId',
-          parentBlockId: 'parentBlockId',
-          parentOrder: 0,
-          label: 'test button',
-          buttonVariant: null,
-          buttonColor: null,
-          size: null,
-          startIcon: null,
-          endIcon: null,
           action: {
-            __typename: 'LinkAction',
-            gtmEventName: 'gtmEventName',
             url: 'https://www.google.com'
           }
         }
