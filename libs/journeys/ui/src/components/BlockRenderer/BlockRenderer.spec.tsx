@@ -531,6 +531,7 @@ describe('BlockRenderer', () => {
       startAt: null,
       parentBlockId: null,
       posterBlockId: null,
+      fullsize: null,
       parentOrder: 0,
       children: []
     }
