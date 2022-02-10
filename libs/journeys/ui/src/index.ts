@@ -12,7 +12,8 @@ export {
   Step,
   Typography,
   Video,
-  VideoTrigger
+  VideoTrigger,
+  WrappersProps
 } from './components'
 export {
   handleAction,
