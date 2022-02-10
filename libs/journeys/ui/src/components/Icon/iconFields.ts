@@ -5,8 +5,8 @@ export const ICON_FIELDS = gql`
     id
     parentBlockId
     parentOrder
-    name
-    size
-    color
+    iconName: name
+    iconSize: size
+    iconColor: color
   }
 `
