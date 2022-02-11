@@ -78,7 +78,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button',
+            id: 'button0',
             parentBlockId: 'card0.id',
             parentOrder: 3,
             label: 'Watch Now',
@@ -93,8 +93,9 @@ const steps: Array<TreeBlock<StepBlock>> = [
             },
             endIcon: null,
             action: {
-              __typename: 'NavigateAction',
-              gtmEventName: 'gtmEventName'
+              __typename: 'NavigateToBlockAction',
+              gtmEventName: 'gtmEventName',
+              blockId: 'step1.id'
             },
             children: []
           }
@@ -474,14 +475,19 @@ export const Default: Story = () => {
 export const SelectedCard: Story = () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
-    id: 'id',
-    parentBlockId: 'parentBlockId',
-    parentOrder: 0,
-    label: 'test button',
-    buttonVariant: null,
-    buttonColor: null,
-    size: null,
-    startIcon: null,
+    id: 'button0',
+    parentBlockId: 'card0.id',
+    parentOrder: 3,
+    label: 'Watch Now',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.large,
+    startIcon: {
+      __typename: 'Icon',
+      name: IconName.PlayArrowRounded,
+      color: null,
+      size: IconSize.md
+    },
     endIcon: null,
     action: {
       __typename: 'NavigateToBlockAction',

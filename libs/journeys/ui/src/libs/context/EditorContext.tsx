@@ -115,6 +115,7 @@ export const reducer = (
         activeTab: action.activeTab
       }
     case 'SetStepsAction':
+      console.log('editor context', action, state)
       return {
         ...state,
         steps: action.steps,
