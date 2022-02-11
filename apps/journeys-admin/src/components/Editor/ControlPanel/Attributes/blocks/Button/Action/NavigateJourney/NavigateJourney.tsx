@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import { gql, useQuery, useMutation } from '@apollo/client'
@@ -56,30 +56,21 @@ export function NavigateJourney(): ReactElement {
       NAVIGATE_TO_JOURNEY_ACTION_UPDATE
     )
 
-  const currentActionTitle =
+  const currentActionJourneyId =
     data?.journeys.find(
       ({ id }) =>
         selectedBlock?.action?.__typename === 'NavigateToJourneyAction' &&
         id === selectedBlock?.action?.journey?.id
-    )?.title ?? ''
-
-  const journeysList = data?.journeys
-  const [journeyName, setJourneyName] = useState('')
-
-  useEffect(() => {
-    setJourneyName(currentActionTitle)
-  }, [currentActionTitle])
+    )?.id ?? ''
+  console.log(currentActionJourneyId)
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    const selectedJourney = journeysList?.find(
-      (journey) => journey.title === event.target.value
-    )
-    if (selectedBlock != null && selectedJourney != null) {
+    if (selectedBlock != null) {
       await navigateToJourneyActionUpdate({
         variables: {
           id: selectedBlock.id,
           journeyId: journey.id,
-          input: { journeyId: selectedJourney.id }
+          input: { journeyId: event.target.value }
         }
         // optimistic response causing cache issues
         // optimisticResponse: {
@@ -93,7 +84,7 @@ export function NavigateJourney(): ReactElement {
         //   }
         // }
       })
-      setJourneyName(selectedJourney.title)
+      // setJourneyName(selectedJourney.title)
     }
   }
 
@@ -102,13 +93,13 @@ export function NavigateJourney(): ReactElement {
       <Select
         displayEmpty
         onChange={handleChange}
-        value={journeyName}
+        value={currentActionJourneyId}
         IconComponent={KeyboardArrowDownRoundedIcon}
         inputProps={{ 'aria-label': 'journey-name-select' }}
       >
         <MenuItem value="">Select the Journey...</MenuItem>
-        {journeysList?.map(({ title }) => (
-          <MenuItem key={`button-navigate-journey-${title}`} value={title}>
+        {data?.journeys?.map(({ title, id }) => (
+          <MenuItem key={`button-navigate-journey-${title}`} value={id}>
             {title}
           </MenuItem>
         ))}

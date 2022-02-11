@@ -30,6 +30,7 @@ export function Action(): ReactElement {
     selectedBlock?.action != null
       ? actions[selectedBlock?.action?.__typename]
       : 'Next Step'
+
   const [action, setAction] = useState(actionName)
 
   function handleChange(event: SelectChangeEvent): void {
