@@ -296,6 +296,7 @@ export class VideoBlockCreateInput {
     autoplay?: Nullable<boolean>;
     videoContent: VideoContentInput;
     posterBlockId?: Nullable<string>;
+    fullsize?: Nullable<boolean>;
 }
 
 export class VideoBlockUpdateInput {
@@ -308,6 +309,7 @@ export class VideoBlockUpdateInput {
     autoplay?: Nullable<boolean>;
     videoContent?: Nullable<VideoContentInput>;
     posterBlockId?: Nullable<string>;
+    fullsize?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -566,6 +568,7 @@ export class VideoBlock implements Block {
     autoplay?: Nullable<boolean>;
     videoContent: VideoContent;
     posterBlockId?: Nullable<string>;
+    fullsize?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
