@@ -60,6 +60,7 @@ export function VideoWrapper({
 
   return (
     <Box
+      data-testid={`video-${blockId}`}
       sx={{
         display: 'flex',
         width: '100%',
@@ -74,10 +75,7 @@ export function VideoWrapper({
         bottom: fullsize === true ? 0 : null,
         left: fullsize === true ? 0 : null,
         outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px',
-        '> div': {
-          width: '100%'
-        }
+        outlineOffset: '5px'
       }}
       onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
@@ -91,7 +89,6 @@ export function VideoWrapper({
       ) : (
         <Paper
           sx={{
-            borderRadius: (theme) => theme.spacing(4),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

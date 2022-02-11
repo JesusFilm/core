@@ -15,6 +15,7 @@ const block: TreeBlock<VideoFields> = {
   startAt: 10,
   endAt: null,
   muted: null,
+  fullsize: null,
   posterBlockId: 'posterBlockId',
   videoContent: {
     __typename: 'VideoArclight',
