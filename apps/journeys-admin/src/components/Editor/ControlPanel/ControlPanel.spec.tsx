@@ -377,8 +377,7 @@ describe('ControlPanel', () => {
                   videoContent: {
                     src: null
                   },
-                  title: '',
-                  fullsize: true
+                  title: ''
                 }
               }
             },
@@ -396,8 +395,7 @@ describe('ControlPanel', () => {
                   posterBlockId: null,
                   videoContent: {
                     src: null
-                  },
-                  fullsize: true
+                  }
                 }
               }
             }
