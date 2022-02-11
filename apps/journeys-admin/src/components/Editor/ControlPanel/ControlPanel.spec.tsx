@@ -378,7 +378,7 @@ describe('ControlPanel', () => {
                     src: null
                   },
                   title: '',
-                  fullsize: null
+                  fullsize: true
                 }
               }
             },
@@ -397,7 +397,7 @@ describe('ControlPanel', () => {
                   videoContent: {
                     src: null
                   },
-                  fullsize: null
+                  fullsize: true
                 }
               }
             }

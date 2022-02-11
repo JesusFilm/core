@@ -49,8 +49,8 @@ export function CardWrapper({
         backgroundPosition: 'center center',
         backgroundImage:
           coverBlock != null &&
-            coverBlock.__typename === 'ImageBlock' &&
-            coverBlock.src != null
+          coverBlock.__typename === 'ImageBlock' &&
+          coverBlock.src != null
             ? `url(${coverBlock.src})`
             : undefined
       }}
@@ -107,8 +107,8 @@ export function CardWrapper({
 
 interface CardPaperProps
   extends Pick<
-  CardFields,
-  'id' | 'backgroundColor' | 'themeMode' | 'themeName'
+    CardFields,
+    'id' | 'backgroundColor' | 'themeMode' | 'themeName'
   > {
   children: ReactNode
   sx?: SxProps
