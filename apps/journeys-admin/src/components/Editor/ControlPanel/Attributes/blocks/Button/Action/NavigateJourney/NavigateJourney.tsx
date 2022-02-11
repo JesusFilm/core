@@ -62,7 +62,6 @@ export function NavigateJourney(): ReactElement {
         selectedBlock?.action?.__typename === 'NavigateToJourneyAction' &&
         id === selectedBlock?.action?.journey?.id
     )?.id ?? ''
-  console.log(currentActionJourneyId)
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (selectedBlock != null) {
