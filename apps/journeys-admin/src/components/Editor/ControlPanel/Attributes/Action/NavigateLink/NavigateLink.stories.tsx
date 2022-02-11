@@ -1,8 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { NavigateLink } from '.'
 
 const NavigateLinkStory = {

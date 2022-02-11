@@ -5,10 +5,10 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import { GetJourneysNames } from '../../../../../../../../../__generated__/GetJourneysNames'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { NavigateToJourneyActionUpdate } from '../../../../../../../../../__generated__/NavigateToJourneyActionUpdate'
-import { useJourney } from '../../../../../../../../libs/context'
+import { GetJourneysNames } from '../../../../../../../__generated__/GetJourneysNames'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { NavigateToJourneyActionUpdate } from '../../../../../../../__generated__/NavigateToJourneyActionUpdate'
+import { useJourney } from '../../../../../../libs/context'
 
 export const GET_JOURNEYS_NAMES = gql`
   query GetJourneysNames {

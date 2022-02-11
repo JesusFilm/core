@@ -3,10 +3,10 @@ import { useEditor, TreeBlock } from '@core/journeys/ui'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
-import { CardPreview } from '../../../../../../../CardPreview'
-import { NavigateActionUpdate } from '../../../../../../../../../__generated__/NavigateActionUpdate'
-import { useJourney } from '../../../../../../../../libs/context'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { CardPreview } from '../../../../../CardPreview'
+import { NavigateActionUpdate } from '../../../../../../../__generated__/NavigateActionUpdate'
+import { useJourney } from '../../../../../../libs/context'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(

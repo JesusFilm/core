@@ -2,9 +2,9 @@ import { ReactElement, useState, ChangeEvent, FocusEvent } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { NavigateToLinkActionUpdate } from '../../../../../../../../../__generated__/NavigateToLinkActionUpdate'
-import { useJourney } from '../../../../../../../../libs/context'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { NavigateToLinkActionUpdate } from '../../../../../../../__generated__/NavigateToLinkActionUpdate'
+import { useJourney } from '../../../../../../libs/context'
 
 export const NAVIGATE_TO_LINK_ACTION_UPDATE = gql`
   mutation NavigateToLinkActionUpdate(

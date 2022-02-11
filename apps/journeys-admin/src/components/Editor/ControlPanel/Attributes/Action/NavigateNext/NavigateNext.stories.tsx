@@ -1,8 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   ButtonVariant,
   ButtonColor,
@@ -10,7 +10,7 @@ import {
   ButtonSize,
   IconName,
   IconSize
-} from '../../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 import { NavigateNext } from '.'
 
 const NavigateNextStory = {

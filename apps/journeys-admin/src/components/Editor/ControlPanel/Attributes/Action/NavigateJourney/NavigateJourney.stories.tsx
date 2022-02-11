@@ -1,17 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey as Journey
-} from '../../../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../../../libs/context'
+} from '../../../../../../../__generated__/GetJourney'
+import { JourneyProvider } from '../../../../../../libs/context'
 import {
   ThemeMode,
   ThemeName,
   JourneyStatus
-} from '../../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 import { GET_JOURNEYS_NAMES } from './NavigateJourney'
 import { NavigateJourney } from '.'
 

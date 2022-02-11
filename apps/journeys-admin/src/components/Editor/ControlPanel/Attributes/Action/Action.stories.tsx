@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import {
   ButtonVariant,
   ButtonColor,
@@ -14,7 +14,7 @@ import {
   ThemeMode,
   ThemeName,
   JourneyStatus
-} from '../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../__generated__/globalTypes'
 import { GET_JOURNEYS_NAMES } from './NavigateJourney/NavigateJourney'
 import { Action } from '.'
 

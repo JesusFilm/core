@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   ButtonVariant,
   ButtonColor,
@@ -10,7 +10,7 @@ import {
   ButtonSize,
   IconName,
   IconSize
-} from '../../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 import { NavigateStep, NAVIGATE_TO_STEP_ACTION_UPDATE } from './NavigateStep'
 
 describe('NavigateStep', () => {

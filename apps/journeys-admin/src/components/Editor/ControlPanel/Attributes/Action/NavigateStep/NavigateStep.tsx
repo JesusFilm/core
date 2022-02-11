@@ -1,13 +1,13 @@
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { CardPreview } from '../../../../../../../CardPreview'
+import { CardPreview } from '../../../../../CardPreview'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock
-} from '../../../../../../../../../__generated__/GetJourney'
-import { NavigateToStepActionUpdate } from '../../../../../../../../../__generated__/NavigateToStepActionUpdate'
-import { useJourney } from '../../../../../../../../libs/context'
+} from '../../../../../../../__generated__/GetJourney'
+import { NavigateToStepActionUpdate } from '../../../../../../../__generated__/NavigateToStepActionUpdate'
+import { useJourney } from '../../../../../../libs/context'
 
 export const NAVIGATE_TO_STEP_ACTION_UPDATE = gql`
   mutation NavigateToStepActionUpdate(

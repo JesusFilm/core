@@ -1,16 +1,16 @@
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { JourneyProvider } from '../../../../../../../../libs/context'
+import { JourneyProvider } from '../../../../../../libs/context'
 import {
   ThemeMode,
   ThemeName,
   JourneyStatus
-} from '../../../../../../../../../__generated__/globalTypes'
+} from '../../../../../../../__generated__/globalTypes'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey as Journey
-} from '../../../../../../../../../__generated__/GetJourney'
+} from '../../../../../../../__generated__/GetJourney'
 import {
   NavigateJourney,
   GET_JOURNEYS_NAMES,

@@ -13,11 +13,11 @@ import {
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
-import { actions as buttonAction } from './Action/Action'
+import { actions as buttonAction } from '../../Action/Action'
+import { Action } from '../../Action'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { Action } from './Action'
 
 export function Button({
   id,
