@@ -4,11 +4,15 @@ import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { TreeBlock } from '../..'
-import { BlockRenderer } from '../BlockRenderer'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
 import { CardCover } from '.'
+
+interface CardProps extends TreeBlock<CardFields> {
+  wrappers?: WrappersProps
+}
 
 export function Card({
   id,
@@ -17,15 +21,18 @@ export function Card({
   coverBlockId,
   themeMode,
   themeName,
-  fullscreen
-}: TreeBlock<CardFields>): ReactElement {
+  fullscreen,
+  wrappers
+}: CardProps): ReactElement {
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageFields | VideoFields>
     | undefined
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
-    .map((block) => <BlockRenderer {...block} key={block.id} />)
+    .map((block) => (
+      <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
+    ))
 
   return (
     <CardWrapper
