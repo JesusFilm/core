@@ -17,7 +17,7 @@ const NavigateNextStory = {
   ...simpleComponentConfig,
   component: NavigateNext,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Action/NavigateNext'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateNext'
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [

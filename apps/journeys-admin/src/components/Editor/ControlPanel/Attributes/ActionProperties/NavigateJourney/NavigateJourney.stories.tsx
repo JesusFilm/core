@@ -19,7 +19,7 @@ const NavigateJourneyStory = {
   ...simpleComponentConfig,
   component: NavigateJourney,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Action/NavigateJourney'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateJourney'
 }
 const journey: Journey = {
   __typename: 'Journey',

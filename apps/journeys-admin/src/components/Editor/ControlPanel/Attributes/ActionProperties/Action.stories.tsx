@@ -21,7 +21,7 @@ import { ActionProperties } from '.'
 const ActionStory = {
   ...simpleComponentConfig,
   component: ActionProperties,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button/ActionProperties'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties'
 }
 
 const journey: Journey = {

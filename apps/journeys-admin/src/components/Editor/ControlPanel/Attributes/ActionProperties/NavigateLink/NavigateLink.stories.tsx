@@ -9,7 +9,7 @@ const NavigateLinkStory = {
   ...simpleComponentConfig,
   component: NavigateLink,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Action/NavigateLink'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateLink'
 }
 
 export const Default: Story = () => {
