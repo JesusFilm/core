@@ -3,10 +3,7 @@ import { ArangoDB } from '../db'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName,
-  IconColor,
-  IconName,
-  IconSize
+  ThemeName
 } from '../../src/app/__generated__/graphql'
 
 const db = ArangoDB()
