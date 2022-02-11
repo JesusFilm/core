@@ -205,6 +205,7 @@ VideoCover.args = {
         __typename: 'VideoArclight',
         src: 'https://arc.gt/hls/2_0-FallingPlates/529'
       },
+      fullsize: null,
       children: [
         {
           id: 'posterBlockId',

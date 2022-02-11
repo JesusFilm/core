@@ -388,8 +388,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             },
             startAt: null,
             endAt: null,
-            fullsize: null,
             posterBlockId: null,
+            fullsize: null,
             children: []
           }
         ]

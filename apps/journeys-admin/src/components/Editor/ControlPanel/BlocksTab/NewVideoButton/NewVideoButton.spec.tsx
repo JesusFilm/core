@@ -45,7 +45,8 @@ describe('Video', () => {
           posterBlockId: null,
           videoContent: {
             src: null
-          }
+          },
+          fullsize: null
         }
       }
     }))
@@ -64,7 +65,8 @@ describe('Video', () => {
                   videoContent: {
                     src: null
                   },
-                  title: ''
+                  title: '',
+                  fullsize: null
                 }
               }
             },
@@ -107,7 +109,8 @@ describe('Video', () => {
           videoContent: {
             src: null
           },
-          __typename: 'VideoBlock'
+          __typename: 'VideoBlock',
+          fullsize: null
         }
       }
     }))
@@ -127,7 +130,8 @@ describe('Video', () => {
                   videoContent: {
                     src: null
                   },
-                  title: ''
+                  title: '',
+                  fullsize: null
                 }
               }
             },

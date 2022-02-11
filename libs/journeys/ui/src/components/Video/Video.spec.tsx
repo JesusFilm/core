@@ -15,8 +15,8 @@ const block: TreeBlock<VideoFields> = {
   startAt: 10,
   endAt: null,
   muted: null,
-  fullsize: null,
   posterBlockId: 'posterBlockId',
+  fullsize: null,
   videoContent: {
     __typename: 'VideoArclight',
     src: 'https://arc.gt/hls/2_0-FallingPlates/529'
