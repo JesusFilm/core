@@ -1,6 +1,6 @@
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../../../CardPreview'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -50,8 +50,6 @@ export function NavigateStep(): ReactElement {
         id === selectedBlock?.action?.blockId
     ) ?? undefined
 
-  const [selection, setSelection] = useState(currentActionStep)
-
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
     if (selectedBlock != null) {
       await navigateToStepActionUpdate({
@@ -73,12 +71,11 @@ export function NavigateStep(): ReactElement {
         // }
       })
     }
-    setSelection(step)
   }
 
   return (
     <CardPreview
-      selected={selection}
+      selected={currentActionStep}
       steps={state.steps}
       onSelect={handleSelectStep}
     />
