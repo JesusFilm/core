@@ -71,12 +71,15 @@ export function NavigateJourney(): ReactElement {
   }, [currentActionTitle])
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (selectedBlock != null) {
+    const selectedJourney = journeysList?.find(
+      (journey) => journey.title === event.target.value
+    )
+    if (selectedBlock != null && selectedJourney != null) {
       await navigateToJourneyActionUpdate({
         variables: {
           id: selectedBlock.id,
           journeyId: journey.id,
-          input: { journeyId: event.target.value }
+          input: { journeyId: selectedJourney.id }
         }
         // optimistic response causing cache issues
         // optimisticResponse: {
@@ -90,8 +93,8 @@ export function NavigateJourney(): ReactElement {
         //   }
         // }
       })
+      setJourneyName(selectedJourney.title)
     }
-    setJourneyName(event.target.value)
   }
 
   return (
@@ -104,8 +107,8 @@ export function NavigateJourney(): ReactElement {
         inputProps={{ 'aria-label': 'journey-name-select' }}
       >
         <MenuItem value="">Select the Journey...</MenuItem>
-        {journeysList?.map(({ id, title }) => (
-          <MenuItem key={`button-navigate-journey-${title}`} value={id}>
+        {journeysList?.map(({ title }) => (
+          <MenuItem key={`button-navigate-journey-${title}`} value={title}>
             {title}
           </MenuItem>
         ))}

@@ -36,14 +36,12 @@ describe('NavigateJourney', () => {
   }
 
   it('displays text when no journey is selected', () => {
-    const { getByRole } = render(
+    const { getByText } = render(
       <MockedProvider>
         <NavigateJourney />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Select the Journey...' })
-    ).toBeInTheDocument()
+    expect(getByText('Select the Journey...')).toBeInTheDocument()
   })
 
   it('displays selected journey', async () => {
@@ -63,13 +61,13 @@ describe('NavigateJourney', () => {
         gtmEventName: 'gtmEventName',
         journey: {
           __typename: 'Journey',
-          id: journey.id,
-          slug: journey.slug
+          id: 'journeyId',
+          slug: 'my-journey'
         }
       },
       children: []
     }
-    const { getByRole } = render(
+    const { getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -78,7 +76,12 @@ describe('NavigateJourney', () => {
             },
             result: {
               data: {
-                journeys: [journey]
+                journeys: [
+                  {
+                    id: 'journeyId',
+                    title: 'my journey'
+                  }
+                ]
               }
             }
           }
@@ -91,9 +94,7 @@ describe('NavigateJourney', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'my journey' })).toBeInTheDocument()
-    )
+    await waitFor(() => expect(getByText('my journey')).toBeInTheDocument())
   })
 
   it('changes the journey on action', async () => {
