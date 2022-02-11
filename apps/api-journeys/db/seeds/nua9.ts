@@ -148,7 +148,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button1._key,
     name: 'PlayArrowRounded',
     color: 'primary',
-    size: 'large',
+    size: 'lg',
     parentOrder: 0
   })
   await db
@@ -368,7 +368,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button2._key,
     name: 'ChevronRightRounded',
     color: 'primary',
-    size: 'small',
+    size: 'sm',
     parentOrder: 0
   })
   await db
@@ -453,7 +453,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button3._key,
     name: 'ChevronRightRounded',
     color: 'primary',
-    size: 'small',
+    size: 'sm',
     parentOrder: 0
   })
   await db
@@ -538,7 +538,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button4._key,
     name: 'BeenhereRounded',
     color: 'primary',
-    size: 'small',
+    size: 'sm',
     parentOrder: 0
   })
   await db
@@ -734,7 +734,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button5._key,
     name: 'SendRounded',
     color: 'primary',
-    size: 'large',
+    size: 'lg',
     parentOrder: 0
   })
   await db
@@ -929,7 +929,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button6._key,
     name: 'ContactSupportRounded',
     color: 'primary',
-    size: 'large',
+    size: 'lg',
     parentOrder: 0
   })
   await db
@@ -1124,7 +1124,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button7._key,
     name: 'ContactSupportRounded',
     color: 'primary',
-    size: 'large',
+    size: 'lg',
     parentOrder: 0
   })
   await db
@@ -1236,7 +1236,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: signUp1._key,
     name: 'SendRounded',
     color: 'primary',
-    size: 'medium',
+    size: 'md',
     parentOrder: 0
   })
   await db
@@ -1290,7 +1290,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: signUp3._key,
     name: 'SendRounded',
     color: 'primary',
-    size: 'medium',
+    size: 'md',
     parentOrder: 0
   })
   await db
@@ -1314,7 +1314,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: signUp4._key,
     name: 'SendRounded',
     color: 'primary',
-    size: 'medium',
+    size: 'md',
     parentOrder: 0
   })
   await db
@@ -1387,7 +1387,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: button8._key,
     name: 'SubscriptionsRounded',
     color: 'primary',
-    size: 'medium',
+    size: 'md',
     parentOrder: 0
   })
   await db

@@ -146,7 +146,7 @@ export async function nua8(): Promise<void> {
     parentBlockId: button1._key,
     name: 'PlayArrowRounded',
     color: 'primary',
-    size: 'large',
+    size: 'lg',
     parentOrder: 0
   })
   await db
@@ -385,7 +385,7 @@ export async function nua8(): Promise<void> {
     parentBlockId: button2._key,
     name: 'ContactSupportRounded',
     color: 'primary',
-    size: 'medium',
+    size: 'md',
     parentOrder: 4
   })
   await db
