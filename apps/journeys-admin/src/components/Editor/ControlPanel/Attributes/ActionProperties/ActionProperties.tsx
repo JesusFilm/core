@@ -20,7 +20,7 @@ export enum actions {
   LinkAction = 'URL/Website'
 }
 
-export function Action(): ReactElement {
+export function ActionProperties(): ReactElement {
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>

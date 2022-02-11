@@ -2,13 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
-import { Action } from '.'
+import { ActionProperties } from '.'
 
 describe('Action', () => {
   it('shows Next Step by default', () => {
     const { getByText } = render(
       <MockedProvider>
-        <Action />
+        <ActionProperties />
       </MockedProvider>
     )
     expect(getByText('Next Step')).toBeInTheDocument()
@@ -37,7 +37,7 @@ describe('Action', () => {
     const { getByText } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <Action />
+          <ActionProperties />
         </EditorProvider>
       </MockedProvider>
     )
@@ -47,7 +47,7 @@ describe('Action', () => {
   it('shows properties for new action selected', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <Action />
+        <ActionProperties />
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('button', { name: 'Next Step' }))

@@ -16,12 +16,12 @@ import {
   JourneyStatus
 } from '../../../../../../__generated__/globalTypes'
 import { GET_JOURNEYS_NAMES } from './NavigateJourney/NavigateJourney'
-import { Action } from '.'
+import { ActionProperties } from '.'
 
 const ActionStory = {
   ...simpleComponentConfig,
-  component: Action,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Action'
+  component: ActionProperties,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button/ActionProperties'
 }
 
 const journey: Journey = {
@@ -494,7 +494,7 @@ export const Default: Story = () => {
       ]}
     >
       <EditorProvider initialState={{ steps, selectedStep }}>
-        <Action />
+        <ActionProperties />
       </EditorProvider>
     </MockedProvider>
   )
