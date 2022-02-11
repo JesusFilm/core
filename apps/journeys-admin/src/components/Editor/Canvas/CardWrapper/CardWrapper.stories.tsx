@@ -107,5 +107,8 @@ VideoCover.args = {
     }
   ]
 }
+VideoCover.parameters = {
+  chromatic: { delay: 400, diffThreshold: 0.85 }
+}
 
 export default Demo
