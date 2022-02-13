@@ -26,7 +26,8 @@
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
     "help": "nx help",
-    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
+    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\"",
+    "prepare": "husky install"
   },
   "private": true,
   "dependencies": {
@@ -90,6 +91,8 @@
   "devDependencies": {
     "@babel/core": "7.12.13",
     "@babel/preset-typescript": "7.12.13",
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0",
     "@graphql-codegen/add": "^3.0.0",
     "@graphql-codegen/cli": "^2.0.1",
     "@graphql-codegen/graphql-modules-preset": "^2.0.1",
@@ -153,6 +156,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-react": "7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^7.0.4",
     "jest": "27.2.3",
     "jest-mock-extended": "^2.0.2-beta2",
     "mini-css-extract-plugin": "^2.1.0",
