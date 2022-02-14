@@ -9,6 +9,9 @@ on:
       repository:
         required: true
         type: string
+      branch:
+        required: true
+        type: string
     secrets:
       ARANGODB_URL:
         required: true
@@ -29,7 +32,7 @@ jobs:
   build-and-deploy:
     environment: Production
     env:
-      ENV_SUFFIX: ${{ github.ref_name }}
+      ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
