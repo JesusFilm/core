@@ -19,13 +19,10 @@ export class IconBlockResolver {
     @Args('input') input: IconBlockCreateInput & { __typename }
   ): Promise<IconBlock> {
     input.__typename = 'IconBlock'
-    const siblings = await this.blockService.getSiblings(
-      input.journeyId,
-      input.parentBlockId
-    )
     return await this.blockService.save({
       ...input,
-      parentOrder: siblings.length
+      // Icons positions are set via parent block props, cannot be ordered.
+      parentOrder: null
     })
   }
 

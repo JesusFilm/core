@@ -40,7 +40,7 @@ describe('Icon', () => {
   }
 
   const input: IconBlockCreateInput & { __typename: string } = {
-    __typename: '',
+    __typename: 'IconBlock',
     id: '1',
     parentBlockId: '0',
     journeyId: '2',
@@ -113,7 +113,7 @@ describe('Icon', () => {
     })
   })
 
-  describe('iconBlockCreate', () => {
+  describe('IconBlockCreate', () => {
     it('creates an IconBlock', async () => {
       await iconBlockResolver.iconBlockCreate(input)
       expect(service.getSiblings).toHaveBeenCalledWith(
