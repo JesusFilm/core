@@ -29,6 +29,9 @@ jobs:
           targets: lint,type-check
       - name: Prettier
         run: npx prettier --check .
+      - uses: wagoid/commitlint-github-action@v4
+      - name: Check branch name matches convention
+        run: ./tools/scripts/check-git-branch-name.sh
       - name: Check for changes
         run: ./tools/scripts/check-git-status.sh
   build:
