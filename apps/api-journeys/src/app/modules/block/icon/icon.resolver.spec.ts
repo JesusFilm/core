@@ -54,7 +54,7 @@ describe('Icon', () => {
     __typename: 'IconBlock',
     journeyId: '2',
     parentBlockId: '0',
-    parentOrder: 2,
+    parentOrder: null,
     name: 'ArrowForwardRounded',
     color: 'secondary',
     size: 'lg'
@@ -81,7 +81,6 @@ describe('Icon', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -116,10 +115,6 @@ describe('Icon', () => {
   describe('IconBlockCreate', () => {
     it('creates an IconBlock', async () => {
       await iconBlockResolver.iconBlockCreate(input)
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        input.journeyId,
-        input.parentBlockId
-      )
       expect(service.save).toHaveBeenCalledWith(createResponse)
     })
   })
