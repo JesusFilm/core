@@ -5,10 +5,10 @@ import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ActionResolver } from '../action.resolver'
-import { LinkToActionResolver } from './linkToAction.resolver'
+import { LinkActionResolver } from './linkAction.resolver'
 
-describe('LinkToActionResolver', () => {
-  let resolver: LinkToActionResolver, service: BlockService
+describe('LinkActionResolver', () => {
+  let resolver: LinkActionResolver, service: BlockService
 
   const block = {
     _key: '1',
@@ -43,7 +43,7 @@ describe('LinkToActionResolver', () => {
       providers: [
         BlockResolver,
         blockService,
-        LinkToActionResolver,
+        LinkActionResolver,
         ActionResolver,
         UserJourneyService,
         {
@@ -52,7 +52,7 @@ describe('LinkToActionResolver', () => {
         }
       ]
     }).compile()
-    resolver = module.get<LinkToActionResolver>(LinkToActionResolver)
+    resolver = module.get<LinkActionResolver>(LinkActionResolver)
     service = await module.resolve(BlockService)
   })
 

@@ -12,8 +12,8 @@ import {
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 
-@Resolver('LinkToActionResolver')
-export class LinkToActionResolver {
+@Resolver('LinkActionResolver')
+export class LinkActionResolver {
   constructor(private readonly blockService: BlockService) {}
 
   @Mutation()

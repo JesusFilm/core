@@ -6,7 +6,7 @@ import { BlockService } from '../block/block.service'
 import { ActionResolver } from './action.resolver'
 import { NavigateToJourneyActionResolver } from './navigateToJourney/navigateToJourney.resolver'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateToBlockAction.resolver'
-import { LinkToActionResolver } from './linkToAction/linkToAction.resolver'
+import { LinkActionResolver } from './linkAction/linkAction.resolver'
 import { NavigateActionResolver } from './navigateAction/navigateAction.resolver'
 
 @Module({
@@ -16,7 +16,7 @@ import { NavigateActionResolver } from './navigateAction/navigateAction.resolver
     BlockService,
     DateTimeScalar,
     JourneyService,
-    LinkToActionResolver,
+    LinkActionResolver,
     NavigateActionResolver,
     NavigateToBlockActionResolver,
     NavigateToJourneyActionResolver
