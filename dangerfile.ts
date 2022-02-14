@@ -18,3 +18,33 @@ if (changeCount > CHANGE_THRESHOLD) {
     `> (${changeCount}): Pull Request size seems relatively large. If Pull Request contains multiple changes, split each into separate PR will helps faster, easier review.`
   )
 }
+
+if (danger.github.pr.assignee === null) {
+  fail('Please assign someone to merge this PR.')
+}
+
+if (!danger.github.issue.labels.some((label) => label.name.includes('type:'))) {
+  fail('Please add type label to this PR.')
+}
+
+if (
+  !danger.github.issue.labels.some((label) => label.name.includes('priority:'))
+) {
+  fail('Please add priority label to this PR.')
+}
+
+if (
+  !danger.github.issue.labels.some((label) => label.name.includes('effort:'))
+) {
+  fail('Please add effort label to this PR.')
+}
+
+if (
+  danger.github.pr.title.match(
+    /^(fix|chore|docs|feature|fix|security|testing): .+/g
+  ) === null
+) {
+  fail(
+    'Please ensure your PR title matches convention. See https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-pr for more details.'
+  )
+}
