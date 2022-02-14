@@ -7,11 +7,33 @@ import InputLabel from '@mui/material/InputLabel'
 import { Typography } from '@mui/material'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Stack from '@mui/material/Stack'
+import { gql, useMutation } from '@apollo/client'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
+import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
+import { useJourney } from '../../../../../libs/context'
 import { NavigateNext } from './NavigateNext'
 import { NavigateStep } from './NavigateStep'
 import { NavigateJourney } from './NavigateJourney'
 import { NavigateLink } from './NavigateLink'
+
+export const NAVIGATE_ACTION_UPDATE = gql`
+  mutation NavigateActionUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: NavigateActionInput!
+  ) {
+    blockUpdateNavigateAction(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      ... on ButtonBlock {
+        action {
+          ... on NavigateAction {
+            gtmEventName
+          }
+        }
+      }
+    }
+  }
+`
 
 export enum actions {
   NavigateAction = 'Next Step',
@@ -22,9 +44,18 @@ export enum actions {
 
 export function ActionProperties(): ReactElement {
   const { state } = useEditor()
+  const journey = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
+
+  const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(
+    NAVIGATE_ACTION_UPDATE
+  )
+
+  const nextStep = state.steps.find(
+    (step) => step.id === state.selectedStep?.nextBlockId
+  )
 
   const actionName =
     selectedBlock?.action != null
@@ -33,7 +64,29 @@ export function ActionProperties(): ReactElement {
 
   const [action, setAction] = useState(actionName)
 
-  function handleChange(event: SelectChangeEvent): void {
+  async function navigateAction(): Promise<void> {
+    if (selectedBlock != null && nextStep != null) {
+      await navigateActionUpdate({
+        variables: {
+          id: selectedBlock.id,
+          journeyId: journey.id,
+          input: { gtmEventName: 'gtmEventName' }
+        }
+        // optimistic response cache issues
+        // optimisticResponse: {
+        //   blockUpdateNavigateAction: {
+        //     id: selectedBlock.id,
+        //     __typename: 'ButtonBlock'
+        //   }
+        // }
+      })
+    }
+  }
+
+  async function handleChange(event: SelectChangeEvent): Promise<void> {
+    if (event.target.value === 'Next Step') {
+      await navigateAction()
+    }
     setAction(event.target.value)
   }
 
