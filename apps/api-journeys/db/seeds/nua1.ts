@@ -63,7 +63,6 @@ export async function nua1(): Promise<void> {
     autoplay: true,
     startAt: 11,
     title: 'Fact or fiction',
-    fullsize: true,
     description:
       'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.'
   })
@@ -147,10 +146,20 @@ export async function nua1(): Promise<void> {
     parentOrder: 3
   })
 
+  const videoCard = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'CardBlock',
+    parentBlockId: step2._key,
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    fullscreen: false,
+    parentOrder: 0
+  })
+
   const video = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'VideoBlock',
-    parentBlockId: step2._key,
+    parentBlockId: videoCard._key,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
@@ -259,10 +268,20 @@ export async function nua1(): Promise<void> {
     }
   ])
 
+  const videoCard1 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'CardBlock',
+    parentBlockId: step4._key,
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    fullscreen: false,
+    parentOrder: 0
+  })
+
   const video1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'VideoBlock',
-    parentBlockId: step4._key,
+    parentBlockId: videoCard1._key,
     videoContent: {
       mediaComponentId: '5_0-NUA0201-0-0',
       languageId: '529'
