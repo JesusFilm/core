@@ -13,7 +13,7 @@ import {
 } from '../../../../../../../__generated__/GetJourney'
 import {
   NavigateToJourneyAction,
-  GET_JOURNEYS_NAMES,
+  GET_JOURNEY_NAMES,
   NAVIGATE_TO_JOURNEY_ACTION_UPDATE
 } from './NavigateToJourneyAction'
 
@@ -72,7 +72,7 @@ describe('NavigateToJourneyAction', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS_NAMES
+              query: GET_JOURNEY_NAMES
             },
             result: {
               data: {
@@ -132,7 +132,7 @@ describe('NavigateToJourneyAction', () => {
         mocks={[
           {
             request: {
-              query: GET_JOURNEYS_NAMES
+              query: GET_JOURNEY_NAMES
             },
             result: {
               data: {

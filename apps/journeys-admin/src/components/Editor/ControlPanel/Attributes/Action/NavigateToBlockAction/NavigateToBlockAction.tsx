@@ -6,11 +6,11 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { NavigateToStepActionUpdate } from '../../../../../../../__generated__/NavigateToStepActionUpdate'
+import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
 import { useJourney } from '../../../../../../libs/context'
 
-export const NAVIGATE_TO_STEP_ACTION_UPDATE = gql`
-  mutation NavigateToStepActionUpdate(
+export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
+  mutation NavigateToBlockActionUpdate(
     $id: ID!
     $journeyId: ID!
     $input: NavigateToBlockActionInput!
@@ -39,9 +39,8 @@ export function NavigateToBlockAction(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const [navigateToStepActionUpdate] = useMutation<NavigateToStepActionUpdate>(
-    NAVIGATE_TO_STEP_ACTION_UPDATE
-  )
+  const [navigateToBlockActionUpdate] =
+    useMutation<NavigateToBlockActionUpdate>(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
 
   const currentActionStep =
     state.steps.find(
@@ -52,7 +51,7 @@ export function NavigateToBlockAction(): ReactElement {
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
     if (selectedBlock != null) {
-      await navigateToStepActionUpdate({
+      await navigateToBlockActionUpdate({
         variables: {
           id: selectedBlock.id,
           journeyId: journey.id,

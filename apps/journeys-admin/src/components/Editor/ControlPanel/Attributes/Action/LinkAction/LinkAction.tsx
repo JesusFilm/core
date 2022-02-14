@@ -3,11 +3,11 @@ import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
-import { NavigateToLinkActionUpdate } from '../../../../../../../__generated__/NavigateToLinkActionUpdate'
+import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 import { useJourney } from '../../../../../../libs/context'
 
-export const NAVIGATE_TO_LINK_ACTION_UPDATE = gql`
-  mutation NavigateToLinkActionUpdate(
+export const LINK_ACTION_UPDATE = gql`
+  mutation LinkActionUpdate(
     $id: ID!
     $journeyId: ID!
     $input: LinkActionInput!
@@ -32,9 +32,7 @@ export function LinkAction(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const [navigateToLinkActionUpdate] = useMutation<NavigateToLinkActionUpdate>(
-    NAVIGATE_TO_LINK_ACTION_UPDATE
-  )
+  const [linkActionUpdate] = useMutation<LinkActionUpdate>(LINK_ACTION_UPDATE)
 
   const currentActionLink =
     selectedBlock?.action?.__typename === 'LinkAction'
@@ -47,7 +45,7 @@ export function LinkAction(): ReactElement {
     event: FocusEvent<HTMLInputElement>
   ): Promise<void> {
     if (selectedBlock != null) {
-      await navigateToLinkActionUpdate({
+      await linkActionUpdate({
         variables: {
           id: selectedBlock.id,
           journeyId: journey.id,

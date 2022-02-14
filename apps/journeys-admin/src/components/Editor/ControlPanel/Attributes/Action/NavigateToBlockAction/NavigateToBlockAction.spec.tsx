@@ -13,7 +13,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import {
   NavigateToBlockAction,
-  NAVIGATE_TO_STEP_ACTION_UPDATE
+  NAVIGATE_TO_BLOCK_ACTION_UPDATE
 } from './NavigateToBlockAction'
 
 describe('NavigateToBlockAction', () => {
@@ -476,7 +476,7 @@ describe('NavigateToBlockAction', () => {
         mocks={[
           {
             request: {
-              query: NAVIGATE_TO_STEP_ACTION_UPDATE,
+              query: NAVIGATE_TO_BLOCK_ACTION_UPDATE,
               variables: {
                 id: selectedBlock.id,
                 input: {

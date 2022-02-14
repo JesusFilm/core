@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
-import { LinkAction, NAVIGATE_TO_LINK_ACTION_UPDATE } from './LinkAction'
+import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
 describe('LinkAction', () => {
   it('defaults to place holder text', () => {
@@ -75,7 +75,7 @@ describe('LinkAction', () => {
         mocks={[
           {
             request: {
-              query: NAVIGATE_TO_LINK_ACTION_UPDATE,
+              query: LINK_ACTION_UPDATE,
               variables: {
                 id: selectedBlock.id,
                 input: {

@@ -5,13 +5,13 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import { GetJourneysNames } from '../../../../../../../__generated__/GetJourneysNames'
+import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToJourneyActionUpdate } from '../../../../../../../__generated__/NavigateToJourneyActionUpdate'
 import { useJourney } from '../../../../../../libs/context'
 
-export const GET_JOURNEYS_NAMES = gql`
-  query GetJourneysNames {
+export const GET_JOURNEY_NAMES = gql`
+  query GetJourneyNames {
     journeys: adminJourneys {
       id
       title
@@ -49,7 +49,7 @@ export function NavigateToJourneyAction(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const { data } = useQuery<GetJourneysNames>(GET_JOURNEYS_NAMES)
+  const { data } = useQuery<GetJourneyNames>(GET_JOURNEY_NAMES)
 
   const [navigateToJourneyActionUpdate] =
     useMutation<NavigateToJourneyActionUpdate>(
