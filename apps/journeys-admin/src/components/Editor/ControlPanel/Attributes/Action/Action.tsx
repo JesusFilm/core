@@ -11,10 +11,10 @@ import { gql, useMutation } from '@apollo/client'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 import { useJourney } from '../../../../../libs/context'
-import { NavigateNext } from './NavigateNext'
-import { NavigateStep } from './NavigateStep'
-import { NavigateJourney } from './NavigateJourney'
-import { NavigateLink } from './NavigateLink'
+import { NavigateAction } from './NavigateAction'
+import { NavigateToBlockAction } from './NavigateToBlockAction'
+import { NavigateToJourneyAction } from './NavigateToJourneyAction'
+import { LinkAction } from './LinkAction'
 
 export const NAVIGATE_ACTION_UPDATE = gql`
   mutation NavigateActionUpdate(
@@ -42,7 +42,7 @@ export enum actions {
   LinkAction = 'URL/Website'
 }
 
-export function ActionProperties(): ReactElement {
+export function Action(): ReactElement {
   const { state } = useEditor()
   const journey = useJourney()
   const selectedBlock = state.selectedBlock as
@@ -114,10 +114,12 @@ export function ActionProperties(): ReactElement {
         Redirect user to the selected resource
       </Typography>
 
-      {action === actions.NavigateAction && <NavigateNext />}
-      {action === actions.NavigateToBlockAction && <NavigateStep />}
-      {action === actions.NavigateToJourneyAction && <NavigateJourney />}
-      {action === actions.LinkAction && <NavigateLink />}
+      {action === actions.NavigateAction && <NavigateAction />}
+      {action === actions.NavigateToBlockAction && <NavigateToBlockAction />}
+      {action === actions.NavigateToJourneyAction && (
+        <NavigateToJourneyAction />
+      )}
+      {action === actions.LinkAction && <LinkAction />}
     </Stack>
   )
 }

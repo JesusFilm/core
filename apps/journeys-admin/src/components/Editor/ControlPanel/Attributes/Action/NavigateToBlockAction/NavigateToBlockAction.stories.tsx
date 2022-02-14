@@ -12,13 +12,13 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
-import { NavigateStep } from '.'
+import { NavigateToBlockAction } from '.'
 
-const NavigateStepStory = {
+const NavigateToBlockActionStory = {
   ...simpleComponentConfig,
-  component: NavigateStep,
+  component: NavigateToBlockAction,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateStep'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateToBlockAction'
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [
@@ -466,7 +466,7 @@ export const Default: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock, steps }}>
-        <NavigateStep />
+        <NavigateToBlockAction />
       </EditorProvider>
     </MockedProvider>
   )
@@ -500,10 +500,10 @@ export const SelectedCard: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock, steps }}>
-        <NavigateStep />
+        <NavigateToBlockAction />
       </EditorProvider>
     </MockedProvider>
   )
 }
 
-export default NavigateStepStory as Meta
+export default NavigateToBlockActionStory as Meta

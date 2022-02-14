@@ -15,13 +15,13 @@ import {
   ThemeName,
   JourneyStatus
 } from '../../../../../../__generated__/globalTypes'
-import { GET_JOURNEYS_NAMES } from './NavigateJourney/NavigateJourney'
-import { ActionProperties } from '.'
+import { GET_JOURNEYS_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
+import { Action } from '.'
 
 const ActionStory = {
   ...simpleComponentConfig,
-  component: ActionProperties,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties'
+  component: Action,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action'
 }
 
 const journey: Journey = {
@@ -494,7 +494,7 @@ export const Default: Story = () => {
       ]}
     >
       <EditorProvider initialState={{ steps, selectedStep }}>
-        <ActionProperties />
+        <Action />
       </EditorProvider>
     </MockedProvider>
   )

@@ -11,13 +11,13 @@ import {
   IconName,
   IconSize
 } from '../../../../../../__generated__/globalTypes'
-import { ActionProperties, NAVIGATE_ACTION_UPDATE } from './ActionProperties'
+import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 
 describe('Action', () => {
   it('shows Next Step by default', () => {
     const { getByText } = render(
       <MockedProvider>
-        <ActionProperties />
+        <Action />
       </MockedProvider>
     )
     expect(getByText('Next Step')).toBeInTheDocument()
@@ -583,7 +583,7 @@ describe('Action', () => {
         ]}
       >
         <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
-          <ActionProperties />
+          <Action />
         </EditorProvider>
       </MockedProvider>
     )
@@ -615,7 +615,7 @@ describe('Action', () => {
     const { getByText } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <ActionProperties />
+          <Action />
         </EditorProvider>
       </MockedProvider>
     )
@@ -625,7 +625,7 @@ describe('Action', () => {
   it('shows properties for new action selected', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <ActionProperties />
+        <Action />
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('button', { name: 'Next Step' }))

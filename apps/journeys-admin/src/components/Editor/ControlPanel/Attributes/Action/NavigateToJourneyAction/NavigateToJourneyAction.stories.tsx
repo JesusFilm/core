@@ -12,14 +12,14 @@ import {
   ThemeName,
   JourneyStatus
 } from '../../../../../../../__generated__/globalTypes'
-import { GET_JOURNEYS_NAMES } from './NavigateJourney'
-import { NavigateJourney } from '.'
+import { GET_JOURNEYS_NAMES } from './NavigateToJourneyAction'
+import { NavigateToJourneyAction } from '.'
 
-const NavigateJourneyStory = {
+const NavigateToJourneyActionStory = {
   ...simpleComponentConfig,
-  component: NavigateJourney,
+  component: NavigateToJourneyAction,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateJourney'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateToJourneyAction'
 }
 const journey: Journey = {
   __typename: 'Journey',
@@ -41,7 +41,7 @@ const journey: Journey = {
 export const Default: Story = () => {
   return (
     <MockedProvider>
-      <NavigateJourney />
+      <NavigateToJourneyAction />
     </MockedProvider>
   )
 }
@@ -87,11 +87,11 @@ export const WithSelected: Story = () => {
     >
       <JourneyProvider value={journey}>
         <EditorProvider initialState={{ selectedBlock }}>
-          <NavigateJourney />
+          <NavigateToJourneyAction />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-export default NavigateJourneyStory as Meta
+export default NavigateToJourneyActionStory as Meta

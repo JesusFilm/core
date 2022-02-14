@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   ButtonVariant,
   ButtonColor,
@@ -11,9 +10,9 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
-import { NavigateStep, NAVIGATE_TO_STEP_ACTION_UPDATE } from './NavigateStep'
+import { NavigateAction } from './NavigateAction'
 
-describe('NavigateStep', () => {
+describe('NavigateNext', () => {
   const steps: Array<TreeBlock<StepBlock>> = [
     {
       id: 'step0.id',
@@ -164,7 +163,10 @@ describe('NavigateStep', () => {
                 size: IconSize.md
               },
               endIcon: null,
-              action: null,
+              action: {
+                __typename: 'NavigateAction',
+                gtmEventName: 'gtmEventName'
+              },
               children: []
             }
           ]
@@ -436,61 +438,46 @@ describe('NavigateStep', () => {
       ]
     }
   ]
-  it('sets action on card click', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'button',
-      parentBlockId: 'card1.id',
-      parentOrder: 3,
-      label: 'Watch Now',
-      buttonVariant: ButtonVariant.contained,
-      buttonColor: ButtonColor.primary,
-      size: ButtonSize.large,
-      startIcon: {
-        __typename: 'Icon',
-        name: IconName.PlayArrowRounded,
-        color: null,
-        size: IconSize.md
-      },
-      endIcon: null,
-      action: null,
+
+  it('shows, disabled cards', () => {
+    const selectedStep: TreeBlock<StepBlock> = {
+      id: 'step3.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
       children: []
     }
 
-    const result = jest.fn(() => ({
-      data: {
-        blockUpdateNavigateToBlockAction: {
-          id: selectedBlock.id,
-          journeyId: 'journeyId',
-          action: {
-            blockId: 'step2.id'
-          }
-        }
-      }
-    }))
     const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: NAVIGATE_TO_STEP_ACTION_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                input: {
-                  blockId: 'step2.id'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <EditorProvider initialState={{ steps, selectedBlock }}>
-          <NavigateStep />
+      <MockedProvider>
+        <EditorProvider initialState={{ steps, selectedStep }}>
+          <NavigateAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step2.id'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByTestId('cards-disabled-view')).toBeInTheDocument()
+  })
+
+  it('shows no next card message', () => {
+    const selectedStep: TreeBlock<StepBlock> = {
+      id: 'step4.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+
+    const { getByText } = render(
+      <MockedProvider>
+        <EditorProvider initialState={{ steps, selectedStep }}>
+          <NavigateAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(getByText('No next card')).toBeInTheDocument()
   })
 })

@@ -25,7 +25,7 @@ export const NAVIGATE_TO_LINK_ACTION_UPDATE = gql`
   }
 `
 
-export function NavigateLink(): ReactElement {
+export function LinkAction(): ReactElement {
   const { state } = useEditor()
   const journey = useJourney()
   const selectedBlock = state.selectedBlock as

@@ -13,8 +13,8 @@ import {
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
-import { actions as buttonAction } from '../../ActionProperties/ActionProperties'
-import { ActionProperties } from '../../ActionProperties'
+import { actions as buttonAction } from '../../Action/Action'
+import { Action } from '../../Action'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
@@ -43,7 +43,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Action',
             mobileOpen: true,
-            children: <ActionProperties />
+            children: <Action />
           })
         }}
       />

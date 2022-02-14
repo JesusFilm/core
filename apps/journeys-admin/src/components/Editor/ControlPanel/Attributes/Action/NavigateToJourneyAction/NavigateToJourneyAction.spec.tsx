@@ -12,12 +12,12 @@ import {
   GetJourney_journey as Journey
 } from '../../../../../../../__generated__/GetJourney'
 import {
-  NavigateJourney,
+  NavigateToJourneyAction,
   GET_JOURNEYS_NAMES,
   NAVIGATE_TO_JOURNEY_ACTION_UPDATE
-} from './NavigateJourney'
+} from './NavigateToJourneyAction'
 
-describe('NavigateJourney', () => {
+describe('NavigateToJourneyAction', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
@@ -38,7 +38,7 @@ describe('NavigateJourney', () => {
   it('displays text when no journey is selected', () => {
     const { getByText } = render(
       <MockedProvider>
-        <NavigateJourney />
+        <NavigateToJourneyAction />
       </MockedProvider>
     )
     expect(getByText('Select the Journey...')).toBeInTheDocument()
@@ -89,7 +89,7 @@ describe('NavigateJourney', () => {
       >
         <JourneyProvider value={journey}>
           <EditorProvider initialState={{ selectedBlock }}>
-            <NavigateJourney />
+            <NavigateToJourneyAction />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -162,7 +162,7 @@ describe('NavigateJourney', () => {
       >
         <JourneyProvider value={journey}>
           <EditorProvider initialState={{ selectedBlock }}>
-            <NavigateJourney />
+            <NavigateToJourneyAction />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

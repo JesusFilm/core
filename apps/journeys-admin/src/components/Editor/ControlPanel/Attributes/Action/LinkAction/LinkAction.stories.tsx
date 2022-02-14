@@ -3,19 +3,19 @@ import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
-import { NavigateLink } from '.'
+import { LinkAction } from '.'
 
-const NavigateLinkStory = {
+const LinkActionStory = {
   ...simpleComponentConfig,
-  component: NavigateLink,
+  component: LinkAction,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateLink'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/LinkAction'
 }
 
 export const Default: Story = () => {
   return (
     <MockedProvider>
-      <NavigateLink />
+      <LinkAction />
     </MockedProvider>
   )
 }
@@ -43,10 +43,10 @@ export const WithLink: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock }}>
-        <NavigateLink />
+        <LinkAction />
       </EditorProvider>
     </MockedProvider>
   )
 }
 
-export default NavigateLinkStory as Meta
+export default LinkActionStory as Meta

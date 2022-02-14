@@ -32,7 +32,7 @@ export const NAVIGATE_TO_STEP_ACTION_UPDATE = gql`
   }
 `
 
-export function NavigateStep(): ReactElement {
+export function NavigateToBlockAction(): ReactElement {
   const { state } = useEditor()
   const journey = useJourney()
   const selectedBlock = state.selectedBlock as

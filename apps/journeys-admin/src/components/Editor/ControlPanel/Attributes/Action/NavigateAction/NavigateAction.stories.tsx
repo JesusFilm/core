@@ -11,13 +11,13 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
-import { NavigateNext } from '.'
+import { NavigateAction } from '.'
 
 const NavigateNextStory = {
   ...simpleComponentConfig,
-  component: NavigateNext,
+  component: NavigateAction,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateNext'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateAction'
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [
@@ -465,7 +465,7 @@ export const Default: Story = () => {
           selectedStep
         }}
       >
-        <NavigateNext />
+        <NavigateAction />
       </EditorProvider>
     </MockedProvider>
   )
@@ -490,7 +490,7 @@ export const End: Story = () => {
           selectedStep
         }}
       >
-        <NavigateNext />
+        <NavigateAction />
       </EditorProvider>
     </MockedProvider>
   )

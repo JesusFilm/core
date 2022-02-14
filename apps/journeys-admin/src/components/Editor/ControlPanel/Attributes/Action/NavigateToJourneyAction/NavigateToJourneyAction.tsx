@@ -42,7 +42,7 @@ export const NAVIGATE_TO_JOURNEY_ACTION_UPDATE = gql`
   }
 `
 
-export function NavigateJourney(): ReactElement {
+export function NavigateToJourneyAction(): ReactElement {
   const { state } = useEditor()
   const journey = useJourney()
   const selectedBlock = state.selectedBlock as

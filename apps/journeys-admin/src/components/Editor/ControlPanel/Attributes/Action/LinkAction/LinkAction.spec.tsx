@@ -2,13 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
-import { NavigateLink, NAVIGATE_TO_LINK_ACTION_UPDATE } from './NavigateLink'
+import { LinkAction, NAVIGATE_TO_LINK_ACTION_UPDATE } from './LinkAction'
 
-describe('NavigateLink', () => {
+describe('LinkAction', () => {
   it('defaults to place holder text', () => {
     const { getByPlaceholderText } = render(
       <MockedProvider>
-        <NavigateLink />
+        <LinkAction />
       </MockedProvider>
     )
     expect(getByPlaceholderText('Paste URL here...')).toBeInTheDocument()
@@ -36,7 +36,7 @@ describe('NavigateLink', () => {
     const { getByDisplayValue } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <NavigateLink />
+          <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
@@ -88,7 +88,7 @@ describe('NavigateLink', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <NavigateLink />
+          <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )

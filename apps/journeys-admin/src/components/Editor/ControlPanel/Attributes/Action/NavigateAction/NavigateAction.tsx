@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { CardPreview } from '../../../../../CardPreview'
 
-export function NavigateNext(): ReactElement {
+export function NavigateAction(): ReactElement {
   const { state } = useEditor()
 
   const nextStep = state.steps.find(
