@@ -10,6 +10,7 @@ jobs:
     with:
       name: api-journeys
       repository: jfp-api-journeys
+      branch: ${{ github.ref }}
     secrets:
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
@@ -23,6 +24,7 @@ jobs:
     with:
       name: api-users
       repository: jfp-api-users
+      branch: ${{ github.ref }}
     secrets:
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}

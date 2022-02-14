@@ -67,6 +67,7 @@ describe('Attributes', () => {
     startAt: 10,
     endAt: null,
     muted: null,
+    fullsize: null,
     posterBlockId: 'posterBlockId',
     videoContent: {
       __typename: 'VideoArclight',

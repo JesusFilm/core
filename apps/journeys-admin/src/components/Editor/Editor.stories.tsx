@@ -356,7 +356,8 @@ const blocks: GetJourney_journey_blocks[] = [
     },
     startAt: null,
     endAt: null,
-    posterBlockId: null
+    posterBlockId: null,
+    fullsize: null
   },
   {
     id: 'step5.id',
