@@ -106,6 +106,7 @@ describe('CardBlock', () => {
               startAt: null,
               endAt: null,
               posterBlockId: 'posterBlockId',
+              fullsize: null,
               videoContent: {
                 __typename: 'VideoArclight',
                 src: 'https://arc.gt/hls/2_0-FallingPlates/529'

@@ -11,6 +11,7 @@ export const VIDEO_FIELDS = gql`
     startAt
     endAt
     posterBlockId
+    fullsize
     videoContent {
       src
     }

@@ -11,7 +11,6 @@ import { VideoResponseCreateInput, VideoResponseStateEnum } from "./globalTypes"
 
 export interface VideoResponseCreate_videoResponseCreate {
   __typename: "VideoResponse";
-  id: string;
   state: VideoResponseStateEnum;
   position: number | null;
 }

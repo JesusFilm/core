@@ -36,6 +36,7 @@ export interface VideoBlockCreate_videoBlockCreate {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
+  fullsize: boolean | null;
   videoContent: VideoBlockCreate_videoBlockCreate_videoContent;
 }
 

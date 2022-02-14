@@ -145,17 +145,28 @@ export async function nua9(): Promise<void> {
     parentOrder: 3
   })
 
+  const videoCard = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'CardBlock',
+    parentBlockId: step2._key,
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    fullscreen: false,
+    parentOrder: 0
+  })
+
   const video = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'VideoBlock',
-    parentBlockId: step2._key,
+    parentBlockId: videoCard._key,
     videoContent: {
       mediaComponentId: '5_0-NUA1001-0-0',
       languageId: '529'
     },
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
-    parentOrder: 0
+    parentOrder: 0,
+    fullsize: true
   })
 
   // question step!
