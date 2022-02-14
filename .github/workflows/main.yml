@@ -20,21 +20,23 @@ jobs:
       - name: Upgrade NPM
         run: npm install -g npm
       - uses: bahmutov/npm-install@v1
-      - uses: mansagroup/nrwl-nx-action@v2
+      - name: Codegen
+        uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: codegen
           all: true
-      - uses: mansagroup/nrwl-nx-action@v2
+      - name: lint and typecheck
+        uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: lint,type-check
       - name: Prettier
         run: npx prettier --check .
-      - uses: wagoid/commitlint-github-action@v4
-      - name: Check branch name matches convention
-        run: ./tools/scripts/check-git-branch-name.sh
-      - name: Check for changes
+      - name: lint commit messages
+        uses: wagoid/commitlint-github-action@v4
+      - name: Check for file changes due to codegen
         run: ./tools/scripts/check-git-status.sh
       - name: Danger JS
+        if: ${{ github.event_name == 'pull_request' }}
         uses: danger/danger-js@9.1.6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

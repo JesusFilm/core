@@ -1,6 +1,9 @@
 import { danger, warn, markdown } from 'danger'
 
 export default async () => {
+  // ignore dependabot
+  if (danger.github.pr.user.login === 'dependabot[bot]') return
+
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
   const lockfileChanged =
@@ -18,11 +21,23 @@ export default async () => {
   if (changeCount > CHANGE_THRESHOLD) {
     warn(`:exclamation: Big PR (${changeCount} changes)`)
     markdown(
-      `> (${changeCount}): Pull Request size seems relatively large. If Pull Request contains multiple changes, split each into separate PR will helps faster, easier review.`
+      `> (change count - ${changeCount}): Pull Request size seems relatively large. If Pull Request contains multiple changes, split each into separate PR will helps faster, easier review.`
     )
   }
 
-  // check PR has well formed title
+  // check branch has well-formed name
+  if (
+    danger.github.pr.head.ref.match(
+      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(fix|chore|docs|feature|fix|security|testing)-[a-z\-]+[a-z]/g
+    ) === null
+  ) {
+    fail('Your branch does not match the naming convention.')
+    markdown(
+      `> (branch name - ${danger.github.pr.head.ref}): see the Branch naming conventions here https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-branch`
+    )
+  }
+
+  // check PR has well-formed title
   if (
     danger.github.pr.title.match(
       /^(fix|chore|docs|feature|fix|security|testing): .+/g
