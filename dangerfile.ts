@@ -100,7 +100,7 @@ export default async () => {
   }
 
   // check PR has requested reviewers
-  if (currentPR.data.requested_reviewers === []) {
+  if (currentPR.data.requested_reviewers.length === 0) {
     fail('Please request reviewers for this PR.')
   }
 }
