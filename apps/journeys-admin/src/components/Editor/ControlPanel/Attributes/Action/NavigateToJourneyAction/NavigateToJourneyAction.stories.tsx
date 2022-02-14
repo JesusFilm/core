@@ -12,7 +12,7 @@ import {
   ThemeName,
   JourneyStatus
 } from '../../../../../../../__generated__/globalTypes'
-import { GET_JOURNEYS_NAMES } from './NavigateToJourneyAction'
+import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction'
 import { NavigateToJourneyAction } from '.'
 
 const NavigateToJourneyActionStory = {
@@ -75,7 +75,7 @@ export const WithSelected: Story = () => {
       mocks={[
         {
           request: {
-            query: GET_JOURNEYS_NAMES
+            query: GET_JOURNEY_NAMES
           },
           result: {
             data: {
