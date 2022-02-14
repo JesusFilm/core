@@ -53,6 +53,7 @@ enum ThemeName {
 }
 
 interface Action {
+  parentBlockId: ID!
   gtmEventName: String
 }
 
@@ -61,21 +62,25 @@ NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   blockId: String!
 }
 
 type NavigateToJourneyAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   journeyId: String!
   journey: Journey
 }
 
 type LinkAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   url: String!
   target: String
