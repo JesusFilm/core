@@ -5,9 +5,17 @@ on:
   pull_request:
     branches: [main, feature/*]
 jobs:
+  danger:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Danger JS
+        uses: danger/danger-js@9.1.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -35,11 +43,6 @@ jobs:
         uses: wagoid/commitlint-github-action@v4
       - name: Check for file changes due to codegen
         run: ./tools/scripts/check-git-status.sh
-      - name: Danger JS
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: danger/danger-js@9.1.6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     runs-on: ubuntu-latest
     steps:
