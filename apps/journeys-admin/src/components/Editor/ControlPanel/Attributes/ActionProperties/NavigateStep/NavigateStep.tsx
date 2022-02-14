@@ -50,8 +50,6 @@ export function NavigateStep(): ReactElement {
         id === selectedBlock?.action?.blockId
     ) ?? undefined
 
-  console.log(currentActionStep)
-
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
     if (selectedBlock != null) {
       await navigateToStepActionUpdate({
