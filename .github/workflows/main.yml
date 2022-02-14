@@ -34,6 +34,10 @@ jobs:
         run: ./tools/scripts/check-git-branch-name.sh
       - name: Check for changes
         run: ./tools/scripts/check-git-status.sh
+      - name: Danger JS
+        uses: danger/danger-js@9.1.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     runs-on: ubuntu-latest
     steps:
