@@ -34,6 +34,7 @@ describe('NavigateActionResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
+        get: jest.fn().mockResolvedValue(block),
         update: jest.fn((navigateActionInput) => navigateActionInput)
       })
     }
@@ -62,5 +63,24 @@ describe('NavigateActionResolver', () => {
     expect(service.update).toHaveBeenCalledWith(block._key, {
       action: { ...navigateActionInput }
     })
+  })
+
+  it('throws an error if typename is wrong', async () => {
+    const wrongBlock = {
+      ...block,
+      __typename: 'WrongBlock'
+    }
+    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    await resolver
+      .blockUpdateNavigateAction(
+        wrongBlock._key,
+        wrongBlock.journeyId,
+        navigateActionInput
+      )
+      .catch((error) => {
+        expect(error.message).toEqual(
+          'This block does not support navigate actions'
+        )
+      })
   })
 })

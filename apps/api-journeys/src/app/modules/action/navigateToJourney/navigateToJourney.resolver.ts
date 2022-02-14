@@ -1,6 +1,8 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { KeyAsId } from '@core/nest/decorators'
+import { includes } from 'lodash'
+import { UserInputError } from 'apollo-server-errors'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
   Action,
@@ -35,6 +37,19 @@ export class NavigateToJourneyActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToJourneyActionInput
   ): Promise<Action> {
+    const block = await this.blockService.get<{ __typename: string }>(id)
+
+    if (
+      !includes(
+        ['SignUpBlock', 'RadioOptionBlock', 'ButtonBlock', 'VideoTriggerBlock'],
+        block.__typename
+      )
+    ) {
+      throw new UserInputError(
+        'This block does not support navigate to journey actions'
+      )
+    }
+
     return await this.blockService.update(id, {
       action: { ...input, blockId: null, url: null, target: null }
     })
