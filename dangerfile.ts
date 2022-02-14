@@ -1,50 +1,71 @@
 import { danger, warn, markdown } from 'danger'
 
-const packageChanged = danger.git.modified_files.includes('package.json')
-const lockfileChanged = danger.git.modified_files.includes('package-lock.json')
+export default async () => {
+  const currentPR = await danger.github.api.pulls.get({
+    owner: danger.github.thisPR.owner,
+    repo: danger.github.thisPR.repo,
+    pull_number: danger.github.thisPR.number
+  })
 
-if (packageChanged && !lockfileChanged) {
-  const message =
-    'Changes were made to package.json, but not to package-lock.json'
-  const idea = 'Perhaps you need to run `npm install`?'
-  warn(`${message} - <i>${idea}</i>`)
-}
+  const packageChanged = danger.git.modified_files.includes('package.json')
+  const lockfileChanged =
+    danger.git.modified_files.includes('package-lock.json')
 
-const CHANGE_THRESHOLD = 600
-const changeCount = danger.github.pr.additions + danger.github.pr.deletions
-if (changeCount > CHANGE_THRESHOLD) {
-  warn(`:exclamation: Big PR (${changeCount} changes)`)
-  markdown(
-    `> (${changeCount}): Pull Request size seems relatively large. If Pull Request contains multiple changes, split each into separate PR will helps faster, easier review.`
-  )
-}
+  if (packageChanged && !lockfileChanged) {
+    const message =
+      'Changes were made to package.json, but not to package-lock.json'
+    const idea = 'Perhaps you need to run `npm install`?'
+    warn(`${message} - <i>${idea}</i>`)
+  }
 
-if (danger.github.pr.assignee === null) {
-  fail('Please assign someone to merge this PR.')
-}
+  const CHANGE_THRESHOLD = 600
+  const changeCount = danger.github.pr.additions + danger.github.pr.deletions
+  if (changeCount > CHANGE_THRESHOLD) {
+    warn(`:exclamation: Big PR (${changeCount} changes)`)
+    markdown(
+      `> (${changeCount}): Pull Request size seems relatively large. If Pull Request contains multiple changes, split each into separate PR will helps faster, easier review.`
+    )
+  }
 
-if (!danger.github.issue.labels.some((label) => label.name.includes('type:'))) {
-  fail('Please add type label to this PR.')
-}
+  if (danger.github.pr.assignee === null) {
+    fail('Please assign someone to merge this PR.')
+  }
 
-if (
-  !danger.github.issue.labels.some((label) => label.name.includes('priority:'))
-) {
-  fail('Please add priority label to this PR.')
-}
+  if (
+    !danger.github.issue.labels.some((label) => label.name.includes('type:'))
+  ) {
+    fail('Please add type label to this PR.')
+  }
 
-if (
-  !danger.github.issue.labels.some((label) => label.name.includes('effort:'))
-) {
-  fail('Please add effort label to this PR.')
-}
+  if (
+    !danger.github.issue.labels.some((label) =>
+      label.name.includes('priority:')
+    )
+  ) {
+    fail('Please add priority label to this PR.')
+  }
 
-if (
-  danger.github.pr.title.match(
-    /^(fix|chore|docs|feature|fix|security|testing): .+/g
-  ) === null
-) {
-  fail(
-    'Please ensure your PR title matches convention. See https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-pr for more details.'
-  )
+  if (
+    !danger.github.issue.labels.some((label) => label.name.includes('effort:'))
+  ) {
+    fail('Please add effort label to this PR.')
+  }
+
+  if (
+    danger.github.pr.title.match(
+      /^(fix|chore|docs|feature|fix|security|testing): .+/g
+    ) === null
+  ) {
+    fail(
+      'Please ensure your PR title matches convention. See https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-pr for more details.'
+    )
+  }
+
+  if (currentPR.data.milestone === null) {
+    fail('Please add milestone to this PR.')
+  }
+
+  if (currentPR.data.requested_reviewers == null) {
+    fail('Please request reviewers for this PR.')
+  }
 }
