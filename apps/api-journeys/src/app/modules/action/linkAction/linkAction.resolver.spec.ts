@@ -5,10 +5,10 @@ import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ActionResolver } from '../action.resolver'
-import { LinkToActionResolver } from './linkToAction.resolver'
+import { LinkActionResolver } from './linkAction.resolver'
 
-describe('LinkToActionResolver', () => {
-  let resolver: LinkToActionResolver, service: BlockService
+describe('LinkActionResolver', () => {
+  let resolver: LinkActionResolver, service: BlockService
 
   const block = {
     _key: '1',
@@ -35,6 +35,7 @@ describe('LinkToActionResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
+        get: jest.fn().mockResolvedValue(block),
         update: jest.fn((navigateToBlockInput) => navigateToBlockInput)
       })
     }
@@ -42,7 +43,7 @@ describe('LinkToActionResolver', () => {
       providers: [
         BlockResolver,
         blockService,
-        LinkToActionResolver,
+        LinkActionResolver,
         ActionResolver,
         UserJourneyService,
         {
@@ -51,7 +52,7 @@ describe('LinkToActionResolver', () => {
         }
       ]
     }).compile()
-    resolver = module.get<LinkToActionResolver>(LinkToActionResolver)
+    resolver = module.get<LinkActionResolver>(LinkActionResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -64,5 +65,24 @@ describe('LinkToActionResolver', () => {
     expect(service.update).toHaveBeenCalledWith(block._key, {
       action: { ...linkActionInput }
     })
+  })
+
+  it('throws an error if typename is wrong', async () => {
+    const wrongBlock = {
+      ...block,
+      __typename: 'WrongBlock'
+    }
+    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    await resolver
+      .blockUpdateLinkAction(
+        wrongBlock._key,
+        wrongBlock.journeyId,
+        linkActionInput
+      )
+      .catch((error) => {
+        expect(error.message).toEqual(
+          'This block does not support link actions'
+        )
+      })
   })
 })
