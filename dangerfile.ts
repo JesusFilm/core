@@ -99,8 +99,8 @@ export default async () => {
     fail('Please add milestone to this PR.')
   }
 
-  // check PR has reviewers
-  if (currentPR.data.requested_reviewers == null) {
+  // check PR has requested reviewers
+  if (currentPR.data.requested_reviewers === []) {
     fail('Please request reviewers for this PR.')
   }
 }
