@@ -1274,7 +1274,7 @@ export async function nua9(): Promise<void> {
     parentBlockId: signUp2._key,
     name: 'SendRounded',
     color: 'primary',
-    size: 'medium',
+    size: 'md',
     parentOrder: 0
   })
   await db
