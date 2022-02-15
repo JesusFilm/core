@@ -86,6 +86,7 @@ export class BlockResolver {
     )
   }
 
+  @KeyAsId()
   async siblings(@Parent() block: Block): Promise<Block[]> {
     return await this.blockService.getSiblings(
       block.journeyId,
