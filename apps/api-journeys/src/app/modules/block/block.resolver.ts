@@ -69,7 +69,23 @@ export class BlockResolver {
     return []
   }
 
+  @Mutation()
   @KeyAsId()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  async blockDelete(
+    @Args('id') id: string,
+    @Args('parentBlockId') parentBlockId: string,
+    @Args('journeyId') journeyId: string
+  ): Promise<Block[]> {
+    return await this.blockService.removeBlockAndChildren(
+      id,
+      parentBlockId,
+      journeyId
+    )
+  }
+
   async siblings(@Parent() block: Block): Promise<Block[]> {
     return await this.blockService.getSiblings(
       block.journeyId,

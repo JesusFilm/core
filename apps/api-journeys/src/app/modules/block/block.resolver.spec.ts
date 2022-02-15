@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { UserJourneyService } from '../userJourney/userJourney.service'
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
@@ -48,12 +49,14 @@ describe('BlockResolver', () => {
     useFactory: () => ({
       get: jest.fn(() => image1),
       getSiblings: jest.fn(() => [image1, image2, image3]),
-      update: jest.fn((input) => input)
+      update: jest.fn((input) => input),
+      removeBlockAndChildren: jest.fn(() => [image1, image2, image3])
     })
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        UserJourneyService,
         BlockResolver,
         blockService,
         {
@@ -64,6 +67,20 @@ describe('BlockResolver', () => {
     }).compile()
     resolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
+  })
+
+  describe('blockDelete', () => {
+    it('removes the block and its children', async () => {
+      const data = await resolver.blockDelete('image1', 'card1', '2')
+
+      expect(service.removeBlockAndChildren).toBeCalledTimes(1)
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        'image1',
+        'card1',
+        '2'
+      )
+      expect(data).toEqual([image1, image2, image3])
+    })
   })
 
   describe('blockOrderUpdate', () => {
@@ -100,6 +117,7 @@ describe('BlockResolver', () => {
       }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
+          UserJourneyService,
           BlockResolver,
           blockService,
           {
