@@ -3,25 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
 // ====================================================
-
-export interface GetJourney_journey_blocks_ButtonBlock_startIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
-export interface GetJourney_journey_blocks_ButtonBlock_endIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
@@ -63,8 +49,8 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIcon: GetJourney_journey_blocks_ButtonBlock_startIcon | null;
-  endIcon: GetJourney_journey_blocks_ButtonBlock_endIcon | null;
+  startIconId: string | null;
+  endIconId: string | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
 }
 
@@ -120,6 +106,16 @@ export interface GetJourney_journey_blocks_GridItemBlock {
   xl: number;
   lg: number;
   sm: number;
+}
+
+export interface GetJourney_journey_blocks_IconBlock {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
 }
 
 export interface GetJourney_journey_blocks_ImageBlock {
@@ -218,21 +214,14 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
 
 export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction;
 
-export interface GetJourney_journey_blocks_SignUpBlock_submitIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
+  submitIconId: string | null;
   action: GetJourney_journey_blocks_SignUpBlock_action | null;
-  submitIcon: GetJourney_journey_blocks_SignUpBlock_submitIcon | null;
 }
 
 export interface GetJourney_journey_blocks_StepBlock {
@@ -340,7 +329,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";

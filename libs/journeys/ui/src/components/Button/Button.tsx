@@ -1,8 +1,9 @@
 import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
-import { Icon } from '../Icon'
 import { handleAction, TreeBlock, useEditor, ActiveTab } from '../..'
+import { IconFields } from '../Icon/__generated__/IconFields'
+import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
 
 export function Button({
@@ -10,11 +11,20 @@ export function Button({
   label,
   buttonColor,
   size,
-  startIcon,
-  endIcon,
+  startIconId,
+  endIconId,
   action,
+  children,
   ...props
 }: TreeBlock<ButtonFields>): ReactElement {
+  const startIcon = children.find((block) => block.id === startIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
+  const endIcon = children.find((block) => block.id === endIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
   const router = useRouter()
   const handleClick = (): void => {
     handleAction(router, action)
@@ -33,9 +43,10 @@ export function Button({
       label,
       buttonColor,
       size,
-      startIcon,
-      endIcon,
+      startIconId,
+      endIconId,
       action,
+      children,
       ...props
     }
 
@@ -49,26 +60,8 @@ export function Button({
       variant={buttonVariant ?? 'contained'}
       color={buttonColor ?? undefined}
       size={size ?? undefined}
-      startIcon={
-        startIcon != null && (
-          <Icon
-            __typename="Icon"
-            name={startIcon.name}
-            color={startIcon.color}
-            size={startIcon.size}
-          />
-        )
-      }
-      endIcon={
-        endIcon != null && (
-          <Icon
-            __typename="Icon"
-            name={endIcon.name}
-            color={endIcon.color}
-            size={endIcon.size}
-          />
-        )
-      }
+      startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
+      endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
       sx={{
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'

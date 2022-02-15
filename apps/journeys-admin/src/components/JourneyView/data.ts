@@ -129,17 +129,21 @@ export const publishedJourney: Journey = {
       buttonVariant: ButtonVariant.contained,
       buttonColor: ButtonColor.primary,
       size: ButtonSize.large,
-      startIcon: {
-        __typename: 'Icon',
-        name: IconName.PlayArrowRounded,
-        color: null,
-        size: IconSize.md
-      },
-      endIcon: null,
+      startIconId: 'icon',
+      endIconId: null,
       action: {
         __typename: 'NavigateAction',
         gtmEventName: 'gtmEventName'
       }
+    },
+    {
+      id: 'icon',
+      __typename: 'IconBlock',
+      parentBlockId: 'button',
+      parentOrder: 0,
+      iconName: IconName.PlayArrowRounded,
+      iconColor: null,
+      iconSize: IconSize.md
     }
   ]
 }

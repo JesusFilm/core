@@ -7,6 +7,7 @@ import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, handleAction, useEditor, ActiveTab } from '../..'
 import { Icon } from '../Icon'
+import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
 import { TextField } from './TextField'
@@ -32,12 +33,17 @@ interface SignUpFormValues {
 export const SignUp = ({
   id: blockId,
   uuid = uuidv4,
-  submitIcon,
+  submitIconId,
   // Use translated string when i18n is in
   submitLabel,
   action,
+  children,
   ...props
 }: SignUpProps): ReactElement => {
+  const submitIcon = children.find((block) => block.id === submitIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
   const router = useRouter()
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
@@ -87,9 +93,10 @@ export const SignUp = ({
 
     const block: TreeBlock<SignUpFields> = {
       id: blockId,
-      submitIcon,
+      submitIconId,
       submitLabel,
       action,
+      children,
       ...props
     }
 

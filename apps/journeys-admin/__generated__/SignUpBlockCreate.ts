@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { SignUpBlockCreateInput, IconName, IconColor, IconSize } from "./globalTypes";
+import { SignUpBlockCreateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: SignUpBlockCreate
@@ -40,13 +40,6 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_LinkAction {
 
 export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateAction | SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_NavigateToJourneyAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction;
 
-export interface SignUpBlockCreate_signUpBlockCreate_submitIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
 export interface SignUpBlockCreate_signUpBlockCreate {
   __typename: "SignUpBlock";
   id: string;
@@ -54,8 +47,8 @@ export interface SignUpBlockCreate_signUpBlockCreate {
   journeyId: string;
   parentOrder: number | null;
   submitLabel: string | null;
+  submitIconId: string | null;
   action: SignUpBlockCreate_signUpBlockCreate_action | null;
-  submitIcon: SignUpBlockCreate_signUpBlockCreate_submitIcon | null;
 }
 
 export interface SignUpBlockCreate {

@@ -127,7 +127,7 @@ export async function nua9(): Promise<void> {
   })
   await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
 
-  await db.collection('blocks').save({
+  const button1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: card1._key,
@@ -135,15 +135,25 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'large',
-    startIcon: {
-      name: 'PlayArrowRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: step2._key
     },
     parentOrder: 3
   })
+
+  const icon1 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button1._key,
+    name: 'PlayArrowRounded',
+    color: 'primary',
+    size: 'lg',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button1._key, { startIconId: icon1._key })
 
   const videoCard = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -348,7 +358,7 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepPrayer1._key, { nextBlockId: stepPrayer2._key })
 
-  await db.collection('blocks').save({
+  const button2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: prayerCard1._key,
@@ -356,15 +366,25 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'small',
-    startIcon: {
-      name: 'ChevronRightRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: stepPrayer2._key
     },
     parentOrder: 3
   })
+
+  const icon2 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button2._key,
+    name: 'ChevronRightRounded',
+    color: 'primary',
+    size: 'sm',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button2._key, { startIconId: icon2._key })
 
   const prayerImageId2 = uuidv4()
   const prayerCard2 = await db.collection('blocks').save({
@@ -424,7 +444,7 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepPrayer2._key, { nextBlockId: stepPrayer3._key })
 
-  await db.collection('blocks').save({
+  const button3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: prayerCard2._key,
@@ -432,15 +452,24 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'small',
-    startIcon: {
-      name: 'ChevronRightRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: stepPrayer3._key
     },
     parentOrder: 3
   })
+  const icon3 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button3._key,
+    name: 'ChevronRightRounded',
+    color: 'primary',
+    size: 'sm',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button3._key, { startIconId: icon3._key })
 
   const prayerImageId3 = uuidv4()
   const prayerCard3 = await db.collection('blocks').save({
@@ -500,7 +529,7 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepPrayer3._key, { nextBlockId: stepPrayer4._key })
 
-  await db.collection('blocks').save({
+  const button4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: prayerCard3._key,
@@ -508,15 +537,24 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'small',
-    startIcon: {
-      name: 'BeenhereRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: stepPrayer4._key
     },
     parentOrder: 3
   })
+  const icon4 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button4._key,
+    name: 'BeenhereRounded',
+    color: 'primary',
+    size: 'sm',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button4._key, { startIconId: icon4._key })
 
   const prayerImageId4 = uuidv4()
   const prayerCard4 = await db.collection('blocks').save({
@@ -687,7 +725,7 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepIAlreadyHave._key, { nextBlockId: stepIAlreadyHave2._key })
 
-  await db.collection('blocks').save({
+  const button5 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: card3._key,
@@ -695,15 +733,24 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'large',
-    startIcon: {
-      name: 'SendRounded'
-    },
     action: {
       gtmEvenName: 'click',
       blockId: stepIAlreadyHave2._key
     },
     parentOrder: 4
   })
+  const icon5 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button5._key,
+    name: 'SendRounded',
+    color: 'primary',
+    size: 'lg',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button5._key, { startIconId: icon5._key })
 
   const alreadyImageId = uuidv4()
   const alreadyCard4 = await db.collection('blocks').save({
@@ -873,7 +920,7 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepNoThanks._key, { nextBlockId: stepNoThanks2._key })
 
-  await db.collection('blocks').save({
+  const button6 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: noThanksCard._key,
@@ -881,15 +928,24 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'large',
-    startIcon: {
-      name: 'ContactSupportRounded'
-    },
     action: {
       gtmEvenName: 'click',
       blockId: stepNoThanks2._key
     },
     parentOrder: 4
   })
+  const icon6 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button6._key,
+    name: 'ContactSupportRounded',
+    color: 'primary',
+    size: 'lg',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button6._key, { startIconId: icon6._key })
 
   const noThanksImageId2 = uuidv4()
   const noThanksCard2 = await db.collection('blocks').save({
@@ -1059,7 +1115,7 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepNotSure._key, { nextBlockId: stepNotSure2._key })
 
-  await db.collection('blocks').save({
+  const button7 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: notSureCard._key,
@@ -1067,15 +1123,24 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'large',
-    startIcon: {
-      name: 'ContactSupportRounded'
-    },
     action: {
       gtmEvenName: 'click',
       blockId: stepNotSure2._key
     },
     parentOrder: 4
   })
+  const icon7 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button7._key,
+    name: 'ContactSupportRounded',
+    color: 'primary',
+    size: 'lg',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button7._key, { startIconId: icon7._key })
 
   const notSureImageId2 = uuidv4()
   const notSureCard2 = await db.collection('blocks').save({
@@ -1165,22 +1230,31 @@ export async function nua9(): Promise<void> {
     .collection('blocks')
     .update(stepNotSure2._key, { nextBlockId: lastStep._key })
 
-  await db.collection('blocks').save({
+  const signUp1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
     parentBlockId: prayerGridItemRight._key,
     submitLabel: 'Submit',
-    submitIcon: {
-      name: 'SendRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
     },
     parentOrder: 0
   })
+  const icon8 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: signUp1._key,
+    name: 'SendRounded',
+    color: 'primary',
+    size: 'md',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(signUp1._key, { startIconId: icon8._key })
 
-  await db.collection('blocks').save({
+  const signUp2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
     parentBlockId: noThanksGridItemRight._key,
@@ -1194,8 +1268,20 @@ export async function nua9(): Promise<void> {
     },
     parentOrder: 0
   })
+  const icon9 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: signUp2._key,
+    name: 'SendRounded',
+    color: 'primary',
+    size: 'medium',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(signUp2._key, { startIconId: icon9._key })
 
-  await db.collection('blocks').save({
+  const signUp3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
     parentBlockId: alreadyGridItemRight._key,
@@ -1209,21 +1295,42 @@ export async function nua9(): Promise<void> {
     },
     parentOrder: 0
   })
+  const icon10 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: signUp3._key,
+    name: 'SendRounded',
+    color: 'primary',
+    size: 'md',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(signUp3._key, { startIconId: icon10._key })
 
-  await db.collection('blocks').save({
+  const signUp4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
     parentBlockId: notSureGridItemRight._key,
     submitLabel: 'Submit',
-    submitIcon: {
-      name: 'SendRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
     },
     parentOrder: 0
   })
+  const icon11 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: signUp4._key,
+    name: 'SendRounded',
+    color: 'primary',
+    size: 'md',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(signUp4._key, { startIconId: icon11._key })
 
   const lastImageId = uuidv4()
   const lastCard = await db.collection('blocks').save({
@@ -1271,7 +1378,7 @@ export async function nua9(): Promise<void> {
     blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
   })
 
-  await db.collection('blocks').save({
+  const button8 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: lastCard._key,
@@ -1279,13 +1386,22 @@ export async function nua9(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'medium',
-    startIcon: {
-      name: 'SubscriptionsRounded'
-    },
     action: {
       gtmEvenName: 'click',
       blockId: stepNoThanks2._key
     },
     parentOrder: 2
   })
+  const icon12 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button8._key,
+    name: 'SubscriptionsRounded',
+    color: 'primary',
+    size: 'md',
+    parentOrder: 0
+  })
+  await db
+    .collection('blocks')
+    .update(button8._key, { startIconId: icon12._key })
 }

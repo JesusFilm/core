@@ -30,14 +30,14 @@ interface Block {
 type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
-  endIcon: Icon
+  endIconId: ID
   id: ID!
   journeyId: ID!
   label: String!
   parentBlockId: ID
   parentOrder: Int
   size: ButtonSize
-  startIcon: Icon
+  startIconId: ID
   variant: ButtonVariant
 }
 
@@ -166,9 +166,33 @@ enum GridJustifyContent {
   flexStart
 }
 
-type Icon {
+type IconBlock implements Block {
+  color: IconColor
+  id: ID!
+  journeyId: ID!
+  name: IconName!
+  parentBlockId: ID
+  parentOrder: Int
+  size: IconSize
+}
+
+input IconBlockCreateInput {
+  color: IconColor
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+  name: IconName!
+  parentBlockId: ID!
+  size: IconSize
+}
+
+input IconBlockUpdateInput {
   color: IconColor
   name: IconName!
+  parentBlockId: ID
   size: IconSize
 }
 
@@ -330,6 +354,8 @@ type Mutation {
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
+  iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
@@ -467,7 +493,7 @@ type SignUpBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  submitIcon: Icon
+  submitIconId: ID
   submitLabel: String
 }
 

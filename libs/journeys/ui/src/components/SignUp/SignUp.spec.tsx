@@ -27,7 +27,7 @@ const block: TreeBlock<SignUpFields> = {
   id: 'signUp0.id',
   parentBlockId: '0',
   parentOrder: 0,
-  submitIcon: null,
+  submitIconId: null,
   submitLabel: null,
   action: {
     __typename: 'LinkAction',
