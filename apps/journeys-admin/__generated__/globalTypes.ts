@@ -171,6 +171,26 @@ export interface JourneyUpdateInput {
   title?: string | null;
 }
 
+export interface LinkActionInput {
+  gtmEventName?: string | null;
+  target?: string | null;
+  url: string;
+}
+
+export interface NavigateActionInput {
+  gtmEventName?: string | null;
+}
+
+export interface NavigateToBlockActionInput {
+  blockId: string;
+  gtmEventName?: string | null;
+}
+
+export interface NavigateToJourneyActionInput {
+  gtmEventName?: string | null;
+  journeyId: string;
+}
+
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;

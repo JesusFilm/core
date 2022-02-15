@@ -14,6 +14,8 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { actions as buttonAction } from '../../Action/Action'
+import { Action } from '../../Action'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
@@ -38,15 +40,23 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
+  const actionName = action != null ? buttonAction[action.__typename] : 'None'
   return (
     <>
       <Attribute
         id={`${id}-button-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        value={action?.__typename?.toString() ?? 'None'}
+        value={actionName}
         description="Action"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Action',
+            mobileOpen: true,
+            children: <Action />
+          })
+        }}
       />
 
       <Attribute
