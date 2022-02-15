@@ -75,9 +75,7 @@ export function BackgroundMedia(): ReactElement {
       {blockType === 'ImageBlock' && (
         <BackgroundMediaImage cardBlock={cardBlock} />
       )}
-      {blockType === 'VideoBlock' && (
-        <BackgroundMediaVideo cardBlock={cardBlock} />
-      )}
+      {blockType === 'VideoBlock' && <BackgroundMediaVideo />}
     </>
   )
 }

@@ -10,7 +10,7 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { debounce, reject } from 'lodash'
+import { reject } from 'lodash'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -73,12 +73,10 @@ export const CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE = gql`
 `
 interface BackgroundMediaImageProps {
   cardBlock: TreeBlock<CardBlock>
-  debounceTime?: number
 }
 
 export function BackgroundMediaImage({
-  cardBlock,
-  debounceTime = 1000
+  cardBlock
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
@@ -101,17 +99,24 @@ export function BackgroundMediaImage({
   const [imageBlock, setImageBlock] = useState(
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
   )
+  const [imageSrc, setImageSrc] = useState(imageBlock?.src)
+  const [saveState, setSaveState] = useState(false)
 
-  const handleImageChange = async (
+  const handleSrcChange = async (
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
+    setImageSrc(event.target.value)
+  }
+
+  const handleImageClick = async (): Promise<void> => {
+    if (imageSrc == null) return
     const block = {
       ...imageBlock,
-      src: event.target.value,
-      alt: event.target.value // per Vlad 26/1/22, we are hardcoding the image alt for now
+      src: imageSrc,
+      alt: imageSrc // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
-    await handleChangeDebounced(block as ImageBlock)
     setImageBlock(block as TreeBlock<ImageBlock>)
+    await handleChange(block as ImageBlock)
   }
 
   const handleImageDelete = async (): Promise<void> => {
@@ -232,6 +237,7 @@ export function BackgroundMediaImage({
     })
   }
   const handleChange = async (block: ImageBlock): Promise<void> => {
+    setSaveState(false)
     if (
       coverBlock != null &&
       coverBlock?.__typename.toString() !== 'ImageBlock'
@@ -239,13 +245,14 @@ export function BackgroundMediaImage({
       // remove existing cover block if type changed
       await deleteCoverBlock()
     }
+    if (block.src === '') return
     if (imageBlock == null) {
       await createImageBlock(block)
     } else {
       await updateImageBlock(block)
     }
+    setSaveState(true)
   }
-  const handleChangeDebounced = debounce(handleChange, debounceTime)
 
   return (
     <>
@@ -320,8 +327,8 @@ export function BackgroundMediaImage({
               id="imageSrc"
               name="src"
               variant="filled"
-              value={imageBlock?.src}
-              onChange={handleImageChange}
+              value={imageSrc}
+              onChange={handleSrcChange}
               data-testid="imgSrcTextField"
               label="Paste URL of image..."
               InputProps={{
@@ -332,7 +339,12 @@ export function BackgroundMediaImage({
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <CheckCircle style={{ cursor: 'pointer' }}></CheckCircle>
+                    <CheckCircle
+                      style={{ cursor: 'pointer' }}
+                      data-testid="checkCircle"
+                      color={saveState ? 'primary' : 'secondary'}
+                      onClick={handleImageClick}
+                    ></CheckCircle>
                   </InputAdornment>
                 )
               }}

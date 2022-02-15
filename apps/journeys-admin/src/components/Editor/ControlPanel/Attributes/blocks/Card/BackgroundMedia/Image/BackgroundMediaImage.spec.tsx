@@ -78,6 +78,7 @@ describe('BackgroundMediaImage', () => {
       expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
     })
 
+    // Apollo fails to match mock on imageBlockCreate
     xit('creates a new image cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -106,7 +107,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      const { getByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -140,7 +141,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={card} debounceTime={0} />
+            <BackgroundMediaImage cardBlock={card} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -148,6 +149,7 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
+      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     })
@@ -178,12 +180,13 @@ describe('BackgroundMediaImage', () => {
       const { getByTestId } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={videoCard} debounceTime={0} />
+            <BackgroundMediaImage cardBlock={videoCard} />
           </JourneyProvider>
         </MockedProvider>
       )
       expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
     })
+    // Apollo fails to match mock on imageBlockCreate
     xit('creates a new image cover block', async () => {
       const videoCard: TreeBlock<CardBlock> = {
         ...card,
@@ -227,7 +230,7 @@ describe('BackgroundMediaImage', () => {
           ]
         }
       }))
-      const { getByRole } = render(
+      const { getByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -236,6 +239,7 @@ describe('BackgroundMediaImage', () => {
                 query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
                 variables: {
                   id: video.id,
+                  parentBlockId: card.parentBlockId,
                   journeyId: journey.id
                 }
               },
@@ -262,7 +266,7 @@ describe('BackgroundMediaImage', () => {
                     journeyId: journey.id,
                     parentBlockId: card.id,
                     src: image.src,
-                    alt: image.alt
+                    alt: image.src
                   }
                 }
               },
@@ -292,6 +296,7 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
+      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -316,10 +321,7 @@ describe('BackgroundMediaImage', () => {
       const { getByTestId, getByRole } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage
-              cardBlock={existingCoverBlock}
-              debounceTime={0}
-            />
+            <BackgroundMediaImage cardBlock={existingCoverBlock} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -353,7 +355,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      const { getByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -374,10 +376,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage
-              cardBlock={existingCoverBlock}
-              debounceTime={0}
-            />
+            <BackgroundMediaImage cardBlock={existingCoverBlock} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -385,6 +384,7 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
+      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       expect(textBox).toHaveValue(image.src)
       const img = await getByRole('img')
@@ -435,6 +435,7 @@ describe('BackgroundMediaImage', () => {
                 query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
                 variables: {
                   id: image.id,
+                  parentBlockId: card.parentBlockId,
                   journeyId: journey.id
                 }
               },
@@ -456,10 +457,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage
-              cardBlock={existingCoverBlock}
-              debounceTime={0}
-            />
+            <BackgroundMediaImage cardBlock={existingCoverBlock} />
           </JourneyProvider>
         </MockedProvider>
       )
