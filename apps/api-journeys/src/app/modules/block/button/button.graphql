@@ -36,8 +36,8 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
-  startIcon: IconUpdateInput
-  endIcon: IconUpdateInput
+  startIconId: ID
+  endIconId: ID
 }
 
 extend type Mutation {

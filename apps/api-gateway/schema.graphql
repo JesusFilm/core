@@ -43,11 +43,11 @@ type ButtonBlock implements Block {
 
 input ButtonBlockUpdateInput {
   color: ButtonColor
-  endIcon: IconUpdateInput
+  endIconId: ID
   label: String
   parentBlockId: ID
   size: ButtonSize
-  startIcon: IconUpdateInput
+  startIconId: ID
   variant: ButtonVariant
 }
 

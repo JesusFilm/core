@@ -138,11 +138,11 @@ export enum VideoResponseStateEnum {
 
 export interface ButtonBlockUpdateInput {
   color?: ButtonColor | null;
-  endIcon?: IconUpdateInput | null;
+  endIconId?: string | null;
   label?: string | null;
   parentBlockId?: string | null;
   size?: ButtonSize | null;
-  startIcon?: IconUpdateInput | null;
+  startIconId?: string | null;
   variant?: ButtonVariant | null;
 }
 
