@@ -10,6 +10,6 @@ extend type Journey {
 }
 
 extend type Mutation {
-  blockDelete(id: ID!, parentBlockIdjourneyId: ID!): [Block!]!
+  blockDelete(id: ID!, parentBlockId: ID!, journeyId: ID!): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
 }
