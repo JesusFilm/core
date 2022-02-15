@@ -41,6 +41,13 @@ type ButtonBlock implements Block {
   variant: ButtonVariant
 }
 
+input ButtonBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+}
+
 input ButtonBlockUpdateInput {
   color: ButtonColor
   label: String
@@ -351,6 +358,7 @@ type Mutation {
   blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
