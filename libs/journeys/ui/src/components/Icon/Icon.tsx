@@ -33,7 +33,7 @@ export function Icon({
       ? '28px'
       : iconSize === 'xl'
       ? '48px'
-      : 'inherit'
+      : '20px'
 
   const icons = {
     CheckCircleRounded,
@@ -55,6 +55,6 @@ export function Icon({
 
   return createElement(icons[iconName], {
     color: iconColor ?? undefined,
-    sx: { fontSize }
+    sx: { width: fontSize, height: fontSize }
   })
 }

@@ -8,6 +8,11 @@ export const cache = (): InMemoryCache =>
      these relationships, we need to pass a possibleTypes option when
      initializing InMemoryCache.
    */
+    typePolicies: {
+      Icon: {
+        keyFields: []
+      }
+    },
     possibleTypes: {
       Action: [
         'NavigateAction',

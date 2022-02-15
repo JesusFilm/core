@@ -138,9 +138,11 @@ export enum VideoResponseStateEnum {
 
 export interface ButtonBlockUpdateInput {
   color?: ButtonColor | null;
+  endIcon?: IconUpdateInput | null;
   label?: string | null;
   parentBlockId?: string | null;
   size?: ButtonSize | null;
+  startIcon?: IconUpdateInput | null;
   variant?: ButtonVariant | null;
 }
 
@@ -151,6 +153,12 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface IconUpdateInput {
+  color?: IconColor | null;
+  name?: IconName | null;
+  size?: IconSize | null;
 }
 
 export interface ImageBlockCreateInput {

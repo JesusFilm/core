@@ -120,6 +120,8 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIcon: IconUpdateInput
+  endIcon: IconUpdateInput
 }
 
 type CardBlock implements Block {
