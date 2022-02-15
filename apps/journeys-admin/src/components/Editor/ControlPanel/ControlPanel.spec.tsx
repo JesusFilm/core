@@ -11,6 +11,7 @@ import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypo
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
 import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
+import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
 import { ControlPanel } from '.'
 
 jest.mock('uuid', () => ({
@@ -417,6 +418,61 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Video' }))
+    await waitFor(() =>
+      expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    )
+  })
+
+  it('should change to properties tab on button button click', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  label: 'Your text here'
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonBlockCreate: {
+                  id: 'buttonBlockId',
+                  parentBlockId: 'cardId',
+                  journeyId: 'journeyId',
+                  label: 'Your text here',
+                  buttonVariant: null,
+                  buttonColor: null,
+                  size: null,
+                  startIconId: null,
+                  endIconId: null,
+                  action: null
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
+    fireEvent.click(getByTestId('preview-step3.id'))
+    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Add' }))
+    expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Button' }))
     await waitFor(() =>
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',
