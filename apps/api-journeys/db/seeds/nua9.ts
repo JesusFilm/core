@@ -147,7 +147,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button1._key,
     name: 'PlayArrowRounded',
-    color: 'primary',
     size: 'lg',
     parentOrder: 0
   })
@@ -378,7 +377,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button2._key,
     name: 'ChevronRightRounded',
-    color: 'primary',
     size: 'sm',
     parentOrder: 0
   })
@@ -463,7 +461,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button3._key,
     name: 'ChevronRightRounded',
-    color: 'primary',
     size: 'sm',
     parentOrder: 0
   })
@@ -548,7 +545,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button4._key,
     name: 'BeenhereRounded',
-    color: 'primary',
     size: 'sm',
     parentOrder: 0
   })
@@ -744,7 +740,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button5._key,
     name: 'SendRounded',
-    color: 'primary',
     size: 'lg',
     parentOrder: 0
   })
@@ -939,7 +934,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button6._key,
     name: 'ContactSupportRounded',
-    color: 'primary',
     size: 'lg',
     parentOrder: 0
   })
@@ -1134,7 +1128,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button7._key,
     name: 'ContactSupportRounded',
-    color: 'primary',
     size: 'lg',
     parentOrder: 0
   })
@@ -1246,22 +1239,18 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: signUp1._key,
     name: 'SendRounded',
-    color: 'primary',
     size: 'md',
     parentOrder: 0
   })
   await db
     .collection('blocks')
-    .update(signUp1._key, { startIconId: icon8._key })
+    .update(signUp1._key, { submitIconId: icon8._key })
 
   const signUp2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
     parentBlockId: noThanksGridItemRight._key,
     submitLabel: 'Submit',
-    submitIcon: {
-      name: 'SendRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
@@ -1273,22 +1262,18 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: signUp2._key,
     name: 'SendRounded',
-    color: 'primary',
     size: 'md',
     parentOrder: 0
   })
   await db
     .collection('blocks')
-    .update(signUp2._key, { startIconId: icon9._key })
+    .update(signUp2._key, { submitIconId: icon9._key })
 
   const signUp3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
     parentBlockId: alreadyGridItemRight._key,
     submitLabel: 'Submit',
-    submitIcon: {
-      name: 'SendRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
@@ -1300,13 +1285,12 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: signUp3._key,
     name: 'SendRounded',
-    color: 'primary',
     size: 'md',
     parentOrder: 0
   })
   await db
     .collection('blocks')
-    .update(signUp3._key, { startIconId: icon10._key })
+    .update(signUp3._key, { submitIconId: icon10._key })
 
   const signUp4 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1324,13 +1308,12 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: signUp4._key,
     name: 'SendRounded',
-    color: 'primary',
     size: 'md',
     parentOrder: 0
   })
   await db
     .collection('blocks')
-    .update(signUp4._key, { startIconId: icon11._key })
+    .update(signUp4._key, { submitIconId: icon11._key })
 
   const lastImageId = uuidv4()
   const lastCard = await db.collection('blocks').save({
@@ -1397,7 +1380,6 @@ export async function nua9(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button8._key,
     name: 'SubscriptionsRounded',
-    color: 'primary',
     size: 'md',
     parentOrder: 0
   })
