@@ -322,7 +322,7 @@ input LinkActionInput {
 }
 
 type Mutation {
-  blockDelete(id: ID!, parentBlockIdjourneyId: ID!): [Block!]! @join__field(graph: JOURNEYS)
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID!): [Block!]! @join__field(graph: JOURNEYS)
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
