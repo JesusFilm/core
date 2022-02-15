@@ -12,8 +12,8 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ButtonBlockResolver } from './button.resolver'
 
 describe('Button', () => {
-  let blockResolver: BlockResolver,
-    resolver: ButtonBlockResolver,
+  let resolver: ButtonBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
