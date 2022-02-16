@@ -148,7 +148,6 @@ export async function nua1(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button1._key,
     name: 'PlayArrowRounded',
-    color: 'primary',
     size: 'lg',
     parentOrder: 0
   })
@@ -411,7 +410,6 @@ export async function nua1(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button2._key,
     name: 'ContactSupportRounded',
-    color: 'primary',
     size: 'md',
     parentOrder: 4
   })

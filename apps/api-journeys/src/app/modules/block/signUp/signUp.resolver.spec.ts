@@ -56,13 +56,21 @@ describe('SignUpBlockResolver', () => {
     submitLabel: input.submitLabel
   }
 
+  const blockUpdate = {
+    __typename: 'SignUpBlock',
+    parentBlockId: '0',
+    submitIconId: 'icon2',
+    submitLabel: 'Unlock Later!'
+  }
+
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block]),
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => input),
+      update: jest.fn((input) => input)
     })
   }
 
@@ -98,6 +106,13 @@ describe('SignUpBlockResolver', () => {
     it('creates a SignUpBlock', async () => {
       await resolver.signUpBlockCreate(input)
       expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
+    })
+  })
+
+  describe('SignUpBlockUpdate', () => {
+    it('updates a SignUpBlock', async () => {
+      await resolver.signUpBlockUpdate(block._key, block.journeyId, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })
   })
 })
