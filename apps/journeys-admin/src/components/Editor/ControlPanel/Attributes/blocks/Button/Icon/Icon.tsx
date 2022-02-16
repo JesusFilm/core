@@ -183,36 +183,38 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
   async function iconCreate(
     name: IconName
   ): Promise<IconBlockCreate_iconBlockCreate | undefined> {
-    const { data } = await iconBlockCreate({
-      variables: {
-        input: {
-          parentBlockId: selectedBlock?.id,
-          journeyId: journey.id,
-          name
-        }
-      },
-      update(cache, { data }) {
-        if (data?.iconBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newBlockRef = cache.writeFragment({
-                  data: data.iconBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newBlockRef]
+    if (selectedBlock != null) {
+      const { data } = await iconBlockCreate({
+        variables: {
+          input: {
+            parentBlockId: selectedBlock?.id,
+            journeyId: journey.id,
+            name
+          }
+        },
+        update(cache, { data }) {
+          if (data?.iconBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.iconBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
               }
-            }
-          })
+            })
+          }
         }
-      }
-    })
-    return data?.iconBlockCreate
+      })
+      return data?.iconBlockCreate
+    }
   }
 
   async function iconUpdate(
@@ -225,6 +227,13 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
           id: iconBlockId,
           journeyId: journey.id,
           input: {
+            name
+          }
+        },
+        optimisticResponse: {
+          iconBlockUpdate: {
+            __typename: 'IconBlock',
+            id: iconBlockId,
             name
           }
         }
@@ -242,6 +251,14 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: {
+            startIconId,
+            endIconId
+          }
+        },
+        optimisticResponse: {
+          buttonBlockUpdate: {
+            __typename: 'ButtonBlock',
+            id: selectedBlock.id,
             startIconId,
             endIconId
           }
