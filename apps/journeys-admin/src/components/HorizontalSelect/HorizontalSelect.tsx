@@ -9,13 +9,15 @@ export interface HorizontalSelectProps {
   id?: string
   children: ReactNode
   sx?: SxProps<Theme>
+  footer?: ReactNode
 }
 
 export function HorizontalSelect({
   children,
   id,
   onChange,
-  sx
+  sx,
+  footer
 }: HorizontalSelectProps): ReactElement {
   return (
     <Stack
@@ -42,7 +44,8 @@ export function HorizontalSelect({
                   id === child.props.id
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
-                border: '3px solid transparent'
+                border: '3px solid transparent',
+                cursor: 'pointer'
               }}
               onClick={() => onChange?.(child.props.id)}
             >
@@ -59,6 +62,15 @@ export function HorizontalSelect({
               {child}
             </Box>
           )
+      )}
+      {footer != null && (
+        <Box
+          sx={{
+            border: '3px solid transparent'
+          }}
+        >
+          {footer}
+        </Box>
       )}
     </Stack>
   )

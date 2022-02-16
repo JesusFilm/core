@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import { HorizontalSelect } from '.'
 
 describe('HorizontalSelect', () => {
-  it('should call onChange when step is clicked on', () => {
+  it('calls onChange when step is clicked on', () => {
     const onChange = jest.fn()
     const { getByText } = render(
       <HorizontalSelect onChange={onChange}>
@@ -15,7 +15,7 @@ describe('HorizontalSelect', () => {
     expect(onChange).toHaveBeenCalledWith('step1.id')
   })
 
-  it('should show border around selected', () => {
+  it('shows border around selected', () => {
     const { getByText } = render(
       <HorizontalSelect onChange={jest.fn()} id="step1.id">
         <Box id="step1.id">Option 1</Box>
@@ -25,5 +25,19 @@ describe('HorizontalSelect', () => {
     expect(getByText('Option 1').parentElement).toHaveStyle(
       'outline: 2px solid #1976d2'
     )
+  })
+
+  it('displays foolter', () => {
+    const { getByTestId } = render(
+      <HorizontalSelect
+        onChange={jest.fn()}
+        id="step1.id"
+        footer={<div data-testid="this-is-a-test">Hello World</div>}
+      >
+        <Box id="step1.id">Option 1</Box>
+        <Box id="step2.id">Option 2</Box>
+      </HorizontalSelect>
+    )
+    expect(getByTestId('this-is-a-test')).toHaveTextContent('Hello World')
   })
 })
