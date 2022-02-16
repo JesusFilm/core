@@ -1,17 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { AddFab } from '.'
+import { Fab } from '.'
 
-const AddFabStory = {
+const FabStory = {
   ...journeysAdminConfig,
-  component: AddFab,
-  title: 'Journeys-Admin/Editor/ControlPanel/AddFab'
+  component: Fab,
+  title: 'Journeys-Admin/Editor/ControlPanel/Fab'
 }
 
 const Template: Story = () => {
-  return <AddFab visible />
+  return <Fab visible />
 }
 
 export const Default = Template.bind({})
 
-export default AddFabStory as Meta
+export default FabStory as Meta

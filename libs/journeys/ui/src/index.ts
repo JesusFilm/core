@@ -19,6 +19,7 @@ export {
   useEditor,
   EditorProvider,
   ActiveTab,
+  ActiveFab,
   searchBlocks,
   journeyUiConfig,
   simpleComponentConfig,
