@@ -10,6 +10,7 @@ import { gql, useMutation } from '@apollo/client'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ButtonBlockCreate } from '../../../../../../__generated__/ButtonBlockCreate'
+import { ButtonVariant, ButtonColor, ButtonSize } from '../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../libs/context'
 
 export const BUTTON_BLOCK_CREATE = gql`
@@ -43,7 +44,10 @@ export function NewButtonButton(): ReactElement {
           input: {
             journeyId,
             parentBlockId: card.id,
-            label: 'Your text here'
+            label: 'Edit Text...',
+            variant: ButtonVariant.contained,
+            color: ButtonColor.primary,
+            size: ButtonSize.medium
           }
         },
         update(cache, { data }) {

@@ -4,6 +4,7 @@ import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { ButtonVariant, ButtonColor, ButtonSize } from '../../../../../../__generated__/globalTypes'
 import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
 import { NewButtonButton } from '.'
 
@@ -37,10 +38,10 @@ describe('Button', () => {
           id: 'buttonBlockId',
           parentBlockId: 'cardId',
           journeyId: 'journeyId',
-          label: 'Your text here',
-          buttonVariant: null,
-          buttonColor: null,
-          size: null,
+          label: 'Edit Text...',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.medium,
           startIconId: null,
           endIconId: null,
           action: null
@@ -57,7 +58,10 @@ describe('Button', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  label: 'Your text here'
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium
                 }
               }
             },
@@ -93,10 +97,10 @@ describe('Button', () => {
           parentBlockId: 'cardId',
           parentOrder: 1,
           journeyId: 'journeyId',
-          label: 'Your text here',
-          buttonVariant: null,
-          buttonColor: null,
-          size: null,
+          label: 'Edit Text...',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
           action: null
@@ -114,7 +118,10 @@ describe('Button', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  label: 'Your text here'
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium
                 }
               }
             },

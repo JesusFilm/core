@@ -6,6 +6,7 @@ import {
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
+import { ButtonVariant, ButtonColor, ButtonSize } from '../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
@@ -437,7 +438,10 @@ describe('ControlPanel', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  label: 'Your text here'
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium
                 }
               }
             },
@@ -447,10 +451,10 @@ describe('ControlPanel', () => {
                   id: 'buttonBlockId',
                   parentBlockId: 'cardId',
                   journeyId: 'journeyId',
-                  label: 'Your text here',
-                  buttonVariant: null,
-                  buttonColor: null,
-                  size: null,
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium,
                   startIconId: null,
                   endIconId: null,
                   action: null

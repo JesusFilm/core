@@ -137,10 +137,13 @@ export enum VideoResponseStateEnum {
 }
 
 export interface ButtonBlockCreateInput {
+  color?: ButtonColor | null;
   id?: string | null;
   journeyId: string;
   label: string;
   parentBlockId: string;
+  size?: ButtonSize | null;
+  variant?: ButtonVariant | null;
 }
 
 export interface ButtonBlockUpdateInput {
