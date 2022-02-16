@@ -50,9 +50,11 @@ input ButtonBlockCreateInput {
 
 input ButtonBlockUpdateInput {
   color: ButtonColor
+  endIconId: ID
   label: String
   parentBlockId: ID
   size: ButtonSize
+  startIconId: ID
   variant: ButtonVariant
 }
 

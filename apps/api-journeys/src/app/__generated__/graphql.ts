@@ -171,6 +171,8 @@ export class ButtonBlockUpdateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    startIconId?: Nullable<string>;
+    endIconId?: Nullable<string>;
 }
 
 export class CardBlockCreateInput {
