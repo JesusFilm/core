@@ -4,7 +4,11 @@ import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { ButtonVariant, ButtonColor, ButtonSize } from '../../../../../../__generated__/globalTypes'
+import {
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize
+} from '../../../../../../__generated__/globalTypes'
 import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
 import { NewButtonButton } from '.'
 

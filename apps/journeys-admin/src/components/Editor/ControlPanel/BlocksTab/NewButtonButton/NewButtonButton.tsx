@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import RadioButtonCheckedRounded from '@mui/icons-material/RadioButtonCheckedRounded'
+import TouchAppRounded from '@mui/icons-material/TouchAppRounded'
 import {
   ActiveTab,
   BUTTON_FIELDS,
@@ -10,7 +10,11 @@ import { gql, useMutation } from '@apollo/client'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ButtonBlockCreate } from '../../../../../../__generated__/ButtonBlockCreate'
-import { ButtonVariant, ButtonColor, ButtonSize } from '../../../../../../__generated__/globalTypes'
+import {
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize
+} from '../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../libs/context'
 
 export const BUTTON_BLOCK_CREATE = gql`
@@ -85,10 +89,6 @@ export function NewButtonButton(): ReactElement {
   }
 
   return (
-    <Button
-      icon={<RadioButtonCheckedRounded />}
-      value="Button"
-      onClick={handleClick}
-    />
+    <Button icon={<TouchAppRounded />} value="Button" onClick={handleClick} />
   )
 }

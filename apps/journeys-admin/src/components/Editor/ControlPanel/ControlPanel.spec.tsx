@@ -6,7 +6,11 @@ import {
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
-import { ButtonVariant, ButtonColor, ButtonSize } from '../../../../__generated__/globalTypes'
+import {
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize
+} from '../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
