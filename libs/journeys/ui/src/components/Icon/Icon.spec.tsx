@@ -4,14 +4,19 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
+import { TreeBlock } from '../..'
+import { IconFields } from './__generated__/IconFields'
 import { Icon } from '.'
 
-const block: IconType = {
-  __typename: 'Icon',
-  name: IconName.CheckCircleRounded,
-  color: IconColor.error,
-  size: IconSize.md
+const block: TreeBlock<IconFields> = {
+  id: 'id',
+  __typename: 'IconBlock',
+  parentBlockId: 'parent',
+  parentOrder: 0,
+  iconName: IconName.CheckCircleRounded,
+  iconColor: IconColor.error,
+  iconSize: IconSize.md,
+  children: []
 }
 
 describe('Icon', () => {
@@ -20,19 +25,19 @@ describe('Icon', () => {
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })
   it('should render small icon', () => {
-    const { getByTestId } = render(<Icon {...block} size={IconSize.sm} />)
+    const { getByTestId } = render(<Icon {...block} iconSize={IconSize.sm} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 16px')
   })
   it('should render medium icon', () => {
-    const { getByTestId } = render(<Icon {...block} size={IconSize.md} />)
+    const { getByTestId } = render(<Icon {...block} iconSize={IconSize.md} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 20px')
   })
   it('should render large icon', () => {
-    const { getByTestId } = render(<Icon {...block} size={IconSize.lg} />)
+    const { getByTestId } = render(<Icon {...block} iconSize={IconSize.lg} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 28px')
   })
   it('should render extra large icon', () => {
-    const { getByTestId } = render(<Icon {...block} size={IconSize.xl} />)
+    const { getByTestId } = render(<Icon {...block} iconSize={IconSize.xl} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 48px')
   })
 })

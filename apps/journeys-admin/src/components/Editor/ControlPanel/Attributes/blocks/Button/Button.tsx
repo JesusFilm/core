@@ -11,6 +11,7 @@ import {
   ButtonVariant
 } from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
@@ -22,11 +23,21 @@ export function Button({
   buttonVariant,
   buttonColor,
   size,
-  startIcon,
-  endIcon,
-  action
+  startIconId,
+  endIconId,
+  action,
+  children
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
+
+  const startIcon = children.find((block) => block.id === startIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
+  const endIcon = children.find((block) => block.id === endIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
   return (
     <>
       <Attribute
@@ -90,7 +101,7 @@ export function Button({
         id={`${id}-button-leading-icon`}
         icon={<InfoOutlinedIcon />}
         name="Leading Icon"
-        value={startIcon?.name.toString() ?? 'None'}
+        value={startIcon?.iconName ?? 'None'}
         description="Leading Icon"
         // onClick to open drawer
       />
@@ -99,7 +110,7 @@ export function Button({
         id={`${id}-button-trailing-icon`}
         icon={<InfoOutlinedIcon />}
         name="Trailing Icon"
-        value={endIcon?.name.toString() ?? 'None'}
+        value={endIcon?.iconName ?? 'None'}
         description="Trailing Icon"
         // onClick to open drawer
       />

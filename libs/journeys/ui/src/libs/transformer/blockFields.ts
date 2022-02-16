@@ -3,6 +3,7 @@ import { BUTTON_FIELDS } from '../../components/Button/buttonFields'
 import { CARD_FIELDS } from '../../components/Card/cardFields'
 import { GRID_CONTAINER_FIELDS } from '../../components/GridContainer/gridContainerFields'
 import { GRID_ITEM_FIELDS } from '../../components/GridContainer/GridItem/gridItemFields'
+import { ICON_FIELDS } from '../../components/Icon/iconFields'
 import { IMAGE_FIELDS } from '../../components/Image/imageFields'
 import { RADIO_OPTION_FIELDS } from '../../components/RadioQuestion/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '../../components/RadioQuestion/radioQuestionFields'
@@ -17,6 +18,7 @@ export const BLOCK_FIELDS = gql`
   ${CARD_FIELDS}
   ${GRID_CONTAINER_FIELDS}
   ${GRID_ITEM_FIELDS}
+  ${ICON_FIELDS}
   ${IMAGE_FIELDS}
   ${RADIO_OPTION_FIELDS}
   ${RADIO_QUESTION_FIELDS}
@@ -40,6 +42,9 @@ export const BLOCK_FIELDS = gql`
     }
     ... on GridItemBlock {
       ...GridItemFields
+    }
+    ... on IconBlock {
+      ...IconFields
     }
     ... on ImageBlock {
       ...ImageFields
@@ -73,6 +78,7 @@ export {
   CARD_FIELDS,
   GRID_CONTAINER_FIELDS,
   GRID_ITEM_FIELDS,
+  ICON_FIELDS,
   IMAGE_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,

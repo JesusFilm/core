@@ -3,25 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
 // ====================================================
-
-export interface BlockFields_ButtonBlock_startIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
-export interface BlockFields_ButtonBlock_endIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
 
 export interface BlockFields_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
@@ -63,8 +49,8 @@ export interface BlockFields_ButtonBlock {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIcon: BlockFields_ButtonBlock_startIcon | null;
-  endIcon: BlockFields_ButtonBlock_endIcon | null;
+  startIconId: string | null;
+  endIconId: string | null;
   action: BlockFields_ButtonBlock_action | null;
 }
 
@@ -120,6 +106,16 @@ export interface BlockFields_GridItemBlock {
   xl: number;
   lg: number;
   sm: number;
+}
+
+export interface BlockFields_IconBlock {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
 }
 
 export interface BlockFields_ImageBlock {
@@ -218,21 +214,14 @@ export interface BlockFields_SignUpBlock_action_LinkAction {
 
 export type BlockFields_SignUpBlock_action = BlockFields_SignUpBlock_action_NavigateAction | BlockFields_SignUpBlock_action_NavigateToBlockAction | BlockFields_SignUpBlock_action_NavigateToJourneyAction | BlockFields_SignUpBlock_action_LinkAction;
 
-export interface BlockFields_SignUpBlock_submitIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
 export interface BlockFields_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
+  submitIconId: string | null;
   action: BlockFields_SignUpBlock_action | null;
-  submitIcon: BlockFields_SignUpBlock_submitIcon | null;
 }
 
 export interface BlockFields_StepBlock {
@@ -292,6 +281,7 @@ export interface BlockFields_VideoBlock {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
+  fullsize: boolean | null;
   videoContent: BlockFields_VideoBlock_videoContent;
 }
 
@@ -339,4 +329,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

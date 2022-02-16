@@ -44,7 +44,7 @@ describe('SignUp', () => {
             gtmEventName: 'gtmEventName',
             blockId: 'def'
           },
-          submitIcon: null
+          submitIconId: null
         }
       }
     }))
@@ -100,7 +100,7 @@ describe('SignUp', () => {
             gtmEventName: 'gtmEventName',
             blockId: 'def'
           },
-          submitIcon: null
+          submitIconId: null
         }
       }
     }))

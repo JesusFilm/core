@@ -37,8 +37,8 @@ const block: TreeBlock<ButtonFields> = {
   buttonVariant: ButtonVariant.contained,
   buttonColor: ButtonColor.primary,
   size: ButtonSize.small,
-  startIcon: null,
-  endIcon: null,
+  startIconId: null,
+  endIconId: null,
   action: null,
   children: []
 }
@@ -70,34 +70,46 @@ describe('Button', () => {
   })
 
   it('should render the start icon', () => {
-    const { getByTestId } = render(
-      <Button
-        {...block}
-        startIcon={{
-          __typename: 'Icon',
-          name: IconName.CheckCircleRounded,
-          color: IconColor.primary,
-          size: IconSize.md
-        }}
-      />
-    )
+    const iconBlock: TreeBlock<ButtonFields> = {
+      ...block,
+      startIconId: 'start',
+      children: [
+        {
+          id: 'start',
+          __typename: 'IconBlock',
+          parentBlockId: 'id',
+          parentOrder: 0,
+          iconName: IconName.CheckCircleRounded,
+          iconColor: null,
+          iconSize: IconSize.md,
+          children: []
+        }
+      ]
+    }
+    const { getByTestId } = render(<Button {...iconBlock} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
     expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-startIcon'
     )
   })
   it('should render the end icon', () => {
-    const { getByTestId } = render(
-      <Button
-        {...block}
-        endIcon={{
-          __typename: 'Icon',
-          name: IconName.CheckCircleRounded,
-          color: IconColor.primary,
-          size: IconSize.md
-        }}
-      />
-    )
+    const iconBlock: TreeBlock<ButtonFields> = {
+      ...block,
+      endIconId: 'end',
+      children: [
+        {
+          id: 'end',
+          __typename: 'IconBlock',
+          parentBlockId: 'id',
+          parentOrder: 0,
+          iconName: IconName.CheckCircleRounded,
+          iconColor: IconColor.primary,
+          iconSize: IconSize.md,
+          children: []
+        }
+      ]
+    }
+    const { getByTestId } = render(<Button {...iconBlock} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
     expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-endIcon'

@@ -24,7 +24,7 @@ export const Default: Story = () => {
     parentOrder: 0,
     submitLabel: null,
     action: null,
-    submitIcon: null,
+    submitIconId: null,
     children: []
   }
   return (
@@ -53,13 +53,19 @@ export const Filled: Story = () => {
       gtmEventName: 'signup',
       url: 'https://www.google.com'
     },
-    submitIcon: {
-      __typename: 'Icon',
-      name: IconName.ArrowForwardRounded,
-      color: IconColor.action,
-      size: IconSize.lg
-    },
-    children: []
+    submitIconId: 'icon',
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.ArrowForwardRounded,
+        iconColor: IconColor.action,
+        iconSize: IconSize.lg,
+        children: []
+      }
+    ]
   }
   return (
     <Stack

@@ -47,7 +47,8 @@ export function NewVideoButton(): ReactElement {
             videoContent: {
               src: null
             },
-            title: ''
+            title: '',
+            fullsize: true
           }
         },
         update(cache, { data }) {
