@@ -234,12 +234,6 @@ enum IconSize {
   xl
 }
 
-input IconUpdateInput {
-  color: IconColor
-  name: IconName
-  size: IconSize
-}
-
 enum IdType {
   databaseId
   slug

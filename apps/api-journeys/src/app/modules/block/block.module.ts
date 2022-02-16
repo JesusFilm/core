@@ -18,6 +18,7 @@ import {
   RadioOptionBlockResolver,
   RadioQuestionBlockResolver
 } from './radioQuestion/radioQuestion.resolver'
+import { IconBlockResolver } from './icon/icon.resolver'
 
 @Module({
   imports: [DatabaseModule],
@@ -26,6 +27,7 @@ import {
     BlockResolver,
     ButtonBlockResolver,
     CardBlockResolver,
+    IconBlockResolver,
     ImageBlockResolver,
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,

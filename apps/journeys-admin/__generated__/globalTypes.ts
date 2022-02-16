@@ -155,16 +155,19 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface IconBlockCreateInput {
+  color?: IconColor | null;
+  id?: string | null;
+  journeyId: string;
+  name: IconName;
+  parentBlockId: string;
+  size?: IconSize | null;
+}
+
 export interface IconBlockUpdateInput {
   color?: IconColor | null;
   name: IconName;
   parentBlockId?: string | null;
-  size?: IconSize | null;
-}
-
-export interface IconUpdateInput {
-  color?: IconColor | null;
-  name?: IconName | null;
   size?: IconSize | null;
 }
 

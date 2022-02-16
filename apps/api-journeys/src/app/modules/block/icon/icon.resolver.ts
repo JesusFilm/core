@@ -14,12 +14,19 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 export class IconBlockResolver {
   constructor(private readonly blockService: BlockService) {}
 
+  @Mutation()
   @IdAsKey()
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   async iconBlockCreate(
-    @Args('input') input: IconBlockCreateInput & { __typename }
+    @Args('input') input: IconBlockCreateInput
   ): Promise<IconBlock> {
-    input.__typename = 'IconBlock'
     return await this.blockService.save({
+      __typename: 'IconBlock',
       ...input,
       // Icons positions are set via parent block props, cannot be ordered.
       parentOrder: null

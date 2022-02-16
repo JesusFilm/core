@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IconBlockCreateInput, IconName, IconSize, IconColor } from "./globalTypes";
+import { IconBlockCreateInput, IconName, IconColor, IconSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: IconBlockCreate
@@ -13,10 +13,10 @@ export interface IconBlockCreate_iconBlockCreate {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
-  parentOrder: number | null;
-  iconName: IconName;
-  iconSize: IconSize | null;
-  iconColor: IconColor | null;
+  journeyId: string;
+  name: IconName;
+  color: IconColor | null;
+  size: IconSize | null;
 }
 
 export interface IconBlockCreate {

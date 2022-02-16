@@ -7,41 +7,6 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum IconName {
-    PlayArrowRounded = "PlayArrowRounded",
-    TranslateRounded = "TranslateRounded",
-    CheckCircleRounded = "CheckCircleRounded",
-    RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
-    FormatQuoteRounded = "FormatQuoteRounded",
-    LockOpenRounded = "LockOpenRounded",
-    ArrowForwardRounded = "ArrowForwardRounded",
-    ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
-    LiveTvRounded = "LiveTvRounded",
-    MenuBookRounded = "MenuBookRounded",
-    ChevronRightRounded = "ChevronRightRounded",
-    BeenhereRounded = "BeenhereRounded",
-    SendRounded = "SendRounded",
-    SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
-}
-
-export enum IconColor {
-    primary = "primary",
-    secondary = "secondary",
-    action = "action",
-    error = "error",
-    disabled = "disabled",
-    inherit = "inherit"
-}
-
-export enum IconSize {
-    sm = "sm",
-    md = "md",
-    lg = "lg",
-    xl = "xl",
-    inherit = "inherit"
-}
-
 export enum ThemeMode {
     dark = "dark",
     light = "light"
@@ -87,6 +52,41 @@ export enum GridAlignItems {
     flexStart = "flexStart",
     flexEnd = "flexEnd",
     center = "center"
+}
+
+export enum IconName {
+    PlayArrowRounded = "PlayArrowRounded",
+    TranslateRounded = "TranslateRounded",
+    CheckCircleRounded = "CheckCircleRounded",
+    RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
+    FormatQuoteRounded = "FormatQuoteRounded",
+    LockOpenRounded = "LockOpenRounded",
+    ArrowForwardRounded = "ArrowForwardRounded",
+    ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
+    LiveTvRounded = "LiveTvRounded",
+    MenuBookRounded = "MenuBookRounded",
+    ChevronRightRounded = "ChevronRightRounded",
+    BeenhereRounded = "BeenhereRounded",
+    SendRounded = "SendRounded",
+    SubscriptionsRounded = "SubscriptionsRounded",
+    ContactSupportRounded = "ContactSupportRounded"
+}
+
+export enum IconColor {
+    primary = "primary",
+    secondary = "secondary",
+    action = "action",
+    error = "error",
+    disabled = "disabled",
+    inherit = "inherit"
+}
+
+export enum IconSize {
+    sm = "sm",
+    md = "md",
+    lg = "lg",
+    xl = "xl",
+    inherit = "inherit"
 }
 
 export enum TypographyVariant {
@@ -136,12 +136,6 @@ export enum UserJourneyRole {
     inviteRequested = "inviteRequested",
     editor = "editor",
     owner = "owner"
-}
-
-export class IconUpdateInput {
-    name?: Nullable<IconName>;
-    color?: Nullable<IconColor>;
-    size?: Nullable<IconSize>;
 }
 
 export class NavigateActionInput {
@@ -378,13 +372,6 @@ export interface VideoContent {
 export interface Response {
     id: string;
     userId: string;
-}
-
-export class Icon {
-    __typename?: 'Icon';
-    name: IconName;
-    color?: Nullable<IconColor>;
-    size?: Nullable<IconSize>;
 }
 
 export class NavigateAction implements Action {

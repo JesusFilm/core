@@ -2,14 +2,11 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import {
-  // useEditor,
-  TreeBlock
-} from '@core/journeys/ui'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-// import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import {
   CheckCircleRounded,
   PlayArrowRounded,
@@ -28,9 +25,15 @@ import {
   ContactSupportRounded
 } from '@mui/icons-material'
 import { IconName } from '../../../../../../../../__generated__/globalTypes'
-// import { useJourney } from '../../../../../../../libs/context'
-// import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
+import { useJourney } from '../../../../../../../libs/context'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../../__generated__/IconFields'
+import {
+  IconBlockCreate,
+  IconBlockCreate_iconBlockCreate
+} from '../../../../../../../../__generated__/IconBlockCreate'
+import { IconBlockNameUpdate } from '../../../../../../../../__generated__/IconBlockNameUpdate'
+import { ButtonBlockIconUpdate } from '../../../../../../../../__generated__/ButtonBlockIconUpdate'
 import { ColorToggleGroup } from './ColorToggleGroup'
 import { SizeToggleGroup } from './SizeToggleGroup'
 
@@ -109,20 +112,45 @@ const icons = [
   }
 ]
 // ---------- MUTATIONS ----------
-// export const START_ICON_UPDATE = gql`
-//   mutation ButtonBlockStartIconUpdate(
-//     $id: ID!
-//     $journeyId: ID!
-//     $input: ButtonBlockUpdateInput!
-//   ) {
-//     buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-//       id
-//       startIcon {
-//         name
-//       }
-//     }
-//   }
-// `
+export const ICON_BLOCK_CREATE = gql`
+  mutation IconBlockCreate($input: IconBlockCreateInput!) {
+    iconBlockCreate(input: $input) {
+      id
+      parentBlockId
+      journeyId
+      name
+      color
+      size
+    }
+  }
+`
+
+export const ICON_BLOCK_NAME_UPDATE = gql`
+  mutation IconBlockNameUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: IconBlockUpdateInput!
+  ) {
+    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      name
+    }
+  }
+`
+
+export const BUTTON_BLOCK_ICON_UPDATE = gql`
+  mutation ButtonBlockIconUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: ButtonBlockUpdateInput!
+  ) {
+    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      startIconId
+      endIconId
+    }
+  }
+`
 
 interface iconProps {
   iconBlock?: TreeBlock<IconFields>
@@ -130,18 +158,20 @@ interface iconProps {
 }
 
 export function Icon({ iconBlock, type }: iconProps): ReactElement {
-  // ---------- DECLEARING MUTATIONS ----------
-  // const [buttonBlockStartIconUpdate] =
-  //   useMutation<ButtonBlockStartIconUpdate>(START_ICON_UPDATE)
-  // const [buttonBlockEndIconUpdate] =
-  //   useMutation<ButtonBlockEndIconUpdate>(END_ICON_UPDATE)
+  const [iconBlockCreate] = useMutation<IconBlockCreate>(ICON_BLOCK_CREATE)
+  const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
+    ICON_BLOCK_NAME_UPDATE
+  )
+  const [buttonBlockIconUpdate] = useMutation<ButtonBlockIconUpdate>(
+    BUTTON_BLOCK_ICON_UPDATE
+  )
 
-  // const journey = useJourney()
+  const journey = useJourney()
 
-  // const { state } = useEditor()
-  // const selectedBlock = state.selectedBlock as
-  //   | TreeBlock<ButtonBlock>
-  //   | undefined
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
 
   // ---------- SET UP ----------
   const iconName = iconBlock != null ? iconBlock.iconName : ''
@@ -149,12 +179,76 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
   const [showProps, setShowProps] = useState(iconName !== '')
   const [name, setName] = useState(iconName)
 
-  // useEffect(() => {
-  //   setShowProps(iconName != null)
-  //   setName(iconName != null ? iconName : '')
-  // }, [iconName])
-
   // ---------- API CALLERS ----------
+  async function iconCreate(
+    name: IconName
+  ): Promise<IconBlockCreate_iconBlockCreate | undefined> {
+    const { data } = await iconBlockCreate({
+      variables: {
+        input: {
+          parentBlockId: selectedBlock?.id,
+          journeyId: journey.id,
+          name
+        }
+      },
+      update(cache, { data }) {
+        if (data?.iconBlockCreate != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
+            fields: {
+              blocks(existingBlockRefs = []) {
+                const newBlockRef = cache.writeFragment({
+                  data: data.iconBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                return [...existingBlockRefs, newBlockRef]
+              }
+            }
+          })
+        }
+      }
+    })
+    return data?.iconBlockCreate
+  }
+
+  async function iconUpdate(
+    name: IconName,
+    iconBlockId: string
+  ): Promise<void> {
+    if (selectedBlock != null) {
+      await iconBlockNameUpdate({
+        variables: {
+          id: iconBlockId,
+          journeyId: journey.id,
+          input: {
+            name
+          }
+        }
+      })
+    }
+  }
+
+  async function buttonIconUpdate(
+    startIconId: string | null,
+    endIconId: string | null
+  ): Promise<void> {
+    if (selectedBlock != null) {
+      await buttonBlockIconUpdate({
+        variables: {
+          id: selectedBlock.id,
+          journeyId: journey.id,
+          input: {
+            startIconId,
+            endIconId
+          }
+        }
+      })
+    }
+  }
   // async function updateIcon(name: IconName, type: IconType): Promise<void> {
   //   if (selectedBlock != null) {
   //     if (type === IconType.start) {
@@ -248,11 +342,34 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
   // ---------- HANDLE CHANGE ----------
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     const newName = event.target.value as IconName
-    // if (event.target.value === '') {
-    //   await removeIcon(iconType)
-    // } else if (newName !== name) {
-    //   await updateIcon(newName, iconType)
-    // }
+    if (event.target.value === '') {
+      type === 'start'
+        ? await buttonIconUpdate(null, selectedBlock?.endIconId ?? null)
+        : await buttonIconUpdate(selectedBlock?.startIconId ?? null, null)
+      // delete iconBlock
+    } else if (newName !== iconName) {
+      if (type === 'start') {
+        if (typeof selectedBlock?.startIconId === 'string') {
+          await iconUpdate(newName, selectedBlock.startIconId)
+        } else {
+          const newIcon = await iconCreate(newName)
+          await buttonIconUpdate(
+            newIcon?.id ?? null,
+            selectedBlock?.endIconId ?? null
+          )
+        }
+      } else {
+        if (typeof selectedBlock?.endIconId === 'string') {
+          await iconUpdate(newName, selectedBlock.endIconId)
+        } else {
+          const newIcon = await iconCreate(newName)
+          await buttonIconUpdate(
+            selectedBlock?.startIconId ?? null,
+            newIcon?.id ?? null
+          )
+        }
+      }
+    }
     setName(newName)
     setShowProps(event.target.value !== '')
   }
@@ -284,19 +401,18 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
         </Select>
       </FormControl>
 
-      {showProps &&
-        iconBlock != null && ( // need to test if drawers will open with this
-          <Box>
-            <Typography variant="subtitle2" sx={{ px: 6 }}>
-              Color
-            </Typography>
-            <ColorToggleGroup iconBlock={iconBlock} />
-            <Typography variant="subtitle2" sx={{ px: 6 }}>
-              Size
-            </Typography>
-            <SizeToggleGroup iconBlock={iconBlock} />
-          </Box>
-        )}
+      {showProps && iconBlock != null && (
+        <Box>
+          <Typography variant="subtitle2" sx={{ px: 6 }}>
+            Color
+          </Typography>
+          <ColorToggleGroup iconBlock={iconBlock} />
+          <Typography variant="subtitle2" sx={{ px: 6 }}>
+            Size
+          </Typography>
+          <SizeToggleGroup iconBlock={iconBlock} />
+        </Box>
+      )}
     </>
   )
 }
