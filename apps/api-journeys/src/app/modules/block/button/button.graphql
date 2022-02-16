@@ -35,6 +35,9 @@ input ButtonBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
 }
 
 input ButtonBlockUpdateInput {
@@ -43,6 +46,8 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIconId: ID
+  endIconId: ID
 }
 
 extend type Mutation {

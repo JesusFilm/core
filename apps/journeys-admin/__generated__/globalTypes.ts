@@ -145,9 +145,11 @@ export interface ButtonBlockCreateInput {
 
 export interface ButtonBlockUpdateInput {
   color?: ButtonColor | null;
+  endIconId?: string | null;
   label?: string | null;
   parentBlockId?: string | null;
   size?: ButtonSize | null;
+  startIconId?: string | null;
   variant?: ButtonVariant | null;
 }
 
