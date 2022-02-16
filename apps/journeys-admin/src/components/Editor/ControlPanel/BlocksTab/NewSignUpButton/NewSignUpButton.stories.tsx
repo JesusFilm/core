@@ -40,7 +40,7 @@ export const Default: Story = () => {
                   gtmEventName: 'gtmEventName',
                   blockId: 'def'
                 },
-                submitIcon: null
+                submitIconId: null
               }
             }
           }

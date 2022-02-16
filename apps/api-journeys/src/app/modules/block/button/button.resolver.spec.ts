@@ -26,16 +26,8 @@ describe('Button', () => {
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
     size: ButtonSize.large,
-    startIcon: {
-      name: 'ArrowForwardRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
-    endIcon: {
-      name: 'LockOpenRounded',
-      color: 'action',
-      size: 'xl'
-    },
+    startIconId: 'start1',
+    endIconId: 'end1',
     action: {
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
@@ -52,16 +44,8 @@ describe('Button', () => {
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
     size: ButtonSize.large,
-    startIcon: {
-      name: 'ArrowForwardRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
-    endIcon: {
-      name: 'LockOpenRounded',
-      color: 'action',
-      size: 'xl'
-    },
+    startIconId: 'start1',
+    endIconId: 'end1',
     action: {
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
@@ -78,16 +62,8 @@ describe('Button', () => {
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
     size: ButtonSize.small,
-    startIcon: {
-      name: 'ArrowForwardRounded',
-      color: 'secondary',
-      size: 'lg'
-    },
-    endIcon: {
-      name: 'LockOpenRounded',
-      color: 'action',
-      size: 'xl'
-    },
+    startIconId: 'start1',
+    endIconId: 'end1',
     action: {
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',

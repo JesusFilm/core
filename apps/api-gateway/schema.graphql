@@ -30,22 +30,24 @@ interface Block {
 type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
-  endIcon: Icon
+  endIconId: ID
   id: ID!
   journeyId: ID!
   label: String!
   parentBlockId: ID
   parentOrder: Int
   size: ButtonSize
-  startIcon: Icon
+  startIconId: ID
   variant: ButtonVariant
 }
 
 input ButtonBlockUpdateInput {
   color: ButtonColor
+  endIconId: ID
   label: String
   parentBlockId: ID
   size: ButtonSize
+  startIconId: ID
   variant: ButtonVariant
 }
 
@@ -166,9 +168,33 @@ enum GridJustifyContent {
   flexStart
 }
 
-type Icon {
+type IconBlock implements Block {
+  color: IconColor
+  id: ID!
+  journeyId: ID!
+  name: IconName!
+  parentBlockId: ID
+  parentOrder: Int
+  size: IconSize
+}
+
+input IconBlockCreateInput {
+  color: IconColor
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+  name: IconName!
+  parentBlockId: ID!
+  size: IconSize
+}
+
+input IconBlockUpdateInput {
   color: IconColor
   name: IconName!
+  parentBlockId: ID
   size: IconSize
 }
 
@@ -331,6 +357,8 @@ type Mutation {
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
+  iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
@@ -342,6 +370,7 @@ type Mutation {
   radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
+  signUpBlockUpdate(id: ID!, input: SignUpBlockUpdateInput!, journeyId: ID!): SignUpBlock @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
@@ -468,7 +497,7 @@ type SignUpBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  submitIcon: Icon
+  submitIconId: ID
   submitLabel: String
 }
 
@@ -476,7 +505,14 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  submitIconId: ID
   submitLabel: String!
+}
+
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 type SignUpResponse implements Response {

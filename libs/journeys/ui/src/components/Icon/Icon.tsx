@@ -16,17 +16,22 @@ import {
   SubscriptionsRounded,
   ContactSupportRounded
 } from '@mui/icons-material'
-import { ButtonFields_startIcon as IconType } from '../Button/__generated__/ButtonFields'
+import { BlockFields_IconBlock as IconBlock } from '../../libs/transformer/__generated__/BlockFields'
+import { TreeBlock } from '../..'
 
-export function Icon({ name, color, size }: IconType): ReactElement | null {
+export function Icon({
+  iconName,
+  iconColor,
+  iconSize
+}: TreeBlock<IconBlock>): ReactElement | null {
   const fontSize =
-    size === 'sm'
+    iconSize === 'sm'
       ? '16px'
-      : size === 'md'
+      : iconSize === 'md'
       ? '20px'
-      : size === 'lg'
+      : iconSize === 'lg'
       ? '28px'
-      : size === 'xl'
+      : iconSize === 'xl'
       ? '48px'
       : 'inherit'
 
@@ -48,8 +53,8 @@ export function Icon({ name, color, size }: IconType): ReactElement | null {
     ContactSupportRounded
   }
 
-  return createElement(icons[name], {
-    color: color ?? undefined,
+  return createElement(icons[iconName], {
+    color: iconColor ?? undefined,
     sx: { fontSize }
   })
 }

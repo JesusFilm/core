@@ -11,16 +11,8 @@ export const BUTTON_FIELDS = gql`
     buttonVariant: variant
     buttonColor: color
     size
-    startIcon {
-      name
-      color
-      size
-    }
-    endIcon {
-      name
-      color
-      size
-    }
+    startIconId
+    endIconId
     action {
       ...ActionFields
     }

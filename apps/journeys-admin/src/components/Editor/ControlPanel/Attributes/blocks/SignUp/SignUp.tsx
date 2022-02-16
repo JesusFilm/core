@@ -4,12 +4,18 @@ import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Attribute } from '../..'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
 
 export function SignUp({
   id,
   action,
-  submitIcon
+  submitIconId,
+  children
 }: TreeBlock<SignUpBlock>): ReactElement {
+  const submitIcon = children.find((block) => block.id === submitIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
   return (
     <>
       <Attribute
@@ -25,7 +31,7 @@ export function SignUp({
         id={`${id}-signup-icon`}
         icon={<InfoOutlinedIcon />}
         name="Button Icon"
-        value={submitIcon?.name.toString() ?? 'None'}
+        value={submitIcon?.iconName ?? 'None'}
         description="Button Icon"
         // onClick to open drawer
       />

@@ -80,17 +80,21 @@ const blocks: GetJourney_journey_blocks[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIcon: {
-      __typename: 'Icon',
-      name: IconName.PlayArrowRounded,
-      color: null,
-      size: IconSize.md
-    },
-    endIcon: null,
+    startIconId: 'icon',
+    endIconId: null,
     action: {
       __typename: 'NavigateAction',
       gtmEventName: 'gtmEventName'
     }
+  },
+  {
+    id: 'icon0',
+    __typename: 'IconBlock',
+    parentBlockId: 'button0',
+    parentOrder: 0,
+    iconName: IconName.PlayArrowRounded,
+    iconColor: null,
+    iconSize: IconSize.md
   },
   {
     id: 'image0.id',
@@ -151,17 +155,21 @@ const blocks: GetJourney_journey_blocks[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIcon: {
-      __typename: 'Icon',
-      name: IconName.PlayArrowRounded,
-      color: null,
-      size: IconSize.md
-    },
-    endIcon: null,
+    startIconId: 'icon1',
+    endIconId: null,
     action: {
       __typename: 'NavigateAction',
       gtmEventName: 'gtmEventName'
     }
+  },
+  {
+    id: 'icon1',
+    __typename: 'IconBlock',
+    parentBlockId: 'button1',
+    parentOrder: 0,
+    iconName: IconName.PlayArrowRounded,
+    iconColor: null,
+    iconSize: IconSize.md
   },
   {
     id: 'image1.id',
@@ -348,7 +356,8 @@ const blocks: GetJourney_journey_blocks[] = [
     },
     startAt: null,
     endAt: null,
-    posterBlockId: null
+    posterBlockId: null,
+    fullsize: null
   },
   {
     id: 'step5.id',
@@ -385,7 +394,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'SignUp1',
     parentBlockId: 'card5.id',
     parentOrder: 1,
-    submitIcon: null,
+    submitIconId: null,
     submitLabel: null,
     action: null
   },
@@ -459,18 +468,22 @@ const blocks: GetJourney_journey_blocks[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIcon: {
-      __typename: 'Icon',
-      name: IconName.PlayArrowRounded,
-      color: null,
-      size: IconSize.md
-    },
-    endIcon: null,
+    startIconId: 'icon',
+    endIconId: null,
     action: {
       __typename: 'NavigateToBlockAction',
       gtmEventName: 'gtmEventName',
       blockId: 'step6.id'
     }
+  },
+  {
+    id: 'icon',
+    __typename: 'IconBlock',
+    parentBlockId: 'button',
+    parentOrder: 0,
+    iconName: IconName.PlayArrowRounded,
+    iconColor: null,
+    iconSize: IconSize.md
   }
 ]
 
