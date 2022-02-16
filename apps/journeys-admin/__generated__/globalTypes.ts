@@ -244,6 +244,19 @@ export interface VideoBlockCreateInput {
   videoContent: VideoContentInput;
 }
 
+export interface VideoBlockUpdateInput {
+  autoplay?: boolean | null;
+  description?: string | null;
+  endAt?: number | null;
+  fullsize?: boolean | null;
+  muted?: boolean | null;
+  parentBlockId?: string | null;
+  posterBlockId?: string | null;
+  startAt?: number | null;
+  title?: string | null;
+  videoContent?: VideoContentInput | null;
+}
+
 export interface VideoContentInput {
   languageId?: string | null;
   mediaComponentId?: string | null;

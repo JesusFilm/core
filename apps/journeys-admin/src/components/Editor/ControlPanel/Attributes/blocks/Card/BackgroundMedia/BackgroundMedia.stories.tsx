@@ -5,6 +5,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
@@ -49,7 +50,72 @@ const journey: Journey = {
   userJourneys: []
 }
 
+const block: TreeBlock<CardBlock> = {
+  id: 'card1.id',
+  __typename: 'CardBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  coverBlockId: null,
+  backgroundColor: null,
+  themeMode: null,
+  themeName: null,
+  fullscreen: false,
+  children: []
+}
+
 export const Default: Story = () => {
+  const posterBlock: TreeBlock<ImageBlock> = {
+    id: 'poster1.id',
+    __typename: 'ImageBlock',
+    parentBlockId: 'video1.id',
+    parentOrder: 0,
+    src: 'https://via.placeholder.com/300x200',
+    width: 300,
+    height: 200,
+    blurhash: '',
+    alt: 'poster',
+    children: []
+  }
+
+  const videoBlock: TreeBlock<VideoBlock> = {
+    id: 'video1.id',
+    __typename: 'VideoBlock',
+    parentBlockId: 'card1.id',
+    parentOrder: 0,
+    title: 'my video',
+    startAt: 0,
+    endAt: null,
+    muted: false,
+    autoplay: true,
+    videoContent: {
+      __typename: 'VideoGeneric',
+      src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    },
+    posterBlockId: 'poster1.id',
+    children: [posterBlock]
+  }
+
+  return (
+    <MockedProvider>
+      <ThemeProvider>
+        <JourneyProvider value={journey}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...block, children: [videoBlock] },
+              drawerChildren: <BackgroundMedia />,
+              drawerTitle: 'Background Media',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
+
+export const Image: Story = () => {
   const image: TreeBlock<ImageBlock> = {
     id: 'image1.id',
     __typename: 'ImageBlock',
