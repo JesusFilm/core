@@ -207,6 +207,7 @@ export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  submitIconId?: string | null;
   submitLabel: string;
 }
 
