@@ -21,7 +21,7 @@ import { HorizontalSelect } from '../HorizontalSelect'
 import { useJourney } from '../../libs/context'
 
 export interface CardPreviewProps {
-  onSelect?: (card: TreeBlock<StepBlock>) => void
+  onSelect?: (step: TreeBlock<StepBlock>) => void
   selected?: TreeBlock<StepBlock>
   steps: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
