@@ -18,7 +18,7 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('CardPreview', () => {
-  it('calls onSelect when step is clicked', () => {
+  it('should call onSelect when step is clicked', () => {
     const onSelect = jest.fn()
     const step: TreeBlock<StepBlock> = {
       id: 'step.id',
@@ -38,7 +38,7 @@ describe('CardPreview', () => {
     expect(onSelect).toHaveBeenCalledWith(step)
   })
 
-  it('creates step and card when add button is clicked', async () => {
+  it('should create step and card when add button is clicked', async () => {
     mockUuidv4.mockReturnValueOnce('stepId')
     mockUuidv4.mockReturnValueOnce('cardId')
     const onSelect = jest.fn()
