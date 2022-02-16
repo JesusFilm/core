@@ -42,10 +42,13 @@ type ButtonBlock implements Block {
 }
 
 input ButtonBlockCreateInput {
+  color: ButtonColor
   id: ID
   journeyId: ID!
   label: String!
   parentBlockId: ID!
+  size: ButtonSize
+  variant: ButtonVariant
 }
 
 input ButtonBlockUpdateInput {

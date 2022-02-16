@@ -59,7 +59,10 @@ describe('Button', () => {
     journeyId: '2',
     __typename: 'ButtonBlock',
     parentBlockId: '0',
-    label: 'label'
+    label: 'label',
+    variant: ButtonVariant.contained,
+    color: ButtonColor.primary,
+    size: ButtonSize.medium
   }
 
   const blockCreateResponse = {
@@ -68,7 +71,10 @@ describe('Button', () => {
     __typename: 'ButtonBlock',
     parentBlockId: '0',
     parentOrder: 2,
-    label: 'label'
+    label: 'label',
+    variant: ButtonVariant.contained,
+    color: ButtonColor.primary,
+    size: ButtonSize.medium
   }
 
   const blockUpdate = {

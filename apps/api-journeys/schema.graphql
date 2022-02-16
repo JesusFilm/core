@@ -119,6 +119,9 @@ input ButtonBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
 }
 
 input ButtonBlockUpdateInput {

@@ -163,6 +163,9 @@ export class ButtonBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     label: string;
+    variant?: Nullable<ButtonVariant>;
+    color?: Nullable<ButtonColor>;
+    size?: Nullable<ButtonSize>;
 }
 
 export class ButtonBlockUpdateInput {
