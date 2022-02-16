@@ -63,6 +63,7 @@ const video: TreeBlock<VideoBlock> = {
   endAt: null,
   muted: true,
   autoplay: true,
+  fullsize: true,
   videoContent: {
     __typename: 'VideoGeneric',
     src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
@@ -233,6 +234,7 @@ describe('BackgroundMediaVideo', () => {
             autoplay: video.autoplay,
             parentBlockId: card.id,
             posterBlockId: video.posterBlockId,
+            fullsize: video.fullsize,
             videoContent: video.videoContent,
             __typename: 'VideoBlock'
           }
@@ -257,6 +259,7 @@ describe('BackgroundMediaVideo', () => {
                 query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
                 variables: {
                   id: image.id,
+                  parentBlockId: image.parentBlockId,
                   journeyId: journey.id
                 }
               },
@@ -319,8 +322,9 @@ describe('BackgroundMediaVideo', () => {
         target: { value: video.videoContent.src }
       })
       fireEvent.click(await getByTestId('checkCircle'))
+      await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
-      expect(videoBlockResult).toHaveBeenCalled()
+      await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` },
         { __ref: `VideoBlock:${video.id}` }
@@ -475,6 +479,7 @@ describe('BackgroundMediaVideo', () => {
                 query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
                 variables: {
                   id: video.id,
+                  parentBlockId: video.parentBlockId,
                   journeyId: journey.id
                 }
               },

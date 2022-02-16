@@ -225,6 +225,7 @@ export function BackgroundMediaVideo({
     await blockDelete({
       variables: {
         id: coverBlock.id,
+        parentBlockId: coverBlock.parentBlockId,
         journeyId: journeyId
       },
       update(cache, { data }) {
