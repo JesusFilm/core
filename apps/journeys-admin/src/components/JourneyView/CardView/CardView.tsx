@@ -28,7 +28,7 @@ export function CardView({ slug, blocks }: CardViewProps): ReactElement {
     <>
       {stepBlockLength > 0 ? (
         <>
-          <CardPreview steps={blocks} />
+          <CardPreview steps={blocks} showAddButton />
         </>
       ) : (
         <Box
