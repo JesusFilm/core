@@ -27,7 +27,7 @@ describe('HorizontalSelect', () => {
     )
   })
 
-  it('should display foolter', () => {
+  it('should display footer', () => {
     const { getByTestId } = render(
       <HorizontalSelect
         onChange={jest.fn()}
