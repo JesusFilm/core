@@ -26,7 +26,7 @@ jobs:
   build-and-deploy:
     environment: Production
     env:
-      ENV_SUFFIX: ${{ github.ref_name }}
+      ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
@@ -104,7 +104,7 @@ jobs:
           # Build a docker container and push it to ECR 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_SUFFIX .  -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster

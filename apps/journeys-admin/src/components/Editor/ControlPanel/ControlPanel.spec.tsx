@@ -192,7 +192,7 @@ describe('ControlPanel', () => {
                     gtmEventName: 'gtmEventName',
                     blockId: 'def'
                   },
-                  submitIcon: null
+                  submitIconId: null
                 }
               }
             }
@@ -377,7 +377,8 @@ describe('ControlPanel', () => {
                   videoContent: {
                     src: null
                   },
-                  title: ''
+                  title: '',
+                  fullsize: true
                 }
               }
             },
@@ -395,7 +396,8 @@ describe('ControlPanel', () => {
                   posterBlockId: null,
                   videoContent: {
                     src: null
-                  }
+                  },
+                  fullsize: true
                 }
               }
             }

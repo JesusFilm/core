@@ -17,8 +17,8 @@ describe('Button variant selector', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -46,8 +46,8 @@ describe('Button variant selector', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }

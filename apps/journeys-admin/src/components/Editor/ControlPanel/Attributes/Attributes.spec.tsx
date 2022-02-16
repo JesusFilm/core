@@ -67,6 +67,7 @@ describe('Attributes', () => {
     startAt: 10,
     endAt: null,
     muted: null,
+    fullsize: null,
     posterBlockId: 'posterBlockId',
     videoContent: {
       __typename: 'VideoArclight',
@@ -143,8 +144,8 @@ describe('Attributes', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -210,7 +211,7 @@ describe('Attributes', () => {
       parentOrder: 0,
       submitLabel: null,
       action: null,
-      submitIcon: null,
+      submitIconId: null,
       children: []
     }
     const { getByTestId, getByRole } = render(

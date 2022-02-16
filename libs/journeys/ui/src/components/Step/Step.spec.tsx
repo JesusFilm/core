@@ -20,8 +20,8 @@ const block: TreeBlock<StepFields> = {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     },
@@ -34,8 +34,8 @@ const block: TreeBlock<StepFields> = {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }

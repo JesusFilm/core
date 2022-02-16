@@ -88,18 +88,24 @@ const steps: Array<TreeBlock<StepBlock>> = [
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
             size: ButtonSize.large,
-            startIcon: {
-              __typename: 'Icon',
-              name: IconName.PlayArrowRounded,
-              color: null,
-              size: IconSize.md
-            },
-            endIcon: null,
+            startIconId: 'icon',
+            endIconId: null,
             action: {
               __typename: 'NavigateAction',
               gtmEventName: 'gtmEventName'
             },
-            children: []
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -167,18 +173,24 @@ const steps: Array<TreeBlock<StepBlock>> = [
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
             size: ButtonSize.large,
-            startIcon: {
-              __typename: 'Icon',
-              name: IconName.PlayArrowRounded,
-              color: null,
-              size: IconSize.md
-            },
-            endIcon: null,
+            startIconId: 'icon',
+            endIconId: null,
             action: {
               __typename: 'NavigateAction',
               gtmEventName: 'gtmEventName'
             },
-            children: []
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -430,19 +442,25 @@ const steps: Array<TreeBlock<StepBlock>> = [
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
             size: ButtonSize.large,
-            startIcon: {
-              __typename: 'Icon',
-              name: IconName.PlayArrowRounded,
-              color: null,
-              size: IconSize.md
-            },
-            endIcon: null,
+            startIconId: 'icon',
+            endIconId: null,
             action: {
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
             },
-            children: []
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
           }
         ]
       }
