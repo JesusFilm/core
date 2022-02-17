@@ -17,7 +17,7 @@ import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { Icon } from './Icon'
+import { Icon, icons } from './Icon'
 
 export function Button({
   id,
@@ -39,6 +39,11 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
+  console.log(
+    startIcon != null
+      ? icons.find(({ value }) => value === startIcon.iconName)?.label
+      : 'None'
+  )
   return (
     <>
       <Attribute
@@ -102,7 +107,10 @@ export function Button({
         id={`${id}-button-leading-icon`}
         icon={<InfoOutlinedIcon />}
         name="Leading Icon"
-        value={startIcon?.iconName ?? 'None'}
+        value={
+          icons.find(({ value }) => value === startIcon?.iconName)?.label ??
+          'None'
+        }
         description="Leading Icon"
         onClick={() => {
           dispatch({
@@ -118,7 +126,10 @@ export function Button({
         id={`${id}-button-trailing-icon`}
         icon={<InfoOutlinedIcon />}
         name="Trailing Icon"
-        value={endIcon?.iconName ?? 'None'}
+        value={
+          icons.find(({ value }) => value === endIcon?.iconName)?.label ??
+          'None'
+        }
         description="Trailing Icon"
         onClick={() => {
           dispatch({

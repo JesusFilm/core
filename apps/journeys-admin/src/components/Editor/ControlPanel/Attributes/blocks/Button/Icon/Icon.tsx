@@ -38,7 +38,7 @@ import { ColorToggleGroup } from './ColorToggleGroup'
 import { SizeToggleGroup } from './SizeToggleGroup'
 
 // icons is equivalent to IconName from global types"
-const icons = [
+export const icons = [
   {
     value: IconName.ArrowForwardRounded,
     label: 'Arrow Forward',
@@ -51,7 +51,7 @@ const icons = [
   },
   {
     value: IconName.ChatBubbleOutlineRounded,
-    label: 'Chat Bubblle',
+    label: 'Chat Bubble',
     display: <ChatBubbleOutlineRounded />
   },
   {
