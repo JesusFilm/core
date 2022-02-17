@@ -1,45 +1,25 @@
-import { ReactElement } from 'react'
-// import { gql, useMutation } from '@apollo/client'
-import {
-  // useEditor,
-  TreeBlock
-} from '@core/journeys/ui'
+import { ReactElement, useState } from 'react'
+import { gql, useMutation } from '@apollo/client'
+import { TreeBlock } from '@core/journeys/ui'
 import { IconColor } from '../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../../ColorDisplayIcon'
-// import { useJourney } from '../../../../../../../../libs/context'
+import { useJourney } from '../../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
-// import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { IconBlockColorUpdate } from '../../../../../../../../../__generated__/IconBlockColorUpdate'
 
-// export const BUTTON_START_ICON_COLOR_UPDATE = gql`
-//   mutation ButtonBlockStartIconColorUpdate(
-//     $id: ID!
-//     $journeyId: ID!
-//     $input: ButtonBlockUpdateInput!
-//   ) {
-//     buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-//       id
-//       startIcon {
-//         color
-//       }
-//     }
-//   }
-// `
-
-// export const BUTTON_END_ICON_COLOR_UPDATE = gql`
-//   mutation ButtonBlockEndIconColorUpdate(
-//     $id: ID!
-//     $journeyId: ID!
-//     $input: ButtonBlockUpdateInput!
-//   ) {
-//     buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-//       id
-//       endIcon {
-//         color
-//       }
-//     }
-//   }
-// `
+export const ICON_BLOCK_COLOR_UPDATE = gql`
+  mutation IconBlockColorUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: IconBlockUpdateInput!
+  ) {
+    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      color
+    }
+  }
+`
 
 interface ColorToggleGroupProps {
   iconBlock: TreeBlock<IconFields>
@@ -48,46 +28,31 @@ interface ColorToggleGroupProps {
 export function ColorToggleGroup({
   iconBlock
 }: ColorToggleGroupProps): ReactElement {
-  // const [buttonBlockStartIconColorUpdate] =
-  //   useMutation<ButtonBlockStartIconColorUpdate>(BUTTON_START_ICON_COLOR_UPDATE)
-  // const [buttonBlockEndIconColorUpdate] =
-  //   useMutation<ButtonBlockEndIconColorUpdate>(BUTTON_END_ICON_COLOR_UPDATE)
-
-  // const journey = useJourney()
-
-  // const { state } = useEditor()
-  // const selectedBlock = state.selectedBlock as
-  //   | TreeBlock<ButtonBlock>
-  //   | undefined
+  const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
+    ICON_BLOCK_COLOR_UPDATE
+  )
+  const journey = useJourney()
+  const [color, setColor] = useState(iconBlock?.iconColor ?? IconColor.inherit)
 
   async function handleChange(color: IconColor): Promise<void> {
-    // if (selectedBlock != null && color != null) {
-    //   if (type === IconType.start) {
-    //     await buttonBlockStartIconColorUpdate({
-    //       variables: {
-    //         id: selectedBlock.id,
-    //         journeyId: journey.id,
-    //         input: {
-    //           startIcon: {
-    //             color
-    //           }
-    //         }
-    //       }
-    //     })
-    //   } else {
-    //     await buttonBlockEndIconColorUpdate({
-    //       variables: {
-    //         id: selectedBlock.id,
-    //         journeyId: journey.id,
-    //         input: {
-    //           endIcon: {
-    //             color
-    //           }
-    //         }
-    //       }
-    //     })
-    //   }
-    // }
+    await iconBlockColorUpdate({
+      variables: {
+        id: iconBlock.id,
+        journeyId: journey.id,
+        input: {
+          name: iconBlock.iconName,
+          color
+        }
+      },
+      optimisticResponse: {
+        iconBlockUpdate: {
+          __typename: 'IconBlock',
+          id: iconBlock.id,
+          color
+        }
+      }
+    })
+    setColor(color)
   }
 
   const options = [
@@ -115,7 +80,7 @@ export function ColorToggleGroup({
 
   return (
     <ToggleButtonGroup
-      value={iconBlock?.iconColor ?? IconColor.inherit}
+      value={color}
       onChange={handleChange}
       options={options}
     />

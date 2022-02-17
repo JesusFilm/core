@@ -39,11 +39,6 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  console.log(
-    startIcon != null
-      ? icons.find(({ value }) => value === startIcon.iconName)?.label
-      : 'None'
-  )
   return (
     <>
       <Attribute
