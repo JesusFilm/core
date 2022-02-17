@@ -1,9 +1,20 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../ThemeProvider'
-import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
+import {
+  defaultJourney,
+  publishedJourney,
+  oldJourney,
+  resultData
+} from './journeyListData'
+import { JOURNEY_CREATE } from './JourneyList'
 import { JourneyList } from '.'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'uuid'
+}))
 
 describe('JourneyList', () => {
   it('should render journeys in descending createdAt date by default', () => {
@@ -76,5 +87,48 @@ describe('JourneyList', () => {
     expect(
       getByRole('button', { name: 'Create a Journey' })
     ).toBeInTheDocument()
+  })
+
+  it('should check if the mutation gets called ', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        resultData
+      }
+    }))
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: JOURNEY_CREATE,
+                variables: {
+                  journeyId: 'uuid',
+                  title: 'Untitled Journey',
+                  slug: `untitled-journey-uuid`,
+                  description:
+                    'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
+                  stepId: 'uuid',
+                  cardId: 'uuid',
+                  imageId: 'uuid',
+                  alt: 'two hot air balloons in the sky',
+                  headlineTypography: 'The Journey Is On',
+                  bodyTypography: '"Go, and lead the people on their way..."',
+                  captionTypography: 'Deutoronomy 10:11'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <ThemeProvider>
+            <JourneyList journeys={[defaultJourney]} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Add' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
