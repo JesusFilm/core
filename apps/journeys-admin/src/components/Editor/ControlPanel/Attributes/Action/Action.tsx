@@ -56,7 +56,7 @@ export function Action(): ReactElement {
   const actionName =
     selectedBlock?.action != null
       ? actions[selectedBlock?.action?.__typename]
-      : 'Next Step'
+      : 'none'
 
   const [action, setAction] = useState(actionName)
 
@@ -80,7 +80,10 @@ export function Action(): ReactElement {
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (event.target.value === 'Next Step') {
+    if (event.target.value === 'none') {
+      // feat: add in remove action API
+      console.log('remove action')
+    } else if (event.target.value === 'Next Step') {
       await navigateAction()
     }
     setAction(event.target.value)
@@ -97,6 +100,7 @@ export function Action(): ReactElement {
           value={action}
           IconComponent={KeyboardArrowDownRoundedIcon}
         >
+          <MenuItem value={'none'}>Select an Action...</MenuItem>
           {Object.values(actions).map((action) => {
             return (
               <MenuItem key={`button-action-${action}`} value={action}>
