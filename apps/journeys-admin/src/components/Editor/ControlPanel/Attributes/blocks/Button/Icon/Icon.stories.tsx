@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-import { Icon, IconType } from '.'
+import { Icon } from '.'
 
 const IconStory = {
   ...simpleComponentConfig,
@@ -12,7 +12,7 @@ const IconStory = {
 export const Default: Story = () => {
   return (
     <MockedProvider>
-      <Icon iconType={IconType.start} />
+      <Icon type={'start'} />
     </MockedProvider>
   )
 }
