@@ -1,44 +1,24 @@
-import { ReactElement } from 'react'
-// import { gql, useMutation } from '@apollo/client'
-import {
-  // useEditor,
-  TreeBlock
-} from '@core/journeys/ui'
+import { ReactElement, useState } from 'react'
+import { gql, useMutation } from '@apollo/client'
+import { TreeBlock } from '@core/journeys/ui'
 import { IconSize } from '../../../../../../../../../__generated__/globalTypes'
-// import { useJourney } from '../../../../../../../../libs/context'
+import { useJourney } from '../../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
-// import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { IconBlockSizeUpdate } from '../../../../../../../../../__generated__/IconBlockSizeUpdate'
 
-// export const BUTTON_START_ICON_SIZE_UPDATE = gql`
-//   mutation ButtonBlockStartIconSizeUpdate(
-//     $id: ID!
-//     $journeyId: ID!
-//     $input: ButtonBlockUpdateInput!
-//   ) {
-//     buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-//       id
-//       startIcon {
-//         size
-//       }
-//     }
-//   }
-// `
-
-// export const BUTTON_END_ICON_SIZE_UPDATE = gql`
-//   mutation ButtonBlockEndIconSizeUpdate(
-//     $id: ID!
-//     $journeyId: ID!
-//     $input: ButtonBlockUpdateInput!
-//   ) {
-//     buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-//       id
-//       endIcon {
-//         size
-//       }
-//     }
-//   }
-// `
+export const ICON_BLOCK_SIZE_UPDATE = gql`
+  mutation IconBlockSizeUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: IconBlockUpdateInput!
+  ) {
+    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      size
+    }
+  }
+`
 
 interface SizeToggleGroupProps {
   iconBlock: TreeBlock<IconFields>
@@ -47,46 +27,31 @@ interface SizeToggleGroupProps {
 export function SizeToggleGroup({
   iconBlock
 }: SizeToggleGroupProps): ReactElement {
-  // const [buttonBlockStartIconSizeUpdate] =
-  //   useMutation<ButtonBlockStartIconSizeUpdate>(BUTTON_START_ICON_SIZE_UPDATE)
-  // const [buttonBlockEndIconSizeUpdate] =
-  //   useMutation<ButtonBlockEndIconSizeUpdate>(BUTTON_END_ICON_SIZE_UPDATE)
-
-  // const journey = useJourney()
-
-  // const { state } = useEditor()
-  // const selectedBlock = state.selectedBlock as
-  //   | TreeBlock<ButtonBlock>
-  //   | undefined
+  const [iconBlockSizeUpdate] = useMutation<IconBlockSizeUpdate>(
+    ICON_BLOCK_SIZE_UPDATE
+  )
+  const [size, setSize] = useState(iconBlock?.iconSize ?? IconSize.md)
+  const journey = useJourney()
 
   async function handleChange(size: IconSize): Promise<void> {
-    // if (selectedBlock != null && size != null) {
-    //   if (type === IconType.start) {
-    //     await buttonBlockStartIconSizeUpdate({
-    //       variables: {
-    //         id: selectedBlock.id,
-    //         journeyId: journey.id,
-    //         input: {
-    //           startIcon: {
-    //             size
-    //           }
-    //         }
-    //       }
-    //     })
-    //   } else {
-    //     await buttonBlockEndIconSizeUpdate({
-    //       variables: {
-    //         id: selectedBlock.id,
-    //         journeyId: journey.id,
-    //         input: {
-    //           endIcon: {
-    //             size
-    //           }
-    //         }
-    //       }
-    //     })
-    //   }
-    // }
+    await iconBlockSizeUpdate({
+      variables: {
+        id: iconBlock.id,
+        journeyId: journey.id,
+        input: {
+          name: iconBlock.iconName,
+          size
+        }
+      },
+      optimisticResponse: {
+        iconBlockUpdate: {
+          __typename: 'IconBlock',
+          id: iconBlock.id,
+          size
+        }
+      }
+    })
+    setSize(size)
   }
 
   const options = [
@@ -105,10 +70,6 @@ export function SizeToggleGroup({
   ]
 
   return (
-    <ToggleButtonGroup
-      value={iconBlock?.iconSize ?? IconSize.md}
-      onChange={handleChange}
-      options={options}
-    />
+    <ToggleButtonGroup value={size} onChange={handleChange} options={options} />
   )
 }
