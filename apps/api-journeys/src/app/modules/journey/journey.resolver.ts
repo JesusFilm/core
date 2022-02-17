@@ -12,6 +12,7 @@ import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ForbiddenError } from 'apollo-server-errors'
 import { get } from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 import { BlockService } from '../block/block.service'
 import {
   Block,
@@ -100,27 +101,43 @@ export class JourneyResolver {
   @UseGuards(GqlAuthGuard)
   @IdAsKey()
   async journeyCreate(
-    @Args('input') input: JourneyCreateInput,
+    @Args('input') input: JourneyCreateInput & { _key?: string },
     @CurrentUserId() userId: string
-  ): Promise<Journey> {
-    if (input.slug != null)
-      input.slug = slugify(input.slug ?? input.title, {
-        remove: /[*+~.()'"!:@#]/g
-      })
-    const journey: Journey & { _key: string } = await this.journeyService.save({
-      ...input,
-      createdAt: new Date().toISOString(),
-      themeName: input.themeName ?? ThemeName.base,
-      themeMode: input.themeMode ?? ThemeMode.light,
-      locale: input.locale ?? 'en-US',
-      status: JourneyStatus.draft
+  ): Promise<Journey | undefined> {
+    input._key = input._key ?? uuidv4()
+    input.slug = slugify(input.slug ?? input.title, {
+      lower: true,
+      strict: true
     })
-    await this.userJourneyService.save({
-      userId,
-      journeyId: journey._key,
-      role: UserJourneyRole.owner
-    })
-    return journey
+    let retry = true
+    while (retry) {
+      try {
+        const journey: Journey & { _key: string } =
+          await this.journeyService.save({
+            ...input,
+            createdAt: new Date().toISOString(),
+            themeName: input.themeName ?? ThemeName.base,
+            themeMode: input.themeMode ?? ThemeMode.light,
+            locale: input.locale ?? 'en-US',
+            status: JourneyStatus.draft
+          })
+        await this.userJourneyService.save({
+          userId,
+          journeyId: journey._key,
+          role: UserJourneyRole.owner
+        })
+        retry = false
+        return journey
+      } catch (err) {
+        const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
+        if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+          input.slug = slugify(`${input.slug}-${input._key}`)
+        } else {
+          retry = false
+          throw err
+        }
+      }
+    }
   }
 
   @Mutation()
