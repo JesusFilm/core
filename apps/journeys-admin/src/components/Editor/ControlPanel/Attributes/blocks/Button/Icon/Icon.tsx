@@ -111,7 +111,7 @@ const icons = [
     display: <TranslateRounded />
   }
 ]
-// ---------- MUTATIONS ----------
+
 export const ICON_BLOCK_CREATE = gql`
   mutation IconBlockCreate($input: IconBlockCreateInput!) {
     iconBlockCreate(input: $input) {
@@ -167,19 +167,15 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
   )
 
   const journey = useJourney()
-
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
-  // ---------- SET UP ----------
   const iconName = iconBlock != null ? iconBlock.iconName : ''
-
   const [showProps, setShowProps] = useState(iconName !== '')
   const [name, setName] = useState(iconName)
 
-  // ---------- API CALLERS ----------
   async function iconCreate(
     name: IconName
   ): Promise<IconBlockCreate_iconBlockCreate | undefined> {
@@ -266,97 +262,7 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
       })
     }
   }
-  // async function updateIcon(name: IconName, type: IconType): Promise<void> {
-  //   if (selectedBlock != null) {
-  //     if (type === IconType.start) {
-  //       await buttonBlockStartIconUpdate({
-  //         variables: {
-  //           id: selectedBlock.id,
-  //           journeyId: journey.id,
-  //           input: {
-  //             startIcon: {
-  //               name
-  //             }
-  //           }
-  //         },
-  //         optimisticResponse: {
-  //           buttonBlockUpdate: {
-  //             id: selectedBlock.id,
-  //             __typename: 'ButtonBlock',
-  //             startIcon: {
-  //               __typename: 'Icon',
-  //               name
-  //             }
-  //           }
-  //         }
-  //       })
-  //     } else {
-  //       await buttonBlockEndIconUpdate({
-  //         variables: {
-  //           id: selectedBlock.id,
-  //           journeyId: journey.id,
-  //           input: {
-  //             endIcon: {
-  //               name
-  //             }
-  //           }
-  //         },
-  //         optimisticResponse: {
-  //           buttonBlockUpdate: {
-  //             id: selectedBlock.id,
-  //             __typename: 'ButtonBlock',
-  //             endIcon: {
-  //               __typename: 'Icon',
-  //               name
-  //             }
-  //           }
-  //         }
-  //       })
-  //     }
-  //   }
-  // }
 
-  // async function removeIcon(type: IconType): Promise<void> {
-  //   if (selectedBlock != null) {
-  //     if (type === IconType.start) {
-  //       await buttonBlockStartIconUpdate({
-  //         variables: {
-  //           id: selectedBlock.id,
-  //           journeyId: journey.id,
-  //           input: {
-  //             startIcon: null
-  //           }
-  //         },
-  //         optimisticResponse: {
-  //           buttonBlockUpdate: {
-  //             id: selectedBlock.id,
-  //             __typename: 'ButtonBlock',
-  //             startIcon: null
-  //           }
-  //         }
-  //       })
-  //     } else {
-  //       await buttonBlockEndIconUpdate({
-  //         variables: {
-  //           id: selectedBlock.id,
-  //           journeyId: journey.id,
-  //           input: {
-  //             endIcon: null
-  //           }
-  //         },
-  //         optimisticResponse: {
-  //           buttonBlockUpdate: {
-  //             id: selectedBlock.id,
-  //             __typename: 'ButtonBlock',
-  //             endIcon: null
-  //           }
-  //         }
-  //       })
-  //     }
-  //   }
-  // }
-
-  // ---------- HANDLE CHANGE ----------
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     const newName = event.target.value as IconName
     if (event.target.value === '') {
