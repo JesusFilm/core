@@ -172,7 +172,7 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  // bug: not display correctly when changing from start to end icon
+  // BUG: not display correctly when changing from start to end icon
   const iconName = iconBlock != null ? iconBlock.iconName : ''
   const [showProps, setShowProps] = useState(iconName !== '')
   const [name, setName] = useState(iconName)

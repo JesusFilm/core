@@ -24,6 +24,7 @@ interface SizeToggleGroupProps {
   iconBlock: TreeBlock<IconFields>
 }
 
+// BUG: switching sizes when clicking the same button
 export function SizeToggleGroup({
   iconBlock
 }: SizeToggleGroupProps): ReactElement {

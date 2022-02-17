@@ -25,6 +25,8 @@ interface ColorToggleGroupProps {
   iconBlock: TreeBlock<IconFields>
 }
 
+// BUG: Toggle group can be off
+// BUG: switching colors when clicking the same button
 export function ColorToggleGroup({
   iconBlock
 }: ColorToggleGroupProps): ReactElement {
@@ -32,27 +34,31 @@ export function ColorToggleGroup({
     ICON_BLOCK_COLOR_UPDATE
   )
   const journey = useJourney()
-  const [color, setColor] = useState(iconBlock?.iconColor ?? IconColor.inherit)
+  const [iconColor, setIconColor] = useState(
+    iconBlock?.iconColor ?? IconColor.inherit
+  )
 
   async function handleChange(color: IconColor): Promise<void> {
-    await iconBlockColorUpdate({
-      variables: {
-        id: iconBlock.id,
-        journeyId: journey.id,
-        input: {
-          name: iconBlock.iconName,
-          color
-        }
-      },
-      optimisticResponse: {
-        iconBlockUpdate: {
-          __typename: 'IconBlock',
+    if (color !== iconColor) {
+      await iconBlockColorUpdate({
+        variables: {
           id: iconBlock.id,
-          color
+          journeyId: journey.id,
+          input: {
+            name: iconBlock.iconName,
+            color
+          }
+        },
+        optimisticResponse: {
+          iconBlockUpdate: {
+            __typename: 'IconBlock',
+            id: iconBlock.id,
+            color
+          }
         }
-      }
-    })
-    setColor(color)
+      })
+      setIconColor(color)
+    }
   }
 
   const options = [
@@ -80,7 +86,7 @@ export function ColorToggleGroup({
 
   return (
     <ToggleButtonGroup
-      value={color}
+      value={iconColor}
       onChange={handleChange}
       options={options}
     />
