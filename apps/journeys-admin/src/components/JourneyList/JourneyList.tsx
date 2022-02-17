@@ -8,6 +8,7 @@ import Container from '@mui/material/Container'
 import AddIcon from '@mui/icons-material/Add'
 import { sortBy } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { AddJourneyFab } from '../AddJourneyFab'
 import { JourneySort, SortOrder } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
 
@@ -22,11 +23,14 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
     sortOrder === SortOrder.TITLE
       ? sortBy(journeys, 'title')
       : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
+        new Date(createdAt).getTime()
+      ).reverse()
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
+      <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1 }}>
+        <AddJourneyFab />
+      </Box>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
