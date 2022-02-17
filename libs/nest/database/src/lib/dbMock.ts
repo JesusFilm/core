@@ -1,9 +1,10 @@
+import { Database } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor, BatchedArrayCursor } from 'arangojs/cursor'
 import { Document, DocumentMetadata } from 'arangojs/documents'
 
 export const mockDbQueryResult = async <T>(
-  db,
+  db: Database,
   result: T[]
 ): Promise<ArrayCursor> =>
   await Promise.resolve(
@@ -42,3 +43,16 @@ export const mockCollectionRemoveResult = async <T>(
     _rev: '1',
     old: result
   })
+
+export const mockCollectionUpdateAllResult = async <T>(
+  collection: DocumentCollection,
+  results: Array<T & { _key: string }>
+): Promise<Array<DocumentMetadata & { new?: Document }>> =>
+  await Promise.resolve(
+    results.map((result) => ({
+      _key: result._key,
+      _id: `${collection.name}/${result._key}`,
+      _rev: '1',
+      new: result
+    }))
+  )
