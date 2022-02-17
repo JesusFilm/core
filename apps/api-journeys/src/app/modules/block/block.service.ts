@@ -47,8 +47,14 @@ export class BlockService extends BaseService {
     parentBlockId: string
   ): Promise<Array<{ _key: string; parentOrder: number }>> {
     const siblings = await this.getSiblings(journeyId, parentBlockId)
+    return await this.reorderSiblings(siblings)
+  }
+
+  async reorderSiblings(
+    siblings: Block[] | Array<{ _key: string; parentOrder: number }>
+  ): Promise<Array<{ _key: string; parentOrder: number }>> {
     const updatedSiblings = siblings.map((block, index) => ({
-      _key: block.id,
+      _key: block._key,
       parentOrder: index
     }))
     return await this.updateAll(updatedSiblings)
