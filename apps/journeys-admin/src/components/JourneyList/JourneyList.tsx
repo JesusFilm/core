@@ -28,9 +28,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
-      <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1 }}>
-        <AddJourneyFab />
-      </Box>
+      <AddJourneyFab />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
