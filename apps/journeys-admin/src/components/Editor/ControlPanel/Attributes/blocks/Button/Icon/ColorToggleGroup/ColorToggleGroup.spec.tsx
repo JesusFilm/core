@@ -2,49 +2,51 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { ButtonColor } from '../../../../../../../../../__generated__/globalTypes'
-import { IconType } from '..'
 import {
-  BUTTON_START_ICON_COLOR_UPDATE,
-  BUTTON_END_ICON_COLOR_UPDATE
-} from './ColorToggleGroup'
+  IconColor,
+  IconName
+} from '../../../../../../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { ICON_BLOCK_COLOR_UPDATE } from './ColorToggleGroup'
 import { ColorToggleGroup } from '.'
 
 describe('Button color selector', () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
-    id: 'id',
+    id: 'buttonBlockId',
     parentBlockId: 'parentBlockId',
     parentOrder: 0,
     label: 'test button',
     buttonVariant: null,
     buttonColor: null,
     size: null,
-    startIcon: null,
-    endIcon: null,
+    startIconId: 'icon-id',
+    endIconId: null,
     action: null,
     children: []
   }
-  it('should show button color properties', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <ColorToggleGroup type={IconType.start} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
-    expect(getByRole('button', { name: 'Primary' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
-  })
 
-  it('should change the start icon color property', async () => {
+  it('should change the icon color', async () => {
+    const icon: TreeBlock<IconFields> = {
+      id: 'icon-id',
+      parentBlockId: 'buttonBlockId',
+      parentOrder: null,
+      __typename: 'IconBlock',
+      iconName: IconName.ArrowForwardRounded,
+      iconSize: null,
+      iconColor: null,
+      children: []
+    }
+
     const result = jest.fn(() => ({
       data: {
-        buttonBlockUpdate: {
-          id: 'id',
-          startIcon: { color: ButtonColor.secondary }
+        iconBlockUodate: {
+          id: 'icon-id',
+          journeyId: 'journeyId',
+          parentBlockId: 'buttonBlockId',
+          name: IconName.ArrowForwardRounded,
+          color: IconColor.secondary,
+          size: null
         }
       }
     }))
@@ -54,14 +56,11 @@ describe('Button color selector', () => {
         mocks={[
           {
             request: {
-              query: BUTTON_START_ICON_COLOR_UPDATE,
+              query: ICON_BLOCK_COLOR_UPDATE,
               variables: {
                 id: 'id',
-                journeyId: undefined,
                 input: {
-                  startIcon: {
-                    color: ButtonColor.secondary
-                  }
+                  color: IconColor.secondary
                 }
               }
             },
@@ -70,47 +69,7 @@ describe('Button color selector', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <ColorToggleGroup type={IconType.start} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
-    fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
-  })
-
-  it('should change the end icon color property', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        buttonBlockUpdate: {
-          id: 'id',
-          endIcon: { color: ButtonColor.secondary }
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BUTTON_END_ICON_COLOR_UPDATE,
-              variables: {
-                id: 'id',
-                journeyId: undefined,
-                input: {
-                  endIcon: {
-                    color: ButtonColor.secondary
-                  }
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <ColorToggleGroup type={IconType.end} />
+          <ColorToggleGroup iconBlock={icon} />
         </EditorProvider>
       </MockedProvider>
     )
