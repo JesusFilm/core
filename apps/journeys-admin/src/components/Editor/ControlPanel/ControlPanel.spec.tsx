@@ -71,9 +71,19 @@ describe('ControlPanel', () => {
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -89,9 +99,19 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -105,9 +125,19 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking add button', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
