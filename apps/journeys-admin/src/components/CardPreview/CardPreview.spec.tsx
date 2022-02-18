@@ -7,6 +7,7 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../libs/context'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
 import { CardPreview } from '.'
 
@@ -31,7 +32,17 @@ describe('CardPreview', () => {
     }
     const { getByTestId } = render(
       <MockedProvider>
-        <CardPreview onSelect={onSelect} steps={[step]} />
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <CardPreview onSelect={onSelect} steps={[step]} />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step.id'))

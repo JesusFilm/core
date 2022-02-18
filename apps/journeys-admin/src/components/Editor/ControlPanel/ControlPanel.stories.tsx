@@ -2,7 +2,10 @@ import { Story, Meta } from '@storybook/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ButtonColor,
@@ -10,8 +13,11 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant
+  TypographyVariant,
+  ThemeMode,
+  ThemeName
 } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/context'
 import { ControlPanel } from '.'
 
 const ControlPanelStory = {
@@ -561,15 +567,25 @@ const steps: Array<TreeBlock<StepBlock>> = [
 const Template: Story = () => {
   return (
     <MockedProvider>
-      <EditorProvider
-        initialState={{
-          steps
-        }}
+      <JourneyProvider
+        value={
+          {
+            id: 'journeyId',
+            themeMode: ThemeMode.dark,
+            themeName: ThemeName.base
+          } as unknown as Journey
+        }
       >
-        <Box sx={{ mt: '80px' }}>
-          <ControlPanel />
-        </Box>
-      </EditorProvider>
+        <EditorProvider
+          initialState={{
+            steps
+          }}
+        >
+          <Box sx={{ mt: '80px' }}>
+            <ControlPanel />
+          </Box>
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }

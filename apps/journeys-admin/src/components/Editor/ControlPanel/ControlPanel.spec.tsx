@@ -9,7 +9,9 @@ import { JourneyProvider } from '../../../libs/context'
 import {
   ButtonVariant,
   ButtonColor,
-  ButtonSize
+  ButtonSize,
+  ThemeMode,
+  ThemeName
 } from '../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
@@ -69,9 +71,19 @@ describe('ControlPanel', () => {
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -87,9 +99,19 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -103,9 +125,19 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking add button', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -148,7 +180,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -205,7 +245,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -291,7 +339,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -346,7 +402,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -410,7 +474,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -468,7 +540,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>

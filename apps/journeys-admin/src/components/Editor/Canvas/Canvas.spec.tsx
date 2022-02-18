@@ -1,7 +1,12 @@
 import { render, fireEvent } from '@testing-library/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../ThemeProvider'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/context'
 import { Canvas } from '.'
 
 describe('Canvas', () => {
@@ -26,13 +31,23 @@ describe('Canvas', () => {
     }
     const { getByTestId } = render(
       <ThemeProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step0, step1]
-          }}
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
         >
-          <Canvas />
-        </EditorProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step0, step1]
+            }}
+          >
+            <Canvas />
+          </EditorProvider>
+        </JourneyProvider>
       </ThemeProvider>
     )
     fireEvent.click(getByTestId('step-step0.id'))

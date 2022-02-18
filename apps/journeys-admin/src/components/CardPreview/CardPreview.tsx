@@ -16,7 +16,6 @@ import { useMutation, gql } from '@apollo/client'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../HorizontalSelect'
 import { useJourney } from '../../libs/context'
 
@@ -51,7 +50,7 @@ export function CardPreview({
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
   )
-  const { id: journeyId } = useJourney()
+  const { id: journeyId, themeMode, themeName } = useJourney()
 
   const handleChange = (selectedId: string): void => {
     const selectedStep = steps.find(({ id }) => id === selectedId)
@@ -152,10 +151,7 @@ export function CardPreview({
             }}
           >
             <FramePortal width={380} height={560}>
-              <ThemeProvider
-                themeName={ThemeName.base}
-                themeMode={ThemeMode.light}
-              >
+              <ThemeProvider themeName={themeName} themeMode={themeMode}>
                 <Box sx={{ p: 4, height: '100%' }}>
                   <BlockRenderer block={step} />
                 </Box>
