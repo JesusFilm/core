@@ -210,6 +210,7 @@ export class ImageBlockCreateInput {
     journeyId: string;
     src?: Nullable<string>;
     alt: string;
+    blurhash?: Nullable<string>;
 }
 
 export class ImageBlockUpdateInput {

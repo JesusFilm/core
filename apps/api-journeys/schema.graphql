@@ -312,6 +312,7 @@ input ImageBlockCreateInput {
   journeyId: ID!
   src: String
   alt: String!
+  blurhash: String
 }
 
 input ImageBlockUpdateInput {

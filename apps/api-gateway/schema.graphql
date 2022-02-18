@@ -258,6 +258,7 @@ type ImageBlock implements Block {
 
 input ImageBlockCreateInput {
   alt: String!
+  blurhash: String
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
