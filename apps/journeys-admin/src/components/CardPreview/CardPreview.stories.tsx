@@ -468,19 +468,25 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = () => {
+const Template: Story = ({ ...args }) => {
   const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
       <CardPreview
         onSelect={(step) => setSelectedStep(step)}
         selected={selected}
-        steps={steps}
+        steps={args.steps ?? steps}
+        showAddButton={args.showAddButton}
       />
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
+
+export const AddButton = Template.bind({})
+AddButton.args = {
+  showAddButton: true
+}
 
 export default CardPreviewStory as Meta
