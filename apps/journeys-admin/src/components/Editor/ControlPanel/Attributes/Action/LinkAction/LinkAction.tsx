@@ -2,6 +2,9 @@ import { ReactElement, useState, ChangeEvent, FocusEvent } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
+import { Formik, Form } from 'formik'
+import { object, string } from 'yup'
+import { Button } from '@mui/material'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 import { useJourney } from '../../../../../../libs/context'
@@ -42,14 +45,17 @@ export function LinkAction(): ReactElement {
   const [link, setLink] = useState(currentActionLink)
 
   async function handleBlur(
-    event: FocusEvent<HTMLInputElement>
+    event: FocusEvent
+    // link: string
   ): Promise<void> {
-    if (selectedBlock != null && event.target.value !== '') {
+    // if (selectedBlock != null && event.target.value !== '') {
+    if (selectedBlock != null && link !== '') {
       await linkActionUpdate({
         variables: {
           id: selectedBlock.id,
           journeyId: journey.id,
-          input: { url: event.target.value }
+          // input: { url: event.target.value }
+          input: { url: link }
         }
         // optimistic response causing cache issue
         // optimisticResponse: {
@@ -70,14 +76,45 @@ export function LinkAction(): ReactElement {
     setLink(event.target.value)
   }
 
+  const linkActionSchema = object().shape({
+    // link: string().url('Invalid URL').required('Required')
+    link: string().email('Invalid URL').required('Required')
+  })
+
   return (
-    <TextField
-      placeholder="Paste URL here..."
-      variant="filled"
-      hiddenLabel
-      value={link}
-      onBlur={handleBlur}
-      onChange={handleChange}
-    />
+    <Formik
+      initialValues={{ link: '' }}
+      validationSchema={linkActionSchema}
+      // validateOnBlur
+      validateOnChange
+      onSubmit={async (values) => {
+        // return await Promise.resolve(values.link)
+        return await Promise.resolve(null)
+        // await handleBlur(values.link)
+      }}
+    >
+      {({ ...formikProps }) => (
+        <Form>
+          <TextField
+            {...formikProps}
+            id="link"
+            name="link"
+            placeholder="Paste URL here..."
+            variant="filled"
+            hiddenLabel
+            fullWidth
+            onBlur={async (e) => {
+              await handleBlur(e)
+              formikProps.handleBlur(e)
+            }}
+            // value={link}
+            // onBlur={handleBlur}
+            // onChange={handleChange}
+          />
+          {/* {typeof errors.link === 'string' && <div>{errors.link}</div>} */}
+          {/* <Button type="submit">Submit</Button> */}
+        </Form>
+      )}
+    </Formik>
   )
 }
