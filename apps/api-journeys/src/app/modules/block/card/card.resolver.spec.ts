@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { ThemeMode, ThemeName } from '../../../__generated__/graphql'
+import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -120,6 +120,24 @@ describe('CardBlockResolver', () => {
         .cardBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+    })
+  })
+
+  describe('fullscreen', () => {
+    it('returns fullscreen when true', () => {
+      expect(
+        resolver.fullscreen({ fullscreen: true } as unknown as CardBlock)
+      ).toEqual(true)
+    })
+
+    it('returns fullscreen when false', () => {
+      expect(
+        resolver.fullscreen({ fullscreen: false } as unknown as CardBlock)
+      ).toEqual(false)
+    })
+
+    it('returns false when fullscreen is not set', () => {
+      expect(resolver.fullscreen({} as unknown as CardBlock)).toEqual(false)
     })
   })
 })

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { UserJourneyService } from '../userJourney/userJourney.service'
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 
@@ -48,12 +49,18 @@ describe('BlockResolver', () => {
     useFactory: () => ({
       get: jest.fn(() => image1),
       getSiblings: jest.fn(() => [image1, image2, image3]),
-      update: jest.fn((input) => input)
+      removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
+      reorderSiblings: jest.fn(() => [
+        { _key: 'image2', parentOrder: 0 },
+        { _key: 'image3', parentOrder: 1 },
+        { _key: 'image1', parentOrder: 2 }
+      ])
     })
   }
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        UserJourneyService,
         BlockResolver,
         blockService,
         {
@@ -66,25 +73,34 @@ describe('BlockResolver', () => {
     service = await module.resolve(BlockService)
   })
 
+  describe('blockDelete', () => {
+    it('removes the block and its children', async () => {
+      const data = await resolver.blockDelete('image1', 'card1', '2')
+
+      expect(service.removeBlockAndChildren).toBeCalledTimes(1)
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        'image1',
+        'card1',
+        '2'
+      )
+      expect(data).toEqual([image1, image2, image3])
+    })
+  })
+
   describe('blockOrderUpdate', () => {
     it('updates the block order', async () => {
       await resolver.blockOrderUpdate('image1', '2', 2)
-      expect(service.update).toBeCalledTimes(3)
-      expect(service.update).toHaveBeenCalledWith('image2', {
-        parentOrder: 0
-      })
-      expect(service.update).toHaveBeenCalledWith('image3', {
-        parentOrder: 1
-      })
-      expect(service.update).toHaveBeenCalledWith('image1', {
-        parentOrder: 2
-      })
+      expect(service.reorderSiblings).toHaveBeenCalledWith([
+        image2,
+        image3,
+        image1
+      ])
     })
 
     it('does not update if block not part of current journey', async () => {
       const data = await resolver.blockOrderUpdate('image1', '1', 2)
 
-      expect(service.update).toBeCalledTimes(0)
+      expect(service.reorderSiblings).toBeCalledTimes(0)
       expect(data).toEqual([])
     })
 
@@ -95,11 +111,16 @@ describe('BlockResolver', () => {
         useFactory: () => ({
           get: jest.fn(() => coverImage1),
           getSiblings: jest.fn(() => [coverImage1, image2, image3]),
-          update: jest.fn((input) => input)
+          reorderSiblings: jest.fn(() => [
+            { _key: 'image2', parentOrder: 0 },
+            { _key: 'image3', parentOrder: 1 },
+            { _key: 'image1', parentOrder: 2 }
+          ])
         })
       }
       const module: TestingModule = await Test.createTestingModule({
         providers: [
+          UserJourneyService,
           BlockResolver,
           blockService,
           {
@@ -113,7 +134,7 @@ describe('BlockResolver', () => {
 
       const data = await resolver.blockOrderUpdate('image1', '1', 2)
 
-      expect(service.update).toBeCalledTimes(0)
+      expect(service.reorderSiblings).toBeCalledTimes(0)
       expect(data).toEqual([])
     })
   })

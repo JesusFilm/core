@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { DocumentCollection } from 'arangojs/collection'
 import { aql, Database } from 'arangojs'
 import { DeepMockProxy } from 'jest-mock-extended'
+import { DocumentData, Patch } from 'arangojs/documents'
 
 @Injectable()
 export abstract class BaseService {
@@ -34,6 +35,15 @@ export abstract class BaseService {
   async update<T, T2>(_key: string, body: T2): Promise<T> {
     const result = await this.collection.update(_key, body, { returnNew: true })
     return result.new
+  }
+
+  async updateAll<T>(
+    arr: Array<(Patch<DocumentData<T>> & { _key: string }) | { _id: string }>
+  ): Promise<T[]> {
+    const result = await this.collection.updateAll(arr, {
+      returnNew: true
+    })
+    return result.map((item) => item.new)
   }
 
   async save<T, T2>(body: T2): Promise<T> {
