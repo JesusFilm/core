@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import { sortBy } from 'lodash'
+import { useRouter } from 'next/router'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneyCreate } from '../../../__generated__/JourneyCreate'
 import { AddJourneyFab } from './AddJourneyFab'
@@ -122,6 +123,7 @@ export interface JourneysListProps {
 export function JourneyList({ journeys }: JourneysListProps): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const [journeyCreate] = useMutation<JourneyCreate>(JOURNEY_CREATE)
+  const router = useRouter()
 
   const handleClick = async (): Promise<void> => {
     const journeyId = uuidv4()
@@ -129,7 +131,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
     const cardId = uuidv4()
     const imageId = uuidv4()
 
-    await journeyCreate({
+    const { data } = await journeyCreate({
       variables: {
         journeyId,
         title: 'Untitled Journey',
@@ -163,14 +165,17 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
         }
       }
     })
+    if (data?.journeyCreate != null) {
+      void router.push(`/journeys/${data.journeyCreate.slug}`)
+    }
   }
 
   const sortedJourneys =
     sortOrder === SortOrder.TITLE
       ? sortBy(journeys, 'title')
       : sortBy(journeys, ({ createdAt }) =>
-        new Date(createdAt).getTime()
-      ).reverse()
+          new Date(createdAt).getTime()
+        ).reverse()
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
