@@ -26,6 +26,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
+      {journeys.length > 0 && <AddJourneyButton variant="fab" />}
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
@@ -43,10 +44,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
       </Stack>
       <Box sx={{ mb: { xs: 4, sm: 5 } }} data-testid="journey-list">
         {sortedJourneys.map((journey) => (
-          <>
-            <JourneyCard key={journey.id} journey={journey} />
-            <AddJourneyButton variant="fab" />
-          </>
+          <JourneyCard key={journey.id} journey={journey} />
         ))}
         {sortedJourneys.length === 0 && (
           <Card
