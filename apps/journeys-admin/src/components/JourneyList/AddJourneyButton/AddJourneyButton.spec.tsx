@@ -60,15 +60,15 @@ describe('AddJourneyButton', () => {
       id: 'imageId',
       __typename: 'ImageBlock'
     },
-    headlineTypography: {
+    headlineTypographyBlockCreate: {
       id: 'headlineTypographyId',
       __typename: 'TypographyBlock'
     },
-    bodyTypography: {
+    bodyTypographyBlockCreate: {
       id: 'bodyTypographyId',
       __typename: 'TypographyBlock'
     },
-    captionTypography: {
+    captionTypographyBlockCreate: {
       id: 'captionTypographyId',
       __typename: 'TypographyBlock'
     }
@@ -106,9 +106,10 @@ describe('AddJourneyButton', () => {
                 cardId: 'cardId',
                 imageId: 'imageId',
                 alt: 'two hot air balloons in the sky',
-                headlineTypography: 'The Journey Is On',
-                bodyTypography: '"Go, and lead the people on their way..."',
-                captionTypography: 'Deutoronomy 10:11'
+                headlineTypographyContent: 'The Journey Is On',
+                bodyTypographyContent:
+                  '"Go, and lead the people on their way..."',
+                captionTypographyContent: 'Deutoronomy 10:11'
               }
             },
             result
@@ -164,9 +165,10 @@ describe('AddJourneyButton', () => {
                 cardId: 'cardId',
                 imageId: 'imageId',
                 alt: 'two hot air balloons in the sky',
-                headlineTypography: 'The Journey Is On',
-                bodyTypography: '"Go, and lead the people on their way..."',
-                captionTypography: 'Deutoronomy 10:11'
+                headlineTypographyContent: 'The Journey Is On',
+                bodyTypographyContent:
+                  '"Go, and lead the people on their way..."',
+                captionTypographyContent: 'Deutoronomy 10:11'
               }
             },
             result

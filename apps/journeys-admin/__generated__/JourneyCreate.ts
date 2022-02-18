@@ -53,17 +53,17 @@ export interface JourneyCreate_imageBlockCreate {
   id: string;
 }
 
-export interface JourneyCreate_headlineTypography {
+export interface JourneyCreate_headlineTypographyBlockCreate {
   __typename: "TypographyBlock";
   id: string;
 }
 
-export interface JourneyCreate_bodyTypography {
+export interface JourneyCreate_bodyTypographyBlockCreate {
   __typename: "TypographyBlock";
   id: string;
 }
 
-export interface JourneyCreate_captionTypography {
+export interface JourneyCreate_captionTypographyBlockCreate {
   __typename: "TypographyBlock";
   id: string;
 }
@@ -73,9 +73,9 @@ export interface JourneyCreate {
   stepBlockCreate: JourneyCreate_stepBlockCreate;
   cardBlockCreate: JourneyCreate_cardBlockCreate;
   imageBlockCreate: JourneyCreate_imageBlockCreate;
-  headlineTypography: JourneyCreate_headlineTypography;
-  bodyTypography: JourneyCreate_bodyTypography;
-  captionTypography: JourneyCreate_captionTypography;
+  headlineTypographyBlockCreate: JourneyCreate_headlineTypographyBlockCreate;
+  bodyTypographyBlockCreate: JourneyCreate_bodyTypographyBlockCreate;
+  captionTypographyBlockCreate: JourneyCreate_captionTypographyBlockCreate;
 }
 
 export interface JourneyCreateVariables {
@@ -86,7 +86,7 @@ export interface JourneyCreateVariables {
   cardId: string;
   imageId: string;
   alt: string;
-  headlineTypography: string;
-  bodyTypography: string;
-  captionTypography: string;
+  headlineTypographyContent: string;
+  bodyTypographyContent: string;
+  captionTypographyContent: string;
 }

@@ -17,9 +17,9 @@ export const JOURNEY_CREATE = gql`
     $cardId: ID!
     $imageId: ID!
     $alt: String!
-    $headlineTypography: String!
-    $bodyTypography: String!
-    $captionTypography: String!
+    $headlineTypographyContent: String!
+    $bodyTypographyContent: String!
+    $captionTypographyContent: String!
   ) {
     journeyCreate(
       input: {
@@ -74,31 +74,31 @@ export const JOURNEY_CREATE = gql`
     ) {
       id
     }
-    headlineTypography: typographyBlockCreate(
+    headlineTypographyBlockCreate: typographyBlockCreate(
       input: {
         journeyId: $journeyId
         parentBlockId: $cardId
-        content: $headlineTypography
+        content: $headlineTypographyContent
         variant: h3
       }
     ) {
       id
     }
-    bodyTypography: typographyBlockCreate(
+    bodyTypographyBlockCreate: typographyBlockCreate(
       input: {
         journeyId: $journeyId
         parentBlockId: $cardId
-        content: $bodyTypography
+        content: $bodyTypographyContent
         variant: body1
       }
     ) {
       id
     }
-    captionTypography: typographyBlockCreate(
+    captionTypographyBlockCreate: typographyBlockCreate(
       input: {
         journeyId: $journeyId
         parentBlockId: $cardId
-        content: $captionTypography
+        content: $captionTypographyContent
         variant: caption
       }
     ) {
@@ -108,7 +108,7 @@ export const JOURNEY_CREATE = gql`
 `
 
 interface AddJourneyFabProps {
-  variant?: 'button' | 'fab'
+  variant: 'button' | 'fab'
 }
 
 export function AddJourneyButton({
@@ -133,9 +133,9 @@ export function AddJourneyButton({
         cardId,
         imageId,
         alt: 'two hot air balloons in the sky',
-        headlineTypography: 'The Journey Is On',
-        bodyTypography: '"Go, and lead the people on their way..."',
-        captionTypography: 'Deutoronomy 10:11'
+        headlineTypographyContent: 'The Journey Is On',
+        bodyTypographyContent: '"Go, and lead the people on their way..."',
+        captionTypographyContent: 'Deutoronomy 10:11'
       },
       update(cache, { data }) {
         if (data?.journeyCreate != null) {
@@ -162,7 +162,23 @@ export function AddJourneyButton({
     }
   }
 
-  return variant === 'fab' ? (
+  if (variant === 'button')
+    return (
+      <Button
+        variant="contained"
+        startIcon={<AddIcon />}
+        size="medium"
+        onClick={handleClick}
+        sx={{
+          mt: 3,
+          alignSelf: 'center'
+        }}
+      >
+        Create a Journey
+      </Button>
+    )
+
+  return (
     <Fab
       variant="extended"
       size="large"
@@ -173,20 +189,5 @@ export function AddJourneyButton({
       <AddRounded sx={{ mr: 3 }} />
       Add
     </Fab>
-  ) : variant === 'button' ? (
-    <Button
-      variant="contained"
-      startIcon={<AddIcon />}
-      size="medium"
-      onClick={handleClick}
-      sx={{
-        mt: 3,
-        alignSelf: 'center'
-      }}
-    >
-      Create a Journey
-    </Button>
-  ) : (
-    <></>
   )
 }

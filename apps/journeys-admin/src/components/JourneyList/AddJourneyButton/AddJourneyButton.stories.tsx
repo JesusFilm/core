@@ -10,7 +10,7 @@ const AddJourneyButtonStory = {
   title: 'Journeys-Admin/JourneyList/AddJourneyButton'
 }
 
-const Template: Story = ({ ...args }) => (
+const Template: Story = ({ variant }) => (
   <MockedProvider
     mocks={[
       {
@@ -88,7 +88,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <AddJourneyButton {...args} />
+    <AddJourneyButton variant={variant} />
   </MockedProvider>
 )
 
