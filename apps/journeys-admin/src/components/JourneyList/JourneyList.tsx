@@ -79,6 +79,7 @@ export const JOURNEY_CREATE = gql`
         journeyId: $journeyId
         src: "https://images.unsplash.com/photo-1524414287096-c7fb74ab3ba0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2348&q=80"
         alt: $alt
+        blurhash: "LgFiG+59PC=s|AE3XT$gnjngs7Ne"
       }
     ) {
       id
@@ -171,8 +172,8 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
     sortOrder === SortOrder.TITLE
       ? sortBy(journeys, 'title')
       : sortBy(journeys, ({ createdAt }) =>
-        new Date(createdAt).getTime()
-      ).reverse()
+          new Date(createdAt).getTime()
+        ).reverse()
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>

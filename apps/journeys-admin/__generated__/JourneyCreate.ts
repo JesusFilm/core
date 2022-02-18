@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, ThemeName, JourneyStatus } from "./globalTypes";
+import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: JourneyCreate
@@ -83,7 +83,6 @@ export interface JourneyCreateVariables {
   title: string;
   slug: string;
   description: string;
-  themeMode: ThemeMode;
   stepId: string;
   cardId: string;
   imageId: string;
