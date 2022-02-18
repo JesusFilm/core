@@ -1,13 +1,10 @@
-import { ReactElement, useState, ChangeEvent, FocusEvent } from 'react'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
-import { gql, useMutation } from '@apollo/client'
+import { ReactElement } from 'react'
+import { useEditor } from '@core/journeys/ui'
+import { gql } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
-import { Button } from '@mui/material'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
-import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
-import { useJourney } from '../../../../../../libs/context'
+import { noop } from 'lodash'
 
 export const LINK_ACTION_UPDATE = gql`
   mutation LinkActionUpdate(
@@ -28,91 +25,48 @@ export const LINK_ACTION_UPDATE = gql`
   }
 `
 
+interface LinkActionFormValues {
+  link: string
+}
+
 export function LinkAction(): ReactElement {
-  const { state } = useEditor()
-  const journey = useJourney()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<ButtonBlock>
-    | undefined
-
-  const [linkActionUpdate] = useMutation<LinkActionUpdate>(LINK_ACTION_UPDATE)
-
-  const currentActionLink =
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+  console.log(selectedBlock)
+  const linkAction =
+    selectedBlock?.__typename === 'ButtonBlock' &&
     selectedBlock?.action?.__typename === 'LinkAction'
-      ? selectedBlock?.action?.url
-      : ''
+      ? selectedBlock.action
+      : undefined
 
-  const [link, setLink] = useState(currentActionLink)
-
-  async function handleBlur(
-    event: FocusEvent
-    // link: string
-  ): Promise<void> {
-    // if (selectedBlock != null && event.target.value !== '') {
-    if (selectedBlock != null && link !== '') {
-      await linkActionUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          // input: { url: event.target.value }
-          input: { url: link }
-        }
-        // optimistic response causing cache issue
-        // optimisticResponse: {
-        //   blockUpdateLinkAction: {
-        //     id: selectedBlock.id,
-        //     __typename: 'ButtonBlock',
-        //     action: {
-        //       __typename: 'LinkAction',
-        //       url: event.target.value
-        //     }
-        //   }
-        // }
-      })
-    }
-  }
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    setLink(event.target.value)
-  }
+  const initialValues: LinkActionFormValues = { link: linkAction?.url ?? '' }
 
   const linkActionSchema = object().shape({
-    // link: string().url('Invalid URL').required('Required')
-    link: string().email('Invalid URL').required('Required')
+    link: string().url('Invalid URL').required('Required')
   })
 
   return (
     <Formik
-      initialValues={{ link: '' }}
+      initialValues={initialValues}
       validationSchema={linkActionSchema}
-      // validateOnBlur
-      validateOnChange
-      onSubmit={async (values) => {
-        // return await Promise.resolve(values.link)
-        return await Promise.resolve(null)
-        // await handleBlur(values.link)
-      }}
+      onSubmit={noop}
     >
-      {({ ...formikProps }) => (
+      {({ values, touched, errors, handleChange, handleBlur }) => (
         <Form>
           <TextField
-            {...formikProps}
             id="link"
             name="link"
             placeholder="Paste URL here..."
             variant="filled"
             hiddenLabel
             fullWidth
-            onBlur={async (e) => {
-              await handleBlur(e)
-              formikProps.handleBlur(e)
-            }}
-            // value={link}
-            // onBlur={handleBlur}
-            // onChange={handleChange}
+            value={values.link}
+            error={touched.link === true && Boolean(errors.link)}
+            helperText={touched.link === true && errors.link}
+            onBlur={handleBlur}
+            onChange={handleChange}
           />
-          {/* {typeof errors.link === 'string' && <div>{errors.link}</div>} */}
-          {/* <Button type="submit">Submit</Button> */}
         </Form>
       )}
     </Formik>
