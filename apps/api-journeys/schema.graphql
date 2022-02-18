@@ -114,6 +114,16 @@ type ButtonBlock implements Block {
   action: Action
 }
 
+input ButtonBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+}
+
 input ButtonBlockUpdateInput {
   parentBlockId: ID
   label: String
@@ -715,6 +725,7 @@ extend type Mutation {
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
   blockDelete(id: ID!, parentBlockId: ID!, journeyId: ID!): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!

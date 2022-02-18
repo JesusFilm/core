@@ -158,6 +158,16 @@ export class LinkActionInput {
     target?: Nullable<string>;
 }
 
+export class ButtonBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+    variant?: Nullable<ButtonVariant>;
+    color?: Nullable<ButtonColor>;
+    size?: Nullable<ButtonSize>;
+}
+
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
@@ -638,6 +648,8 @@ export abstract class IMutation {
     abstract blockDelete(id: string, parentBlockId: string, journeyId: string): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
+
+    abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 
     abstract buttonBlockUpdate(id: string, journeyId: string, input: ButtonBlockUpdateInput): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 
