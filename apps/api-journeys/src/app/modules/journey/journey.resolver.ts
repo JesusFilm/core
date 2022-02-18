@@ -10,7 +10,7 @@ import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
-import { ForbiddenError } from 'apollo-server-errors'
+import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { get } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { BlockService } from '../block/block.service'
@@ -36,6 +36,8 @@ function resolveStatus(journey: Journey): Journey {
     journey.publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
   return journey
 }
+
+const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
 
 @Resolver('Journey')
 export class JourneyResolver {
@@ -129,7 +131,6 @@ export class JourneyResolver {
         retry = false
         return journey
       } catch (err) {
-        const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
         if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
           input.slug = slugify(`${input.slug}-${input._key}`)
         } else {
@@ -147,8 +148,19 @@ export class JourneyResolver {
     @Args('input') input: JourneyUpdateInput
   ): Promise<Journey> {
     if (input.slug != null)
-      input.slug = slugify(input.slug, { remove: /[*+~.()'"!:@]#/g })
-    return await this.journeyService.update(id, input)
+      input.slug = slugify(input.slug, {
+        lower: true,
+        strict: true
+      })
+    try {
+      return await this.journeyService.update(id, input)
+    } catch (err) {
+      if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+        throw new UserInputError('Slug is not unique')
+      } else {
+        throw err
+      }
+    }
   }
 
   @Mutation()

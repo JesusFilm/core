@@ -360,6 +360,26 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate('1', journeyUpdate)
       expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
     })
+
+    it('throws UserInputErrror', async () => {
+      const mockUpdate = service.update as jest.MockedFunction<
+        typeof service.update
+      >
+      mockUpdate.mockRejectedValueOnce({ errorNum: 1210 })
+      await expect(
+        resolver.journeyUpdate('journeyId', { slug: 'untitled-journey' })
+      ).rejects.toThrow('Slug is not unique')
+    })
+
+    it('throws error gracefully', async () => {
+      const mockUpdate = service.update as jest.MockedFunction<
+        typeof service.update
+      >
+      mockUpdate.mockRejectedValueOnce(new Error('database error'))
+      await expect(
+        resolver.journeyUpdate('journeyId', { title: 'Untitled Journey' })
+      ).rejects.toThrow('database error')
+    })
   })
 
   describe('journeyPublish', () => {
