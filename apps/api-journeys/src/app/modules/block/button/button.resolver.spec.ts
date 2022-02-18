@@ -12,8 +12,8 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ButtonBlockResolver } from './button.resolver'
 
 describe('Button', () => {
-  let resolver: BlockResolver,
-    buttonBlockResolver: ButtonBlockResolver,
+  let resolver: ButtonBlockResolver,
+    blockResolver: BlockResolver,
     service: BlockService
 
   const block = {
@@ -34,6 +34,7 @@ describe('Button', () => {
       target: 'target'
     }
   }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
@@ -51,6 +52,29 @@ describe('Button', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     }
+  }
+
+  const blockInput = {
+    id: '1',
+    journeyId: '2',
+    __typename: 'ButtonBlock',
+    parentBlockId: '0',
+    label: 'label',
+    variant: ButtonVariant.contained,
+    color: ButtonColor.primary,
+    size: ButtonSize.medium
+  }
+
+  const blockCreateResponse = {
+    _key: '1',
+    journeyId: '2',
+    __typename: 'ButtonBlock',
+    parentBlockId: '0',
+    parentOrder: 2,
+    label: 'label',
+    variant: ButtonVariant.contained,
+    color: ButtonColor.primary,
+    size: ButtonSize.medium
   }
 
   const blockUpdate = {
@@ -76,6 +100,8 @@ describe('Button', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block, block]),
+      save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
   }
@@ -93,26 +119,35 @@ describe('Button', () => {
         }
       ]
     }).compile()
-    resolver = module.get<BlockResolver>(BlockResolver)
-    buttonBlockResolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
-    resolver = module.get<BlockResolver>(BlockResolver)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
     service = await module.resolve(BlockService)
   })
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockResponse)
-      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
+      expect(await blockResolver.blocks()).toEqual([
+        blockResponse,
+        blockResponse
+      ])
+    })
+  })
+
+  describe('ButtonBlockCreate', () => {
+    it('creates a ButtoBlock', async () => {
+      await resolver.buttonBlockCreate(blockInput)
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockInput.journeyId,
+        blockInput.parentBlockId
+      )
+      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
     })
   })
 
   describe('ButtonBlockUpdate', () => {
     it('updates a ButtonBlock', async () => {
-      void buttonBlockResolver.buttonBlockUpdate(
-        block._key,
-        block.journeyId,
-        blockUpdate
-      )
+      void resolver.buttonBlockUpdate(block._key, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
     })
   })
