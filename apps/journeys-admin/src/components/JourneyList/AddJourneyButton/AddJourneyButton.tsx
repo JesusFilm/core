@@ -158,7 +158,7 @@ export function AddJourneyButton({
       }
     })
     if (data?.journeyCreate != null) {
-      void router.push(`/journeys/${data.journeyCreate.slug}`)
+      void router.push(`/journeys/${data.journeyCreate.slug}/edit`)
     }
   }
 
