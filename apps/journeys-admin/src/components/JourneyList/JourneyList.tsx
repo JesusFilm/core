@@ -8,12 +8,6 @@ import Container from '@mui/material/Container'
 import AddIcon from '@mui/icons-material/Add'
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
-import {
-  CARD_FIELDS,
-  IMAGE_FIELDS,
-  STEP_FIELDS,
-  TYPOGRAPHY_FIELDS
-} from '@core/journeys/ui'
 import { sortBy } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { JourneyCreate } from '../../../__generated__/JourneyCreate'
@@ -23,10 +17,6 @@ import { JourneyCard } from './JourneyCard'
 
 // remove slug once Tatai finish his api changes
 export const JOURNEY_CREATE = gql`
-  ${STEP_FIELDS}
-  ${CARD_FIELDS}
-  ${TYPOGRAPHY_FIELDS}
-  ${IMAGE_FIELDS}
   mutation JourneyCreate(
     $journeyId: ID!
     $title: String!
@@ -46,6 +36,7 @@ export const JOURNEY_CREATE = gql`
         title: $title
         slug: $slug
         description: $description
+        themeMode: dark
       }
     ) {
       id
@@ -69,7 +60,7 @@ export const JOURNEY_CREATE = gql`
       }
     }
     stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
-      ...StepFields
+      id
     }
     cardBlockCreate(
       input: {
@@ -79,7 +70,7 @@ export const JOURNEY_CREATE = gql`
         coverBlockId: $imageId
       }
     ) {
-      ...CardFields
+      id
     }
     imageBlockCreate(
       input: {
@@ -90,7 +81,7 @@ export const JOURNEY_CREATE = gql`
         alt: $alt
       }
     ) {
-      ...ImageFields
+      id
     }
     headlineTypography: typographyBlockCreate(
       input: {
@@ -100,9 +91,9 @@ export const JOURNEY_CREATE = gql`
         variant: h3
       }
     ) {
-      ...TypographyFields
+      id
     }
-    bodyTypograpphy: typographyBlockCreate(
+    bodyTypography: typographyBlockCreate(
       input: {
         journeyId: $journeyId
         parentBlockId: $cardId
@@ -110,7 +101,7 @@ export const JOURNEY_CREATE = gql`
         variant: body1
       }
     ) {
-      ...TypographyFields
+      id
     }
     captionTypography: typographyBlockCreate(
       input: {
@@ -120,7 +111,7 @@ export const JOURNEY_CREATE = gql`
         variant: caption
       }
     ) {
-      ...TypographyFields
+      id
     }
   }
 `
@@ -180,8 +171,8 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
     sortOrder === SortOrder.TITLE
       ? sortBy(journeys, 'title')
       : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
+        new Date(createdAt).getTime()
+      ).reverse()
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>

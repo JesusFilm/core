@@ -1,6 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { InMemoryCache } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
 import { ThemeProvider } from '../ThemeProvider'
 import {
   defaultJourney,
@@ -13,8 +15,10 @@ import { JourneyList } from '.'
 
 jest.mock('uuid', () => ({
   __esModule: true,
-  v4: () => 'uuid'
+  v4: jest.fn()
 }))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('JourneyList', () => {
   it('should render journeys in descending createdAt date by default', () => {
@@ -90,27 +94,37 @@ describe('JourneyList', () => {
   })
 
   it('should check if the mutation gets called on AddJourneyFab click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        resultData
+    mockUuidv4.mockReturnValueOnce('journeyId')
+    mockUuidv4.mockReturnValueOnce('stepId')
+    mockUuidv4.mockReturnValueOnce('cardId')
+    mockUuidv4.mockReturnValueOnce('imageId')
+    const cache = new InMemoryCache()
+    cache.restore({
+      ROOT_QUERY: {
+        __typename: 'Query',
+        adminJourneys: []
       }
+    })
+    const result = jest.fn(() => ({
+      data: resultData
     }))
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider
+          cache={cache}
           mocks={[
             {
               request: {
                 query: JOURNEY_CREATE,
                 variables: {
-                  journeyId: 'uuid',
+                  journeyId: 'journeyId',
                   title: 'Untitled Journey',
-                  slug: `untitled-journey-uuid`,
+                  slug: `untitled-journey-journeyId`,
                   description:
                     'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
-                  stepId: 'uuid',
-                  cardId: 'uuid',
-                  imageId: 'uuid',
+                  stepId: 'stepId',
+                  cardId: 'cardId',
+                  imageId: 'imageId',
                   alt: 'two hot air balloons in the sky',
                   headlineTypography: 'The Journey Is On',
                   bodyTypography: '"Go, and lead the people on their way..."',
@@ -130,30 +144,43 @@ describe('JourneyList', () => {
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
+      { __ref: 'Journey:journeyId' }
+    ])
   })
 
   it('should check if the mutations gets called on AddJourneyButton click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        resultData
+    mockUuidv4.mockReturnValueOnce('journeyId')
+    mockUuidv4.mockReturnValueOnce('stepId')
+    mockUuidv4.mockReturnValueOnce('cardId')
+    mockUuidv4.mockReturnValueOnce('imageId')
+    const cache = new InMemoryCache()
+    cache.restore({
+      ROOT_QUERY: {
+        __typename: 'Query',
+        adminJourneys: []
       }
+    })
+    const result = jest.fn(() => ({
+      data: resultData
     }))
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider
+          cache={cache}
           mocks={[
             {
               request: {
                 query: JOURNEY_CREATE,
                 variables: {
-                  journeyId: 'uuid',
+                  journeyId: 'journeyId',
                   title: 'Untitled Journey',
-                  slug: `untitled-journey-uuid`,
+                  slug: `untitled-journey-journeyId`,
                   description:
                     'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
-                  stepId: 'uuid',
-                  cardId: 'uuid',
-                  imageId: 'uuid',
+                  stepId: 'stepId',
+                  cardId: 'cardId',
+                  imageId: 'imageId',
                   alt: 'two hot air balloons in the sky',
                   headlineTypography: 'The Journey Is On',
                   bodyTypography: '"Go, and lead the people on their way..."',
@@ -175,5 +202,8 @@ describe('JourneyList', () => {
     ).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Create a Journey' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
+      { __ref: 'Journey:journeyId' }
+    ])
   })
 })
