@@ -3,14 +3,13 @@ import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import { InputAdornment, Stack, TextField, Typography } from '@mui/material'
 import {
-  CheckCircle,
   DeleteOutline,
   Image as ImageIcon,
   Link as LinkIcon
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { reject } from 'lodash'
+import { debounce, reject } from 'lodash'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -73,58 +72,56 @@ export const CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE = gql`
 `
 interface BackgroundMediaImageProps {
   cardBlock: TreeBlock<CardBlock>
+  debounceTime?: number
 }
 
 export function BackgroundMediaImage({
-  cardBlock
+  cardBlock,
+  debounceTime = 2000
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
-  const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
-    CARD_BLOCK_COVER_IMAGE_UPDATE
-  )
-  const [imageBlockCreate] = useMutation<CardBlockImageBlockCreate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE
-  )
-  const [imageBlockUpdate] = useMutation<CardBlockImageBlockUpdate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
-  )
-  const [blockRemove] = useMutation<BlockDeleteForBackgroundImage>(
-    BLOCK_DELETE_FOR_BACKGROUND_IMAGE
-  )
+  const [cardBlockUpdate, { error: cardBlockUpdateError }] =
+    useMutation<CardBlockBackgroundImageUpdate>(CARD_BLOCK_COVER_IMAGE_UPDATE)
+  const [imageBlockCreate, { error: imageBlockCreateError }] =
+    useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
+  const [imageBlockUpdate, { error: imageBlockUpdateError }] =
+    useMutation<CardBlockImageBlockUpdate>(CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE)
+  const [blockDelete, { error: blockDeleteError }] =
+    useMutation<BlockDeleteForBackgroundImage>(
+      BLOCK_DELETE_FOR_BACKGROUND_IMAGE
+    )
   const { id: journeyId } = useJourney()
   const [imageBlock, setImageBlock] = useState(
     coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
   )
   const [imageSrc, setImageSrc] = useState(imageBlock?.src)
-  const [saveState, setSaveState] = useState(false)
 
   const handleSrcChange = async (
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
-    setImageSrc(event.target.value)
-  }
+    const src = event.target.value
+    setImageSrc(src)
 
-  const handleImageClick = async (): Promise<void> => {
-    if (imageSrc == null) return
+    if (src == null || src === imageBlock?.src) return
+
     const block = {
       ...imageBlock,
-      src: imageSrc,
-      alt: imageSrc // per Vlad 26/1/22, we are hardcoding the image alt for now
+      src: src,
+      alt: src // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
-    setImageBlock(block as TreeBlock<ImageBlock>)
-    await handleChange(block as ImageBlock)
+    await handleChangeDebounced(block as ImageBlock)
   }
 
   const handleImageDelete = async (): Promise<void> => {
     await deleteCoverBlock()
   }
 
-  const deleteCoverBlock = async (): Promise<void> => {
-    await blockRemove({
+  const deleteCoverBlock = async (): Promise<boolean> => {
+    await blockDelete({
       variables: {
         id: coverBlock.id,
         parentBlockId: cardBlock.parentBlockId,
@@ -149,6 +146,9 @@ export function BackgroundMediaImage({
         }
       }
     })
+
+    if (blockDeleteError != null) return false
+
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
@@ -165,9 +165,10 @@ export function BackgroundMediaImage({
         }
       }
     })
+    return cardBlockUpdateError == null
   }
 
-  const createImageBlock = async (block): Promise<void> => {
+  const createImageBlock = async (block): Promise<boolean> => {
     const { data } = await imageBlockCreate({
       variables: {
         input: {
@@ -198,6 +199,9 @@ export function BackgroundMediaImage({
         }
       }
     })
+
+    if (imageBlockCreateError != null) return false
+
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
@@ -214,9 +218,10 @@ export function BackgroundMediaImage({
         }
       }
     })
+    return cardBlockUpdateError == null
   }
 
-  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+  const updateImageBlock = async (block: ImageBlock): Promise<boolean> => {
     await imageBlockUpdate({
       variables: {
         id: coverBlock.id,
@@ -235,24 +240,31 @@ export function BackgroundMediaImage({
         }
       }
     })
+    return imageBlockUpdateError == null
   }
   const handleChange = async (block: ImageBlock): Promise<void> => {
-    setSaveState(false)
+    let success = true
     if (
       coverBlock != null &&
       coverBlock?.__typename.toString() !== 'ImageBlock'
     ) {
       // remove existing cover block if type changed
-      await deleteCoverBlock()
+      success = await deleteCoverBlock()
     }
-    if (block.src === '') return
+
+    if (block.src === '' || !success) return
+
     if (imageBlock == null) {
-      await createImageBlock(block)
+      success = await createImageBlock(block)
     } else {
-      await updateImageBlock(block)
+      success = await updateImageBlock(block)
     }
-    setSaveState(true)
+    if (success) {
+      setImageBlock(block as TreeBlock<ImageBlock>)
+    }
   }
+
+  const handleChangeDebounced = debounce(handleChange, debounceTime)
 
   return (
     <>
@@ -335,16 +347,6 @@ export function BackgroundMediaImage({
                 startAdornment: (
                   <InputAdornment position="start">
                     <LinkIcon></LinkIcon>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <CheckCircle
-                      style={{ cursor: 'pointer' }}
-                      data-testid="checkCircle"
-                      color={saveState ? 'primary' : 'secondary'}
-                      onClick={handleImageClick}
-                    ></CheckCircle>
                   </InputAdornment>
                 )
               }}
