@@ -167,6 +167,7 @@ export interface CardBlockUpdateInput {
 
 export interface ImageBlockCreateInput {
   alt: string;
+  blurhash?: string | null;
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
