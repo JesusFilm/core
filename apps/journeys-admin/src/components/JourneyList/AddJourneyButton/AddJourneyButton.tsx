@@ -67,7 +67,7 @@ export const JOURNEY_CREATE = gql`
         id: $imageId
         parentBlockId: $cardId
         journeyId: $journeyId
-        src: "https://images.unsplash.com/photo-1524414287096-c7fb74ab3ba0?w=854&q=500"
+        src: "https://images.unsplash.com/photo-1524414287096-c7fb74ab3ba0?w=854&q=50"
         alt: $alt
         blurhash: "LgFiG+59PC=s|AE3XT$gnjngs7Ne"
       }
