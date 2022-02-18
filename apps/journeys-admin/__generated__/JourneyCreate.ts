@@ -81,7 +81,6 @@ export interface JourneyCreate {
 export interface JourneyCreateVariables {
   journeyId: string;
   title: string;
-  slug: string;
   description: string;
   stepId: string;
   cardId: string;

@@ -20,7 +20,6 @@ export const JOURNEY_CREATE = gql`
   mutation JourneyCreate(
     $journeyId: ID!
     $title: String!
-    $slug: String!
     $description: String!
     $stepId: ID!
     $cardId: ID!
@@ -34,7 +33,6 @@ export const JOURNEY_CREATE = gql`
       input: {
         id: $journeyId
         title: $title
-        slug: $slug
         description: $description
         themeMode: dark
       }
@@ -135,7 +133,6 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
       variables: {
         journeyId,
         title: 'Untitled Journey',
-        slug: `untitled-journey-${journeyId}`,
         description:
           'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
         stepId,
@@ -172,8 +169,8 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
     sortOrder === SortOrder.TITLE
       ? sortBy(journeys, 'title')
       : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
+        new Date(createdAt).getTime()
+      ).reverse()
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>

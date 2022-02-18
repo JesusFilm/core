@@ -28,7 +28,6 @@ describe('AddJourneyFab', () => {
               variables: {
                 journeyId: 'journeyId',
                 title: 'Untitled Journey',
-                slug: `untitled-journey-journeyId`,
                 description:
                   'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
                 stepId: 'stepId',
