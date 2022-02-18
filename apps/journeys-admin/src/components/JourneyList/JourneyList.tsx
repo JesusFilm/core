@@ -139,7 +139,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
     const cardId = uuidv4()
     const imageId = uuidv4()
 
-    const { data } = await journeyCreate({
+    await journeyCreate({
       variables: {
         journeyId,
         title: 'Untitled Journey',
@@ -174,7 +174,6 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
         }
       }
     })
-    console.log(data)
   }
 
   const sortedJourneys =
