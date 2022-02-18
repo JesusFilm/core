@@ -7,7 +7,7 @@ import { AddJourneyButton } from '.'
 const AddJourneyButtonStory = {
   ...simpleComponentConfig,
   component: AddJourneyButton,
-  title: 'Journeys-Admin/JourneyList/AddJourneyFab'
+  title: 'Journeys-Admin/JourneyList/AddJourneyButton'
 }
 
 const Template: Story = ({ ...args }) => (
