@@ -328,7 +328,7 @@ export class JourneyCreateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
-    slug: string;
+    slug?: Nullable<string>;
 }
 
 export class JourneyUpdateInput {
