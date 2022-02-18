@@ -38,7 +38,10 @@ function JourneyEditPage(): ReactElement {
             backHref={`/journeys/${router.query.journeySlug as string}`}
             AuthUser={AuthUser}
           >
-            <Editor journey={data.journey} />
+            <Editor
+              journey={data.journey}
+              selectedStepId={router.query.stepId as string | undefined}
+            />
           </PageWrapper>
         </>
       )}

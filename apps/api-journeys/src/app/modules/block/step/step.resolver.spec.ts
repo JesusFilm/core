@@ -4,6 +4,7 @@ import { mockDeep } from 'jest-mock-extended'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
+import { StepBlock } from '../../../__generated__/graphql'
 import { StepBlockResolver } from './step.resolver'
 
 describe('StepBlockResolver', () => {
@@ -104,6 +105,24 @@ describe('StepBlockResolver', () => {
         .stepBlockUpdate(block._key, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+    })
+  })
+
+  describe('locked', () => {
+    it('returns locked when true', () => {
+      expect(resolver.locked({ locked: true } as unknown as StepBlock)).toEqual(
+        true
+      )
+    })
+
+    it('returns locked when false', () => {
+      expect(
+        resolver.locked({ locked: false } as unknown as StepBlock)
+      ).toEqual(false)
+    })
+
+    it('returns false when locked is not set', () => {
+      expect(resolver.locked({} as unknown as StepBlock)).toEqual(false)
     })
   })
 })
