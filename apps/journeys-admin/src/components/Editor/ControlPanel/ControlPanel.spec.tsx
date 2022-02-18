@@ -9,7 +9,9 @@ import { JourneyProvider } from '../../../libs/context'
 import {
   ButtonVariant,
   ButtonColor,
-  ButtonSize
+  ButtonSize,
+  ThemeMode,
+  ThemeName
 } from '../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
@@ -148,7 +150,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -205,7 +215,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -291,7 +309,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -346,7 +372,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -410,7 +444,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -468,7 +510,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
