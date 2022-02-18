@@ -114,12 +114,12 @@ export class JourneyResolver {
       try {
         const journey: Journey & { _key: string } =
           await this.journeyService.save({
-            ...input,
+            themeName: ThemeName.base,
+            themeMode: ThemeMode.light,
             createdAt: new Date().toISOString(),
-            themeName: input.themeName ?? ThemeName.base,
-            themeMode: input.themeMode ?? ThemeMode.light,
-            locale: input.locale ?? 'en-US',
-            status: JourneyStatus.draft
+            locale: 'en-US',
+            status: JourneyStatus.draft,
+            ...input
           })
         await this.userJourneyService.save({
           userId,

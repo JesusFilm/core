@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { v4 as uuidv4 } from 'uuid'
 import {
   IdType,
   JourneyStatus,
@@ -12,7 +13,23 @@ import { UserJourneyService } from '../userJourney/userJourney.service'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
 describe('JourneyResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   let resolver: JourneyResolver,
     service: JourneyService,
     ujService: UserJourneyService
@@ -57,7 +74,7 @@ describe('JourneyResolver', () => {
     height: 1080
   }
 
-  const journeyupdate = {
+  const journeyUpdate = {
     title: 'published',
     locale: 'en-US',
     themeMode: ThemeMode.light,
@@ -81,7 +98,7 @@ describe('JourneyResolver', () => {
     status: JourneyStatus.published
   }
 
-  const pijourneyResponse = {
+  const piJourneyResponse = {
     id: '1',
     title: 'published',
     locale: 'en-US',
@@ -104,7 +121,7 @@ describe('JourneyResolver', () => {
     status: JourneyStatus.published
   }
 
-  const pijourneyResponsenull = {
+  const piJourneyResponsenull = {
     id: '1',
     title: 'published',
     locale: 'en-US',
@@ -153,7 +170,7 @@ describe('JourneyResolver', () => {
       getBySlug: jest.fn(() => journey),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
-      save: jest.fn(() => journey),
+      save: jest.fn((input) => input),
       update: jest.fn(() => journey)
     })
   }
@@ -164,7 +181,14 @@ describe('JourneyResolver', () => {
       forJourney: jest.fn(() => [block]),
       getSiblings: jest.fn(() => [block]),
       get: jest.fn(() => block),
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => ({
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        createdAt,
+        locale: 'en-US',
+        status: JourneyStatus.draft,
+        ...input
+      }))
     })
   }
 
@@ -262,50 +286,87 @@ describe('JourneyResolver', () => {
   // need working example to diagnose
   describe('primaryImageBlock', () => {
     it('returns primaryImageBlock', async () => {
-      expect(await resolver.primaryImageBlock(pijourneyResponse)).toEqual(
+      expect(await resolver.primaryImageBlock(piJourneyResponse)).toEqual(
         blockResponse
       )
     })
     it('should return null', async () => {
-      expect(await resolver.primaryImageBlock(pijourneyResponsenull)).toEqual(
+      expect(await resolver.primaryImageBlock(piJourneyResponsenull)).toEqual(
         null
       )
     })
   })
 
-  describe('createJourney', () => {
-    it('creates a Journey and UserJourney', async () => {
+  describe('journeyCreate', () => {
+    it('creates a Journey', async () => {
+      mockUuidv4.mockReturnValueOnce('journeyId')
       expect(
-        await resolver.journeyCreate(journey, ownerUserJourney._key)
-      ).toEqual(journeyResponse)
+        await resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+      ).toEqual({
+        id: 'journeyId',
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        createdAt: new Date().toISOString(),
+        locale: 'en-US',
+        status: JourneyStatus.draft,
+        slug: 'untitled-journey',
+        title: 'Untitled Journey'
+      })
+    })
+
+    it('creates a UserJourney', async () => {
+      mockUuidv4.mockReturnValueOnce('journeyId')
+      await resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
       expect(ujService.save).toHaveBeenCalledWith({
-        userId: ownerUserJourney._key,
-        journeyId: journey._key,
+        userId: 'userId',
+        journeyId: 'journeyId',
         role: UserJourneyRole.owner
       })
     })
+
+    it('adds uuid if slug already taken', async () => {
+      const mockSave = service.save as jest.MockedFunction<typeof service.save>
+      mockSave.mockRejectedValueOnce({ errorNum: 1210 })
+      mockUuidv4.mockReturnValueOnce('journeyId')
+      expect(
+        await resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+      ).toEqual({
+        id: 'journeyId',
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        createdAt: new Date().toISOString(),
+        locale: 'en-US',
+        status: JourneyStatus.draft,
+        slug: 'untitled-journey-journeyId',
+        title: 'Untitled Journey'
+      })
+    })
+
+    it('throws error and does not get stuck in retry loop', async () => {
+      const mockSave = service.save as jest.MockedFunction<typeof service.save>
+      mockSave.mockRejectedValueOnce(new Error('database error'))
+      await expect(
+        resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+      ).rejects.toThrow('database error')
+    })
   })
 
-  describe('updateJourney', () => {
+  describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
-      await resolver
-        .journeyUpdate('1', journeyupdate)
-        .catch((err) => console.log(err))
-      expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
+      await resolver.journeyUpdate('1', journeyUpdate)
+      expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
     })
     it('updates a Journey 2', async () => {
-      await resolver
-        .journeyUpdate('1', journeyupdate)
-        .catch((err) => console.log(err))
-      expect(service.update).toHaveBeenCalledWith('1', journeyupdate)
+      await resolver.journeyUpdate('1', journeyUpdate)
+      expect(service.update).toHaveBeenCalledWith('1', journeyUpdate)
     })
   })
 
-  describe('publishJourney', () => {
+  describe('journeyPublish', () => {
     it('publishes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyPublish('1').catch((err) => console.log(err))
+      await resolver.journeyPublish('1')
       expect(service.update).toHaveBeenCalledWith('1', {
         status: JourneyStatus.published,
         publishedAt: '2021-12-07T03:22:41.135Z'
