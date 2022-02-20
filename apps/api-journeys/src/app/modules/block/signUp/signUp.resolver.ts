@@ -1,7 +1,8 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
+  Action,
   SignUpBlock,
   SignUpBlockCreateInput,
   SignUpBlockUpdateInput,
@@ -13,6 +14,17 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 @Resolver('SignUpBlock')
 export class SignUpBlockResolver {
   constructor(private readonly blockService: BlockService) {}
+
+  @ResolveField()
+  action(@Parent() block: SignUpBlock): Action | null {
+    return block.action != null
+      ? {
+          ...block.action,
+          parentBlockId: block.id
+        }
+      : null
+  }
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [

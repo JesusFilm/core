@@ -1,7 +1,8 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
+  Action,
   RadioOptionBlock,
   RadioQuestionBlock,
   RadioOptionBlockCreateInput,
@@ -16,6 +17,17 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 @Resolver('RadioOptionBlock')
 export class RadioOptionBlockResolver {
   constructor(private readonly blockService: BlockService) {}
+
+  @ResolveField()
+  action(@Parent() block: RadioOptionBlock): Action | null {
+    return block.action != null
+      ? {
+          ...block.action,
+          parentBlockId: block.id
+        }
+      : null
+  }
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [

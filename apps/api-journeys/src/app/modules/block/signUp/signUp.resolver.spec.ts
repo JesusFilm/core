@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { SignUpBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  SignUpBlock,
+  SignUpBlockCreateInput
+} from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -19,12 +22,14 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 2,
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
     submitIconId: 'icon1',
     submitLabel: 'Unlock Now!'
   }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
@@ -32,6 +37,7 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 2,
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
@@ -99,6 +105,12 @@ describe('SignUpBlockResolver', () => {
         blockResponse,
         blockResponse
       ])
+    })
+
+    it('returns SignUpBlock action with parentBlockId', async () => {
+      expect(await resolver.action(blockResponse as SignUpBlock)).toEqual(
+        block.action
+      )
     })
   })
 

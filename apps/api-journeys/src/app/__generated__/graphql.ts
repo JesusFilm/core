@@ -373,6 +373,7 @@ export class VideoResponseCreateInput {
 }
 
 export interface Action {
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
 }
 
@@ -394,17 +395,20 @@ export interface Response {
 
 export class NavigateAction implements Action {
     __typename?: 'NavigateAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
 }
 
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
 
 export class NavigateToJourneyAction implements Action {
     __typename?: 'NavigateToJourneyAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
     journeyId: string;
     journey?: Nullable<Journey>;
@@ -412,6 +416,7 @@ export class NavigateToJourneyAction implements Action {
 
 export class LinkAction implements Action {
     __typename?: 'LinkAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;

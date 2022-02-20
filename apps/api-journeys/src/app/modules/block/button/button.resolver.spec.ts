@@ -6,7 +6,8 @@ import { BlockService } from '../block.service'
 import {
   ButtonVariant,
   ButtonColor,
-  ButtonSize
+  ButtonSize,
+  ButtonBlock
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ButtonBlockResolver } from './button.resolver'
@@ -29,6 +30,7 @@ describe('Button', () => {
     startIconId: 'start1',
     endIconId: 'end1',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
@@ -48,6 +50,7 @@ describe('Button', () => {
     startIconId: 'start1',
     endIconId: 'end1',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
@@ -119,8 +122,8 @@ describe('Button', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -131,6 +134,12 @@ describe('Button', () => {
         blockResponse,
         blockResponse
       ])
+    })
+
+    it('returns ButtonBlock action with parentBlockId', async () => {
+      expect(await resolver.action(blockResponse as ButtonBlock)).toEqual(
+        block.action
+      )
     })
   })
 

@@ -19,6 +19,7 @@ describe('LinkActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
