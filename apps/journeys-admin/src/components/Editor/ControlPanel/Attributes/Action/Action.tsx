@@ -81,7 +81,7 @@ export function Action(): ReactElement {
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (event.target.value === 'none') {
-      // feat: add in remove action API
+      // TODO: add in remove action API
       console.log('remove action')
     } else if (event.target.value === 'Next Step') {
       await navigateAction()
@@ -95,6 +95,7 @@ export function Action(): ReactElement {
         <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
           Navigate to:
         </InputLabel>
+
         <Select
           onChange={handleChange}
           value={action}
@@ -110,6 +111,7 @@ export function Action(): ReactElement {
           })}
         </Select>
       </FormControl>
+
       <Typography variant="caption" color="secondary.main" sx={{ pb: 8 }}>
         Redirect user to the selected resource
       </Typography>

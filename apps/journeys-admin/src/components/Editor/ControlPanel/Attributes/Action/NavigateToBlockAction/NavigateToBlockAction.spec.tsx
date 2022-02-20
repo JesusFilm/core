@@ -7,9 +7,7 @@ import {
   ButtonVariant,
   ButtonColor,
   TypographyVariant,
-  ButtonSize,
-  IconName,
-  IconSize
+  ButtonSize
 } from '../../../../../../../__generated__/globalTypes'
 import {
   NavigateToBlockAction,
@@ -81,13 +79,8 @@ describe('NavigateToBlockAction', () => {
               buttonVariant: ButtonVariant.contained,
               buttonColor: ButtonColor.primary,
               size: ButtonSize.large,
-              startIcon: {
-                __typename: 'Icon',
-                name: IconName.PlayArrowRounded,
-                color: null,
-                size: IconSize.md
-              },
-              endIcon: null,
+              startIconId: null,
+              endIconId: null,
               action: {
                 __typename: 'NavigateAction',
                 gtmEventName: 'gtmEventName'
@@ -160,13 +153,8 @@ describe('NavigateToBlockAction', () => {
               buttonVariant: ButtonVariant.contained,
               buttonColor: ButtonColor.primary,
               size: ButtonSize.large,
-              startIcon: {
-                __typename: 'Icon',
-                name: IconName.PlayArrowRounded,
-                color: null,
-                size: IconSize.md
-              },
-              endIcon: null,
+              startIconId: null,
+              endIconId: null,
               action: null,
               children: []
             }
@@ -420,13 +408,8 @@ describe('NavigateToBlockAction', () => {
               buttonVariant: ButtonVariant.contained,
               buttonColor: ButtonColor.primary,
               size: ButtonSize.large,
-              startIcon: {
-                __typename: 'Icon',
-                name: IconName.PlayArrowRounded,
-                color: null,
-                size: IconSize.md
-              },
-              endIcon: null,
+              startIconId: null,
+              endIconId: null,
               action: {
                 __typename: 'NavigateToBlockAction',
                 gtmEventName: 'gtmEventName',
@@ -449,13 +432,8 @@ describe('NavigateToBlockAction', () => {
       buttonVariant: ButtonVariant.contained,
       buttonColor: ButtonColor.primary,
       size: ButtonSize.large,
-      startIcon: {
-        __typename: 'Icon',
-        name: IconName.PlayArrowRounded,
-        color: null,
-        size: IconSize.md
-      },
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }

@@ -6,9 +6,7 @@ import {
   ButtonVariant,
   ButtonColor,
   TypographyVariant,
-  ButtonSize,
-  IconName,
-  IconSize
+  ButtonSize
 } from '../../../../../../../__generated__/globalTypes'
 import { NavigateAction } from './NavigateAction'
 
@@ -77,13 +75,8 @@ describe('NavigateNext', () => {
               buttonVariant: ButtonVariant.contained,
               buttonColor: ButtonColor.primary,
               size: ButtonSize.large,
-              startIcon: {
-                __typename: 'Icon',
-                name: IconName.PlayArrowRounded,
-                color: null,
-                size: IconSize.md
-              },
-              endIcon: null,
+              startIconId: null,
+              endIconId: null,
               action: {
                 __typename: 'NavigateAction',
                 gtmEventName: 'gtmEventName'
@@ -156,13 +149,8 @@ describe('NavigateNext', () => {
               buttonVariant: ButtonVariant.contained,
               buttonColor: ButtonColor.primary,
               size: ButtonSize.large,
-              startIcon: {
-                __typename: 'Icon',
-                name: IconName.PlayArrowRounded,
-                color: null,
-                size: IconSize.md
-              },
-              endIcon: null,
+              startIconId: null,
+              endIconId: null,
               action: {
                 __typename: 'NavigateAction',
                 gtmEventName: 'gtmEventName'
@@ -419,13 +407,8 @@ describe('NavigateNext', () => {
               buttonVariant: ButtonVariant.contained,
               buttonColor: ButtonColor.primary,
               size: ButtonSize.large,
-              startIcon: {
-                __typename: 'Icon',
-                name: IconName.PlayArrowRounded,
-                color: null,
-                size: IconSize.md
-              },
-              endIcon: null,
+              startIconId: null,
+              endIconId: null,
               action: {
                 __typename: 'NavigateToBlockAction',
                 gtmEventName: 'gtmEventName',
