@@ -37,6 +37,7 @@ describe('SignUp Attributes', () => {
       submitLabel: 'Sign Up',
       action: {
         __typename: 'LinkAction',
+        parentBlockId: 'signup.id',
         gtmEventName: 'signup',
         url: 'https://www.google.com'
       },

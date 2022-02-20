@@ -57,6 +57,7 @@ describe('Conductor', () => {
                     label: '1. Step 2 (Locked)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption2.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step2.id'
                     },
@@ -70,6 +71,7 @@ describe('Conductor', () => {
                     label: '1. Step 3 (No nextBlockId)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption3.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step3.id'
                     },
@@ -83,6 +85,7 @@ describe('Conductor', () => {
                     label: '1. Step 4 (End)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption4.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step4.id'
                     },
@@ -98,7 +101,7 @@ describe('Conductor', () => {
         id: 'step2.id',
         __typename: 'StepBlock',
         parentBlockId: null,
-        parentOrder: 0,
+        parentOrder: 1,
         locked: true,
         nextBlockId: 'step3.id',
         children: [
@@ -129,6 +132,7 @@ describe('Conductor', () => {
                     label: '2. Step 1 (Start)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption1.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step1.id'
                     },
@@ -142,6 +146,7 @@ describe('Conductor', () => {
                     label: '2. Step 3 (No nextBlockId)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption3.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step3.id'
                     },
@@ -155,6 +160,7 @@ describe('Conductor', () => {
                     label: '2. Step 4 (End)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption4.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step4.id'
                     },
@@ -170,7 +176,7 @@ describe('Conductor', () => {
         id: 'step3.id',
         __typename: 'StepBlock',
         parentBlockId: null,
-        parentOrder: 0,
+        parentOrder: 2,
         locked: false,
         nextBlockId: null,
         children: [
@@ -201,6 +207,7 @@ describe('Conductor', () => {
                     label: '3. Step 1 (Start)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption1.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step1.id'
                     },
@@ -214,6 +221,7 @@ describe('Conductor', () => {
                     label: '3. Step 2 (Locked)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption2.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step2.id'
                     },
@@ -227,6 +235,7 @@ describe('Conductor', () => {
                     label: '3. Step 4 (End)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption4.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step4.id'
                     },
@@ -242,7 +251,7 @@ describe('Conductor', () => {
         id: 'step4.id',
         __typename: 'StepBlock',
         parentBlockId: null,
-        parentOrder: 0,
+        parentOrder: 3,
         locked: false,
         nextBlockId: null,
         children: [
@@ -273,6 +282,7 @@ describe('Conductor', () => {
                     label: '4. Step 1 (Start)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption1.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step1.id'
                     },
@@ -286,6 +296,7 @@ describe('Conductor', () => {
                     label: '4. Step 2 (Locked)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption2.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step2.id'
                     },
@@ -299,6 +310,7 @@ describe('Conductor', () => {
                     label: '4. Step 3 (No nextBlockId)',
                     action: {
                       __typename: 'NavigateToBlockAction',
+                      parentBlockId: 'radioOption3.id',
                       gtmEventName: 'gtmEventName',
                       blockId: 'step3.id'
                     },

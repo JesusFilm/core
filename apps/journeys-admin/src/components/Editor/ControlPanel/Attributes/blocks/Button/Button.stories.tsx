@@ -50,7 +50,7 @@ export const Default: Story = () => {
 }
 export const Filled: Story = () => {
   const block: TreeBlock<ButtonBlock> = {
-    id: 'button.id',
+    id: 'button1.id',
     __typename: 'ButtonBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
@@ -62,6 +62,7 @@ export const Filled: Story = () => {
     endIconId: 'icon2',
     action: {
       __typename: 'NavigateToBlockAction',
+      parentBlockId: 'button1.id',
       gtmEventName: 'navigateToBlock',
       blockId: 'step2.id'
     },
