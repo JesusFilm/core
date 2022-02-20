@@ -46,7 +46,7 @@ export class BlockResolver {
     @Args('id') _key: string,
     @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
-  ): Promise<Array<Promise<Block>>> {
+  ): Promise<Array<{ _key: string; parentOrder: number }>> {
     const selectedBlock: Block = await this.block(_key)
 
     if (
@@ -57,16 +57,26 @@ export class BlockResolver {
       siblings.splice(selectedBlock.parentOrder, 1)
       siblings.splice(parentOrder, 0, selectedBlock)
 
-      const updatedBlocks = siblings.map(async (block, index) => {
-        if (block.parentOrder !== index) {
-          return await this.updateOrder(block.id, index)
-        } else {
-          return block
-        }
-      })
-      return updatedBlocks
+      return await this.blockService.reorderSiblings(siblings)
     }
     return []
+  }
+
+  @Mutation()
+  @KeyAsId()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  async blockDelete(
+    @Args('id') id: string,
+    @Args('parentBlockId') parentBlockId: string,
+    @Args('journeyId') journeyId: string
+  ): Promise<Block[]> {
+    return await this.blockService.removeBlockAndChildren(
+      id,
+      parentBlockId,
+      journeyId
+    )
   }
 
   @KeyAsId()

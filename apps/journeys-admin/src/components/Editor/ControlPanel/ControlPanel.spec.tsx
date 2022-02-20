@@ -6,11 +6,19 @@ import {
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
+import {
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize,
+  ThemeMode,
+  ThemeName
+} from '../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_CREATE } from './BlocksTab/NewVideoButton/NewVideoButton'
 import { TYPOGRAPHY_BLOCK_CREATE } from './BlocksTab/NewTypographyButton/NewTypographyButton'
 import { IMAGE_BLOCK_CREATE } from './BlocksTab/NewImageButton/NewImageButton'
 import { SIGN_UP_BLOCK_CREATE } from './BlocksTab/NewSignUpButton/NewSignUpButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from './BlocksTab/NewRadioQuestionButton/NewRadioQuestionButton'
+import { BUTTON_BLOCK_CREATE } from './BlocksTab/NewButtonButton/NewButtonButton'
 import { ControlPanel } from '.'
 
 jest.mock('uuid', () => ({
@@ -63,9 +71,19 @@ describe('ControlPanel', () => {
   it('should render the element', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -81,9 +99,19 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -97,9 +125,19 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking add button', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps: [step1, step2] }}>
-          <ControlPanel />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
@@ -142,7 +180,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -199,7 +245,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -285,7 +339,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -340,7 +402,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -404,7 +474,15 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
           </EditorProvider>
@@ -417,6 +495,72 @@ describe('ControlPanel', () => {
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Video' }))
+    await waitFor(() =>
+      expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    )
+  })
+
+  it('should change to properties tab on button button click', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonBlockCreate: {
+                  id: 'buttonBlockId',
+                  parentBlockId: 'cardId',
+                  journeyId: 'journeyId',
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium,
+                  startIconId: null,
+                  endIconId: null,
+                  action: null
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+            <ControlPanel />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
+    fireEvent.click(getByTestId('preview-step3.id'))
+    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Add' }))
+    expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Button' }))
     await waitFor(() =>
       expect(getByRole('tab', { name: 'Properties' })).toHaveAttribute(
         'aria-selected',

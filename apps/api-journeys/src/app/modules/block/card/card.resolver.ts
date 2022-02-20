@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   CardBlock,
@@ -46,5 +46,12 @@ export class CardBlockResolver {
     @Args('input') input: CardBlockUpdateInput
   ): Promise<CardBlock> {
     return await this.blockService.update(id, input)
+  }
+
+  @ResolveField()
+  fullscreen(@Parent() card: CardBlock): boolean {
+    if (card.fullscreen != null) return card.fullscreen
+
+    return false
   }
 }

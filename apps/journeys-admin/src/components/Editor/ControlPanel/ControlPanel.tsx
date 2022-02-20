@@ -77,6 +77,7 @@ export function ControlPanel(): ReactElement {
           selected={selectedStep}
           onSelect={handleSelectPreviewStep}
           steps={steps}
+          showAddButton
         />
       </TabPanel>
       <TabPanel name="control-panel" value={activeTab} index={1}>

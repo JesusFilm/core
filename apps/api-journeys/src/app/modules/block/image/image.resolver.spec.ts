@@ -41,7 +41,8 @@ describe('ImageBlockResolver', () => {
     parentBlockId: '2',
     journeyId: '3',
     src: 'https://blurha.sh/assets/images/img2.jpg',
-    alt: 'grid image'
+    alt: 'grid image',
+    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
   const inputUpdate = {

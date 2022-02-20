@@ -1,7 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   ButtonColor,
@@ -9,8 +12,11 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
+  ThemeMode,
+  ThemeName,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/context'
 import { Canvas } from '.'
 
 const CanvasStory = {
@@ -556,9 +562,19 @@ const steps: Array<TreeBlock<StepBlock>> = [
 const Template: Story = () => {
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ steps: steps }}>
-        <Canvas />
-      </EditorProvider>
+      <JourneyProvider
+        value={
+          {
+            id: 'journeyId',
+            themeMode: ThemeMode.light,
+            themeName: ThemeName.base
+          } as unknown as Journey
+        }
+      >
+        <EditorProvider initialState={{ steps: steps }}>
+          <Canvas />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }

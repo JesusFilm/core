@@ -2,7 +2,10 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
@@ -10,8 +13,11 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant
+  TypographyVariant,
+  ThemeMode,
+  ThemeName
 } from '../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../libs/context'
 import { CardPreview } from '.'
 
 const CardPreviewStory = {
@@ -468,19 +474,35 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = () => {
+const Template: Story = ({ ...args }) => {
   const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
-      <CardPreview
-        onSelect={(step) => setSelectedStep(step)}
-        selected={selected}
-        steps={steps}
-      />
+      <JourneyProvider
+        value={
+          {
+            id: 'journeyId',
+            themeMode: ThemeMode.light,
+            themeName: ThemeName.base
+          } as unknown as Journey
+        }
+      >
+        <CardPreview
+          onSelect={(step) => setSelectedStep(step)}
+          selected={selected}
+          steps={args.steps ?? steps}
+          showAddButton={args.showAddButton}
+        />
+      </JourneyProvider>
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
+
+export const AddButton = Template.bind({})
+AddButton.args = {
+  showAddButton: true
+}
 
 export default CardPreviewStory as Meta

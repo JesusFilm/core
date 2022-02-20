@@ -14,6 +14,7 @@ describe('BlocksTab', () => {
     expect(getByText('Video')).toBeInTheDocument()
     expect(getByText('Poll')).toBeInTheDocument()
     expect(getByText('Subscribe')).toBeInTheDocument()
+    expect(getByText('Button')).toBeInTheDocument()
   })
   it('contains correct bottom text', () => {
     const { getByText } = render(
