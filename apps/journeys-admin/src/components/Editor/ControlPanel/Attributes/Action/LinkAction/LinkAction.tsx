@@ -33,7 +33,6 @@ export function LinkAction(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  console.log(selectedBlock)
   const linkAction =
     selectedBlock?.__typename === 'ButtonBlock' &&
     selectedBlock?.action?.__typename === 'LinkAction'
@@ -45,6 +44,11 @@ export function LinkAction(): ReactElement {
   const linkActionSchema = object().shape({
     link: string().url('Invalid URL').required('Required')
   })
+
+  function handleSubmit(e: React.FocusEvent, errors): void {
+    const target = e.target as HTMLInputElement
+    console.log('Submit: ', target.value)
+  }
 
   return (
     <Formik
@@ -64,7 +68,10 @@ export function LinkAction(): ReactElement {
             value={values.link}
             error={touched.link === true && Boolean(errors.link)}
             helperText={touched.link === true && errors.link}
-            onBlur={handleBlur}
+            onBlur={(e) => {
+              handleBlur(e)
+              errors.link == null && handleSubmit(e, errors)
+            }}
             onChange={handleChange}
           />
         </Form>
