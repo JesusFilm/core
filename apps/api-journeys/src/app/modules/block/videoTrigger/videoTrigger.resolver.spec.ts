@@ -15,10 +15,15 @@ describe('VideoTriggerBlockResolver', () => {
     parentOrder: 0,
     triggerStart: 5,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
+  }
+
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
   }
 
   const blockResponse = {
@@ -38,8 +43,8 @@ describe('VideoTriggerBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block])
+      get: jest.fn(() => blockResponse),
+      getAll: jest.fn(() => [blockResponse, blockResponse])
     })
   }
 
@@ -61,9 +66,9 @@ describe('VideoTriggerBlockResolver', () => {
     })
 
     it('returns VideoTriggerBlock action with parentBlockId', async () => {
-      expect(await resolver.action(blockResponse as VideoTriggerBlock)).toEqual(
-        block.action
-      )
+      expect(
+        await resolver.action(blockWithId as unknown as VideoTriggerBlock)
+      ).toEqual(blockResponse.action)
     })
   })
 })

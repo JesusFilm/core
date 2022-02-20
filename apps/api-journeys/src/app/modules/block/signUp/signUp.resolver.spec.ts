@@ -20,9 +20,8 @@ describe('SignUpBlockResolver', () => {
     journeyId: '2',
     parentBlockId: '0',
     __typename: 'SignUpBlock',
-    parentOrder: 2,
+    parentOrder: 1,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
@@ -30,12 +29,18 @@ describe('SignUpBlockResolver', () => {
     submitLabel: 'Unlock Now!'
   }
 
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
+  }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
     parentBlockId: '0',
     __typename: 'SignUpBlock',
-    parentOrder: 2,
+    parentOrder: 1,
     action: {
       parentBlockId: '1',
       gtmEventName: 'gtmEventName',
@@ -48,7 +53,7 @@ describe('SignUpBlockResolver', () => {
   const input: SignUpBlockCreateInput & { __typename: string } = {
     __typename: '',
     id: '1',
-    parentBlockId: '0',
+    parentBlockId: '',
     journeyId: '2',
     submitLabel: 'Submit'
   }
@@ -58,7 +63,7 @@ describe('SignUpBlockResolver', () => {
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
     __typename: 'SignUpBlock',
-    parentOrder: 1,
+    parentOrder: 2,
     submitLabel: input.submitLabel
   }
 
@@ -72,9 +77,9 @@ describe('SignUpBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => [block]),
+      get: jest.fn(() => blockResponse),
+      getAll: jest.fn(() => [blockResponse, blockResponse]),
+      getSiblings: jest.fn(() => [blockResponse, blockResponse]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -108,9 +113,9 @@ describe('SignUpBlockResolver', () => {
     })
 
     it('returns SignUpBlock action with parentBlockId', async () => {
-      expect(await resolver.action(blockResponse as SignUpBlock)).toEqual(
-        block.action
-      )
+      expect(
+        await resolver.action(blockWithId as unknown as SignUpBlock)
+      ).toEqual(blockResponse.action)
     })
   })
 

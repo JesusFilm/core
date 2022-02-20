@@ -30,11 +30,16 @@ describe('Button', () => {
     startIconId: 'start1',
     endIconId: 'end1',
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
     }
+  }
+
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
   }
 
   const blockResponse = {
@@ -101,9 +106,9 @@ describe('Button', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => [block, block]),
+      get: jest.fn(() => blockResponse),
+      getAll: jest.fn(() => [blockResponse, blockResponse]),
+      getSiblings: jest.fn(() => [blockResponse, blockResponse]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -137,9 +142,9 @@ describe('Button', () => {
     })
 
     it('returns ButtonBlock action with parentBlockId', async () => {
-      expect(await resolver.action(blockResponse as ButtonBlock)).toEqual(
-        block.action
-      )
+      expect(
+        await resolver.action(blockWithId as unknown as ButtonBlock)
+      ).toEqual(blockResponse.action)
     })
   })
 
