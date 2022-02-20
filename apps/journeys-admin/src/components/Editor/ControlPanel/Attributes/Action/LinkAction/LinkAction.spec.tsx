@@ -24,8 +24,8 @@ describe('LinkAction', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: {
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
@@ -53,8 +53,8 @@ describe('LinkAction', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
