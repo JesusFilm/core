@@ -169,6 +169,7 @@ describe('ControlPanel', () => {
                 typographyBlockCreate: {
                   id: 'typographyBlockId',
                   parentBlockId: 'cardId',
+                  parentOrder: 0,
                   journeyId: 'journeyId',
                   align: null,
                   color: null,
@@ -307,6 +308,7 @@ describe('ControlPanel', () => {
                   id: 'uuid',
                   parentBlockId: 'cardId',
                   journeyId: 'journeyId',
+                  parentOrder: 0,
                   label: 'Your Question Here?',
                   description: null
                 },
@@ -314,6 +316,7 @@ describe('ControlPanel', () => {
                   __typename: 'RadioOptionBlock',
                   id: 'radioOptionBlockId1',
                   parentBlockId: 'uuid',
+                  parentOrder: 0,
                   journeyId: 'journeyId',
                   label: 'Option 1',
                   action: {
@@ -326,6 +329,7 @@ describe('ControlPanel', () => {
                   __typename: 'RadioOptionBlock',
                   id: 'radioOptionBlockId2',
                   parentBlockId: 'uuid',
+                  parentOrder: 1,
                   journeyId: 'journeyId',
                   label: 'Option 2',
                   action: {
@@ -389,6 +393,7 @@ describe('ControlPanel', () => {
                 imageBlockCreate: {
                   id: 'imageBlockId',
                   parentBlockId: 'cardId',
+                  parentOrder: 0,
                   journeyId: 'journeyId',
                   src: null,
                   alt: 'Default Image Icon',
@@ -457,6 +462,7 @@ describe('ControlPanel', () => {
                 videoBlockCreate: {
                   id: 'videoBlockId',
                   parentBlockId: 'cardId',
+                  parentOrder: 0,
                   journeyId: 'journeyId',
                   title: '',
                   muted: false,

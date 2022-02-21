@@ -37,6 +37,12 @@ describe('Button', () => {
     }
   }
 
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
+  }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
@@ -55,6 +61,11 @@ describe('Button', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     }
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const blockInput = {
@@ -140,6 +151,14 @@ describe('Button', () => {
       expect(await resolver.action(blockResponse as ButtonBlock)).toEqual(
         block.action
       )
+    })
+  })
+
+  describe('action', () => {
+    it('returns ButtonBlock action with parentBlockId', async () => {
+      expect(
+        await resolver.action(blockWithId as unknown as ButtonBlock)
+      ).toEqual(actionResponse)
     })
   })
 

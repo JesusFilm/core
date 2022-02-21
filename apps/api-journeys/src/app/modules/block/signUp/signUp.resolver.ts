@@ -17,12 +17,12 @@ export class SignUpBlockResolver {
 
   @ResolveField()
   action(@Parent() block: SignUpBlock): Action | null {
-    return block.action != null
-      ? {
-          ...block.action,
-          parentBlockId: block.id
-        }
-      : null
+    if (block.action == null) return null
+
+    return {
+      ...block.action,
+      parentBlockId: block.id
+    }
   }
 
   @Mutation()

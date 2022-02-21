@@ -31,6 +31,12 @@ describe('RadioQuestionBlockResolver', () => {
     }
   }
 
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
+  }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
@@ -44,6 +50,11 @@ describe('RadioQuestionBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const radioOptionInput = {
@@ -122,6 +133,16 @@ describe('RadioQuestionBlockResolver', () => {
       expect(
         await radioOptionBlockResolver.action(blockResponse as RadioOptionBlock)
       ).toEqual(block.action)
+    })
+  })
+
+  describe('action', () => {
+    it('returns RadioOptionBlock action with parentBlockId', async () => {
+      expect(
+        await radioOptionBlockResolver.action(
+          blockWithId as unknown as RadioOptionBlock
+        )
+      ).toEqual(actionResponse)
     })
   })
 

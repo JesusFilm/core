@@ -15,10 +15,15 @@ describe('VideoTriggerBlockResolver', () => {
     parentOrder: 0,
     triggerStart: 5,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
+  }
+
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
   }
 
   const blockResponse = {
@@ -29,10 +34,14 @@ describe('VideoTriggerBlockResolver', () => {
     parentOrder: 0,
     triggerStart: 5,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const blockService = {
@@ -59,11 +68,13 @@ describe('VideoTriggerBlockResolver', () => {
         blockResponse
       ])
     })
+  })
 
+  describe('action', () => {
     it('returns VideoTriggerBlock action with parentBlockId', async () => {
-      expect(await resolver.action(blockResponse as VideoTriggerBlock)).toEqual(
-        block.action
-      )
+      expect(
+        await resolver.action(blockWithId as unknown as VideoTriggerBlock)
+      ).toEqual(actionResponse)
     })
   })
 })

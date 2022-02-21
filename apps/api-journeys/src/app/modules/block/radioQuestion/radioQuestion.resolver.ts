@@ -20,12 +20,12 @@ export class RadioOptionBlockResolver {
 
   @ResolveField()
   action(@Parent() block: RadioOptionBlock): Action | null {
-    return block.action != null
-      ? {
-          ...block.action,
-          parentBlockId: block.id
-        }
-      : null
+    if (block.action == null) return null
+
+    return {
+      ...block.action,
+      parentBlockId: block.id
+    }
   }
 
   @Mutation()
