@@ -169,7 +169,7 @@ describe('ControlPanel', () => {
                 typographyBlockCreate: {
                   id: 'typographyBlockId',
                   parentBlockId: 'cardId',
-                  parentOrder: 0,
+                  parentOrder: null,
                   journeyId: 'journeyId',
                   align: null,
                   color: null,
@@ -231,7 +231,7 @@ describe('ControlPanel', () => {
                   id: 'signUpBlockId',
                   parentBlockId: 'cardId',
                   journeyId: 'journeyId',
-                  parentOrder: 0,
+                  parentOrder: null,
                   submitLabel: 'Submit',
                   __typename: 'SignUpBlock',
                   action: {
@@ -308,7 +308,7 @@ describe('ControlPanel', () => {
                   id: 'uuid',
                   parentBlockId: 'cardId',
                   journeyId: 'journeyId',
-                  parentOrder: 0,
+                  parentOrder: null,
                   label: 'Your Question Here?',
                   description: null
                 },
@@ -316,7 +316,7 @@ describe('ControlPanel', () => {
                   __typename: 'RadioOptionBlock',
                   id: 'radioOptionBlockId1',
                   parentBlockId: 'uuid',
-                  parentOrder: 0,
+                  parentOrder: null,
                   journeyId: 'journeyId',
                   label: 'Option 1',
                   action: {
@@ -329,7 +329,7 @@ describe('ControlPanel', () => {
                   __typename: 'RadioOptionBlock',
                   id: 'radioOptionBlockId2',
                   parentBlockId: 'uuid',
-                  parentOrder: 1,
+                  parentOrder: null,
                   journeyId: 'journeyId',
                   label: 'Option 2',
                   action: {
@@ -393,7 +393,7 @@ describe('ControlPanel', () => {
                 imageBlockCreate: {
                   id: 'imageBlockId',
                   parentBlockId: 'cardId',
-                  parentOrder: 0,
+                  parentOrder: null,
                   journeyId: 'journeyId',
                   src: null,
                   alt: 'Default Image Icon',
@@ -462,7 +462,7 @@ describe('ControlPanel', () => {
                 videoBlockCreate: {
                   id: 'videoBlockId',
                   parentBlockId: 'cardId',
-                  parentOrder: 0,
+                  parentOrder: null,
                   journeyId: 'journeyId',
                   title: '',
                   muted: false,
@@ -532,6 +532,7 @@ describe('ControlPanel', () => {
                 buttonBlockCreate: {
                   id: 'buttonBlockId',
                   parentBlockId: 'cardId',
+                  parentOrder: null,
                   journeyId: 'journeyId',
                   label: 'Edit Text...',
                   variant: ButtonVariant.contained,
