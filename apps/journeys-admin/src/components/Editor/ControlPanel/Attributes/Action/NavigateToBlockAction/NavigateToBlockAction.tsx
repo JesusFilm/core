@@ -45,7 +45,7 @@ export function NavigateToBlockAction(): ReactElement {
   const currentActionStep =
     state.steps.find(
       ({ id }) =>
-        selectedBlock?.action?.__typename === 'NavigateToBlockAction' && // TODO: optimize
+        selectedBlock?.action?.__typename === 'NavigateToBlockAction' &&
         id === selectedBlock?.action?.blockId
     ) ?? undefined
 

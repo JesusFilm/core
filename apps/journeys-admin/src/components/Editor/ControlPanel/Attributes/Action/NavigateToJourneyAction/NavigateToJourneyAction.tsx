@@ -59,7 +59,7 @@ export function NavigateToJourneyAction(): ReactElement {
   const currentActionJourneyId =
     data?.journeys.find(
       ({ id }) =>
-        selectedBlock?.action?.__typename === 'NavigateToJourneyAction' && // TODO: optimize/standardise
+        selectedBlock?.action?.__typename === 'NavigateToJourneyAction' &&
         id === selectedBlock?.action?.journey?.id
     )?.id ?? ''
 
