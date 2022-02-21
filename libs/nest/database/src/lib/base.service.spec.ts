@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { mockCollectionUpdateAllResult } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
+import { mockCollectionUpdateAllResult } from './dbMock'
 import { BaseService } from './base.service'
 
 @Injectable()
