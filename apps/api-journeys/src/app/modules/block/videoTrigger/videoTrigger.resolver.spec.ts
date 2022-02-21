@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { VideoTriggerBlock } from '../../../__generated__/graphql'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
+import { VideoTriggerResolver } from './videoTrigger.resolver'
 
 describe('VideoTriggerBlockResolver', () => {
-  let resolver: BlockResolver
+  let resolver: VideoTriggerResolver, blockResolver: BlockResolver
 
   const block = {
     _key: '1',
@@ -11,13 +13,17 @@ describe('VideoTriggerBlockResolver', () => {
     __typename: 'VideoTriggerBlock',
     parentBlockId: '3',
     parentOrder: 0,
-    extraAttrs: {
-      triggerStart: 5,
-      action: {
-        gtmEventName: 'gtmEventName',
-        journeyId: '4'
-      }
+    triggerStart: 5,
+    action: {
+      gtmEventName: 'gtmEventName',
+      journeyId: '4'
     }
+  }
+
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
   }
 
   const blockResponse = {
@@ -26,13 +32,16 @@ describe('VideoTriggerBlockResolver', () => {
     __typename: 'VideoTriggerBlock',
     parentBlockId: '3',
     parentOrder: 0,
-    extraAttrs: {
-      triggerStart: 5,
-      action: {
-        gtmEventName: 'gtmEventName',
-        journeyId: '4'
-      }
+    triggerStart: 5,
+    action: {
+      gtmEventName: 'gtmEventName',
+      journeyId: '4'
     }
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const blockService = {
@@ -45,15 +54,27 @@ describe('VideoTriggerBlockResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolver, blockService]
+      providers: [BlockResolver, blockService, VideoTriggerResolver]
     }).compile()
-    resolver = module.get<BlockResolver>(BlockResolver)
+    resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
   })
 
   describe('VideoTriggerBlock', () => {
     it('returns VideoTriggerBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockResponse)
-      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
+      expect(await blockResolver.block('1')).toEqual(blockResponse)
+      expect(await blockResolver.blocks()).toEqual([
+        blockResponse,
+        blockResponse
+      ])
+    })
+  })
+
+  describe('action', () => {
+    it('returns VideoTriggerBlock action with parentBlockId', async () => {
+      expect(
+        await resolver.action(blockWithId as unknown as VideoTriggerBlock)
+      ).toEqual(actionResponse)
     })
   })
 })

@@ -23,6 +23,7 @@ describe('NavigateToJourneyActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -37,6 +38,7 @@ describe('NavigateToJourneyActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }

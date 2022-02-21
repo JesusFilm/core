@@ -19,6 +19,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -33,6 +34,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -47,6 +49,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -61,6 +64,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -75,6 +79,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -89,6 +94,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -103,6 +109,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -117,6 +124,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }

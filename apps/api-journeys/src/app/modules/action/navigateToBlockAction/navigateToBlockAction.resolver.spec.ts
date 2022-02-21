@@ -18,6 +18,7 @@ describe('NavigateToBlockActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }

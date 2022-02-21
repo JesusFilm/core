@@ -18,6 +18,7 @@ directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
 interface Action {
   gtmEventName: String
+  parentBlockId: ID!
 }
 
 interface Block {
@@ -351,6 +352,7 @@ input JourneyUpdateInput {
 
 type LinkAction implements Action {
   gtmEventName: String
+  parentBlockId: ID!
   target: String
   url: String!
 }
@@ -406,6 +408,7 @@ closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
   gtmEventName: String
+  parentBlockId: ID!
 }
 
 input NavigateActionInput {
@@ -415,6 +418,7 @@ input NavigateActionInput {
 type NavigateToBlockAction implements Action {
   blockId: String!
   gtmEventName: String
+  parentBlockId: ID!
 }
 
 input NavigateToBlockActionInput {
@@ -426,6 +430,7 @@ type NavigateToJourneyAction implements Action {
   gtmEventName: String
   journey: Journey
   journeyId: String!
+  parentBlockId: ID!
 }
 
 input NavigateToJourneyActionInput {
