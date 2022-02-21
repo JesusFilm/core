@@ -4,10 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockCollectionUpdateAllResult } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../journeys/ui/__generated__/globalTypes'
 import { BaseService } from './base.service'
 
 @Injectable()
@@ -23,8 +19,8 @@ const block = {
   parentOrder: 0,
   backgroundColor: '#FFF',
   coverBlockId: '4',
-  themeMode: ThemeMode.light,
-  themeName: ThemeName.base,
+  themeMode: 'light',
+  themeName: 'base',
   fullscreen: true
 }
 
@@ -36,8 +32,8 @@ const block2 = {
   parentOrder: 2,
   backgroundColor: '#FFF',
   coverBlockId: '4',
-  themeMode: ThemeMode.light,
-  themeName: ThemeName.base,
+  themeMode: 'light',
+  themeName: 'base',
   fullscreen: true
 }
 
