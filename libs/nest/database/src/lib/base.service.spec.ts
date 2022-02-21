@@ -1,12 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import {
-  mockCollectionRemoveResult,
-  mockCollectionSaveResult,
-  mockCollectionUpdateAllResult,
-  mockDbQueryResult
-} from '@core/nest/database'
+import { mockCollectionUpdateAllResult } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
 import {
