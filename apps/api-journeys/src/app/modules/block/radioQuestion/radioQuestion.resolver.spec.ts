@@ -45,10 +45,14 @@ describe('RadioQuestionBlockResolver', () => {
     label: 'label',
     description: 'description',
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const radioOptionInput = {
@@ -82,9 +86,9 @@ describe('RadioQuestionBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => blockResponse),
-      getAll: jest.fn(() => [blockResponse, blockResponse]),
-      getSiblings: jest.fn(() => [blockResponse, blockResponse]),
+      get: jest.fn(() => block),
+      getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -122,13 +126,15 @@ describe('RadioQuestionBlockResolver', () => {
         blockResponse
       ])
     })
+  })
 
+  describe('action', () => {
     it('returns RadioOptionBlock action with parentBlockId', async () => {
       expect(
         await radioOptionBlockResolver.action(
           blockWithId as unknown as RadioOptionBlock
         )
-      ).toEqual(blockResponse.action)
+      ).toEqual(actionResponse)
     })
   })
 

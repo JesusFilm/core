@@ -42,12 +42,16 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 1,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
     submitIconId: 'icon1',
     submitLabel: 'Unlock Now!'
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const input: SignUpBlockCreateInput & { __typename: string } = {
@@ -77,9 +81,9 @@ describe('SignUpBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => blockResponse),
-      getAll: jest.fn(() => [blockResponse, blockResponse]),
-      getSiblings: jest.fn(() => [blockResponse, blockResponse]),
+      get: jest.fn(() => block),
+      getAll: jest.fn(() => [block, block]),
+      getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -111,11 +115,13 @@ describe('SignUpBlockResolver', () => {
         blockResponse
       ])
     })
+  })
 
+  describe('action', () => {
     it('returns SignUpBlock action with parentBlockId', async () => {
       expect(
         await resolver.action(blockWithId as unknown as SignUpBlock)
-      ).toEqual(blockResponse.action)
+      ).toEqual(actionResponse)
     })
   })
 
