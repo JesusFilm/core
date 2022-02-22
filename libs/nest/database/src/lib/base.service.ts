@@ -38,7 +38,7 @@ export abstract class BaseService {
   }
 
   async updateAll<T>(
-    arr: Array<(Patch<DocumentData<T>> & { _key: string }) | { _id: string }>
+    arr: Array<Patch<DocumentData<T>> & ({ _key: string } | { _id: string })>
   ): Promise<T[]> {
     const result = await this.collection.updateAll(arr, {
       returnNew: true

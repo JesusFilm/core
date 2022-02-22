@@ -4,10 +4,15 @@ import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
-import { NewVideoButton } from '.'
+import {
+  ButtonVariant,
+  ButtonColor,
+  ButtonSize
+} from '../../../../../../__generated__/globalTypes'
+import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
+import { NewButtonButton } from '.'
 
-describe('Video', () => {
+describe('Button', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -33,21 +38,17 @@ describe('Video', () => {
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {
-        videoBlockCreate: {
-          id: 'videoBlockId',
+        buttonBlockCreate: {
+          id: 'buttonBlockId',
           parentBlockId: 'cardId',
-          parentOrder: 0,
           journeyId: 'journeyId',
-          title: '',
-          muted: false,
-          autoplay: true,
-          startAt: null,
-          endAt: null,
-          posterBlockId: null,
-          videoContent: {
-            src: null
-          },
-          fullsize: true
+          label: 'Edit Text...',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.medium,
+          startIconId: null,
+          endIconId: null,
+          action: null
         }
       }
     }))
@@ -56,18 +57,15 @@ describe('Video', () => {
         mocks={[
           {
             request: {
-              query: VIDEO_BLOCK_CREATE,
+              query: BUTTON_BLOCK_CREATE,
               variables: {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  autoplay: true,
-                  muted: false,
-                  videoContent: {
-                    src: null
-                  },
-                  title: '',
-                  fullsize: true
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium
                 }
               }
             },
@@ -77,7 +75,7 @@ describe('Video', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <NewVideoButton />
+            <NewButtonButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -97,22 +95,19 @@ describe('Video', () => {
     })
     const result = jest.fn(() => ({
       data: {
-        videoBlockCreate: {
-          id: 'videoBlockId',
+        buttonBlockCreate: {
+          __typename: 'ButtonBlock',
+          id: 'buttonBlockId',
           parentBlockId: 'cardId',
-          parentOrder: 0,
+          parentOrder: 1,
           journeyId: 'journeyId',
-          title: '',
-          muted: false,
-          autoplay: true,
-          startAt: null,
-          endAt: null,
-          posterBlockId: null,
-          videoContent: {
-            src: null
-          },
-          __typename: 'VideoBlock',
-          fullsize: true
+          label: 'Edit Text...',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.large,
+          startIconId: null,
+          endIconId: null,
+          action: null
         }
       }
     }))
@@ -122,18 +117,15 @@ describe('Video', () => {
         mocks={[
           {
             request: {
-              query: VIDEO_BLOCK_CREATE,
+              query: BUTTON_BLOCK_CREATE,
               variables: {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  autoplay: true,
-                  muted: false,
-                  videoContent: {
-                    src: null
-                  },
-                  title: '',
-                  fullsize: true
+                  label: 'Edit Text...',
+                  variant: ButtonVariant.contained,
+                  color: ButtonColor.primary,
+                  size: ButtonSize.medium
                 }
               }
             },
@@ -143,7 +135,7 @@ describe('Video', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider initialState={{ selectedStep }}>
-            <NewVideoButton />
+            <NewButtonButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -152,7 +144,7 @@ describe('Video', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'TypographyBlock:typographyBlockId' },
-      { __ref: 'VideoBlock:videoBlockId' }
+      { __ref: 'ButtonBlock:buttonBlockId' }
     ])
   })
 })
