@@ -49,7 +49,6 @@ describe('BlockResolver', () => {
     useFactory: () => ({
       get: jest.fn(() => image1),
       getSiblings: jest.fn(() => [image1, image2, image3]),
-      update: jest.fn((input) => input),
       removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
       reorderSiblings: jest.fn(() => [
         { _key: 'image2', parentOrder: 0 },
