@@ -73,7 +73,7 @@ const blocks: GetJourney_journey_blocks[] = [
   },
   {
     __typename: 'ButtonBlock',
-    id: 'button0',
+    id: 'button0.id',
     parentBlockId: 'card0.id',
     parentOrder: 2,
     label: 'Watch Now',
@@ -84,6 +84,7 @@ const blocks: GetJourney_journey_blocks[] = [
     endIconId: null,
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'button0.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -148,7 +149,7 @@ const blocks: GetJourney_journey_blocks[] = [
   },
   {
     __typename: 'ButtonBlock',
-    id: 'button1',
+    id: 'button1.id',
     parentBlockId: 'card1.id',
     parentOrder: 2,
     label: 'Watch Now',
@@ -159,6 +160,7 @@ const blocks: GetJourney_journey_blocks[] = [
     endIconId: null,
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'button1.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -228,6 +230,7 @@ const blocks: GetJourney_journey_blocks[] = [
     label: 'One of many ways to God',
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'radioOption1.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -239,6 +242,7 @@ const blocks: GetJourney_journey_blocks[] = [
     label: 'One great lie...',
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'radioOption2.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -250,6 +254,7 @@ const blocks: GetJourney_journey_blocks[] = [
     label: 'One true way to God',
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'radioOption3.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -309,6 +314,7 @@ const blocks: GetJourney_journey_blocks[] = [
     label: 'Yes, God likes good people',
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'radioOption4.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -320,6 +326,7 @@ const blocks: GetJourney_journey_blocks[] = [
     label: 'No, He will accept me as I am',
     action: {
       __typename: 'NavigateAction',
+      parentBlockId: 'radioOption5.id',
       gtmEventName: 'gtmEventName'
     }
   },
@@ -461,7 +468,7 @@ const blocks: GetJourney_journey_blocks[] = [
   },
   {
     __typename: 'ButtonBlock',
-    id: 'button',
+    id: 'button3.id',
     parentBlockId: 'card6.id',
     parentOrder: 4,
     label: 'Start Over',
@@ -472,6 +479,7 @@ const blocks: GetJourney_journey_blocks[] = [
     endIconId: null,
     action: {
       __typename: 'NavigateToBlockAction',
+      parentBlockId: 'button3.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step6.id'
     }
