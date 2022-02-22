@@ -76,6 +76,7 @@ describe('BackgroundMedia', () => {
       endAt: null,
       muted: false,
       autoplay: true,
+      fullsize: false,
       videoContent: {
         __typename: 'VideoGeneric',
         src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
