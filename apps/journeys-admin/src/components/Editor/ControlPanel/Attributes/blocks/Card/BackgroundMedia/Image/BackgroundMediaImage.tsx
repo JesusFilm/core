@@ -53,6 +53,11 @@ export const CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE = gql`
       id
       src
       alt
+      parentBlockId
+      width
+      height
+      parentOrder
+      blurhash
     }
   }
 `
@@ -176,26 +181,26 @@ export function BackgroundMediaImage({
           parentBlockId: cardBlock.id,
           src: block.src,
           alt: block.alt
-        },
-        update(cache, { data }) {
-          if (data?.imageBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.imageBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
+        }
+      },
+      update(cache, { data }) {
+        if (data?.imageBlockCreate != null) {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            fields: {
+              blocks(existingBlockRefs = []) {
+                const newBlockRef = cache.writeFragment({
+                  data: data.imageBlockCreate,
+                  fragment: gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                })
+                return [...existingBlockRefs, newBlockRef]
               }
-            })
-          }
+            }
+          })
         }
       }
     })

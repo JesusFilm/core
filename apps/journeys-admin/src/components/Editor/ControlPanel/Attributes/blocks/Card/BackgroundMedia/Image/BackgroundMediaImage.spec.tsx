@@ -79,7 +79,7 @@ describe('BackgroundMediaImage', () => {
     })
 
     // Apollo fails to match mock on imageBlockCreate
-    xit('creates a new image cover block', async () => {
+    it('creates a new image cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
         ['Journey:' + journey.id]: {
@@ -187,7 +187,7 @@ describe('BackgroundMediaImage', () => {
       expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
     })
     // Apollo fails to match mock on imageBlockCreate
-    xit('creates a new image cover block', async () => {
+    it('creates a new image cover block', async () => {
       const videoCard: TreeBlock<CardBlock> = {
         ...card,
         coverBlockId: video.id,
