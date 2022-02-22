@@ -11,11 +11,13 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirec
 
 export interface BlockFields_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface BlockFields_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -28,12 +30,14 @@ export interface BlockFields_ButtonBlock_action_NavigateToJourneyAction_journey 
 
 export interface BlockFields_ButtonBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: BlockFields_ButtonBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface BlockFields_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -136,11 +140,13 @@ export interface BlockFields_ImageBlock {
 
 export interface BlockFields_RadioOptionBlock_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -153,12 +159,14 @@ export interface BlockFields_RadioOptionBlock_action_NavigateToJourneyAction_jou
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: BlockFields_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -185,11 +193,13 @@ export interface BlockFields_RadioQuestionBlock {
 
 export interface BlockFields_SignUpBlock_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface BlockFields_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -202,12 +212,14 @@ export interface BlockFields_SignUpBlock_action_NavigateToJourneyAction_journey 
 
 export interface BlockFields_SignUpBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: BlockFields_SignUpBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface BlockFields_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -287,11 +299,13 @@ export interface BlockFields_VideoBlock {
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -304,12 +318,14 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAc
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: BlockFields_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }

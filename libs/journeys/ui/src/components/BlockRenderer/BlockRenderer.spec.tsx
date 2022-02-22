@@ -306,6 +306,7 @@ describe('BlockRenderer', () => {
       submitIconId: null,
       action: {
         __typename: 'NavigateAction',
+        parentBlockId: 'signUp',
         gtmEventName: 'gtmEventName'
       },
       children: []
@@ -329,6 +330,7 @@ describe('BlockRenderer', () => {
       submitIconId: null,
       action: {
         __typename: 'NavigateAction',
+        parentBlockId: 'signUp',
         gtmEventName: 'gtmEventName'
       },
       children: []

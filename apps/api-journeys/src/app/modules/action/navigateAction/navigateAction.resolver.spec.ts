@@ -18,12 +18,13 @@ describe('NavigateActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName'
     }
   }
 
   const navigateActionInput = {
-    gtmEventName: 'gtmEventName',
+    gtmEventName: 'gtmEventNameUpdated',
     blockId: null,
     journeyId: null,
     url: null,

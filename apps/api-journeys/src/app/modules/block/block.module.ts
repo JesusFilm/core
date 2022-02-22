@@ -18,6 +18,7 @@ import {
   RadioOptionBlockResolver,
   RadioQuestionBlockResolver
 } from './radioQuestion/radioQuestion.resolver'
+import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
 
 @Module({
   imports: [DatabaseModule],
@@ -34,7 +35,8 @@ import {
     TypographyBlockResolver,
     VideoBlockResolver,
     VideoContentResolver,
-    VideoArclightResolver
+    VideoArclightResolver,
+    VideoTriggerResolver
   ],
   exports: [BlockService]
 })

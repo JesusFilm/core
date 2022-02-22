@@ -43,6 +43,7 @@ describe('RadioQuestion', () => {
           __typename: 'RadioQuestionBlock',
           id: 'uuid',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           label: 'Your Question Here?',
           description: null
@@ -51,6 +52,7 @@ describe('RadioQuestion', () => {
           __typename: 'RadioOptionBlock',
           id: 'radioOptionBlockId1',
           parentBlockId: 'uuid',
+          parentOrder: 0,
           journeyId: 'journeyId',
           label: 'Option 1',
           action: {
@@ -63,6 +65,7 @@ describe('RadioQuestion', () => {
           __typename: 'RadioOptionBlock',
           id: 'radioOptionBlockId2',
           parentBlockId: 'uuid',
+          parentOrder: 1,
           journeyId: 'journeyId',
           label: 'Option 2',
           action: {
@@ -128,6 +131,7 @@ describe('RadioQuestion', () => {
           __typename: 'RadioQuestionBlock',
           id: 'uuid',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           label: 'Your Question Here?',
           description: null
@@ -136,6 +140,7 @@ describe('RadioQuestion', () => {
           __typename: 'RadioOptionBlock',
           id: 'radioOptionBlockId1',
           parentBlockId: 'uuid',
+          parentOrder: 0,
           journeyId: 'journeyId',
           label: 'Option 1',
           action: {
@@ -148,6 +153,7 @@ describe('RadioQuestion', () => {
           __typename: 'RadioOptionBlock',
           id: 'radioOptionBlockId2',
           parentBlockId: 'uuid',
+          parentOrder: 1,
           journeyId: 'journeyId',
           label: 'Option 2',
           action: {

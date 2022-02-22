@@ -11,6 +11,7 @@ enum ThemeName {
 }
 
 interface Action {
+  parentBlockId: ID!
   gtmEventName: String
 }
 
@@ -19,21 +20,25 @@ NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   blockId: String!
 }
 
 type NavigateToJourneyAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   journeyId: String!
   journey: Journey
 }
 
 type LinkAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   url: String!
   target: String
@@ -114,12 +119,24 @@ type ButtonBlock implements Block {
   action: Action
 }
 
+input ButtonBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+}
+
 input ButtonBlockUpdateInput {
   parentBlockId: ID
   label: String
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIconId: ID
+  endIconId: ID
 }
 
 type CardBlock implements Block {
@@ -310,6 +327,7 @@ input ImageBlockCreateInput {
   journeyId: ID!
   src: String
   alt: String!
+  blurhash: String
 }
 
 input ImageBlockUpdateInput {
@@ -375,7 +393,14 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  submitIconId: ID
   submitLabel: String!
+}
+
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 type StepBlock implements Block {
@@ -604,8 +629,11 @@ input JourneyCreateInput {
   """
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
+  If not required will use title formatted with kebab-case
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
   """
-  slug: String!
+  slug: String
 }
 
 input JourneyUpdateInput {
@@ -701,7 +729,9 @@ extend type Mutation {
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): Block!
   blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
+  blockDelete(id: ID!, parentBlockId: ID!, journeyId: ID!): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
@@ -714,6 +744,7 @@ extend type Mutation {
   radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
   radioQuestionBlockUpdate(id: ID!, journeyId: ID!, input: RadioQuestionBlockUpdateInput!): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!

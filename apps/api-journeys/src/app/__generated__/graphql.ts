@@ -158,12 +158,24 @@ export class LinkActionInput {
     target?: Nullable<string>;
 }
 
+export class ButtonBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+    variant?: Nullable<ButtonVariant>;
+    color?: Nullable<ButtonColor>;
+    size?: Nullable<ButtonSize>;
+}
+
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    startIconId?: Nullable<string>;
+    endIconId?: Nullable<string>;
 }
 
 export class CardBlockCreateInput {
@@ -208,6 +220,7 @@ export class ImageBlockCreateInput {
     journeyId: string;
     src?: Nullable<string>;
     alt: string;
+    blurhash?: Nullable<string>;
 }
 
 export class ImageBlockUpdateInput {
@@ -245,7 +258,14 @@ export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    submitIconId?: Nullable<string>;
     submitLabel: string;
+}
+
+export class SignUpBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
 }
 
 export class StepBlockCreateInput {
@@ -319,7 +339,7 @@ export class JourneyCreateInput {
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
-    slug: string;
+    slug?: Nullable<string>;
 }
 
 export class JourneyUpdateInput {
@@ -353,6 +373,7 @@ export class VideoResponseCreateInput {
 }
 
 export interface Action {
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
 }
 
@@ -374,17 +395,20 @@ export interface Response {
 
 export class NavigateAction implements Action {
     __typename?: 'NavigateAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
 }
 
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
 
 export class NavigateToJourneyAction implements Action {
     __typename?: 'NavigateToJourneyAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
     journeyId: string;
     journey?: Nullable<Journey>;
@@ -392,6 +416,7 @@ export class NavigateToJourneyAction implements Action {
 
 export class LinkAction implements Action {
     __typename?: 'LinkAction';
+    parentBlockId: string;
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
@@ -626,7 +651,11 @@ export abstract class IMutation {
 
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): Block | Promise<Block>;
 
+    abstract blockDelete(id: string, parentBlockId: string, journeyId: string): Block[] | Promise<Block[]>;
+
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
+
+    abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 
     abstract buttonBlockUpdate(id: string, journeyId: string, input: ButtonBlockUpdateInput): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 
@@ -651,6 +680,8 @@ export abstract class IMutation {
     abstract radioQuestionBlockUpdate(id: string, journeyId: string, input: RadioQuestionBlockUpdateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
+
+    abstract signUpBlockUpdate(id: string, journeyId: string, input: SignUpBlockUpdateInput): Nullable<SignUpBlock> | Promise<Nullable<SignUpBlock>>;
 
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 

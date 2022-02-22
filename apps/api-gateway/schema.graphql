@@ -18,6 +18,7 @@ directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
 interface Action {
   gtmEventName: String
+  parentBlockId: ID!
 }
 
 interface Block {
@@ -41,11 +42,23 @@ type ButtonBlock implements Block {
   variant: ButtonVariant
 }
 
+input ButtonBlockCreateInput {
+  color: ButtonColor
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+  size: ButtonSize
+  variant: ButtonVariant
+}
+
 input ButtonBlockUpdateInput {
   color: ButtonColor
+  endIconId: ID
   label: String
   parentBlockId: ID
   size: ButtonSize
+  startIconId: ID
   variant: ButtonVariant
 }
 
@@ -256,6 +269,7 @@ type ImageBlock implements Block {
 
 input ImageBlockCreateInput {
   alt: String!
+  blurhash: String
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
@@ -311,8 +325,11 @@ input JourneyCreateInput {
   """
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
+  If not required will use title formatted with kebab-case
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
   """
-  slug: String!
+  slug: String
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
@@ -335,6 +352,7 @@ input JourneyUpdateInput {
 
 type LinkAction implements Action {
   gtmEventName: String
+  parentBlockId: ID!
   target: String
   url: String!
 }
@@ -346,11 +364,13 @@ input LinkActionInput {
 }
 
 type Mutation {
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID!): [Block!]! @join__field(graph: JOURNEYS)
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
@@ -367,6 +387,7 @@ type Mutation {
   radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
+  signUpBlockUpdate(id: ID!, input: SignUpBlockUpdateInput!, journeyId: ID!): SignUpBlock @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
@@ -387,6 +408,7 @@ closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
   gtmEventName: String
+  parentBlockId: ID!
 }
 
 input NavigateActionInput {
@@ -396,6 +418,7 @@ input NavigateActionInput {
 type NavigateToBlockAction implements Action {
   blockId: String!
   gtmEventName: String
+  parentBlockId: ID!
 }
 
 input NavigateToBlockActionInput {
@@ -407,6 +430,7 @@ type NavigateToJourneyAction implements Action {
   gtmEventName: String
   journey: Journey
   journeyId: String!
+  parentBlockId: ID!
 }
 
 input NavigateToJourneyActionInput {
@@ -501,7 +525,14 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  submitIconId: ID
   submitLabel: String!
+}
+
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 type SignUpResponse implements Response {
