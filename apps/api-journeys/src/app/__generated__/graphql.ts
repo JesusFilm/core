@@ -643,6 +643,8 @@ export class VideoResponse implements Response {
 }
 
 export abstract class IMutation {
+    abstract blockRemoveAction(id: string, journeyId: string): Block | Promise<Block>;
+
     abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): Block | Promise<Block>;
 
     abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): Block | Promise<Block>;
