@@ -34,7 +34,7 @@ export const NAVIGATE_ACTION_UPDATE = gql`
     }
   }
 `
-
+// convert this to array of obects, add one for the none option
 export enum actions {
   NavigateAction = 'Next Step',
   NavigateToBlockAction = 'Selected Card',
