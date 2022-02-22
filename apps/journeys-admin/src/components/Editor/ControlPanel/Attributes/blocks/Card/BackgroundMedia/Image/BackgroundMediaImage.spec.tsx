@@ -79,7 +79,7 @@ describe('BackgroundMediaImage', () => {
     })
 
     // Apollo fails to match mock on imageBlockCreate
-    xit('creates a new image cover block', async () => {
+    it('creates a new image cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
         ['Journey:' + journey.id]: {
@@ -107,7 +107,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -141,7 +141,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={card} />
+            <BackgroundMediaImage cardBlock={card} debounceTime={0} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -149,7 +149,6 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
-      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     })
@@ -165,6 +164,7 @@ describe('BackgroundMediaImage', () => {
       endAt: null,
       muted: false,
       autoplay: true,
+      fullsize: true,
       videoContent: {
         __typename: 'VideoGeneric',
         src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
@@ -187,7 +187,7 @@ describe('BackgroundMediaImage', () => {
       expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
     })
     // Apollo fails to match mock on imageBlockCreate
-    xit('creates a new image cover block', async () => {
+    it('creates a new image cover block', async () => {
       const videoCard: TreeBlock<CardBlock> = {
         ...card,
         coverBlockId: video.id,
@@ -230,7 +230,7 @@ describe('BackgroundMediaImage', () => {
           ]
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -288,7 +288,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={videoCard} />
+            <BackgroundMediaImage cardBlock={videoCard} debounceTime={0} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -296,7 +296,6 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
-      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -355,7 +354,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -376,7 +375,10 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            <BackgroundMediaImage
+              cardBlock={existingCoverBlock}
+              debounceTime={2}
+            />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -384,11 +386,10 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
-      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-      expect(textBox).toHaveValue(image.src)
+      await waitFor(() => expect(textBox).toHaveValue(image.src))
       const img = await getByRole('img')
-      expect(img).toHaveAttribute('src', image.src)
+      await waitFor(() => expect(img).toHaveAttribute('src', image.src))
       expect(img).toHaveAttribute('alt', image.src)
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` },

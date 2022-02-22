@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   StepBlock,
@@ -43,5 +43,12 @@ export class StepBlockResolver {
     @Args('input') input: StepBlockUpdateInput
   ): Promise<StepBlock> {
     return await this.blockService.update(id, input)
+  }
+
+  @ResolveField()
+  locked(@Parent() step: StepBlock): boolean {
+    if (step.locked != null) return step.locked
+
+    return false
   }
 }

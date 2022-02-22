@@ -36,6 +36,7 @@ describe('Video', () => {
         videoBlockCreate: {
           id: 'videoBlockId',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           title: '',
           muted: false,
@@ -99,6 +100,7 @@ describe('Video', () => {
         videoBlockCreate: {
           id: 'videoBlockId',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           title: '',
           muted: false,

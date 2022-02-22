@@ -153,6 +153,49 @@ describe('BlockService', () => {
     })
   })
 
+  describe('reorderSiblings', () => {
+    it('should update parent order', async () => {
+      service.updateAll = jest.fn().mockReturnValue([
+        { ...block, parentOrder: 0 },
+        { ...block, parentOrder: 1 }
+      ])
+      expect(
+        await service.reorderSiblings([
+          { _key: block._key, parentOrder: 2 },
+          { _key: block._key, parentOrder: 3 }
+        ])
+      ).toEqual([
+        { ...block, parentOrder: 0 },
+        { ...block, parentOrder: 1 }
+      ])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        { _key: block._key, parentOrder: 0 },
+        { _key: block._key, parentOrder: 1 }
+      ])
+    })
+  })
+
+  describe('updateChildrenParentOrder', () => {
+    it('should update parent order', async () => {
+      service.getSiblings = jest.fn().mockReturnValue([
+        { _key: block._key, parentOrder: 1 },
+        { _key: block._key, parentOrder: 2 }
+      ])
+      service.reorderSiblings = jest.fn().mockReturnValue([
+        { _key: block._key, parentOrder: 0 },
+        { _key: block._key, parentOrder: 1 }
+      ])
+      expect(await service.updateChildrenParentOrder('1', '2')).toEqual([
+        { _key: block._key, parentOrder: 0 },
+        { _key: block._key, parentOrder: 1 }
+      ])
+      expect(service.reorderSiblings).toHaveBeenCalledWith([
+        { _key: block._key, parentOrder: 1 },
+        { _key: block._key, parentOrder: 2 }
+      ])
+    })
+  })
+
   describe('removeBlockAndChildren', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(

@@ -46,25 +46,21 @@ export class BlockResolver {
     @Args('id') _key: string,
     @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
-  ): Promise<Array<Promise<Block>>> {
-    const selectedBlock: Block = await this.block(_key)
+  ): Promise<Array<{ _key: string; parentOrder: number }>> {
+    const selectedBlock: Block = await this.blockService.get(_key)
 
     if (
       selectedBlock.journeyId === journeyId &&
       selectedBlock.parentOrder != null
     ) {
-      const siblings = await this.siblings(selectedBlock)
+      const siblings = await this.blockService.getSiblings(
+        journeyId,
+        selectedBlock.parentBlockId
+      )
       siblings.splice(selectedBlock.parentOrder, 1)
       siblings.splice(parentOrder, 0, selectedBlock)
 
-      const updatedBlocks = siblings.map(async (block, index) => {
-        if (block.parentOrder !== index) {
-          return await this.updateOrder(block.id, index)
-        } else {
-          return block
-        }
-      })
-      return updatedBlocks
+      return await this.blockService.reorderSiblings(siblings)
     }
     return []
   }
