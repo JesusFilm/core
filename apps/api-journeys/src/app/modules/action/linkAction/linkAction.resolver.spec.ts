@@ -64,7 +64,7 @@ describe('LinkActionResolver', () => {
       linkActionInput
     )
     expect(service.update).toHaveBeenCalledWith(block._key, {
-      action: { ...linkActionInput }
+      action: { ...linkActionInput, parentBlockId: block.action.parentBlockId }
     })
   })
 

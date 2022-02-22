@@ -124,7 +124,10 @@ describe('NavigateToJourneyActionResolver', () => {
         navigateToJourneyInput
       )
       expect(service.update).toHaveBeenCalledWith(block._key, {
-        action: { ...navigateToJourneyInput }
+        action: {
+          ...navigateToJourneyInput,
+          parentBlockId: block.action.parentBlockId
+        }
       })
     })
   })

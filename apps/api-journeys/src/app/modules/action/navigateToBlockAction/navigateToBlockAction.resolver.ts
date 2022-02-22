@@ -6,6 +6,7 @@ import { UserInputError } from 'apollo-server-errors'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
   Action,
+  NavigateToBlockAction,
   NavigateToBlockActionInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
@@ -25,7 +26,10 @@ export class NavigateToBlockActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<{ __typename: string }>(id)
+    const block = await this.blockService.get<{
+      __typename: string
+      action: NavigateToBlockAction
+    }>(id)
 
     if (
       !includes(
@@ -38,8 +42,24 @@ export class NavigateToBlockActionResolver {
       )
     }
 
+    console.log('UPDATING!!!', block, {
+      action: {
+        ...block.action,
+        ...input,
+        journeyId: null,
+        url: null,
+        target: null
+      }
+    })
+
     return await this.blockService.update(id, {
-      action: { ...input, journeyId: null, url: null, target: null }
+      action: {
+        ...block.action,
+        ...input,
+        journeyId: null,
+        url: null,
+        target: null
+      }
     })
   }
 }
