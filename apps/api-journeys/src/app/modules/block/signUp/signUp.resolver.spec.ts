@@ -22,6 +22,7 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 1,
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
@@ -42,6 +43,7 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 1,
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
@@ -114,6 +116,12 @@ describe('SignUpBlockResolver', () => {
         blockResponse,
         blockResponse
       ])
+    })
+
+    it('returns SignUpBlock action with parentBlockId', async () => {
+      expect(await resolver.action(blockResponse as SignUpBlock)).toEqual(
+        block.action
+      )
     })
   })
 

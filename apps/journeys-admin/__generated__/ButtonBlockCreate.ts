@@ -11,11 +11,13 @@ import { ButtonBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize } from "
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -28,12 +30,14 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToJourneyAct
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: ButtonBlockCreate_buttonBlockCreate_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }

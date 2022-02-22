@@ -31,7 +31,11 @@ const allStories = [
 
 module.exports = {
   stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || allStories,
-  addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
+  addons: [
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y'
+  ],
   core: {
     builder: 'webpack5'
   },

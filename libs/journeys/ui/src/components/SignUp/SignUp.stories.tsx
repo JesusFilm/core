@@ -27,6 +27,7 @@ const signUpProps: TreeBlock<SignUpFields> = {
   submitLabel: null,
   action: {
     __typename: 'NavigateToBlockAction',
+    parentBlockId: 'signUpBlockId1',
     gtmEventName: 'gtmEventName',
     blockId: 'step2.id'
   },
