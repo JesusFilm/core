@@ -65,10 +65,7 @@ describe('NavigateToBlockActionResolver', () => {
       navigateToBlockInput
     )
     expect(service.update).toHaveBeenCalledWith(block._key, {
-      action: {
-        ...navigateToBlockInput,
-        parentBlockId: block.action.parentBlockId
-      }
+      action: { ...navigateToBlockInput }
     })
   })
 
