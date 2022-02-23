@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
 import { Conditions } from './Conditions'
 
 interface NextCardProps {
@@ -22,7 +23,9 @@ export function NextCard({
       </Box>
       <Divider />
       <Box sx={{ px: 6, py: 4 }}>
-        <Box>Conditions</Box>
+        <Typography variant="subtitle2" gutterBottom>
+          Conditions
+        </Typography>
         <Conditions />
       </Box>
     </>
