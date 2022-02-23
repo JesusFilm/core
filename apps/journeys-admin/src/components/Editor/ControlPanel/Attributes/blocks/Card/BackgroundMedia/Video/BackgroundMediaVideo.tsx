@@ -13,7 +13,6 @@ import {
   Typography
 } from '@mui/material'
 import {
-  CheckCircle,
   Create,
   DeleteOutline,
   Image as ImageIcon,
@@ -133,7 +132,6 @@ export function BackgroundMediaVideo({
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
   )
   const [videoSrc, setVideoSrc] = useState(videoBlock?.videoContent?.src)
-  const [saveState, setSaveState] = useState(false)
 
   const [imageBlock, setImageBlock] = useState(
     coverBlock?.children.find(
@@ -152,7 +150,6 @@ export function BackgroundMediaVideo({
   }
 
   const [startAt] = useState(secondsToTimeFormat(videoBlock?.startAt ?? 0))
-
   const [endAt] = useState(secondsToTimeFormat(videoBlock?.endAt ?? 0))
 
   const handleTabChange = (event, newValue): void => {
@@ -171,36 +168,35 @@ export function BackgroundMediaVideo({
     await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
-  const handleVideoSrcClick = async (): Promise<void> => {
-    setSaveState(false)
-    if (videoSrc == null) return
+  const handleVideoSrcChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const src = event.target.value
+    setVideoSrc(src)
+
+    if (src == null || src === videoBlock?.videoContent?.src) return
+
     const block =
       videoBlock == null
         ? {
             parentBlockId: cardBlock.id,
             __typename: 'VideoBlock',
-            title: videoSrc,
+            title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
             autoplay: true,
             muted: cardBlock.parentOrder === 0,
             startAt: 0,
             endAt: null,
             posterBlockId: null,
             videoContent: {
-              src: videoSrc
+              src: src
             }
           }
         : {
             ...videoBlock,
-            videoContent: { src: videoSrc }
+            title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
+            videoContent: { src: src }
           }
-    setVideoBlock(block as TreeBlock<VideoBlock>)
-    await handleChange(block as TreeBlock<VideoBlock>)
-    setSaveState(true)
-  }
-  const handleVideoSrcChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    setVideoSrc(event.target.value)
+    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
   const handleVideoDelete = async (): Promise<void> => {
@@ -455,7 +451,7 @@ export function BackgroundMediaVideo({
         {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null && (
           <Stack
             direction="row"
-            spacing={3}
+            spacing="16px"
             data-testid="videoPlaceholderStack"
           >
             <Box
@@ -491,11 +487,13 @@ export function BackgroundMediaVideo({
           disabled={
             (coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null
           }
+          data-testid="videoSettingsTab"
         ></Tab>
       </Tabs>
       <TabPanel name="videoSrc" value={tabValue} index={0}>
-        <Box sx={{ py: 3, width: '100%', textAlign: 'center' }}>
+        <Box sx={{ p: 3, textAlign: 'center' }}>
           <TextField
+            fullWidth={true}
             variant="filled"
             value={videoSrc}
             onChange={handleVideoSrcChange}
@@ -505,16 +503,6 @@ export function BackgroundMediaVideo({
               startAdornment: (
                 <InputAdornment position="start">
                   <LinkIcon></LinkIcon>
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <CheckCircle
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleVideoSrcClick}
-                    color={saveState ? 'primary' : 'secondary'}
-                    data-testid="checkCircle"
-                  ></CheckCircle>
                 </InputAdornment>
               )
             }}

@@ -58,7 +58,7 @@ const video: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   parentBlockId: 'card1.id',
   parentOrder: 0,
-  title: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  title: 'watch',
   startAt: 0,
   endAt: null,
   muted: true,
@@ -118,7 +118,7 @@ describe('BackgroundMediaVideo', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -157,7 +157,7 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={card} />
+            <BackgroundMediaVideo cardBlock={card} debounceTime={0} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -165,7 +165,6 @@ describe('BackgroundMediaVideo', () => {
       fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
-      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -250,7 +249,7 @@ describe('BackgroundMediaVideo', () => {
           ]
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -313,7 +312,7 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={videoCard} />
+            <BackgroundMediaVideo cardBlock={videoCard} debounceTime={0} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -321,7 +320,6 @@ describe('BackgroundMediaVideo', () => {
       fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
-      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -384,7 +382,7 @@ describe('BackgroundMediaVideo', () => {
           }
         }
       }))
-      const { getByRole, getByTestId } = render(
+      const { getByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -423,6 +421,7 @@ describe('BackgroundMediaVideo', () => {
                   }
                 ]
               }}
+              debounceTime={0}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -431,7 +430,6 @@ describe('BackgroundMediaVideo', () => {
       await fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
-      fireEvent.click(await getByTestId('checkCircle'))
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(textBox).toHaveValue(video.videoContent.src)
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([

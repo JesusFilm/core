@@ -184,6 +184,66 @@ export const VideoNoPoster: Story = () => {
   )
 }
 
+export const VideoSettings: Story = () => {
+  return (
+    <MockedProvider>
+      <ThemeProvider>
+        <JourneyProvider value={journey}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: {
+                ...card,
+                children: [
+                  { ...video, posterBlockId: poster.id, children: [poster] }
+                ],
+                coverBlockId: video.id
+              },
+              drawerChildren: <BackgroundMedia />,
+              drawerTitle: 'Background Media',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
+VideoSettings.play = async () => {
+  const settingsTab = await screen.getByTestId('videoSettingsTab')
+  await userEvent.click(settingsTab)
+}
+
+export const VideoSettingsNoPoster: Story = () => {
+  return (
+    <MockedProvider>
+      <ThemeProvider>
+        <JourneyProvider value={journey}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: {
+                ...card,
+                children: [video],
+                coverBlockId: video.id
+              },
+              drawerChildren: <BackgroundMedia />,
+              drawerTitle: 'Background Media',
+              drawerMobileOpen: true
+            }}
+          >
+            <Drawer />
+          </EditorProvider>
+        </JourneyProvider>
+      </ThemeProvider>
+    </MockedProvider>
+  )
+}
+VideoSettingsNoPoster.play = async () => {
+  const settingsTab = await screen.getByTestId('videoSettingsTab')
+  await userEvent.click(settingsTab)
+}
+
 export const NoImage: Story = () => (
   <MockedProvider>
     <ThemeProvider>
