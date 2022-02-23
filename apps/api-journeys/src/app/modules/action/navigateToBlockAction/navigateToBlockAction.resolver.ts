@@ -41,14 +41,19 @@ export class NavigateToBlockActionResolver {
       )
     }
 
-    return await this.blockService.update(id, {
-      action: {
-        ...input,
-        parentBlockId: block._key,
-        journeyId: null,
-        url: null,
-        target: null
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          parentBlockId: block._key,
+          journeyId: null,
+          url: null,
+          target: null
+        }
       }
-    })
+    )
+
+    return updatedBlock.action
   }
 }

@@ -52,15 +52,19 @@ export class NavigateToJourneyActionResolver {
         'This block does not support navigate to journey actions'
       )
     }
-
-    return await this.blockService.update(id, {
-      action: {
-        ...input,
-        parentBlockId: block._key,
-        blockId: null,
-        url: null,
-        target: null
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          parentBlockId: block._key,
+          blockId: null,
+          url: null,
+          target: null
+        }
       }
-    })
+    )
+
+    return updatedBlock.action
   }
 }
