@@ -10,51 +10,13 @@ import Toolbar from '@mui/material/Toolbar'
 import { VideoList } from './VideoList'
 
 export const DRAWER_WIDTH = 328
-
-interface VideoLibraryDrawerProps {
-  openDrawer: boolean
+interface VideoLibraryDrawerContentProps {
+  handleDrawerToggle: () => void
 }
 
-export function VideoLibraryDrawer({
-  openDrawer
-}: VideoLibraryDrawerProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  return smUp ? (
-    <Drawer
-      anchor="right"
-      variant="temporary"
-      open={openDrawer}
-      // onClose={toggleDrawer(false)}
-      elevation={1}
-      hideBackdrop
-      sx={{
-        display: { xs: 'none', sm: 'block' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: DRAWER_WIDTH
-        }
-      }}
-    >
-      <VideoLibraryDrawerContent />
-    </Drawer>
-  ) : (
-    <Drawer
-      anchor="bottom"
-      variant="temporary"
-      open={openDrawer}
-      // onClose={toggleDrawer(false)}
-      hideBackdrop
-      sx={{
-        display: { xs: 'block', sm: 'none' }
-      }}
-    >
-      <VideoLibraryDrawerContent />
-    </Drawer>
-  )
-}
-
-function VideoLibraryDrawerContent(): ReactElement {
+function VideoLibraryDrawerContent({
+  handleDrawerToggle
+}: VideoLibraryDrawerContentProps): ReactElement {
   return (
     <>
       <AppBar position="static" color="default">
@@ -68,14 +30,59 @@ function VideoLibraryDrawerContent(): ReactElement {
             Video Library
           </Typography>
           <IconButton
-            sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+            onClick={handleDrawerToggle}
+            sx={{ display: 'inline-flex' }}
             edge="end"
           >
             <Close />
           </IconButton>
         </Toolbar>
       </AppBar>
+      {/* search form */}
+      {/* language */}
       <VideoList />
     </>
+  )
+}
+interface VideoLibraryDrawerProps {
+  openDrawer: boolean
+  closeDrawer: () => void
+}
+
+export function VideoLibraryDrawer({
+  openDrawer,
+  closeDrawer
+}: VideoLibraryDrawerProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  return smUp ? (
+    <Drawer
+      anchor="right"
+      variant="temporary"
+      open={openDrawer}
+      elevation={1}
+      hideBackdrop
+      sx={{
+        display: { xs: 'none', sm: 'block' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: DRAWER_WIDTH
+        }
+      }}
+    >
+      <VideoLibraryDrawerContent handleDrawerToggle={closeDrawer} />
+    </Drawer>
+  ) : (
+    <Drawer
+      anchor="bottom"
+      variant="temporary"
+      open={openDrawer}
+      hideBackdrop
+      sx={{
+        display: { xs: 'block', sm: 'none' }
+      }}
+    >
+      <VideoLibraryDrawerContent handleDrawerToggle={closeDrawer} />
+    </Drawer>
   )
 }

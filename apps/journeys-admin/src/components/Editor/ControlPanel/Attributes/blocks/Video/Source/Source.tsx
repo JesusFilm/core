@@ -9,14 +9,17 @@ export function Source(): ReactElement {
   return (
     <>
       <Button
-        variant="contained"
+        variant="text"
         startIcon={<SubscriptionsRounded />}
-        size="medium"
+        size="small"
         onClick={() => setOpen(true)}
       >
-        Video Library
+        Select a Video
       </Button>
-      <VideoLibraryDrawer openDrawer={open} />
+      <VideoLibraryDrawer
+        openDrawer={open}
+        closeDrawer={() => setOpen(false)}
+      />
     </>
   )
 }
