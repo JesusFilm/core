@@ -7,7 +7,9 @@ import Typography from '@mui/material/Typography'
 import { Close } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
+import Box from '@mui/system/Box'
 import { VideoList } from './VideoList'
+import { VideoSearch } from './VideoSearch'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryDrawerContentProps {
@@ -38,7 +40,9 @@ function VideoLibraryDrawerContent({
           </IconButton>
         </Toolbar>
       </AppBar>
-      {/* search form */}
+      <Box sx={{ px: 4, pt: 4 }}>
+        <VideoSearch />
+      </Box>
       {/* language */}
       <VideoList />
     </>
