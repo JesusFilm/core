@@ -47,7 +47,8 @@ export function Conditions(): ReactElement {
         optimisticResponse: {
           stepBlockUpdate: {
             id: selectedBlock.id,
-            __typename: 'StepBlock'
+            __typename: 'StepBlock',
+            locked: !checked
           }
         }
       })
