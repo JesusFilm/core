@@ -54,6 +54,7 @@ export function BackgroundMedia(): ReactElement {
           onChange={handleTypeChange}
           aria-label="block type"
           exclusive
+          color="primary"
         >
           <ToggleButton
             value="VideoBlock"

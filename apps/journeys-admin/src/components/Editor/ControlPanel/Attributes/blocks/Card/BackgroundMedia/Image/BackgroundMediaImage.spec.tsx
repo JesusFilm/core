@@ -58,7 +58,7 @@ const image: TreeBlock<ImageBlock> = {
   parentBlockId: card.id,
   parentOrder: 0,
   src: 'https://example.com/image.jpg',
-  alt: 'https://example.com/image.jpg',
+  alt: 'image.jpg',
   width: 1920,
   height: 1080,
   blurhash: '',
@@ -266,7 +266,7 @@ describe('BackgroundMediaImage', () => {
                     journeyId: journey.id,
                     parentBlockId: card.id,
                     src: image.src,
-                    alt: image.src
+                    alt: image.alt
                   }
                 }
               },
@@ -366,7 +366,7 @@ describe('BackgroundMediaImage', () => {
                   journeyId: journey.id,
                   input: {
                     src: image.src,
-                    alt: image.src
+                    alt: image.alt
                   }
                 }
               },
@@ -390,7 +390,7 @@ describe('BackgroundMediaImage', () => {
       await waitFor(() => expect(textBox).toHaveValue(image.src))
       const img = await getByRole('img')
       await waitFor(() => expect(img).toHaveAttribute('src', image.src))
-      expect(img).toHaveAttribute('alt', image.src)
+      expect(img).toHaveAttribute('alt', image.alt)
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` },
         { __ref: `ImageBlock:${image.id}` }
