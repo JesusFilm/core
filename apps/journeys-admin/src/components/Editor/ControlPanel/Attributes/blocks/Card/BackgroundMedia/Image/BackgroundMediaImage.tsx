@@ -116,7 +116,7 @@ export function BackgroundMediaImage({
     const block = {
       ...imageBlock,
       src: src,
-      alt: src // per Vlad 26/1/22, we are hardcoding the image alt for now
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     await handleChangeDebounced(block as ImageBlock)
   }
@@ -306,7 +306,7 @@ export function BackgroundMediaImage({
                   overflow: 'hidden'
                 }}
               >
-                {imageBlock.src}
+                {imageBlock.src.replace(/(.*\/)*/, '').replace(/\?.*/, '')}
               </Typography>
             </Stack>
             <Stack direction="column" justifyContent="center">
@@ -322,12 +322,22 @@ export function BackgroundMediaImage({
         {imageBlock?.src == null && (
           <Stack
             direction="row"
-            spacing="3"
-            justifyContent="center"
+            spacing="16px"
             data-testid="imagePlaceholderStack"
           >
-            <Box sx={{ width: 55, height: 55 }}>
-              <ImageIcon></ImageIcon>
+            <Box borderRadius={2} bgcolor="#EFEFEF" height={55} width={55}>
+              <div
+                style={{
+                  height: 55,
+                  width: 55,
+                  textAlign: 'center',
+                  verticalAlign: 'middle',
+                  lineHeight: '55px',
+                  padding: '5px'
+                }}
+              >
+                <ImageIcon></ImageIcon>
+              </div>
             </Box>
             <Stack direction="column" justifyContent="center">
               <Typography variant="subtitle2">Select Image File</Typography>

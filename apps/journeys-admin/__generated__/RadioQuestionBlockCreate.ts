@@ -20,11 +20,13 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -37,12 +39,14 @@ export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyA
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -60,11 +64,13 @@ export interface RadioQuestionBlockCreate_radioOption1 {
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -77,12 +83,14 @@ export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyA
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }

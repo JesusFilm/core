@@ -50,6 +50,7 @@ export const Filled: Story = () => {
     submitLabel: 'Sign Up',
     action: {
       __typename: 'LinkAction',
+      parentBlockId: 'signup.id',
       gtmEventName: 'signup',
       url: 'https://www.google.com'
     },
