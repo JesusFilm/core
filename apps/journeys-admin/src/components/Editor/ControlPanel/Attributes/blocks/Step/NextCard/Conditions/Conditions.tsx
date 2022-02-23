@@ -1,14 +1,57 @@
 import Typography from '@mui/material/Typography'
+import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import Switch from '@mui/material/Switch'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useJourney } from '../../../../../../../../libs/context'
+import { StepBlockLockUpdate } from '../../../../../../../../../__generated__/StepBlockLockUpdate'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../../__generated__/GetJourney'
+
+export const STEP_BLOCK_LOCK_UPDATE = gql`
+  mutation StepBlockLockUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: StepBlockUpdateInput!
+  ) {
+    stepBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      locked
+    }
+  }
+`
 
 export function Conditions(): ReactElement {
-  const checked = false
+  const [stepBlockLockUpdate] = useMutation<StepBlockLockUpdate>(
+    STEP_BLOCK_LOCK_UPDATE
+  )
+
+  const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as TreeBlock<StepBlock>
+  const journey = useJourney()
+
+  const checked = selectedBlock.locked
   async function handleChange(): Promise<void> {
-    console.log('switched')
+    if (selectedBlock != null && selectedBlock.__typename === 'StepBlock') {
+      await stepBlockLockUpdate({
+        variables: {
+          id: selectedBlock.id,
+          journeyId: journey.id,
+          input: {
+            locked: !checked,
+            nextBlockId: selectedBlock.nextBlockId
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id: selectedBlock.id,
+            __typename: 'StepBlock'
+          }
+        }
+      })
+    }
   }
   return (
     <Stack>
