@@ -276,7 +276,7 @@ describe('ActionResolver', () => {
     })
   })
 
-  describe('blockRemoveAction', () => {
+  describe('blockDeleteAction', () => {
     const emptyAction = { action: null }
     beforeEach(async () => {
       const blockService = {
@@ -301,7 +301,7 @@ describe('ActionResolver', () => {
       service = await module.resolve(BlockService)
     })
     it('removes the block action', async () => {
-      await resolver.blockRemoveAction(block1._key, block1.journeyId)
+      await resolver.blockDeleteAction(block1._key, block1.journeyId)
 
       expect(service.update).toHaveBeenCalledWith(block1._key, {
         action: null

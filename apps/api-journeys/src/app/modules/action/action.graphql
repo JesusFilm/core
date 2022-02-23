@@ -52,7 +52,7 @@ input LinkActionInput {
 }
 
 extend type Mutation {
-  blockRemoveAction(id: ID!, journeyId: ID!): Block!
+  blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(
     id: ID!
     journeyId: ID!

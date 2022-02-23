@@ -24,7 +24,7 @@ export class ActionResolver {
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   @KeyAsId()
-  async blockRemoveAction(
+  async blockDeleteAction(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<Block> {
