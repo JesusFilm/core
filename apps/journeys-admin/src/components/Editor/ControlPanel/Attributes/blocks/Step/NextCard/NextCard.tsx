@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
+import { Conditions } from './Conditions'
 
 interface NextCardProps {
   id: string
@@ -13,9 +14,10 @@ export function NextCard({
   locked
 }: NextCardProps): ReactElement {
   return (
-    <>
-      <Box sx={{ px: 6, py: 4 }}>Cards</Box>
-      <Box sx={{ px: 6, py: 4 }}>Conditions</Box>
-    </>
+    <Box sx={{ px: 6, py: 4 }}>
+      <Box>Cards</Box>
+      <Box>Conditions</Box>
+      <Conditions />
+    </Box>
   )
 }
