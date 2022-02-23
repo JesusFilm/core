@@ -66,7 +66,7 @@ export function Conditions(): ReactElement {
       >
         <Box>
           <Typography variant="body1">Lock the next step</Typography>
-          <Typography variant="caption">
+          <Typography variant="caption" color="text.secondary">
             Don&apos;t allow to skip the current card
           </Typography>
         </Box>
@@ -74,7 +74,7 @@ export function Conditions(): ReactElement {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <InfoOutlinedIcon sx={{ mr: 4 }} />
-        <Typography variant="caption">
+        <Typography variant="caption" color="text.secondary">
           User can&apos;t skip interaction on the current card, like watching
           video or interacting with questions.
         </Typography>
