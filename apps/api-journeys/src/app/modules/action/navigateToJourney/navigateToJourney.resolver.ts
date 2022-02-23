@@ -39,7 +39,7 @@ export class NavigateToJourneyActionResolver {
   ): Promise<Action> {
     const block = await this.blockService.get<{
       __typename: string
-      action: NavigateToJourneyAction
+      _key: string
     }>(id)
 
     if (
@@ -55,8 +55,8 @@ export class NavigateToJourneyActionResolver {
 
     return await this.blockService.update(id, {
       action: {
-        ...block.action,
         ...input,
+        parentBlockId: block._key,
         blockId: null,
         url: null,
         target: null

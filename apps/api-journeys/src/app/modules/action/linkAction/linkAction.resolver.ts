@@ -7,7 +7,6 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 import {
   Action,
-  LinkAction,
   LinkActionInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
@@ -29,7 +28,7 @@ export class LinkActionResolver {
   ): Promise<Action> {
     const block = await this.blockService.get<{
       __typename: string
-      action: LinkAction
+      _key: string
     }>(id)
 
     if (
@@ -42,7 +41,12 @@ export class LinkActionResolver {
     }
 
     return await this.blockService.update(id, {
-      action: { ...block.action, ...input, blockId: null, journeyId: null }
+      action: {
+        ...input,
+        parentBlockId: block._key,
+        blockId: null,
+        journeyId: null
+      }
     })
   }
 }
