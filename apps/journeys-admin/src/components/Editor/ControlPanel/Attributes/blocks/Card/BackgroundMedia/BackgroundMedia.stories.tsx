@@ -19,7 +19,6 @@ import {
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 import { BackgroundMedia } from '.'
-import { cardMediaClasses } from '@mui/material'
 
 const BackgroundMediaStory = {
   ...simpleComponentConfig,
