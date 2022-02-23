@@ -89,6 +89,7 @@ export function VideoListItem({
           </Box>
         </Grid>
       </Grid>
+      {/* Language needs to be updated to render multiple languages */}
       <Chip
         icon={<TranslateRounded />}
         label={language ?? 'EN (US)'}

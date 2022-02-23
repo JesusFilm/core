@@ -13,6 +13,9 @@ export function Source(): ReactElement {
         startIcon={<SubscriptionsRounded />}
         size="small"
         onClick={() => setOpen(true)}
+        sx={{
+          mx: 'auto'
+        }}
       >
         Select a Video
       </Button>
