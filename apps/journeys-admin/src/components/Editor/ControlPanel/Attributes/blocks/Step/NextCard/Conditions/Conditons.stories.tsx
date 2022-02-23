@@ -22,6 +22,7 @@ export const Default: Story = () => {
     locked: false,
     children: []
   }
+
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock }}>
@@ -40,6 +41,7 @@ export const Locked: Story = () => {
     locked: true,
     children: []
   }
+
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock }}>

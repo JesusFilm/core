@@ -70,11 +70,23 @@ export function Conditions(): ReactElement {
             Don&apos;t allow to skip the current card
           </Typography>
         </Box>
-        <Switch checked={checked} onChange={handleChange} sx={{ ml: 'auto' }} />
+        <Switch
+          inputProps={{ 'aria-checked': checked }}
+          checked={checked}
+          onChange={handleChange}
+          sx={{ ml: 'auto' }}
+        />
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          color: 'text.secondary'
+        }}
+      >
         <InfoOutlinedIcon sx={{ mr: 4 }} />
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption">
           User can&apos;t skip interaction on the current card, like watching
           video or interacting with questions.
         </Typography>

@@ -1,5 +1,6 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
@@ -33,12 +34,14 @@ describe('Step', () => {
         children: []
       }
       const { getByText } = render(
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <Step {...step} />
-          </EditorProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <EditorProvider initialState={{ selectedBlock: step }}>
+              <Drawer />
+              <Step {...step} />
+            </EditorProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       fireEvent.click(getByText('Next Card'))
       expect(getByText('Next Card Properties')).toBeInTheDocument()
