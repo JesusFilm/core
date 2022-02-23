@@ -36,14 +36,19 @@ export class NavigateActionResolver {
       throw new UserInputError('This block does not support navigate actions')
     }
 
-    return await this.blockService.update(id, {
-      action: {
-        ...input,
-        blockId: null,
-        journeyId: null,
-        url: null,
-        target: null
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          blockId: null,
+          journeyId: null,
+          url: null,
+          target: null
+        }
       }
-    })
+    )
+
+    return updatedBlock.action
   }
 }

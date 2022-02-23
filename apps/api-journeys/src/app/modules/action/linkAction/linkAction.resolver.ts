@@ -37,8 +37,17 @@ export class LinkActionResolver {
       throw new UserInputError('This block does not support link actions')
     }
 
-    return await this.blockService.update(id, {
-      action: { ...input, blockId: null, journeyId: null }
-    })
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          blockId: null,
+          journeyId: null
+        }
+      }
+    )
+
+    return updatedBlock.action
   }
 }
