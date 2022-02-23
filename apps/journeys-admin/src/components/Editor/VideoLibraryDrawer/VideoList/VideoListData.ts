@@ -27,6 +27,13 @@ export const arclightMediaUnits = {
             url: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1631&q=80'
           }
         ]
+      },
+      trackRecordings: {
+        nodes: [
+          {
+            durationMilliseconds: 94000
+          }
+        ]
       }
     },
     {
@@ -54,6 +61,13 @@ export const arclightMediaUnits = {
           {
             visualType: 'THUMBNAIL',
             url: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
+          }
+        ]
+      },
+      trackRecordings: {
+        nodes: [
+          {
+            durationMilliseconds: 194000
           }
         ]
       }
@@ -85,6 +99,13 @@ export const arclightMediaUnits = {
             url: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
           }
         ]
+      },
+      trackRecordings: {
+        nodes: [
+          {
+            durationMilliseconds: 94000
+          }
+        ]
       }
     },
     {
@@ -112,6 +133,13 @@ export const arclightMediaUnits = {
           {
             visualType: 'THUMBNAIL',
             url: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
+          }
+        ]
+      },
+      trackRecordings: {
+        nodes: [
+          {
+            durationMilliseconds: 264000
           }
         ]
       }

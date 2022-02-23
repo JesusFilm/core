@@ -18,9 +18,22 @@ export function VideoList(): ReactElement {
       {arclightMediaUnits.nodes.map((arclight) => (
         <>
           <VideoListItem
-            title={arclight.descriptors.nodes[2].value}
-            description={arclight.descriptors.nodes[1].value}
-            poster={arclight.visuals.nodes[0].url}
+            title={
+              arclight.descriptors.nodes.find(
+                (type) => type.descriptorType === 'TITLE'
+              )?.value
+            }
+            description={
+              arclight.descriptors.nodes.find(
+                (type) => type.descriptorType === 'SHORT_DESCRIPTION'
+              )?.value
+            }
+            poster={
+              arclight.visuals.nodes.find(
+                (type) => type.visualType === 'THUMBNAIL'
+              )?.url
+            }
+            time={arclight.trackRecordings.nodes[0].durationMilliseconds}
           />
           <Divider />
         </>
