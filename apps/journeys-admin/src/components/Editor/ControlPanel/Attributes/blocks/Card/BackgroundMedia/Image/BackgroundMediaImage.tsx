@@ -354,12 +354,12 @@ export function BackgroundMediaImage({
           <Stack direction="column">
             <Formik
               initialValues={{
-                src: imageBlock?.src
+                src: imageBlock?.src ?? ''
               }}
               validationSchema={srcSchema}
               onSubmit={noop}
             >
-              {({ values, touched, errors, handleChange }) => (
+              {({ values, errors, handleChange }) => (
                 <Form>
                   <TextField
                     id="src"
@@ -374,8 +374,8 @@ export function BackgroundMediaImage({
                       errors.src == null &&
                         handleSrcChange(e as ChangeEvent<HTMLInputElement>)
                     }}
-                    helperText={touched.src === true && errors.src}
-                    error={touched.src === true && Boolean(errors.src)}
+                    helperText={errors.src}
+                    error={Boolean(errors.src)}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
