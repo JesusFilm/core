@@ -10,6 +10,8 @@ import {
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
 import { debounce, reject } from 'lodash'
+import { object, string } from 'yup'
+import { Formik } from 'formik'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -106,19 +108,20 @@ export function BackgroundMediaImage({
   const [imageSrc, setImageSrc] = useState(imageBlock?.src)
 
   const handleSrcChange = async (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLFormElement>
   ): Promise<void> => {
+    console.log(event.target.value)
     const src = event.target.value
     setImageSrc(src)
 
-    if (src == null || src === imageBlock?.src) return
+    // if (src == null || src === imageBlock?.src) return
 
-    const block = {
-      ...imageBlock,
-      src: src,
-      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
-    }
-    await handleChangeDebounced(block as ImageBlock)
+    // const block = {
+    //   ...imageBlock,
+    //   src: src,
+    //   alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    // }
+    // await handleChangeDebounced(block as ImageBlock)
   }
 
   const handleImageDelete = async (): Promise<void> => {
@@ -271,6 +274,10 @@ export function BackgroundMediaImage({
 
   const handleChangeDebounced = debounce(handleChange, debounceTime)
 
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
+
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
@@ -350,22 +357,35 @@ export function BackgroundMediaImage({
       <Box sx={{ p: 3 }}>
         <Box sx={{ px: 'auto' }}>
           <Stack direction="column">
-            <TextField
-              id="imageSrc"
-              name="src"
-              variant="filled"
-              value={imageSrc}
-              onChange={handleSrcChange}
-              data-testid="imgSrcTextField"
-              label="Paste URL of image..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LinkIcon></LinkIcon>
-                  </InputAdornment>
-                )
+            <Formik
+              initialValues={{
+                src: imageSrc
               }}
-            ></TextField>
+              onSubmit={async () => ({})}
+              validationSchema={imageSrc === undefined ? srcSchema : undefined}
+            >
+              {({ ...formikProps }) => (
+                <form onChange={handleSrcChange}>
+                  <TextField
+                    {...formikProps}
+                    id="imageSrc"
+                    name="src"
+                    variant="filled"
+                    value={imageSrc}
+                    data-testid="imgSrcTextField"
+                    label="Paste URL of image..."
+                    fullWidth={true}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LinkIcon></LinkIcon>
+                        </InputAdornment>
+                      )
+                    }}
+                  ></TextField>
+                </form>
+              )}
+            </Formik>
             <Typography variant="caption">
               Make sure image address is permanent
             </Typography>
