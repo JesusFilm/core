@@ -24,6 +24,7 @@ import Image from 'next/image'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import TimeField from 'react-simple-timefield'
 import { debounce, reject } from 'lodash'
+import { object, string } from 'yup'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -132,6 +133,7 @@ export function BackgroundMediaVideo({
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
   )
   const [videoSrc, setVideoSrc] = useState(videoBlock?.videoContent?.src)
+  const [srcValidationText, setSrcValidationText] = useState('')
 
   const [imageBlock, setImageBlock] = useState(
     coverBlock?.children.find(
@@ -168,35 +170,45 @@ export function BackgroundMediaVideo({
     await handleChangeDebounced(block as TreeBlock<VideoBlock>)
   }
 
+  const srcSchema = object().shape({
+    src: string().url('Please enter a valid url').required('Required')
+  })
+
   const handleVideoSrcChange = async (
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const src = event.target.value
     setVideoSrc(src)
 
-    if (src == null || src === videoBlock?.videoContent?.src) return
-
-    const block =
-      videoBlock == null
-        ? {
-            parentBlockId: cardBlock.id,
-            __typename: 'VideoBlock',
-            title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
-            autoplay: true,
-            muted: cardBlock.parentOrder === 0,
-            startAt: 0,
-            endAt: null,
-            posterBlockId: null,
-            videoContent: {
-              src: src
-            }
-          }
-        : {
-            ...videoBlock,
-            title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
-            videoContent: { src: src }
-          }
-    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
+    await srcSchema
+      .validate({ src: src })
+      .then(async () => {
+        setSrcValidationText('')
+        const block =
+          videoBlock == null
+            ? {
+                parentBlockId: cardBlock.id,
+                __typename: 'VideoBlock',
+                title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
+                autoplay: true,
+                muted: cardBlock.parentOrder === 0,
+                startAt: 0,
+                endAt: null,
+                posterBlockId: null,
+                videoContent: {
+                  src: src
+                }
+              }
+            : {
+                ...videoBlock,
+                title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
+                videoContent: { src: src }
+              }
+        await handleChangeDebounced(block as TreeBlock<VideoBlock>)
+      })
+      .catch((err) => {
+        setSrcValidationText(err.message)
+      })
   }
 
   const handleVideoDelete = async (): Promise<void> => {
@@ -499,6 +511,7 @@ export function BackgroundMediaVideo({
             onChange={handleVideoSrcChange}
             data-testid="videoSrcTextField"
             label="Paste URL of video..."
+            helperText={srcValidationText}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
