@@ -25,7 +25,10 @@ export class NavigateToBlockActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<{ __typename: string }>(id)
+    const block = await this.blockService.get<{
+      __typename: string
+      _key: string
+    }>(id)
 
     if (
       !includes(
@@ -43,6 +46,7 @@ export class NavigateToBlockActionResolver {
       {
         action: {
           ...input,
+          parentBlockId: block._key,
           journeyId: null,
           url: null,
           target: null

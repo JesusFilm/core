@@ -26,7 +26,10 @@ export class LinkActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: LinkActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<{ __typename: string }>(id)
+    const block = await this.blockService.get<{
+      __typename: string
+      _key: string
+    }>(id)
 
     if (
       !includes(
@@ -42,6 +45,7 @@ export class LinkActionResolver {
       {
         action: {
           ...input,
+          parentBlockId: block._key,
           blockId: null,
           journeyId: null
         }
