@@ -79,12 +79,10 @@ export const CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE = gql`
 `
 interface BackgroundMediaImageProps {
   cardBlock: TreeBlock<CardBlock>
-  debounceTime?: number
 }
 
 export function BackgroundMediaImage({
-  cardBlock,
-  debounceTime = 2000
+  cardBlock
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
@@ -120,7 +118,7 @@ export function BackgroundMediaImage({
       src: src,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
-    await handleChangeDebounced(block as ImageBlock)
+    await handleChange(block as ImageBlock)
   }
 
   const handleImageDelete = async (): Promise<void> => {
@@ -271,8 +269,6 @@ export function BackgroundMediaImage({
     }
   }
 
-  const handleChangeDebounced = debounce(handleChange, debounceTime)
-
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
@@ -359,7 +355,7 @@ export function BackgroundMediaImage({
               validationSchema={srcSchema}
               onSubmit={noop}
             >
-              {({ values, errors, handleChange }) => (
+              {({ values, touched, errors, handleChange, handleBlur }) => (
                 <Form>
                   <TextField
                     id="src"
@@ -369,13 +365,14 @@ export function BackgroundMediaImage({
                     label="Paste URL of image..."
                     fullWidth
                     value={values.src}
-                    onChange={(e) => {
-                      handleChange(e)
+                    onChange={handleChange}
+                    onBlur={(e) => {
+                      handleBlur(e)
                       errors.src == null &&
                         handleSrcChange(e as ChangeEvent<HTMLInputElement>)
                     }}
-                    helperText={errors.src}
-                    error={Boolean(errors.src)}
+                    helperText={touched.src === true && errors.src}
+                    error={touched.src === true && Boolean(errors.src)}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
