@@ -365,12 +365,12 @@ input LinkActionInput {
 
 type Mutation {
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID!): [Block!]! @join__field(graph: JOURNEYS)
-  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): LinkAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): NavigateAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
