@@ -2,14 +2,13 @@ import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { withReactContext } from 'storybook-react-context'
 
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../../../libs/context'
 import {
   ThemeMode,
@@ -21,17 +20,12 @@ import { Drawer } from '../../../../../Drawer'
 import { BackgroundMedia } from '.'
 
 const BackgroundMediaStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: BackgroundMedia,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundMedia',
-  decorators: [withReactContext],
   parameters: {
-    ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      viewports: [360, 600]
-    }
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
   }
 }
 
