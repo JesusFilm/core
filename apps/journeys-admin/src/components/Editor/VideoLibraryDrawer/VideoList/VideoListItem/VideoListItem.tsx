@@ -41,37 +41,43 @@ export function VideoListItem({
     )
   }, [time])
 
+  // use the listItem Mui component
+  // make it fullWidth
+
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        px: 6,
-        py: 4
+        cursor: 'pointer'
       }}
+      role="Button"
     >
-      <Grid container spacing={2}>
+      <Grid container spacing={4}>
         <Grid item xs={8}>
           <Typography variant="subtitle2">{title}</Typography>
           <Typography variant="caption">{description}</Typography>
         </Grid>
         <Grid item xs={4}>
           <Box
-            sx={{ borderRadius: 2, overflow: 'hidden', position: 'relative' }}
+            sx={{
+              borderRadius: 2,
+              width: 79,
+              height: 79,
+              overflow: 'hidden',
+              position: 'relative'
+            }}
           >
             {poster != null && (
               <NextImage
                 src={poster}
                 alt={title}
-                height={79}
-                width={79}
+                layout="fill"
                 objectFit="cover"
               />
             )}
             <Box
               sx={{
                 display: 'flex',
-                backgroundColor: 'secondary.dark',
+                backgroundColor: 'rgba(0, 0, 0, 0.35)',
                 px: 1,
                 height: 18,
                 borderRadius: 2,
@@ -90,11 +96,14 @@ export function VideoListItem({
         </Grid>
       </Grid>
       {/* Language needs to be updated to render multiple languages */}
-      <Chip
-        icon={<TranslateRounded />}
-        label={language ?? 'EN (US)'}
-        sx={{ fontWeight: 400, fontSize: 12, width: 98 }}
-      />
+      {/* Put in a box */}
+      <Box>
+        <Chip
+          icon={<TranslateRounded />}
+          size="small"
+          label={language ?? 'EN (US)'}
+        />
+      </Box>
     </Box>
   )
 }

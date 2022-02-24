@@ -24,11 +24,14 @@ export function VideoList(): ReactElement {
     setTimeout(() => setIsLoading(false), 1500)
   }
 
+  // use the MUI List
+
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        alignContent: 'center',
         px: 4,
         py: 4
       }}

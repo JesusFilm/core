@@ -7,9 +7,7 @@ import Typography from '@mui/material/Typography'
 import { Close } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
-import Box from '@mui/system/Box'
 import { VideoList } from './VideoList'
-import { VideoSearch } from './VideoSearch'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryDrawerContentProps {
@@ -40,9 +38,7 @@ function VideoLibraryDrawerContent({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box sx={{ px: 4, pt: 4 }}>
-        <VideoSearch />
-      </Box>
+      {/* search */}
       {/* language */}
       <VideoList />
     </>
@@ -50,14 +46,17 @@ function VideoLibraryDrawerContent({
 }
 interface VideoLibraryDrawerProps {
   openDrawer: boolean
-  closeDrawer: () => void
+  onClose: () => void,
+  onSelect: (id: string) => void
 }
 
 export function VideoLibraryDrawer({
   openDrawer,
-  closeDrawer
+  onClose
 }: VideoLibraryDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  // should have an onSelect
 
   return smUp ? (
     <Drawer
@@ -74,7 +73,7 @@ export function VideoLibraryDrawer({
         }
       }}
     >
-      <VideoLibraryDrawerContent handleDrawerToggle={closeDrawer} />
+      <VideoLibraryDrawerContent handleDrawerToggle={onClose} />
     </Drawer>
   ) : (
     <Drawer
@@ -86,7 +85,7 @@ export function VideoLibraryDrawer({
         display: { xs: 'block', sm: 'none' }
       }}
     >
-      <VideoLibraryDrawerContent handleDrawerToggle={closeDrawer} />
+      <VideoLibraryDrawerContent handleDrawerToggle={onClose} />
     </Drawer>
   )
 }
