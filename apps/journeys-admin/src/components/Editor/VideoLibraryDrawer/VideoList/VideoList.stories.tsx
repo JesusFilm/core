@@ -3,9 +3,9 @@ import { simpleComponentConfig } from '../../../../libs/storybook'
 import { VideoList } from '.'
 
 const VideoListStory = {
-    ...simpleComponentConfig,
-    component: VideoList,
-    title: 'Journeys-Admin/Editor/VideoLibrary/VideoList'
+  ...simpleComponentConfig,
+  component: VideoList,
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoList'
 }
 
 const Template: Story = () => <VideoList />

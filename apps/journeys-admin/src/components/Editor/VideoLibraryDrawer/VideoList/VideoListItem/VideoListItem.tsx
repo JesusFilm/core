@@ -41,52 +41,64 @@ export function VideoListItem({
     )
   }, [time])
 
-  // only have one line of text and the rest are dots
-
   return (
-    <>
-      <ListItemButton>
-        <ListItemText
-          primary={title}
-          secondary={description}
-        />
-        {/* recreate grid */}
-        {poster != null &&
-          <Box>
-            <Box
+    <ListItemButton
+      sx={{
+        display: 'grid',
+        gap: 1,
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateRows: 'auto',
+        gridTemplateAreas: `"Text Text Text Image" 
+        "Language Language Language Language"`
+      }}
+    >
+      <ListItemText
+        primary={title}
+        secondary={description}
+        sx={{ gridArea: 'Text' }}
+      />
+      {poster != null && (
+        <Box>
+          <Box
+            sx={{
+              gridArea: 'Image',
+              justifySelf: 'end',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'flex-end',
+              p: 1,
+              height: 79,
+              width: 79,
+              borderRadius: 2,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundImage: `url(${poster})`
+            }}
+          >
+            <Typography
+              component="div"
+              variant="caption"
               sx={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'flex-end',
-                p: 1,
-                height: 79,
-                width: 79,
-                borderRadius: 2,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
-                backgroundImage: `url(${poster})`
-              }}
-            >
-              <Typography component="div" variant="caption" sx={{
                 color: 'background.paper',
                 backgroundColor: 'rgba(0, 0, 0, 0.35)',
                 px: 1,
-                borderRadius: 2,
-              }}>
-                {convertedTime}
-              </Typography>
-            </Box>
-          </Box>}
-        {/* update to display multiple lanaguages */}
-        <Box pb={2}>
-          <Chip
-            icon={<TranslateRounded />}
-            size="small"
-            label={language ?? 'EN (US)'}
-          />
+                borderRadius: 2
+              }}
+            >
+              {convertedTime}
+            </Typography>
+          </Box>
         </Box>
-      </ListItemButton>
-    </>
+      )}
+      {/* update to display multiple lanaguages */}
+      <Box sx={{ py: 2, gridArea: 'Language' }}>
+        <Chip
+          icon={<TranslateRounded />}
+          size="small"
+          label={language ?? 'EN (US)'}
+          sx={{ mr: 1 }}
+        />
+      </Box>
+    </ListItemButton>
   )
 }
-
