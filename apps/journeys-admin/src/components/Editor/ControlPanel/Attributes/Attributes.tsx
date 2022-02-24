@@ -7,7 +7,6 @@ import { ReactElement, useEffect } from 'react'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
 import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
-import { Video } from './blocks/Video'
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
   const withMoveButtons = (block: ReactElement): ReactElement => {
@@ -42,10 +41,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       return step.id === selected.parentBlockId ? (
         <p>Video Attributes</p>
       ) : (
-        // create a video block for editing
-        // add one attribute block that displays video attributes in drawer
-        // then add VideoLibrary button in the drawer that opens the video drawer tab
-        withMoveButtons(<Video {...selected} />)
+        withMoveButtons(<p>Video Attributes</p>)
       )
     }
 
@@ -113,7 +109,7 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
           selected.__typename === 'StepBlock'
             ? 'Card'
             : selected.__typename.replace('Block', '')
-        } Properties`}</MuiTypography>
+          } Properties`}</MuiTypography>
       </Box>
     </>
   )
