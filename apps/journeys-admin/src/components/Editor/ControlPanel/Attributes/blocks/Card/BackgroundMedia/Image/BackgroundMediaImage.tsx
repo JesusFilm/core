@@ -141,7 +141,7 @@ export function BackgroundMediaImage({
     await blockDelete({
       variables: {
         id: coverBlock.id,
-        parentBlockId: coverBlock.parentBlockId,
+        parentBlockId: cardBlock.parentBlockId,
         journeyId: journeyId
       },
       update(cache, { data }) {
