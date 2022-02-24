@@ -45,7 +45,7 @@ export function VideoListItem({
     <ListItemButton
       sx={{
         display: 'grid',
-        gap: 5,
+        columnGap: 3,
         gridTemplateColumns: 'repeat(4, 1fr)',
         gridTemplateRows: 'auto',
         gridTemplateAreas: `"Text Text Text Image" 

@@ -10,8 +10,6 @@ const VideoLibraryStory = {
 
 const Template: Story = ({ openLibrary, onClose, onSelect }) => (
   <VideoLibrary
-    openLibrary={openLibrary}
-    onClose={onClose}
     onSelect={onSelect}
   />
 )
