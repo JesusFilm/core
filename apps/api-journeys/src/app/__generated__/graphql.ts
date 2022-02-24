@@ -645,13 +645,13 @@ export class VideoResponse implements Response {
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
-    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): NavigateAction | Promise<NavigateAction>;
 
-    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
 
-    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): NavigateToJourneyAction | Promise<NavigateToJourneyAction>;
 
-    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): Block | Promise<Block>;
+    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
 
     abstract blockDelete(id: string, parentBlockId: string, journeyId: string): Block[] | Promise<Block[]>;
 
