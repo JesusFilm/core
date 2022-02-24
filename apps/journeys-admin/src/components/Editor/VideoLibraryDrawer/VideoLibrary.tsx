@@ -10,13 +10,13 @@ import Toolbar from '@mui/material/Toolbar'
 import { VideoList } from './VideoList'
 
 export const DRAWER_WIDTH = 328
-interface VideoLibraryDrawerContentProps {
-  handleDrawerToggle: () => void
+interface VideoLibraryContentProps {
+  handleLibraryToggle: () => void
 }
 
-function VideoLibraryDrawerContent({
-  handleDrawerToggle
-}: VideoLibraryDrawerContentProps): ReactElement {
+function VideoLibraryContent({
+  handleLibraryToggle
+}: VideoLibraryContentProps): ReactElement {
   return (
     <>
       <AppBar position="static" color="default">
@@ -30,7 +30,7 @@ function VideoLibraryDrawerContent({
             Video Library
           </Typography>
           <IconButton
-            onClick={handleDrawerToggle}
+            onClick={handleLibraryToggle}
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
@@ -44,16 +44,16 @@ function VideoLibraryDrawerContent({
     </>
   )
 }
-interface VideoLibraryDrawerProps {
-  openDrawer: boolean
-  onClose: () => void,
+interface VideoLibraryProps {
+  openLibrary: boolean
+  onClose: () => void
   onSelect: (id: string) => void
 }
 
-export function VideoLibraryDrawer({
-  openDrawer,
+export function VideoLibrary({
+  openLibrary,
   onClose
-}: VideoLibraryDrawerProps): ReactElement {
+}: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   // should have an onSelect
@@ -62,7 +62,7 @@ export function VideoLibraryDrawer({
     <Drawer
       anchor="right"
       variant="temporary"
-      open={openDrawer}
+      open={openLibrary}
       elevation={1}
       hideBackdrop
       sx={{
@@ -73,19 +73,19 @@ export function VideoLibraryDrawer({
         }
       }}
     >
-      <VideoLibraryDrawerContent handleDrawerToggle={onClose} />
+      <VideoLibraryContent handleLibraryToggle={onClose} />
     </Drawer>
   ) : (
     <Drawer
       anchor="bottom"
       variant="temporary"
-      open={openDrawer}
+      open={openLibrary}
       hideBackdrop
       sx={{
         display: { xs: 'block', sm: 'none' }
       }}
     >
-      <VideoLibraryDrawerContent handleDrawerToggle={onClose} />
+      <VideoLibraryContent handleLibraryToggle={onClose} />
     </Drawer>
   )
 }

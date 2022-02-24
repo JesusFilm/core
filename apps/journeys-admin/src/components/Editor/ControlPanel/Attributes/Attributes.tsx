@@ -109,7 +109,7 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
           selected.__typename === 'StepBlock'
             ? 'Card'
             : selected.__typename.replace('Block', '')
-          } Properties`}</MuiTypography>
+        } Properties`}</MuiTypography>
       </Box>
     </>
   )

@@ -1,1 +1,1 @@
-export { VideoLibraryDrawer } from './VideoLibraryDrawer'
+export { VideoLibrary } from './VideoLibrary'

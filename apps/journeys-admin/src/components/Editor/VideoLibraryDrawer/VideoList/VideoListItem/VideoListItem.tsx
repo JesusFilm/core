@@ -2,15 +2,15 @@ import { ReactElement, useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
-import Grid from '@mui/material/Grid'
-import NextImage from 'next/image'
 import Chip from '@mui/material/Chip'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemButton from '@mui/material/ListItemButton'
 
 interface VideoListItemProps {
   title?: string
   description?: string
   poster?: string
-  time?: number
+  time: number
   language?: string
 }
 
@@ -24,9 +24,9 @@ export function VideoListItem({
   const [convertedTime, setConvertedTime] = useState<string>()
 
   useEffect((): void => {
-    let seconds = Math.floor((time / 1000) % 60)
-    let minutes = Math.floor((time / (1000 * 60)) % 60)
-    let hours = Math.floor((time / (1000 * 60 * 60)) % 24)
+    let seconds = Math.floor((time % 60000) / 1000)
+    let minutes = Math.floor(time / 60000)
+    let hours = Math.floor(minutes / 60)
 
     hours = hours < 10 ? 0 + hours : hours
     minutes = minutes < 10 ? 0 + minutes : minutes
@@ -41,69 +41,52 @@ export function VideoListItem({
     )
   }, [time])
 
-  // use the listItem Mui component
-  // make it fullWidth
+  // only have one line of text and the rest are dots
 
   return (
-    <Box
-      sx={{
-        cursor: 'pointer'
-      }}
-      role="Button"
-    >
-      <Grid container spacing={4}>
-        <Grid item xs={8}>
-          <Typography variant="subtitle2">{title}</Typography>
-          <Typography variant="caption">{description}</Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Box
-            sx={{
-              borderRadius: 2,
-              width: 79,
-              height: 79,
-              overflow: 'hidden',
-              position: 'relative'
-            }}
-          >
-            {poster != null && (
-              <NextImage
-                src={poster}
-                alt={title}
-                layout="fill"
-                objectFit="cover"
-              />
-            )}
+    <>
+      <ListItemButton>
+        <ListItemText
+          primary={title}
+          secondary={description}
+        />
+        {/* recreate grid */}
+        {poster != null &&
+          <Box>
             <Box
               sx={{
                 display: 'flex',
-                backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                px: 1,
-                height: 18,
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
+                p: 1,
+                height: 79,
+                width: 79,
                 borderRadius: 2,
-                position: 'absolute',
-                bottom: 4,
-                right: 4,
-                zIndex: 1,
-                alignItems: 'center'
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+                backgroundImage: `url(${poster})`
               }}
             >
-              <Typography variant="caption" sx={{ color: '#ffffff' }}>
+              <Typography component="div" variant="caption" sx={{
+                color: 'background.paper',
+                backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                px: 1,
+                borderRadius: 2,
+              }}>
                 {convertedTime}
               </Typography>
             </Box>
-          </Box>
-        </Grid>
-      </Grid>
-      {/* Language needs to be updated to render multiple languages */}
-      {/* Put in a box */}
-      <Box>
-        <Chip
-          icon={<TranslateRounded />}
-          size="small"
-          label={language ?? 'EN (US)'}
-        />
-      </Box>
-    </Box>
+          </Box>}
+        {/* update to display multiple lanaguages */}
+        <Box pb={2}>
+          <Chip
+            icon={<TranslateRounded />}
+            size="small"
+            label={language ?? 'EN (US)'}
+          />
+        </Box>
+      </ListItemButton>
+    </>
   )
 }
+

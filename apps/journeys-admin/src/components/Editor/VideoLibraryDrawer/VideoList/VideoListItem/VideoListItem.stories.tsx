@@ -1,26 +1,21 @@
 import { Story, Meta } from '@storybook/react'
-import Box from '@mui/system/Box'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { VideoListItem } from '.'
 
 const VideoListItemStory = {
   ...simpleComponentConfig,
   component: VideoListItem,
-  title: 'Journeys-Admin/Editor/VideoLibraryDrawer/VideoList/VideoListItem'
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoList/VideoListItem'
 }
 
 const Template: Story = ({ ...args }) => (
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      px: 4,
-      py: 4,
-      width: 324
-    }}
-  >
-    <VideoListItem {...args} />
-  </Box>
+  <VideoListItem
+    title={args.title}
+    description={args.description}
+    poster={args.poster}
+    time={args.time}
+    language={args.language}
+  />
 )
 
 export const Default = Template.bind({})
