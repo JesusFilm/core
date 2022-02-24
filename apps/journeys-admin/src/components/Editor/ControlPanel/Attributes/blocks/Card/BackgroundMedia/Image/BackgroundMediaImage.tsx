@@ -9,7 +9,7 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { debounce, noop, reject } from 'lodash'
+import { noop, reject } from 'lodash'
 import { object, string } from 'yup'
 import { Formik, Form } from 'formik'
 
