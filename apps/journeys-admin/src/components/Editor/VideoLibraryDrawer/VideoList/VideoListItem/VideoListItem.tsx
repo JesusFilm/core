@@ -45,7 +45,7 @@ export function VideoListItem({
     <ListItemButton
       sx={{
         display: 'grid',
-        gap: 1,
+        gap: 5,
         gridTemplateColumns: 'repeat(4, 1fr)',
         gridTemplateRows: 'auto',
         gridTemplateAreas: `"Text Text Text Image" 
@@ -55,6 +55,13 @@ export function VideoListItem({
       <ListItemText
         primary={title}
         secondary={description}
+        secondaryTypographyProps={{
+          style: {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }
+        }}
         sx={{ gridArea: 'Text' }}
       />
       {poster != null && (
