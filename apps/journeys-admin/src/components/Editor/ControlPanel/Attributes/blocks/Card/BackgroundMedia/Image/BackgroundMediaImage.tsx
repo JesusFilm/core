@@ -345,7 +345,7 @@ export function BackgroundMediaImage({
         )}
       </Box>
 
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ py: 3, px: 6 }}>
         <Box sx={{ px: 'auto' }}>
           <Stack direction="column">
             <Formik
@@ -371,7 +371,11 @@ export function BackgroundMediaImage({
                       errors.src == null &&
                         handleSrcChange(e as ChangeEvent<HTMLInputElement>)
                     }}
-                    helperText={touched.src === true && errors.src}
+                    helperText={
+                      touched.src === true
+                        ? errors.src
+                        : 'Make sure image address is permanent'
+                    }
                     error={touched.src === true && Boolean(errors.src)}
                     InputProps={{
                       startAdornment: (
@@ -384,9 +388,6 @@ export function BackgroundMediaImage({
                 </Form>
               )}
             </Formik>
-            <Typography variant="caption">
-              Make sure image address is permanent
-            </Typography>
           </Stack>
         </Box>
       </Box>
