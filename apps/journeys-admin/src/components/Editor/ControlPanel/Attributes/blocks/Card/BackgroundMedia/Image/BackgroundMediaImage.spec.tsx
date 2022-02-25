@@ -470,7 +470,7 @@ describe('BackgroundMediaImage', () => {
         { __ref: `CardBlock:${card.id}` }
       ])
     })
-    it('displays Required error message', async () => {
+    it('displays validation messages ', async () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
@@ -484,16 +484,6 @@ describe('BackgroundMediaImage', () => {
       })
       fireEvent.blur(textBox)
       await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-    })
-    it('displays url validation error message', async () => {
-      const { getByRole, getByText } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: 'example.com/123' }
       })
