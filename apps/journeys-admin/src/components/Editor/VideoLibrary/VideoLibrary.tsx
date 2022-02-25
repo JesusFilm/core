@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
@@ -7,8 +7,6 @@ import Typography from '@mui/material/Typography'
 import { Close } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
-import Button from '@mui/material/Button'
-import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
 import { VideoList } from './VideoList'
 
 export const DRAWER_WIDTH = 328
@@ -47,30 +45,16 @@ function VideoLibraryContent({
   )
 }
 interface VideoLibraryProps {
+  open: boolean
+  onClose: () => void
   onSelect: (id: string) => void
 }
 
-export function VideoLibrary({ onSelect }: VideoLibraryProps): ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
+export function VideoLibrary({ open, onClose, onSelect }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  const handleLibraryToggle = (): void => {
-    setOpen(!open)
-  }
-
-  console.log(onSelect)
 
   return (
     <>
-      <Button
-        variant="text"
-        startIcon={<SubscriptionsRounded />}
-        size="small"
-        onClick={() => setOpen(true)}
-        sx={{ px: 2 }}
-      >
-        Select a Video
-      </Button>
       {smUp ? (
         <Drawer
           anchor="right"
@@ -86,7 +70,7 @@ export function VideoLibrary({ onSelect }: VideoLibraryProps): ReactElement {
             }
           }}
         >
-          <VideoLibraryContent handleLibraryToggle={handleLibraryToggle} />
+          <VideoLibraryContent handleLibraryToggle={onClose} />
         </Drawer>
       ) : (
         <Drawer
@@ -98,7 +82,7 @@ export function VideoLibrary({ onSelect }: VideoLibraryProps): ReactElement {
             display: { xs: 'block', sm: 'none' }
           }}
         >
-          <VideoLibraryContent handleLibraryToggle={handleLibraryToggle} />
+          <VideoLibraryContent handleLibraryToggle={onClose} />
         </Drawer>
       )}
     </>

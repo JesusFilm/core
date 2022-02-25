@@ -8,14 +8,19 @@ const VideoLibraryStory = {
   title: 'Journeys-Admin/Editor/VideoLibrary'
 }
 
-const Template: Story = () => {
-  const onSelect = (id: string): void => {
-    console.log(id)
-  }
-
-  return <VideoLibrary onSelect={onSelect} />
-}
+const Template: Story = ({ openLibrary, onClose, onSelect }) => (
+  <VideoLibrary
+    open={openLibrary}
+    onClose={onClose}
+    onSelect={onSelect}
+  />
+)
 
 export const Default = Template.bind({})
+Default.args = {
+  openLibrary: true,
+  onClose: () => console.log('onClose'),
+  onSelect: (id: string) => console.log('onSelect', id)
+}
 
 export default VideoLibraryStory as Meta
