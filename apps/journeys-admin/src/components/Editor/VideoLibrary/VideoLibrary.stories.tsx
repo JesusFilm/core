@@ -1,24 +1,20 @@
 import { Story, Meta } from '@storybook/react'
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { VideoLibrary } from '.'
 
 const VideoLibraryStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: VideoLibrary,
   title: 'Journeys-Admin/Editor/VideoLibrary'
 }
 
-const Template: Story = ({ openLibrary, onClose, onSelect }) => (
-  <VideoLibrary
-    open={openLibrary}
-    onClose={onClose}
-    onSelect={onSelect}
-  />
+const Template: Story = ({ open, onClose, onSelect }) => (
+  <VideoLibrary open={open} onClose={onClose} onSelect={onSelect} />
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  openLibrary: true,
+  open: true,
   onClose: () => console.log('onClose'),
   onSelect: (id: string) => console.log('onSelect', id)
 }

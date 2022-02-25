@@ -17,6 +17,8 @@ interface VideoLibraryContentProps {
 function VideoLibraryContent({
   handleLibraryToggle
 }: VideoLibraryContentProps): ReactElement {
+  // should we make the appbar it's own component that accepts a title prop?
+  // this "drawer header" code is going to be repeated three times
   return (
     <>
       <AppBar position="static" color="default">
@@ -50,8 +52,14 @@ interface VideoLibraryProps {
   onSelect: (id: string) => void
 }
 
-export function VideoLibrary({ open, onClose, onSelect }: VideoLibraryProps): ReactElement {
+export function VideoLibrary({
+  open,
+  onClose,
+  onSelect
+}: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  // onSelectReturns the chosen videos ID
 
   return (
     <>
@@ -79,7 +87,10 @@ export function VideoLibrary({ open, onClose, onSelect }: VideoLibraryProps): Re
           open={open}
           hideBackdrop
           sx={{
-            display: { xs: 'block', sm: 'none' }
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': {
+              height: '100%'
+            }
           }}
         >
           <VideoLibraryContent handleLibraryToggle={onClose} />

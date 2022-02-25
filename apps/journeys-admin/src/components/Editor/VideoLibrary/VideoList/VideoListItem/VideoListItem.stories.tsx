@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { VideoListItem } from '.'
 
 const VideoListItemStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: VideoListItem,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoList/VideoListItem'
 }
