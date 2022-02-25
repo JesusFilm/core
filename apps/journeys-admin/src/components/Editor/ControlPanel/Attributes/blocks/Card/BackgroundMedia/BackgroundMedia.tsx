@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState, MouseEvent } from 'react'
 import Box from '@mui/material/Box'
-import { ToggleButton, ToggleButtonGroup, Divider } from '@mui/material'
+import { ToggleButton, ToggleButtonGroup, Divider, Stack } from '@mui/material'
 import { Image as ImageIcon, Videocam } from '@mui/icons-material'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -52,14 +52,20 @@ export function BackgroundMedia(): ReactElement {
             aria-label="video"
             data-testid="bgvideo-video-tab"
           >
-            <Videocam></Videocam> Video
+            <Stack direction="row" spacing="8px">
+              <Videocam></Videocam>
+              <span>Video</span>
+            </Stack>
           </ToggleButton>
           <ToggleButton
             value="ImageBlock"
             aria-label="image"
             data-testid="bgvideo-image-tab"
           >
-            <ImageIcon></ImageIcon> Image
+            <Stack direction="row" spacing="8px">
+              <ImageIcon></ImageIcon>
+              <span>Image</span>
+            </Stack>
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
