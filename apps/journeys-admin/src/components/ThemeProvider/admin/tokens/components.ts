@@ -1,5 +1,5 @@
 import { ThemeOptions } from '@mui/material/styles'
-import { palette } from './colors'
+import { palette, adminColorsLight } from './colors'
 
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
@@ -42,6 +42,22 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           paddingRight: 24,
           borderBottom: '1px solid',
           borderColor: palette[200]
+        }
+      }
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          paddingLeft: 30,
+          paddingRight: 30,
+          paddingTop: 12,
+          paddingBottom: 12,
+          borderRadius: 8,
+          backgroundColor: palette[0],
+          '&.Mui-selected': {
+            backgroundColor: palette[100],
+            color: palette.error
+          }
         }
       }
     }
