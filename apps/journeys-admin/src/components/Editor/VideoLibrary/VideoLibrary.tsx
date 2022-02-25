@@ -50,9 +50,7 @@ interface VideoLibraryProps {
   onSelect: (id: string) => void
 }
 
-export function VideoLibrary({
-  onSelect
-}: VideoLibraryProps): ReactElement {
+export function VideoLibrary({ onSelect }: VideoLibraryProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -60,22 +58,20 @@ export function VideoLibrary({
     setOpen(!open)
   }
 
-  // should have an onSelect
-  // so we are trying to get the selected videos id
-  // to make sure we're changing the right video
+  console.log(onSelect)
 
-  return <>
-    <Button
-      variant="text"
-      startIcon={<SubscriptionsRounded />}
-      size="small"
-      onClick={() => setOpen(true)}
-      sx={{ px: 2 }}
-    >
-      Select a Video
-    </Button>
-    {
-      smUp ? (
+  return (
+    <>
+      <Button
+        variant="text"
+        startIcon={<SubscriptionsRounded />}
+        size="small"
+        onClick={() => setOpen(true)}
+        sx={{ px: 2 }}
+      >
+        Select a Video
+      </Button>
+      {smUp ? (
         <Drawer
           anchor="right"
           variant="temporary"
@@ -104,7 +100,7 @@ export function VideoLibrary({
         >
           <VideoLibraryContent handleLibraryToggle={handleLibraryToggle} />
         </Drawer>
-      )
-    }
-  </>
+      )}
+    </>
+  )
 }

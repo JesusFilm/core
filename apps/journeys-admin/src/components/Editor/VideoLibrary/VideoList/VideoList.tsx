@@ -24,11 +24,9 @@ export function VideoList(): ReactElement {
     setTimeout(() => setIsLoading(false), 1500)
   }
 
-  // use the MUI List
-
   return (
     <>
-      <List disablePadding sx={{ width: '100%', px: 2 }}>
+      <List sx={{ px: 2 }}>
         <Divider />
         {arclightMediaUnits.nodes.slice(0, visibleVidoes).map((arclight) => (
           <>
