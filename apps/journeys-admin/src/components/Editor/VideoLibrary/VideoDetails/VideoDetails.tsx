@@ -41,6 +41,7 @@ export function VideoDetailsContent({
 
   // TODO: pass in the videoID from the drawer
   // Run a query with the videoId to get the video details
+  // then onClick return onSelect to parent with the videoId
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -109,6 +110,7 @@ export function VideoDetailsContent({
             display: 'flex',
             height: 169,
             borderRadius: 3,
+            position: 'relative',
             overflow: 'hidden',
             '> .video-js': {
               width: '100%'
@@ -125,11 +127,11 @@ export function VideoDetailsContent({
               src={
                 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
               }
-              // type={
-              //   videoContent.__typename === 'VideoArclight'
-              //     ? 'application/x-mpegURL'
-              //     : undefined
-              // }
+            // type={
+            //   videoContent.__typename === 'VideoArclight'
+            //     ? 'application/x-mpegURL'
+            //     : undefined
+            // }
             />
           </video>
           {!isPlaying && (
@@ -143,6 +145,8 @@ export function VideoDetailsContent({
                 px: 1,
                 borderRadius: 2,
                 position: 'absolute',
+                right: 1,
+                bottom: 1,
                 zIndex: 1
               }}
             >
@@ -162,7 +166,7 @@ export function VideoDetailsContent({
           <Typography variant="caption">Available Languages</Typography>
         </Box>
         <Box sx={{ py: 2 }}>
-          <Chip size="small" label="EN (US)" sx={{ mr: 1 }} />
+          <Chip size="small" label="EN (US)" sx={{ mr: 1, px: 1, py: 4 }} />
         </Box>
         <Box
           sx={{

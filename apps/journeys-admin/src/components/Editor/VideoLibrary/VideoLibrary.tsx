@@ -12,10 +12,12 @@ import { VideoList } from './VideoList'
 export const DRAWER_WIDTH = 328
 interface VideoLibraryContentProps {
   handleLibraryToggle: () => void
+  onSelect: (id: string) => void
 }
 
 function VideoLibraryContent({
-  handleLibraryToggle
+  handleLibraryToggle,
+  onSelect
 }: VideoLibraryContentProps): ReactElement {
   // should we make the appbar it's own component that accepts a title prop?
   // this "drawer header" code is going to be repeated three times
@@ -42,7 +44,7 @@ function VideoLibraryContent({
       </AppBar>
       {/* search */}
       {/* language */}
-      <VideoList />
+      <VideoList onSelect={onSelect} />
     </>
   )
 }
@@ -78,7 +80,10 @@ export function VideoLibrary({
             }
           }}
         >
-          <VideoLibraryContent handleLibraryToggle={onClose} />
+          <VideoLibraryContent
+            handleLibraryToggle={onClose}
+            onSelect={onSelect}
+          />
         </Drawer>
       ) : (
         <Drawer
@@ -93,7 +98,10 @@ export function VideoLibrary({
             }
           }}
         >
-          <VideoLibraryContent handleLibraryToggle={onClose} />
+          <VideoLibraryContent
+            handleLibraryToggle={onClose}
+            onSelect={onSelect}
+          />
         </Drawer>
       )}
     </>

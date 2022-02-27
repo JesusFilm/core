@@ -1,14 +1,19 @@
 import { ReactElement, useState } from 'react'
 import Divider from '@mui/material/Divider'
-import Button from '@mui/material/Button'
 import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded'
 import RefreshRounded from '@mui/icons-material/RefreshRounded'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
+import Chip from '@mui/material/Chip'
+import { Box } from '@mui/system'
 import { VideoListItem } from './VideoListItem'
 import { arclightMediaUnits } from './VideoListData'
 
-export function VideoList(): ReactElement {
+interface VideoListProps {
+  onSelect: (id: string) => void
+}
+
+export function VideoList({ onSelect }: VideoListProps): ReactElement {
   const [visibleVidoes, setVisibleVideos] = useState(4)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -47,37 +52,39 @@ export function VideoList(): ReactElement {
                 )?.url
               }
               time={arclight.trackRecordings.nodes[0].durationMilliseconds}
+              onSelect={onSelect}
             />
             <Divider />
           </>
         ))}
       </List>
-      {isLoading ? (
-        <IconButton
-          size="medium"
-          sx={{ my: 4, mx: 'auto', backgroundColor: 'background.default' }}
-        >
-          <RefreshRounded />
-        </IconButton>
-      ) : (
-        <Button
-          variant="contained"
-          size="medium"
-          disabled={visibleVidoes >= arclightContent}
-          startIcon={
-            arclightContent > visibleVidoes ? (
-              <KeyboardArrowDownRounded />
-            ) : null
-          }
-          onClick={handleClick}
-          sx={{
-            my: 4,
-            mx: 'auto'
-          }}
-        >
-          {arclightContent > visibleVidoes ? 'Load More' : 'No More Videos'}
-        </Button>
-      )}
+      <Box sx={{ mx: 'auto', my: 6 }}>
+        {isLoading ? (
+          <IconButton
+            size="medium"
+            sx={{ backgroundColor: 'background.default' }}
+          >
+            <RefreshRounded />
+          </IconButton>
+        ) : (
+          <Chip
+            size="medium"
+            disabled={visibleVidoes >= arclightContent}
+            icon={
+              arclightContent > visibleVidoes ? (
+                <KeyboardArrowDownRounded />
+              ) : (
+                <></>
+              )
+            }
+            sx={{ py: 5, borderRadius: 30 }}
+            onClick={handleClick}
+            label={
+              arclightContent > visibleVidoes ? 'Load More' : 'No More Videos'
+            }
+          />
+        )}
+      </Box>
     </>
   )
 }

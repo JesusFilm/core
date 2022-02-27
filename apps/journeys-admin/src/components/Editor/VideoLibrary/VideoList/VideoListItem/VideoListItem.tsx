@@ -13,6 +13,7 @@ interface VideoListItemProps {
   poster?: string
   time: number
   language?: string
+  onSelect: (id: string) => void
 }
 
 export function VideoListItem({
@@ -20,7 +21,8 @@ export function VideoListItem({
   description,
   poster,
   time,
-  language
+  language,
+  onSelect
 }: VideoListItemProps): ReactElement {
   const [convertedTime, setConvertedTime] = useState<string>()
   const [open, setOpen] = useState<boolean>(false)
@@ -57,7 +59,7 @@ export function VideoListItem({
           gridTemplateColumns: 'repeat(4, 1fr)',
           gridTemplateRows: 'auto',
           gridTemplateAreas: `"Text Text Text Image" 
-        "Language Language Language Language"`
+          "Language Language Language Language"`
         }}
       >
         <ListItemText
@@ -111,15 +113,11 @@ export function VideoListItem({
             icon={<TranslateRounded />}
             size="small"
             label={language ?? 'EN (US)'}
-            sx={{ mr: 1 }}
+            sx={{ mr: 1, px: 1, py: 4 }}
           />
         </Box>
       </ListItemButton>
-      <VideoDetails
-        open={open}
-        handleOpen={handleOpen}
-        onSelect={() => console.log('replace with onSelect function here')}
-      />
+      <VideoDetails open={open} handleOpen={handleOpen} onSelect={onSelect} />
     </>
   )
 }
