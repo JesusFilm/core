@@ -1,10 +1,13 @@
 import { ReactElement } from 'react'
-import { useEditor } from '@core/journeys/ui'
-import { gql } from '@apollo/client'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { gql, useMutation } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import { noop } from 'lodash'
+import { useJourney } from '../../../../../../libs/context'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
 
 export const LINK_ACTION_UPDATE = gql`
   mutation LinkActionUpdate(
@@ -24,11 +27,15 @@ interface LinkActionFormValues {
 }
 
 export function LinkAction(): ReactElement {
-  const {
-    state: { selectedBlock }
-  } = useEditor()
+  const { state } = useEditor()
+  const journey = useJourney()
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
+
+  const [linkActionUpdate] = useMutation<LinkActionUpdate>(LINK_ACTION_UPDATE)
+
   const linkAction =
-    selectedBlock?.__typename === 'ButtonBlock' &&
     selectedBlock?.action?.__typename === 'LinkAction'
       ? selectedBlock.action
       : undefined
@@ -39,9 +46,31 @@ export function LinkAction(): ReactElement {
     link: string().url('Invalid URL').required('Required')
   })
 
-  function handleSubmit(e: React.FocusEvent, errors): void {
+  async function handleSubmit(e: React.FocusEvent): Promise<void> {
     const target = e.target as HTMLInputElement
-    console.log('Submit: ', target.value)
+    if (selectedBlock != null) {
+      const { id, __typename: typeName } = selectedBlock
+      await linkActionUpdate({
+        variables: {
+          id,
+          journeyId: journey.id,
+          input: { url: target.value }
+        },
+        update(cache, { data }) {
+          if (data?.blockUpdateLinkAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: typeName,
+                id
+              }),
+              fields: {
+                action: () => data.blockUpdateLinkAction
+              }
+            })
+          }
+        }
+      })
+    }
   }
 
   return (
@@ -64,7 +93,7 @@ export function LinkAction(): ReactElement {
             helperText={touched.link === true && errors.link}
             onBlur={(e) => {
               handleBlur(e)
-              errors.link == null && handleSubmit(e, errors)
+              errors.link == null && handleSubmit(e)
             }}
             onChange={handleChange}
           />
