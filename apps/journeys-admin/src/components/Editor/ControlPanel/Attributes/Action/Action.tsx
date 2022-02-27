@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
+import { ActionRemove } from '../../../../../../__generated__/ActionRemove'
 import { useJourney } from '../../../../../libs/context'
 import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
@@ -24,6 +25,14 @@ export const NAVIGATE_ACTION_UPDATE = gql`
   ) {
     blockUpdateNavigateAction(id: $id, journeyId: $journeyId, input: $input) {
       gtmEventName
+    }
+  }
+`
+
+export const ACTION_REMOVE = gql`
+  mutation ActionRemove($id: ID!, $journeyId: ID!) {
+    blockDeleteAction(id: $id, journeyId: $journeyId) {
+      id
     }
   }
 `
@@ -45,6 +54,7 @@ export function Action(): ReactElement {
   const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(
     NAVIGATE_ACTION_UPDATE
   )
+  const [actionRemove] = useMutation<ActionRemove>(ACTION_REMOVE)
 
   const actionName =
     selectedBlock?.action != null
@@ -79,10 +89,34 @@ export function Action(): ReactElement {
     }
   }
 
+  async function removeAction(): Promise<void> {
+    if (selectedBlock != null) {
+      const { id, __typename: typeName } = selectedBlock
+      await actionRemove({
+        variables: {
+          id,
+          journeyId: journey.id
+        },
+        update(cache, { data }) {
+          if (data?.blockDeleteAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: typeName,
+                id
+              }),
+              fields: {
+                action: () => null
+              }
+            })
+          }
+        }
+      })
+    }
+  }
+
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (event.target.value === 'none') {
-      // TODO: add in remove action API
-      console.log('remove action')
+      await removeAction()
     } else if (event.target.value === 'Next Step') {
       await navigateAction()
     }

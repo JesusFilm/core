@@ -9,9 +9,16 @@ import { NavigateToJourneyActionInput } from "./globalTypes";
 // GraphQL mutation operation: NavigateToJourneyActionUpdate
 // ====================================================
 
+export interface NavigateToJourneyActionUpdate_blockUpdateNavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
 export interface NavigateToJourneyActionUpdate_blockUpdateNavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
-  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: NavigateToJourneyActionUpdate_blockUpdateNavigateToJourneyAction_journey | null;
 }
 
 export interface NavigateToJourneyActionUpdate {

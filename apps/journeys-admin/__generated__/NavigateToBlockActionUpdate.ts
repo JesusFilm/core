@@ -11,7 +11,8 @@ import { NavigateToBlockActionInput } from "./globalTypes";
 
 export interface NavigateToBlockActionUpdate_blockUpdateNavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
 }
 
 export interface NavigateToBlockActionUpdate {
