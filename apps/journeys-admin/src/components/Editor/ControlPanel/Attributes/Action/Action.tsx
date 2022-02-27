@@ -23,14 +23,7 @@ export const NAVIGATE_ACTION_UPDATE = gql`
     $input: NavigateActionInput!
   ) {
     blockUpdateNavigateAction(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      ... on ButtonBlock {
-        action {
-          ... on NavigateAction {
-            gtmEventName
-          }
-        }
-      }
+      gtmEventName
     }
   }
 `
@@ -62,19 +55,26 @@ export function Action(): ReactElement {
 
   async function navigateAction(): Promise<void> {
     if (selectedBlock != null && state.selectedStep?.nextBlockId != null) {
+      const { id, __typename: typeName } = selectedBlock
       await navigateActionUpdate({
         variables: {
-          id: selectedBlock.id,
+          id,
           journeyId: journey.id,
           input: {}
+        },
+        update(cache, { data }) {
+          if (data?.blockUpdateNavigateAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: typeName,
+                id
+              }),
+              fields: {
+                action: () => data.blockUpdateNavigateAction
+              }
+            })
+          }
         }
-        // optimistic response cache issues
-        // optimisticResponse: {
-        //   blockUpdateNavigateAction: {
-        //     id: selectedBlock.id,
-        //     __typename: 'ButtonBlock'
-        //   }
-        // }
       })
     }
   }

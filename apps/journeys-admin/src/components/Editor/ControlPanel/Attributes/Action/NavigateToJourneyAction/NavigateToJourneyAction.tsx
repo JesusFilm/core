@@ -30,13 +30,10 @@ export const NAVIGATE_TO_JOURNEY_ACTION_UPDATE = gql`
       journeyId: $journeyId
       input: $input
     ) {
-      id
-      ... on ButtonBlock {
-        action {
-          ... on NavigateToJourneyAction {
-            journeyId
-          }
-        }
+      gtmEventName
+      journey {
+        id
+        slug
       }
     }
   }
@@ -65,25 +62,27 @@ export function NavigateToJourneyAction(): ReactElement {
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (selectedBlock != null) {
+      const { id, __typename: typeName } = selectedBlock
       await navigateToJourneyActionUpdate({
         variables: {
-          id: selectedBlock.id,
+          id,
           journeyId: journey.id,
           input: { journeyId: event.target.value }
+        },
+        update(cache, { data }) {
+          if (data?.blockUpdateNavigateToJourneyAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: typeName,
+                id
+              }),
+              fields: {
+                action: () => data.blockUpdateNavigateToJourneyAction
+              }
+            })
+          }
         }
-        // optimistic response causing cache issues
-        // optimisticResponse: {
-        //   blockUpdateNavigateToJourneyAction: {
-        //     id: selectedBlock.id,
-        //     __typename: 'ButtonBlock',
-        //     action: {
-        //       __typename: 'NavigateToJourneyAction',
-        //       journeyId: linkJourney.id
-        //     }
-        //   }
-        // }
       })
-      // setJourneyName(selectedJourney.title)
     }
   }
 

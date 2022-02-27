@@ -20,14 +20,8 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
       journeyId: $journeyId
       input: $input
     ) {
-      id
-      ... on ButtonBlock {
-        action {
-          ... on NavigateToBlockAction {
-            blockId
-          }
-        }
-      }
+      gtmEventName
+      blockId
     }
   }
 `
@@ -51,23 +45,26 @@ export function NavigateToBlockAction(): ReactElement {
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
     if (selectedBlock != null) {
+      const { id, __typename: typeName } = selectedBlock
       await navigateToBlockActionUpdate({
         variables: {
-          id: selectedBlock.id,
+          id,
           journeyId: journey.id,
           input: { blockId: step.id }
+        },
+        update(cache, { data }) {
+          if (data?.blockUpdateNavigateToBlockAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: typeName,
+                id
+              }),
+              fields: {
+                action: () => data.blockUpdateNavigateToBlockAction
+              }
+            })
+          }
         }
-        // also cache issues, kinda
-        // optimisticResponse: {
-        //   blockUpdateNavigateToBlockAction: {
-        //     id: selectedBlock.id,
-        //     __typename: 'ButtonBlock',
-        //     action: {
-        //       __typename: 'NavigateToBlockAction',
-        //       blockId: step.id
-        //     }
-        //   }
-        // }
       })
     }
   }
