@@ -16,17 +16,31 @@ import Close from '@mui/icons-material/Close'
 export const DRAWER_WIDTH = 328
 
 interface VideoDetailsContentProps {
-  handleClose: () => void
+  videoId: string
+  handleOpen: () => void
+  onSelect: (id: string) => void
 }
 
 export function VideoDetailsContent({
-  handleClose
+  videoId: id,
+  handleOpen,
+  onSelect
 }: VideoDetailsContentProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
+  const [videoId, setVideoId] = useState<string>('')
 
-  // TODO: pass in props from the drawer
+  useEffect(() => {
+    setVideoId(id)
+  }, [id])
+
+  const handleOnClick = (): void => {
+    onSelect(videoId)
+  }
+
+  // TODO: pass in the videoID from the drawer
+  // Run a query with the videoId to get the video details
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -74,7 +88,7 @@ export function VideoDetailsContent({
             Video Details
           </Typography>
           <IconButton
-            onClick={handleClose}
+            onClick={handleOpen}
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
@@ -101,7 +115,6 @@ export function VideoDetailsContent({
             }
           }}
         >
-          {/* fix width */}
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
@@ -112,11 +125,11 @@ export function VideoDetailsContent({
               src={
                 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
               }
-            // type={
-            //   videoContent.__typename === 'VideoArclight'
-            //     ? 'application/x-mpegURL'
-            //     : undefined
-            // }
+              // type={
+              //   videoContent.__typename === 'VideoArclight'
+              //     ? 'application/x-mpegURL'
+              //     : undefined
+              // }
             />
           </video>
           {!isPlaying && (
@@ -169,6 +182,7 @@ export function VideoDetailsContent({
       <Button
         variant="contained"
         size="medium"
+        onClick={handleOnClick}
         sx={{
           mt: 3,
           mx: 'auto'
@@ -182,13 +196,13 @@ export function VideoDetailsContent({
 
 interface VideoDetailsProps {
   open: boolean
-  onClose: () => void
+  handleOpen: () => void
   onSelect: (id: string) => void
 }
 
 export function VideoDetails({
   open,
-  onClose,
+  handleOpen,
   onSelect
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -208,7 +222,11 @@ export function VideoDetails({
         }
       }}
     >
-      <VideoDetailsContent handleClose={onClose} />
+      <VideoDetailsContent
+        videoId="selectedVideoId"
+        handleOpen={handleOpen}
+        onSelect={onSelect}
+      />
     </Drawer>
   ) : (
     <Drawer
@@ -223,7 +241,11 @@ export function VideoDetails({
         }
       }}
     >
-      <VideoDetailsContent handleClose={onClose} />
+      <VideoDetailsContent
+        videoId="selectedVideoId"
+        handleOpen={handleOpen}
+        onSelect={onSelect}
+      />
     </Drawer>
   )
 }

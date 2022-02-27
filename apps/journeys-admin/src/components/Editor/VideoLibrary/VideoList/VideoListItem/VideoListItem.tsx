@@ -5,6 +5,7 @@ import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import Chip from '@mui/material/Chip'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
+import { VideoDetails } from '../../VideoDetails'
 
 interface VideoListItemProps {
   title?: string
@@ -22,6 +23,11 @@ export function VideoListItem({
   language
 }: VideoListItemProps): ReactElement {
   const [convertedTime, setConvertedTime] = useState<string>()
+  const [open, setOpen] = useState<boolean>(false)
+
+  const handleOpen = (): void => {
+    setOpen(!open)
+  }
 
   useEffect((): void => {
     let seconds = Math.floor((time % 60000) / 1000)
@@ -42,70 +48,78 @@ export function VideoListItem({
   }, [time])
 
   return (
-    <ListItemButton
-      sx={{
-        display: 'grid',
-        columnGap: 3,
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gridTemplateRows: 'auto',
-        gridTemplateAreas: `"Text Text Text Image" 
+    <>
+      <ListItemButton
+        onClick={handleOpen}
+        sx={{
+          display: 'grid',
+          columnGap: 3,
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateRows: 'auto',
+          gridTemplateAreas: `"Text Text Text Image" 
         "Language Language Language Language"`
-      }}
-    >
-      <ListItemText
-        primary={title}
-        secondary={description}
-        secondaryTypographyProps={{
-          style: {
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }
         }}
-        sx={{ gridArea: 'Text' }}
-      />
-      {poster != null && (
-        <Box>
-          <Box
-            sx={{
-              gridArea: 'Image',
-              justifySelf: 'end',
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'flex-end',
-              p: 1,
-              height: 79,
-              width: 79,
-              borderRadius: 2,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              backgroundImage: `url(${poster})`
-            }}
-          >
-            <Typography
-              component="div"
-              variant="caption"
+      >
+        <ListItemText
+          primary={title}
+          secondary={description}
+          secondaryTypographyProps={{
+            style: {
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }
+          }}
+          sx={{ gridArea: 'Text' }}
+        />
+        {poster != null && (
+          <Box>
+            <Box
               sx={{
-                color: 'background.paper',
-                backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                px: 1,
-                borderRadius: 2
+                gridArea: 'Image',
+                justifySelf: 'end',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
+                p: 1,
+                height: 79,
+                width: 79,
+                borderRadius: 2,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+                backgroundImage: `url(${poster})`
               }}
             >
-              {convertedTime}
-            </Typography>
+              <Typography
+                component="div"
+                variant="caption"
+                sx={{
+                  color: 'background.paper',
+                  backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                  px: 1,
+                  borderRadius: 2
+                }}
+              >
+                {convertedTime}
+              </Typography>
+            </Box>
           </Box>
+        )}
+        {/* update to display multiple lanaguages */}
+        <Box sx={{ py: 2, gridArea: 'Language' }}>
+          <Chip
+            icon={<TranslateRounded />}
+            size="small"
+            label={language ?? 'EN (US)'}
+            sx={{ mr: 1 }}
+          />
         </Box>
-      )}
-      {/* update to display multiple lanaguages */}
-      <Box sx={{ py: 2, gridArea: 'Language' }}>
-        <Chip
-          icon={<TranslateRounded />}
-          size="small"
-          label={language ?? 'EN (US)'}
-          sx={{ mr: 1 }}
-        />
-      </Box>
-    </ListItemButton>
+      </ListItemButton>
+      <VideoDetails
+        open={open}
+        handleOpen={handleOpen}
+        onSelect={() => console.log('replace with onSelect function here')}
+      />
+    </>
   )
 }
