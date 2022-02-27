@@ -3,14 +3,18 @@ import { render } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
+  ThemeName,
+  ThemeMode,
   ButtonVariant,
   ButtonColor,
   TypographyVariant,
   ButtonSize
 } from '../../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../../../../libs/context'
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { NavigateAction } from './NavigateAction'
 
-describe('NavigateNext', () => {
+describe('NavigateAction', () => {
   const steps: Array<TreeBlock<StepBlock>> = [
     {
       id: 'step0.id',
@@ -68,7 +72,7 @@ describe('NavigateNext', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button0.id',
               parentBlockId: 'card0.id',
               parentOrder: 3,
               label: 'Watch Now',
@@ -78,6 +82,7 @@ describe('NavigateNext', () => {
               startIconId: null,
               endIconId: null,
               action: {
+                parentBlockId: 'button0.id',
                 __typename: 'NavigateAction',
                 gtmEventName: 'gtmEventName'
               },
@@ -142,7 +147,7 @@ describe('NavigateNext', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button1.id',
               parentBlockId: 'card1.id',
               parentOrder: 3,
               label: 'Watch Now',
@@ -152,6 +157,7 @@ describe('NavigateNext', () => {
               startIconId: null,
               endIconId: null,
               action: {
+                parentBlockId: 'button1.id',
                 __typename: 'NavigateAction',
                 gtmEventName: 'gtmEventName'
               },
@@ -204,7 +210,7 @@ describe('NavigateNext', () => {
               children: []
             },
             {
-              id: 'radioQuestion1.id',
+              id: 'radioQuestion0.id',
               __typename: 'RadioQuestionBlock',
               parentBlockId: 'card2.id',
               parentOrder: 2,
@@ -214,10 +220,11 @@ describe('NavigateNext', () => {
                 {
                   id: 'radioOption1.id',
                   __typename: 'RadioOptionBlock',
-                  parentBlockId: 'radioQuestion1.id',
+                  parentBlockId: 'radioQuestion0.id',
                   parentOrder: 0,
                   label: 'One of many ways to God',
                   action: {
+                    parentBlockId: 'radioQuestion1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -230,6 +237,7 @@ describe('NavigateNext', () => {
                   parentOrder: 1,
                   label: 'One great lie...',
                   action: {
+                    parentBlockId: 'radioOption1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -242,6 +250,7 @@ describe('NavigateNext', () => {
                   parentOrder: 2,
                   label: 'One true way to God',
                   action: {
+                    parentBlockId: 'radioOption1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -310,6 +319,7 @@ describe('NavigateNext', () => {
                   parentOrder: 0,
                   label: 'Yes, God likes good people',
                   action: {
+                    parentBlockId: 'radioQuestion1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -322,6 +332,7 @@ describe('NavigateNext', () => {
                   parentOrder: 1,
                   label: 'No, He will accept me as I am',
                   action: {
+                    parentBlockId: 'radioQuestion1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -400,7 +411,7 @@ describe('NavigateNext', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button2.id',
               parentBlockId: 'card4.id',
               parentOrder: 4,
               label: 'Start Over',
@@ -410,6 +421,7 @@ describe('NavigateNext', () => {
               startIconId: null,
               endIconId: null,
               action: {
+                parentBlockId: 'button2.id',
                 __typename: 'NavigateToBlockAction',
                 gtmEventName: 'gtmEventName',
                 blockId: 'step0.id'
@@ -429,15 +441,98 @@ describe('NavigateNext', () => {
       parentBlockId: null,
       parentOrder: 0,
       locked: false,
-      nextBlockId: null,
-      children: []
+      nextBlockId: 'step4.id',
+      children: [
+        {
+          id: 'card3.id',
+          __typename: 'CardBlock',
+          parentBlockId: 'step3.id',
+          coverBlockId: 'image3.id',
+          parentOrder: 0,
+          backgroundColor: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: [
+            {
+              id: 'image3.id',
+              __typename: 'ImageBlock',
+              src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
+              width: 1920,
+              height: 1080,
+              alt: 'random image from unsplash',
+              parentBlockId: 'card3.id',
+              parentOrder: 0,
+              children: [],
+              blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
+            },
+            {
+              id: 'typographyBlockId1',
+              __typename: 'TypographyBlock',
+              parentBlockId: 'card3.id',
+              parentOrder: 1,
+              align: null,
+              color: null,
+              content: 'What do you think?',
+              variant: TypographyVariant.h6,
+              children: []
+            },
+            {
+              id: 'radioQuestion1.id',
+              __typename: 'RadioQuestionBlock',
+              parentBlockId: 'card3.id',
+              parentOrder: 2,
+              label: 'Do you need to change to be good enough for God?',
+              description: '',
+              children: [
+                {
+                  id: 'radioOption1.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  parentOrder: 0,
+                  label: 'Yes, God likes good people',
+                  action: {
+                    parentBlockId: 'radioQuestion1.id',
+                    __typename: 'NavigateAction',
+                    gtmEventName: 'gtmEventName'
+                  },
+                  children: []
+                },
+                {
+                  id: 'radioOption3.id',
+                  __typename: 'RadioOptionBlock',
+                  parentBlockId: 'radioQuestion1.id',
+                  parentOrder: 1,
+                  label: 'No, He will accept me as I am',
+                  action: {
+                    parentBlockId: 'radioQuestion1.id',
+                    __typename: 'NavigateAction',
+                    gtmEventName: 'gtmEventName'
+                  },
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
 
     const { getByTestId } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps, selectedStep }}>
-          <NavigateAction />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps, selectedStep }}>
+            <NavigateAction />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByTestId('cards-disabled-view')).toBeInTheDocument()
@@ -451,14 +546,103 @@ describe('NavigateNext', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
-      children: []
+      children: [
+        {
+          id: 'card4.id',
+          __typename: 'CardBlock',
+          parentBlockId: 'step4.id',
+          coverBlockId: 'image4.id',
+          parentOrder: 0,
+          backgroundColor: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: [
+            {
+              id: 'image4.id',
+              __typename: 'ImageBlock',
+              src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+              width: 1920,
+              height: 1080,
+              alt: 'random image from unsplash',
+              parentBlockId: 'card0.id',
+              parentOrder: 0,
+              children: [],
+              blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            },
+            {
+              id: 'typographyBlockId1',
+              __typename: 'TypographyBlock',
+              parentBlockId: 'card4.id',
+              parentOrder: 1,
+              align: null,
+              color: null,
+              content: 'a quote',
+              variant: TypographyVariant.overline,
+              children: []
+            },
+            {
+              id: 'typographyBlockId12',
+              __typename: 'TypographyBlock',
+              parentBlockId: 'card4.id',
+              parentOrder: 2,
+              align: null,
+              color: null,
+              content:
+                '“God sent his Son into the world not to judge the world, but to save the world through him.”',
+              variant: TypographyVariant.subtitle1,
+              children: []
+            },
+            {
+              id: 'typographyBlockId13',
+              __typename: 'TypographyBlock',
+              parentBlockId: 'card4.id',
+              parentOrder: 3,
+              align: null,
+              color: null,
+              content: '–  The Bible, John 3:17',
+              variant: TypographyVariant.caption,
+              children: []
+            },
+            {
+              __typename: 'ButtonBlock',
+              id: 'button2.id',
+              parentBlockId: 'card4.id',
+              parentOrder: 4,
+              label: 'Start Over',
+              buttonVariant: ButtonVariant.contained,
+              buttonColor: ButtonColor.primary,
+              size: ButtonSize.large,
+              startIconId: null,
+              endIconId: null,
+              action: {
+                parentBlockId: 'button2.id',
+                __typename: 'NavigateToBlockAction',
+                gtmEventName: 'gtmEventName',
+                blockId: 'step0.id'
+              },
+              children: []
+            }
+          ]
+        }
+      ]
     }
 
     const { getByText } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ steps, selectedStep }}>
-          <NavigateAction />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps, selectedStep }}>
+            <NavigateAction />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('No next card')).toBeInTheDocument()

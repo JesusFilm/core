@@ -2,13 +2,19 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../__generated__/GetJourney'
+import {
+  ThemeName,
+  ThemeMode,
   ButtonVariant,
   ButtonColor,
   TypographyVariant,
   ButtonSize
 } from '../../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../../../../libs/context'
 import {
   NavigateToBlockAction,
   NAVIGATE_TO_BLOCK_ACTION_UPDATE
@@ -72,7 +78,7 @@ describe('NavigateToBlockAction', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button0.id',
               parentBlockId: 'card0.id',
               parentOrder: 3,
               label: 'Watch Now',
@@ -82,6 +88,7 @@ describe('NavigateToBlockAction', () => {
               startIconId: null,
               endIconId: null,
               action: {
+                parentBlockId: 'button0.id',
                 __typename: 'NavigateAction',
                 gtmEventName: 'gtmEventName'
               },
@@ -146,7 +153,7 @@ describe('NavigateToBlockAction', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button1.id',
               parentBlockId: 'card1.id',
               parentOrder: 3,
               label: 'Watch Now',
@@ -205,7 +212,7 @@ describe('NavigateToBlockAction', () => {
               children: []
             },
             {
-              id: 'radioQuestion1.id',
+              id: 'radioQuestion0.id',
               __typename: 'RadioQuestionBlock',
               parentBlockId: 'card2.id',
               parentOrder: 2,
@@ -219,6 +226,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 0,
                   label: 'One of many ways to God',
                   action: {
+                    parentBlockId: 'radioQuestion0.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -231,6 +239,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 1,
                   label: 'One great lie...',
                   action: {
+                    parentBlockId: 'radioQuestion0.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -243,6 +252,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 2,
                   label: 'One true way to God',
                   action: {
+                    parentBlockId: 'radioQuestion0.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -311,6 +321,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 0,
                   label: 'Yes, God likes good people',
                   action: {
+                    parentBlockId: 'radioQuestion1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -323,6 +334,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 1,
                   label: 'No, He will accept me as I am',
                   action: {
+                    parentBlockId: 'radioQuestion1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -401,7 +413,7 @@ describe('NavigateToBlockAction', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button2.id',
               parentBlockId: 'card4.id',
               parentOrder: 4,
               label: 'Start Over',
@@ -411,6 +423,7 @@ describe('NavigateToBlockAction', () => {
               startIconId: null,
               endIconId: null,
               action: {
+                parentBlockId: 'button2.id',
                 __typename: 'NavigateToBlockAction',
                 gtmEventName: 'gtmEventName',
                 blockId: 'step0.id'
@@ -425,7 +438,7 @@ describe('NavigateToBlockAction', () => {
   it('sets action on card click', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
-      id: 'button',
+      id: 'button1.id',
       parentBlockId: 'card1.id',
       parentOrder: 3,
       label: 'Watch Now',
@@ -443,9 +456,8 @@ describe('NavigateToBlockAction', () => {
         blockUpdateNavigateToBlockAction: {
           id: selectedBlock.id,
           journeyId: 'journeyId',
-          action: {
-            blockId: 'step2.id'
-          }
+          gtmEventName: 'gtmEventName',
+          blockId: 'step2.id'
         }
       }
     }))
@@ -457,6 +469,7 @@ describe('NavigateToBlockAction', () => {
               query: NAVIGATE_TO_BLOCK_ACTION_UPDATE,
               variables: {
                 id: selectedBlock.id,
+                journeyId: 'journeyId',
                 input: {
                   blockId: 'step2.id'
                 }
@@ -466,9 +479,19 @@ describe('NavigateToBlockAction', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ steps, selectedBlock }}>
-          <NavigateToBlockAction />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps, selectedBlock }}>
+            <NavigateToBlockAction />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step2.id'))

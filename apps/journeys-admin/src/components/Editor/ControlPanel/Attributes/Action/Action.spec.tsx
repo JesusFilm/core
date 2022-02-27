@@ -2,13 +2,19 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../__generated__/GetJourney'
+import {
+  ThemeName,
+  ThemeMode,
   ButtonVariant,
   ButtonColor,
   TypographyVariant,
   ButtonSize
 } from '../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../../../libs/context'
 import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 
 describe('Action', () => {
@@ -79,7 +85,7 @@ describe('Action', () => {
               },
               {
                 __typename: 'ButtonBlock',
-                id: 'button',
+                id: 'button0.id',
                 parentBlockId: 'card0.id',
                 parentOrder: 3,
                 label: 'Watch Now',
@@ -89,6 +95,7 @@ describe('Action', () => {
                 startIconId: null,
                 endIconId: null,
                 action: {
+                  parentBlockId: 'button0.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -153,7 +160,7 @@ describe('Action', () => {
               },
               {
                 __typename: 'ButtonBlock',
-                id: 'button',
+                id: 'button1.id',
                 parentBlockId: 'card1.id',
                 parentOrder: 3,
                 label: 'Watch Now',
@@ -163,6 +170,7 @@ describe('Action', () => {
                 startIconId: null,
                 endIconId: null,
                 action: {
+                  parentBlockId: 'button1.id',
                   __typename: 'LinkAction',
                   gtmEventName: 'gtmEventName',
                   url: 'https://www.google.com'
@@ -216,7 +224,7 @@ describe('Action', () => {
                 children: []
               },
               {
-                id: 'radioQuestion1.id',
+                id: 'radioQuestion0.id',
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card2.id',
                 parentOrder: 2,
@@ -230,6 +238,7 @@ describe('Action', () => {
                     parentOrder: 0,
                     label: 'One of many ways to God',
                     action: {
+                      parentBlockId: 'radioOption1.id',
                       __typename: 'NavigateAction',
                       gtmEventName: 'gtmEventName'
                     },
@@ -242,6 +251,7 @@ describe('Action', () => {
                     parentOrder: 1,
                     label: 'One great lie...',
                     action: {
+                      parentBlockId: 'radioOption3.id',
                       __typename: 'NavigateAction',
                       gtmEventName: 'gtmEventName'
                     },
@@ -254,6 +264,7 @@ describe('Action', () => {
                     parentOrder: 2,
                     label: 'One true way to God',
                     action: {
+                      parentBlockId: 'radioOption4.id',
                       __typename: 'NavigateAction',
                       gtmEventName: 'gtmEventName'
                     },
@@ -322,6 +333,7 @@ describe('Action', () => {
                     parentOrder: 0,
                     label: 'Yes, God likes good people',
                     action: {
+                      parentBlockId: 'radioOption1.id',
                       __typename: 'NavigateAction',
                       gtmEventName: 'gtmEventName'
                     },
@@ -334,6 +346,7 @@ describe('Action', () => {
                     parentOrder: 1,
                     label: 'No, He will accept me as I am',
                     action: {
+                      parentBlockId: 'radioOption3.id',
                       __typename: 'NavigateAction',
                       gtmEventName: 'gtmEventName'
                     },
@@ -412,7 +425,7 @@ describe('Action', () => {
               },
               {
                 __typename: 'ButtonBlock',
-                id: 'button',
+                id: 'button2.id',
                 parentBlockId: 'card4.id',
                 parentOrder: 4,
                 label: 'Start Over',
@@ -422,6 +435,7 @@ describe('Action', () => {
                 startIconId: null,
                 endIconId: null,
                 action: {
+                  parentBlockId: 'button2.id',
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
                   blockId: 'step0.id'
@@ -489,7 +503,7 @@ describe('Action', () => {
             },
             {
               __typename: 'ButtonBlock',
-              id: 'button',
+              id: 'button1.id',
               parentBlockId: 'card1.id',
               parentOrder: 3,
               label: 'Watch Now',
@@ -499,6 +513,7 @@ describe('Action', () => {
               startIconId: null,
               endIconId: null,
               action: {
+                parentBlockId: 'button1.id',
                 __typename: 'LinkAction',
                 gtmEventName: 'gtmEventName',
                 url: 'https://www.google.com'
@@ -512,7 +527,7 @@ describe('Action', () => {
 
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
-      id: 'button',
+      id: 'button1.id',
       parentBlockId: 'card1.id',
       parentOrder: 3,
       label: 'Watch Now',
@@ -522,6 +537,7 @@ describe('Action', () => {
       startIconId: null,
       endIconId: null,
       action: {
+        parentBlockId: 'button1.id',
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
         url: 'https://www.google.com'
@@ -532,7 +548,8 @@ describe('Action', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateNavigateAction: {
-          id: 'journeyId'
+          id: 'journeyId',
+          gtmEventName: 'gtmEventName'
         }
       }
     }))
@@ -545,6 +562,7 @@ describe('Action', () => {
               query: NAVIGATE_ACTION_UPDATE,
               variables: {
                 id: selectedBlock.id,
+                journeyId: 'journeyId',
                 input: {}
               }
             },
@@ -552,9 +570,19 @@ describe('Action', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
-          <Action />
-        </EditorProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
+            <Action />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.mouseDown(getByText('URL/Website'))
@@ -565,7 +593,7 @@ describe('Action', () => {
   it('shows properties for current action', () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
-      id: 'button',
+      id: 'button1.id',
       parentBlockId: 'card1.id',
       parentOrder: 3,
       label: 'Watch Now',
@@ -575,6 +603,7 @@ describe('Action', () => {
       startIconId: null,
       endIconId: null,
       action: {
+        parentBlockId: 'button1.id',
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
         url: 'https://www.google.com'
@@ -598,7 +627,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'Next Step' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'Select an Action...' }))
     fireEvent.mouseDown(getByRole('option', { name: 'Another Journey' }))
     expect(getByText('Another Journey')).toBeInTheDocument()
   })

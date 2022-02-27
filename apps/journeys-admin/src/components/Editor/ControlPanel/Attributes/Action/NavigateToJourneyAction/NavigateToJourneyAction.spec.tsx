@@ -47,7 +47,7 @@ describe('NavigateToJourneyAction', () => {
   it('displays selected journey', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
-      id: 'journeyId',
+      id: 'button.id',
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       label: 'test button',
@@ -57,6 +57,7 @@ describe('NavigateToJourneyAction', () => {
       startIconId: null,
       endIconId: null,
       action: {
+        parentBlockId: 'button.id',
         __typename: 'NavigateToJourneyAction',
         gtmEventName: 'gtmEventName',
         journey: {
@@ -76,6 +77,7 @@ describe('NavigateToJourneyAction', () => {
             },
             result: {
               data: {
+                gtmEventName: 'gtmEventName',
                 journeys: [
                   {
                     id: 'journeyId',
@@ -117,11 +119,12 @@ describe('NavigateToJourneyAction', () => {
       data: {
         blockUpdateNavigateToJourneyAction: {
           id: 'journeyId',
-          action: {
-            journeyId: 'journeyId',
-            journey: {
-              id: journey.id
-            }
+          slug: 'my-journey',
+          journeyId: 'journeyId',
+          gtmEventName: 'gtmEventName',
+          journey: {
+            id: journey.id,
+            slug: 'my-journey'
           }
         }
       }

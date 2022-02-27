@@ -17,7 +17,7 @@ describe('LinkAction', () => {
   it('shows the link on the action', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
-      id: 'journeyId',
+      id: 'button.id',
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       label: 'test button',
@@ -27,6 +27,7 @@ describe('LinkAction', () => {
       startIconId: null,
       endIconId: null,
       action: {
+        parentBlockId: 'button.id',
         __typename: 'LinkAction',
         gtmEventName: 'gtmEventName',
         url: 'https://www.google.com'
@@ -46,7 +47,7 @@ describe('LinkAction', () => {
   it('updates the link on the action', async () => {
     const selectedBlock: TreeBlock<ButtonBlock> = {
       __typename: 'ButtonBlock',
-      id: 'journeyId',
+      id: 'button.id',
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       label: 'test button',
@@ -63,9 +64,8 @@ describe('LinkAction', () => {
       data: {
         blockUpdateLinkAction: {
           id: 'journeyId',
-          action: {
-            url: 'https://www.google.com'
-          }
+          gtmEventName: 'gtmEventName',
+          url: 'https://www.google.com'
         }
       }
     }))
