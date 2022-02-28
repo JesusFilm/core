@@ -1,10 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { EditorProvider } from '@core/journeys/ui'
+import { steps } from '../data'
 import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
 describe('LinkAction', () => {
+  const selectedBlock = steps[1].children[0].children[3]
   it('defaults to place holder text', () => {
     const { getByPlaceholderText } = render(
       <MockedProvider>
@@ -15,25 +16,6 @@ describe('LinkAction', () => {
   })
 
   it('shows the link on the action', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'button.id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: {
-        parentBlockId: 'button.id',
-        __typename: 'LinkAction',
-        gtmEventName: 'gtmEventName',
-        url: 'https://www.google.com'
-      },
-      children: []
-    }
     const { getByDisplayValue } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -45,27 +27,12 @@ describe('LinkAction', () => {
   })
 
   it('updates the link on the action', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'button.id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
-
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
           id: 'journeyId',
           gtmEventName: 'gtmEventName',
-          url: 'https://www.google.com'
+          url: 'https://www.github.com'
         }
       }
     }))
@@ -79,7 +46,7 @@ describe('LinkAction', () => {
               variables: {
                 id: selectedBlock.id,
                 input: {
-                  url: 'https://www.google.com'
+                  url: 'https://www.github.com'
                 }
               }
             },
@@ -93,7 +60,7 @@ describe('LinkAction', () => {
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
-      target: { value: 'https://www.google.com' }
+      target: { value: 'https://www.github.com' }
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())

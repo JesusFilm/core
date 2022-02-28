@@ -7,10 +7,8 @@ import {
   ThemeName,
   JourneyStatus
 } from '../../../../../../../__generated__/globalTypes'
-import {
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey as Journey
-} from '../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { steps } from '../data'
 import {
   NavigateToJourneyAction,
   GET_JOURNEY_NAMES,
@@ -45,29 +43,7 @@ describe('NavigateToJourneyAction', () => {
   })
 
   it('displays selected journey', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'button.id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: {
-        parentBlockId: 'button.id',
-        __typename: 'NavigateToJourneyAction',
-        gtmEventName: 'gtmEventName',
-        journey: {
-          __typename: 'Journey',
-          id: 'journeyId',
-          slug: 'my-journey'
-        }
-      },
-      children: []
-    }
+    const selectedBlock = steps[0].children[0].children[3]
     const { getByText } = render(
       <MockedProvider
         mocks={[
@@ -100,20 +76,7 @@ describe('NavigateToJourneyAction', () => {
   })
 
   it('changes the journey on action', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'journeyId',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
+    const selectedBlock = steps[1].children[0].children[3]
 
     const result = jest.fn(() => ({
       data: {

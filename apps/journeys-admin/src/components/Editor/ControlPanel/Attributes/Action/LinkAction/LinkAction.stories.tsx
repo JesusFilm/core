@@ -1,8 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { steps } from '../data'
 import { LinkAction } from '.'
 
 const LinkActionStory = {
@@ -21,25 +21,7 @@ export const Default: Story = () => {
 }
 
 export const WithLink: Story = () => {
-  const selectedBlock: TreeBlock<ButtonBlock> = {
-    __typename: 'ButtonBlock',
-    id: 'button.id',
-    parentBlockId: 'parentBlockId',
-    parentOrder: 0,
-    label: 'test button',
-    buttonVariant: null,
-    buttonColor: null,
-    size: null,
-    startIconId: null,
-    endIconId: null,
-    action: {
-      parentBlockId: 'button.id',
-      __typename: 'LinkAction',
-      gtmEventName: 'gtmEventName',
-      url: 'https://www.google.com'
-    },
-    children: []
-  }
+  const selectedBlock = steps[1].children[0].children[3]
 
   return (
     <MockedProvider>
