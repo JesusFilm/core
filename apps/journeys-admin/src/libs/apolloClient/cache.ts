@@ -8,20 +8,6 @@ export const cache = (): InMemoryCache =>
      these relationships, we need to pass a possibleTypes option when
      initializing InMemoryCache.
    */
-    // typePolicies: {
-    //   NavigateAction: {
-    //     keyFields: false
-    //   },
-    //   NavigateToBlockAction: {
-    //     keyFields: false
-    //   },
-    //   NavigateToJourneyAction: {
-    //     keyFields: false
-    //   },
-    //   LinkAction: {
-    //     keyFields: false
-    //   }
-    // },
     possibleTypes: {
       Action: [
         'NavigateAction',
