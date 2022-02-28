@@ -53,8 +53,12 @@ export function Icon({
     ContactSupportRounded
   }
 
-  return createElement(icons[iconName], {
-    color: iconColor ?? undefined,
-    sx: { fontSize }
-  })
+  return iconName === 'None' ? (
+    <></>
+  ) : (
+    createElement(icons[iconName], {
+      color: iconColor ?? undefined,
+      sx: { fontSize }
+    })
+  )
 }
