@@ -37,12 +37,34 @@ export const ACTION_REMOVE = gql`
   }
 `
 // convert this to array of obects, add one for the none option
-export enum actions {
-  NavigateAction = 'Next Step',
-  NavigateToBlockAction = 'Selected Card',
-  NavigateToJourneyAction = 'Another Journey',
-  LinkAction = 'URL/Website'
-}
+// export enum actions {
+//   NavigateAction = 'Next Step',
+//   NavigateToBlockAction = 'Selected Card',
+//   NavigateToJourneyAction = 'Another Journey',
+//   LinkAction = 'URL/Website'
+// }
+export const actions = [
+  {
+    value: 'none',
+    label: 'Select an Action...'
+  },
+  {
+    value: 'NavigateAction',
+    label: 'Next Step'
+  },
+  {
+    value: 'NavigateToBlockAction',
+    label: 'Selected Card'
+  },
+  {
+    value: 'NavigateToJourneyAction',
+    label: 'Another Journey'
+  },
+  {
+    value: 'LinkAction',
+    label: 'URL/Website'
+  }
+]
 
 export function Action(): ReactElement {
   const { state } = useEditor()
@@ -56,12 +78,10 @@ export function Action(): ReactElement {
   )
   const [actionRemove] = useMutation<ActionRemove>(ACTION_REMOVE)
 
-  const actionName =
-    selectedBlock?.action != null
-      ? actions[selectedBlock?.action?.__typename]
-      : 'none'
-
-  const [action, setAction] = useState(actionName)
+  const selectedAction = actions.find(
+    (act) => act.value === selectedBlock?.action?.__typename
+  )
+  const [action, setAction] = useState(selectedAction?.value ?? 'none')
 
   async function navigateAction(): Promise<void> {
     if (selectedBlock != null && state.selectedStep?.nextBlockId != null) {
@@ -117,7 +137,7 @@ export function Action(): ReactElement {
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (event.target.value === 'none') {
       await removeAction()
-    } else if (event.target.value === 'Next Step') {
+    } else if (event.target.value === 'NavigateAction') {
       await navigateAction()
     }
     setAction(event.target.value)
@@ -135,11 +155,13 @@ export function Action(): ReactElement {
           value={action}
           IconComponent={KeyboardArrowDownRoundedIcon}
         >
-          <MenuItem value={'none'}>Select an Action...</MenuItem>
-          {Object.values(actions).map((action) => {
+          {actions.map((action) => {
             return (
-              <MenuItem key={`button-action-${action}`} value={action}>
-                {action}
+              <MenuItem
+                key={`button-action-${action.value}`}
+                value={action.value}
+              >
+                {action.label}
               </MenuItem>
             )
           })}
@@ -150,12 +172,10 @@ export function Action(): ReactElement {
         Redirect user to the selected resource
       </Typography>
 
-      {action === actions.NavigateAction && <NavigateAction />}
-      {action === actions.NavigateToBlockAction && <NavigateToBlockAction />}
-      {action === actions.NavigateToJourneyAction && (
-        <NavigateToJourneyAction />
-      )}
-      {action === actions.LinkAction && <LinkAction />}
+      {action === 'NavigateAction' && <NavigateAction />}
+      {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
+      {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
+      {action === 'LinkAction' && <LinkAction />}
     </Stack>
   )
 }

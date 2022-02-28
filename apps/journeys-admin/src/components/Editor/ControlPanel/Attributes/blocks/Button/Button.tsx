@@ -14,7 +14,7 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
-import { actions as buttonAction } from '../../Action/Action'
+import { actions } from '../../Action/Action'
 import { Action } from '../../Action'
 import { Color } from './Color'
 import { Size } from './Size'
@@ -40,14 +40,15 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  const actionName = action != null ? buttonAction[action.__typename] : 'None'
+  const selectedAction = actions.find((act) => act.value === action?.__typename)
+
   return (
     <>
       <Attribute
         id={`${id}-button-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        value={actionName}
+        value={selectedAction?.label ?? 'None'}
         description="Action"
         onClick={() => {
           dispatch({
