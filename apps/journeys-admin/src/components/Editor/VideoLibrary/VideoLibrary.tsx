@@ -65,6 +65,7 @@ export function VideoLibrary({
     <>
       {smUp ? (
         <Drawer
+          data-testId="video-library"
           anchor="right"
           variant="temporary"
           open={open}
@@ -85,6 +86,7 @@ export function VideoLibrary({
         </Drawer>
       ) : (
         <Drawer
+          data-testId="video-library"
           anchor="bottom"
           variant="temporary"
           open={open}

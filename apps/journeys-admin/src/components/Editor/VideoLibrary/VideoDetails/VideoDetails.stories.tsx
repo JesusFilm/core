@@ -8,14 +8,20 @@ const VideoDetailsStory = {
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails'
 }
 
-const Template: Story = ({ open, onClose, onSelect }) => (
-  <VideoDetails open={open} onClose={onClose} onSelect={onSelect} />
+const Template: Story = ({ ...args }) => (
+  <VideoDetails
+    videoId={args.videoId}
+    open={args.open}
+    handleOpen={args.handleOpen}
+    onSelect={args.onSelect}
+  />
 )
 
 export const Default = Template.bind({})
 Default.args = {
+  videoId: 'videoUUID',
   open: true,
-  onClose: () => console.log('onClose'),
+  handleOpen: () => console.log('handleOpen'),
   onSelect: (id: string) => console.log('onSelect', id)
 }
 

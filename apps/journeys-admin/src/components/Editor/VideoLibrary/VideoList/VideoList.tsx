@@ -68,6 +68,7 @@ export function VideoList({ onSelect }: VideoListProps): ReactElement {
           </IconButton>
         ) : (
           <Chip
+            data-testid="video-list-chip"
             size="medium"
             disabled={visibleVidoes >= arclightContent}
             icon={

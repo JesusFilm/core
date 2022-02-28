@@ -8,7 +8,9 @@ const VideoListStory = {
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoList'
 }
 
-const Template: Story = () => <VideoList />
-export const Default = Template.bind({})
+const Template: Story = ({ ...args }) => <VideoList onSelect={args.onSelect} />
+export const Default = Template.bind({
+  onSelect: () => console.log('onSelect')
+})
 
 export default VideoListStory as Meta

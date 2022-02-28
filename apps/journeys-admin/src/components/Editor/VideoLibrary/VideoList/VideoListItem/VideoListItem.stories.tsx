@@ -15,6 +15,7 @@ const Template: Story = ({ ...args }) => (
     poster={args.poster}
     time={args.time}
     language={args.language}
+    onSelect={args.onSelect}
   />
 )
 
@@ -25,7 +26,8 @@ Default.args = {
   poster:
     'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1631&q=80',
   time: 94000,
-  language: ''
+  language: '',
+  onSelect: () => console.log('onSelect')
 }
 
 export default VideoListItemStory as Meta
