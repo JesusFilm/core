@@ -36,13 +36,7 @@ export const ACTION_REMOVE = gql`
     }
   }
 `
-// convert this to array of obects, add one for the none option
-// export enum actions {
-//   NavigateAction = 'Next Step',
-//   NavigateToBlockAction = 'Selected Card',
-//   NavigateToJourneyAction = 'Another Journey',
-//   LinkAction = 'URL/Website'
-// }
+
 export const actions = [
   {
     value: 'none',
