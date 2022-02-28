@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
+import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockCreate
@@ -53,15 +53,39 @@ export interface ButtonBlockCreate_buttonBlockCreate {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIconId: string | null;
-  endIconId: string | null;
+  startIconId: string;
+  endIconId: string;
   action: ButtonBlockCreate_buttonBlockCreate_action | null;
+}
+
+export interface ButtonBlockCreate_startIcon {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
+}
+
+export interface ButtonBlockCreate_endIcon {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
 }
 
 export interface ButtonBlockCreate {
   buttonBlockCreate: ButtonBlockCreate_buttonBlockCreate;
+  startIcon: ButtonBlockCreate_startIcon;
+  endIcon: ButtonBlockCreate_endIcon;
 }
 
 export interface ButtonBlockCreateVariables {
   input: ButtonBlockCreateInput;
+  iconBlockCreateInput1: IconBlockCreateInput;
+  iconBlockCreateInput2: IconBlockCreateInput;
 }
