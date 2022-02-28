@@ -226,7 +226,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 0,
                   label: 'One of many ways to God',
                   action: {
-                    parentBlockId: 'radioQuestion0.id',
+                    parentBlockId: 'radioOption1.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -239,7 +239,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 1,
                   label: 'One great lie...',
                   action: {
-                    parentBlockId: 'radioQuestion0.id',
+                    parentBlockId: 'radioOption3.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
@@ -252,7 +252,7 @@ describe('NavigateToBlockAction', () => {
                   parentOrder: 2,
                   label: 'One true way to God',
                   action: {
-                    parentBlockId: 'radioQuestion0.id',
+                    parentBlockId: 'radioOption4.id',
                     __typename: 'NavigateAction',
                     gtmEventName: 'gtmEventName'
                   },
