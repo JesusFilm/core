@@ -9,11 +9,13 @@
 
 export interface VideoTriggerFields_triggerAction_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -26,12 +28,14 @@ export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journe
 
 export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
 export interface VideoTriggerFields_triggerAction_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }

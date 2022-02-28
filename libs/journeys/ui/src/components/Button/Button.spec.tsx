@@ -122,6 +122,7 @@ describe('Button', () => {
         {...block}
         action={{
           __typename: 'NavigateToBlockAction',
+          parentBlockId: block.id,
           gtmEventName: 'gtmEventName',
           blockId: 'def'
         }}
@@ -134,6 +135,7 @@ describe('Button', () => {
       }),
       {
         __typename: 'NavigateToBlockAction',
+        parentBlockId: block.id,
         gtmEventName: 'gtmEventName',
         blockId: 'def'
       }

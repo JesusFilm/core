@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { RadioOptionBlock } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -29,6 +30,12 @@ describe('RadioQuestionBlockResolver', () => {
     }
   }
 
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
+  }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
@@ -41,6 +48,11 @@ describe('RadioQuestionBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
   }
 
   const radioOptionInput = {
@@ -106,13 +118,23 @@ describe('RadioQuestionBlockResolver', () => {
     service = await module.resolve(BlockService)
   })
 
-  describe('RadioQuestionBlock', () => {
-    it('returns RadioQuestionBlock', async () => {
+  describe('RadioOptionBlock', () => {
+    it('returns RadioOptionBlock', async () => {
       expect(await blockResolver.block('1')).toEqual(blockResponse)
       expect(await blockResolver.blocks()).toEqual([
         blockResponse,
         blockResponse
       ])
+    })
+  })
+
+  describe('action', () => {
+    it('returns RadioOptionBlock action with parentBlockId', async () => {
+      expect(
+        await radioOptionBlockResolver.action(
+          blockWithId as unknown as RadioOptionBlock
+        )
+      ).toEqual(actionResponse)
     })
   })
 

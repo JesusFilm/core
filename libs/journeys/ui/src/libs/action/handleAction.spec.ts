@@ -23,6 +23,7 @@ describe('handleAction', () => {
   it('should handle NavigateToBlockAction', () => {
     handleAction(router, {
       __typename: 'NavigateToBlockAction',
+      parentBlockId: 'parent-id',
       blockId: 'block-id',
       gtmEventName: null
     })
@@ -32,6 +33,7 @@ describe('handleAction', () => {
   it('should handle NavigateToJourneyAction', () => {
     handleAction(router, {
       __typename: 'NavigateToJourneyAction',
+      parentBlockId: 'parent-id',
       journey: {
         __typename: 'Journey',
         id: 'journey-id',
@@ -46,6 +48,7 @@ describe('handleAction', () => {
     expect(() =>
       handleAction(router, {
         __typename: 'NavigateToJourneyAction',
+        parentBlockId: 'parent-id',
         journey: null,
         gtmEventName: null
       })
@@ -55,6 +58,7 @@ describe('handleAction', () => {
   it('should handle NavigateAction', () => {
     handleAction(router, {
       __typename: 'NavigateAction',
+      parentBlockId: 'parent-id',
       gtmEventName: null
     })
     expect(nextActiveBlock).toHaveBeenCalledWith()

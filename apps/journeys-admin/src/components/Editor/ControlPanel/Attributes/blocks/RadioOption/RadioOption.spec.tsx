@@ -6,7 +6,7 @@ import { RadioOption } from '.'
 describe('RadioOption Attribute', () => {
   it('shows default attributes', () => {
     const block: TreeBlock<RadioOptionBlock> = {
-      id: 'radio-option.id',
+      id: 'radioOption1.id',
       __typename: 'RadioOptionBlock',
       parentBlockId: 'step1.id',
       parentOrder: 0,
@@ -20,13 +20,14 @@ describe('RadioOption Attribute', () => {
 
   it('shows filled attributes', () => {
     const block: TreeBlock<RadioOptionBlock> = {
-      id: 'radio-option.id',
+      id: 'radioOption1.id',
       __typename: 'RadioOptionBlock',
       parentBlockId: 'step1.id',
       parentOrder: 0,
       label: 'Radio Option',
       action: {
         __typename: 'NavigateToBlockAction',
+        parentBlockId: 'radioOption1.id',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       },

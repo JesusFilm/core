@@ -13,7 +13,7 @@ const RadioOptionStory = {
 
 export const Default: Story = () => {
   const block: TreeBlock<RadioOptionBlock> = {
-    id: 'radio-option.id',
+    id: 'radioOption1.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
@@ -38,13 +38,14 @@ export const Default: Story = () => {
 
 export const Filled: Story = () => {
   const block: TreeBlock<RadioOptionBlock> = {
-    id: 'radio-option.id',
+    id: 'radioOption1.id',
     __typename: 'RadioOptionBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
     label: 'Radio Option',
     action: {
       __typename: 'NavigateToBlockAction',
+      parentBlockId: 'radioOption1.id',
       gtmEventName: 'navigateToBlock',
       blockId: 'step2.id'
     },

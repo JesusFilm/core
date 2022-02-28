@@ -11,7 +11,7 @@ import {
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 
-@Resolver('NavigateToBlockActionResolver')
+@Resolver('NavigateToBlockAction')
 export class NavigateToBlockActionResolver {
   constructor(private readonly blockService: BlockService) {}
 
@@ -25,7 +25,10 @@ export class NavigateToBlockActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<{ __typename: string }>(id)
+    const block = await this.blockService.get<{
+      __typename: string
+      _key: string
+    }>(id)
 
     if (
       !includes(
@@ -38,8 +41,19 @@ export class NavigateToBlockActionResolver {
       )
     }
 
-    return await this.blockService.update(id, {
-      action: { ...input, journeyId: null, url: null, target: null }
-    })
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          parentBlockId: block._key,
+          journeyId: null,
+          url: null,
+          target: null
+        }
+      }
+    )
+
+    return updatedBlock.action
   }
 }
