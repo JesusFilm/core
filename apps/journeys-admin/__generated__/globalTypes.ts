@@ -68,6 +68,7 @@ export enum IconName {
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
   MenuBookRounded = "MenuBookRounded",
+  None = "None",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
   SendRounded = "SendRounded",
@@ -138,21 +139,21 @@ export enum VideoResponseStateEnum {
 
 export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
+  endIconId: string;
   id?: string | null;
   journeyId: string;
   label: string;
   parentBlockId: string;
   size?: ButtonSize | null;
+  startIconId: string;
   variant?: ButtonVariant | null;
 }
 
 export interface ButtonBlockUpdateInput {
   color?: ButtonColor | null;
-  endIconId?: string | null;
   label?: string | null;
   parentBlockId?: string | null;
   size?: ButtonSize | null;
-  startIconId?: string | null;
   variant?: ButtonVariant | null;
 }
 
@@ -163,6 +164,15 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface IconBlockCreateInput {
+  color?: IconColor | null;
+  id?: string | null;
+  journeyId: string;
+  name: IconName;
+  parentBlockId: string;
+  size?: IconSize | null;
 }
 
 export interface ImageBlockCreateInput {
@@ -208,7 +218,7 @@ export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  submitIconId?: string | null;
+  submitIconId: string;
   submitLabel: string;
 }
 
