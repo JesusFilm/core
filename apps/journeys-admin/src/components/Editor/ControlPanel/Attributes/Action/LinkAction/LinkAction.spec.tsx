@@ -65,4 +65,34 @@ describe('LinkAction', () => {
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('is a required field', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <LinkAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: '' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+  })
+
+  it('validates the input as a URL', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <LinkAction />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'www.incorectUrl.com/needs-protocol' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
+  })
 })
