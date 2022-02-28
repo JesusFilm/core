@@ -15,6 +15,7 @@ import Close from '@mui/icons-material/Close'
 
 export const DRAWER_WIDTH = 328
 
+// add props when arclight api is ready
 interface VideoDetailsContentProps {
   videoId: string
   handleOpen: () => void
@@ -22,26 +23,19 @@ interface VideoDetailsContentProps {
 }
 
 export function VideoDetailsContent({
-  videoId: id,
+  videoId,
   handleOpen,
   onSelect
 }: VideoDetailsContentProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
-  const [videoId, setVideoId] = useState<string>('')
-
-  useEffect(() => {
-    setVideoId(id)
-  }, [id])
 
   const handleOnClick = (): void => {
     onSelect(videoId)
   }
 
-  // TODO: pass in the videoID from the drawer
-  // Run a query with the videoId to get the video details
-  // then onClick return onSelect to parent with the videoId
+  // TODO: removed hardcoded values to be replaced with arclight props
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -127,11 +121,11 @@ export function VideoDetailsContent({
               src={
                 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
               }
-            // type={
-            //   videoContent.__typename === 'VideoArclight'
-            //     ? 'application/x-mpegURL'
-            //     : undefined
-            // }
+              // type={
+              //   videoContent.__typename === 'VideoArclight'
+              //     ? 'application/x-mpegURL'
+              //     : undefined
+              // }
             />
           </video>
           {!isPlaying && (
@@ -200,12 +194,14 @@ export function VideoDetailsContent({
 
 interface VideoDetailsProps {
   open: boolean
+  videoId: string
   handleOpen: () => void
   onSelect: (id: string) => void
 }
 
 export function VideoDetails({
   open,
+  videoId,
   handleOpen,
   onSelect
 }: VideoDetailsProps): ReactElement {
@@ -227,7 +223,7 @@ export function VideoDetails({
       }}
     >
       <VideoDetailsContent
-        videoId="selectedVideoId"
+        videoId={videoId}
         handleOpen={handleOpen}
         onSelect={onSelect}
       />
@@ -246,7 +242,7 @@ export function VideoDetails({
       }}
     >
       <VideoDetailsContent
-        videoId="selectedVideoId"
+        videoId={videoId}
         handleOpen={handleOpen}
         onSelect={onSelect}
       />

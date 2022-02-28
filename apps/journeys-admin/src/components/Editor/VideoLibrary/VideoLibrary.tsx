@@ -61,8 +61,6 @@ export function VideoLibrary({
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  // onSelectReturns the chosen videos ID
-
   return (
     <>
       {smUp ? (

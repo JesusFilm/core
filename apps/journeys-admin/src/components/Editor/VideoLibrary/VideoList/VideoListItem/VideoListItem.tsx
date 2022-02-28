@@ -7,7 +7,9 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 import { VideoDetails } from '../../VideoDetails'
 
+// props to be set as optional for now until arclight api is ready
 interface VideoListItemProps {
+  id?: string
   title?: string
   description?: string
   poster?: string
@@ -17,6 +19,7 @@ interface VideoListItemProps {
 }
 
 export function VideoListItem({
+  id,
   title,
   description,
   poster,
@@ -117,7 +120,13 @@ export function VideoListItem({
           />
         </Box>
       </ListItemButton>
-      <VideoDetails open={open} handleOpen={handleOpen} onSelect={onSelect} />
+      {/* videoId to be passed from arclight */}
+      <VideoDetails
+        open={open}
+        videoId={id ?? 'videoUUID'}
+        handleOpen={handleOpen}
+        onSelect={onSelect}
+      />
     </>
   )
 }
