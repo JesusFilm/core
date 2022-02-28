@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
-import { ActionRemove } from '../../../../../../__generated__/ActionRemove'
+import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
 import { useJourney } from '../../../../../libs/context'
 import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
@@ -29,8 +29,8 @@ export const NAVIGATE_ACTION_UPDATE = gql`
   }
 `
 
-export const ACTION_REMOVE = gql`
-  mutation ActionRemove($id: ID!, $journeyId: ID!) {
+export const ACTION_DELETE = gql`
+  mutation ActionDelete($id: ID!, $journeyId: ID!) {
     blockDeleteAction(id: $id, journeyId: $journeyId) {
       id
     }
@@ -70,7 +70,7 @@ export function Action(): ReactElement {
   const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(
     NAVIGATE_ACTION_UPDATE
   )
-  const [actionRemove] = useMutation<ActionRemove>(ACTION_REMOVE)
+  const [actionDelete] = useMutation<ActionDelete>(ACTION_DELETE)
 
   const selectedAction = actions.find(
     (act) => act.value === selectedBlock?.action?.__typename
@@ -106,7 +106,7 @@ export function Action(): ReactElement {
   async function removeAction(): Promise<void> {
     if (selectedBlock != null) {
       const { id, __typename: typeName } = selectedBlock
-      await actionRemove({
+      await actionDelete({
         variables: {
           id,
           journeyId: journey.id

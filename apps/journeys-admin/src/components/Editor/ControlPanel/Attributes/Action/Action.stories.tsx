@@ -10,7 +10,7 @@ import {
   JourneyStatus
 } from '../../../../../../__generated__/globalTypes'
 import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
-import { Action, ACTION_REMOVE, NAVIGATE_ACTION_UPDATE } from './Action'
+import { Action, ACTION_DELETE, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
 
 const ActionStory = {
@@ -73,7 +73,7 @@ export const Default: Story = () => {
         },
         {
           request: {
-            query: ACTION_REMOVE,
+            query: ACTION_DELETE,
             variables: {
               journeyId: 'journeyId',
               id: selectedBlock.id

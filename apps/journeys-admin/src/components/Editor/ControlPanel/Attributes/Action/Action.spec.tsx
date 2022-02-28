@@ -7,7 +7,7 @@ import {
   ThemeMode
 } from '../../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../../libs/context'
-import { Action, NAVIGATE_ACTION_UPDATE, ACTION_REMOVE } from './Action'
+import { Action, NAVIGATE_ACTION_UPDATE, ACTION_DELETE } from './Action'
 import { steps } from './data'
 
 describe('Action', () => {
@@ -110,7 +110,7 @@ describe('Action', () => {
         mocks={[
           {
             request: {
-              query: ACTION_REMOVE,
+              query: ACTION_DELETE,
               variables: {
                 id: selectedBlock?.id
               }
