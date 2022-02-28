@@ -23,7 +23,7 @@ export const Default: Story = () => {
 export const WithLink: Story = () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
-    id: 'id',
+    id: 'button.id',
     parentBlockId: 'parentBlockId',
     parentOrder: 0,
     label: 'test button',
@@ -33,6 +33,7 @@ export const WithLink: Story = () => {
     startIconId: null,
     endIconId: null,
     action: {
+      parentBlockId: 'button.id',
       __typename: 'LinkAction',
       gtmEventName: 'gtmEventName',
       url: 'https://www.google.com'

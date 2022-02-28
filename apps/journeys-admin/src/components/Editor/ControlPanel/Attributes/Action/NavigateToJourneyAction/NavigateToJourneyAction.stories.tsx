@@ -49,7 +49,7 @@ export const Default: Story = () => {
 export const WithSelected: Story = () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
-    id: 'journeyId',
+    id: 'buttonId',
     parentBlockId: 'parentBlockId',
     parentOrder: 0,
     label: 'test button',
@@ -59,6 +59,7 @@ export const WithSelected: Story = () => {
     startIconId: null,
     endIconId: null,
     action: {
+      parentBlockId: 'buttonId',
       __typename: 'NavigateToJourneyAction',
       gtmEventName: 'gtmEventName',
       journey: {

@@ -2,14 +2,20 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   ButtonVariant,
   ButtonColor,
   TypographyVariant,
-  ButtonSize
+  ButtonSize,
+  ThemeName,
+  ThemeMode
 } from '../../../../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../../../../libs/context'
 import { NavigateToBlockAction } from '.'
 
 const NavigateToBlockActionStory = {
@@ -76,7 +82,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button0',
+            id: 'button0.id',
             parentBlockId: 'card0.id',
             parentOrder: 3,
             label: 'Watch Now',
@@ -86,6 +92,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: null,
             endIconId: null,
             action: {
+              parentBlockId: 'button0.id',
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step1.id'
@@ -151,7 +158,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button',
+            id: 'button1.id',
             parentBlockId: 'card1.id',
             parentOrder: 3,
             label: 'Watch Now',
@@ -161,6 +168,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: null,
             endIconId: null,
             action: {
+              parentBlockId: 'button1.id',
               __typename: 'NavigateAction',
               gtmEventName: 'gtmEventName'
             },
@@ -227,6 +235,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 0,
                 label: 'One of many ways to God',
                 action: {
+                  parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -239,6 +248,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 1,
                 label: 'One great lie...',
                 action: {
+                  parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -251,6 +261,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 2,
                 label: 'One true way to God',
                 action: {
+                  parentBlockId: 'radioOption4.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -319,6 +330,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: {
+                  parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -331,6 +343,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: {
+                  parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -409,7 +422,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button',
+            id: 'button3.id',
             parentBlockId: 'card4.id',
             parentOrder: 4,
             label: 'Start Over',
@@ -419,6 +432,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: null,
             endIconId: null,
             action: {
+              parentBlockId: 'button3.id',
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
@@ -430,6 +444,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
     ]
   }
 ]
+
+const journeyTheme = {
+  id: 'journeyId',
+  themeMode: ThemeMode.light,
+  themeName: ThemeName.base
+} as unknown as Journey
 
 export const Default: Story = () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
@@ -448,9 +468,11 @@ export const Default: Story = () => {
   }
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ selectedBlock, steps }}>
-        <NavigateToBlockAction />
-      </EditorProvider>
+      <JourneyProvider value={journeyTheme}>
+        <EditorProvider initialState={{ selectedBlock, steps }}>
+          <NavigateToBlockAction />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }
@@ -458,7 +480,7 @@ export const Default: Story = () => {
 export const SelectedCard: Story = () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
-    id: 'button0',
+    id: 'button0.id',
     parentBlockId: 'card0.id',
     parentOrder: 3,
     label: 'Watch Now',
@@ -468,6 +490,7 @@ export const SelectedCard: Story = () => {
     startIconId: null,
     endIconId: null,
     action: {
+      parentBlockId: 'button0.id',
       __typename: 'NavigateToBlockAction',
       gtmEventName: 'gtmEventName',
       blockId: 'step1.id'
@@ -477,9 +500,11 @@ export const SelectedCard: Story = () => {
 
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ selectedBlock, steps }}>
-        <NavigateToBlockAction />
-      </EditorProvider>
+      <JourneyProvider value={journeyTheme}>
+        <EditorProvider initialState={{ selectedBlock, steps }}>
+          <NavigateToBlockAction />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }

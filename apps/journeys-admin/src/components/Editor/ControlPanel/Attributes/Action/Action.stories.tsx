@@ -1,8 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '../../../../../libs/context'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
+} from '../../../../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import {
   ButtonVariant,
@@ -14,7 +18,7 @@ import {
   JourneyStatus
 } from '../../../../../../__generated__/globalTypes'
 import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
-import { Action } from '.'
+import { Action, ACTION_REMOVE, NAVIGATE_ACTION_UPDATE } from './Action'
 
 const ActionStory = {
   ...simpleComponentConfig,
@@ -96,7 +100,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button',
+            id: 'button0.id',
             parentBlockId: 'card0.id',
             parentOrder: 3,
             label: 'Watch Now',
@@ -106,6 +110,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: null,
             endIconId: null,
             action: {
+              parentBlockId: 'button0.id',
               __typename: 'NavigateAction',
               gtmEventName: 'gtmEventName'
             },
@@ -170,7 +175,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button',
+            id: 'button1.id',
             parentBlockId: 'card1.id',
             parentOrder: 3,
             label: 'Watch Now',
@@ -179,10 +184,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
-            action: {
-              __typename: 'NavigateAction',
-              gtmEventName: 'gtmEventName'
-            },
+            action: null,
             children: []
           }
         ]
@@ -246,6 +248,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 0,
                 label: 'One of many ways to God',
                 action: {
+                  parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -258,6 +261,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 1,
                 label: 'One great lie...',
                 action: {
+                  parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -270,6 +274,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 2,
                 label: 'One true way to God',
                 action: {
+                  parentBlockId: 'radioOption4.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -338,6 +343,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
                 action: {
+                  parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -350,6 +356,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: {
+                  parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateAction',
                   gtmEventName: 'gtmEventName'
                 },
@@ -428,7 +435,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           },
           {
             __typename: 'ButtonBlock',
-            id: 'button',
+            id: 'button3.id',
             parentBlockId: 'card4.id',
             parentOrder: 4,
             label: 'Start Over',
@@ -438,6 +445,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             startIconId: null,
             endIconId: null,
             action: {
+              parentBlockId: 'button3.id',
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
@@ -450,17 +458,93 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-export const Default: Story = () => {
-  const selectedStep: TreeBlock<StepBlock> = {
-    id: 'step1.id',
-    __typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    locked: false,
-    nextBlockId: null,
-    children: []
-  }
+const selectedStep: TreeBlock<StepBlock> = {
+  id: 'step1.id',
+  __typename: 'StepBlock',
+  parentBlockId: null,
+  parentOrder: 0,
+  locked: false,
+  nextBlockId: 'step2.id',
+  children: [
+    {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: 'image1.id',
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: [
+        {
+          id: 'image1.id',
+          __typename: 'ImageBlock',
+          src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+          width: 1920,
+          height: 1080,
+          alt: 'random image from unsplash',
+          parentBlockId: 'card1.id',
+          parentOrder: 0,
+          children: [],
+          blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
+        },
+        {
+          id: 'typographyBlockId1',
+          __typename: 'TypographyBlock',
+          parentBlockId: 'card1.id',
+          parentOrder: 1,
+          align: null,
+          color: null,
+          content: 'a quick question...',
+          variant: TypographyVariant.h6,
+          children: []
+        },
+        {
+          id: 'typographyBlockId12',
+          __typename: 'TypographyBlock',
+          parentBlockId: 'card1.id',
+          parentOrder: 2,
+          align: null,
+          color: null,
+          content: 'Can we trust the story of Jesus ?',
+          variant: TypographyVariant.h3,
+          children: []
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'button1.id',
+          parentBlockId: 'card1.id',
+          parentOrder: 3,
+          label: 'Watch Now',
+          buttonVariant: ButtonVariant.contained,
+          buttonColor: ButtonColor.primary,
+          size: ButtonSize.large,
+          startIconId: null,
+          endIconId: null,
+          action: null,
+          children: []
+        }
+      ]
+    }
+  ]
+}
 
+const selectedBlock: TreeBlock<ButtonBlock> = {
+  __typename: 'ButtonBlock',
+  id: 'button1.id',
+  parentBlockId: 'card1.id',
+  parentOrder: 3,
+  label: 'Watch Now',
+  buttonVariant: ButtonVariant.contained,
+  buttonColor: ButtonColor.primary,
+  size: ButtonSize.large,
+  startIconId: null,
+  endIconId: null,
+  action: null,
+  children: []
+}
+export const Default: Story = () => {
   return (
     <MockedProvider
       mocks={[
@@ -473,12 +557,48 @@ export const Default: Story = () => {
               journeys: [journey]
             }
           }
+        },
+        {
+          request: {
+            query: NAVIGATE_ACTION_UPDATE,
+            variables: {
+              id: selectedBlock.id,
+              journeyId: 'journeyId',
+              input: {}
+            }
+          },
+          result: {
+            data: {
+              blockUpdateNavigateAction: {
+                id: 'journeyId',
+                gtmEventName: 'gtmEventName'
+              }
+            }
+          }
+        },
+        {
+          request: {
+            query: ACTION_REMOVE,
+            variables: {
+              journeyId: 'journeyId',
+              id: selectedBlock.id
+            }
+          },
+          result: {
+            data: {
+              blockDeleteAction: {
+                id: 'journeyId'
+              }
+            }
+          }
         }
       ]}
     >
-      <EditorProvider initialState={{ steps, selectedStep }}>
-        <Action />
-      </EditorProvider>
+      <JourneyProvider value={journey}>
+        <EditorProvider initialState={{ steps, selectedStep, selectedBlock }}>
+          <Action />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }
