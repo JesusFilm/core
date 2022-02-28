@@ -55,6 +55,7 @@ export enum GridAlignItems {
 }
 
 export enum IconName {
+    None = "None",
     PlayArrowRounded = "PlayArrowRounded",
     TranslateRounded = "TranslateRounded",
     CheckCircleRounded = "CheckCircleRounded",
@@ -166,6 +167,8 @@ export class ButtonBlockCreateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    startIconId: string;
+    endIconId: string;
 }
 
 export class ButtonBlockUpdateInput {
@@ -174,8 +177,6 @@ export class ButtonBlockUpdateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
-    startIconId?: Nullable<string>;
-    endIconId?: Nullable<string>;
 }
 
 export class CardBlockCreateInput {
@@ -208,7 +209,6 @@ export class IconBlockCreateInput {
 }
 
 export class IconBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
     name: IconName;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
@@ -258,13 +258,12 @@ export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    submitIconId?: Nullable<string>;
+    submitIconId: string;
     submitLabel: string;
 }
 
 export class SignUpBlockUpdateInput {
     parentBlockId?: Nullable<string>;
-    submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
 
@@ -449,8 +448,8 @@ export class ButtonBlock implements Block {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
-    startIconId?: Nullable<string>;
-    endIconId?: Nullable<string>;
+    startIconId: string;
+    endIconId: string;
     action?: Nullable<Action>;
 }
 
@@ -541,7 +540,7 @@ export class SignUpBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
-    submitIconId?: Nullable<string>;
+    submitIconId: string;
     submitLabel?: Nullable<string>;
 }
 

@@ -74,7 +74,9 @@ describe('Button', () => {
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
-    size: ButtonSize.medium
+    size: ButtonSize.medium,
+    startIconId: 'start1',
+    endIconId: 'end1'
   }
 
   const blockCreateResponse = {
@@ -86,7 +88,9 @@ describe('Button', () => {
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
-    size: ButtonSize.medium
+    size: ButtonSize.medium,
+    startIconId: 'start1',
+    endIconId: 'end1'
   }
 
   const blockUpdate = {

@@ -59,7 +59,8 @@ describe('SignUpBlockResolver', () => {
     id: '1',
     parentBlockId: '',
     journeyId: '2',
-    submitLabel: 'Submit'
+    submitLabel: 'Submit',
+    submitIconId: 'icon1'
   }
 
   const signUpBlockResponse = {
@@ -68,7 +69,8 @@ describe('SignUpBlockResolver', () => {
     journeyId: input.journeyId,
     __typename: 'SignUpBlock',
     parentOrder: 2,
-    submitLabel: input.submitLabel
+    submitLabel: input.submitLabel,
+    submitIconId: 'icon1'
   }
 
   const blockUpdate = {

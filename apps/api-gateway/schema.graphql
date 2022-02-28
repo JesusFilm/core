@@ -31,34 +31,34 @@ interface Block {
 type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
-  endIconId: ID
+  endIconId: ID!
   id: ID!
   journeyId: ID!
   label: String!
   parentBlockId: ID
   parentOrder: Int
   size: ButtonSize
-  startIconId: ID
+  startIconId: ID!
   variant: ButtonVariant
 }
 
 input ButtonBlockCreateInput {
   color: ButtonColor
+  endIconId: ID!
   id: ID
   journeyId: ID!
   label: String!
   parentBlockId: ID!
   size: ButtonSize
+  startIconId: ID!
   variant: ButtonVariant
 }
 
 input ButtonBlockUpdateInput {
   color: ButtonColor
-  endIconId: ID
   label: String
   parentBlockId: ID
   size: ButtonSize
-  startIconId: ID
   variant: ButtonVariant
 }
 
@@ -205,7 +205,6 @@ input IconBlockCreateInput {
 input IconBlockUpdateInput {
   color: IconColor
   name: IconName!
-  parentBlockId: ID
   size: IconSize
 }
 
@@ -230,6 +229,7 @@ enum IconName {
   LiveTvRounded
   LockOpenRounded
   MenuBookRounded
+  None
   PlayArrowRounded
   RadioButtonUncheckedRounded
   SendRounded
@@ -365,8 +365,8 @@ input LinkActionInput {
 
 type Mutation {
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID!): [Block!]! @join__field(graph: JOURNEYS)
-  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+  blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
@@ -518,7 +518,7 @@ type SignUpBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  submitIconId: ID
+  submitIconId: ID!
   submitLabel: String
 }
 
@@ -526,13 +526,12 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID
+  submitIconId: ID!
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
-  submitIconId: ID
   submitLabel: String
 }
 

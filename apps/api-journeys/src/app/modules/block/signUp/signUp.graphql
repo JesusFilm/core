@@ -4,7 +4,7 @@ type SignUpBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  submitIconId: ID
+  submitIconId: ID!
   submitLabel: String
 }
 
@@ -12,13 +12,12 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID
+  submitIconId: ID!
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
-  submitIconId: ID
   submitLabel: String
 }
 
