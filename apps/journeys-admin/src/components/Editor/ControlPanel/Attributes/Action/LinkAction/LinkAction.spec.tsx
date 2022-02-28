@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui'
+import { InMemoryCache } from '@apollo/client'
 import { steps } from '../data'
 import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
@@ -27,6 +28,15 @@ describe('LinkAction', () => {
   })
 
   it('updates the link on the action', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button0.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
@@ -64,6 +74,10 @@ describe('LinkAction', () => {
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'ButtonBlock:button0.id' }
+    ])
   })
 
   it('is a required field', async () => {

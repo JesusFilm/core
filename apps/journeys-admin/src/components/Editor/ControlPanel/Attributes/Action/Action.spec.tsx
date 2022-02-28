@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui'
+import { InMemoryCache } from '@apollo/client'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ThemeName,
@@ -24,6 +25,15 @@ describe('Action', () => {
   })
 
   it('changes action to navigateAction', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
     const result = jest.fn(() => ({
       data: {
         blockUpdateNavigateAction: {
@@ -67,6 +77,10 @@ describe('Action', () => {
     fireEvent.mouseDown(getByText('URL/Website'))
     fireEvent.click(getByText('Next Step'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'ButtonBlock:button1.id' }
+    ])
   })
 
   it('shows properties for current action', () => {
@@ -96,7 +110,16 @@ describe('Action', () => {
     )
   })
 
-  it('removes action from block', async () => {
+  it('deletes action from block', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
     const result = jest.fn(() => ({
       data: {
         blockDeleteAction: {
@@ -129,5 +152,9 @@ describe('Action', () => {
     fireEvent.mouseDown(getByRole('button', { name: 'URL/Website' }))
     fireEvent.click(getByRole('option', { name: 'Select an Action...' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'ButtonBlock:button1.id' }
+    ])
   })
 })

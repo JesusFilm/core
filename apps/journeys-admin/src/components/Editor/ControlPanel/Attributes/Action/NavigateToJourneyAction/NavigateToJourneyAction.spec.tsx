@@ -1,6 +1,7 @@
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { InMemoryCache } from '@apollo/client'
 import { JourneyProvider } from '../../../../../../libs/context'
 import {
   ThemeMode,
@@ -78,6 +79,15 @@ describe('NavigateToJourneyAction', () => {
   it('changes the journey on action', async () => {
     const selectedBlock = steps[1].children[0].children[3]
 
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
     const result = jest.fn(() => ({
       data: {
         blockUpdateNavigateToJourneyAction: {
@@ -141,5 +151,9 @@ describe('NavigateToJourneyAction', () => {
     )
     fireEvent.click(getByRole('option', { name: 'testJourneyName' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'ButtonBlock:button1.id' }
+    ])
   })
 })

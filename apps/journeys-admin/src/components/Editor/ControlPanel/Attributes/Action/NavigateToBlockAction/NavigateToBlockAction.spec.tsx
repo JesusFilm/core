@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui'
+import { InMemoryCache } from '@apollo/client'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
   ThemeName,
@@ -16,6 +17,15 @@ import {
 describe('NavigateToBlockAction', () => {
   it('sets action on card click', async () => {
     const selectedBlock = steps[1].children[0].children[3]
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
 
     const result = jest.fn(() => ({
       data: {
@@ -62,5 +72,9 @@ describe('NavigateToBlockAction', () => {
     )
     fireEvent.click(getByTestId('preview-step2.id'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'ButtonBlock:button1.id' }
+    ])
   })
 })
