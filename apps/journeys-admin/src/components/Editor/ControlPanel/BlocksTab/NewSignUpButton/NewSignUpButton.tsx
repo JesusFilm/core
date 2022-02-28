@@ -58,6 +58,7 @@ export function NewSignUpButton(): ReactElement {
             id,
             journeyId,
             parentBlockId: card.id,
+            submitIconId: submitId,
             submitLabel: 'Submit'
           },
           iconBlockCreateInput: {
@@ -82,7 +83,7 @@ export function NewSignUpButton(): ReactElement {
                     `
                   })
                   const newSubmitIconBlockRef = cache.writeFragment({
-                    data: data.endIcon,
+                    data: data.submitIcon,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
