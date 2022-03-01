@@ -172,13 +172,14 @@ export function BackgroundMediaVideo({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const src = event.target.value
+    const title = src.replace(/(.*\/)*/, '').replace(/\?.*/, '')
 
     const block =
       videoBlock == null
         ? {
             parentBlockId: cardBlock.id,
             __typename: 'VideoBlock',
-            title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
+            title: title,
             autoplay: true,
             muted: cardBlock.parentOrder === 0,
             startAt: 0,
@@ -190,7 +191,7 @@ export function BackgroundMediaVideo({
           }
         : {
             ...videoBlock,
-            title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
+            title: title,
             videoContent: { src: src }
           }
     await handleChange(block as TreeBlock<VideoBlock>)
@@ -497,13 +498,13 @@ export function BackgroundMediaVideo({
                   id="src"
                   name="src"
                   variant="filled"
-                  data-testid="videoSrcTextField"
                   label="Paste URL of image..."
                   fullWidth
                   value={values.src}
                   onChange={handleChange}
                   onBlur={(e) => {
                     handleBlur(e)
+                    console.log(errors.src)
                     errors.src == null &&
                       handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
                   }}
