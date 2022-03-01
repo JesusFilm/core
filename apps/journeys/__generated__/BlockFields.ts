@@ -53,8 +53,8 @@ export interface BlockFields_ButtonBlock {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIconId: string;
-  endIconId: string;
+  startIconId: string | null;
+  endIconId: string | null;
   action: BlockFields_ButtonBlock_action | null;
 }
 
@@ -232,7 +232,7 @@ export interface BlockFields_SignUpBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
-  submitIconId: string;
+  submitIconId: string | null;
   action: BlockFields_SignUpBlock_action | null;
 }
 

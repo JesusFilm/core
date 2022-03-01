@@ -53,7 +53,7 @@ export interface ButtonFields {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIconId: string;
-  endIconId: string;
+  startIconId: string | null;
+  endIconId: string | null;
   action: ButtonFields_action | null;
 }

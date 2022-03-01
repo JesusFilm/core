@@ -53,8 +53,8 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIconId: string;
-  endIconId: string;
+  startIconId: string | null;
+  endIconId: string | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
 }
 
@@ -232,7 +232,7 @@ export interface GetJourney_journey_blocks_SignUpBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
-  submitIconId: string;
+  submitIconId: string | null;
   action: GetJourney_journey_blocks_SignUpBlock_action | null;
 }
 

@@ -51,7 +51,7 @@ export interface SignUpBlockCreate_signUpBlockCreate {
   journeyId: string;
   parentOrder: number | null;
   submitLabel: string | null;
-  submitIconId: string;
+  submitIconId: string | null;
   action: SignUpBlockCreate_signUpBlockCreate_action | null;
 }
 

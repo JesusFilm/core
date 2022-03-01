@@ -48,6 +48,6 @@ export interface SignUpFields {
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
-  submitIconId: string;
+  submitIconId: string | null;
   action: SignUpFields_action | null;
 }
