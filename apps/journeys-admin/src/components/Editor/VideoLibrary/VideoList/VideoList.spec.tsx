@@ -25,13 +25,11 @@ describe('Video List', () => {
     const { getByTestId, getAllByRole } = render(
       <VideoList onSelect={() => console.log('onSelect')} />
     )
-    expect(getByTestId('video-list-chip')).toBeInTheDocument()
     expect(getAllByRole('button')[0]).toHaveTextContent('Fact or fiction')
     expect(getAllByRole('button')).toHaveLength(5)
-    fireEvent.click(getByTestId('video-list-chip'))
-    await waitFor(() =>
-      expect(getAllByRole('button')[4]).toHaveTextContent('Fact or fiction')
-    )
-    expect(getAllByRole('button')).toHaveLength(9)
+    expect(getAllByRole('button')[5]).toBeUndefined()
+    fireEvent.click(getByTestId('VideoListLoadMore'))
+    await waitFor(() => expect(getAllByRole('button')).toHaveLength(9))
+    expect(getAllByRole('button')[4]).toHaveTextContent('Fact or fiction')
   })
 })

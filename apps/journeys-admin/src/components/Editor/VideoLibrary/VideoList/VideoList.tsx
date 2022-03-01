@@ -62,6 +62,7 @@ export function VideoList({ onSelect }: VideoListProps): ReactElement {
         sx={{ display: 'flex', justifyContent: 'center', mx: 'auto', my: 6 }}
       >
         <LoadingButton
+          data-testid="VideoListLoadMore"
           variant="outlined"
           onClick={handleClick}
           loading={isLoading}

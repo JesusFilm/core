@@ -12,8 +12,8 @@ import { VideoList } from './VideoList'
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
-  onClose: () => void
-  onSelect: (id: string) => void
+  onClose?: () => void
+  onSelect?: (id: string) => void
 }
 
 export function VideoLibrary({
@@ -24,8 +24,8 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const onSelect = (id: string): void => {
-    handleSelect(id)
-    onClose()
+    if (handleSelect != null) handleSelect(id)
+    if (onClose != null) onClose()
   }
 
   return (

@@ -18,8 +18,8 @@ export const DRAWER_WIDTH = 328
 
 interface VideoDetailsContentProps {
   videoId: string
-  handleOpen: () => void
-  onSelect: (id: string) => void
+  handleOpen?: () => void
+  onSelect?: (id: string) => void
 }
 
 export function VideoDetailsContent({
@@ -37,7 +37,7 @@ export function VideoDetailsContent({
   )
 
   const handleOnClick = (): void => {
-    onSelect(videoId)
+    if (onSelect != null) onSelect(videoId)
   }
 
   useEffect(() => {
@@ -167,6 +167,7 @@ export function VideoDetailsContent({
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mx: 2 }}>
         <Button
+          data-testid="VideoDetailsLanguageButton"
           variant="contained"
           size="small"
           onClick={() => console.log('open language drawer')}
@@ -176,6 +177,7 @@ export function VideoDetailsContent({
           Other Languages
         </Button>
         <Button
+          data-testid="VideoDetailsSelectButton"
           variant="contained"
           size="small"
           startIcon={<Check />}
@@ -191,8 +193,8 @@ export function VideoDetailsContent({
 interface VideoDetailsProps {
   open: boolean
   videoId: string
-  handleOpen: () => void
-  onSelect: (id: string) => void
+  handleOpen?: () => void
+  onSelect?: (id: string) => void
 }
 
 export function VideoDetails({
@@ -204,8 +206,8 @@ export function VideoDetails({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const onSelect = (id: string): void => {
-    handleSelect(id)
-    handleOpen()
+    if (handleSelect != null) handleSelect(id)
+    if (handleOpen != null) handleOpen()
   }
 
   return (
