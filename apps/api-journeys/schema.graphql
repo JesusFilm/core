@@ -114,8 +114,8 @@ type ButtonBlock implements Block {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
-  startIconId: ID!
-  endIconId: ID!
+  startIconId: ID
+  endIconId: ID
   action: Action
 }
 
@@ -127,8 +127,6 @@ input ButtonBlockCreateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
-  startIconId: ID!
-  endIconId: ID!
 }
 
 input ButtonBlockUpdateInput {
@@ -137,6 +135,8 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIconId: ID
+  endIconId: ID
 }
 
 type CardBlock implements Block {
@@ -385,7 +385,7 @@ type SignUpBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  submitIconId: ID!
+  submitIconId: ID
   submitLabel: String
 }
 
@@ -393,12 +393,12 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID!
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
+  submitIconId: ID
   submitLabel: String
 }
 

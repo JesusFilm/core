@@ -167,8 +167,6 @@ export class ButtonBlockCreateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
-    startIconId: string;
-    endIconId: string;
 }
 
 export class ButtonBlockUpdateInput {
@@ -177,6 +175,8 @@ export class ButtonBlockUpdateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    startIconId?: Nullable<string>;
+    endIconId?: Nullable<string>;
 }
 
 export class CardBlockCreateInput {
@@ -258,12 +258,12 @@ export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    submitIconId: string;
     submitLabel: string;
 }
 
 export class SignUpBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
 
@@ -448,8 +448,8 @@ export class ButtonBlock implements Block {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
-    startIconId: string;
-    endIconId: string;
+    startIconId?: Nullable<string>;
+    endIconId?: Nullable<string>;
     action?: Nullable<Action>;
 }
 
@@ -540,7 +540,7 @@ export class SignUpBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     action?: Nullable<Action>;
-    submitIconId: string;
+    submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
 
