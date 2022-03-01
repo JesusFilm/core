@@ -8,6 +8,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('LanguageDrawer', () => {
+  const languages = [
+    { id: 'en', name: 'English', nativeName: 'English' },
+    { id: 'zh-Hans', name: 'Simplified Chinese', nativeName: '简体中文' }
+  ]
+
   it('should call onClose when closed', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
@@ -17,6 +22,7 @@ describe('LanguageDrawer', () => {
           onClose={handleClose}
           onChange={jest.fn()}
           selectedIds={[]}
+          languages={languages}
         />
       </MockedProvider>
     )
@@ -33,6 +39,7 @@ describe('LanguageDrawer', () => {
           onClose={handleClose}
           onChange={jest.fn()}
           selectedIds={['en']}
+          languages={languages}
         />
       </MockedProvider>
     )
@@ -52,6 +59,7 @@ describe('LanguageDrawer', () => {
           onClose={handleClose}
           onChange={handleChange}
           selectedIds={['en']}
+          languages={languages}
         />
       </MockedProvider>
     )
@@ -73,6 +81,7 @@ describe('LanguageDrawer', () => {
           onClose={jest.fn()}
           onChange={handleChange}
           selectedIds={['en']}
+          languages={languages}
         />
       </MockedProvider>
     )

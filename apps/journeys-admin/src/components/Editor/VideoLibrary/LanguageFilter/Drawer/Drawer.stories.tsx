@@ -24,6 +24,10 @@ const Template: Story = ({ onSelect }) => {
       onClose={() => setOpen(false)}
       onChange={handleChange}
       selectedIds={selectedIds}
+      languages={[
+        { id: 'en', name: 'English', nativeName: 'English' },
+        { id: 'zh-Hans', name: 'Simplified Chinese', nativeName: '简体中文' }
+      ]}
     />
   )
 }

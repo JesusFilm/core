@@ -18,10 +18,17 @@ import Box from '@mui/material/Box'
 
 export const DRAWER_WIDTH = 328
 
+interface Language {
+  id: string
+  name: string
+  nativeName: string
+}
+
 interface DrawerProps {
   open?: boolean
   onClose: () => void
   onChange: (selectedIds: string[]) => void
+  languages: Language[]
   selectedIds: string[]
 }
 
@@ -29,16 +36,11 @@ export function Drawer({
   open,
   onClose: handleClose,
   onChange: handleChange,
-  selectedIds: initialSelectedIds
+  selectedIds: initialSelectedIds,
+  languages
 }: DrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds)
-
-  // TODO: replace with languages GraphQL query
-  const languages = [
-    { id: 'en', name: 'English', nativeName: 'English' },
-    { id: 'zh-Hans', name: 'Simplified Chinese', nativeName: '简体中文' }
-  ]
 
   useEffect(() => {
     setSelectedIds(initialSelectedIds)
