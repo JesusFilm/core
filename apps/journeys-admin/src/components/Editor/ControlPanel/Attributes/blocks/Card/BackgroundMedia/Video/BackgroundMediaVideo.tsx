@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import {
   Divider,
+  IconButton,
   InputAdornment,
   Stack,
   Switch,
@@ -23,8 +24,9 @@ import {
 import Image from 'next/image'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import TimeField from 'react-simple-timefield'
-import { debounce, reject } from 'lodash'
+import { noop, reject } from 'lodash'
 import { object, string } from 'yup'
+import { Formik, Form } from 'formik'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -103,12 +105,10 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
 
 interface BackgroundMediaVideoProps {
   cardBlock: TreeBlock<CardBlock>
-  debounceTime?: number
 }
 
 export function BackgroundMediaVideo({
-  cardBlock,
-  debounceTime = 1000
+  cardBlock
 }: BackgroundMediaVideoProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
@@ -132,9 +132,6 @@ export function BackgroundMediaVideo({
   const [videoBlock, setVideoBlock] = useState(
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
   )
-  const [videoSrc, setVideoSrc] = useState(videoBlock?.videoContent?.src)
-  const [srcValidationText, setSrcValidationText] = useState('')
-
   const [imageBlock, setImageBlock] = useState(
     coverBlock?.children.find(
       (child) => child.id === (coverBlock as VideoBlock).posterBlockId
@@ -151,9 +148,6 @@ export function BackgroundMediaVideo({
     return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds)
   }
 
-  const [startAt] = useState(secondsToTimeFormat(videoBlock?.startAt ?? 0))
-  const [endAt] = useState(secondsToTimeFormat(videoBlock?.endAt ?? 0))
-
   const handleTabChange = (event, newValue): void => {
     setTabValue(newValue)
   }
@@ -167,7 +161,7 @@ export function BackgroundMediaVideo({
       [target]: timeFormatToSeconds(time)
     }
     setVideoBlock(block as TreeBlock<VideoBlock>)
-    await handleChangeDebounced(block as TreeBlock<VideoBlock>)
+    await handleChange(block as TreeBlock<VideoBlock>)
   }
 
   const srcSchema = object().shape({
@@ -178,37 +172,29 @@ export function BackgroundMediaVideo({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const src = event.target.value
-    setVideoSrc(src)
+    const title = src.replace(/(.*\/)*/, '').replace(/\?.*/, '')
 
-    await srcSchema
-      .validate({ src: src })
-      .then(async () => {
-        setSrcValidationText('')
-        const block =
-          videoBlock == null
-            ? {
-                parentBlockId: cardBlock.id,
-                __typename: 'VideoBlock',
-                title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
-                autoplay: true,
-                muted: cardBlock.parentOrder === 0,
-                startAt: 0,
-                endAt: null,
-                posterBlockId: null,
-                videoContent: {
-                  src: src
-                }
-              }
-            : {
-                ...videoBlock,
-                title: src.replace(/(.*\/)*/, '').replace(/\?.*/, ''),
-                videoContent: { src: src }
-              }
-        await handleChangeDebounced(block as TreeBlock<VideoBlock>)
-      })
-      .catch((err) => {
-        setSrcValidationText(err.message)
-      })
+    const block =
+      videoBlock == null
+        ? {
+            parentBlockId: cardBlock.id,
+            __typename: 'VideoBlock',
+            title: title,
+            autoplay: true,
+            muted: cardBlock.parentOrder === 0,
+            startAt: 0,
+            endAt: null,
+            posterBlockId: null,
+            videoContent: {
+              src: src
+            }
+          }
+        : {
+            ...videoBlock,
+            title: title,
+            videoContent: { src: src }
+          }
+    await handleChange(block as TreeBlock<VideoBlock>)
   }
 
   const handleVideoDelete = async (): Promise<void> => {
@@ -394,15 +380,13 @@ export function BackgroundMediaVideo({
     }
   }
 
-  const handleChangeDebounced = debounce(handleChange, debounceTime)
-
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
         {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src != null && (
           <Stack
             direction="row"
-            spacing="3"
+            spacing="16px"
             justifyContent="space-between"
             data-testid="videoSrcStack"
           >
@@ -428,7 +412,7 @@ export function BackgroundMediaVideo({
                   sx={{
                     width: 55,
                     height: 55,
-                    bgcolor: '#DCDDE5',
+                    bgcolor: '#EFEFEF',
                     verticalAlign: 'center'
                   }}
                   justifyContent="center"
@@ -439,24 +423,21 @@ export function BackgroundMediaVideo({
             </div>
             <Stack direction="column" justifyContent="center">
               <Typography
-                variant="body1"
+                variant="subtitle2"
                 sx={{
-                  maxWidth: 180,
+                  maxWidth: 150,
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden'
                 }}
               >
-                {(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src}
+                {(coverBlock as TreeBlock<VideoBlock>)?.title}
               </Typography>
             </Stack>
             <Stack direction="column" justifyContent="center">
-              <DeleteOutline
-                data-testid="deleteVideo"
-                color="primary"
-                onClick={handleVideoDelete}
-                style={{ cursor: 'pointer' }}
-              ></DeleteOutline>
+              <IconButton onClick={handleVideoDelete} data-testid="deleteVideo">
+                <DeleteOutline color="primary"></DeleteOutline>
+              </IconButton>
             </Stack>
           </Stack>
         )}
@@ -503,23 +484,47 @@ export function BackgroundMediaVideo({
         ></Tab>
       </Tabs>
       <TabPanel name="videoSrc" value={tabValue} index={0}>
-        <Box sx={{ p: 3, textAlign: 'center' }}>
-          <TextField
-            fullWidth={true}
-            variant="filled"
-            value={videoSrc}
-            onChange={handleVideoSrcChange}
-            data-testid="videoSrcTextField"
-            label="Paste URL of video..."
-            helperText={srcValidationText}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LinkIcon></LinkIcon>
-                </InputAdornment>
-              )
+        <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
+          <Formik
+            initialValues={{
+              src: videoBlock?.videoContent?.src ?? ''
             }}
-          ></TextField>
+            validationSchema={srcSchema}
+            onSubmit={noop}
+          >
+            {({ values, touched, errors, handleChange, handleBlur }) => (
+              <Form>
+                <TextField
+                  id="src"
+                  name="src"
+                  variant="filled"
+                  label="Paste URL of image..."
+                  fullWidth
+                  value={values.src}
+                  onChange={handleChange}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                    console.log(errors.src)
+                    errors.src == null &&
+                      handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
+                  }}
+                  helperText={
+                    touched.src === true
+                      ? errors.src
+                      : 'Make sure video address is permanent'
+                  }
+                  error={touched.src === true && Boolean(errors.src)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LinkIcon></LinkIcon>
+                      </InputAdornment>
+                    )
+                  }}
+                ></TextField>
+              </Form>
+            )}
+          </Formik>
         </Box>
       </TabPanel>
       <TabPanel name="videoSettings" value={tabValue} index={1}>
@@ -558,52 +563,75 @@ export function BackgroundMediaVideo({
               ></Switch>
             </Stack>
             <Divider />
-            <Stack direction="row" justifyContent="space-around">
-              <TimeField
-                showSeconds
-                value={startAt}
-                style={{ width: 120 }}
-                onChange={async (event, time: string) =>
-                  await handleTimeChange('startAt', time)
-                }
-                input={
-                  <TextField
-                    label="Starts At"
-                    value={startAt}
-                    variant="filled"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PlayCircle></PlayCircle>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                }
-              />
-              <TimeField
-                showSeconds
-                value={endAt}
-                onChange={async (event, time: string) =>
-                  await handleTimeChange('endAt', time)
-                }
-                style={{ width: 120 }}
-                input={
-                  <TextField
-                    label="Ends At"
-                    value={endAt}
-                    variant="filled"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <StopCircle></StopCircle>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                }
-              />
-            </Stack>
+            <Formik
+              initialValues={{
+                startAt: secondsToTimeFormat(videoBlock?.startAt ?? 0),
+                endAt: secondsToTimeFormat(videoBlock?.endAt ?? 0)
+              }}
+              validationSchema={srcSchema}
+              onSubmit={noop}
+            >
+              {({ values, errors, handleChange, handleBlur }) => (
+                <Form>
+                  <Stack direction="row" justifyContent="space-around">
+                    <TimeField
+                      showSeconds
+                      value={values.startAt}
+                      style={{ width: 120 }}
+                      onChange={handleChange}
+                      input={
+                        <TextField
+                          id="startAt"
+                          name="startAt"
+                          label="Starts At"
+                          value={values.startAt}
+                          variant="filled"
+                          onBlur={(e) => {
+                            handleBlur(e)
+                            errors.startAt == null &&
+                              handleTimeChange('startAt', values.startAt)
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <PlayCircle></PlayCircle>
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                      }
+                    />
+                    <TimeField
+                      showSeconds
+                      value={values.endAt}
+                      onChange={handleChange}
+                      style={{ width: 120 }}
+                      input={
+                        <TextField
+                          id="endAt"
+                          name="endAt"
+                          label="Ends At"
+                          value={values.endAt}
+                          variant="filled"
+                          onBlur={(e) => {
+                            handleBlur(e)
+                            errors.endAt == null &&
+                              handleTimeChange('endAt', values.endAt)
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <StopCircle></StopCircle>
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                      }
+                    />
+                  </Stack>
+                </Form>
+              )}
+            </Formik>
             <Divider />
             <Stack direction="row" justifyContent="space-between">
               <Stack direction="column" justifyContent="center">

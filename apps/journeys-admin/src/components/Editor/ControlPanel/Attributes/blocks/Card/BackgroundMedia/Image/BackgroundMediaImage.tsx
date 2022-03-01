@@ -1,7 +1,13 @@
-import { ReactElement, useState, ChangeEvent } from 'react'
+import { ReactElement, ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
-import { InputAdornment, Stack, TextField, Typography } from '@mui/material'
+import {
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material'
 import {
   DeleteOutline,
   Image as ImageIcon,
@@ -9,8 +15,9 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { debounce, reject } from 'lodash'
+import { noop, reject } from 'lodash'
 import { object, string } from 'yup'
+import { Formik, Form } from 'formik'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -78,12 +85,10 @@ export const CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE = gql`
 `
 interface BackgroundMediaImageProps {
   cardBlock: TreeBlock<CardBlock>
-  debounceTime?: number
 }
 
 export function BackgroundMediaImage({
-  cardBlock,
-  debounceTime = 2000
+  cardBlock
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock =
     (cardBlock?.children.find(
@@ -101,11 +106,6 @@ export function BackgroundMediaImage({
       BLOCK_DELETE_FOR_BACKGROUND_IMAGE
     )
   const { id: journeyId } = useJourney()
-  const [imageBlock, setImageBlock] = useState(
-    coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
-  )
-  const [imageSrc, setImageSrc] = useState(imageBlock?.src)
-  const [srcValidationText, setSrcValidationText] = useState('')
 
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
@@ -115,22 +115,16 @@ export function BackgroundMediaImage({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const src = event.target.value
-    setImageSrc(src)
 
-    await srcSchema
-      .validate({ src: src })
-      .then(async () => {
-        setSrcValidationText('')
-        const block = {
-          ...imageBlock,
-          src: src,
-          alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
-        }
-        await handleChangeDebounced(block as ImageBlock)
-      })
-      .catch((err) => {
-        setSrcValidationText(err.message)
-      })
+    const initialBlock =
+      coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+
+    const block = {
+      ...initialBlock,
+      src: src,
+      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+    }
+    await handleChange(block as ImageBlock)
   }
 
   const handleImageDelete = async (): Promise<void> => {
@@ -259,6 +253,7 @@ export function BackgroundMediaImage({
     })
     return imageBlockUpdateError == null
   }
+
   const handleChange = async (block: ImageBlock): Promise<void> => {
     let success = true
     if (
@@ -271,28 +266,21 @@ export function BackgroundMediaImage({
 
     if (block.src === '' || !success) return
 
-    if (imageBlock == null) {
-      success = await createImageBlock(block)
+    if (
+      coverBlock == null ||
+      coverBlock?.__typename.toString() !== 'ImageBlock'
+    ) {
+      await createImageBlock(block)
     } else {
-      success = await updateImageBlock(block)
-    }
-    if (success) {
-      setImageBlock(block as TreeBlock<ImageBlock>)
+      await updateImageBlock(block)
     }
   }
-
-  const handleChangeDebounced = debounce(handleChange, debounceTime)
 
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
-        {imageBlock?.src != null && (
-          <Stack
-            direction="row"
-            spacing="3"
-            justifyContent="space-between"
-            data-testid="imageSrcStack"
-          >
+        {(coverBlock as ImageBlock)?.src != null && (
+          <Stack direction="row" spacing="16px" data-testid="imageSrcStack">
             <div
               style={{
                 overflow: 'hidden',
@@ -302,36 +290,40 @@ export function BackgroundMediaImage({
               }}
             >
               <Image
-                src={imageBlock.src}
-                alt={imageBlock?.alt}
+                src={(coverBlock as ImageBlock).src ?? ''}
+                alt={(coverBlock as ImageBlock).alt}
                 width={55}
                 height={55}
               ></Image>
             </div>
             <Stack direction="column" justifyContent="center">
               <Typography
-                variant="body1"
+                variant="subtitle2"
                 sx={{
-                  maxWidth: 180,
+                  maxWidth: 150,
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden'
                 }}
               >
-                {imageBlock.src.replace(/(.*\/)*/, '').replace(/\?.*/, '')}
+                {(coverBlock as ImageBlock).alt}
               </Typography>
+              {(coverBlock as ImageBlock)?.width != null &&
+                (coverBlock as ImageBlock)?.height != null && (
+                  <Typography variant="caption">
+                    {(coverBlock as ImageBlock).width}x
+                    {(coverBlock as ImageBlock).height}
+                  </Typography>
+                )}
             </Stack>
             <Stack direction="column" justifyContent="center">
-              <DeleteOutline
-                data-testid="deleteImage"
-                color="primary"
-                onClick={handleImageDelete}
-                style={{ cursor: 'pointer' }}
-              ></DeleteOutline>
+              <IconButton onClick={handleImageDelete} data-testid="deleteImage">
+                <DeleteOutline color="primary"></DeleteOutline>
+              </IconButton>
             </Stack>
           </Stack>
         )}
-        {imageBlock?.src == null && (
+        {(coverBlock as ImageBlock)?.src == null && (
           <Stack
             direction="row"
             spacing="16px"
@@ -359,30 +351,49 @@ export function BackgroundMediaImage({
         )}
       </Box>
 
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ py: 3, px: 6 }}>
         <Box sx={{ px: 'auto' }}>
           <Stack direction="column">
-            <TextField
-              id="imageSrc"
-              name="src"
-              variant="filled"
-              value={imageSrc}
-              data-testid="imgSrcTextField"
-              label="Paste URL of image..."
-              fullWidth={true}
-              onChange={handleSrcChange}
-              helperText={srcValidationText}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LinkIcon></LinkIcon>
-                  </InputAdornment>
-                )
+            <Formik
+              initialValues={{
+                src: (coverBlock as ImageBlock)?.src ?? ''
               }}
-            ></TextField>
-            <Typography variant="caption">
-              Make sure image address is permanent
-            </Typography>
+              validationSchema={srcSchema}
+              onSubmit={noop}
+            >
+              {({ values, touched, errors, handleChange, handleBlur }) => (
+                <Form>
+                  <TextField
+                    id="src"
+                    name="src"
+                    variant="filled"
+                    data-testid="imgSrcTextField"
+                    label="Paste URL of image..."
+                    fullWidth
+                    value={values.src}
+                    onChange={handleChange}
+                    onBlur={(e) => {
+                      handleBlur(e)
+                      errors.src == null &&
+                        handleSrcChange(e as ChangeEvent<HTMLInputElement>)
+                    }}
+                    helperText={
+                      touched.src === true
+                        ? errors.src
+                        : 'Make sure image address is permanent'
+                    }
+                    error={touched.src === true && Boolean(errors.src)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LinkIcon></LinkIcon>
+                        </InputAdornment>
+                      )
+                    }}
+                  ></TextField>
+                </Form>
+              )}
+            </Formik>
           </Stack>
         </Box>
       </Box>

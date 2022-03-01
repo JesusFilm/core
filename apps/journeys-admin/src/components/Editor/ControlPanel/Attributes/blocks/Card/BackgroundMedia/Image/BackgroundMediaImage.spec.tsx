@@ -141,7 +141,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={card} debounceTime={0} />
+            <BackgroundMediaImage cardBlock={card} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -149,6 +149,7 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
+      fireEvent.blur(textBox)
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     })
@@ -288,7 +289,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={videoCard} debounceTime={0} />
+            <BackgroundMediaImage cardBlock={videoCard} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -296,6 +297,7 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
+      fireEvent.blur(textBox)
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -375,10 +377,7 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage
-              cardBlock={existingCoverBlock}
-              debounceTime={2}
-            />
+            <BackgroundMediaImage cardBlock={existingCoverBlock} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -386,11 +385,9 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: image.src }
       })
+      fireEvent.blur(textBox)
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
-      const img = await getByRole('img')
-      await waitFor(() => expect(img).toHaveAttribute('src', image.src))
-      expect(img).toHaveAttribute('alt', image.alt)
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` },
         { __ref: `ImageBlock:${image.id}` }
@@ -470,7 +467,7 @@ describe('BackgroundMediaImage', () => {
         { __ref: `CardBlock:${card.id}` }
       ])
     })
-    it('displays Required error message', async () => {
+    it('displays validation messages ', async () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
@@ -482,20 +479,12 @@ describe('BackgroundMediaImage', () => {
       fireEvent.change(textBox, {
         target: { value: '' }
       })
+      fireEvent.blur(textBox)
       await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-    })
-    it('displays url validation error message', async () => {
-      const { getByRole, getByText } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: 'example.com/123' }
       })
+      fireEvent.blur(textBox)
       await waitFor(() =>
         expect(getByText('Please enter a valid url')).toBeInTheDocument()
       )

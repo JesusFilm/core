@@ -44,6 +44,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           borderColor: palette[200]
         }
       }
-    }
+    },
+
   }
 }
