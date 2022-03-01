@@ -34,7 +34,7 @@ export function LanguageDrawer({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds)
 
-  // replace with GraphQL query
+  // TODO: replace with languages GraphQL query
   const languages = [
     { id: 'en', name: 'English', nativeName: 'English' },
     { id: 'zh', name: 'Chinese', nativeName: '中文' }
