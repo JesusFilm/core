@@ -11,6 +11,7 @@ const VideoListItemStory = {
 
 const Template: Story = ({ onSelect, ...args }) => (
   <VideoListItem
+    id={args.id}
     title={args.title}
     description={args.description}
     poster={args.poster}
@@ -21,6 +22,7 @@ const Template: Story = ({ onSelect, ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  id: 'nua1-uuid',
   title: 'NUA - Episode: Fact or Fiction',
   description: 'This is a short description for the video nua1',
   poster:

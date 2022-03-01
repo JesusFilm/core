@@ -30,7 +30,7 @@ export function VideoList({ onSelect }: VideoListProps): ReactElement {
 
   return (
     <>
-      <List sx={{ px: 6 }}>
+      <List data-testId="VideoList" sx={{ px: 6 }}>
         <Divider />
         {arclightMediaUnits.nodes.slice(0, visibleVideos).map((arclight) => (
           <>

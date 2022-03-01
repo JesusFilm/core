@@ -165,11 +165,11 @@ export function VideoDetailsContent({
           }
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mx: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mx: 4 }}>
         <Button
           data-testid="VideoDetailsLanguageButton"
           variant="contained"
-          size="small"
+          size="medium"
           onClick={() => console.log('open language drawer')}
           endIcon={<ArrowDropDown />}
           sx={{ mr: 2 }}
@@ -179,7 +179,7 @@ export function VideoDetailsContent({
         <Button
           data-testid="VideoDetailsSelectButton"
           variant="contained"
-          size="small"
+          size="medium"
           startIcon={<Check />}
           onClick={handleOnClick}
         >

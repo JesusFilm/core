@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { VideoListItem } from './VideoListItem'
 
@@ -10,6 +10,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Video List Item', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   const tempData = {
+    id: 'nua-1',
     title: 'NUA - Episode: Fact or Fiction',
     description: 'This is a short description for the video nua1',
     poster:
@@ -20,6 +21,7 @@ describe('Video List Item', () => {
   it('should render the content of VideoListItem', () => {
     const { getByText } = render(
       <VideoListItem
+        id={tempData.id}
         title={tempData.title}
         description={tempData.description}
         poster={tempData.poster}
@@ -32,5 +34,23 @@ describe('Video List Item', () => {
       getByText('This is a short description for the video nua1')
     ).toBeInTheDocument()
     expect(getByText('1:34')).toBeInTheDocument()
+  })
+
+  it('should render VideoDetails on VideoListItem click', () => {
+    const { getByText, getByRole } = render(
+      <VideoListItem
+        id={tempData.id}
+        title={tempData.title}
+        description={tempData.description}
+        poster={tempData.poster}
+        time={tempData.time}
+        onSelect={tempData.onSelect}
+      />
+    )
+    expect(getByRole('button')).toHaveTextContent(
+      'NUA - Episode: Fact or Fiction'
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByText('Video Details')).toBeInTheDocument()
   })
 })

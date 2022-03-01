@@ -33,7 +33,7 @@ describe('Video Details', () => {
     expect(handleOpen).toHaveBeenCalled()
   })
 
-  // add test for clicing on other languages button
+  // add test for clicking on other languages button
 
   it('should call onSelect on click', () => {
     const onSelect = jest.fn()

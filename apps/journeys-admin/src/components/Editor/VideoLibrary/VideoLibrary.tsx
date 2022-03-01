@@ -30,7 +30,6 @@ export function VideoLibrary({
 
   return (
     <Drawer
-      data-testId="video-library"
       anchor={smUp ? 'right' : 'bottom'}
       variant="temporary"
       open={open}
