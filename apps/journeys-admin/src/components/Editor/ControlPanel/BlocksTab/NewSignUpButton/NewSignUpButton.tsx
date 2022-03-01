@@ -21,17 +21,20 @@ export const SIGN_UP_BLOCK_CREATE = gql`
   mutation SignUpBlockCreate(
     $input: SignUpBlockCreateInput!
     $iconBlockCreateInput: IconBlockCreateInput!
+    $id: ID!
+    $journeyId: ID!
+    $updateInput: SignUpBlockUpdateInput!
   ) {
     signUpBlockCreate(input: $input) {
       id
-      parentBlockId
-      journeyId
-      ...SignUpFields
     }
     submitIcon: iconBlockCreate(input: $iconBlockCreateInput) {
       id
       parentBlockId
       ...IconFields
+    }
+    signUpBlockUpdate(id: $id, journeyId: $journeyId, input: $updateInput) {
+      ...SignUpFields
     }
   }
 `
@@ -58,7 +61,6 @@ export function NewSignUpButton(): ReactElement {
             id,
             journeyId,
             parentBlockId: card.id,
-            submitIconId: submitId,
             submitLabel: 'Submit'
           },
           iconBlockCreateInput: {
@@ -66,24 +68,29 @@ export function NewSignUpButton(): ReactElement {
             journeyId,
             parentBlockId: id,
             name: IconName.None
+          },
+          id,
+          journeyId,
+          updateInput: {
+            submitIconId: submitId
           }
         },
         update(cache, { data }) {
-          if (data?.signUpBlockCreate != null) {
+          if (data?.signUpBlockUpdate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journeyId }),
               fields: {
                 blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.signUpBlockCreate,
+                  const newSubmitIconBlockRef = cache.writeFragment({
+                    data: data.submitIcon,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
                       }
                     `
                   })
-                  const newSubmitIconBlockRef = cache.writeFragment({
-                    data: data.submitIcon,
+                  const newBlockRef = cache.writeFragment({
+                    data: data.signUpBlockUpdate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -101,7 +108,7 @@ export function NewSignUpButton(): ReactElement {
           }
         }
       })
-      if (data?.signUpBlockCreate != null) {
+      if (data?.signUpBlockUpdate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.signUpBlockCreate.id

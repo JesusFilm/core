@@ -27,22 +27,21 @@ export const BUTTON_BLOCK_CREATE = gql`
     $input: ButtonBlockCreateInput!
     $iconBlockCreateInput1: IconBlockCreateInput!
     $iconBlockCreateInput2: IconBlockCreateInput!
+    $id: ID!
+    $journeyId: ID!
+    $updateInput: ButtonBlockUpdateInput!
   ) {
     buttonBlockCreate(input: $input) {
       id
-      parentBlockId
-      parentOrder
-      ...ButtonFields
     }
     startIcon: iconBlockCreate(input: $iconBlockCreateInput1) {
-      id
-      parentBlockId
       ...IconFields
     }
     endIcon: iconBlockCreate(input: $iconBlockCreateInput2) {
-      id
-      parentBlockId
       ...IconFields
+    }
+    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $updateInput) {
+      ...ButtonFields
     }
   }
 `
@@ -73,9 +72,7 @@ export function NewButtonButton(): ReactElement {
             label: 'Edit Text...',
             variant: ButtonVariant.contained,
             color: ButtonColor.primary,
-            size: ButtonSize.medium,
-            startIconId: startId,
-            endIconId: endId
+            size: ButtonSize.medium
           },
           iconBlockCreateInput1: {
             id: startId,
@@ -88,10 +85,16 @@ export function NewButtonButton(): ReactElement {
             journeyId,
             parentBlockId: id,
             name: IconName.None
+          },
+          id,
+          journeyId,
+          updateInput: {
+            startIconId: startId,
+            endIconId: endId
           }
         },
         update(cache, { data }) {
-          if (data?.buttonBlockCreate != null) {
+          if (data?.buttonBlockUpdate != null) {
             cache.modify({
               id: cache.identify({ __typename: 'Journey', id: journeyId }),
               fields: {
@@ -113,7 +116,7 @@ export function NewButtonButton(): ReactElement {
                     `
                   })
                   const newBlockRef = cache.writeFragment({
-                    data: data.buttonBlockCreate,
+                    data: data.buttonBlockUpdate,
                     fragment: gql`
                       fragment NewBlock on Block {
                         id
@@ -132,7 +135,7 @@ export function NewButtonButton(): ReactElement {
           }
         }
       })
-      if (data?.buttonBlockCreate != null) {
+      if (data?.buttonBlockUpdate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           id: data.buttonBlockCreate.id
