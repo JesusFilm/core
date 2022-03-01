@@ -1,28 +1,31 @@
 import { Story, Meta } from '@storybook/react'
+import { useState } from 'react'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { VideoDetails } from '.'
 
 const VideoDetailsStory = {
   ...journeysAdminConfig,
   component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails'
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
+  argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ ...args }) => (
-  <VideoDetails
-    videoId={args.videoId}
-    open={args.open}
-    handleOpen={args.handleOpen}
-    onSelect={args.onSelect}
-  />
-)
+const Template: Story = ({ videoId, onSelect }) => {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <VideoDetails
+      videoId={videoId}
+      open={open}
+      handleOpen={() => setOpen(!open)}
+      onSelect={onSelect}
+    />
+  )
+}
 
 export const Default = Template.bind({})
 Default.args = {
-  videoId: 'videoUUID',
-  open: true,
-  handleOpen: () => console.log('handleOpen'),
-  onSelect: (id: string) => console.log('onSelect', id)
+  videoId: 'videoUUID'
 }
 
 export default VideoDetailsStory as Meta

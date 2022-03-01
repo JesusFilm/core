@@ -1,10 +1,8 @@
 import { ReactElement, useState } from 'react'
 import Divider from '@mui/material/Divider'
-import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded'
-import RefreshRounded from '@mui/icons-material/RefreshRounded'
-import IconButton from '@mui/material/IconButton'
+import LoadingButton from '@mui/lab/LoadingButton'
+import AddRounded from '@mui/icons-material/AddRounded'
 import List from '@mui/material/List'
-import Chip from '@mui/material/Chip'
 import { Box } from '@mui/system'
 import { VideoListItem } from './VideoListItem'
 import { arclightMediaUnits } from './VideoListData'
@@ -14,9 +12,10 @@ interface VideoListProps {
 }
 
 export function VideoList({ onSelect }: VideoListProps): ReactElement {
-  const [visibleVidoes, setVisibleVideos] = useState(4)
+  const [visibleVideos, setVisibleVideos] = useState(4)
   const [isLoading, setIsLoading] = useState(false)
 
+  // to be replaced with the query
   const arclightContent = arclightMediaUnits.nodes.length
 
   const handleClick = (): void => {
@@ -31,11 +30,12 @@ export function VideoList({ onSelect }: VideoListProps): ReactElement {
 
   return (
     <>
-      <List sx={{ px: 2 }}>
+      <List sx={{ px: 6 }}>
         <Divider />
-        {arclightMediaUnits.nodes.slice(0, visibleVidoes).map((arclight) => (
+        {arclightMediaUnits.nodes.slice(0, visibleVideos).map((arclight) => (
           <>
             <VideoListItem
+              id={arclight.uuid}
               title={
                 arclight.descriptors.nodes.find(
                   (type) => type.descriptorType === 'TITLE'
@@ -58,33 +58,20 @@ export function VideoList({ onSelect }: VideoListProps): ReactElement {
           </>
         ))}
       </List>
-      <Box sx={{ mx: 'auto', my: 6 }}>
-        {isLoading ? (
-          <IconButton
-            size="medium"
-            sx={{ backgroundColor: 'background.default' }}
-          >
-            <RefreshRounded />
-          </IconButton>
-        ) : (
-          <Chip
-            data-testid="video-list-chip"
-            size="medium"
-            disabled={visibleVidoes >= arclightContent}
-            icon={
-              arclightContent > visibleVidoes ? (
-                <KeyboardArrowDownRounded />
-              ) : (
-                <></>
-              )
-            }
-            sx={{ py: 5, borderRadius: 30 }}
-            onClick={handleClick}
-            label={
-              arclightContent > visibleVidoes ? 'Load More' : 'No More Videos'
-            }
-          />
-        )}
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', mx: 'auto', my: 6 }}
+      >
+        <LoadingButton
+          variant="outlined"
+          onClick={handleClick}
+          loading={isLoading}
+          startIcon={visibleVideos >= arclightContent ? null : <AddRounded />}
+          disabled={visibleVideos >= arclightContent}
+          loadingPosition="start"
+          size="medium"
+        >
+          {arclightContent > visibleVideos ? 'Load More' : 'No More Videos'}
+        </LoadingButton>
       </Box>
     </>
   )

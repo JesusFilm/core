@@ -2,8 +2,6 @@ import videojs from 'video.js'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import Chip from '@mui/material/Chip'
-import InfoOutlined from '@mui/icons-material/InfoOutlined'
 import Button from '@mui/material/Button'
 import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -15,7 +13,6 @@ import Close from '@mui/icons-material/Close'
 
 export const DRAWER_WIDTH = 328
 
-// add props when arclight api is ready
 interface VideoDetailsContentProps {
   videoId: string
   handleOpen: () => void
@@ -34,8 +31,6 @@ export function VideoDetailsContent({
   const handleOnClick = (): void => {
     onSelect(videoId)
   }
-
-  // TODO: removed hardcoded values to be replaced with arclight props
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -156,26 +151,6 @@ export function VideoDetailsContent({
           looking for answers and wrestling with the things that just don’t seem
           to make sense.{' '}
         </Typography>
-        <Box sx={{ pt: 4 }}>
-          <Typography variant="caption">Available Languages</Typography>
-        </Box>
-        <Box sx={{ py: 2 }}>
-          <Chip size="small" label="EN (US)" sx={{ mr: 1, px: 1, py: 4 }} />
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            py: 2
-          }}
-        >
-          <InfoOutlined />
-          <Typography variant="caption" sx={{ px: 2 }}>
-            8mb
-          </Typography>
-          <Typography variant="caption">720p</Typography>
-        </Box>
       </Box>
       <Button
         variant="contained"
@@ -203,40 +178,27 @@ export function VideoDetails({
   open,
   videoId,
   handleOpen,
-  onSelect
+  onSelect: handleSelect
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  return smUp ? (
+  const onSelect = (id: string): void => {
+    handleSelect(id)
+    handleOpen()
+  }
+
+  return (
     <Drawer
-      anchor="right"
+      anchor={smUp ? 'right' : 'bottom'}
       variant="temporary"
       open={open}
-      elevation={1}
+      elevation={smUp ? 1 : 0}
       hideBackdrop
       sx={{
-        display: { xs: 'none', sm: 'block' },
+        display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
         '& .MuiDrawer-paper': {
           boxSizing: 'border-box',
-          width: DRAWER_WIDTH
-        }
-      }}
-    >
-      <VideoDetailsContent
-        videoId={videoId}
-        handleOpen={handleOpen}
-        onSelect={onSelect}
-      />
-    </Drawer>
-  ) : (
-    <Drawer
-      anchor="bottom"
-      variant="temporary"
-      open={open}
-      hideBackdrop
-      sx={{
-        display: { xs: 'block', sm: 'none' },
-        '& .MuiDrawer-paper': {
+          width: smUp ? DRAWER_WIDTH : '100%',
           height: '100%'
         }
       }}

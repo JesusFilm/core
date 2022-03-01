@@ -6,25 +6,22 @@ import { VideoLibrary } from '.'
 const VideoLibraryStory = {
   ...journeysAdminConfig,
   component: VideoLibrary,
-  title: 'Journeys-Admin/Editor/VideoLibrary'
+  title: 'Journeys-Admin/Editor/VideoLibrary',
+  argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ open, onClose }) => {
-  const [selectedVideo, setSelectedVideo] = useState<string>()
+const Template: Story = ({ onSelect }) => {
+  const [open, setOpen] = useState(true)
 
-  // this is not the actual onSelect function
-  const onSelect = (id: string): void => {
-    setSelectedVideo(id)
-    console.log('Selected Video: ', selectedVideo)
-  }
-
-  return <VideoLibrary open={open} onClose={onClose} onSelect={onSelect} />
+  return (
+    <VideoLibrary
+      open={open}
+      onClose={() => setOpen(false)}
+      onSelect={onSelect}
+    />
+  )
 }
 
 export const Default = Template.bind({})
-Default.args = {
-  open: true,
-  onClose: () => console.log('onClose')
-}
 
 export default VideoLibraryStory as Meta

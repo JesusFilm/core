@@ -5,12 +5,12 @@ import { VideoList } from '.'
 const VideoListStory = {
   ...journeysAdminConfig,
   component: VideoList,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoList'
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoList',
+  argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ ...args }) => <VideoList onSelect={args.onSelect} />
-export const Default = Template.bind({
-  onSelect: () => console.log('onSelect')
-})
+const Template: Story = ({ onSelect }) => <VideoList onSelect={onSelect} />
+
+export const Default = Template.bind({})
 
 export default VideoListStory as Meta

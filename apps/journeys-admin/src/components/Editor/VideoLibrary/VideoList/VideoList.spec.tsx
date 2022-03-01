@@ -11,17 +11,13 @@ describe('Video List', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render a video list item', () => {
-    const { getAllByRole, getAllByTestId } = render(
+    const { getAllByRole } = render(
       <VideoList onSelect={() => console.log('onSelect')} />
     )
 
     const videoListItem = getAllByRole('button')
     expect(videoListItem[0]).toHaveClass('MuiListItemButton-root')
     expect(videoListItem[0]).toHaveTextContent('Fact or fiction')
-    expect(videoListItem[0]).toContainElement(
-      getAllByTestId('TranslateRoundedIcon')[0]
-    )
-    expect(videoListItem[0]).toHaveTextContent('EN (US)')
     expect(videoListItem[0]).toHaveTextContent('1:34')
   })
 

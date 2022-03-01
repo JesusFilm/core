@@ -10,19 +10,41 @@ import Toolbar from '@mui/material/Toolbar'
 import { VideoList } from './VideoList'
 
 export const DRAWER_WIDTH = 328
-interface VideoLibraryContentProps {
-  handleLibraryToggle: () => void
+interface VideoLibraryProps {
+  open: boolean
+  onClose: () => void
   onSelect: (id: string) => void
 }
 
-function VideoLibraryContent({
-  handleLibraryToggle,
-  onSelect
-}: VideoLibraryContentProps): ReactElement {
-  // should we make the appbar it's own component that accepts a title prop?
-  // this "drawer header" code is going to be repeated three times
+export function VideoLibrary({
+  open,
+  onClose,
+  onSelect: handleSelect
+}: VideoLibraryProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  const onSelect = (id: string): void => {
+    handleSelect(id)
+    onClose()
+  }
+
   return (
-    <>
+    <Drawer
+      data-testId="video-library"
+      anchor={smUp ? 'right' : 'bottom'}
+      variant="temporary"
+      open={open}
+      elevation={smUp ? 1 : 0}
+      hideBackdrop
+      sx={{
+        display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: smUp ? DRAWER_WIDTH : '100%',
+          height: '100%'
+        }
+      }}
+    >
       <AppBar position="static" color="default">
         <Toolbar>
           <Typography
@@ -34,7 +56,7 @@ function VideoLibraryContent({
             Video Library
           </Typography>
           <IconButton
-            onClick={handleLibraryToggle}
+            onClick={onClose}
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
@@ -45,65 +67,6 @@ function VideoLibraryContent({
       {/* search */}
       {/* language */}
       <VideoList onSelect={onSelect} />
-    </>
-  )
-}
-interface VideoLibraryProps {
-  open: boolean
-  onClose: () => void
-  onSelect: (id: string) => void
-}
-
-export function VideoLibrary({
-  open,
-  onClose,
-  onSelect
-}: VideoLibraryProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  return (
-    <>
-      {smUp ? (
-        <Drawer
-          data-testId="video-library"
-          anchor="right"
-          variant="temporary"
-          open={open}
-          elevation={1}
-          hideBackdrop
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: DRAWER_WIDTH
-            }
-          }}
-        >
-          <VideoLibraryContent
-            handleLibraryToggle={onClose}
-            onSelect={onSelect}
-          />
-        </Drawer>
-      ) : (
-        <Drawer
-          data-testId="video-library"
-          anchor="bottom"
-          variant="temporary"
-          open={open}
-          hideBackdrop
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              height: '100%'
-            }
-          }}
-        >
-          <VideoLibraryContent
-            handleLibraryToggle={onClose}
-            onSelect={onSelect}
-          />
-        </Drawer>
-      )}
-    </>
+    </Drawer>
   )
 }

@@ -1,20 +1,17 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
-import TranslateRounded from '@mui/icons-material/TranslateRounded'
-import Chip from '@mui/material/Chip'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 import { VideoDetails } from '../../VideoDetails'
 
-// props to be set as optional for now until arclight api is ready
+// props to be updated according to the arclight changes
 interface VideoListItemProps {
   id?: string
   title?: string
   description?: string
   poster?: string
   time: number
-  language?: string
   onSelect: (id: string) => void
 }
 
@@ -24,7 +21,6 @@ export function VideoListItem({
   description,
   poster,
   time,
-  language,
   onSelect
 }: VideoListItemProps): ReactElement {
   const [convertedTime, setConvertedTime] = useState<string>()
@@ -56,14 +52,7 @@ export function VideoListItem({
     <>
       <ListItemButton
         onClick={handleOpen}
-        sx={{
-          display: 'grid',
-          columnGap: 3,
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gridTemplateRows: 'auto',
-          gridTemplateAreas: `"Text Text Text Image" 
-          "Language Language Language Language"`
-        }}
+        sx={{ my: 1, alignItems: 'flex-start', mx: -1 }}
       >
         <ListItemText
           primary={title}
@@ -72,21 +61,19 @@ export function VideoListItem({
             style: {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              textOverflow: 'ellipsis',
+              paddingRight: '2rem'
             }
           }}
-          sx={{ gridArea: 'Text' }}
         />
         {poster != null && (
           <Box>
             <Box
               sx={{
-                gridArea: 'Image',
                 justifySelf: 'end',
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'flex-end',
-                p: 1,
                 height: 79,
                 width: 79,
                 borderRadius: 2,
@@ -110,23 +97,15 @@ export function VideoListItem({
             </Box>
           </Box>
         )}
-        {/* update to display multiple lanaguages */}
-        <Box sx={{ py: 2, gridArea: 'Language' }}>
-          <Chip
-            icon={<TranslateRounded />}
-            size="small"
-            label={language ?? 'EN (US)'}
-            sx={{ mr: 1, px: 1, py: 4 }}
-          />
-        </Box>
       </ListItemButton>
-      {/* videoId to be passed from arclight */}
-      <VideoDetails
-        open={open}
-        videoId={id ?? 'videoUUID'}
-        handleOpen={handleOpen}
-        onSelect={onSelect}
-      />
+      {id != null && (
+        <VideoDetails
+          open={open}
+          videoId={id}
+          handleOpen={handleOpen}
+          onSelect={onSelect}
+        />
+      )}
     </>
   )
 }
