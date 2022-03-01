@@ -4,6 +4,7 @@ import { mockDeep } from 'jest-mock-extended'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
+  ButtonBlockCreateInput,
   ButtonVariant,
   ButtonColor,
   ButtonSize,
@@ -66,7 +67,7 @@ describe('Button', () => {
     parentBlockId: block._key
   }
 
-  const blockInput = {
+  const blockInput: ButtonBlockCreateInput & { __typename: string } = {
     id: '1',
     journeyId: '2',
     __typename: 'ButtonBlock',
@@ -74,9 +75,7 @@ describe('Button', () => {
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
-    size: ButtonSize.medium,
-    startIconId: 'start1',
-    endIconId: 'end1'
+    size: ButtonSize.medium
   }
 
   const blockCreateResponse = {
@@ -88,13 +87,11 @@ describe('Button', () => {
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
-    size: ButtonSize.medium,
-    startIconId: 'start1',
-    endIconId: 'end1'
+    size: ButtonSize.medium
   }
 
   const blockUpdate = {
-    __typname: '',
+    __typename: '',
     journeyId: '2',
     parentBlockId: '0',
     parentOrder: 1,
@@ -118,7 +115,8 @@ describe('Button', () => {
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
-      update: jest.fn((input) => input)
+      update: jest.fn((input) => input),
+      validateBlock: jest.fn()
     })
   }
 
@@ -159,7 +157,7 @@ describe('Button', () => {
   })
 
   describe('ButtonBlockCreate', () => {
-    it('creates a ButtoBlock', async () => {
+    it('creates a ButtonBlock', async () => {
       await resolver.buttonBlockCreate(blockInput)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockInput.journeyId,
@@ -171,8 +169,50 @@ describe('Button', () => {
 
   describe('ButtonBlockUpdate', () => {
     it('updates a ButtonBlock', async () => {
-      void resolver.buttonBlockUpdate(block._key, block.journeyId, blockUpdate)
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(true)
+      mockValidate.mockResolvedValueOnce(true)
+
+      await resolver.buttonBlockUpdate(block._key, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+    })
+
+    it('should throw error with an invalid startIconId', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(false)
+      mockValidate.mockResolvedValueOnce(true)
+
+      await resolver
+        .buttonBlockUpdate(block._key, block.journeyId, {
+          ...blockUpdate,
+          startIconId: 'wrong!'
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Start icon does not exist')
+        })
+      expect(service.update).not.toHaveBeenCalled()
+    })
+
+    it('should throw error with an invalid endIconId', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(true)
+      mockValidate.mockResolvedValueOnce(false)
+
+      await resolver
+        .buttonBlockUpdate(block._key, block.journeyId, {
+          ...blockUpdate,
+          endIconId: 'wrong!'
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('End icon does not exist')
+        })
+      expect(service.update).not.toHaveBeenCalled()
     })
   })
 })

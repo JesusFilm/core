@@ -31,34 +31,34 @@ interface Block {
 type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
-  endIconId: ID!
+  endIconId: ID
   id: ID!
   journeyId: ID!
   label: String!
   parentBlockId: ID
   parentOrder: Int
   size: ButtonSize
-  startIconId: ID!
+  startIconId: ID
   variant: ButtonVariant
 }
 
 input ButtonBlockCreateInput {
   color: ButtonColor
-  endIconId: ID!
   id: ID
   journeyId: ID!
   label: String!
   parentBlockId: ID!
   size: ButtonSize
-  startIconId: ID!
   variant: ButtonVariant
 }
 
 input ButtonBlockUpdateInput {
   color: ButtonColor
+  endIconId: ID
   label: String
   parentBlockId: ID
   size: ButtonSize
+  startIconId: ID
   variant: ButtonVariant
 }
 
@@ -518,7 +518,7 @@ type SignUpBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  submitIconId: ID!
+  submitIconId: ID
   submitLabel: String
 }
 
@@ -526,12 +526,12 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID!
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
+  submitIconId: ID
   submitLabel: String
 }
 
