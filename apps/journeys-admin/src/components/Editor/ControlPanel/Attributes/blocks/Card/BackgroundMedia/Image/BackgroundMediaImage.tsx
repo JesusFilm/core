@@ -280,7 +280,12 @@ export function BackgroundMediaImage({
     <>
       <Box sx={{ px: 6, py: 4 }}>
         {(coverBlock as ImageBlock)?.src != null && (
-          <Stack direction="row" spacing="16px" data-testid="imageSrcStack">
+          <Stack
+            direction="row"
+            spacing="16px"
+            data-testid="imageSrcStack"
+            justifyContent="space-between"
+          >
             <div
               style={{
                 overflow: 'hidden',
