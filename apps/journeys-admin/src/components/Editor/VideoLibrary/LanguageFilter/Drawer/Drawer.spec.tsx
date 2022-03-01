@@ -37,7 +37,9 @@ describe('LanguageDrawer', () => {
       </MockedProvider>
     )
     expect(getByRole('checkbox', { name: 'English English' })).toBeChecked()
-    expect(getByRole('checkbox', { name: 'Chinese 中文' })).not.toBeChecked()
+    expect(
+      getByRole('checkbox', { name: 'Simplified Chinese 简体中文' })
+    ).not.toBeChecked()
   })
 
   it('should call onChange and onClose when Apply clicked', () => {
@@ -54,9 +56,11 @@ describe('LanguageDrawer', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('checkbox', { name: 'English English' }))
-    fireEvent.click(getByRole('checkbox', { name: 'Chinese 中文' }))
+    fireEvent.click(
+      getByRole('checkbox', { name: 'Simplified Chinese 简体中文' })
+    )
     fireEvent.click(getByRole('button', { name: 'Apply' }))
-    expect(handleChange).toHaveBeenCalledWith(['zh'])
+    expect(handleChange).toHaveBeenCalledWith(['zh-Hans'])
     expect(handleClose).toHaveBeenCalled()
   })
 
@@ -74,8 +78,10 @@ describe('LanguageDrawer', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Clear' }))
     expect(getByRole('button', { name: 'Clear' })).toBeDisabled()
-    fireEvent.click(getByRole('checkbox', { name: 'Chinese 中文' }))
+    fireEvent.click(
+      getByRole('checkbox', { name: 'Simplified Chinese 简体中文' })
+    )
     fireEvent.click(getByRole('button', { name: 'Apply' }))
-    expect(handleChange).toHaveBeenCalledWith(['zh'])
+    expect(handleChange).toHaveBeenCalledWith(['zh-Hans'])
   })
 })
