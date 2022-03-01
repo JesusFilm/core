@@ -31,9 +31,12 @@ describe('LinkAction', () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button0.id' }],
+        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
       }
     })
 
@@ -63,6 +66,7 @@ describe('LinkAction', () => {
             result
           }
         ]}
+        cache={cache}
       >
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
@@ -75,9 +79,10 @@ describe('LinkAction', () => {
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'ButtonBlock:button0.id' }
-    ])
+    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      gtmEventName: 'gtmEventName',
+      url: 'https://www.github.com'
+    })
   })
 
   it('is a required field', async () => {

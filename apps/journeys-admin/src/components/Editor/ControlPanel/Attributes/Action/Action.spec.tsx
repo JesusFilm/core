@@ -31,6 +31,9 @@ describe('Action', () => {
         blocks: [{ __ref: 'ButtonBlock:button1.id' }],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
       }
     })
 
@@ -58,6 +61,7 @@ describe('Action', () => {
             result
           }
         ]}
+        cache={cache}
       >
         <JourneyProvider
           value={
@@ -78,9 +82,9 @@ describe('Action', () => {
     fireEvent.click(getByText('Next Step'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'ButtonBlock:button1.id' }
-    ])
+    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      gtmEventName: 'gtmEventName'
+    })
   })
 
   it('shows properties for current action', () => {
@@ -117,6 +121,9 @@ describe('Action', () => {
         blocks: [{ __ref: 'ButtonBlock:button1.id' }],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
       }
     })
 
@@ -141,6 +148,7 @@ describe('Action', () => {
             result
           }
         ]}
+        cache={cache}
       >
         <EditorProvider initialState={{ selectedBlock }}>
           <Action />
@@ -153,8 +161,6 @@ describe('Action', () => {
     fireEvent.click(getByRole('option', { name: 'Select an Action...' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'ButtonBlock:button1.id' }
-    ])
+    expect(cache.extract()['ButtonBlock:button1.id']?.action).toBeNull()
   })
 })

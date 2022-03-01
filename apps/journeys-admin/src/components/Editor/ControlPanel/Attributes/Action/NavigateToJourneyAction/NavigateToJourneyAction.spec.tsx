@@ -85,6 +85,9 @@ describe('NavigateToJourneyAction', () => {
         blocks: [{ __ref: 'ButtonBlock:button1.id' }],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
       }
     })
 
@@ -96,8 +99,8 @@ describe('NavigateToJourneyAction', () => {
           journeyId: 'journeyId',
           gtmEventName: 'gtmEventName',
           journey: {
-            id: journey.id,
-            slug: 'my-journey'
+            id: 'testJourneyId',
+            slug: 'test-journey'
           }
         }
       }
@@ -135,6 +138,7 @@ describe('NavigateToJourneyAction', () => {
             result
           }
         ]}
+        cache={cache}
       >
         <JourneyProvider value={journey}>
           <EditorProvider initialState={{ selectedBlock }}>
@@ -152,8 +156,12 @@ describe('NavigateToJourneyAction', () => {
     fireEvent.click(getByRole('option', { name: 'testJourneyName' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'ButtonBlock:button1.id' }
-    ])
+    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      gtmEventName: 'gtmEventName',
+      journey: {
+        id: 'testJourneyId',
+        slug: 'test-journey'
+      }
+    })
   })
 })

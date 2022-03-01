@@ -24,6 +24,9 @@ describe('NavigateToBlockAction', () => {
         blocks: [{ __ref: 'ButtonBlock:button1.id' }],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'ButtonBlock:button1.id': {
+        ...selectedBlock
       }
     })
 
@@ -54,6 +57,7 @@ describe('NavigateToBlockAction', () => {
             result
           }
         ]}
+        cache={cache}
       >
         <JourneyProvider
           value={
@@ -73,8 +77,9 @@ describe('NavigateToBlockAction', () => {
     fireEvent.click(getByTestId('preview-step2.id'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: 'ButtonBlock:button1.id' }
-    ])
+    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
+      gtmEventName: 'gtmEventName',
+      blockId: 'step2.id'
+    })
   })
 })
