@@ -1,7 +1,13 @@
 import { ReactElement, useState, ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
-import { InputAdornment, Stack, TextField, Typography } from '@mui/material'
+import {
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material'
 import {
   DeleteOutline,
   Image as ImageIcon,
@@ -296,7 +302,7 @@ export function BackgroundMediaImage({
             </div>
             <Stack direction="column" justifyContent="center">
               <Typography
-                variant="body1"
+                variant="subtitle2"
                 sx={{
                   maxWidth: 180,
                   textOverflow: 'ellipsis',
@@ -306,14 +312,16 @@ export function BackgroundMediaImage({
               >
                 {imageBlock.src.replace(/(.*\/)*/, '').replace(/\?.*/, '')}
               </Typography>
+              {coverBlock != null && (
+                <Typography variant="caption">
+                  {coverBlock.width}x{coverBlock.height}
+                </Typography>
+              )}
             </Stack>
             <Stack direction="column" justifyContent="center">
-              <DeleteOutline
-                data-testid="deleteImage"
-                color="primary"
-                onClick={handleImageDelete}
-                style={{ cursor: 'pointer' }}
-              ></DeleteOutline>
+              <IconButton onClick={handleImageDelete} data-testid="deleteImage">
+                <DeleteOutline color="primary"></DeleteOutline>
+              </IconButton>
             </Stack>
           </Stack>
         )}
