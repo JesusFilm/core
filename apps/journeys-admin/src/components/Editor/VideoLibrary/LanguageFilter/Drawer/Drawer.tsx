@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useEffect, useState } from 'react'
-import Drawer from '@mui/material/Drawer'
+import MuiDrawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
@@ -18,26 +18,26 @@ import Box from '@mui/material/Box'
 
 export const DRAWER_WIDTH = 328
 
-interface LanguageDrawerProps {
+interface DrawerProps {
   open?: boolean
   onClose: () => void
   onChange: (selectedIds: string[]) => void
   selectedIds: string[]
 }
 
-export function LanguageDrawer({
+export function Drawer({
   open,
   onClose: handleClose,
   onChange: handleChange,
   selectedIds: initialSelectedIds
-}: LanguageDrawerProps): ReactElement {
+}: DrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds)
 
   // TODO: replace with languages GraphQL query
   const languages = [
     { id: 'en', name: 'English', nativeName: 'English' },
-    { id: 'zh', name: 'Chinese', nativeName: '中文' }
+    { id: 'zh-Hans', name: 'Simplified Chinese', nativeName: '简体中文' }
   ]
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function LanguageDrawer({
   }
 
   return (
-    <Drawer
+    <MuiDrawer
       anchor={smUp ? 'right' : 'bottom'}
       variant="temporary"
       open={open}
@@ -120,6 +120,6 @@ export function LanguageDrawer({
         </Button>
         <Button onClick={handleApply}>Apply</Button>
       </Box>
-    </Drawer>
+    </MuiDrawer>
   )
 }

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-import { LanguageDrawer } from '.'
+import { Drawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -12,7 +12,7 @@ describe('LanguageDrawer', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <LanguageDrawer
+        <Drawer
           open={true}
           onClose={handleClose}
           onChange={jest.fn()}
@@ -28,7 +28,7 @@ describe('LanguageDrawer', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <LanguageDrawer
+        <Drawer
           open={true}
           onClose={handleClose}
           onChange={jest.fn()}
@@ -45,7 +45,7 @@ describe('LanguageDrawer', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <LanguageDrawer
+        <Drawer
           open={true}
           onClose={handleClose}
           onChange={handleChange}
@@ -64,7 +64,7 @@ describe('LanguageDrawer', () => {
     const handleChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <LanguageDrawer
+        <Drawer
           open={true}
           onClose={jest.fn()}
           onChange={handleChange}

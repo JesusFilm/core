@@ -1,12 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { simpleComponentConfig } from '../../../../libs/storybook'
-import { LanguageDrawer } from '.'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { Drawer } from '.'
 
-const LanguageDrawerStory = {
+const DrawerStory = {
   ...simpleComponentConfig,
-  component: LanguageDrawer,
-  title: 'Journeys-Admin/Editor/VideoLibrary/LanguageDrawer',
+  component: Drawer,
+  title: 'Journeys-Admin/Editor/VideoLibrary/LanguageFilter/Drawer',
   argTypes: { onSelect: { action: 'onSelect' } }
 }
 
@@ -19,7 +19,7 @@ const Template: Story = ({ onSelect }) => {
   }
 
   return (
-    <LanguageDrawer
+    <Drawer
       open={open}
       onClose={() => setOpen(false)}
       onChange={handleChange}
@@ -30,4 +30,4 @@ const Template: Story = ({ onSelect }) => {
 
 export const Default = Template.bind({})
 
-export default LanguageDrawerStory as Meta
+export default DrawerStory as Meta
