@@ -7,7 +7,7 @@ export const arclightMediaUnits = {
         nodes: [
           {
             value:
-              'This is going to be a long description. We need to see how a long description is going to render out',
+              'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense.',
             descriptorType: 'DESCRIPTION'
           },
           {
@@ -96,7 +96,7 @@ export const arclightMediaUnits = {
         nodes: [
           {
             visualType: 'THUMBNAIL',
-            url: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
+            url: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80'
           }
         ]
       },
@@ -132,7 +132,7 @@ export const arclightMediaUnits = {
         nodes: [
           {
             visualType: 'THUMBNAIL',
-            url: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
+            url: 'https://images.unsplash.com/photo-1477936821694-ec4233a9a1a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80'
           }
         ]
       },
@@ -151,7 +151,7 @@ export const arclightMediaUnits = {
         nodes: [
           {
             value:
-              'This is going to be a long description. We need to see how a long description is going to render out',
+              'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense.',
             descriptorType: 'DESCRIPTION'
           },
           {

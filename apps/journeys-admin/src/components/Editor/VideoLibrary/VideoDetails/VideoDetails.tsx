@@ -9,7 +9,10 @@ import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
+import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
+import { arclightMediaUnits } from '../VideoList/VideoListData'
 
 export const DRAWER_WIDTH = 328
 
@@ -27,6 +30,11 @@ export function VideoDetailsContent({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
+
+  // to be replaced with the query
+  const arclightVideo = arclightMediaUnits.nodes.find(
+    (arclight) => arclight.uuid === videoId
+  )
 
   const handleOnClick = (): void => {
     onSelect(videoId)
@@ -56,14 +64,15 @@ export function VideoDetailsContent({
         },
         responsive: true,
         muted: true,
-        poster:
-          'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1631&q=80'
+        poster: arclightVideo?.visuals.nodes.find(
+          (arclight) => arclight.visualType === 'THUMBNAIL'
+        )?.url
       })
       playerRef.current.on('playing', () => {
         setIsPlaying(true)
       })
     }
-  }, [])
+  }, [arclightVideo])
 
   return (
     <>
@@ -116,11 +125,7 @@ export function VideoDetailsContent({
               src={
                 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
               }
-              // type={
-              //   videoContent.__typename === 'VideoArclight'
-              //     ? 'application/x-mpegURL'
-              //     : undefined
-              // }
+              type="application/x-mpegURL"
             />
           </video>
           {!isPlaying && (
@@ -143,26 +148,42 @@ export function VideoDetailsContent({
             </Typography>
           )}
         </Box>
-        <Box sx={{ py: 2 }}>
-          <Typography variant="subtitle1">NUA - Episode: Decision</Typography>
+        <Box sx={{ pb: 2, pt: 5 }}>
+          <Typography variant="subtitle1">
+            {
+              arclightVideo?.descriptors.nodes.find(
+                (type) => type.descriptorType === 'TITLE'
+              )?.value
+            }
+          </Typography>
         </Box>
         <Typography variant="caption">
-          Follow the journey of a curious Irishman traveling around the world
-          looking for answers and wrestling with the things that just don’t seem
-          to make sense.{' '}
+          {
+            arclightVideo?.descriptors.nodes.find(
+              (type) => type.descriptorType === 'DESCRIPTION'
+            )?.value
+          }
         </Typography>
       </Box>
-      <Button
-        variant="contained"
-        size="medium"
-        onClick={handleOnClick}
-        sx={{
-          mt: 3,
-          mx: 'auto'
-        }}
-      >
-        Select Video
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mx: 2 }}>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => console.log('open language drawer')}
+          endIcon={<ArrowDropDown />}
+          sx={{ mr: 2 }}
+        >
+          Other Languages
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<Check />}
+          onClick={handleOnClick}
+        >
+          Select Video
+        </Button>
+      </Box>
     </>
   )
 }

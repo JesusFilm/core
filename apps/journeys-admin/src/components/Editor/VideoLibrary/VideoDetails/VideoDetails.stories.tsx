@@ -25,7 +25,7 @@ const Template: Story = ({ videoId, onSelect }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  videoId: 'videoUUID'
+  videoId: 'nua1-uuid'
 }
 
 export default VideoDetailsStory as Meta

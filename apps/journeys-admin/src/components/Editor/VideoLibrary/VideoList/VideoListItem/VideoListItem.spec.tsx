@@ -15,7 +15,6 @@ describe('Video List Item', () => {
     poster:
       'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1631&q=80',
     time: 94000,
-    language: '',
     onSelect: () => console.log('onSelect')
   }
   it('should render the content of VideoListItem', () => {
@@ -25,7 +24,6 @@ describe('Video List Item', () => {
         description={tempData.description}
         poster={tempData.poster}
         time={tempData.time}
-        language={tempData.language}
         onSelect={tempData.onSelect}
       />
     )
@@ -34,6 +32,5 @@ describe('Video List Item', () => {
       getByText('This is a short description for the video nua1')
     ).toBeInTheDocument()
     expect(getByText('1:34')).toBeInTheDocument()
-    // expect(getByText('EN (US)')).toBeInTheDocument()
   })
 })
