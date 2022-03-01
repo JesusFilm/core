@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import {
   Divider,
+  IconButton,
   InputAdornment,
   Stack,
   Switch,
@@ -384,7 +385,7 @@ export function BackgroundMediaVideo({
         {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src != null && (
           <Stack
             direction="row"
-            spacing="3"
+            spacing="16px"
             justifyContent="space-between"
             data-testid="videoSrcStack"
           >
@@ -410,7 +411,7 @@ export function BackgroundMediaVideo({
                   sx={{
                     width: 55,
                     height: 55,
-                    bgcolor: '#DCDDE5',
+                    bgcolor: '#EFEFEF',
                     verticalAlign: 'center'
                   }}
                   justifyContent="center"
@@ -421,24 +422,21 @@ export function BackgroundMediaVideo({
             </div>
             <Stack direction="column" justifyContent="center">
               <Typography
-                variant="body1"
+                variant="subtitle2"
                 sx={{
-                  maxWidth: 180,
+                  maxWidth: 150,
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden'
                 }}
               >
-                {(coverBlock as TreeBlock<VideoBlock>)?.videoContent.src}
+                {(coverBlock as TreeBlock<VideoBlock>)?.title}
               </Typography>
             </Stack>
             <Stack direction="column" justifyContent="center">
-              <DeleteOutline
-                data-testid="deleteVideo"
-                color="primary"
-                onClick={handleVideoDelete}
-                style={{ cursor: 'pointer' }}
-              ></DeleteOutline>
+              <IconButton onClick={handleVideoDelete} data-testid="deleteVideo">
+                <DeleteOutline color="primary"></DeleteOutline>
+              </IconButton>
             </Stack>
           </Stack>
         )}
@@ -485,7 +483,7 @@ export function BackgroundMediaVideo({
         ></Tab>
       </Tabs>
       <TabPanel name="videoSrc" value={tabValue} index={0}>
-        <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
           <Formik
             initialValues={{
               src: videoBlock?.videoContent?.src ?? ''
@@ -509,7 +507,11 @@ export function BackgroundMediaVideo({
                     errors.src == null &&
                       handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
                   }}
-                  helperText={touched.src === true && errors.src}
+                  helperText={
+                    touched.src === true
+                      ? errors.src
+                      : 'Make sure video address is permanent'
+                  }
                   error={touched.src === true && Boolean(errors.src)}
                   InputProps={{
                     startAdornment: (
