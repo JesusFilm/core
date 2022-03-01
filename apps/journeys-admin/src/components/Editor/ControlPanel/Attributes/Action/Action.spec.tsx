@@ -130,7 +130,7 @@ describe('Action', () => {
     const result = jest.fn(() => ({
       data: {
         blockDeleteAction: {
-          id: 'journeyId'
+          id: 'button1.id'
         }
       }
     }))
