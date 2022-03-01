@@ -42,7 +42,7 @@ export function BackgroundMedia(): ReactElement {
     event: MouseEvent<HTMLElement>,
     selected: string
   ): void => {
-    setBlockType(selected)
+    if (selected != null) setBlockType(selected)
   }
 
   const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

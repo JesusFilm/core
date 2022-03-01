@@ -1,4 +1,4 @@
-import { ReactElement, useState, ChangeEvent } from 'react'
+import { ReactElement, ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
 import {
@@ -106,9 +106,6 @@ export function BackgroundMediaImage({
       BLOCK_DELETE_FOR_BACKGROUND_IMAGE
     )
   const { id: journeyId } = useJourney()
-  const [imageBlock, setImageBlock] = useState(
-    coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
-  )
 
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
@@ -119,8 +116,11 @@ export function BackgroundMediaImage({
   ): Promise<void> => {
     const src = event.target.value
 
+    const initialBlock =
+      coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+
     const block = {
-      ...imageBlock,
+      ...initialBlock,
       src: src,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
@@ -253,6 +253,7 @@ export function BackgroundMediaImage({
     })
     return imageBlockUpdateError == null
   }
+
   const handleChange = async (block: ImageBlock): Promise<void> => {
     let success = true
     if (
@@ -265,26 +266,21 @@ export function BackgroundMediaImage({
 
     if (block.src === '' || !success) return
 
-    if (imageBlock == null) {
-      success = await createImageBlock(block)
+    if (
+      coverBlock == null ||
+      coverBlock?.__typename.toString() !== 'ImageBlock'
+    ) {
+      await createImageBlock(block)
     } else {
-      success = await updateImageBlock(block)
-    }
-    if (success) {
-      setImageBlock(block as TreeBlock<ImageBlock>)
+      await updateImageBlock(block)
     }
   }
 
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
-        {imageBlock?.src != null && (
-          <Stack
-            direction="row"
-            spacing="3"
-            justifyContent="space-between"
-            data-testid="imageSrcStack"
-          >
+        {(coverBlock as ImageBlock)?.src != null && (
+          <Stack direction="row" spacing="16px" data-testid="imageSrcStack">
             <div
               style={{
                 overflow: 'hidden',
@@ -294,8 +290,8 @@ export function BackgroundMediaImage({
               }}
             >
               <Image
-                src={imageBlock.src}
-                alt={imageBlock?.alt}
+                src={(coverBlock as ImageBlock).src ?? ''}
+                alt={(coverBlock as ImageBlock).alt}
                 width={55}
                 height={55}
               ></Image>
@@ -304,19 +300,21 @@ export function BackgroundMediaImage({
               <Typography
                 variant="subtitle2"
                 sx={{
-                  maxWidth: 180,
+                  maxWidth: 150,
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden'
                 }}
               >
-                {imageBlock.src.replace(/(.*\/)*/, '').replace(/\?.*/, '')}
+                {(coverBlock as ImageBlock).alt}
               </Typography>
-              {coverBlock != null && (
-                <Typography variant="caption">
-                  {coverBlock.width}x{coverBlock.height}
-                </Typography>
-              )}
+              {(coverBlock as ImageBlock)?.width != null &&
+                (coverBlock as ImageBlock)?.height != null && (
+                  <Typography variant="caption">
+                    {(coverBlock as ImageBlock).width}x
+                    {(coverBlock as ImageBlock).height}
+                  </Typography>
+                )}
             </Stack>
             <Stack direction="column" justifyContent="center">
               <IconButton onClick={handleImageDelete} data-testid="deleteImage">
@@ -325,7 +323,7 @@ export function BackgroundMediaImage({
             </Stack>
           </Stack>
         )}
-        {imageBlock?.src == null && (
+        {(coverBlock as ImageBlock)?.src == null && (
           <Stack
             direction="row"
             spacing="16px"
@@ -358,7 +356,7 @@ export function BackgroundMediaImage({
           <Stack direction="column">
             <Formik
               initialValues={{
-                src: imageBlock?.src ?? ''
+                src: (coverBlock as ImageBlock)?.src ?? ''
               }}
               validationSchema={srcSchema}
               onSubmit={noop}

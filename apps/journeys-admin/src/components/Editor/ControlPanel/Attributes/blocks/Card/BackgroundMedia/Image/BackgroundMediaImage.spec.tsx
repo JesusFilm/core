@@ -388,9 +388,6 @@ describe('BackgroundMediaImage', () => {
       fireEvent.blur(textBox)
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
-      const img = await getByRole('img')
-      await waitFor(() => expect(img).toHaveAttribute('src', image.src))
-      expect(img).toHaveAttribute('alt', image.alt)
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` },
         { __ref: `ImageBlock:${image.id}` }
