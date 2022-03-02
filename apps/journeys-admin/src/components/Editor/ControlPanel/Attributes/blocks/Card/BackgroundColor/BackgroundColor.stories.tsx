@@ -73,7 +73,6 @@ export const Default: Story = () => {
         >
           <Drawer />
         </EditorProvider>
-        pnavi
       </JourneyProvider>
     </MockedProvider>
   )
