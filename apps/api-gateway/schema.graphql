@@ -183,7 +183,7 @@ type IconBlock implements Block {
   color: IconColor
   id: ID!
   journeyId: ID!
-  name: IconName!
+  name: IconName
   parentBlockId: ID
   parentOrder: Int
   size: IconSize
@@ -197,15 +197,14 @@ input IconBlockCreateInput {
   """
   id: ID
   journeyId: ID!
-  name: IconName!
+  name: IconName
   parentBlockId: ID!
   size: IconSize
 }
 
 input IconBlockUpdateInput {
   color: IconColor
-  name: IconName!
-  parentBlockId: ID
+  name: IconName
   size: IconSize
 }
 
@@ -526,7 +525,6 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID
   submitLabel: String!
 }
 

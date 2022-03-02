@@ -220,27 +220,53 @@ describe('ControlPanel', () => {
               query: SIGN_UP_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   submitLabel: 'Submit'
+                },
+                iconBlockCreateInput: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  name: null
+                },
+                id: 'uuid',
+                journeyId: 'journeyId',
+                updateInput: {
+                  submitIconId: 'uuid'
                 }
               }
             },
             result: {
               data: {
                 signUpBlockCreate: {
-                  id: 'signUpBlockId',
-                  parentBlockId: 'cardId',
-                  journeyId: 'journeyId',
-                  parentOrder: null,
-                  submitLabel: 'Submit',
                   __typename: 'SignUpBlock',
+                  id: 'uuid'
+                },
+                submitIcon: {
+                  __typename: 'IconBlock',
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  parentOrder: null,
+                  iconName: null,
+                  iconColor: null,
+                  iconSize: null
+                },
+                signUpBlockUpdate: {
+                  __typename: 'SignUpBlock',
+                  id: 'uuid',
+                  parentBlockId: 'cardId',
+                  parentOrder: 0,
+                  journeyId: 'journeyId',
+                  submitIconId: 'uuid',
+                  submitLabel: 'Submit',
                   action: {
                     __typename: 'NavigateToBlockAction',
                     gtmEventName: 'gtmEventName',
                     blockId: 'def'
-                  },
-                  submitIconId: null
+                  }
                 }
               }
             }
@@ -519,28 +545,70 @@ describe('ControlPanel', () => {
               query: BUTTON_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   label: 'Edit Text...',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
                   size: ButtonSize.medium
+                },
+                iconBlockCreateInput1: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  name: null
+                },
+                iconBlockCreateInput2: {
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  name: null
+                },
+                id: 'uuid',
+                journeyId: 'journeyId',
+                updateInput: {
+                  startIconId: 'uuid',
+                  endIconId: 'uuid'
                 }
               }
             },
             result: {
               data: {
                 buttonBlockCreate: {
-                  id: 'buttonBlockId',
-                  parentBlockId: 'cardId',
+                  id: 'uuid'
+                },
+                startIcon: {
+                  __typename: 'IconBlock',
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
                   parentOrder: null,
+                  iconName: null,
+                  iconColor: null,
+                  iconSize: null
+                },
+                endIcon: {
+                  __typename: 'IconBlock',
+                  id: 'uuid',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'uuid',
+                  parentOrder: null,
+                  iconName: null,
+                  iconColor: null,
+                  iconSize: null
+                },
+                buttonBlockUpdate: {
+                  id: 'uuid',
+                  parentBlockId: 'cardId',
+                  parentOrder: 0,
                   journeyId: 'journeyId',
                   label: 'Edit Text...',
                   variant: ButtonVariant.contained,
                   color: ButtonColor.primary,
                   size: ButtonSize.medium,
-                  startIconId: null,
-                  endIconId: null,
+                  startIconId: 'uuid',
+                  endIconId: 'uuid',
                   action: null
                 }
               }

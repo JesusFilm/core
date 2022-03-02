@@ -36,7 +36,7 @@ export function Card({
       type: 'SetDrawerPropsAction',
       title: 'Background Media Properties',
       mobileOpen: true,
-      children: <BackgroundMedia id={id} coverBlock={coverBlock} />
+      children: <BackgroundMedia />
     })
   }
 
