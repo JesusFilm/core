@@ -21,13 +21,11 @@ const block: TreeBlock<IconFields> = {
 
 describe('Icon', () => {
   it('should render the icon successfully', () => {
-    const { getByTestId, baseElement } = render(<Icon {...block} />)
-    console.log(baseElement)
+    const { getByTestId } = render(<Icon {...block} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })
   it('should render nothing', () => {
     const { getByTestId } = render(<Icon {...block} iconName={IconName.None} />)
-
     expect(getByTestId('None')).toBeInTheDocument()
   })
   it('should render small icon', () => {
