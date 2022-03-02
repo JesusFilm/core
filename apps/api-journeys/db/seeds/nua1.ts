@@ -154,7 +154,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button1._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -422,7 +422,7 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button2._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')

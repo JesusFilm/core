@@ -68,7 +68,6 @@ export enum IconName {
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
   MenuBookRounded = "MenuBookRounded",
-  None = "None",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
   SendRounded = "SendRounded",
@@ -170,7 +169,7 @@ export interface IconBlockCreateInput {
   color?: IconColor | null;
   id?: string | null;
   journeyId: string;
-  name: IconName;
+  name?: IconName | null;
   parentBlockId: string;
   size?: IconSize | null;
 }

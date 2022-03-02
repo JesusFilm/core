@@ -154,7 +154,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button1._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -390,7 +390,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button2._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -480,7 +480,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button3._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -570,7 +570,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button4._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -771,7 +771,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button5._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -971,7 +971,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button6._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -1171,7 +1171,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button7._key,
-    name: 'None'
+    name: null
   })
   await db
     .collection('blocks')
@@ -1429,7 +1429,7 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button8._key,
-    name: 'None'
+    name: null
   })
   await db.collection('blocks').update(button8._key, {
     startIconId: icon12a._key,
