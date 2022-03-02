@@ -87,7 +87,7 @@ export function LinkAction(): ReactElement {
             id="link"
             name="link"
             variant="filled"
-            label="Past URL here..."
+            label="Paste URL here..."
             fullWidth
             value={values.link}
             error={touched.link === true && Boolean(errors.link)}

@@ -2,19 +2,20 @@ import { Story, Meta } from '@storybook/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '../../../../../libs/context'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
   JourneyStatus
 } from '../../../../../../__generated__/globalTypes'
+import { Drawer } from '../../../Drawer'
 import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
 import { Action, ACTION_DELETE, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
 
 const ActionStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: Action,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action'
 }
@@ -90,8 +91,17 @@ export const Default: Story = () => {
       ]}
     >
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ steps, selectedStep, selectedBlock }}>
-          <Action />
+        <EditorProvider
+          initialState={{
+            steps,
+            selectedStep,
+            selectedBlock,
+            drawerChildren: <Action />,
+            drawerTitle: 'Action',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
