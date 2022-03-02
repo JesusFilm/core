@@ -95,7 +95,7 @@ const poster: TreeBlock<ImageBlock> = {
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',
   __typename: 'ImageBlock',
-  parentBlockId: '3',
+  parentBlockId: card.id,
   parentOrder: 0,
   src: 'https://source.unsplash.com/random/1920x1080',
   alt: 'random image from unsplash',
