@@ -358,29 +358,29 @@ describe('BackgroundMediaVideo', () => {
       expect(textBox).toHaveValue('https://example.com/video.mp4')
     })
 
-    it('displays validation message', async () => {
-      const { getByRole, getByText } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = await getByRole('textbox')
-      await fireEvent.focus(textBox)
-      fireEvent.change(textBox, {
-        target: { value: '' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-      fireEvent.change(textBox, {
-        target: { value: 'example.com/123' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(getByText('Please enter a valid url')).toBeInTheDocument()
-      )
-    })
+    // it('displays validation message', async () => {
+    //   const { getByRole, getByText } = render(
+    //     <MockedProvider>
+    //       <JourneyProvider value={journey}>
+    //         <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+    //       </JourneyProvider>
+    //     </MockedProvider>
+    //   )
+    //   const textBox = await getByRole('textbox')
+    //   await fireEvent.focus(textBox)
+    //   fireEvent.change(textBox, {
+    //     target: { value: '' }
+    //   })
+    //   fireEvent.blur(textBox)
+    //   await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+    //   fireEvent.change(textBox, {
+    //     target: { value: 'example.com/123' }
+    //   })
+    //   fireEvent.blur(textBox)
+    //   await waitFor(() =>
+    //     expect(getByText('Please enter a valid url')).toBeInTheDocument()
+    //   )
+    // })
 
     it('updates video cover block', async () => {
       const cache = new InMemoryCache()

@@ -14,7 +14,6 @@ import {
   Typography
 } from '@mui/material'
 import {
-  Create,
   DeleteOutline,
   Image as ImageIcon,
   Link as LinkIcon,
@@ -39,6 +38,7 @@ import { BlockDeleteForBackgroundVideo } from '../../../../../../../../../__gene
 import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundVideoUpdate'
 import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
 import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
+import { BackgroundMediaCoverImage } from './Cover/BackgroundMediaVideoCover'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(
@@ -633,62 +633,10 @@ export function BackgroundMediaVideo({
               )}
             </Formik>
             <Divider />
-            <Stack direction="row" justifyContent="space-between">
-              <Stack direction="column" justifyContent="center">
-                <Typography variant="subtitle2">Cover Image</Typography>
-                <Typography variant="caption">
-                  Appears while video is loading
-                </Typography>
-              </Stack>
-              <Box
-                width={95}
-                height={62}
-                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', py: 1 }}
-                borderRadius={2}
-              >
-                <Stack direction="row" justifyContent="space-around">
-                  <div
-                    style={{
-                      overflow: 'hidden',
-                      borderRadius: 8,
-                      height: 55,
-                      width: 55
-                    }}
-                  >
-                    {imageBlock?.src != null && (
-                      <Image
-                        src={imageBlock.src}
-                        alt={imageBlock.alt}
-                        width={55}
-                        height={55}
-                      ></Image>
-                    )}
-                    {imageBlock?.src == null && (
-                      <Box
-                        borderRadius={2}
-                        sx={{
-                          width: 55,
-                          height: 55,
-                          verticalAlign: 'center'
-                        }}
-                        justifyContent="center"
-                      >
-                        <ImageIcon
-                          sx={{ marginTop: 4, marginLeft: 4 }}
-                        ></ImageIcon>
-                      </Box>
-                    )}
-                  </div>
-                  <Stack
-                    direction="column"
-                    justifyContent="center"
-                    sx={{ paddingRight: 1 }}
-                  >
-                    <Create color="primary"></Create>
-                  </Stack>
-                </Stack>
-              </Box>
-            </Stack>
+            <BackgroundMediaCoverImage
+              selectedBlock={imageBlock}
+              parentBlockId={coverBlock.id}
+            />
           </Stack>
         </Box>
       </TabPanel>
