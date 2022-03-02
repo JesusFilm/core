@@ -184,6 +184,12 @@ export interface ImageBlockCreateInput {
   src?: string | null;
 }
 
+export interface ImageBlockUpdateInput {
+  alt?: string | null;
+  parentBlockId?: string | null;
+  src?: string | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
