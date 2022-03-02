@@ -45,16 +45,18 @@ export class BlockService extends BaseService {
   async updateChildrenParentOrder(
     journeyId: string,
     parentBlockId: string
-  ): Promise<Array<{ _key: string; parentOrder: number }>> {
-    const siblings = await this.getSiblings(journeyId, parentBlockId)
+  ): Promise<Block[]> {
+    const siblings = await (
+      await this.getSiblings(journeyId, parentBlockId)
+    ).filter((block) => block.parentOrder != null)
     return await this.reorderSiblings(siblings)
   }
 
   async reorderSiblings(
     siblings: Block[] | Array<{ _key: string; parentOrder: number }>
-  ): Promise<Array<{ _key: string; parentOrder: number }>> {
+  ): Promise<Block[]> {
     const updatedSiblings = siblings.map((block, index) => ({
-      _key: block._key,
+      ...block,
       parentOrder: index
     }))
     return await this.updateAll(updatedSiblings)
@@ -82,12 +84,16 @@ export class BlockService extends BaseService {
 
   async removeBlockAndChildren(
     blockId: string,
-    parentBlockId: string,
-    journeyId: string
+    journeyId: string,
+    parentBlockId?: string
   ): Promise<Block[]> {
     const res: Block = await this.remove(blockId)
-    await this.updateChildrenParentOrder(journeyId, parentBlockId)
-    return await this.removeAllBlocksForParentId([blockId], [res])
+    await this.removeAllBlocksForParentId([blockId], [res])
+    const result =
+      parentBlockId == null
+        ? []
+        : await this.updateChildrenParentOrder(journeyId, parentBlockId)
+    return result as unknown as Block[]
   }
 
   async validateBlock(

@@ -14,11 +14,13 @@ export {
   Video,
   VideoTrigger
 } from './components'
+export type { WrapperProps } from './components'
 export {
   handleAction,
   useEditor,
   EditorProvider,
   ActiveTab,
+  ActiveFab,
   searchBlocks,
   journeyUiConfig,
   simpleComponentConfig,

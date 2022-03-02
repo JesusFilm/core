@@ -1,0 +1,8 @@
+type Translation {
+  value: String!
+  primary: Boolean!
+}
+
+extend type Translation {
+  language: Language
+}

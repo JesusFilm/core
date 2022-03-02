@@ -1,10 +1,11 @@
 import { ReactElement, MouseEvent } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import Box from '@mui/material/Box'
+import { styled } from '@mui/material/styles'
+import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock, useEditor, ActiveTab } from '../..'
+import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -23,6 +24,11 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
 }
+
+const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
+  marginBottom: theme.spacing(4),
+  '&:last-child': { marginBottom: 0 }
+}))
 
 export function RadioQuestion({
   id: blockId,
@@ -73,15 +79,21 @@ export function RadioQuestion({
       ...props
     }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (selectedBlock?.id === block.id) {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (
-    <Box
+    <StyledRadioQuestion
       data-testid={`radioQuestion-${blockId}`}
       sx={{
+        // TODO: Pass this in via Selection Wrapper
         outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
@@ -109,6 +121,6 @@ export function RadioQuestion({
             )
         )}
       </ButtonGroup>
-    </Box>
+    </StyledRadioQuestion>
   )
 }

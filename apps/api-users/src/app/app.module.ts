@@ -1,12 +1,17 @@
 import { join } from 'path'
 import { Module } from '@nestjs/common'
-import { GraphQLFederationModule } from '@nestjs/graphql'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig
+} from '@nestjs/apollo'
+import { GraphQLModule } from '@nestjs/graphql'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [
     UserModule,
-    GraphQLFederationModule.forRoot({
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
       typePaths: [
         join(process.cwd(), 'apps/api-users/src/app/**/*.graphql'),
         join(process.cwd(), 'assets/**/*.graphql')

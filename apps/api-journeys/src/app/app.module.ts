@@ -1,6 +1,10 @@
 import { join } from 'path'
 import { Module } from '@nestjs/common'
-import { GraphQLFederationModule } from '@nestjs/graphql'
+import { GraphQLModule } from '@nestjs/graphql'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig
+} from '@nestjs/apollo'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
@@ -15,7 +19,8 @@ import { UserJourneyModule } from './modules/userJourney/userJourney.module'
     JourneyModule,
     ResponseModule,
     UserJourneyModule,
-    GraphQLFederationModule.forRoot({
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
       typePaths: [
         join(process.cwd(), 'apps/api-journeys/src/app/**/*.graphql'),
         join(process.cwd(), 'assets/**/*.graphql')

@@ -1,0 +1,90 @@
+{
+  "root": "apps/api-languages",
+  "sourceRoot": "apps/api-languages/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-languages",
+        "main": "apps/api-languages/src/main.ts",
+        "tsConfig": "apps/api-languages/tsconfig.app.json",
+        "assets": [
+          "apps/api-languages/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apps/api-languages/src/app/",
+            "output": "./assets"
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-languages/src/environments/environment.ts",
+              "with": "apps/api-languages/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "seed": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx ts-node apps/api-languages/db/seed.ts"
+      }
+    },
+    "serve-nowatch": {
+      "executor": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "api-languages:build"
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve-nowatch api-languages"
+          },
+          {
+            "command": "npx ts-node apps/api-languages/src/generate-typings.ts"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-languages/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-languages"],
+      "options": {
+        "jestConfig": "apps/api-languages/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4003/graphql > apps/api-languages/schema.graphql"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

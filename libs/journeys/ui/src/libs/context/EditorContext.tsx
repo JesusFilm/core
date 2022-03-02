@@ -17,6 +17,12 @@ export enum ActiveTab {
   Blocks = 2
 }
 
+export enum ActiveFab {
+  Add = 0,
+  Edit = 1,
+  Save = 2
+}
+
 export interface EditorState {
   steps: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
@@ -26,6 +32,7 @@ export interface EditorState {
   drawerChildren?: ReactNode
   drawerMobileOpen: boolean
   activeTab: ActiveTab
+  activeFab: ActiveFab
 }
 
 interface SetSelectedStepAction {
@@ -65,6 +72,11 @@ interface SetActiveTabAction {
   activeTab: ActiveTab
 }
 
+interface SetActiveFabAction {
+  type: 'SetActiveFabAction'
+  activeFab: ActiveFab
+}
+
 interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
@@ -78,6 +90,7 @@ type EditorAction =
   | SetDrawerPropsAction
   | SetDrawerMobileOpenAction
   | SetActiveTabAction
+  | SetActiveFabAction
   | SetStepsAction
 
 export const reducer = (
@@ -114,6 +127,11 @@ export const reducer = (
         ...state,
         activeTab: action.activeTab
       }
+    case 'SetActiveFabAction':
+      return {
+        ...state,
+        activeFab: action.activeFab
+      }
     case 'SetStepsAction':
       return {
         ...state,
@@ -134,7 +152,12 @@ export const EditorContext = createContext<{
   state: EditorState
   dispatch: Dispatch<EditorAction>
 }>({
-  state: { steps: [], drawerMobileOpen: false, activeTab: ActiveTab.Cards },
+  state: {
+    steps: [],
+    drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add
+  },
   dispatch: () => null
 })
 
@@ -153,6 +176,7 @@ export function EditorProvider({
     selectedBlock: initialState?.steps?.[0],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add,
     ...initialState
   })
 

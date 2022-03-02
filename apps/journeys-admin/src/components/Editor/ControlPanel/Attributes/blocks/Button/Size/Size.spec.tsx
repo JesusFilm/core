@@ -55,7 +55,7 @@ describe('Button size selector', () => {
       data: {
         buttonBlockUpdate: {
           id: 'id',
-          color: ButtonSize.small
+          size: 'small'
         }
       }
     }))

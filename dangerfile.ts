@@ -28,7 +28,7 @@ export default async () => {
   // check branch has well-formed name
   if (
     danger.github.pr.head.ref.match(
-      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(fix|chore|docs|feature|fix|security|testing)-[a-z\-]+[a-z]/g
+      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z\-]+[a-z]/g
     ) === null
   ) {
     fail('Your branch does not match the naming convention.')
@@ -40,7 +40,7 @@ export default async () => {
   // check PR has well-formed title
   if (
     danger.github.pr.title.match(
-      /^(fix|chore|docs|feature|fix|security|testing): .+/g
+      /^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test): .+/g
     ) === null
   ) {
     fail(
@@ -99,8 +99,17 @@ export default async () => {
     fail('Please add milestone to this PR.')
   }
 
-  // check PR has requested reviewers
-  if (currentPR.data.requested_reviewers.length === 0) {
+  // pull reviews for PR from GitHub API
+  const reviews = await danger.github.api.pulls.listReviews({
+    ...danger.github.thisPR,
+    pull_number: danger.github.thisPR.number
+  })
+
+  // check PR has requested reviewers or completed reviews
+  if (
+    currentPR.data.requested_reviewers.length === 0 &&
+    reviews.data.length === 0
+  ) {
     fail('Please request a reviewer for this PR.')
   }
 }

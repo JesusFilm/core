@@ -46,7 +46,7 @@ export class BlockResolver {
     @Args('id') _key: string,
     @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
-  ): Promise<Array<{ _key: string; parentOrder: number }>> {
+  ): Promise<Block[]> {
     const selectedBlock: Block = await this.blockService.get(_key)
 
     if (
@@ -72,13 +72,13 @@ export class BlockResolver {
   )
   async blockDelete(
     @Args('id') id: string,
-    @Args('parentBlockId') parentBlockId: string,
-    @Args('journeyId') journeyId: string
+    @Args('journeyId') journeyId: string,
+    @Args('parentBlockId') parentBlockId?: string
   ): Promise<Block[]> {
     return await this.blockService.removeBlockAndChildren(
       id,
-      parentBlockId,
-      journeyId
+      journeyId,
+      parentBlockId
     )
   }
 

@@ -5,7 +5,7 @@ import { Theme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
-import { TreeBlock, useEditor, ActiveTab } from '../..'
+import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
 interface ImageProps extends TreeBlock<ImageFields> {
@@ -37,13 +37,14 @@ export function Image({
     }
 
     dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
     dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   return (
     <Box
-      data-testId={`image-${props.id}`}
+      data-testid={`image-${props.id}`}
       sx={{
         borderRadius: (theme) => theme.spacing(4),
         overflow: 'hidden',
