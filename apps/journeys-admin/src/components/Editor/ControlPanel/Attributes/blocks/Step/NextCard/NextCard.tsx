@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -63,17 +62,12 @@ export function NextCard({ id }: NextCardProps): ReactElement {
 
   return (
     <>
-      <Divider />
-      <Box sx={{ px: 6, py: 4 }}>
-        <Box>Cards</Box>
-      </Box>
-      <Divider />
       <Box sx={{ px: 6, py: 4 }}>
         <Typography variant="subtitle2" gutterBottom>
           Conditions
         </Typography>
         <ToggleOption
-          heading={'Conditions'}
+          heading={'Lock the next step'}
           description={"Don't allow to skip the current card"}
           checked={stepBlock?.locked ?? false}
           handleChange={handleChange}

@@ -27,13 +27,7 @@ export const Default: Story = () => {
       <EditorProvider
         initialState={{
           selectedBlock,
-          drawerChildren: (
-            <NextCard
-              id={selectedBlock.id}
-              nextBlockId={selectedBlock.nextBlockId}
-              locked={selectedBlock.locked}
-            />
-          ),
+          drawerChildren: <NextCard id={selectedBlock.id} />,
           drawerTitle: 'Next Card Properties',
           drawerMobileOpen: true
         }}
