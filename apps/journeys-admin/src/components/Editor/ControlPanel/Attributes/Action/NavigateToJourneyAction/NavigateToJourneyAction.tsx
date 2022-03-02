@@ -97,7 +97,7 @@ export function NavigateToJourneyAction(): ReactElement {
       >
         <MenuItem value="">Select the Journey...</MenuItem>
         {data?.journeys?.map(({ title, id }) => (
-          <MenuItem key={`button-navigate-journey-${title}`} value={id}>
+          <MenuItem key={`button-navigate-journey-${id}`} value={id}>
             {title}
           </MenuItem>
         ))}
