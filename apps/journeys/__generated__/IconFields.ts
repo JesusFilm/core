@@ -14,7 +14,7 @@ export interface IconFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  iconName: IconName;
+  iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
 }
