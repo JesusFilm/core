@@ -53,7 +53,7 @@ export function Icon({
     ContactSupportRounded
   }
 
-  return iconName === 'None' ? (
+  return iconName === null ? (
     <div data-testid={'None'} />
   ) : (
     createElement(icons[iconName], {

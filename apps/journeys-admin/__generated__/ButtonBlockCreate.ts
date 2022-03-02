@@ -19,7 +19,7 @@ export interface ButtonBlockCreate_startIcon {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  iconName: IconName;
+  iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
 }
@@ -29,7 +29,7 @@ export interface ButtonBlockCreate_endIcon {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  iconName: IconName;
+  iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
 }

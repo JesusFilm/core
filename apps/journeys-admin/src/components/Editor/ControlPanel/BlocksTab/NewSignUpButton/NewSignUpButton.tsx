@@ -12,7 +12,6 @@ import DraftsRounded from '@mui/icons-material/DraftsRounded'
 import { useJourney } from '../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
-import { IconName } from '../../../../../../__generated__/globalTypes'
 import { Button } from '../../Button'
 
 export const SIGN_UP_BLOCK_CREATE = gql`
@@ -67,7 +66,7 @@ export function NewSignUpButton(): ReactElement {
             id: submitId,
             journeyId,
             parentBlockId: id,
-            name: IconName.None
+            name: null
           },
           id,
           journeyId,

@@ -229,7 +229,7 @@ describe('ControlPanel', () => {
                   id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
-                  name: 'None'
+                  name: null
                 },
                 id: 'uuid',
                 journeyId: 'journeyId',
@@ -250,7 +250,7 @@ describe('ControlPanel', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   parentOrder: null,
-                  iconName: 'None',
+                  iconName: null,
                   iconColor: null,
                   iconSize: null
                 },
@@ -557,13 +557,13 @@ describe('ControlPanel', () => {
                   id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
-                  name: 'None'
+                  name: null
                 },
                 iconBlockCreateInput2: {
                   id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
-                  name: 'None'
+                  name: null
                 },
                 id: 'uuid',
                 journeyId: 'journeyId',
@@ -584,7 +584,7 @@ describe('ControlPanel', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   parentOrder: null,
-                  iconName: 'None',
+                  iconName: null,
                   iconColor: null,
                   iconSize: null
                 },
@@ -594,7 +594,7 @@ describe('ControlPanel', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   parentOrder: null,
-                  iconName: 'None',
+                  iconName: null,
                   iconColor: null,
                   iconSize: null
                 },

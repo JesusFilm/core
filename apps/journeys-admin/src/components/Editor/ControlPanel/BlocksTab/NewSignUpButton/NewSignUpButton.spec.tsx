@@ -52,7 +52,7 @@ describe('SignUp', () => {
           id: 'iconId',
           journeyId: 'journeyId',
           parentBlockId: 'signUpBlockId',
-          name: 'None'
+          name: null
         },
         signUpBlockUpdate: {
           id: 'signUpBlockId',
@@ -86,7 +86,7 @@ describe('SignUp', () => {
                   id: 'iconId',
                   journeyId: 'journeyId',
                   parentBlockId: 'signUpBlockId',
-                  name: 'None'
+                  name: null
                 },
                 id: 'signUpBlockId',
                 journeyId: 'journeyId',
@@ -134,7 +134,7 @@ describe('SignUp', () => {
           journeyId: 'journeyId',
           parentBlockId: 'signUpBlockId',
           parentOrder: null,
-          iconName: 'None',
+          iconName: null,
           iconColor: null,
           iconSize: null
         },
@@ -172,7 +172,7 @@ describe('SignUp', () => {
                   id: 'iconId',
                   journeyId: 'journeyId',
                   parentBlockId: 'signUpBlockId',
-                  name: 'None'
+                  name: null
                 },
                 id: 'signUpBlockId',
                 journeyId: 'journeyId',
