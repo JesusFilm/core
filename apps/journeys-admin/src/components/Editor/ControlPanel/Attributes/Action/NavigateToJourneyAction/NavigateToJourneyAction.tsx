@@ -93,7 +93,7 @@ export function NavigateToJourneyAction(): ReactElement {
         onChange={handleChange}
         value={currentActionJourneyId}
         IconComponent={KeyboardArrowDownRoundedIcon}
-        inputProps={{ 'aria-label': 'journey-name-select' }}
+        inputProps={{ 'aria-label': 'journey' }}
       >
         <MenuItem value="">Select the Journey...</MenuItem>
         {data?.journeys?.map(({ title, id }) => (

@@ -147,7 +147,7 @@ describe('NavigateToJourneyAction', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'journey-name-select' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'journey' }))
     await waitFor(() =>
       expect(
         getByRole('option', { name: 'testJourneyName' })
