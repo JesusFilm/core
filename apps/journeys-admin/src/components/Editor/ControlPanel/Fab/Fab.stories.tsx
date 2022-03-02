@@ -1,10 +1,7 @@
 import { noop } from 'lodash'
 import { Story, Meta } from '@storybook/react'
-import {
-  ActiveFab,
-  EditorProvider,
-  simpleComponentConfig
-} from '@core/journeys/ui'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui'
+import { simpleComponentConfig } from '../../../../libs/storybook'
 import { Fab } from '.'
 
 const FabStory = {
