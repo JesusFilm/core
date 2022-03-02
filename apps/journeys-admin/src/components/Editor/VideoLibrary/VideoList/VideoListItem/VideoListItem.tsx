@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
-import { VideoDetails } from '../../VideoDetails'
 
 // props to be updated according to the arclight changes
 interface VideoListItemProps {
@@ -98,14 +97,7 @@ export function VideoListItem({
           </Box>
         )}
       </ListItemButton>
-      {id != null && (
-        <VideoDetails
-          open={open}
-          videoId={id}
-          handleOpen={handleOpen}
-          onSelect={onSelect}
-        />
-      )}
+      {/* call VideoDetails here once merged */}
     </>
   )
 }
