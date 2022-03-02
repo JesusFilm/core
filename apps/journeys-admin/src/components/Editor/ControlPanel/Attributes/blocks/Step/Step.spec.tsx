@@ -45,7 +45,6 @@ describe('Step', () => {
       )
       fireEvent.click(getByText('Next Card'))
       expect(getByText('Next Card Properties')).toBeInTheDocument()
-      expect(getByText('Cards')).toBeInTheDocument()
     })
 
     it('shows locked', () => {
