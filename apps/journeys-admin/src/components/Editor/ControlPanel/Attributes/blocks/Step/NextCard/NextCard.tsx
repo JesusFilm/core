@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
-import { Conditions } from './Conditions'
+import { LockStep } from './LockStep'
 
 interface NextCardProps {
   id: string
@@ -26,7 +26,7 @@ export function NextCard({
         <Typography variant="subtitle2" gutterBottom>
           Conditions
         </Typography>
-        <Conditions />
+        <LockStep />
       </Box>
     </>
   )

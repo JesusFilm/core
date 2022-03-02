@@ -3,13 +3,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { Conditions } from '.'
+import { LockStep } from '.'
 
-const ConditionsStory = {
+const LockStepStory = {
   ...simpleComponentConfig,
-  component: Conditions,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Step/NextCard/Conditions'
+  component: LockStep,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Step/NextCard/LockStep'
 }
 
 export const Default: Story = () => {
@@ -26,7 +25,7 @@ export const Default: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock }}>
-        <Conditions />
+        <LockStep />
       </EditorProvider>
     </MockedProvider>
   )
@@ -45,10 +44,10 @@ export const Locked: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock }}>
-        <Conditions />
+        <LockStep />
       </EditorProvider>
     </MockedProvider>
   )
 }
 
-export default ConditionsStory as Meta
+export default LockStepStory as Meta

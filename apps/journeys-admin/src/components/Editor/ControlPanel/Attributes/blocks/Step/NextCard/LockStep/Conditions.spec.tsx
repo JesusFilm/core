@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { Conditions, STEP_BLOCK_LOCK_UPDATE } from './Conditions'
+import { LockStep, STEP_BLOCK_LOCK_UPDATE } from './LockStep'
 
-describe('Conditions', () => {
+describe('LockStep', () => {
   it('display the correct text', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -19,7 +19,7 @@ describe('Conditions', () => {
     const { getByText } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <Conditions />
+          <LockStep />
         </EditorProvider>
       </MockedProvider>
     )
@@ -67,7 +67,7 @@ describe('Conditions', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <Conditions />
+          <LockStep />
         </EditorProvider>
       </MockedProvider>
     )

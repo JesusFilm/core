@@ -23,7 +23,7 @@ export const STEP_BLOCK_LOCK_UPDATE = gql`
   }
 `
 
-export function Conditions(): ReactElement {
+export function LockStep(): ReactElement {
   const [stepBlockLockUpdate] = useMutation<StepBlockLockUpdate>(
     STEP_BLOCK_LOCK_UPDATE
   )
