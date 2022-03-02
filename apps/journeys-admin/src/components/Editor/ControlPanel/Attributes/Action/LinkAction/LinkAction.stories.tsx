@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { steps } from '../data'
 import { LinkAction } from '.'
@@ -8,27 +11,30 @@ import { LinkAction } from '.'
 const LinkActionStory = {
   ...simpleComponentConfig,
   component: LinkAction,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/LinkAction'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
 }
 
-export const Default: Story = () => {
-  return (
-    <MockedProvider>
-      <LinkAction />
-    </MockedProvider>
-  )
-}
-
-export const WithLink: Story = () => {
+export const Link: Story = () => {
   const selectedBlock = steps[1].children[0].children[3]
 
   return (
-    <MockedProvider>
-      <EditorProvider initialState={{ selectedBlock }}>
-        <LinkAction />
-      </EditorProvider>
-    </MockedProvider>
+    <Stack spacing={10}>
+      <Box>
+        <Typography>Default</Typography>
+        <MockedProvider>
+          <LinkAction />
+        </MockedProvider>
+      </Box>
+
+      <Box>
+        <Typography>With Link</Typography>
+        <MockedProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <LinkAction />
+          </EditorProvider>
+        </MockedProvider>
+      </Box>
+    </Stack>
   )
 }
 

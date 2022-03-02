@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
@@ -14,8 +17,7 @@ import { NavigateToBlockAction } from '.'
 const NavigateToBlockActionStory = {
   ...simpleComponentConfig,
   component: NavigateToBlockAction,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateToBlockAction'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
 }
 
 const journeyTheme = {
@@ -24,29 +26,33 @@ const journeyTheme = {
   themeName: ThemeName.base
 } as unknown as Journey
 
-export const Default: Story = () => {
-  return (
-    <MockedProvider>
-      <JourneyProvider value={journeyTheme}>
-        <EditorProvider initialState={{ steps }}>
-          <NavigateToBlockAction />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
-}
-
-export const SelectedCard: Story = () => {
+export const NavigateToBlock: Story = () => {
   const selectedBlock = steps[4].children[0].children[4]
 
   return (
-    <MockedProvider>
-      <JourneyProvider value={journeyTheme}>
-        <EditorProvider initialState={{ selectedBlock, steps }}>
-          <NavigateToBlockAction />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
+    <Stack spacing={10}>
+      <Box>
+        <Typography>Default</Typography>
+        <MockedProvider>
+          <JourneyProvider value={journeyTheme}>
+            <EditorProvider initialState={{ steps }}>
+              <NavigateToBlockAction />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </Box>
+
+      <Box>
+        <Typography>Selected card</Typography>
+        <MockedProvider>
+          <JourneyProvider value={journeyTheme}>
+            <EditorProvider initialState={{ selectedBlock, steps }}>
+              <NavigateToBlockAction />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </Box>
+    </Stack>
   )
 }
 

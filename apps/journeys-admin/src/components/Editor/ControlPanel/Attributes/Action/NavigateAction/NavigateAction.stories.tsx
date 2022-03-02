@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import {
   ThemeName,
@@ -14,8 +17,7 @@ import { NavigateAction } from '.'
 const NavigateNextStory = {
   ...simpleComponentConfig,
   component: NavigateAction,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateAction'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
 }
 
 const journeyTheme = {
@@ -24,41 +26,44 @@ const journeyTheme = {
   themeName: ThemeName.base
 } as unknown as Journey
 
-export const Default: Story = () => {
+export const Navigate: Story = () => {
   const selectedStep = steps[3]
+  const selectedStepEnd = steps[4]
 
   return (
-    <MockedProvider>
-      <JourneyProvider value={journeyTheme}>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep
-          }}
-        >
-          <NavigateAction />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
-}
+    <Stack spacing={10}>
+      <Box>
+        <Typography>Default</Typography>
+        <MockedProvider>
+          <JourneyProvider value={journeyTheme}>
+            <EditorProvider
+              initialState={{
+                steps,
+                selectedStep
+              }}
+            >
+              <NavigateAction />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </Box>
 
-export const End: Story = () => {
-  const selectedStep = steps[4]
-
-  return (
-    <MockedProvider>
-      <JourneyProvider value={journeyTheme}>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep
-          }}
-        >
-          <NavigateAction />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
+      <Box>
+        <Typography>No next card</Typography>
+        <MockedProvider>
+          <JourneyProvider value={journeyTheme}>
+            <EditorProvider
+              initialState={{
+                steps,
+                selectedStep: selectedStepEnd
+              }}
+            >
+              <NavigateAction />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </Box>
+    </Stack>
   )
 }
 

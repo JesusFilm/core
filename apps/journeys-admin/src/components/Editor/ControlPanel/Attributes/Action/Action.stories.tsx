@@ -90,7 +90,7 @@ export const Default: Story = () => {
       ]}
     >
       <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ steps, selectedStep, selectedBlock }}>
+        <EditorProvider initialState={{ steps }}>
           <Action />
         </EditorProvider>
       </JourneyProvider>

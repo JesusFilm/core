@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../../../../libs/context'
@@ -16,8 +19,7 @@ import { NavigateToJourneyAction } from '.'
 const NavigateToJourneyActionStory = {
   ...simpleComponentConfig,
   component: NavigateToJourneyAction,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/ActionProperties/NavigateToJourneyAction'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
 }
 const journey: Journey = {
   __typename: 'Journey',
@@ -36,38 +38,41 @@ const journey: Journey = {
   userJourneys: []
 }
 
-export const Default: Story = () => {
-  return (
-    <MockedProvider>
-      <NavigateToJourneyAction />
-    </MockedProvider>
-  )
-}
-
-export const WithSelected: Story = () => {
+export const NavigateToJourney: Story = () => {
   const selectedBlock = steps[0].children[0].children[3]
-
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_JOURNEY_NAMES
-          },
-          result: {
-            data: {
-              journeys: [journey]
-            }
-          }
-        }
-      ]}
-    >
-      <JourneyProvider value={journey}>
-        <EditorProvider initialState={{ selectedBlock }}>
+    <Stack spacing={10}>
+      <Box>
+        <Typography>Default</Typography>
+        <MockedProvider>
           <NavigateToJourneyAction />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
+        </MockedProvider>
+      </Box>
+
+      <Box>
+        <Typography>Selected Journey</Typography>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_JOURNEY_NAMES
+              },
+              result: {
+                data: {
+                  journeys: [journey]
+                }
+              }
+            }
+          ]}
+        >
+          <JourneyProvider value={journey}>
+            <EditorProvider initialState={{ selectedBlock }}>
+              <NavigateToJourneyAction />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </Box>
+    </Stack>
   )
 }
 
