@@ -14,6 +14,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../PageWrapper'
+import { JourneyEdit } from './JourneyEdit'
 import { Editor } from '.'
 
 const EditorStory = {
@@ -497,30 +498,32 @@ const blocks: GetJourney_journey_blocks[] = [
 
 const Template: Story = () => (
   <MockedProvider>
-    <PageWrapper
-      title="NUA Journey: Ep.3 – Decision"
-      showDrawer
-      backHref="/journeys/nua-journey-ep-3-decision"
+    <Editor
+      journey={{
+        __typename: 'Journey',
+        id: 'journeyId',
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        title: 'NUA Journey: Ep.3 – Decision',
+        slug: 'nua-journey-ep-3-decision',
+        description: 'my cool journey',
+        locale: 'en-US',
+        status: JourneyStatus.draft,
+        createdAt: '2021-11-19T12:34:56.647Z',
+        publishedAt: null,
+        primaryImageBlock: null,
+        userJourneys: [],
+        blocks
+      }}
     >
-      <Editor
-        journey={{
-          __typename: 'Journey',
-          id: 'journeyId',
-          themeName: ThemeName.base,
-          themeMode: ThemeMode.light,
-          title: 'NUA Journey: Ep.3 – Decision',
-          slug: 'nua-journey-ep-3-decision',
-          description: 'my cool journey',
-          locale: 'en-US',
-          status: JourneyStatus.draft,
-          createdAt: '2021-11-19T12:34:56.647Z',
-          publishedAt: null,
-          primaryImageBlock: null,
-          userJourneys: [],
-          blocks
-        }}
-      />
-    </PageWrapper>
+      <PageWrapper
+        title="NUA Journey: Ep.3 – Decision"
+        showDrawer
+        backHref="/journeys/nua-journey-ep-3-decision"
+      >
+        <JourneyEdit />
+      </PageWrapper>
+    </Editor>
   </MockedProvider>
 )
 
