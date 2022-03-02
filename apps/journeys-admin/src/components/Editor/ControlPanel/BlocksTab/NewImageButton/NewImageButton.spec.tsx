@@ -36,6 +36,7 @@ describe('Image', () => {
         imageBlockCreate: {
           id: 'imageBlockId',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           src: null,
           alt: 'Default Image Icon',
@@ -89,6 +90,7 @@ describe('Image', () => {
         imageBlockCreate: {
           id: 'imageBlockId',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           src: null,
           alt: 'Default Image Icon',

@@ -11,11 +11,13 @@ import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, Button
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -28,12 +30,14 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyA
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: GetJourney_journey_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -136,11 +140,13 @@ export interface GetJourney_journey_blocks_ImageBlock {
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -153,12 +159,14 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJou
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -185,11 +193,13 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -202,12 +212,14 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyA
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: GetJourney_journey_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -287,11 +299,13 @@ export interface GetJourney_journey_blocks_VideoBlock {
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -304,12 +318,14 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_Navig
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }

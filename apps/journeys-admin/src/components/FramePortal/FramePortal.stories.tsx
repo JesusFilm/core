@@ -77,7 +77,7 @@ const block: TreeBlock<Block> = {
         },
         {
           __typename: 'ButtonBlock',
-          id: 'button',
+          id: 'button0.id',
           parentBlockId: 'card0.id',
           parentOrder: 3,
           label: 'Watch Now',
@@ -88,6 +88,7 @@ const block: TreeBlock<Block> = {
           endIconId: null,
           action: {
             __typename: 'NavigateAction',
+            parentBlockId: 'button0.id',
             gtmEventName: 'gtmEventName'
           },
           children: [

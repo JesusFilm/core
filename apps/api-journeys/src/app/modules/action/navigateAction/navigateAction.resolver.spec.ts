@@ -18,12 +18,13 @@ describe('NavigateActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName'
     }
   }
 
   const navigateActionInput = {
-    gtmEventName: 'gtmEventName',
+    gtmEventName: 'gtmEventNameUpdated',
     blockId: null,
     journeyId: null,
     url: null,
@@ -61,7 +62,10 @@ describe('NavigateActionResolver', () => {
       navigateActionInput
     )
     expect(service.update).toHaveBeenCalledWith(block._key, {
-      action: { ...navigateActionInput }
+      action: {
+        ...navigateActionInput,
+        parentBlockId: block.action.parentBlockId
+      }
     })
   })
 

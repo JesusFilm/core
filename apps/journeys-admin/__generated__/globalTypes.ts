@@ -68,6 +68,7 @@ export enum IconName {
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
   MenuBookRounded = "MenuBookRounded",
+  None = "None",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
   SendRounded = "SendRounded",
@@ -174,6 +175,12 @@ export interface ImageBlockCreateInput {
   src?: string | null;
 }
 
+export interface ImageBlockUpdateInput {
+  alt?: string | null;
+  parentBlockId?: string | null;
+  src?: string | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
@@ -208,7 +215,6 @@ export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  submitIconId?: string | null;
   submitLabel: string;
 }
 

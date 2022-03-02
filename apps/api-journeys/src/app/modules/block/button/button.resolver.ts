@@ -1,7 +1,9 @@
+import { UserInputError } from 'apollo-server-errors'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
+  Action,
   ButtonBlock,
   ButtonBlockCreateInput,
   ButtonBlockUpdateInput,
@@ -13,6 +15,17 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 @Resolver('ButtonBlock')
 export class ButtonBlockResolver {
   constructor(private readonly blockService: BlockService) {}
+
+  @ResolveField()
+  action(@Parent() block: ButtonBlock): Action | null {
+    if (block.action == null) return null
+
+    return {
+      ...block.action,
+      parentBlockId: block.id
+    }
+  }
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [
@@ -45,6 +58,23 @@ export class ButtonBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: ButtonBlockUpdateInput
   ): Promise<ButtonBlock> {
+    if (input.startIconId != null) {
+      const startIcon = await this.blockService.validateBlock(
+        input.startIconId,
+        id
+      )
+      if (!startIcon) {
+        throw new UserInputError('Start icon does not exist')
+      }
+    }
+
+    if (input.endIconId != null) {
+      const endIcon = await this.blockService.validateBlock(input.endIconId, id)
+      if (!endIcon) {
+        throw new UserInputError('End icon does not exist')
+      }
+    }
+
     return await this.blockService.update(id, input)
   }
 }

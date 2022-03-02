@@ -8,7 +8,9 @@ import { UserJourneyService } from '../userJourney/userJourney.service'
 import { ActionResolver } from './action.resolver'
 
 describe('ActionResolver', () => {
-  let resolver: ActionResolver, blockResolver: BlockResolver
+  let resolver: ActionResolver,
+    blockResolver: BlockResolver,
+    service: BlockService
 
   const block1 = {
     _key: '1',
@@ -19,6 +21,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -33,6 +36,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -47,6 +51,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -61,6 +66,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -75,6 +81,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -89,6 +96,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -103,6 +111,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -117,6 +126,7 @@ describe('ActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       url: 'https://google.com'
     }
@@ -263,6 +273,39 @@ describe('ActionResolver', () => {
     })
     it('returns NavigateAction', async () => {
       expect(await blockResolver.block('1')).toEqual(blockResponse4)
+    })
+  })
+
+  describe('blockDeleteAction', () => {
+    const emptyAction = { action: null }
+    beforeEach(async () => {
+      const blockService = {
+        provide: BlockService,
+        useFactory: () => ({
+          get: jest.fn(() => block1),
+          update: jest.fn(() => emptyAction)
+        })
+      }
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          blockService,
+          ActionResolver,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
+      }).compile()
+      resolver = module.get<ActionResolver>(ActionResolver)
+      service = await module.resolve(BlockService)
+    })
+    it('removes the block action', async () => {
+      await resolver.blockDeleteAction(block1._key, block1.journeyId)
+
+      expect(service.update).toHaveBeenCalledWith(block1._key, {
+        action: null
+      })
     })
   })
 })

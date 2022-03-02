@@ -18,6 +18,7 @@ describe('NavigateToBlockActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -64,7 +65,10 @@ describe('NavigateToBlockActionResolver', () => {
       navigateToBlockInput
     )
     expect(service.update).toHaveBeenCalledWith(block._key, {
-      action: { ...navigateToBlockInput }
+      action: {
+        ...navigateToBlockInput,
+        parentBlockId: block.action.parentBlockId
+      }
     })
   })
 

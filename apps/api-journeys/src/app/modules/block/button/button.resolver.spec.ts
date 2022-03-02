@@ -4,9 +4,11 @@ import { mockDeep } from 'jest-mock-extended'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
+  ButtonBlockCreateInput,
   ButtonVariant,
   ButtonColor,
-  ButtonSize
+  ButtonSize,
+  ButtonBlock
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { ButtonBlockResolver } from './button.resolver'
@@ -35,6 +37,12 @@ describe('Button', () => {
     }
   }
 
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
+  }
+
   const blockResponse = {
     id: '1',
     journeyId: '2',
@@ -54,7 +62,12 @@ describe('Button', () => {
     }
   }
 
-  const blockInput = {
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
+  }
+
+  const blockInput: ButtonBlockCreateInput & { __typename: string } = {
     id: '1',
     journeyId: '2',
     __typename: 'ButtonBlock',
@@ -78,7 +91,7 @@ describe('Button', () => {
   }
 
   const blockUpdate = {
-    __typname: '',
+    __typename: '',
     journeyId: '2',
     parentBlockId: '0',
     parentOrder: 1,
@@ -102,7 +115,8 @@ describe('Button', () => {
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
-      update: jest.fn((input) => input)
+      update: jest.fn((input) => input),
+      validateBlock: jest.fn()
     })
   }
 
@@ -119,8 +133,8 @@ describe('Button', () => {
         }
       ]
     }).compile()
-    blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
+    blockResolver = module.get<BlockResolver>(BlockResolver)
     service = await module.resolve(BlockService)
   })
 
@@ -134,8 +148,16 @@ describe('Button', () => {
     })
   })
 
+  describe('action', () => {
+    it('returns ButtonBlock action with parentBlockId', async () => {
+      expect(
+        await resolver.action(blockWithId as unknown as ButtonBlock)
+      ).toEqual(actionResponse)
+    })
+  })
+
   describe('ButtonBlockCreate', () => {
-    it('creates a ButtoBlock', async () => {
+    it('creates a ButtonBlock', async () => {
       await resolver.buttonBlockCreate(blockInput)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockInput.journeyId,
@@ -147,8 +169,50 @@ describe('Button', () => {
 
   describe('ButtonBlockUpdate', () => {
     it('updates a ButtonBlock', async () => {
-      void resolver.buttonBlockUpdate(block._key, block.journeyId, blockUpdate)
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(true)
+      mockValidate.mockResolvedValueOnce(true)
+
+      await resolver.buttonBlockUpdate(block._key, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+    })
+
+    it('should throw error with an invalid startIconId', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(false)
+      mockValidate.mockResolvedValueOnce(true)
+
+      await resolver
+        .buttonBlockUpdate(block._key, block.journeyId, {
+          ...blockUpdate,
+          startIconId: 'wrong!'
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Start icon does not exist')
+        })
+      expect(service.update).not.toHaveBeenCalled()
+    })
+
+    it('should throw error with an invalid endIconId', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(true)
+      mockValidate.mockResolvedValueOnce(false)
+
+      await resolver
+        .buttonBlockUpdate(block._key, block.journeyId, {
+          ...blockUpdate,
+          endIconId: 'wrong!'
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('End icon does not exist')
+        })
+      expect(service.update).not.toHaveBeenCalled()
     })
   })
 })
