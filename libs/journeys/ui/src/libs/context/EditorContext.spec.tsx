@@ -1,6 +1,6 @@
 import { TreeBlock } from '../transformer'
 import { reducer } from './EditorContext'
-import { ActiveTab } from '.'
+import { ActiveTab, ActiveFab } from '.'
 
 describe('EditorContext', () => {
   describe('reducer', () => {
@@ -18,6 +18,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [step],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -47,6 +48,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [block],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Edit,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -87,6 +89,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [step],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Edit,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -125,6 +128,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [step],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -142,6 +146,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -160,6 +165,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -179,6 +185,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -202,6 +209,7 @@ describe('EditorContext', () => {
           drawerTitle: 'abc',
           drawerChildren: <></>,
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -222,6 +230,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -241,6 +250,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -251,6 +261,26 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           activeTab: ActiveTab.Properties
+        })
+      })
+    })
+
+    describe('SetActiveFabAction', () => {
+      it('should set active fab', () => {
+        const state = {
+          steps: [],
+          drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
+          activeTab: ActiveTab.Cards
+        }
+        expect(
+          reducer(state, {
+            type: 'SetActiveFabAction',
+            activeFab: ActiveFab.Save
+          })
+        ).toEqual({
+          ...state,
+          activeFab: ActiveFab.Save
         })
       })
     })
@@ -269,6 +299,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards
         }
         expect(
@@ -317,6 +348,7 @@ describe('EditorContext', () => {
         const state = {
           steps: [step],
           drawerMobileOpen: false,
+          activeFab: ActiveFab.Add,
           activeTab: ActiveTab.Cards,
           selectedBlock: block,
           selectedStep: step
