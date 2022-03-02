@@ -205,7 +205,6 @@ input IconBlockCreateInput {
 input IconBlockUpdateInput {
   color: IconColor
   name: IconName!
-  parentBlockId: ID
   size: IconSize
 }
 
@@ -230,6 +229,7 @@ enum IconName {
   LiveTvRounded
   LockOpenRounded
   MenuBookRounded
+  None
   PlayArrowRounded
   RadioButtonUncheckedRounded
   SendRounded
@@ -526,7 +526,6 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID
   submitLabel: String!
 }
 

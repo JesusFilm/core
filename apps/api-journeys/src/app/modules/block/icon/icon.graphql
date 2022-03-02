@@ -2,6 +2,7 @@
 IconName is equivalent to the icons found in @mui/icons-material
 """
 enum IconName {
+  None
   PlayArrowRounded
   TranslateRounded
   CheckCircleRounded
@@ -59,7 +60,6 @@ input IconBlockCreateInput {
 }
 
 input IconBlockUpdateInput {
-  parentBlockId: ID
   name: IconName!
   color: IconColor
   size: IconSize

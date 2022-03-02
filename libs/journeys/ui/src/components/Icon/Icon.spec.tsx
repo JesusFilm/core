@@ -24,6 +24,10 @@ describe('Icon', () => {
     const { getByTestId } = render(<Icon {...block} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })
+  it('should render nothing', () => {
+    const { getByTestId } = render(<Icon {...block} iconName={IconName.None} />)
+    expect(getByTestId('None')).toBeInTheDocument()
+  })
   it('should render small icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.sm} />)
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 16px')
