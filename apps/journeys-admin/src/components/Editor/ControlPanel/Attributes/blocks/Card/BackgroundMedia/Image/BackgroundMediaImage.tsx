@@ -323,7 +323,7 @@ export function BackgroundMediaImage({
             </Stack>
             <Stack direction="column" justifyContent="center">
               <IconButton onClick={handleImageDelete} data-testid="deleteImage">
-                <DeleteOutline color="primary"></DeleteOutline>
+                <DeleteOutline color="primary" />
               </IconButton>
             </Stack>
           </Stack>
@@ -345,7 +345,7 @@ export function BackgroundMediaImage({
                   padding: '5px'
                 }}
               >
-                <ImageIcon></ImageIcon>
+                <ImageIcon />
               </div>
             </Box>
             <Stack direction="column" justifyContent="center">
@@ -391,7 +391,7 @@ export function BackgroundMediaImage({
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <LinkIcon></LinkIcon>
+                          <LinkIcon />
                         </InputAdornment>
                       )
                     }}
