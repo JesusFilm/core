@@ -452,7 +452,7 @@ export function BackgroundMediaVideo({
               sx={{
                 width: 55,
                 height: 55,
-                bgcolor: '#DCDDE5',
+                bgcolor: '#EFEFEF',
                 verticalAlign: 'center'
               }}
               justifyContent="center"
