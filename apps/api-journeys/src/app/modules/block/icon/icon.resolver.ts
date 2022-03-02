@@ -14,6 +14,13 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 export class IconBlockResolver {
   constructor(private readonly blockService: BlockService) {}
 
+  @Mutation()
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   @IdAsKey()
   async iconBlockCreate(
     @Args('input') input: IconBlockCreateInput & { __typename }

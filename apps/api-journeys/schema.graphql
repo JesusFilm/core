@@ -238,6 +238,7 @@ type GridItemBlock implements Block {
 
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
+  None
   PlayArrowRounded
   TranslateRounded
   CheckCircleRounded
@@ -295,7 +296,6 @@ input IconBlockCreateInput {
 }
 
 input IconBlockUpdateInput {
-  parentBlockId: ID
   name: IconName!
   color: IconColor
   size: IconSize
@@ -393,7 +393,6 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID
   submitLabel: String!
 }
 
@@ -725,10 +724,11 @@ enum UserJourneyRole {
 }
 
 extend type Mutation {
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): Block!
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): Block!
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
+  blockDeleteAction(id: ID!, journeyId: ID!): Block!
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
+  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
+  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
+  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
   blockDelete(id: ID!, parentBlockId: ID!, journeyId: ID!): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!

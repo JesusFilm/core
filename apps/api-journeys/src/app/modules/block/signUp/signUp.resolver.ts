@@ -1,3 +1,4 @@
+import { UserInputError } from 'apollo-server-errors'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
@@ -57,6 +58,16 @@ export class SignUpBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: SignUpBlockUpdateInput
   ): Promise<SignUpBlock> {
+    if (input.submitIconId != null) {
+      const submitIcon = await this.blockService.validateBlock(
+        input.submitIconId,
+        id
+      )
+      if (!submitIcon) {
+        throw new UserInputError('Submit icon does not exist')
+      }
+    }
+
     return await this.blockService.update(id, input)
   }
 }

@@ -280,7 +280,12 @@ export function BackgroundMediaImage({
     <>
       <Box sx={{ px: 6, py: 4 }}>
         {(coverBlock as ImageBlock)?.src != null && (
-          <Stack direction="row" spacing="16px" data-testid="imageSrcStack">
+          <Stack
+            direction="row"
+            spacing="16px"
+            data-testid="imageSrcStack"
+            justifyContent="space-between"
+          >
             <div
               style={{
                 overflow: 'hidden',
@@ -318,7 +323,7 @@ export function BackgroundMediaImage({
             </Stack>
             <Stack direction="column" justifyContent="center">
               <IconButton onClick={handleImageDelete} data-testid="deleteImage">
-                <DeleteOutline color="primary"></DeleteOutline>
+                <DeleteOutline color="primary" />
               </IconButton>
             </Stack>
           </Stack>
@@ -340,7 +345,7 @@ export function BackgroundMediaImage({
                   padding: '5px'
                 }}
               >
-                <ImageIcon></ImageIcon>
+                <ImageIcon />
               </div>
             </Box>
             <Stack direction="column" justifyContent="center">
@@ -386,7 +391,7 @@ export function BackgroundMediaImage({
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <LinkIcon></LinkIcon>
+                          <LinkIcon />
                         </InputAdornment>
                       )
                     }}

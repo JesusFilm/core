@@ -25,7 +25,6 @@ describe('RadioQuestionBlockResolver', () => {
     label: 'label',
     description: 'description',
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -46,7 +45,6 @@ describe('RadioQuestionBlockResolver', () => {
     label: 'label',
     description: 'description',
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       blockId: '4'
     }
@@ -127,12 +125,6 @@ describe('RadioQuestionBlockResolver', () => {
         blockResponse,
         blockResponse
       ])
-    })
-
-    it('returns RadioOptionBlock action with parentBlockId', async () => {
-      expect(
-        await radioOptionBlockResolver.action(blockResponse as RadioOptionBlock)
-      ).toEqual(block.action)
     })
   })
 
