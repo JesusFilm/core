@@ -5,6 +5,8 @@ import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import { noop } from 'lodash'
+import InputAdornment from '@mui/material/InputAdornment'
+import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
 import { useJourney } from '../../../../../../libs/context'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
@@ -91,6 +93,13 @@ export function LinkAction(): ReactElement {
             value={values.link}
             error={touched.link === true && Boolean(errors.link)}
             helperText={touched.link === true && errors.link}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <InsertLinkRoundedIcon />
+                </InputAdornment>
+              )
+            }}
             onBlur={(e) => {
               handleBlur(e)
               errors.link == null && handleSubmit(e)
