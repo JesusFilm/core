@@ -8,12 +8,12 @@ import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
   it('defaults to place holder text', () => {
-    const { getByPlaceholderText } = render(
+    const { getByLabelText } = render(
       <MockedProvider>
         <LinkAction />
       </MockedProvider>
     )
-    expect(getByPlaceholderText('Paste URL here...')).toBeInTheDocument()
+    expect(getByLabelText('Paste URL here...')).toBeInTheDocument()
   })
 
   it('shows the link on the action', async () => {

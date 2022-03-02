@@ -11,7 +11,7 @@ import { steps } from '../data'
 import { NavigateAction } from './NavigateAction'
 
 describe('NavigateAction', () => {
-  it('shows, disabled cards', () => {
+  it('shows disabled cards', () => {
     const selectedStep = steps[3]
 
     const { getByTestId } = render(

@@ -15,7 +15,7 @@ describe('Action', () => {
   const selectedStep = steps[1]
   const selectedBlock = selectedStep?.children[0].children[3]
 
-  it('shows default select option', () => {
+  it('shows no action by default', () => {
     const { getByText } = render(
       <MockedProvider>
         <Action />
@@ -24,7 +24,7 @@ describe('Action', () => {
     expect(getByText('Select an Action...')).toBeInTheDocument()
   })
 
-  it('changes action to navigateAction', async () => {
+  it('changes action to NavigateAction when Next Step is selected', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
@@ -87,18 +87,21 @@ describe('Action', () => {
     })
   })
 
-  it('shows properties for current action', () => {
-    const { getByText } = render(
+  it('shows card selector when Selected Card is selected', async () => {
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Action />
-        </EditorProvider>
+        <Action />
       </MockedProvider>
     )
-    expect(getByText('URL/Website')).toBeInTheDocument()
+    fireEvent.mouseDown(getByRole('button', { name: 'Select an Action...' }))
+    await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
+    fireEvent.click(getByRole('option', { name: 'Selected Card' }))
+    await waitFor(() =>
+      expect(getByTestId('horizontal-select')).toBeInTheDocument()
+    )
   })
 
-  it('shows properties for new action selected', async () => {
+  it('shows journey dropdown when Another Journey is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <Action />
@@ -114,7 +117,21 @@ describe('Action', () => {
     )
   })
 
-  it('deletes action from block', async () => {
+  it('shows url input text box when URL/Website is selected', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <Action />
+      </MockedProvider>
+    )
+    fireEvent.mouseDown(getByRole('button', { name: 'Select an Action...' }))
+    await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
+    fireEvent.click(getByRole('option', { name: 'URL/Website' }))
+    await waitFor(() =>
+      expect(getByText('Paste URL here...')).toBeInTheDocument()
+    )
+  })
+
+  it('deletes action from block, when no action selected', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
@@ -135,7 +152,7 @@ describe('Action', () => {
       }
     }))
 
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -155,6 +172,7 @@ describe('Action', () => {
         </EditorProvider>
       </MockedProvider>
     )
+    expect(getByText('URL/Website')).toBeInTheDocument()
 
     expect(getByRole('button', { name: 'URL/Website' })).toBeInTheDocument()
     fireEvent.mouseDown(getByRole('button', { name: 'URL/Website' }))
