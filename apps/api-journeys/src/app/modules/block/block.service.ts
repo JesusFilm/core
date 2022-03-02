@@ -90,5 +90,14 @@ export class BlockService extends BaseService {
     return await this.removeAllBlocksForParentId([blockId], [res])
   }
 
+  async validateBlock(
+    id: string | null,
+    parentBlockId: string | null
+  ): Promise<boolean> {
+    const block: Block | null = id != null ? await this.get(id) : null
+
+    return block != null ? block.parentBlockId === parentBlockId : false
+  }
+
   collection: DocumentCollection = this.db.collection('blocks')
 }

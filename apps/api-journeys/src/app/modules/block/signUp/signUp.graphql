@@ -12,7 +12,6 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  submitIconId: ID
   submitLabel: String!
 }
 

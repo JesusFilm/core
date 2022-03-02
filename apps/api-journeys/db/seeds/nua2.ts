@@ -141,7 +141,7 @@ export async function nua2(): Promise<void> {
     parentOrder: 3
   })
 
-  const icon1 = await db.collection('blocks').save({
+  const icon1a = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button1._key,
@@ -149,9 +149,15 @@ export async function nua2(): Promise<void> {
     size: 'lg',
     parentOrder: 0
   })
+  const icon1b = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button1._key,
+    name: 'None'
+  })
   await db
     .collection('blocks')
-    .update(button1._key, { startIconId: icon1._key })
+    .update(button1._key, { startIconId: icon1a._key, endIconId: icon1b._key })
 
   const videoCard = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -412,7 +418,7 @@ export async function nua2(): Promise<void> {
     parentOrder: 4
   })
 
-  const icon2 = await db.collection('blocks').save({
+  const icon2a = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'IconBlock',
     parentBlockId: button2._key,
@@ -420,9 +426,15 @@ export async function nua2(): Promise<void> {
     size: 'md',
     parentOrder: 4
   })
+  const icon2b = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button2._key,
+    name: 'None'
+  })
   await db
     .collection('blocks')
-    .update(button2._key, { startIconId: icon2._key })
+    .update(button2._key, { startIconId: icon2a._key, endIconId: icon2b._key })
 
   const videoCard2 = await db.collection('blocks').save({
     journeyId: journey._key,

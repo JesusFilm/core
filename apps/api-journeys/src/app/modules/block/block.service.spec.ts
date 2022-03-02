@@ -248,5 +248,22 @@ describe('BlockService', () => {
         { _key: block._key, parentOrder: 1 }
       ])
     })
+
+    describe('validateBlock', () => {
+      beforeEach(() => {
+        ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+          mockDbQueryResult(service.db, [block])
+        )
+      })
+      it('should return false with non-existent id', async () => {
+        expect(await service.validateBlock(null, '1')).toEqual(false)
+      })
+      it('should return false with incorrect parent id', async () => {
+        expect(await service.validateBlock('1', 'wrongParent')).toEqual(false)
+      })
+      it('should validate block', async () => {
+        expect(await service.validateBlock('1', '3')).toEqual(true)
+      })
+    })
   })
 })

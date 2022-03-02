@@ -22,25 +22,53 @@ export const Default: Story = () => {
             query: SIGN_UP_BLOCK_CREATE,
             variables: {
               input: {
+                id: 'signUpBlockId',
                 journeyId: 'journeyId',
                 parentBlockId: 'cardId',
                 submitLabel: 'Submit'
+              },
+              iconBlockCreateInput: {
+                id: 'iconId',
+                journeyId: 'journeyId',
+                parentBlockId: 'signUpBlockId',
+                name: 'None'
+              },
+              id: 'signUpBlockId',
+              journeyId: 'journeyId',
+              updateInput: {
+                submitIconId: 'iconId'
               }
             }
           },
           result: {
             data: {
               signUpBlockCreate: {
+                __typename: 'SignUpBlock',
+                id: 'signUpBlockId'
+              },
+              submitIcon: {
+                __typename: 'IconBlock',
+                id: 'iconId',
+                journeyId: 'journeyId',
+                parentBlockId: 'signUpBlockId',
+                parentOrder: null,
+                iconName: 'None',
+                iconColor: null,
+                iconSize: null
+              },
+              signUpBlockUpdate: {
+                __typename: 'SignUpBlock',
                 id: 'signUpBlockId',
                 parentBlockId: 'cardId',
+                parentOrder: 0,
                 journeyId: 'journeyId',
+                submitIconId: 'iconId',
                 submitLabel: 'Submit',
                 action: {
                   __typename: 'NavigateToBlockAction',
                   gtmEventName: 'gtmEventName',
                   blockId: 'def'
-                },
-                submitIconId: null
+                }
               }
             }
           }
