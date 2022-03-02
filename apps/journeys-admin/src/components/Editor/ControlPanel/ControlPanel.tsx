@@ -23,11 +23,10 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
-  const handleSelectPreviewStep = (step: TreeBlock<StepBlock>): void => {
+  const handleSelectStepPreview = (step: TreeBlock<StepBlock>): void => {
     dispatch({ type: 'SetSelectedStepAction', step })
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   const handleAddFabClick = (): void => {
@@ -75,7 +74,7 @@ export function ControlPanel(): ReactElement {
       <TabPanel name="control-panel" value={activeTab} index={0}>
         <CardPreview
           selected={selectedStep}
-          onSelect={handleSelectPreviewStep}
+          onSelect={handleSelectStepPreview}
           steps={steps}
           showAddButton
         />

@@ -29,10 +29,10 @@ export function Typography({
     if (selectedBlock?.id === block.id) {
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
     } else {
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     }
   }
 
