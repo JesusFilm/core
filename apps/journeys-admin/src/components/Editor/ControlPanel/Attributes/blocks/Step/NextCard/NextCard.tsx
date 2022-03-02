@@ -4,6 +4,7 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { useEditor } from '@core/journeys/ui'
 import { useJourney } from '../../../../../../../libs/context'
 import { StepBlockLockUpdate } from '../../../../../../../../__generated__/StepBlockLockUpdate'
 import { ToggleOption } from '../../../ToggleOption'
@@ -23,40 +24,43 @@ export const STEP_BLOCK_LOCK_UPDATE = gql`
 
 interface NextCardProps {
   id: string
-  nextBlockId: string | null
-  locked: boolean
 }
 
-export function NextCard({
-  id,
-  nextBlockId,
-  locked
-}: NextCardProps): ReactElement {
+export function NextCard({ id }: NextCardProps): ReactElement {
   const [stepBlockLockUpdate] = useMutation<StepBlockLockUpdate>(
     STEP_BLOCK_LOCK_UPDATE
   )
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+
+  const stepBlock =
+    selectedBlock?.__typename === 'StepBlock' ? selectedBlock : null
 
   const journey = useJourney()
 
   async function handleChange(): Promise<void> {
-    await stepBlockLockUpdate({
-      variables: {
-        id: id,
-        journeyId: journey.id,
-        input: {
-          locked: !locked,
-          nextBlockId: nextBlockId
-        }
-      },
-      optimisticResponse: {
-        stepBlockUpdate: {
+    if (stepBlock != null) {
+      await stepBlockLockUpdate({
+        variables: {
           id,
-          __typename: 'StepBlock',
-          locked: !locked
+          journeyId: journey.id,
+          input: {
+            locked: !stepBlock.locked,
+            nextBlockId: stepBlock.nextBlockId
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            id,
+            __typename: 'StepBlock',
+            locked: !stepBlock.locked
+          }
         }
-      }
-    })
+      })
+    }
   }
+
   return (
     <>
       <Divider />
@@ -71,7 +75,7 @@ export function NextCard({
         <ToggleOption
           heading={'Conditions'}
           description={"Don't allow to skip the current card"}
-          checked={locked}
+          checked={stepBlock?.locked ?? false}
           handleChange={handleChange}
         >
           <Box display={'flex'} alignItems={'center'} color={'text.secondary'}>

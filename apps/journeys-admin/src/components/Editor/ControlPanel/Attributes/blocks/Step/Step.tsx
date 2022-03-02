@@ -37,15 +37,13 @@ export function Step({
       value={
         nextBlock != null ? nextBlockHeading?.content ?? 'Untitled' : 'None'
       }
-      description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
+      description={locked ? 'Locked With  ' : 'Unlocked Card'} // TODO: ask about changes in design
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',
           title: 'Next Card Properties',
           mobileOpen: true,
-          children: (
-            <NextCard id={id} nextBlockId={nextBlockId} locked={locked} />
-          )
+          children: <NextCard id={id} />
         })
       }}
     />
