@@ -86,9 +86,8 @@ export function LinkAction(): ReactElement {
           <TextField
             id="link"
             name="link"
-            placeholder="Paste URL here..."
             variant="filled"
-            hiddenLabel
+            label="Past URL here..."
             fullWidth
             value={values.link}
             error={touched.link === true && Boolean(errors.link)}
