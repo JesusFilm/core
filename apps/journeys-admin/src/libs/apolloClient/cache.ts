@@ -11,6 +11,18 @@ export const cache = (): InMemoryCache =>
     typePolicies: {
       Icon: {
         keyFields: []
+      },
+      NavigateAction: {
+        keyFields: ['parentBlockId']
+      },
+      NavigateToBlockAction: {
+        keyFields: ['parentBlockId']
+      },
+      NavigateToJourneyAction: {
+        keyFields: ['parentBlockId']
+      },
+      LinkAction: {
+        keyFields: ['parentBlockId']
       }
     },
     possibleTypes: {

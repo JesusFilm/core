@@ -16,6 +16,7 @@ import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY } from '../[journeySlug]'
+import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 
 function JourneyEditPage(): ReactElement {
   const router = useRouter()
@@ -32,14 +33,19 @@ function JourneyEditPage(): ReactElement {
             title={`Edit ${data.journey.title}`}
             description={data.journey.description ?? undefined}
           />
-          <PageWrapper
-            title={data.journey.title}
-            showDrawer
-            backHref={`/journeys/${router.query.journeySlug as string}`}
-            AuthUser={AuthUser}
+          <Editor
+            journey={data.journey}
+            selectedStepId={router.query.stepId as string | undefined}
           >
-            <Editor journey={data.journey} />
-          </PageWrapper>
+            <PageWrapper
+              title={data.journey.title}
+              showDrawer
+              backHref={`/journeys/${router.query.journeySlug as string}`}
+              AuthUser={AuthUser}
+            >
+              <JourneyEdit />
+            </PageWrapper>
+          </Editor>
         </>
       )}
     </>

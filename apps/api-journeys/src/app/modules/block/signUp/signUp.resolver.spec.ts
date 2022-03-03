@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
-import { SignUpBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  SignUpBlock,
+  SignUpBlockCreateInput
+} from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -17,20 +20,7 @@ describe('SignUpBlockResolver', () => {
     journeyId: '2',
     parentBlockId: '0',
     __typename: 'SignUpBlock',
-    parentOrder: 2,
-    action: {
-      gtmEventName: 'gtmEventName',
-      journeyId: '2'
-    },
-    submitIconId: 'icon1',
-    submitLabel: 'Unlock Now!'
-  }
-  const blockResponse = {
-    id: '1',
-    journeyId: '2',
-    parentBlockId: '0',
-    __typename: 'SignUpBlock',
-    parentOrder: 2,
+    parentOrder: 1,
     action: {
       gtmEventName: 'gtmEventName',
       journeyId: '2'
@@ -39,10 +29,35 @@ describe('SignUpBlockResolver', () => {
     submitLabel: 'Unlock Now!'
   }
 
+  const blockWithId = {
+    ...block,
+    id: block._key,
+    _key: undefined
+  }
+
+  const blockResponse = {
+    id: '1',
+    journeyId: '2',
+    parentBlockId: '0',
+    __typename: 'SignUpBlock',
+    parentOrder: 1,
+    action: {
+      gtmEventName: 'gtmEventName',
+      journeyId: '2'
+    },
+    submitIconId: 'icon1',
+    submitLabel: 'Unlock Now!'
+  }
+
+  const actionResponse = {
+    ...blockResponse.action,
+    parentBlockId: block._key
+  }
+
   const input: SignUpBlockCreateInput & { __typename: string } = {
     __typename: '',
     id: '1',
-    parentBlockId: '0',
+    parentBlockId: '',
     journeyId: '2',
     submitLabel: 'Submit'
   }
@@ -52,8 +67,15 @@ describe('SignUpBlockResolver', () => {
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
     __typename: 'SignUpBlock',
-    parentOrder: 1,
+    parentOrder: 2,
     submitLabel: input.submitLabel
+  }
+
+  const blockUpdate = {
+    __typename: 'SignUpBlock',
+    parentBlockId: '0',
+    submitIconId: 'icon1',
+    submitLabel: 'Unlock Later!'
   }
 
   const blockService = {
@@ -61,8 +83,10 @@ describe('SignUpBlockResolver', () => {
     useFactory: () => ({
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => [block]),
-      save: jest.fn((input) => input)
+      getSiblings: jest.fn(() => [block, block]),
+      save: jest.fn((input) => input),
+      update: jest.fn((input) => input),
+      validateBlock: jest.fn()
     })
   }
 
@@ -94,10 +118,47 @@ describe('SignUpBlockResolver', () => {
     })
   })
 
+  describe('action', () => {
+    it('returns SignUpBlock action with parentBlockId', async () => {
+      expect(
+        await resolver.action(blockWithId as unknown as SignUpBlock)
+      ).toEqual(actionResponse)
+    })
+  })
+
   describe('SignUpBlockCreate', () => {
     it('creates a SignUpBlock', async () => {
       await resolver.signUpBlockCreate(input)
       expect(service.save).toHaveBeenCalledWith(signUpBlockResponse)
+    })
+  })
+
+  describe('SignUpBlockUpdate', () => {
+    it('updates a SignUpBlock', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(true)
+
+      await resolver.signUpBlockUpdate(block._key, block.journeyId, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+    })
+
+    it('should throw error with an invalid submitIconId', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(false)
+
+      await resolver
+        .signUpBlockUpdate(block._key, block.journeyId, {
+          ...blockUpdate,
+          submitIconId: 'wrong!'
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Submit icon does not exist')
+        })
+      expect(service.update).not.toHaveBeenCalled()
     })
   })
 })

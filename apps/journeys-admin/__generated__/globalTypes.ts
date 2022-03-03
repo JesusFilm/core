@@ -136,6 +136,16 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ButtonBlockCreateInput {
+  color?: ButtonColor | null;
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+  size?: ButtonSize | null;
+  variant?: ButtonVariant | null;
+}
+
 export interface ButtonBlockUpdateInput {
   color?: ButtonColor | null;
   endIconId?: string | null;
@@ -159,7 +169,7 @@ export interface IconBlockCreateInput {
   color?: IconColor | null;
   id?: string | null;
   journeyId: string;
-  name: IconName;
+  name?: IconName | null;
   parentBlockId: string;
   size?: IconSize | null;
 }
@@ -173,9 +183,16 @@ export interface IconBlockUpdateInput {
 
 export interface ImageBlockCreateInput {
   alt: string;
+  blurhash?: string | null;
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  src?: string | null;
+}
+
+export interface ImageBlockUpdateInput {
+  alt?: string | null;
+  parentBlockId?: string | null;
   src?: string | null;
 }
 
@@ -216,11 +233,22 @@ export interface SignUpBlockCreateInput {
   submitLabel: string;
 }
 
+export interface SignUpBlockUpdateInput {
+  parentBlockId?: string | null;
+  submitIconId?: string | null;
+  submitLabel?: string | null;
+}
+
 export interface SignUpResponseCreateInput {
   blockId: string;
   email: string;
   id?: string | null;
   name: string;
+}
+
+export interface StepBlockUpdateInput {
+  locked?: boolean | null;
+  nextBlockId?: string | null;
 }
 
 export interface TypographyBlockCreateInput {

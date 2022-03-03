@@ -15,6 +15,12 @@ export class IconBlockResolver {
   constructor(private readonly blockService: BlockService) {}
 
   @Mutation()
+  @UseGuards(
+    RoleGuard('input.journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor
+    ])
+  )
   @IdAsKey()
   @UseGuards(
     RoleGuard('input.journeyId', [

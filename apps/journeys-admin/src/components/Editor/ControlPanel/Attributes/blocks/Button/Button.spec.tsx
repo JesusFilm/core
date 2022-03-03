@@ -58,6 +58,7 @@ describe('Button attributes', () => {
       endIconId: 'icon2',
       action: {
         __typename: 'NavigateToBlockAction',
+        parentBlockId: 'button.id',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       },

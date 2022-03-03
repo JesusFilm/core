@@ -12,7 +12,7 @@ import {
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 
-@Resolver('LinkActionResolver')
+@Resolver('LinkAction')
 export class LinkActionResolver {
   constructor(private readonly blockService: BlockService) {}
 
@@ -26,7 +26,10 @@ export class LinkActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: LinkActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<{ __typename: string }>(id)
+    const block = await this.blockService.get<{
+      __typename: string
+      _key: string
+    }>(id)
 
     if (
       !includes(
@@ -37,8 +40,18 @@ export class LinkActionResolver {
       throw new UserInputError('This block does not support link actions')
     }
 
-    return await this.blockService.update(id, {
-      action: { ...input, blockId: null, journeyId: null }
-    })
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          parentBlockId: block._key,
+          blockId: null,
+          journeyId: null
+        }
+      }
+    )
+
+    return updatedBlock.action
   }
 }

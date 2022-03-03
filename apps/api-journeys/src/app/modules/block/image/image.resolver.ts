@@ -44,7 +44,7 @@ async function handleImage(
       argumentName: 'src'
     })
   }
-  const blurhash = encodeImageToBlurhash(image)
+  const blurhash = input.blurhash ?? encodeImageToBlurhash(image)
 
   const block = {
     ...input,
