@@ -172,7 +172,7 @@ export function Icon({ iconBlock }: iconProps): ReactElement {
           variant="filled"
           displayEmpty
           IconComponent={KeyboardArrowDownRoundedIcon}
-          inputProps={{ 'aria-label': 'icon-name-select' }}
+          inputProps={{ 'aria-label': 'icon-name' }}
         >
           <MenuItem value="">Select an icon...</MenuItem>
           {icons.map(({ value, label, display }) => {
