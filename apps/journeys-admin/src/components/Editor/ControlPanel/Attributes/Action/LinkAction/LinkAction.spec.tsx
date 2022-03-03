@@ -16,7 +16,7 @@ describe('LinkAction', () => {
     expect(getByLabelText('Paste URL here...')).toBeInTheDocument()
   })
 
-  it('shows the link on the action', async () => {
+  it('displays the aciton url', async () => {
     const { getByDisplayValue } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -27,7 +27,7 @@ describe('LinkAction', () => {
     expect(getByDisplayValue('https://www.google.com')).toBeInTheDocument()
   })
 
-  it('updates the link on the action', async () => {
+  it('updates action url', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {

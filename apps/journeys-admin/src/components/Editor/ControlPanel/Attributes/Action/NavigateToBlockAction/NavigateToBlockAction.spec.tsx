@@ -15,7 +15,7 @@ import {
 } from './NavigateToBlockAction'
 
 describe('NavigateToBlockAction', () => {
-  it('sets action on card click', async () => {
+  it('updates the action on card click', async () => {
     const selectedBlock = steps[1].children[0].children[3]
 
     const cache = new InMemoryCache()

@@ -41,7 +41,8 @@ describe('Action', () => {
       data: {
         blockUpdateNavigateAction: {
           id: 'journeyId',
-          gtmEventName: 'gtmEventName'
+          gtmEventName: 'gtmEventName',
+          __typename: 'NavigateAction'
         }
       }
     }))
@@ -83,7 +84,8 @@ describe('Action', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-      gtmEventName: 'gtmEventName'
+      gtmEventName: 'gtmEventName',
+      __typename: 'NavigateAction'
     })
   })
 
