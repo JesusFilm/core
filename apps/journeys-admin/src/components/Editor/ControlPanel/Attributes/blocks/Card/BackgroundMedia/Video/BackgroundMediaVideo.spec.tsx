@@ -358,6 +358,7 @@ describe('BackgroundMediaVideo', () => {
       expect(textBox).toHaveValue('https://example.com/video.mp4')
     })
 
+    // fails depsite working in the browser and in duplicated tests elsewhere. Likely due to being in a tabpanel
     xit('displays validation message', async () => {
       const { getByRole, getByText } = render(
         <MockedProvider>
