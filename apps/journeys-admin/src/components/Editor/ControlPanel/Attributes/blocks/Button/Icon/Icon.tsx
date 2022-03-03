@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { TreeBlock } from '@core/journeys/ui'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -26,14 +26,8 @@ import {
 } from '@mui/icons-material'
 import { IconName } from '../../../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../../../libs/context'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../../__generated__/IconFields'
-import {
-  IconBlockCreate,
-  IconBlockCreate_iconBlockCreate
-} from '../../../../../../../../__generated__/IconBlockCreate'
 import { IconBlockNameUpdate } from '../../../../../../../../__generated__/IconBlockNameUpdate'
-import { ButtonBlockIconUpdate } from '../../../../../../../../__generated__/ButtonBlockIconUpdate'
 import { ColorToggleGroup } from './ColorToggleGroup'
 import { SizeToggleGroup } from './SizeToggleGroup'
 
@@ -112,19 +106,6 @@ export const icons = [
   }
 ]
 
-export const ICON_BLOCK_CREATE = gql`
-  mutation IconBlockCreate($input: IconBlockCreateInput!) {
-    iconBlockCreate(input: $input) {
-      id
-      parentBlockId
-      journeyId
-      name
-      color
-      size
-    }
-  }
-`
-
 export const ICON_BLOCK_NAME_UPDATE = gql`
   mutation IconBlockNameUpdate(
     $id: ID!
@@ -138,164 +119,46 @@ export const ICON_BLOCK_NAME_UPDATE = gql`
   }
 `
 
-export const BUTTON_BLOCK_ICON_UPDATE = gql`
-  mutation ButtonBlockIconUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: ButtonBlockUpdateInput!
-  ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      startIconId
-      endIconId
-    }
-  }
-`
-
 interface iconProps {
-  iconBlock?: TreeBlock<IconFields>
-  type: 'start' | 'end'
+  iconBlock: TreeBlock<IconFields>
 }
 
-export function Icon({ iconBlock, type }: iconProps): ReactElement {
-  const [iconBlockCreate] = useMutation<IconBlockCreate>(ICON_BLOCK_CREATE)
+export function Icon({ iconBlock }: iconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
-  const [buttonBlockIconUpdate] = useMutation<ButtonBlockIconUpdate>(
-    BUTTON_BLOCK_ICON_UPDATE
-  )
 
   const journey = useJourney()
-  const { state } = useEditor()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<ButtonBlock>
-    | undefined
+  const [showProps, setShowProps] = useState(iconBlock?.iconName != null)
 
-  // BUG: not display correctly when changing from start to end icon
-  const iconName = iconBlock != null ? iconBlock.iconName : ''
-  const [showProps, setShowProps] = useState(iconName !== '')
-  const [name, setName] = useState(iconName)
-
-  async function iconCreate(
-    name: IconName
-  ): Promise<IconBlockCreate_iconBlockCreate | undefined> {
-    if (selectedBlock != null) {
-      const { data } = await iconBlockCreate({
-        variables: {
-          input: {
-            parentBlockId: selectedBlock?.id,
-            journeyId: journey.id,
-            name
-          }
-        },
-        update(cache, { data }) {
-          if (data?.iconBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.iconBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
+  async function iconUpdate(name: IconName | null): Promise<void> {
+    await iconBlockNameUpdate({
+      variables: {
+        id: iconBlock?.id,
+        journeyId: journey.id,
+        input: {
+          name
         }
-      })
-      return data?.iconBlockCreate
-    }
-  }
-
-  async function iconUpdate(
-    name: IconName,
-    iconBlockId: string
-  ): Promise<void> {
-    if (selectedBlock != null) {
-      await iconBlockNameUpdate({
-        variables: {
-          id: iconBlockId,
-          journeyId: journey.id,
-          input: {
-            name
-          }
-        },
-        optimisticResponse: {
-          iconBlockUpdate: {
-            __typename: 'IconBlock',
-            id: iconBlockId,
-            name
-          }
+      },
+      optimisticResponse: {
+        iconBlockUpdate: {
+          __typename: 'IconBlock',
+          id: iconBlock.id,
+          name
         }
-      })
-    }
-  }
-
-  async function buttonIconUpdate(
-    startIconId: string | null,
-    endIconId: string | null
-  ): Promise<void> {
-    if (selectedBlock != null) {
-      await buttonBlockIconUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: {
-            startIconId,
-            endIconId
-          }
-        },
-        optimisticResponse: {
-          buttonBlockUpdate: {
-            __typename: 'ButtonBlock',
-            id: selectedBlock.id,
-            startIconId,
-            endIconId
-          }
-        }
-      })
-    }
+      }
+    })
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     const newName = event.target.value as IconName
     if (event.target.value === '') {
-      type === 'start'
-        ? await buttonIconUpdate(null, selectedBlock?.endIconId ?? null)
-        : await buttonIconUpdate(selectedBlock?.startIconId ?? null, null)
-      // delete iconBlock
-    } else if (newName !== iconName) {
-      if (type === 'start') {
-        if (typeof selectedBlock?.startIconId === 'string') {
-          await iconUpdate(newName, selectedBlock.startIconId)
-        } else {
-          const newIcon = await iconCreate(newName)
-          await buttonIconUpdate(
-            newIcon?.id ?? null,
-            selectedBlock?.endIconId ?? null
-          )
-        }
-      } else {
-        if (typeof selectedBlock?.endIconId === 'string') {
-          await iconUpdate(newName, selectedBlock.endIconId)
-        } else {
-          const newIcon = await iconCreate(newName)
-          await buttonIconUpdate(
-            selectedBlock?.startIconId ?? null,
-            newIcon?.id ?? null
-          )
-        }
-      }
+      await iconUpdate(null)
+      setShowProps(false)
+    } else if (newName !== iconBlock?.iconName) {
+      await iconUpdate(newName)
+      setShowProps(true)
     }
-    setName(newName)
-    setShowProps(event.target.value !== '')
   }
 
   return (
@@ -304,7 +167,7 @@ export function Icon({ iconBlock, type }: iconProps): ReactElement {
         <Select
           labelId="icon-name-select"
           id="icon-name-select"
-          value={name}
+          value={iconBlock?.iconName ?? ''}
           onChange={handleChange}
           variant="filled"
           displayEmpty

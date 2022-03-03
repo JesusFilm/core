@@ -12,7 +12,7 @@ import { IconBlockUpdateInput, IconName } from "./globalTypes";
 export interface IconBlockNameUpdate_iconBlockUpdate {
   __typename: "IconBlock";
   id: string;
-  name: IconName;
+  name: IconName | null;
 }
 
 export interface IconBlockNameUpdate {

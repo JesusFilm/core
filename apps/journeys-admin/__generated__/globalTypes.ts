@@ -176,8 +176,7 @@ export interface IconBlockCreateInput {
 
 export interface IconBlockUpdateInput {
   color?: IconColor | null;
-  name: IconName;
-  parentBlockId?: string | null;
+  name?: IconName | null;
   size?: IconSize | null;
 }
 

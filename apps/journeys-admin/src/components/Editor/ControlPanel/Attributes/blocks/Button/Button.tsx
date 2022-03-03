@@ -31,13 +31,13 @@ export function Button({
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId
+  ) as TreeBlock<IconFields>
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const endIcon = children.find(
+    (block) => block.id === endIconId
+  ) as TreeBlock<IconFields>
 
   return (
     <>
@@ -112,7 +112,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Leading Icon ',
             mobileOpen: true,
-            children: <Icon iconBlock={startIcon} type={'start'} />
+            children: <Icon iconBlock={startIcon} />
           })
         }}
       />
@@ -131,7 +131,7 @@ export function Button({
             type: 'SetDrawerPropsAction',
             title: 'Trailing Icon ',
             mobileOpen: true,
-            children: <Icon iconBlock={endIcon} type={'end'} />
+            children: <Icon iconBlock={endIcon} />
           })
         }}
       />
