@@ -5,7 +5,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../..
 import { NextCard, STEP_BLOCK_LOCK_UPDATE } from './NextCard'
 
 describe('NextCard', () => {
-  it('calls the mutation', async () => {
+  it('changes the locked step state on click', async () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       id: 'step1.id',
       __typename: 'StepBlock',

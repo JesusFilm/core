@@ -61,26 +61,24 @@ export function NextCard({ id }: NextCardProps): ReactElement {
   }
 
   return (
-    <>
-      <Box sx={{ px: 6, py: 4 }}>
-        <Typography variant="subtitle2" gutterBottom>
-          Conditions
-        </Typography>
-        <ToggleOption
-          heading={'Lock the next step'}
-          description={"Don't allow to skip the current card"}
-          checked={stepBlock?.locked ?? false}
-          handleChange={handleChange}
-        >
-          <Box display={'flex'} alignItems={'center'} color={'text.secondary'}>
-            <InfoOutlinedIcon sx={{ mr: 4 }} />
-            <Typography variant="caption">
-              User can&apos;t skip interaction on the current card, like
-              watching video or interacting with questions.
-            </Typography>
-          </Box>
-        </ToggleOption>
-      </Box>
-    </>
+    <Box sx={{ px: 6, py: 4 }}>
+      <Typography variant="subtitle2" gutterBottom>
+        Conditions
+      </Typography>
+      <ToggleOption
+        heading={'Lock the next step'}
+        description={"Don't allow to skip the current card"}
+        checked={stepBlock?.locked ?? false}
+        handleChange={handleChange}
+      >
+        <Box display={'flex'} alignItems={'center'} color={'text.secondary'}>
+          <InfoOutlinedIcon sx={{ mr: 4 }} />
+          <Typography variant="caption">
+            User can&apos;t skip interaction on the current card, like watching
+            video or interacting with questions.
+          </Typography>
+        </Box>
+      </ToggleOption>
+    </Box>
   )
 }

@@ -37,7 +37,7 @@ export function Step({
       value={
         nextBlock != null ? nextBlockHeading?.content ?? 'Untitled' : 'None'
       }
-      description={locked ? 'Locked With Interaction' : 'Unlocked Card'} // TODO: ask about changes in design
+      description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
       onClick={() => {
         dispatch({
           type: 'SetDrawerPropsAction',
