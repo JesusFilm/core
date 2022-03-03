@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
 import { IconSize } from '../../../../../../../../../__generated__/globalTypes'
@@ -31,28 +31,28 @@ export function SizeToggleGroup({
   const [iconBlockSizeUpdate] = useMutation<IconBlockSizeUpdate>(
     ICON_BLOCK_SIZE_UPDATE
   )
-  const [size, setSize] = useState(iconBlock?.iconSize ?? IconSize.md)
   const journey = useJourney()
 
   async function handleChange(size: IconSize): Promise<void> {
-    await iconBlockSizeUpdate({
-      variables: {
-        id: iconBlock.id,
-        journeyId: journey.id,
-        input: {
-          name: iconBlock.iconName,
-          size
-        }
-      },
-      optimisticResponse: {
-        iconBlockUpdate: {
-          __typename: 'IconBlock',
+    if (size !== iconBlock.iconSize) {
+      await iconBlockSizeUpdate({
+        variables: {
           id: iconBlock.id,
-          size
+          journeyId: journey.id,
+          input: {
+            name: iconBlock.iconName,
+            size
+          }
+        },
+        optimisticResponse: {
+          iconBlockUpdate: {
+            __typename: 'IconBlock',
+            id: iconBlock.id,
+            size
+          }
         }
-      }
-    })
-    setSize(size)
+      })
+    }
   }
 
   const options = [
@@ -71,6 +71,10 @@ export function SizeToggleGroup({
   ]
 
   return (
-    <ToggleButtonGroup value={size} onChange={handleChange} options={options} />
+    <ToggleButtonGroup
+      value={iconBlock.iconSize}
+      onChange={handleChange}
+      options={options}
+    />
   )
 }

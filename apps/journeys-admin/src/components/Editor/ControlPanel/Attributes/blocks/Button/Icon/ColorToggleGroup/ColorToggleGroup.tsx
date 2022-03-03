@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
 import { IconColor } from '../../../../../../../../../__generated__/globalTypes'
@@ -34,18 +34,14 @@ export function ColorToggleGroup({
     ICON_BLOCK_COLOR_UPDATE
   )
   const journey = useJourney()
-  const [iconColor, setIconColor] = useState(
-    iconBlock?.iconColor ?? IconColor.inherit
-  )
 
   async function handleChange(color: IconColor): Promise<void> {
-    if (color !== iconColor) {
+    if (color !== iconBlock.iconColor) {
       await iconBlockColorUpdate({
         variables: {
           id: iconBlock.id,
           journeyId: journey.id,
           input: {
-            name: iconBlock.iconName,
             color
           }
         },
@@ -57,7 +53,6 @@ export function ColorToggleGroup({
           }
         }
       })
-      setIconColor(color)
     }
   }
 
@@ -86,7 +81,7 @@ export function ColorToggleGroup({
 
   return (
     <ToggleButtonGroup
-      value={iconColor}
+      value={iconBlock.iconColor}
       onChange={handleChange}
       options={options}
     />
