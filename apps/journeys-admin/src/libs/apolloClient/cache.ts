@@ -9,9 +9,6 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     typePolicies: {
-      Icon: {
-        keyFields: []
-      },
       NavigateAction: {
         keyFields: ['parentBlockId']
       },
