@@ -1,5 +1,4 @@
 import { ReactElement, useState } from 'react'
-import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import IconButton from '@mui/material/IconButton'
 import MoreVert from '@mui/icons-material/MoreVert'
 import MuiMenu from '@mui/material/Menu'
@@ -10,12 +9,9 @@ import Divider from '@mui/material/Divider'
 import Edit from '@mui/icons-material/Edit'
 import Share from '@mui/icons-material/Share'
 import Settings from '@mui/icons-material/Settings'
+import { DeleteBlock } from '../DeleteBlock'
 
-interface MenuProps {
-  handleDeleteBlock: () => void
-}
-
-export function Menu({ handleDeleteBlock }: MenuProps): ReactElement {
+export function Menu(): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -31,7 +27,7 @@ export function Menu({ handleDeleteBlock }: MenuProps): ReactElement {
         edge="end"
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
-        aria-expanded="true"
+        aria-expanded={anchorEl != null ? 'true' : undefined}
         onClick={handleShowMenu}
       >
         <MoreVert />
@@ -51,12 +47,7 @@ export function Menu({ handleDeleteBlock }: MenuProps): ReactElement {
           </ListItemIcon>
           <ListItemText>Edit Card</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleDeleteBlock}>
-          <ListItemIcon>
-            <DeleteOutlineRounded />
-          </ListItemIcon>
-          <ListItemText>Delete Card</ListItemText>
-        </MenuItem>
+        <DeleteBlock variant="list-item" />
         <Divider />
         <MenuItem>
           <ListItemIcon>
