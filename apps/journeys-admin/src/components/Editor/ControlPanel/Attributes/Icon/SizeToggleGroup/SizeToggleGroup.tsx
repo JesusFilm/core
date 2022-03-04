@@ -70,6 +70,10 @@ export function SizeToggleGroup({
     {
       value: IconSize.lg,
       label: 'Large'
+    },
+    {
+      value: IconSize.xl,
+      label: 'Extra Large'
     }
   ]
 
