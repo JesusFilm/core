@@ -49,7 +49,7 @@ describe('Icon', () => {
 
     const result = jest.fn(() => ({
       data: {
-        iconBlockCreate: {
+        iconBlockUpdate: {
           id: 'iconBlock.id',
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',

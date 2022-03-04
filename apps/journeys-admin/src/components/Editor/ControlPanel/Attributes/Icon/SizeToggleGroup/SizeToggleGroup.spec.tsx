@@ -42,7 +42,7 @@ describe('SizeToggleGroup', () => {
             request: {
               query: ICON_BLOCK_SIZE_UPDATE,
               variables: {
-                id: 'id',
+                id: 'icon-id',
                 input: {
                   size: IconSize.sm
                 }

@@ -42,7 +42,7 @@ describe('ColorToggleGroup', () => {
             request: {
               query: ICON_BLOCK_COLOR_UPDATE,
               variables: {
-                id: 'id',
+                id: 'icon-id',
                 input: {
                   color: IconColor.secondary
                 }
