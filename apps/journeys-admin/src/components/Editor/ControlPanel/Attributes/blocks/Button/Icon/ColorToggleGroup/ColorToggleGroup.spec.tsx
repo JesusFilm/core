@@ -1,7 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 import {
   IconColor,
   IconName
@@ -10,22 +9,7 @@ import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { ICON_BLOCK_COLOR_UPDATE } from './ColorToggleGroup'
 import { ColorToggleGroup } from '.'
 
-describe('Button color selector', () => {
-  const selectedBlock: TreeBlock<ButtonBlock> = {
-    __typename: 'ButtonBlock',
-    id: 'buttonBlockId',
-    parentBlockId: 'parentBlockId',
-    parentOrder: 0,
-    label: 'test button',
-    buttonVariant: null,
-    buttonColor: null,
-    size: null,
-    startIconId: 'icon-id',
-    endIconId: null,
-    action: null,
-    children: []
-  }
-
+describe('ColorToggleGroup', () => {
   it('should change the icon color', async () => {
     const icon: TreeBlock<IconFields> = {
       id: 'icon-id',
@@ -68,7 +52,7 @@ describe('Button color selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider>
           <ColorToggleGroup iconBlock={icon} />
         </EditorProvider>
       </MockedProvider>

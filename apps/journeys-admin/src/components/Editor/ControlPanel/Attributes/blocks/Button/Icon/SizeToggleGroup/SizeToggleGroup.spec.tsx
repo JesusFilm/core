@@ -1,7 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/GetJourney'
 import {
   IconSize,
   IconName
@@ -10,26 +9,11 @@ import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { ICON_BLOCK_SIZE_UPDATE } from './SizeToggleGroup'
 import { SizeToggleGroup } from '.'
 
-describe('Button icon size selector', () => {
-  const selectedBlock: TreeBlock<ButtonBlock> = {
-    __typename: 'ButtonBlock',
-    id: 'buttonBlockId',
-    parentBlockId: 'parentBlockId',
-    parentOrder: 0,
-    label: 'test button',
-    buttonVariant: null,
-    buttonColor: null,
-    size: null,
-    startIconId: 'icon-id',
-    endIconId: null,
-    action: null,
-    children: []
-  }
-
-  it('should change the  icon size', async () => {
+describe('SizeToggleGroup', () => {
+  it('should change the icon size', async () => {
     const icon: TreeBlock<IconFields> = {
       id: 'icon-id',
-      parentBlockId: 'buttonBlockId',
+      parentBlockId: null,
       parentOrder: null,
       __typename: 'IconBlock',
       iconName: IconName.ArrowForwardRounded,
@@ -68,7 +52,7 @@ describe('Button icon size selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider>
           <SizeToggleGroup iconBlock={icon} />
         </EditorProvider>
       </MockedProvider>
