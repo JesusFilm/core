@@ -45,7 +45,7 @@ export function Menu(): ReactElement {
           <ListItemIcon>
             <Edit />
           </ListItemIcon>
-          <ListItemText>Edit Card</ListItemText>
+          <ListItemText>Edit Block</ListItemText>
         </MenuItem>
         <DeleteBlock variant="list-item" />
         <Divider />

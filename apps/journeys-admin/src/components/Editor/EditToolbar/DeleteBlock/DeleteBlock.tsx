@@ -122,7 +122,7 @@ export function DeleteBlock({
       <ListItemIcon>
         <DeleteOutlineRounded />
       </ListItemIcon>
-      <ListItemText>Delete Card</ListItemText>
+      <ListItemText>Delete Block</ListItemText>
     </MenuItem>
   )
 }
