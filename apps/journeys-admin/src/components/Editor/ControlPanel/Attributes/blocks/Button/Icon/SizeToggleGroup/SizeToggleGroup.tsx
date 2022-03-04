@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
 import { IconSize } from '../../../../../../../../../__generated__/globalTypes'
@@ -24,7 +24,6 @@ interface SizeToggleGroupProps {
   iconBlock: TreeBlock<IconFields>
 }
 
-// BUG: switching sizes when clicking the same button
 export function SizeToggleGroup({
   iconBlock
 }: SizeToggleGroupProps): ReactElement {
@@ -32,15 +31,18 @@ export function SizeToggleGroup({
     ICON_BLOCK_SIZE_UPDATE
   )
   const journey = useJourney()
+  const [iconSize, setIconSize] = useState(iconBlock.iconSize ?? IconSize.md)
+  useEffect(() => {
+    setIconSize(iconBlock.iconSize ?? IconSize.md)
+  }, [iconBlock])
 
   async function handleChange(size: IconSize): Promise<void> {
-    if (size !== iconBlock.iconSize) {
+    if (size !== iconSize && size != null) {
       await iconBlockSizeUpdate({
         variables: {
           id: iconBlock.id,
           journeyId: journey.id,
           input: {
-            name: iconBlock.iconName,
             size
           }
         },
@@ -52,6 +54,7 @@ export function SizeToggleGroup({
           }
         }
       })
+      setIconSize(size)
     }
   }
 
@@ -72,7 +75,7 @@ export function SizeToggleGroup({
 
   return (
     <ToggleButtonGroup
-      value={iconBlock.iconSize}
+      value={iconSize}
       onChange={handleChange}
       options={options}
     />

@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import { TreeBlock } from '@core/journeys/ui'
 import FormControl from '@mui/material/FormControl'
@@ -123,13 +123,20 @@ interface iconProps {
   iconBlock: TreeBlock<IconFields>
 }
 
+// TODO: bug - for some reason, sometimes can't switch to certain icons, don't know how to recreate
 export function Icon({ iconBlock }: iconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
 
   const journey = useJourney()
+  const [iconName, setIconName] = useState(iconBlock?.iconName ?? '')
   const [showProps, setShowProps] = useState(iconBlock?.iconName != null)
+
+  useEffect(() => {
+    setIconName(iconBlock?.iconName ?? '')
+    setShowProps(iconBlock?.iconName != null)
+  }, [iconBlock])
 
   async function iconUpdate(name: IconName | null): Promise<void> {
     await iconBlockNameUpdate({
@@ -148,6 +155,7 @@ export function Icon({ iconBlock }: iconProps): ReactElement {
         }
       }
     })
+    setIconName(name ?? '')
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
@@ -167,7 +175,7 @@ export function Icon({ iconBlock }: iconProps): ReactElement {
         <Select
           labelId="icon-name-select"
           id="icon-name-select"
-          value={iconBlock?.iconName ?? ''}
+          value={iconName}
           onChange={handleChange}
           variant="filled"
           displayEmpty

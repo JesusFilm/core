@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
 import { IconColor } from '../../../../../../../../../__generated__/globalTypes'
@@ -25,18 +25,23 @@ interface ColorToggleGroupProps {
   iconBlock: TreeBlock<IconFields>
 }
 
-// BUG: Toggle group can be off
-// BUG: switching colors when clicking the same button
 export function ColorToggleGroup({
   iconBlock
 }: ColorToggleGroupProps): ReactElement {
   const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
     ICON_BLOCK_COLOR_UPDATE
   )
+
   const journey = useJourney()
+  const [iconColor, setIconColor] = useState(
+    iconBlock.iconColor ?? IconColor.inherit
+  )
+  useEffect(() => {
+    setIconColor(iconBlock.iconColor ?? IconColor.inherit)
+  }, [iconBlock])
 
   async function handleChange(color: IconColor): Promise<void> {
-    if (color !== iconBlock.iconColor) {
+    if (color !== iconColor && color != null) {
       await iconBlockColorUpdate({
         variables: {
           id: iconBlock.id,
@@ -53,6 +58,7 @@ export function ColorToggleGroup({
           }
         }
       })
+      setIconColor(color)
     }
   }
 
@@ -81,7 +87,7 @@ export function ColorToggleGroup({
 
   return (
     <ToggleButtonGroup
-      value={iconBlock.iconColor}
+      value={iconColor}
       onChange={handleChange}
       options={options}
     />

@@ -58,7 +58,7 @@ export function Icon({
   ) : (
     createElement(icons[iconName], {
       color: iconColor ?? undefined,
-      sx: { fontSize }
+      sx: { width: fontSize, height: fontSize }
     })
   )
 }
