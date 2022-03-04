@@ -124,11 +124,6 @@ const Template: Story = ({ ...args }) => (
   </MockedProvider>
 )
 
-export const DefaultNoVideo = Template.bind({})
-DefaultNoVideo.args = {
-  selectedBlock: card
-}
-
 export const Video = Template.bind({})
 Video.args = {
   selectedBlock: {
@@ -136,41 +131,6 @@ Video.args = {
     children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
     coverBlockId: video.id
   }
-}
-
-export const VideoNoPoster = Template.bind({})
-VideoNoPoster.args = {
-  selectedBlock: {
-    ...card,
-    children: [video],
-    coverBlockId: video.id
-  }
-}
-
-export const VideoSettings = Template.bind({})
-VideoSettings.args = {
-  selectedBlock: {
-    ...card,
-    children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
-    coverBlockId: video.id
-  }
-}
-VideoSettings.play = async () => {
-  const settingsTab = await screen.getByTestId('videoSettingsTab')
-  await userEvent.click(settingsTab)
-}
-
-export const VideoSettingsNoPoster = Template.bind({})
-VideoSettingsNoPoster.args = {
-  selectedBlock: {
-    ...card,
-    children: [video],
-    coverBlockId: video.id
-  }
-}
-VideoSettingsNoPoster.play = async () => {
-  const settingsTab = await screen.getByTestId('videoSettingsTab')
-  await userEvent.click(settingsTab)
 }
 
 export const NoImage = Template.bind({})

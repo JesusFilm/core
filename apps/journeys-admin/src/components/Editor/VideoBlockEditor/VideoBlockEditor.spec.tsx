@@ -5,7 +5,7 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
-import { VideoBlockEditor } from './VideoBlockEditor'
+import { VideoBlockEditor } from '.'
 
 const card: TreeBlock<CardBlock> = {
   id: 'card1.id',

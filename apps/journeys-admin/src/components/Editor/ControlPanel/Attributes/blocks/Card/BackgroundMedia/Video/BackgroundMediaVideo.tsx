@@ -14,7 +14,7 @@ import { BlockDeleteForBackgroundVideo } from '../../../../../../../../../__gene
 import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundVideoUpdate'
 import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
 import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
-import { VideoBlockEditor } from '../../../../../../VideoBlockEditor/VideoBlockEditor'
+import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(
