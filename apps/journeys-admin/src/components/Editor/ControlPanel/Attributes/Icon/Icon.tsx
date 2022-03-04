@@ -123,7 +123,6 @@ interface iconProps {
   iconBlock: TreeBlock<IconFields>
 }
 
-// TODO: bug - for some reason, sometimes can't switch to certain icons, don't know how to recreate
 export function Icon({ iconBlock }: iconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
@@ -163,7 +162,7 @@ export function Icon({ iconBlock }: iconProps): ReactElement {
     if (event.target.value === '') {
       await iconUpdate(null)
       setShowProps(false)
-    } else if (newName !== iconBlock?.iconName) {
+    } else if (newName !== iconName) {
       await iconUpdate(newName)
       setShowProps(true)
     }
