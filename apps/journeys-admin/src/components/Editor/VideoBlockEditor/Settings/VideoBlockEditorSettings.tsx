@@ -29,6 +29,7 @@ import {
   secondsToTimeFormat,
   timeFormatToSeconds
 } from '../../../../libs/timeFormat/timeFormat'
+import { ImageBlockThumbnail } from '../../ImageBlockThumbnail/ImageBlockThumbnail'
 
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
@@ -196,36 +197,7 @@ export function VideoBlockEditorSettings({
             borderRadius={2}
           >
             <Stack direction="row" justifyContent="space-around">
-              <div
-                style={{
-                  overflow: 'hidden',
-                  borderRadius: 8,
-                  height: 55,
-                  width: 55
-                }}
-              >
-                {posterBlock?.src != null && (
-                  <Image
-                    src={posterBlock.src}
-                    alt={posterBlock.alt}
-                    width={55}
-                    height={55}
-                  />
-                )}
-                {posterBlock?.src == null && (
-                  <Box
-                    borderRadius={2}
-                    sx={{
-                      width: 55,
-                      height: 55,
-                      verticalAlign: 'center'
-                    }}
-                    justifyContent="center"
-                  >
-                    <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }} />
-                  </Box>
-                )}
-              </div>
+              <ImageBlockThumbnail selectedBlock={posterBlock} />
               <Stack
                 direction="column"
                 justifyContent="center"
