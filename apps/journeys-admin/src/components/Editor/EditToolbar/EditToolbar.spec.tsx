@@ -20,6 +20,6 @@ describe('Edit Toolbar', () => {
     )
     fireEvent.click(getAllByRole('button')[1])
     expect(getByRole('menu')).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Delete Block' })).toBeInTheDocument()
   })
 })
