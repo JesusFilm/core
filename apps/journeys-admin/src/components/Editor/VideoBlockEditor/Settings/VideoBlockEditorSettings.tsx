@@ -10,7 +10,6 @@ import {
 import { Box } from '@mui/system'
 import { TreeBlock } from '@core/journeys/ui'
 import { noop } from 'lodash'
-import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
 import { Create, PlayCircle, StopCircle } from '@mui/icons-material'
@@ -22,7 +21,7 @@ import {
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
-} from '../../../../libs/timeFormat/timeFormat'
+} from '../../../../libs/timeFormat'
 import { ImageBlockThumbnail } from '../../ImageBlockThumbnail/ImageBlockThumbnail'
 
 interface VideoBlockEditorSettingsProps {
@@ -43,7 +42,6 @@ export function VideoBlockEditorSettings({
     e: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const time = e.target.value
-    if (await timeSchema.isValid({ [target]: time })) return
     const timeInSeconds = timeFormatToSeconds(time)
     if (selectedBlock?.[target] === timeInSeconds) return
 
@@ -67,21 +65,11 @@ export function VideoBlockEditorSettings({
     await onChange(block as TreeBlock<VideoBlock>)
   }
 
-  const timeSchema = object().shape({
-    startAt: string()
-      .required('Required')
-      .matches(/(?:\d\d:[012345]\d:[012345]\d)/, 'Invalid time format'),
-    endAt: string()
-      .required('Required')
-      .matches(/(?:\d\d:[012345]\d:[012345]\d)/, 'Invalid time format')
-  })
-
   const formik = useFormik({
     initialValues: {
       startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
       endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0)
     },
-    validationSchema: timeSchema,
     onSubmit: noop
   })
 

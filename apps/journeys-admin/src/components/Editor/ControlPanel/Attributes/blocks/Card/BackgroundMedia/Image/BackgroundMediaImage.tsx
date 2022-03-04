@@ -372,7 +372,6 @@ export function BackgroundMediaImage({
                     id="src"
                     name="src"
                     variant="filled"
-                    data-testid="imgSrcTextField"
                     label="Paste URL of image..."
                     fullWidth
                     value={values.src}

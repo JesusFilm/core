@@ -109,14 +109,11 @@ export function VideoBlockEditor({
           centered
           variant="fullWidth"
         >
-          <Tab label="Source" {...tabA11yProps('videSrc', 0)} />
+          <Tab label="Source" {...tabA11yProps('videoSrc', 0)} />
           <Tab
             label="Settings"
             {...tabA11yProps('videoSettings', 1)}
-            disabled={
-              (selectedBlock as TreeBlock<VideoBlock>)?.videoContent?.src ==
-              null
-            }
+            disabled={selectedBlock?.videoContent?.src == null}
             data-testid="videoSettingsTab"
           />
         </Tabs>
@@ -128,7 +125,12 @@ export function VideoBlockEditor({
             onChange={onChange}
           />
         </TabPanel>
-        <TabPanel name="videoSettings" value={tabValue} index={1}>
+        <TabPanel
+          name="videoSettings"
+          value={tabValue}
+          index={1}
+          data-testid="videoSettingsMobile"
+        >
           <VideoBlockEditorSettings
             selectedBlock={selectedBlock}
             posterBlock={posterBlock}

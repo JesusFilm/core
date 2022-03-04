@@ -349,7 +349,7 @@ describe('BackgroundMediaVideo', () => {
       })
       const videoBlockResult = jest.fn(() => ({
         data: {
-          imageBlockUpdate: {
+          videoBlockUpdate: {
             title: video.title,
             startAt: video.startAt,
             endAt: video.endAt,
@@ -490,7 +490,7 @@ describe('BackgroundMediaVideo', () => {
         { __ref: `CardBlock:${card.id}` }
       ])
     })
-    describe('settings', () => {
+    describe('Video Settings', () => {
       it('shows settings', async () => {
         const { getAllByRole, getByRole } = render(
           <MockedProvider>

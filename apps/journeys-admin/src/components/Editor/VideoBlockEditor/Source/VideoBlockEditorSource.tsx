@@ -77,13 +77,12 @@ export function VideoBlockEditorSource({
           id="src"
           name="src"
           variant="filled"
-          data-testid="imgSrcTextField"
           label="Paste URL of video..."
           fullWidth
           value={formik.values.src}
           onChange={formik.handleChange}
           onBlur={async (e) => {
-            await formik.handleBlur(e)
+            formik.handleBlur(e)
             await handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
           }}
           helperText={

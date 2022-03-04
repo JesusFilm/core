@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 
 import {
@@ -57,6 +57,19 @@ describe('VideoBlockEditor', () => {
       expect(getByText('Select Video File')).toBeInTheDocument()
       expect(getByText('Formats: MP4, HLS')).toBeInTheDocument()
     })
+
+    it('has settings disabled', async () => {
+      const { getByTestId } = render(
+        <VideoBlockEditor
+          selectedBlock={null}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
+      )
+      expect(getByTestId('videoSettingsTab')).toBeDisabled()
+    })
   })
   describe('existing block', () => {
     it('shows video information', async () => {
@@ -86,6 +99,33 @@ describe('VideoBlockEditor', () => {
       const button = getByRole('button')
       fireEvent.click(button)
       expect(onDelete).toHaveBeenCalledWith()
+    })
+    it('has settings enabled', async () => {
+      const { getByTestId } = render(
+        <VideoBlockEditor
+          selectedBlock={video}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
+      )
+      expect(getByTestId('videoSettingsTab')).toBeEnabled()
+    })
+    it('can switch to settings on Mobile', async () => {
+      const { getByTestId } = render(
+        <VideoBlockEditor
+          selectedBlock={video}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
+      )
+      await fireEvent.click(getByTestId('videoSettingsTab'))
+      await waitFor(() =>
+        expect(getByTestId('videoSettingsMobile')).toBeInTheDocument()
+      )
     })
   })
 })

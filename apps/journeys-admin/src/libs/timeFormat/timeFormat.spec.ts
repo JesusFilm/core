@@ -1,4 +1,4 @@
-import { secondsToTimeFormat, timeFormatToSeconds } from './timeFormat'
+import { secondsToTimeFormat, timeFormatToSeconds } from '.'
 
 describe('timeFormat', () => {
   describe('secondsToTimeFormat', () => {
