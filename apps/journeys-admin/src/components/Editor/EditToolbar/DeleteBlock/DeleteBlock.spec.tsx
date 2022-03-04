@@ -134,19 +134,6 @@ describe('DeleteBlock', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should call handleDeleteBlock on click', () => {
-    const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <DeleteBlock variant="button" />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByRole('button')).toContainElement(
-      getByTestId('DeleteOutlineRoundedIcon')
-    )
-  })
-
   it('should call the mutation on Delete Block on list-item click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
