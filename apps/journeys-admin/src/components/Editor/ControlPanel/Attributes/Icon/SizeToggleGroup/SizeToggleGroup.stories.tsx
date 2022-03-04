@@ -9,8 +9,7 @@ import { SizeToggleGroup } from '.'
 const SizeToggleGroupStory = {
   ...simpleComponentConfig,
   component: SizeToggleGroup,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Icon/SizeToggleGroup'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon/SizeToggleGroup'
 }
 
 export const Default: Story = () => {

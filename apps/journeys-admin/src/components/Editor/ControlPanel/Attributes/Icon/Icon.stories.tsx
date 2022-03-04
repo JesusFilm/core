@@ -14,7 +14,7 @@ import { Icon } from '.'
 const IconStory = {
   ...journeysAdminConfig,
   component: Icon,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Icon'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon'
 }
 
 const Template: Story<TreeBlock<IconFields>> = ({ ...props }) => (

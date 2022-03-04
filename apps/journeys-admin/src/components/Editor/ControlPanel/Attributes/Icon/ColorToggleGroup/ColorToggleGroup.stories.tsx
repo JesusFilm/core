@@ -9,8 +9,7 @@ import { ColorToggleGroup } from '.'
 const ColorToggleGroupStory = {
   ...simpleComponentConfig,
   component: ColorToggleGroup,
-  title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/Button/Icon/ColorToggleGroup'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon/ColorToggleGroup'
 }
 
 export const Default: Story = () => {
