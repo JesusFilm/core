@@ -69,18 +69,18 @@ const poster: TreeBlock<ImageBlock> = {
   children: []
 }
 
-const onChange = noop
-const onDelete = noop
+const onChange = async (): Promise<void> => await Promise.resolve()
+const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
   <ThemeProvider>
     <Box width={328} bgcolor="white">
       <VideoBlockEditor
-        {...args}
+        selectedBlock={args.selectedBlock}
         onChange={onChange}
         onDelete={onDelete}
         parentBlockId={card.id}
-        parentOrder={card.parentOrder}
+        parentOrder={Number(card.parentOrder)}
       />
     </Box>
   </ThemeProvider>
