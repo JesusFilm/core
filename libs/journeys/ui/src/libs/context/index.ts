@@ -1,1 +1,6 @@
-export { useEditor, EditorProvider, ActiveTab } from './EditorContext'
+export {
+  useEditor,
+  EditorProvider,
+  ActiveTab,
+  ActiveFab
+} from './EditorContext'
