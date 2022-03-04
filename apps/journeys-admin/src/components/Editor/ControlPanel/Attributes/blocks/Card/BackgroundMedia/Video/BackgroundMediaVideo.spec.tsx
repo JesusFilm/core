@@ -107,7 +107,7 @@ describe('BackgroundMediaVideo', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -150,7 +150,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = getByRole('textbox')
+      const textBox = getAllByRole('textbox')[0]
       fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
@@ -239,7 +239,7 @@ describe('BackgroundMediaVideo', () => {
           ]
         }
       }))
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -306,7 +306,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = getByRole('textbox')
+      const textBox = getAllByRole('textbox')[0]
       fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
@@ -361,7 +361,7 @@ describe('BackgroundMediaVideo', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -404,7 +404,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = await getByRole('textbox')
+      const textBox = await getAllByRole('textbox')[0]
       await fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })

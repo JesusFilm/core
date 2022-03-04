@@ -60,7 +60,7 @@ describe('VideoBlockEditor', () => {
   })
   describe('existing block', () => {
     it('shows video information', async () => {
-      const { getByText, getByRole } = render(
+      const { getByText, getAllByRole } = render(
         <VideoBlockEditor
           selectedBlock={video}
           parentBlockId={card.id}
@@ -70,7 +70,7 @@ describe('VideoBlockEditor', () => {
         />
       )
       expect(getByText(video.title)).toBeInTheDocument()
-      const textBox = getByRole('textbox')
+      const textBox = getAllByRole('textbox')[0]
       expect(textBox).toHaveValue(video.videoContent.src)
     })
     it('calls onDelete', async () => {

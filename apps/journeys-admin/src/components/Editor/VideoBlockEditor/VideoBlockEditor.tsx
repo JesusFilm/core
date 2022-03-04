@@ -1,7 +1,15 @@
 import { ReactElement, useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
-import { IconButton, Stack, Tab, Tabs, Typography } from '@mui/material'
+import {
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  useTheme
+} from '@mui/material'
 import { DeleteOutline } from '@mui/icons-material'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
 
@@ -29,6 +37,7 @@ export function VideoBlockEditor({
   onDelete
 }: VideoBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
+  const theme = useTheme()
 
   const [posterBlock, setPosterBlock] = useState(
     selectedBlock?.children.find(
@@ -52,22 +61,25 @@ export function VideoBlockEditor({
         <Stack direction="row" spacing="16px" data-testid="videoSrcStack">
           <ImageBlockThumbnail selectedBlock={posterBlock} />
           <Stack direction="column" justifyContent="center">
-            <Typography
-              variant="subtitle2"
-              sx={{
-                maxWidth: 150,
-                width: 150,
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden'
-              }}
-            >
-              {(selectedBlock as TreeBlock<VideoBlock>)?.title ??
-                'Select Video File'}
-            </Typography>
+            {selectedBlock?.title == null && (
+              <Typography variant="subtitle2">Select Video File</Typography>
+            )}
+            {selectedBlock?.title != null && (
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  maxWidth: 130,
+                  width: 130,
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden'
+                }}
+              >
+                {selectedBlock?.title}
+              </Typography>
+            )}
             <Typography variant="caption">
-              {(selectedBlock as TreeBlock<VideoBlock>)?.videoContent?.src ==
-              null
+              {selectedBlock?.videoContent?.src == null
                 ? 'Formats: MP4, HLS'
                 : ''}
               &nbsp;
@@ -83,39 +95,63 @@ export function VideoBlockEditor({
           )}
         </Stack>
       </Box>
-      <Tabs
-        value={tabValue}
-        onChange={handleTabChange}
-        aria-label="background tabs"
-        centered
-        variant="fullWidth"
-      >
-        <Tab label="Source" {...tabA11yProps('videSrc', 0)} />
-        <Tab
-          label="Settings"
-          {...tabA11yProps('videoSettings', 1)}
-          disabled={
-            (selectedBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null
+      <Box
+        sx={{
+          [theme.breakpoints.up('md')]: {
+            display: 'none'
           }
-          data-testid="videoSettingsTab"
-        />
-      </Tabs>
-      <TabPanel name="videoSrc" value={tabValue} index={0}>
+        }}
+      >
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="background tabs"
+          centered
+          variant="fullWidth"
+        >
+          <Tab label="Source" {...tabA11yProps('videSrc', 0)} />
+          <Tab
+            label="Settings"
+            {...tabA11yProps('videoSettings', 1)}
+            disabled={
+              (selectedBlock as TreeBlock<VideoBlock>)?.videoContent?.src ==
+              null
+            }
+            data-testid="videoSettingsTab"
+          />
+        </Tabs>
+        <TabPanel name="videoSrc" value={tabValue} index={0}>
+          <VideoBlockEditorSource
+            selectedBlock={selectedBlock}
+            parentBlockId={parentBlockId}
+            parentOrder={parentOrder}
+            onChange={onChange}
+          />
+        </TabPanel>
+        <TabPanel name="videoSettings" value={tabValue} index={1}>
+          <VideoBlockEditorSettings
+            selectedBlock={selectedBlock}
+            posterBlock={posterBlock}
+            parentOrder={parentOrder}
+            onChange={onChange}
+          />
+        </TabPanel>
+      </Box>
+      <Box sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}>
         <VideoBlockEditorSource
           selectedBlock={selectedBlock}
           parentBlockId={parentBlockId}
           parentOrder={parentOrder}
           onChange={onChange}
         />
-      </TabPanel>
-      <TabPanel name="videoSettings" value={tabValue} index={1}>
+        <Divider />
         <VideoBlockEditorSettings
           selectedBlock={selectedBlock}
           posterBlock={posterBlock}
           parentOrder={parentOrder}
           onChange={onChange}
         />
-      </TabPanel>
+      </Box>
     </>
   )
 }
