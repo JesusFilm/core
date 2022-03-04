@@ -24,10 +24,10 @@ import {
   SubscriptionsRounded,
   ContactSupportRounded
 } from '@mui/icons-material'
-import { IconName } from '../../../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../../../libs/context'
-import { IconFields } from '../../../../../../../../__generated__/IconFields'
-import { IconBlockNameUpdate } from '../../../../../../../../__generated__/IconBlockNameUpdate'
+import { IconName } from '../../../../../../__generated__/globalTypes'
+import { useJourney } from '../../../../../libs/context'
+import { IconFields } from '../../../../../../__generated__/IconFields'
+import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNameUpdate'
 import { ColorToggleGroup } from './ColorToggleGroup'
 import { SizeToggleGroup } from './SizeToggleGroup'
 

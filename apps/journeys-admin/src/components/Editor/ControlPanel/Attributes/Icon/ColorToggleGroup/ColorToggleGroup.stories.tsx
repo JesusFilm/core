@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock } from '@core/journeys/ui'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { IconName } from '../../../../../../../../../__generated__/globalTypes'
+import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
+import { IconName } from '../../../../../../../__generated__/globalTypes'
 import { ColorToggleGroup } from '.'
 
 const ColorToggleGroupStory = {

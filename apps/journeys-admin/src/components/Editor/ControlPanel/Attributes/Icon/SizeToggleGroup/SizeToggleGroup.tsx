@@ -1,11 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
-import { IconSize } from '../../../../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../../../../libs/context'
-import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { IconBlockSizeUpdate } from '../../../../../../../../../__generated__/IconBlockSizeUpdate'
+import { IconSize } from '../../../../../../../__generated__/globalTypes'
+import { useJourney } from '../../../../../../libs/context'
+import { ToggleButtonGroup } from '../../ToggleButtonGroup'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
+import { IconBlockSizeUpdate } from '../../../../../../../__generated__/IconBlockSizeUpdate'
 
 export const ICON_BLOCK_SIZE_UPDATE = gql`
   mutation IconBlockSizeUpdate(

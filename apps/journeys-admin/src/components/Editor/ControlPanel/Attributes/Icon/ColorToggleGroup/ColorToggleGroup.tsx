@@ -1,12 +1,12 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
-import { IconColor } from '../../../../../../../../../__generated__/globalTypes'
-import { ColorDisplayIcon } from '../../../../../ColorDisplayIcon'
-import { useJourney } from '../../../../../../../../libs/context'
-import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import { IconBlockColorUpdate } from '../../../../../../../../../__generated__/IconBlockColorUpdate'
+import { IconColor } from '../../../../../../../__generated__/globalTypes'
+import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { useJourney } from '../../../../../../libs/context'
+import { ToggleButtonGroup } from '../../ToggleButtonGroup'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
+import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlockColorUpdate'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(

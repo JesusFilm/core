@@ -14,10 +14,10 @@ import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../.
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { Icon, icons } from '../../Icon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { Icon, icons } from './Icon'
 
 export function Button({
   id,
