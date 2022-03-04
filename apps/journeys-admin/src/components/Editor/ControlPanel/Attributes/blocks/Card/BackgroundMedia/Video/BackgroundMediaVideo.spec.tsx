@@ -74,17 +74,6 @@ const video: TreeBlock<VideoBlock> = {
 
 describe('BackgroundMediaVideo', () => {
   describe('No existing cover', () => {
-    it('shows placeholders on null', () => {
-      const { getByTestId } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={card} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(getByTestId('videoPlaceholderStack')).toBeInTheDocument()
-    })
-
     it('creates a new video cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -193,14 +182,14 @@ describe('BackgroundMediaVideo', () => {
       children: [image]
     }
     it('shows placeholders on ImageBlock', () => {
-      const { getByTestId } = render(
+      const { getByText } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
             <BackgroundMediaVideo cardBlock={videoCard} />
           </JourneyProvider>
         </MockedProvider>
       )
-      expect(getByTestId('videoPlaceholderStack')).toBeInTheDocument()
+      expect(getByText('Select Video File')).toBeInTheDocument()
     })
     it('creates a new video cover block', async () => {
       const cache = new InMemoryCache()
@@ -345,42 +334,6 @@ describe('BackgroundMediaVideo', () => {
         }
       ]
     }
-    it('shows placeholders', async () => {
-      const { getByTestId, getByRole } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(getByTestId('videoSrcStack')).toBeInTheDocument()
-      const textBox = getByRole('textbox')
-      expect(textBox).toHaveValue('https://example.com/video.mp4')
-    })
-
-    // fails depsite working in the browser and in duplicated tests elsewhere. Likely due to being in a tabpanel
-    xit('displays validation message', async () => {
-      const { getByRole, getByText } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: '' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-      fireEvent.change(textBox, {
-        target: { value: 'example.com/123' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(getByText('Please enter a valid url')).toBeInTheDocument()
-      )
-    })
 
     it('updates video cover block', async () => {
       const cache = new InMemoryCache()
