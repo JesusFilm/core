@@ -13,13 +13,7 @@ import { noop } from 'lodash'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
-import {
-  Create,
-  PlayCircle,
-  StopCircle,
-  Image as ImageIcon
-} from '@mui/icons-material'
-import Image from 'next/image'
+import { Create, PlayCircle, StopCircle } from '@mui/icons-material'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
