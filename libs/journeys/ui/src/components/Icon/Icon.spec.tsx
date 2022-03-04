@@ -30,18 +30,18 @@ describe('Icon', () => {
   })
   it('should render small icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.sm} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 16px')
+    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('height: 16px')
   })
   it('should render medium icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.md} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 20px')
+    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('height: 20px')
   })
   it('should render large icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.lg} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 28px')
+    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('height: 28px')
   })
   it('should render extra large icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.xl} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 48px')
+    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('height: 48px')
   })
 })
