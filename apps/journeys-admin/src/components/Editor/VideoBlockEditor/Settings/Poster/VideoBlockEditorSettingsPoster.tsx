@@ -1,17 +1,17 @@
-import { Create, Image as ImageIcon } from '@mui/icons-material'
+import { Create } from '@mui/icons-material'
 import { Box, IconButton, Modal, Stack, Typography } from '@mui/material'
-import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { reject } from 'lodash'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
-import { ImageEditor } from '../../../ImageBlockEditor/ImageEditor'
+import { ImageBlockEditor } from '../../../ImageBlockEditor/ImageBlockEditor'
 import { useJourney } from '../../../../../libs/context'
 import { BlockDeleteForPosterImage } from '../../../../../../__generated__/BlockDeleteForPosterImage'
 import { VideoBlockPosterImageUpdate } from '../../../../../../__generated__/VideoBlockPosterImageUpdate'
 import { PosterImageBlockCreate } from '../../../../../../__generated__/PosterImageBlockCreate'
 import { PosterImageBlockUpdate } from '../../../../../../__generated__/PosterImageBlockUpdate'
+import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail/ImageBlockThumbnail'
 
 export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   mutation BlockDeleteForPosterImage(
@@ -221,36 +221,7 @@ export function VideoBlockEditorSettingsPoster({
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
-          <div
-            style={{
-              overflow: 'hidden',
-              borderRadius: 8,
-              height: 55,
-              width: 55
-            }}
-          >
-            {selectedBlock?.src != null && (
-              <Image
-                src={selectedBlock.src}
-                alt={selectedBlock.alt}
-                width={55}
-                height={55}
-              ></Image>
-            )}
-            {selectedBlock?.src == null && (
-              <Box
-                borderRadius={2}
-                sx={{
-                  width: 55,
-                  height: 55,
-                  verticalAlign: 'center'
-                }}
-                justifyContent="center"
-              >
-                <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }}></ImageIcon>
-              </Box>
-            )}
-          </div>
+          <ImageBlockThumbnail selectedBlock={selectedBlock} />
           <Stack
             direction="column"
             justifyContent="center"
@@ -260,7 +231,7 @@ export function VideoBlockEditorSettingsPoster({
               <Create color="primary"></Create>
             </IconButton>
             <Modal open={open} onClose={handleClose}>
-              <ImageEditor
+              <ImageBlockEditor
                 selectedBlock={selectedBlock}
                 onChange={handleChange}
                 onDelete={deleteCoverBlock}

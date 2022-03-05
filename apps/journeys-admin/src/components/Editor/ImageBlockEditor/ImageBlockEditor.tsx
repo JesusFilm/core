@@ -15,17 +15,17 @@ import { noop } from 'lodash'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail/ImageBlockThumbnail'
 
-interface ImageEditorProps {
+interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
   onChange: (block: ImageBlock) => Promise<void>
   onDelete: () => Promise<void>
 }
 
-export function ImageEditor({
+export function ImageBlockEditor({
   selectedBlock,
   onChange,
   onDelete
-}: ImageEditorProps): ReactElement {
+}: ImageBlockEditorProps): ReactElement {
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })

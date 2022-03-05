@@ -13,7 +13,7 @@ import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__gen
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
-import { ImageEditor } from '../../../../../../ImageBlockEditor/ImageEditor'
+import { ImageBlockEditor } from '../../../../../../ImageBlockEditor/ImageBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   mutation BlockDeleteForBackgroundImage(
@@ -82,7 +82,9 @@ export function BackgroundMediaImage({
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
-    ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
+    ) as ImageBlock | TreeBlock<VideoBlock>) ?? null
+
+  const imageBlock = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
   const [cardBlockUpdate, { error: cardBlockUpdateError }] =
     useMutation<CardBlockBackgroundImageUpdate>(CARD_BLOCK_COVER_IMAGE_UPDATE)
@@ -227,10 +229,7 @@ export function BackgroundMediaImage({
 
     if (block.src === '' || !success) return
 
-    if (
-      coverBlock == null ||
-      coverBlock?.__typename.toString() !== 'ImageBlock'
-    ) {
+    if (imageBlock == null) {
       await createImageBlock(block)
     } else {
       await updateImageBlock(block)
@@ -238,8 +237,8 @@ export function BackgroundMediaImage({
   }
 
   return (
-    <ImageEditor
-      selectedBlock={coverBlock as ImageBlock}
+    <ImageBlockEditor
+      selectedBlock={imageBlock}
       onChange={handleChange}
       onDelete={handleImageDelete}
     />

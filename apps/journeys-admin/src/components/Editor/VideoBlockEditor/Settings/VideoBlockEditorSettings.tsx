@@ -166,35 +166,12 @@ export function VideoBlockEditorSettings({
           />
         </Stack>
         <Divider />
-        <VideoBlockEditorSettingsPoster
-          selectedBlock={posterBlock}
-          parentBlockId={selectedBlock.id}
-        />
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="column" justifyContent="center">
-            <Typography variant="subtitle2">Cover Image</Typography>
-            <Typography variant="caption">
-              Appears while video is loading
-            </Typography>
-          </Stack>
-          <Box
-            width={95}
-            height={62}
-            sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', py: 1 }}
-            borderRadius={2}
-          >
-            <Stack direction="row" justifyContent="space-around">
-              <ImageBlockThumbnail selectedBlock={posterBlock} />
-              <Stack
-                direction="column"
-                justifyContent="center"
-                sx={{ paddingRight: 1 }}
-              >
-                <Create color="primary" />
-              </Stack>
-            </Stack>
-          </Box>
-        </Stack>
+        {selectedBlock != null && (
+          <VideoBlockEditorSettingsPoster
+            selectedBlock={posterBlock}
+            parentBlockId={selectedBlock.id}
+          />
+        )}
       </Stack>
     </Box>
   )
