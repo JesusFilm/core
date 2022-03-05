@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { TreeBlock } from '@core/journeys/ui'
-import { noop } from 'lodash'
 import { Box } from '@mui/system'
 
 import {
