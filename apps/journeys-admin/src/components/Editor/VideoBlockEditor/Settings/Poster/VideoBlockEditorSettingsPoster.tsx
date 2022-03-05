@@ -5,13 +5,13 @@ import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { reject } from 'lodash'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/GetJourney'
-import { ImageEditor } from '../../../../../../../../../libs/ImageEditor/ImageEditor'
-import { useJourney } from '../../../../../../../../../libs/context'
-import { BlockDeleteForPosterImage } from '../../../../../../../../../../__generated__/BlockDeleteForPosterImage'
-import { VideoBlockPosterImageUpdate } from '../../../../../../../../../../__generated__/VideoBlockPosterImageUpdate'
-import { PosterImageBlockCreate } from '../../../../../../../../../../__generated__/PosterImageBlockCreate'
-import { PosterImageBlockUpdate } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
+import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
+import { ImageEditor } from '../../../ImageBlockEditor/ImageEditor'
+import { useJourney } from '../../../../../libs/context'
+import { BlockDeleteForPosterImage } from '../../../../../../__generated__/BlockDeleteForPosterImage'
+import { VideoBlockPosterImageUpdate } from '../../../../../../__generated__/VideoBlockPosterImageUpdate'
+import { PosterImageBlockCreate } from '../../../../../../__generated__/PosterImageBlockCreate'
+import { PosterImageBlockUpdate } from '../../../../../../__generated__/PosterImageBlockUpdate'
 
 export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   mutation BlockDeleteForPosterImage(
@@ -76,7 +76,7 @@ interface BackgroundMediaCoverImageProps {
   parentBlockId: string
 }
 
-export function BackgroundMediaCoverImage({
+export function VideoBlockEditorSettingsPoster({
   selectedBlock,
   parentBlockId
 }: BackgroundMediaCoverImageProps): ReactElement {

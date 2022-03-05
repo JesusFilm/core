@@ -23,6 +23,7 @@ import {
   timeFormatToSeconds
 } from '../../../../libs/timeFormat'
 import { ImageBlockThumbnail } from '../../ImageBlockThumbnail/ImageBlockThumbnail'
+import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
@@ -165,6 +166,10 @@ export function VideoBlockEditorSettings({
           />
         </Stack>
         <Divider />
+        <VideoBlockEditorSettingsPoster
+          selectedBlock={posterBlock}
+          parentBlockId={selectedBlock.id}
+        />
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">Cover Image</Typography>
