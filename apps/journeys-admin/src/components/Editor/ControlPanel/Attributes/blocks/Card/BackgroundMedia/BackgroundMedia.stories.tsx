@@ -95,7 +95,7 @@ const poster: TreeBlock<ImageBlock> = {
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',
   __typename: 'ImageBlock',
-  parentBlockId: '3',
+  parentBlockId: card.id,
   parentOrder: 0,
   src: 'https://source.unsplash.com/random/1920x1080',
   alt: 'random image from unsplash',
@@ -105,146 +105,13 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-export const DefaultNoVideo: Story = () => {
-  return (
-    <MockedProvider>
-      <ThemeProvider>
-        <JourneyProvider value={journey}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: card,
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
-}
-
-export const Video: Story = () => {
-  return (
-    <MockedProvider>
-      <ThemeProvider>
-        <JourneyProvider value={journey}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...card,
-                children: [
-                  { ...video, posterBlockId: poster.id, children: [poster] }
-                ],
-                coverBlockId: video.id
-              },
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
-}
-
-export const VideoNoPoster: Story = () => {
-  return (
-    <MockedProvider>
-      <ThemeProvider>
-        <JourneyProvider value={journey}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...card,
-                children: [video],
-                coverBlockId: video.id
-              },
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
-}
-
-export const VideoSettings: Story = () => {
-  return (
-    <MockedProvider>
-      <ThemeProvider>
-        <JourneyProvider value={journey}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...card,
-                children: [
-                  { ...video, posterBlockId: poster.id, children: [poster] }
-                ],
-                coverBlockId: video.id
-              },
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
-}
-VideoSettings.play = async () => {
-  const settingsTab = await screen.getByTestId('videoSettingsTab')
-  await userEvent.click(settingsTab)
-}
-
-export const VideoSettingsNoPoster: Story = () => {
-  return (
-    <MockedProvider>
-      <ThemeProvider>
-        <JourneyProvider value={journey}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...card,
-                children: [video],
-                coverBlockId: video.id
-              },
-              drawerChildren: <BackgroundMedia />,
-              drawerTitle: 'Background Media',
-              drawerMobileOpen: true
-            }}
-          >
-            <Drawer />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
-    </MockedProvider>
-  )
-}
-VideoSettingsNoPoster.play = async () => {
-  const settingsTab = await screen.getByTestId('videoSettingsTab')
-  await userEvent.click(settingsTab)
-}
-
-export const NoImage: Story = () => (
+const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <ThemeProvider>
       <JourneyProvider value={journey}>
         <EditorProvider
           initialState={{
-            selectedBlock: card,
+            ...args,
             drawerChildren: <BackgroundMedia />,
             drawerTitle: 'Background Media',
             drawerMobileOpen: true
@@ -256,32 +123,32 @@ export const NoImage: Story = () => (
     </ThemeProvider>
   </MockedProvider>
 )
+
+export const Video = Template.bind({})
+Video.args = {
+  selectedBlock: {
+    ...card,
+    children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
+    coverBlockId: video.id
+  }
+}
+
+export const NoImage = Template.bind({})
+NoImage.args = {
+  selectedBlock: card
+}
 NoImage.play = async () => {
   const imageTab = await screen.getByTestId('bgvideo-image-tab')
   await userEvent.click(imageTab)
 }
 
-export const Image: Story = () => (
-  <MockedProvider>
-    <ThemeProvider>
-      <JourneyProvider value={journey}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...card,
-              coverBlockId: image.id,
-              children: [image]
-            },
-            drawerChildren: <BackgroundMedia />,
-            drawerTitle: 'Background Media',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </ThemeProvider>
-  </MockedProvider>
-)
+export const Image = Template.bind({})
+Image.args = {
+  selectedBlock: {
+    ...card,
+    coverBlockId: image.id,
+    children: [image]
+  }
+}
 
 export default BackgroundMediaStory as Meta

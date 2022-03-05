@@ -8,6 +8,7 @@ export {
   CARD_FIELDS,
   GRID_CONTAINER_FIELDS,
   GRID_ITEM_FIELDS,
+  ICON_FIELDS,
   IMAGE_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,
@@ -27,4 +28,4 @@ export {
   previousBlocksVar,
   treeBlocksVar
 } from './useBlocks/blocks'
-export { useEditor, EditorProvider, ActiveTab } from './context'
+export { useEditor, EditorProvider, ActiveTab, ActiveFab } from './context'

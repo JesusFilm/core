@@ -22,7 +22,6 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 1,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
@@ -43,7 +42,6 @@ describe('SignUpBlockResolver', () => {
     __typename: 'SignUpBlock',
     parentOrder: 1,
     action: {
-      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '2'
     },
@@ -76,7 +74,7 @@ describe('SignUpBlockResolver', () => {
   const blockUpdate = {
     __typename: 'SignUpBlock',
     parentBlockId: '0',
-    submitIconId: 'icon2',
+    submitIconId: 'icon1',
     submitLabel: 'Unlock Later!'
   }
 
@@ -87,7 +85,8 @@ describe('SignUpBlockResolver', () => {
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
       save: jest.fn((input) => input),
-      update: jest.fn((input) => input)
+      update: jest.fn((input) => input),
+      validateBlock: jest.fn()
     })
   }
 
@@ -117,12 +116,6 @@ describe('SignUpBlockResolver', () => {
         blockResponse
       ])
     })
-
-    it('returns SignUpBlock action with parentBlockId', async () => {
-      expect(await resolver.action(blockResponse as SignUpBlock)).toEqual(
-        block.action
-      )
-    })
   })
 
   describe('action', () => {
@@ -142,8 +135,30 @@ describe('SignUpBlockResolver', () => {
 
   describe('SignUpBlockUpdate', () => {
     it('updates a SignUpBlock', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(true)
+
       await resolver.signUpBlockUpdate(block._key, block.journeyId, blockUpdate)
       expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+    })
+
+    it('should throw error with an invalid submitIconId', async () => {
+      const mockValidate = service.validateBlock as jest.MockedFunction<
+        typeof service.validateBlock
+      >
+      mockValidate.mockResolvedValueOnce(false)
+
+      await resolver
+        .signUpBlockUpdate(block._key, block.journeyId, {
+          ...blockUpdate,
+          submitIconId: 'wrong!'
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Submit icon does not exist')
+        })
+      expect(service.update).not.toHaveBeenCalled()
     })
   })
 })

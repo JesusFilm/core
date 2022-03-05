@@ -165,6 +165,15 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface IconBlockCreateInput {
+  color?: IconColor | null;
+  id?: string | null;
+  journeyId: string;
+  name?: IconName | null;
+  parentBlockId: string;
+  size?: IconSize | null;
+}
+
 export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
@@ -214,8 +223,13 @@ export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  submitIconId?: string | null;
   submitLabel: string;
+}
+
+export interface SignUpBlockUpdateInput {
+  parentBlockId?: string | null;
+  submitIconId?: string | null;
+  submitLabel?: string | null;
 }
 
 export interface SignUpResponseCreateInput {
@@ -223,6 +237,11 @@ export interface SignUpResponseCreateInput {
   email: string;
   id?: string | null;
   name: string;
+}
+
+export interface StepBlockUpdateInput {
+  locked?: boolean | null;
+  nextBlockId?: string | null;
 }
 
 export interface TypographyBlockCreateInput {

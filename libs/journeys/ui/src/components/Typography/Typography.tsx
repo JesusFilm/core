@@ -1,6 +1,6 @@
 import { ReactElement, MouseEvent } from 'react'
 import MuiTypography from '@mui/material/Typography'
-import { TreeBlock, useEditor, ActiveTab } from '../..'
+import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
 
 export function Typography({
@@ -26,9 +26,14 @@ export function Typography({
       ...props
     }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (selectedBlock?.id === block.id) {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (

@@ -1,31 +1,7 @@
-import { ReactElement, useState, ChangeEvent } from 'react'
+import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
-import Box from '@mui/material/Box'
 import { gql, useMutation } from '@apollo/client'
-import {
-  Divider,
-  IconButton,
-  InputAdornment,
-  Stack,
-  Switch,
-  Tab,
-  Tabs,
-  TextField,
-  Typography
-} from '@mui/material'
-import {
-  DeleteOutline,
-  Image as ImageIcon,
-  Link as LinkIcon,
-  PlayCircle,
-  StopCircle
-} from '@mui/icons-material'
-import Image from 'next/image'
-import { TabPanel, tabA11yProps } from '@core/shared/ui'
-import TimeField from 'react-simple-timefield'
-import { noop, reject } from 'lodash'
-import { object, string } from 'yup'
-import { Formik, Form } from 'formik'
+import { reject } from 'lodash'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -39,6 +15,7 @@ import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__gen
 import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
 import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import { BackgroundMediaCoverImage } from './Cover/BackgroundMediaVideoCover'
+import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(
@@ -115,7 +92,6 @@ export function BackgroundMediaVideo({
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
-  const [tabValue, setTabValue] = useState(0)
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundVideoUpdate>(
     CARD_BLOCK_COVER_VIDEO_UPDATE
   )
@@ -129,91 +105,7 @@ export function BackgroundMediaVideo({
     BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
   const { id: journeyId } = useJourney()
-  const [videoBlock, setVideoBlock] = useState(
-    coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
-  )
-  const [imageBlock, setImageBlock] = useState(
-    coverBlock?.children.find(
-      (child) => child.id === (coverBlock as VideoBlock).posterBlockId
-    ) as ImageBlock | null
-  )
-
-  const secondsToTimeFormat = (seconds: number): string => {
-    const date = new Date(seconds * 1000)
-    return date.toISOString().substring(11, 19)
-  }
-
-  const timeFormatToSeconds = (time: string): number => {
-    const [hours, minutes, seconds] = time.split(':')
-    return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds)
-  }
-
-  const handleTabChange = (event, newValue): void => {
-    setTabValue(newValue)
-  }
-
-  const handleTimeChange = async (
-    target: string,
-    time: string
-  ): Promise<void> => {
-    const block = {
-      ...videoBlock,
-      [target]: timeFormatToSeconds(time)
-    }
-    setVideoBlock(block as TreeBlock<VideoBlock>)
-    await handleChange(block as TreeBlock<VideoBlock>)
-  }
-
-  const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
-  })
-
-  const handleVideoSrcChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const src = event.target.value
-    const title = src.replace(/(.*\/)*/, '').replace(/\?.*/, '')
-
-    const block =
-      videoBlock == null
-        ? {
-            parentBlockId: cardBlock.id,
-            __typename: 'VideoBlock',
-            title: title,
-            autoplay: true,
-            muted: cardBlock.parentOrder === 0,
-            startAt: 0,
-            endAt: null,
-            posterBlockId: null,
-            videoContent: {
-              src: src
-            }
-          }
-        : {
-            ...videoBlock,
-            title: title,
-            videoContent: { src: src }
-          }
-    await handleChange(block as TreeBlock<VideoBlock>)
-  }
-
-  const handleVideoDelete = async (): Promise<void> => {
-    setImageBlock(null)
-    setVideoBlock(null)
-    setTabValue(0)
-    await deleteCoverBlock()
-  }
-
-  const handleSwitchChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const block = {
-      ...videoBlock,
-      [event.target.name]: event.target.checked
-    }
-    setVideoBlock(block as TreeBlock<VideoBlock>)
-    await handleChange(block as TreeBlock<VideoBlock>)
-  }
+  const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 
   const deleteCoverBlock = async (): Promise<void> => {
     await blockDelete({
@@ -381,265 +273,12 @@ export function BackgroundMediaVideo({
   }
 
   return (
-    <>
-      <Box sx={{ px: 6, py: 4 }}>
-        {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src != null && (
-          <Stack
-            direction="row"
-            spacing="16px"
-            justifyContent="space-between"
-            data-testid="videoSrcStack"
-          >
-            <div
-              style={{
-                overflow: 'hidden',
-                borderRadius: 8,
-                height: 55,
-                width: 55
-              }}
-            >
-              {imageBlock?.src != null && (
-                <Image
-                  src={imageBlock.src}
-                  alt={imageBlock.alt}
-                  width={55}
-                  height={55}
-                ></Image>
-              )}
-              {imageBlock?.src == null && (
-                <Box
-                  borderRadius={2}
-                  sx={{
-                    width: 55,
-                    height: 55,
-                    bgcolor: '#EFEFEF',
-                    verticalAlign: 'center'
-                  }}
-                  justifyContent="center"
-                >
-                  <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }}></ImageIcon>
-                </Box>
-              )}
-            </div>
-            <Stack direction="column" justifyContent="center">
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  maxWidth: 150,
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden'
-                }}
-              >
-                {(coverBlock as TreeBlock<VideoBlock>)?.title}
-              </Typography>
-            </Stack>
-            <Stack direction="column" justifyContent="center">
-              <IconButton onClick={handleVideoDelete} data-testid="deleteVideo">
-                <DeleteOutline color="primary"></DeleteOutline>
-              </IconButton>
-            </Stack>
-          </Stack>
-        )}
-        {(coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null && (
-          <Stack
-            direction="row"
-            spacing="16px"
-            data-testid="videoPlaceholderStack"
-          >
-            <Box
-              borderRadius={2}
-              sx={{
-                width: 55,
-                height: 55,
-                bgcolor: '#DCDDE5',
-                verticalAlign: 'center'
-              }}
-              justifyContent="center"
-            >
-              <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }}></ImageIcon>
-            </Box>
-            <Stack direction="column" justifyContent="center">
-              <Typography variant="subtitle2">Select Video File</Typography>
-              <Typography variant="caption">Formats: MP4, HLS</Typography>
-            </Stack>
-          </Stack>
-        )}
-      </Box>
-      <Tabs
-        value={tabValue}
-        onChange={handleTabChange}
-        aria-label="background tabs"
-        centered
-        variant="fullWidth"
-      >
-        <Tab label="Source" {...tabA11yProps('videSrc', 0)}></Tab>
-        <Tab
-          label="Settings"
-          {...tabA11yProps('videoSettings', 1)}
-          disabled={
-            (coverBlock as TreeBlock<VideoBlock>)?.videoContent?.src == null
-          }
-          data-testid="videoSettingsTab"
-        ></Tab>
-      </Tabs>
-      <TabPanel name="videoSrc" value={tabValue} index={0}>
-        <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
-          <Formik
-            initialValues={{
-              src: videoBlock?.videoContent?.src ?? ''
-            }}
-            validationSchema={srcSchema}
-            onSubmit={noop}
-          >
-            {({ values, touched, errors, handleChange, handleBlur }) => (
-              <Form>
-                <TextField
-                  id="src"
-                  name="src"
-                  variant="filled"
-                  label="Paste URL of image..."
-                  fullWidth
-                  value={values.src}
-                  onChange={handleChange}
-                  onBlur={(e) => {
-                    handleBlur(e)
-                    console.log(errors.src)
-                    errors.src == null &&
-                      handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
-                  }}
-                  helperText={
-                    touched.src === true
-                      ? errors.src
-                      : 'Make sure video address is permanent'
-                  }
-                  error={touched.src === true && Boolean(errors.src)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LinkIcon></LinkIcon>
-                      </InputAdornment>
-                    )
-                  }}
-                ></TextField>
-              </Form>
-            )}
-          </Formik>
-        </Box>
-      </TabPanel>
-      <TabPanel name="videoSettings" value={tabValue} index={1}>
-        <Box sx={{ p: 3, width: '100%' }}>
-          <Stack direction="column" spacing={3}>
-            <Stack direction="row" justifyContent="space-between">
-              <Stack direction="column">
-                <Typography variant="subtitle2">Autoplay</Typography>
-                <Typography variant="caption">
-                  Start video automatically when card appears
-                </Typography>
-              </Stack>
-              <Switch
-                checked={
-                  (coverBlock as TreeBlock<VideoBlock>)?.autoplay ?? true
-                }
-                name="autoplay"
-                onChange={handleSwitchChange}
-              ></Switch>
-            </Stack>
-            <Divider />
-            <Stack direction="row" justifyContent="space-between">
-              <Stack direction="column">
-                <Typography variant="subtitle2">Muted</Typography>
-                <Typography variant="caption">
-                  Video always muted on the first card
-                </Typography>
-              </Stack>
-              <Switch
-                checked={
-                  (coverBlock as TreeBlock<VideoBlock>)?.muted ??
-                  cardBlock?.parentOrder === 0
-                }
-                name="muted"
-                onChange={handleSwitchChange}
-              ></Switch>
-            </Stack>
-            <Divider />
-            <Formik
-              initialValues={{
-                startAt: secondsToTimeFormat(videoBlock?.startAt ?? 0),
-                endAt: secondsToTimeFormat(videoBlock?.endAt ?? 0)
-              }}
-              validationSchema={srcSchema}
-              onSubmit={noop}
-            >
-              {({ values, errors, handleChange, handleBlur }) => (
-                <Form>
-                  <Stack direction="row" justifyContent="space-around">
-                    <TimeField
-                      showSeconds
-                      value={values.startAt}
-                      style={{ width: 120 }}
-                      onChange={handleChange}
-                      input={
-                        <TextField
-                          id="startAt"
-                          name="startAt"
-                          label="Starts At"
-                          value={values.startAt}
-                          variant="filled"
-                          onBlur={(e) => {
-                            handleBlur(e)
-                            errors.startAt == null &&
-                              handleTimeChange('startAt', values.startAt)
-                          }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <PlayCircle></PlayCircle>
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      }
-                    />
-                    <TimeField
-                      showSeconds
-                      value={values.endAt}
-                      onChange={handleChange}
-                      style={{ width: 120 }}
-                      input={
-                        <TextField
-                          id="endAt"
-                          name="endAt"
-                          label="Ends At"
-                          value={values.endAt}
-                          variant="filled"
-                          onBlur={(e) => {
-                            handleBlur(e)
-                            errors.endAt == null &&
-                              handleTimeChange('endAt', values.endAt)
-                          }}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <StopCircle></StopCircle>
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      }
-                    />
-                  </Stack>
-                </Form>
-              )}
-            </Formik>
-            <Divider />
-            <BackgroundMediaCoverImage
-              selectedBlock={imageBlock}
-              parentBlockId={coverBlock.id}
-            />
-          </Stack>
-        </Box>
-      </TabPanel>
-    </>
+    <VideoBlockEditor
+      selectedBlock={videoBlock}
+      onChange={handleChange}
+      onDelete={deleteCoverBlock}
+      parentBlockId={cardBlock.id}
+      parentOrder={cardBlock.parentOrder ?? 0}
+    />
   )
 }

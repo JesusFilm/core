@@ -8,6 +8,7 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { ThemeProvider } from '../ThemeProvider'
+import { JourneyEdit } from './JourneyEdit'
 import { Editor } from '.'
 
 describe('Editor', () => {
@@ -49,7 +50,9 @@ describe('Editor', () => {
     const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <Editor journey={journey} />
+          <Editor journey={journey}>
+            <JourneyEdit />
+          </Editor>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -62,7 +65,9 @@ describe('Editor', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <Editor journey={journey} selectedStepId="step1.id" />
+          <Editor journey={journey} selectedStepId="step1.id">
+            <JourneyEdit />
+          </Editor>
         </ThemeProvider>
       </MockedProvider>
     )

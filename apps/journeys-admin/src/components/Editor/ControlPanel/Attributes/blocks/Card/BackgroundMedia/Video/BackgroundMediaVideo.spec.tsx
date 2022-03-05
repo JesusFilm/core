@@ -74,17 +74,6 @@ const video: TreeBlock<VideoBlock> = {
 
 describe('BackgroundMediaVideo', () => {
   describe('No existing cover', () => {
-    it('shows placeholders on null', () => {
-      const { getByTestId } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={card} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(getByTestId('videoPlaceholderStack')).toBeInTheDocument()
-    })
-
     it('creates a new video cover block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -118,7 +107,7 @@ describe('BackgroundMediaVideo', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -161,7 +150,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = await getByRole('textbox')
+      const textBox = getAllByRole('textbox')[0]
       fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
@@ -193,14 +182,14 @@ describe('BackgroundMediaVideo', () => {
       children: [image]
     }
     it('shows placeholders on ImageBlock', () => {
-      const { getByTestId } = render(
+      const { getByText } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
             <BackgroundMediaVideo cardBlock={videoCard} />
           </JourneyProvider>
         </MockedProvider>
       )
-      expect(getByTestId('videoPlaceholderStack')).toBeInTheDocument()
+      expect(getByText('Select Video File')).toBeInTheDocument()
     })
     it('creates a new video cover block', async () => {
       const cache = new InMemoryCache()
@@ -250,7 +239,7 @@ describe('BackgroundMediaVideo', () => {
           ]
         }
       }))
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -317,7 +306,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = await getByRole('textbox')
+      const textBox = getAllByRole('textbox')[0]
       fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
@@ -345,42 +334,6 @@ describe('BackgroundMediaVideo', () => {
         }
       ]
     }
-    it('shows placeholders', async () => {
-      const { getByTestId, getByRole } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(getByTestId('videoSrcStack')).toBeInTheDocument()
-      const textBox = await getByRole('textbox')
-      expect(textBox).toHaveValue('https://example.com/video.mp4')
-    })
-
-    // it('displays validation message', async () => {
-    //   const { getByRole, getByText } = render(
-    //     <MockedProvider>
-    //       <JourneyProvider value={journey}>
-    //         <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-    //       </JourneyProvider>
-    //     </MockedProvider>
-    //   )
-    //   const textBox = await getByRole('textbox')
-    //   await fireEvent.focus(textBox)
-    //   fireEvent.change(textBox, {
-    //     target: { value: '' }
-    //   })
-    //   fireEvent.blur(textBox)
-    //   await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-    //   fireEvent.change(textBox, {
-    //     target: { value: 'example.com/123' }
-    //   })
-    //   fireEvent.blur(textBox)
-    //   await waitFor(() =>
-    //     expect(getByText('Please enter a valid url')).toBeInTheDocument()
-    //   )
-    // })
 
     it('updates video cover block', async () => {
       const cache = new InMemoryCache()
@@ -396,7 +349,7 @@ describe('BackgroundMediaVideo', () => {
       })
       const videoBlockResult = jest.fn(() => ({
         data: {
-          imageBlockUpdate: {
+          videoBlockUpdate: {
             title: video.title,
             startAt: video.startAt,
             endAt: video.endAt,
@@ -408,7 +361,7 @@ describe('BackgroundMediaVideo', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -451,7 +404,7 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textBox = await getByRole('textbox')
+      const textBox = await getAllByRole('textbox')[0]
       await fireEvent.change(textBox, {
         target: { value: video.videoContent.src }
       })
@@ -537,7 +490,7 @@ describe('BackgroundMediaVideo', () => {
         { __ref: `CardBlock:${card.id}` }
       ])
     })
-    describe('settings', () => {
+    describe('Video Settings', () => {
       it('shows settings', async () => {
         const { getAllByRole, getByRole } = render(
           <MockedProvider>
