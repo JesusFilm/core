@@ -14,7 +14,7 @@ describe('NavigateAction', () => {
   it('shows disabled cards', () => {
     const selectedStep = steps[3]
 
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MockedProvider>
         <JourneyProvider
           value={
@@ -32,6 +32,9 @@ describe('NavigateAction', () => {
       </MockedProvider>
     )
     expect(getByTestId('cards-disabled-view')).toBeInTheDocument()
+    expect(
+      getByText('Default Next Step defined in the current card settings.')
+    ).toBeInTheDocument()
   })
 
   it('shows no next card message', () => {
