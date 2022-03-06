@@ -21,13 +21,11 @@ export const ICON_BLOCK_COLOR_UPDATE = gql`
   }
 `
 
-interface ColorToggleGroupProps {
+interface ColorProps {
   iconBlock: TreeBlock<IconFields>
 }
 
-export function ColorToggleGroup({
-  iconBlock
-}: ColorToggleGroupProps): ReactElement {
+export function Color({ iconBlock }: ColorProps): ReactElement {
   const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
     ICON_BLOCK_COLOR_UPDATE
   )

@@ -20,13 +20,11 @@ export const ICON_BLOCK_SIZE_UPDATE = gql`
   }
 `
 
-interface SizeToggleGroupProps {
+interface SizeProps {
   iconBlock: TreeBlock<IconFields>
 }
 
-export function SizeToggleGroup({
-  iconBlock
-}: SizeToggleGroupProps): ReactElement {
+export function Size({ iconBlock }: SizeProps): ReactElement {
   const [iconBlockSizeUpdate] = useMutation<IconBlockSizeUpdate>(
     ICON_BLOCK_SIZE_UPDATE
   )

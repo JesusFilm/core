@@ -1,1 +1,0 @@
-export { SizeToggleGroup } from './SizeToggleGroup'

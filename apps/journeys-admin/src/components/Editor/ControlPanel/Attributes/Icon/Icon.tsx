@@ -28,8 +28,8 @@ import { IconName } from '../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../libs/context'
 import { IconFields } from '../../../../../../__generated__/IconFields'
 import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNameUpdate'
-import { ColorToggleGroup } from './ColorToggleGroup'
-import { SizeToggleGroup } from './SizeToggleGroup'
+import { Color } from './Color'
+import { Size } from './Size'
 
 // icons is equivalent to IconName from global types"
 export const icons = [
@@ -119,11 +119,11 @@ export const ICON_BLOCK_NAME_UPDATE = gql`
   }
 `
 
-interface iconProps {
+interface IconProps {
   iconBlock: TreeBlock<IconFields>
 }
 
-export function Icon({ iconBlock }: iconProps): ReactElement {
+export function Icon({ iconBlock }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
@@ -200,11 +200,11 @@ export function Icon({ iconBlock }: iconProps): ReactElement {
           <Typography variant="subtitle2" sx={{ px: 6 }}>
             Color
           </Typography>
-          <ColorToggleGroup iconBlock={iconBlock} />
+          <Color iconBlock={iconBlock} />
           <Typography variant="subtitle2" sx={{ px: 6 }}>
             Size
           </Typography>
-          <SizeToggleGroup iconBlock={iconBlock} />
+          <Size iconBlock={iconBlock} />
         </Box>
       )}
     </>

@@ -2,18 +2,17 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import {
-  IconSize,
+  IconColor,
   IconName
 } from '../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
-import { ICON_BLOCK_SIZE_UPDATE } from './SizeToggleGroup'
-import { SizeToggleGroup } from '.'
+import { Color, ICON_BLOCK_COLOR_UPDATE } from './Color'
 
-describe('SizeToggleGroup', () => {
-  it('should change the icon size', async () => {
+describe('Color', () => {
+  it('should change the icon color', async () => {
     const icon: TreeBlock<IconFields> = {
       id: 'icon-id',
-      parentBlockId: null,
+      parentBlockId: 'buttonBlockId',
       parentOrder: null,
       __typename: 'IconBlock',
       iconName: IconName.ArrowForwardRounded,
@@ -29,8 +28,8 @@ describe('SizeToggleGroup', () => {
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           name: IconName.ArrowForwardRounded,
-          color: null,
-          size: IconSize.sm
+          color: IconColor.secondary,
+          size: null
         }
       }
     }))
@@ -40,11 +39,11 @@ describe('SizeToggleGroup', () => {
         mocks={[
           {
             request: {
-              query: ICON_BLOCK_SIZE_UPDATE,
+              query: ICON_BLOCK_COLOR_UPDATE,
               variables: {
                 id: 'icon-id',
                 input: {
-                  size: IconSize.sm
+                  color: IconColor.secondary
                 }
               }
             },
@@ -53,12 +52,12 @@ describe('SizeToggleGroup', () => {
         ]}
       >
         <EditorProvider>
-          <SizeToggleGroup iconBlock={icon} />
+          <Color iconBlock={icon} />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Medium' })).toHaveClass('Mui-selected')
-    fireEvent.click(getByRole('button', { name: 'Small' }))
+    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
+    fireEvent.click(getByRole('button', { name: 'Secondary' }))
     await waitFor(() => expect(() => expect(result).toHaveBeenCalled()))
   })
 })

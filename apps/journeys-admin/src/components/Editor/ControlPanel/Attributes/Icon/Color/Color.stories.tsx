@@ -4,12 +4,12 @@ import { TreeBlock } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { IconName } from '../../../../../../../__generated__/globalTypes'
-import { SizeToggleGroup } from '.'
+import { Color } from '.'
 
-const SizeToggleGroupStory = {
+const ColorStory = {
   ...simpleComponentConfig,
-  component: SizeToggleGroup,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon/SizeToggleGroup'
+  component: Color,
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon/Color'
 }
 
 export const Default: Story = () => {
@@ -25,9 +25,9 @@ export const Default: Story = () => {
   }
   return (
     <MockedProvider>
-      <SizeToggleGroup iconBlock={icon} />
+      <Color iconBlock={icon} />
     </MockedProvider>
   )
 }
 
-export default SizeToggleGroupStory as Meta
+export default ColorStory as Meta
