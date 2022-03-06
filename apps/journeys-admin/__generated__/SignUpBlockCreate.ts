@@ -19,7 +19,7 @@ export interface SignUpBlockCreate_submitIcon {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  iconName: IconName;
+  iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
 }

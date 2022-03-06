@@ -15,8 +15,7 @@ import { ButtonBlockCreate } from '../../../../../../__generated__/ButtonBlockCr
 import {
   ButtonVariant,
   ButtonColor,
-  ButtonSize,
-  IconName
+  ButtonSize
 } from '../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../libs/context'
 
@@ -78,13 +77,13 @@ export function NewButtonButton(): ReactElement {
             id: startId,
             journeyId,
             parentBlockId: id,
-            name: IconName.None
+            name: null
           },
           iconBlockCreateInput2: {
             id: endId,
             journeyId,
             parentBlockId: id,
-            name: IconName.None
+            name: null
           },
           id,
           journeyId,

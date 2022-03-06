@@ -55,7 +55,6 @@ export enum GridAlignItems {
 }
 
 export enum IconName {
-    None = "None",
     PlayArrowRounded = "PlayArrowRounded",
     TranslateRounded = "TranslateRounded",
     CheckCircleRounded = "CheckCircleRounded",
@@ -203,13 +202,13 @@ export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
     journeyId: string;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
 
 export class IconBlockUpdateInput {
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
@@ -495,7 +494,7 @@ export class IconBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }

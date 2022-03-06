@@ -31,7 +31,7 @@ export const Default: Story = () => {
                 id: 'iconId',
                 journeyId: 'journeyId',
                 parentBlockId: 'signUpBlockId',
-                name: 'None'
+                name: null
               },
               id: 'signUpBlockId',
               journeyId: 'journeyId',
@@ -52,7 +52,7 @@ export const Default: Story = () => {
                 journeyId: 'journeyId',
                 parentBlockId: 'signUpBlockId',
                 parentOrder: null,
-                iconName: 'None',
+                iconName: null,
                 iconColor: null,
                 iconSize: null
               },

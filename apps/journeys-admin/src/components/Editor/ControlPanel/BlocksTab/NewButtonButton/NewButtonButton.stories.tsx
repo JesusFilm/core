@@ -39,13 +39,13 @@ export const Default: Story = () => {
                 id: 'startIconId',
                 journeyId: 'journeyId',
                 parentBlockId: 'buttonBlockId',
-                name: 'None'
+                name: null
               },
               iconBlockCreateInput2: {
                 id: 'endIconId',
                 journeyId: 'journeyId',
                 parentBlockId: 'buttonBlockId',
-                name: 'None'
+                name: null
               },
               id: 'buttonBlockId',
               journeyId: 'journeyId',
@@ -66,7 +66,7 @@ export const Default: Story = () => {
                 journeyId: 'journeyId',
                 parentBlockId: 'buttonBlockId',
                 parentOrder: null,
-                iconName: 'None',
+                iconName: null,
                 iconColor: null,
                 iconSize: null
               },
@@ -76,7 +76,7 @@ export const Default: Story = () => {
                 journeyId: 'journeyId',
                 parentBlockId: 'buttonBlockId',
                 parentOrder: null,
-                iconName: 'None',
+                iconName: null,
                 iconColor: null,
                 iconSize: null
               },

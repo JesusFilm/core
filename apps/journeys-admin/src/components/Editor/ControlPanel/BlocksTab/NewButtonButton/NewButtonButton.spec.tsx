@@ -59,7 +59,7 @@ describe('Button', () => {
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           parentOrder: null,
-          iconName: 'None',
+          iconName: null,
           iconColor: null,
           iconSize: null
         },
@@ -69,7 +69,7 @@ describe('Button', () => {
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           parentOrder: null,
-          iconName: 'None',
+          iconName: null,
           iconColor: null,
           iconSize: null
         },
@@ -108,13 +108,13 @@ describe('Button', () => {
                   id: 'startIconId',
                   journeyId: 'journeyId',
                   parentBlockId: 'buttonBlockId',
-                  name: 'None'
+                  name: null
                 },
                 iconBlockCreateInput2: {
                   id: 'endIconId',
                   journeyId: 'journeyId',
                   parentBlockId: 'buttonBlockId',
-                  name: 'None'
+                  name: null
                 },
                 id: 'buttonBlockId',
                 journeyId: 'journeyId',
@@ -164,7 +164,7 @@ describe('Button', () => {
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           parentOrder: null,
-          iconName: 'None',
+          iconName: null,
           iconColor: null,
           iconSize: null
         },
@@ -174,7 +174,7 @@ describe('Button', () => {
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           parentOrder: null,
-          iconName: 'None',
+          iconName: null,
           iconColor: null,
           iconSize: null
         },
@@ -215,13 +215,13 @@ describe('Button', () => {
                   id: 'startIconId',
                   journeyId: 'journeyId',
                   parentBlockId: 'buttonBlockId',
-                  name: 'None'
+                  name: null
                 },
                 iconBlockCreateInput2: {
                   id: 'endIconId',
                   journeyId: 'journeyId',
                   parentBlockId: 'buttonBlockId',
-                  name: 'None'
+                  name: null
                 },
                 id: 'buttonBlockId',
                 journeyId: 'journeyId',

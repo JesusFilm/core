@@ -183,7 +183,7 @@ type IconBlock implements Block {
   color: IconColor
   id: ID!
   journeyId: ID!
-  name: IconName!
+  name: IconName
   parentBlockId: ID
   parentOrder: Int
   size: IconSize
@@ -197,14 +197,14 @@ input IconBlockCreateInput {
   """
   id: ID
   journeyId: ID!
-  name: IconName!
+  name: IconName
   parentBlockId: ID!
   size: IconSize
 }
 
 input IconBlockUpdateInput {
   color: IconColor
-  name: IconName!
+  name: IconName
   size: IconSize
 }
 
@@ -229,7 +229,6 @@ enum IconName {
   LiveTvRounded
   LockOpenRounded
   MenuBookRounded
-  None
   PlayArrowRounded
   RadioButtonUncheckedRounded
   SendRounded

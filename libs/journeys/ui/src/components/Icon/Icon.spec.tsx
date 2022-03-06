@@ -25,7 +25,7 @@ describe('Icon', () => {
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })
   it('should render nothing', () => {
-    const { getByTestId } = render(<Icon {...block} iconName={IconName.None} />)
+    const { getByTestId } = render(<Icon {...block} iconName={null} />)
     expect(getByTestId('None')).toBeInTheDocument()
   })
   it('should render small icon', () => {
