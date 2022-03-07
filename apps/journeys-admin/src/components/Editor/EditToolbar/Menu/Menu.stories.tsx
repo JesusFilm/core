@@ -1,43 +1,20 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import { BLOCK_DELETE } from '../DeleteBlock/DeleteBlock'
-import { Menu } from '.'
+import { Menu as DeleteMenu } from '.'
 
 const MenuStory = {
   ...simpleComponentConfig,
-  component: Menu,
-  title: 'Journeys-Admin/Editor/EditToolbar/Menu'
+  component: DeleteMenu,
+  title: 'Journeys-Admin/Editor/EditToolbar'
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: BLOCK_DELETE,
-          variables: {
-            id: 'typographyId',
-            parentBlockId: 'cardId',
-            journeyId: 'journeyId'
-          }
-        },
-        result: {
-          data: {
-            id: 'tyopgraphyId'
-          }
-        }
-      }
-    ]}
-  >
-    <Menu />
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  handleDeleteBlock: () => noop
+export const Menu: Story = () => {
+  return (
+    <MockedProvider>
+      <DeleteMenu />
+    </MockedProvider>
+  )
 }
 
 export default MenuStory as Meta
