@@ -9,7 +9,9 @@ import { TypographyFields } from '../../../../../../__generated__/TypographyFiel
 import {
   ThemeMode,
   ThemeName,
-  TypographyVariant
+  TypographyVariant,
+  TypographyAlign,
+  TypographyColor
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../libs/context'
@@ -26,7 +28,7 @@ const heading: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',
   parentBlockId: 'card0.id',
   parentOrder: 1,
-  align: null,
+  align: TypographyAlign.center,
   color: null,
   content: "What's our purpose, and how did we get here?",
   variant: TypographyVariant.h3,
@@ -52,7 +54,7 @@ const caption: TreeBlock<TypographyFields> = {
   parentBlockId: 'card0.id',
   parentOrder: 3,
   align: null,
-  color: null,
+  color: TypographyColor.error,
   content: 'This is a caption',
   variant: TypographyVariant.caption,
   children: []

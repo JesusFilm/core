@@ -10,7 +10,9 @@ describe('TypographyEdit', () => {
   const props = {
     id: 'typography.id',
     variant: TypographyVariant.body1,
-    content: 'test content'
+    content: 'test content',
+    align: null,
+    color: null
   }
   it('selects the input on click', () => {
     const { getByRole } = render(

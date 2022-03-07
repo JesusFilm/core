@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef } from 'react'
+import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
 import InputBase, { InputBaseProps } from '@mui/material/InputBase'
@@ -21,21 +21,28 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface TypographyEditProps
-  extends Pick<TreeBlock<TypographyFields>, 'id' | 'variant' | 'content'> {}
+  extends Pick<
+    TreeBlock<TypographyFields>,
+    'id' | 'variant' | 'align' | 'color' | 'content'
+  > {}
 
 interface StyledInputProps
   extends InputBaseProps,
-    Pick<TreeBlock<TypographyFields>, 'variant'> {}
+    Pick<TreeBlock<TypographyFields>, 'variant' | 'align'> {}
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
 
 const StyledInput = styled(InputBase)<StyledInputProps>(
-  ({ variant, theme }) => ({
+  ({ variant, align, color, theme }) => ({
     '& .MuiInputBase-input': {
       ...theme.components?.MuiTypography,
       ...theme.typography[variant ?? 'body1'],
-      marginBottom: 0
+      marginBottom: 0,
+      // TODO: Use locale alignment as default
+      textAlign: align ?? 'left',
+      color:
+        color != null ? theme.palette[color].main : theme.palette.primary.main
     },
     marginBottom: 16,
     ...theme.typography[variant ?? 'body1'],
@@ -50,6 +57,8 @@ const StyledInput = styled(InputBase)<StyledInputProps>(
 export function TypographyEdit({
   id,
   variant,
+  align,
+  color,
   content
 }: TypographyEditProps): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
@@ -60,7 +69,6 @@ export function TypographyEdit({
   } = useEditor()
   const journey = useJourney()
   const [value, setValue] = useState(content)
-  const inputRef = useRef()
 
   async function handleSaveBlock(): Promise<void> {
     const content = value.trimStart().trimEnd()
@@ -82,9 +90,10 @@ export function TypographyEdit({
 
   return (
     <StyledInput
-      inputRef={inputRef}
       name={`edit-${id}`}
       variant={variant}
+      align={align}
+      color={color ?? 'primary'}
       multiline
       fullWidth
       autoFocus
