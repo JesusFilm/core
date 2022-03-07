@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { screen, userEvent } from '@storybook/testing-library'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { Menu as DeleteMenu } from '.'
 
@@ -15,6 +16,10 @@ export const Menu: Story = () => {
       <DeleteMenu />
     </MockedProvider>
   )
+}
+Menu.play = () => {
+  const menuButton = screen.getByRole('button')
+  userEvent.click(menuButton)
 }
 
 export default MenuStory as Meta

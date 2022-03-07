@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import { BLOCK_DELETE } from './DeleteBlock'
 import { DeleteBlock } from '.'
 
 const DeleteBlockStory = {
@@ -11,25 +10,7 @@ const DeleteBlockStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: BLOCK_DELETE,
-          variables: {
-            id: 'typographyId',
-            parentBlockId: 'cardId',
-            journeyId: 'journeyId'
-          }
-        },
-        result: {
-          data: {
-            id: 'tyopgraphyId'
-          }
-        }
-      }
-    ]}
-  >
+  <MockedProvider>
     <DeleteBlock variant={args.variant} />
   </MockedProvider>
 )
