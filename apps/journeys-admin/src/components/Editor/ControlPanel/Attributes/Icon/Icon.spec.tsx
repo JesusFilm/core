@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { IconName } from '../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../__generated__/IconFields'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import { ICON_BLOCK_NAME_UPDATE } from './Icon'
 import { Icon } from '.'
 
@@ -17,10 +18,28 @@ describe('Icon', () => {
     iconColor: null,
     children: []
   }
+
+  const selectedBlock: TreeBlock<ButtonBlock> = {
+    __typename: 'ButtonBlock',
+    id: 'id',
+    parentBlockId: 'parentBlockId',
+    parentOrder: 0,
+    label: 'test button',
+    buttonVariant: null,
+    buttonColor: null,
+    size: null,
+    startIconId: null,
+    endIconId: null,
+    action: null,
+    children: [icon]
+  }
+
   it('shows toggle options if there is a icon', () => {
     const { getByText } = render(
       <MockedProvider>
-        <Icon iconBlock={icon} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Icon iconId={icon.id} />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(getByText('Color')).toBeInTheDocument()
@@ -32,9 +51,17 @@ describe('Icon', () => {
       ...icon,
       iconName: null
     }
+
+    const testSelectedBlock = {
+      ...selectedBlock,
+      children: [testIcon]
+    }
+
     const { queryByText } = render(
       <MockedProvider>
-        <Icon iconBlock={testIcon} />
+        <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
+          <Icon iconId={testIcon.id} />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(queryByText('Color')).not.toBeInTheDocument()
@@ -45,6 +72,11 @@ describe('Icon', () => {
     const testIcon = {
       ...icon,
       iconName: null
+    }
+
+    const testSelectedBlock = {
+      ...selectedBlock,
+      children: [testIcon]
     }
 
     const result = jest.fn(() => ({
@@ -77,8 +109,8 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider>
-          <Icon iconBlock={testIcon} />
+        <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
+          <Icon iconId={testIcon.id} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -119,8 +151,8 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider>
-          <Icon iconBlock={icon} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Icon iconId={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -160,8 +192,8 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider>
-          <Icon iconBlock={icon} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Icon iconId={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )

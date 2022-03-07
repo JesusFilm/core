@@ -5,26 +5,41 @@ import {
   IconSize,
   IconName
 } from '../../../../../../../__generated__/globalTypes'
-import { IconFields } from '../../../../../../../__generated__/IconFields'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { Size, ICON_BLOCK_SIZE_UPDATE } from './Size'
 
 describe('Size', () => {
   it('should change the icon size', async () => {
-    const icon: TreeBlock<IconFields> = {
-      id: 'icon-id',
-      parentBlockId: null,
-      parentOrder: null,
-      __typename: 'IconBlock',
-      iconName: IconName.ArrowForwardRounded,
-      iconSize: null,
-      iconColor: null,
-      children: []
+    const selectedBlock: TreeBlock<ButtonBlock> = {
+      __typename: 'ButtonBlock',
+      id: 'id',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      label: 'test button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIconId: null,
+      endIconId: null,
+      action: null,
+      children: [
+        {
+          __typename: 'IconBlock',
+          id: 'iconBlock.id',
+          parentBlockId: null,
+          parentOrder: null,
+          iconName: IconName.ArrowForwardRounded,
+          iconSize: null,
+          iconColor: null,
+          children: []
+        }
+      ]
     }
 
     const result = jest.fn(() => ({
       data: {
         iconBlockUpdate: {
-          id: 'icon-id',
+          id: 'iconBlock.id',
           journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           name: IconName.ArrowForwardRounded,
@@ -41,7 +56,7 @@ describe('Size', () => {
             request: {
               query: ICON_BLOCK_SIZE_UPDATE,
               variables: {
-                id: 'icon-id',
+                id: 'iconBlock.id',
                 input: {
                   size: IconSize.sm
                 }
@@ -51,8 +66,8 @@ describe('Size', () => {
           }
         ]}
       >
-        <EditorProvider>
-          <Size iconBlock={icon} />
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Size id={'iconBlock.id'} size={IconSize.md} />
         </EditorProvider>
       </MockedProvider>
     )
