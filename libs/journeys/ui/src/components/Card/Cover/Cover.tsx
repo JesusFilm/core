@@ -135,7 +135,7 @@ export function Cover({
       >
         <Box
           sx={{
-            margin: 'auto',
+            my: 'auto',
             p: {
               xs: `calc(6vw + ${theme.spacing(4)}) ${theme.spacing(
                 7
