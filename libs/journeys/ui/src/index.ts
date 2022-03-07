@@ -1,6 +1,5 @@
 export {
   BlockRenderer,
-  WrapperProps,
   Button,
   Card,
   CardWrapper,
@@ -15,6 +14,7 @@ export {
   Video,
   VideoTrigger
 } from './components'
+export type { WrapperProps } from './components'
 export {
   handleAction,
   useEditor,
