@@ -1,6 +1,6 @@
 export {
   BlockRenderer,
-  WrappersProps,
+  WrapperProps,
   Button,
   Card,
   CardWrapper,
