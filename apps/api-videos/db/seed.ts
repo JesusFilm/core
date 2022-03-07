@@ -18,6 +18,7 @@ interface MediaComponent {
   imageUrls: {
     mobileCinematicHigh: string
   }
+  studyQuestions: string[]
 }
 
 interface MediaComponentLanguage {
@@ -162,7 +163,12 @@ async function digestMediaComponentLanguage(
     languageId: mediaComponentLanguage.languageId.toString(),
     duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
-    downloads
+    downloads,
+    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => ({
+      languageId: mediaComponent.metadataLanguageId,
+      value: studyQuestion,
+      primary: true
+    }))
   }
   console.log('mediaComponentLanguage:', mediaComponentLanguage.refId)
   const video = await getVideo(mediaComponentLanguage.refId)
