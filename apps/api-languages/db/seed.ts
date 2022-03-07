@@ -62,10 +62,11 @@ async function main(): Promise<void> {
     const metadataLanguage = await getLanguageByBcp47(metadataLanguageTag)
     if (metadataLanguage == null) continue
     const body = {
-      names: [
+      name: [
         {
-          name,
-          languageId: metadataLanguage._key
+          value: name,
+          languageId: metadataLanguage._key,
+          primary: true
         }
       ]
     }
