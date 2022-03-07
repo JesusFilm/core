@@ -1,8 +1,8 @@
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -24,10 +24,15 @@ import {
   SubscriptionsRounded,
   ContactSupportRounded
 } from '@mui/icons-material'
-import { IconName } from '../../../../../../__generated__/globalTypes'
+import {
+  IconColor,
+  IconName,
+  IconSize
+} from '../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../libs/context'
 import { IconFields } from '../../../../../../__generated__/IconFields'
 import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNameUpdate'
+import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import { Color } from './Color'
 import { Size } from './Size'
 
@@ -120,22 +125,25 @@ export const ICON_BLOCK_NAME_UPDATE = gql`
 `
 
 interface IconProps {
-  iconBlock: TreeBlock<IconFields>
+  iconId: string
 }
 
-export function Icon({ iconBlock }: IconProps): ReactElement {
+export function Icon({ iconId }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
-
   const journey = useJourney()
-  const [iconName, setIconName] = useState(iconBlock?.iconName ?? '')
-  const [showProps, setShowProps] = useState(iconBlock?.iconName != null)
+  const { state } = useEditor()
 
-  useEffect(() => {
-    setIconName(iconBlock?.iconName ?? '')
-    setShowProps(iconBlock?.iconName != null)
-  }, [iconBlock])
+  // Add the parentBlock type here for the iconBlock that you want to edit
+  const selectedBlock = state.selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | undefined
+
+  const iconBlock = selectedBlock?.children.find(
+    (block) => block.id === iconId
+  ) as TreeBlock<IconFields>
+  const iconName = iconBlock?.iconName ?? ''
 
   async function iconUpdate(name: IconName | null): Promise<void> {
     await iconBlockNameUpdate({
@@ -154,17 +162,14 @@ export function Icon({ iconBlock }: IconProps): ReactElement {
         }
       }
     })
-    setIconName(name ?? '')
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
     const newName = event.target.value as IconName
     if (event.target.value === '') {
       await iconUpdate(null)
-      setShowProps(false)
     } else if (newName !== iconName) {
       await iconUpdate(newName)
-      setShowProps(true)
     }
   }
 
@@ -195,16 +200,19 @@ export function Icon({ iconBlock }: IconProps): ReactElement {
         </Select>
       </FormControl>
 
-      {showProps && iconBlock != null && (
+      {iconName !== '' && (
         <Box>
           <Typography variant="subtitle2" sx={{ px: 6 }}>
             Color
           </Typography>
-          <Color iconBlock={iconBlock} />
+          <Color
+            id={iconBlock.id}
+            color={iconBlock.iconColor ?? IconColor.inherit}
+          />
           <Typography variant="subtitle2" sx={{ px: 6 }}>
             Size
           </Typography>
-          <Size iconBlock={iconBlock} />
+          <Size id={iconBlock.id} size={iconBlock.iconSize ?? IconSize.md} />
         </Box>
       )}
     </>
