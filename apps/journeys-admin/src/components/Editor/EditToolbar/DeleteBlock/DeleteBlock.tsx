@@ -42,11 +42,12 @@ export function DeleteBlock({
     )
       return
 
-    const block = selectedBlock.parentBlockId
+    if (selectedBlock.parentBlockId == null) return
 
-    if (block == null) return
-
-    const parentBlock = searchBlocks([selectedStep], block)
+    const parentBlock = searchBlocks(
+      [selectedStep],
+      selectedBlock.parentBlockId
+    )
 
     if (parentBlock == null) return
 
@@ -56,12 +57,9 @@ export function DeleteBlock({
     const indexToDelete = children?.findIndex(
       ({ id }) => id === selectedBlock.id
     )
-    let newSelectedBlock
 
+    let newSelectedBlock
     switch (indexToDelete) {
-      case 0:
-        newSelectedBlock = children[1]
-        break
       case children.length - 1:
         newSelectedBlock = children[indexToDelete - 1]
         break

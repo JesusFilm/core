@@ -6,8 +6,6 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Divider from '@mui/material/Divider'
-import Edit from '@mui/icons-material/Edit'
-import Share from '@mui/icons-material/Share'
 import Settings from '@mui/icons-material/Settings'
 import { DeleteBlock } from '../DeleteBlock'
 
@@ -41,20 +39,7 @@ export function Menu(): ReactElement {
           'aria-labelledby': 'edit-journey-actions'
         }}
       >
-        <MenuItem>
-          <ListItemIcon>
-            <Edit />
-          </ListItemIcon>
-          <ListItemText>Edit Block</ListItemText>
-        </MenuItem>
         <DeleteBlock variant="list-item" />
-        <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <Share />
-          </ListItemIcon>
-          <ListItemText>Social Settings</ListItemText>
-        </MenuItem>
         <Divider />
         <MenuItem>
           <ListItemIcon>

@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import noop from 'lodash/noop'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { BLOCK_DELETE } from '../DeleteBlock/DeleteBlock'
 import { Menu } from '.'
@@ -36,7 +37,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  handleDeleteBlock: () => console.log('delete')
+  handleDeleteBlock: () => noop
 }
 
 export default MenuStory as Meta
