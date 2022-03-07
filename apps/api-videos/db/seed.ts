@@ -35,6 +35,16 @@ interface MediaComponentLanguage {
       url: string
     }>
   }
+  downloadUrls: {
+    low?: {
+      url: string
+      sizeInBytes: number
+    }
+    high?: {
+      url: string
+      sizeInBytes: number
+    }
+  }
 }
 
 interface Language {
@@ -110,34 +120,49 @@ async function digestMediaComponentLanguage(
   mediaComponent: MediaComponent & { metadataLanguageId: string },
   mediaComponentLanguage: MediaComponentLanguage
 ): Promise<void> {
+  const downloads: Array<{ quality: string; size: number; url: string }> = []
+  for (const [key, value] of Object.entries(
+    mediaComponentLanguage.downloadUrls
+  )) {
+    downloads.push({
+      quality: key,
+      size: value.sizeInBytes,
+      url: value.url
+    })
+  }
   const body = {
     title: [
       {
         value: mediaComponent.title,
-        languageId: mediaComponent.metadataLanguageId
+        languageId: mediaComponent.metadataLanguageId,
+        primary: true
       }
     ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
-        languageId: mediaComponent.metadataLanguageId
+        languageId: mediaComponent.metadataLanguageId,
+        primary: true
       }
     ],
     description: [
       {
         value: mediaComponent.longDescription,
-        languageId: mediaComponent.metadataLanguageId
+        languageId: mediaComponent.metadataLanguageId,
+        primary: true
       }
     ],
     subtitles:
       mediaComponentLanguage.subtitleUrls.vtt?.map(({ languageId, url }) => ({
         languageId: languageId.toString(),
-        url
+        value: url,
+        primary: languageId === mediaComponentLanguage.languageId
       })) ?? [],
     hls: mediaComponentLanguage.streamingUrls.hls[0].url,
     languageId: mediaComponentLanguage.languageId.toString(),
     duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
-    image: mediaComponent.imageUrls.mobileCinematicHigh
+    image: mediaComponent.imageUrls.mobileCinematicHigh,
+    downloads
   }
   console.log('mediaComponentLanguage:', mediaComponentLanguage.refId)
   const video = await getVideo(mediaComponentLanguage.refId)
