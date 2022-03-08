@@ -53,6 +53,35 @@ interface Language {
   bcp47: string
 }
 
+interface Translation {
+  value: string
+  languageId: string
+  primary: boolean
+}
+
+interface Download {
+  quality: string
+  size: number
+  url: string
+}
+
+interface VideoVariant {
+  subtitle: Translation[]
+  hls: string
+  languageId: string
+  duration: number
+  downloads: Download[]
+}
+
+interface Video {
+  title: Translation[]
+  snippet: Translation[]
+  description: Translation[]
+  studyQuestions: Translation[][]
+  image: string
+  variants: VideoVariant[]
+}
+
 async function getLanguages(): Promise<Language[]> {
   const response: {
     _embedded: { mediaLanguages: Language[] }
@@ -98,30 +127,67 @@ async function digestMediaComponent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
-  const metadataLanguageId = languages
-    .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-    ?.languageId.toString()
+  const metadataLanguageId =
+    languages
+      .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
+      ?.languageId.toString() ?? '529' // english by default
 
   console.log('mediaComponent:', mediaComponent.mediaComponentId)
 
+  const variants: VideoVariant[] = []
   for (const mediaComponentLanguage of await getMediaComponentLanguage(
     mediaComponent.mediaComponentId
   )) {
-    await digestMediaComponentLanguage(
+    variants.push(await digestMediaComponentLanguage(mediaComponentLanguage))
+  }
+
+  const body = {
+    variants,
+    title: [
       {
-        ...mediaComponent,
-        metadataLanguageId: metadataLanguageId ?? '529' // english by default
-      },
-      mediaComponentLanguage
-    )
+        value: mediaComponent.title,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
+    snippet: [
+      {
+        value: mediaComponent.shortDescription,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
+    description: [
+      {
+        value: mediaComponent.longDescription,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
+    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => [
+      {
+        languageId: metadataLanguageId,
+        value: studyQuestion,
+        primary: true
+      }
+    ]),
+    image: mediaComponent.imageUrls.mobileCinematicHigh
+  }
+
+  const video = await getVideo(mediaComponent.mediaComponentId)
+  if (video != null) {
+    await db.collection('videos').update(mediaComponent.mediaComponentId, body)
+  } else {
+    await db
+      .collection('videos')
+      .save({ _key: mediaComponent.mediaComponentId, ...body })
   }
 }
 
 async function digestMediaComponentLanguage(
-  mediaComponent: MediaComponent & { metadataLanguageId: string },
   mediaComponentLanguage: MediaComponentLanguage
-): Promise<void> {
-  const downloads: Array<{ quality: string; size: number; url: string }> = []
+): Promise<VideoVariant> {
+  const downloads: Download[] = []
   for (const [key, value] of Object.entries(
     mediaComponentLanguage.downloadUrls
   )) {
@@ -131,29 +197,8 @@ async function digestMediaComponentLanguage(
       url: value.url
     })
   }
-  const body = {
-    title: [
-      {
-        value: mediaComponent.title,
-        languageId: mediaComponent.metadataLanguageId,
-        primary: true
-      }
-    ],
-    snippet: [
-      {
-        value: mediaComponent.shortDescription,
-        languageId: mediaComponent.metadataLanguageId,
-        primary: true
-      }
-    ],
-    description: [
-      {
-        value: mediaComponent.longDescription,
-        languageId: mediaComponent.metadataLanguageId,
-        primary: true
-      }
-    ],
-    subtitles:
+  return {
+    subtitle:
       mediaComponentLanguage.subtitleUrls.vtt?.map(({ languageId, url }) => ({
         languageId: languageId.toString(),
         value: url,
@@ -162,22 +207,7 @@ async function digestMediaComponentLanguage(
     hls: mediaComponentLanguage.streamingUrls.hls[0].url,
     languageId: mediaComponentLanguage.languageId.toString(),
     duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
-    image: mediaComponent.imageUrls.mobileCinematicHigh,
-    downloads,
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => ({
-      languageId: mediaComponent.metadataLanguageId,
-      value: studyQuestion,
-      primary: true
-    }))
-  }
-  console.log('mediaComponentLanguage:', mediaComponentLanguage.refId)
-  const video = await getVideo(mediaComponentLanguage.refId)
-  if (video != null) {
-    await db.collection('videos').update(mediaComponentLanguage.refId, body)
-  } else {
-    await db
-      .collection('videos')
-      .save({ _key: mediaComponentLanguage.refId, ...body })
+    downloads
   }
 }
 
@@ -196,11 +226,11 @@ async function main(): Promise<void> {
   } catch {}
   await db.collection('videos').ensureIndex({
     type: 'persistent',
-    fields: ['languageId']
+    fields: ['variants[*].languageId']
   })
   await db.collection('videos').ensureIndex({
     type: 'fulltext',
-    fields: ['title']
+    fields: ['title[*].value']
   })
 
   const languages = await getLanguages()
