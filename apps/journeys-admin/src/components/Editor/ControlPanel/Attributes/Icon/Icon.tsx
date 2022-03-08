@@ -121,32 +121,28 @@ export const ICON_BLOCK_NAME_UPDATE = gql`
     }
   }
 `
+type IconParentBlock<T = TreeBlock<ButtonBlock>> = T
 
-interface IconProps {
-  iconId: string
-}
+interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> {}
 
-export function Icon({ iconId }: IconProps): ReactElement {
+export function Icon({ id }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
   const journey = useJourney()
   const { state } = useEditor()
+  const selectedBlock = state.selectedBlock as IconParentBlock
 
-  // Add the parentBlock type here for the iconBlock that you want to edit
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<ButtonBlock>
-    | undefined
-
+  // Get updated iconBlock, passing via props doesn't update as selectedBlock doesn't change
   const iconBlock = selectedBlock?.children.find(
-    (block) => block.id === iconId
+    (block) => block.id === id
   ) as TreeBlock<IconFields>
   const iconName = iconBlock?.iconName ?? ''
 
   async function iconUpdate(name: IconName | null): Promise<void> {
     await iconBlockNameUpdate({
       variables: {
-        id: iconBlock?.id,
+        id,
         journeyId: journey.id,
         input: {
           name
@@ -155,7 +151,7 @@ export function Icon({ iconId }: IconProps): ReactElement {
       optimisticResponse: {
         iconBlockUpdate: {
           __typename: 'IconBlock',
-          id: iconBlock.id,
+          id,
           name
         }
       }
@@ -203,10 +199,7 @@ export function Icon({ iconId }: IconProps): ReactElement {
           <Typography variant="subtitle2" sx={{ px: 6 }}>
             Color
           </Typography>
-          <Color
-            id={iconBlock.id}
-            color={iconBlock.iconColor ?? IconColor.inherit}
-          />
+          <Color id={id} iconColor={iconBlock.iconColor ?? IconColor.inherit} />
         </Box>
       )}
     </>

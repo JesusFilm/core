@@ -1,9 +1,11 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { TreeBlock } from '@core/journeys/ui'
 import { IconColor } from '../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { useJourney } from '../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { IconBlockColorUpdate } from '../../../../../../../__generated__/IconBlockColorUpdate'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
@@ -19,33 +21,29 @@ export const ICON_BLOCK_COLOR_UPDATE = gql`
   }
 `
 
-interface ColorProps {
-  id: string
-  color: IconColor
-}
+interface ColorProps extends Pick<TreeBlock<IconFields>, 'id' | 'iconColor'> {}
 
-export function Color({ id, color }: ColorProps): ReactElement {
+export function Color({ id, iconColor }: ColorProps): ReactElement {
   const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
     ICON_BLOCK_COLOR_UPDATE
   )
-
   const journey = useJourney()
 
-  async function handleChange(newColor: IconColor): Promise<void> {
-    if (newColor !== color && newColor != null) {
+  async function handleChange(color: IconColor): Promise<void> {
+    if (color !== iconColor && color != null) {
       await iconBlockColorUpdate({
         variables: {
           id,
           journeyId: journey.id,
           input: {
-            color: newColor
+            color
           }
         },
         optimisticResponse: {
           iconBlockUpdate: {
             __typename: 'IconBlock',
             id,
-            color: newColor
+            color
           }
         }
       })
@@ -77,7 +75,7 @@ export function Color({ id, color }: ColorProps): ReactElement {
 
   return (
     <ToggleButtonGroup
-      value={color}
+      value={iconColor}
       onChange={handleChange}
       options={options}
     />
