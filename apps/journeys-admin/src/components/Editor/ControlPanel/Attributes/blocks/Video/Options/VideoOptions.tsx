@@ -3,11 +3,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { reject } from 'lodash'
 
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { useJourney } from '../../../../../../../../libs/context'
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { BlockDeleteForBackgroundVideo } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundVideo'
@@ -16,33 +12,16 @@ import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generate
 import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
 
-export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
-  mutation BlockDeleteForBackgroundVideo(
-    $id: ID!
-    $parentBlockId: ID!
-    $journeyId: ID!
-  ) {
+export const BLOCK_DELETE_FOR_VIDEO = gql`
+  mutation BlockDeleteForVideo($id: ID!, $parentBlockId: ID!, $journeyId: ID!) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
     }
   }
 `
 
-export const CARD_BLOCK_COVER_VIDEO_UPDATE = gql`
-  mutation CardBlockBackgroundVideoUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: CardBlockUpdateInput!
-  ) {
-    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      coverBlockId
-    }
-  }
-`
-
-export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
-  mutation CardBlockVideoBlockCreate($input: VideoBlockCreateInput!) {
+export const VIDEO_BLOCK_CREATE = gql`
+  mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
       id
       title
@@ -58,8 +37,8 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
   }
 `
 
-export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
-  mutation CardBlockVideoBlockUpdate(
+export const VIDEO_BLOCK_UPDATE = gql`
+  mutation VideoBlockUpdate(
     $id: ID!
     $journeyId: ID!
     $input: VideoBlockUpdateInput!
