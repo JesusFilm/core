@@ -12,7 +12,7 @@ import { Color } from '.'
 const ColorStory = {
   ...simpleComponentConfig,
   component: Color,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon/Color'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Icon'
 }
 
 export const ColorOptions: Story = () => {
