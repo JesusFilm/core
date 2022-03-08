@@ -34,7 +34,7 @@ describe('NavigateToJourneyAction', () => {
     userJourneys: []
   }
 
-  it('displays text when no journey is selected', () => {
+  it('shows no journey selected by default', () => {
     const { getByText } = render(
       <MockedProvider>
         <NavigateToJourneyAction />
