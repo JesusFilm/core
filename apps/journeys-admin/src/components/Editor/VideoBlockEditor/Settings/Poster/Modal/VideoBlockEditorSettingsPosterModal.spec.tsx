@@ -238,7 +238,7 @@ describe('VideoBlockEditorSettingsPosterModal', () => {
         { __ref: `ImageBlock:${image.id}` }
       ])
     })
-    xit('deletes an image block', async () => {
+    it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
         ['Journey:' + journey.id]: {
@@ -278,7 +278,7 @@ describe('VideoBlockEditorSettingsPosterModal', () => {
                 query: BLOCK_DELETE_FOR_POSTER_IMAGE,
                 variables: {
                   id: image.id,
-                  parentBlockId: video.parentBlockId,
+                  parentBlockId: image.parentBlockId,
                   journeyId: journey.id
                 }
               },
@@ -310,8 +310,8 @@ describe('VideoBlockEditorSettingsPosterModal', () => {
       )
       const button = getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)
+      await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-      expect(blockDeleteResult).toHaveBeenCalled()
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `VideoBlock:${video.id}` }
       ])

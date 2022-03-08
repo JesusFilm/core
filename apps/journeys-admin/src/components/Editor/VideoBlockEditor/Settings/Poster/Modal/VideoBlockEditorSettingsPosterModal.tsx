@@ -82,17 +82,17 @@ export function VideoBlockEditorSettingsPosterModal({
   onClose
 }: VideoBlockEditorSettingsPosterModalProps): ReactElement {
   const { id: journeyId } = useJourney()
-  const [blockDelete] = useMutation<BlockDeleteForPosterImage>(
-    BLOCK_DELETE_FOR_POSTER_IMAGE
-  )
+  const [blockDelete, { error: blockDeleteError }] =
+    useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
   const [videoBlockUpdate, { error: videoBlockUpdateError }] =
     useMutation<VideoBlockPosterImageUpdate>(VIDEO_BLOCK_POSTER_IMAGE_UPDATE)
   const [imageBlockCreate, { error: imageBlockCreateError }] =
     useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
   const [imageBlockUpdate, { error: imageBlockUpdateError }] =
     useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+
   const deleteCoverBlock = async (): Promise<void> => {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || parentBlockId == null) return
 
     await blockDelete({
       variables: {
@@ -116,6 +116,24 @@ export function VideoBlockEditorSettingsPosterModal({
               }
             }
           })
+        }
+      }
+    })
+    if (blockDeleteError != null) return
+
+    await videoBlockUpdate({
+      variables: {
+        id: parentBlockId,
+        journeyId: journeyId,
+        input: {
+          posterBlockId: null
+        }
+      },
+      optimisticResponse: {
+        videoBlockUpdate: {
+          id: parentBlockId,
+          posterBlockId: null,
+          __typename: 'VideoBlock'
         }
       }
     })
