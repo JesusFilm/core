@@ -49,7 +49,7 @@ export const Default: Story = () => {
       <EditorProvider
         initialState={{
           selectedBlock,
-          drawerChildren: <Icon iconId={'iconBlock.id'} />,
+          drawerChildren: <Icon id={'iconBlock.id'} />,
           drawerTitle: 'Start Icon',
           drawerMobileOpen: true
         }}
@@ -92,7 +92,7 @@ export const Filled: Story = () => {
       <EditorProvider
         initialState={{
           selectedBlock,
-          drawerChildren: <Icon iconId={'iconBlock.id'} />,
+          drawerChildren: <Icon id={'iconBlock.id'} />,
           drawerTitle: 'Start Icon',
           drawerMobileOpen: true
         }}

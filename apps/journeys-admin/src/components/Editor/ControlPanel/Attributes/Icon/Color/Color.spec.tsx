@@ -67,7 +67,7 @@ describe('Color', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <Color id={'iconBlock.id'} color={IconColor.inherit} />
+          <Color id={'iconBlock.id'} iconColor={IconColor.inherit} />
         </EditorProvider>
       </MockedProvider>
     )

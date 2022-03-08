@@ -38,7 +38,7 @@ describe('Icon', () => {
     const { getByText } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
-          <Icon iconId={icon.id} />
+          <Icon id={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -59,7 +59,7 @@ describe('Icon', () => {
     const { queryByText } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
-          <Icon iconId={testIcon.id} />
+          <Icon id={testIcon.id} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -108,7 +108,7 @@ describe('Icon', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
-          <Icon iconId={testIcon.id} />
+          <Icon id={testIcon.id} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -150,7 +150,7 @@ describe('Icon', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <Icon iconId={icon.id} />
+          <Icon id={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )
@@ -191,7 +191,7 @@ describe('Icon', () => {
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
-          <Icon iconId={icon.id} />
+          <Icon id={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )

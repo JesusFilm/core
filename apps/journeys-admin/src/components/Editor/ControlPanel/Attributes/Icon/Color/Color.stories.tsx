@@ -44,7 +44,7 @@ export const ColorOptions: Story = () => {
   return (
     <MockedProvider>
       <EditorProvider initialState={{ selectedBlock }}>
-        <Color id={'iconBlock.id'} color={IconColor.primary} />
+        <Color id={'iconBlock.id'} iconColor={IconColor.primary} />
       </EditorProvider>
     </MockedProvider>
   )
