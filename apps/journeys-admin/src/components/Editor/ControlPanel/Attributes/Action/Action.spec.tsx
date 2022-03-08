@@ -21,7 +21,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    expect(getByText('Select an Action...')).toBeInTheDocument()
+    expect(getByText('None')).toBeInTheDocument()
   })
 
   it('disables Next Step option if there is no next step', async () => {
@@ -113,7 +113,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'Select an Action...' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'Selected Card' }))
     await waitFor(() =>
@@ -127,7 +127,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'Select an Action...' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() =>
       expect(getByText('Another Journey')).toBeInTheDocument()
     )
@@ -143,7 +143,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'Select an Action...' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'URL/Website' }))
     await waitFor(() =>
@@ -196,7 +196,7 @@ describe('Action', () => {
 
     expect(getByRole('button', { name: 'URL/Website' })).toBeInTheDocument()
     fireEvent.mouseDown(getByRole('button', { name: 'URL/Website' }))
-    fireEvent.click(getByRole('option', { name: 'Select an Action...' }))
+    fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toBeNull()

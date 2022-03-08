@@ -40,7 +40,7 @@ export const ACTION_DELETE = gql`
 export const actions = [
   {
     value: 'none',
-    label: 'Select an Action...'
+    label: 'None'
   },
   {
     value: 'NavigateAction',
