@@ -40,6 +40,7 @@ export function ImageBlockThumbnail({
             verticalAlign: 'center'
           }}
           justifyContent="center"
+          data-testid="imageBlockThumbnailPlaceholder"
         >
           <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }} />
         </Box>

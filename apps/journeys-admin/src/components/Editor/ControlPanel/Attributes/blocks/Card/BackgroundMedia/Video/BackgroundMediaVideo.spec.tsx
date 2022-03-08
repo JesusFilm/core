@@ -15,6 +15,7 @@ import {
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../../../../../libs/context'
+import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import {
   BackgroundMediaVideo,
   CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -146,7 +147,9 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={card} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={card} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -185,7 +188,9 @@ describe('BackgroundMediaVideo', () => {
       const { getByText } = render(
         <MockedProvider>
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={videoCard} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={videoCard} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -302,7 +307,9 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={videoCard} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={videoCard} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -387,20 +394,22 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo
-              cardBlock={{
-                ...existingCoverBlock,
-                children: [
-                  {
-                    ...video,
-                    videoContent: {
-                      src: 'https://example.com/video2.mp4',
-                      __typename: 'VideoGeneric'
+            <ThemeProvider>
+              <BackgroundMediaVideo
+                cardBlock={{
+                  ...existingCoverBlock,
+                  children: [
+                    {
+                      ...video,
+                      videoContent: {
+                        src: 'https://example.com/video2.mp4',
+                        __typename: 'VideoGeneric'
+                      }
                     }
-                  }
-                ]
-              }}
-            />
+                  ]
+                }}
+              />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -477,12 +486,14 @@ describe('BackgroundMediaVideo', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
+          <ThemeProvider>
+            <JourneyProvider value={journey}>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </JourneyProvider>
+          </ThemeProvider>
         </MockedProvider>
       )
-      const button = await getByTestId('deleteVideo')
+      const button = await getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(blockDeleteResult).toHaveBeenCalled()
@@ -495,7 +506,9 @@ describe('BackgroundMediaVideo', () => {
         const { getAllByRole, getByRole } = render(
           <MockedProvider>
             <JourneyProvider value={journey}>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <ThemeProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
         )
@@ -558,7 +571,9 @@ describe('BackgroundMediaVideo', () => {
             ]}
           >
             <JourneyProvider value={journey}>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <ThemeProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
         )
@@ -619,7 +634,9 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -679,7 +696,9 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -739,9 +758,11 @@ describe('BackgroundMediaVideo', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
+          <ThemeProvider>
+            <JourneyProvider value={journey}>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </JourneyProvider>
+          </ThemeProvider>
         </MockedProvider>
       )
       fireEvent.click(await getByRole('tab', { name: 'Settings' }))

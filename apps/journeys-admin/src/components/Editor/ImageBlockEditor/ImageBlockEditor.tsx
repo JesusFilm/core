@@ -1,19 +1,12 @@
-import { DeleteOutline, Link as LinkIcon } from '@mui/icons-material'
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material'
+import { Link as LinkIcon } from '@mui/icons-material'
+import { Box, InputAdornment, Stack, TextField } from '@mui/material'
 import { ChangeEvent, ReactElement } from 'react'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-import { ImageBlockThumbnail } from '../ImageBlockThumbnail/ImageBlockThumbnail'
+import { ImageBlockHeader } from '../ImageBlockHeader'
 
 interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
@@ -60,41 +53,17 @@ export function ImageBlockEditor({
 
   return (
     <>
-      <Box sx={{ px: 6, py: 4 }}>
-        <Stack direction="row" spacing="16px" data-testid="imageSrcStack">
-          <ImageBlockThumbnail selectedBlock={selectedBlock} />
-          <Stack direction="column" justifyContent="center">
-            {selectedBlock == null && (
-              <Typography variant="subtitle2">Select Image File</Typography>
-            )}
-            {selectedBlock != null && (
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  maxWidth: 130,
-                  width: 130,
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden'
-                }}
-              >
-                {selectedBlock.alt}
-              </Typography>
-            )}
-            <Typography variant="caption">
-              {selectedBlock == null
-                ? 'Min width 1024px'
-                : `${selectedBlock.width}px x ${selectedBlock.height}px`}
-              &nbsp;
-            </Typography>
-          </Stack>
-          <Stack direction="column" justifyContent="center">
-            <IconButton onClick={handleImageDelete} data-testid="deleteImage">
-              <DeleteOutline color="primary"></DeleteOutline>
-            </IconButton>
-          </Stack>
-        </Stack>
-      </Box>
+      <ImageBlockHeader
+        selectedBlock={selectedBlock}
+        header={selectedBlock == null ? 'Select Image File' : selectedBlock.alt}
+        caption={
+          selectedBlock == null
+            ? 'Min width 1024px'
+            : `${selectedBlock.width} x ${selectedBlock.height}px`
+        }
+        showDelete={selectedBlock != null}
+        onDelete={handleImageDelete}
+      />
       <Box sx={{ py: 3, px: 6 }}>
         <Box sx={{ px: 'auto' }}>
           <Stack direction="column">

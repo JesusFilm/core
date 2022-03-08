@@ -5,14 +5,15 @@ import {
   Stack,
   Switch,
   TextField,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { TreeBlock } from '@core/journeys/ui'
 import { noop } from 'lodash'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
-import { Create, PlayCircle, StopCircle } from '@mui/icons-material'
+import { PlayCircle, StopCircle } from '@mui/icons-material'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
@@ -22,13 +23,13 @@ import {
   secondsToTimeFormat,
   timeFormatToSeconds
 } from '../../../../libs/timeFormat'
-import { ImageBlockThumbnail } from '../../ImageBlockThumbnail/ImageBlockThumbnail'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   posterBlock: ImageBlock | null
   parentOrder?: number
+  disabled?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
 }
 
@@ -36,8 +37,10 @@ export function VideoBlockEditorSettings({
   selectedBlock,
   posterBlock,
   parentOrder = 0,
+  disabled = false,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
+  const theme = useTheme()
   const handleTimeChange = async (
     target: string,
     e: ChangeEvent<HTMLInputElement>
@@ -79,8 +82,16 @@ export function VideoBlockEditorSettings({
       <Stack direction="column" spacing={3}>
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column">
-            <Typography variant="subtitle2">Autoplay</Typography>
-            <Typography variant="caption">
+            <Typography
+              variant="subtitle2"
+              color={disabled ? theme.palette.grey[400] : ''}
+            >
+              Autoplay
+            </Typography>
+            <Typography
+              variant="caption"
+              color={disabled ? theme.palette.grey[400] : ''}
+            >
               Start video automatically when card appears
             </Typography>
           </Stack>
@@ -88,13 +99,22 @@ export function VideoBlockEditorSettings({
             checked={selectedBlock?.autoplay ?? true}
             name="autoplay"
             onChange={handleSwitchChange}
+            disabled={disabled}
           />
         </Stack>
         <Divider />
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column">
-            <Typography variant="subtitle2">Muted</Typography>
-            <Typography variant="caption">
+            <Typography
+              variant="subtitle2"
+              color={disabled ? theme.palette.grey[400] : ''}
+            >
+              Muted
+            </Typography>
+            <Typography
+              variant="caption"
+              color={disabled ? theme.palette.grey[400] : ''}
+            >
               Video always muted on the first card
             </Typography>
           </Stack>
@@ -102,6 +122,7 @@ export function VideoBlockEditorSettings({
             checked={selectedBlock?.muted ?? parentOrder === 0}
             name="muted"
             onChange={handleSwitchChange}
+            disabled={disabled}
           ></Switch>
         </Stack>
         <Divider />
@@ -118,6 +139,7 @@ export function VideoBlockEditorSettings({
                 label="Starts At"
                 value={formik.values.startAt}
                 variant="filled"
+                disabled={disabled}
                 onBlur={async (e) => {
                   formik.handleBlur(e)
                   await handleTimeChange(
@@ -147,6 +169,7 @@ export function VideoBlockEditorSettings({
                 label="Ends At"
                 value={formik.values.endAt}
                 variant="filled"
+                disabled={disabled}
                 onBlur={async (e) => {
                   formik.handleBlur(e)
                   await handleTimeChange(
@@ -166,12 +189,11 @@ export function VideoBlockEditorSettings({
           />
         </Stack>
         <Divider />
-        {selectedBlock != null && (
-          <VideoBlockEditorSettingsPoster
-            selectedBlock={posterBlock}
-            parentBlockId={selectedBlock.id}
-          />
-        )}
+        <VideoBlockEditorSettingsPoster
+          selectedBlock={posterBlock}
+          parentBlockId={selectedBlock?.id}
+          disabled={disabled}
+        />
       </Stack>
     </Box>
   )

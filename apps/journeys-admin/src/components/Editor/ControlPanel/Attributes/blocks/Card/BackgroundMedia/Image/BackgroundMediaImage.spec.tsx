@@ -67,17 +67,6 @@ const image: TreeBlock<ImageBlock> = {
 
 describe('BackgroundMediaImage', () => {
   describe('No existing cover', () => {
-    it('shows placeholders on null', async () => {
-      const { getByTestId } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={card} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
-    })
-
     // Apollo fails to match mock on imageBlockCreate
     it('creates a new image cover block', async () => {
       const cache = new InMemoryCache()
@@ -103,7 +92,12 @@ describe('BackgroundMediaImage', () => {
             id: image.id,
             src: image.src,
             alt: image.alt,
-            __typename: 'ImageBlock'
+            __typename: 'ImageBlock',
+            parentBlockId: card.id,
+            width: image.width,
+            height: image.height,
+            parentOrder: image.parentOrder,
+            blurhash: image.blurhash
           }
         }
       }))
@@ -173,20 +167,7 @@ describe('BackgroundMediaImage', () => {
       posterBlockId: 'poster1.id',
       children: []
     }
-    it('shows placeholders on VideoBlock', async () => {
-      const videoCard: TreeBlock<CardBlock> = {
-        ...card,
-        children: [video]
-      }
-      const { getByTestId } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={videoCard} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(await getByTestId('imagePlaceholderStack')).toBeInTheDocument()
-    })
+
     // Apollo fails to match mock on imageBlockCreate
     it('creates a new image cover block', async () => {
       const videoCard: TreeBlock<CardBlock> = {
@@ -217,7 +198,12 @@ describe('BackgroundMediaImage', () => {
             id: image.id,
             src: image.src,
             alt: image.alt,
-            __typename: 'ImageBlock'
+            __typename: 'ImageBlock',
+            parentBlockId: card.id,
+            width: image.width,
+            height: image.height,
+            parentOrder: image.parentOrder,
+            blurhash: image.blurhash
           }
         }
       }))
@@ -318,21 +304,6 @@ describe('BackgroundMediaImage', () => {
         }
       ]
     }
-    it('shows placeholders', async () => {
-      const { getByTestId, getByRole } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
-      const textBox = await getByRole('textbox')
-      expect(textBox).toHaveValue('https://example.com/image2.jpg')
-      const img = await getByRole('img')
-      expect(img).toHaveAttribute('src', 'https://example.com/image2.jpg')
-      expect(img).toHaveAttribute('alt', 'https://example.com/image2.jpg')
-    })
 
     it('updates image cover block', async () => {
       const cache = new InMemoryCache()
@@ -352,7 +323,12 @@ describe('BackgroundMediaImage', () => {
             id: image.id,
             src: image.src,
             alt: image.alt,
-            __typename: 'ImageBlock'
+            __typename: 'ImageBlock',
+            parentBlockId: card.id,
+            width: image.width,
+            height: image.height,
+            parentOrder: image.parentOrder,
+            blurhash: image.blurhash
           }
         }
       }))
@@ -459,35 +435,13 @@ describe('BackgroundMediaImage', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const button = await getByTestId('deleteImage')
+      const button = await getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(blockDeleteResult).toHaveBeenCalled()
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` }
       ])
-    })
-    it('displays validation messages ', async () => {
-      const { getByRole, getByText } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = await getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: '' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-      fireEvent.change(textBox, {
-        target: { value: 'example.com/123' }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() =>
-        expect(getByText('Please enter a valid url')).toBeInTheDocument()
-      )
     })
   })
 })

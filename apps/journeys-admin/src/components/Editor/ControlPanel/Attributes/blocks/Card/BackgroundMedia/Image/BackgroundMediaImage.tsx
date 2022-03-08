@@ -13,7 +13,7 @@ import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__gen
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
-import { ImageBlockEditor } from '../../../../../../ImageBlockEditor/ImageBlockEditor'
+import { ImageBlockEditor } from '../../../../../../ImageBlockEditor'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   mutation BlockDeleteForBackgroundImage(

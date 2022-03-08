@@ -133,15 +133,6 @@ Video.args = {
   }
 }
 
-export const NoImage = Template.bind({})
-NoImage.args = {
-  selectedBlock: card
-}
-NoImage.play = async () => {
-  const imageTab = await screen.getByTestId('bgvideo-image-tab')
-  await userEvent.click(imageTab)
-}
-
 export const Image = Template.bind({})
 Image.args = {
   selectedBlock: {
