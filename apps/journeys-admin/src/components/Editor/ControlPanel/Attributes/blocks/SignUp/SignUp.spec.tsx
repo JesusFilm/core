@@ -64,7 +64,7 @@ describe('SignUp Attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('should icon editing drawer', () => {
+  it('should open icon editing drawer', () => {
     const { getByRole, getAllByText } = render(<SignUp {...block} />)
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
     expect(getAllByText('Button Icon')).toHaveLength(2)
