@@ -78,7 +78,7 @@ export function VideoBlockEditorSettings({
   })
 
   return (
-    <Box sx={{ p: 3, width: '100%' }}>
+    <Box sx={{ px: 6, py: 3, width: '100%' }}>
       <Stack direction="column" spacing={3}>
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column">

@@ -60,7 +60,7 @@ export function VideoBlockEditor({
       />
       <Box
         sx={{
-          [theme.breakpoints.up('md')]: {
+          [theme.breakpoints.up('sm')]: {
             display: 'none'
           }
         }}
