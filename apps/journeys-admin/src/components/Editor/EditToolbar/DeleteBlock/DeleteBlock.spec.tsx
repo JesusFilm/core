@@ -18,7 +18,7 @@ import { BLOCK_DELETE } from './DeleteBlock'
 import { DeleteBlock } from '.'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
-  id: 'typography.id',
+  id: 'typography0.id',
   __typename: 'TypographyBlock',
   parentBlockId: 'card1.id',
   parentOrder: 0,
@@ -47,49 +47,28 @@ const selectedStep: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      children: [
-        selectedBlock,
-        {
-          id: 'typography1.id',
-          __typename: 'TypographyBlock',
-          parentBlockId: 'card1.id',
-          parentOrder: 1,
-          content: 'Title',
-          variant: TypographyVariant.h1,
-          color: TypographyColor.primary,
-          align: TypographyAlign.center,
-          children: []
-        }
-      ]
+      children: [selectedBlock]
     }
   ]
 }
 
 describe('DeleteBlock', () => {
-  it('should call handleDeleteBlock on click', () => {
-    const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <DeleteBlock variant="button" />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByRole('button')).toContainElement(
-      getByTestId('DeleteOutlineRoundedIcon')
-    )
-  })
-
-  it('should call the mutation on Delete Icon click', async () => {
+  it('should delete a block on button click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
         blocks: [
           { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock: ${selectedBlock.id}` },
-          { __ref: `TypographyBlock:typography1.id` }
+          { __ref: `TypographyBlock:typography0.id` }
         ],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'CardBlock:card1.id': {
+        ...selectedStep.children[0]
+      },
+      'TypographyBlock:typography0.id': {
+        ...selectedBlock
       }
     })
     const result = jest.fn(() => ({
@@ -103,7 +82,7 @@ describe('DeleteBlock', () => {
         ]
       }
     }))
-    const { getByRole } = render(
+    const { getByRole, getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -129,22 +108,32 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button')).toBeInTheDocument()
+    expect(getByRole('button')).toContainElement(
+      getByTestId('DeleteOutlineRoundedIcon')
+    )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'CardBlock:card1.id' }
+    ])
   })
 
-  it('should call the mutation on Delete Block on list-item click', async () => {
+  it('should delete a block on menu item click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
         blocks: [
           { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock: ${selectedBlock.id}` },
-          { __ref: `TypographyBlock:typography1.id` }
+          { __ref: `TypographyBlock:typography0.id` }
         ],
         id: 'journeyId',
         __typename: 'Journey'
+      },
+      'CardBlock:card1.id': {
+        ...selectedStep.children[0]
+      },
+      'TypographyBlock:typography0.id': {
+        ...selectedBlock
       }
     })
     const result = jest.fn(() => ({
@@ -184,8 +173,146 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('menuitem')).toBeInTheDocument()
-    fireEvent.click(getByRole('menuitem'))
+    fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'CardBlock:card1.id' }
+    ])
+  })
+
+  it('should not delete if no step is selected', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        blockDelete: [
+          {
+            id: selectedBlock.id,
+            parentBlockId: selectedBlock.parentBlockId,
+            journeyId: 'journeyId'
+          }
+        ]
+      }
+    }))
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: BLOCK_DELETE,
+                variables: {
+                  id: selectedBlock.id,
+                  parentBlockId: selectedBlock.parentBlockId,
+                  journeyId: 'journeyId'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+            <EditorProvider
+              initialState={{
+                selectedBlock
+              }}
+            >
+              <DeleteBlock variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not delete if no block selected', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        blockDelete: [
+          {
+            id: selectedBlock.id,
+            parentBlockId: selectedBlock.parentBlockId,
+            journeyId: 'journeyId'
+          }
+        ]
+      }
+    }))
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: BLOCK_DELETE,
+                variables: {
+                  id: selectedBlock.id,
+                  parentBlockId: selectedBlock.parentBlockId,
+                  journeyId: 'journeyId'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+            <EditorProvider
+              initialState={{
+                selectedStep
+              }}
+            >
+              <DeleteBlock variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
+  it('should not delete if selectedBlock is CardBlock', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        blockDelete: [
+          {
+            id: selectedBlock.id,
+            parentBlockId: selectedBlock.parentBlockId,
+            journeyId: 'journeyId'
+          }
+        ]
+      }
+    }))
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: BLOCK_DELETE,
+                variables: {
+                  id: selectedBlock.id,
+                  parentBlockId: selectedBlock.parentBlockId,
+                  journeyId: 'journeyId'
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+            <EditorProvider
+              initialState={{
+                selectedStep,
+                selectedBlock: selectedStep.children[0]
+              }}
+            >
+              <DeleteBlock variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
 })
