@@ -24,7 +24,7 @@ export class Translation {
 }
 
 export abstract class IQuery {
-    abstract languages(): Language[] | Promise<Language[]>;
+    abstract languages(page?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
 
     abstract language(id: string): Nullable<Language> | Promise<Nullable<Language>>;
 }

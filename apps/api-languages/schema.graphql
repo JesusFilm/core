@@ -1,9 +1,3 @@
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
 type Language @key(fields: "id") {
   id: ID!
   bcp47: String
@@ -12,7 +6,13 @@ type Language @key(fields: "id") {
   name(languageId: ID): [Translation]!
 }
 
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 extend type Query {
-  languages: [Language!]!
+  languages(page: Int, limit: Int): [Language!]!
   language(id: ID!): Language
 }

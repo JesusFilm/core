@@ -3,7 +3,7 @@ import { LanguageResolver } from './language.resolver'
 import { LanguageService } from './language.service'
 
 describe('LangaugeResolver', () => {
-  let resolver: LanguageResolver
+  let resolver: LanguageResolver, service: LanguageService
 
   const language = {
     id: '1',
@@ -31,11 +31,13 @@ describe('LangaugeResolver', () => {
       providers: [LanguageResolver, languageService]
     }).compile()
     resolver = module.get<LanguageResolver>(LanguageResolver)
+    service = await module.resolve(LanguageService)
   })
 
   describe('languages', () => {
     it('returns Languages', async () => {
-      expect(await resolver.languages()).toEqual([language, language])
+      expect(await resolver.languages(1, 2)).toEqual([language, language])
+      expect(service.getAll).toHaveBeenCalledWith(1, 2)
     })
   })
 
