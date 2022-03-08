@@ -66,89 +66,87 @@ const image: TreeBlock<ImageBlock> = {
 }
 
 describe('BackgroundMediaImage', () => {
-  describe('No existing cover', () => {
-    // Apollo fails to match mock on imageBlockCreate
-    it('creates a new image cover block', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        ['Journey:' + journey.id]: {
-          blocks: [{ __ref: `CardBlock:${card.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        }
-      })
-      const cardBlockResult = jest.fn(() => ({
-        data: {
-          cardBlockUpdate: {
-            id: card.id,
-            coverBlockId: image.id,
-            __typename: 'CardBlock'
-          }
-        }
-      }))
-      const imageBlockResult = jest.fn(() => ({
-        data: {
-          imageBlockCreate: {
-            id: image.id,
-            src: image.src,
-            alt: image.alt,
-            __typename: 'ImageBlock',
-            parentBlockId: card.id,
-            width: image.width,
-            height: image.height,
-            parentOrder: image.parentOrder,
-            blurhash: image.blurhash
-          }
-        }
-      }))
-      const { getByRole } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
-                variables: {
-                  input: {
-                    journeyId: journey.id,
-                    parentBlockId: card.id,
-                    src: image.src,
-                    alt: image.alt
-                  }
-                }
-              },
-              result: imageBlockResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: image.id
-                  }
-                }
-              },
-              result: cardBlockResult
-            }
-          ]}
-        >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={card} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = await getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: image.src }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-      await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+  it('creates a new image cover block', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      ['Journey:' + journey.id]: {
+        blocks: [{ __ref: `CardBlock:${card.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      }
     })
+    const cardBlockResult = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: image.id,
+          __typename: 'CardBlock'
+        }
+      }
+    }))
+    const imageBlockResult = jest.fn(() => ({
+      data: {
+        imageBlockCreate: {
+          id: image.id,
+          src: image.src,
+          alt: image.alt,
+          __typename: 'ImageBlock',
+          parentBlockId: card.id,
+          width: image.width,
+          height: image.height,
+          parentOrder: image.parentOrder,
+          blurhash: image.blurhash
+        }
+      }
+    }))
+    const { getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: journey.id,
+                  parentBlockId: card.id,
+                  src: image.src,
+                  alt: image.alt
+                }
+              }
+            },
+            result: imageBlockResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
+              variables: {
+                id: card.id,
+                journeyId: journey.id,
+                input: {
+                  coverBlockId: image.id
+                }
+              }
+            },
+            result: cardBlockResult
+          }
+        ]}
+      >
+        <JourneyProvider value={journey}>
+          <BackgroundMediaImage cardBlock={card} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const textBox = await getByRole('textbox')
+    fireEvent.change(textBox, {
+      target: { value: image.src }
+    })
+    fireEvent.blur(textBox)
+    await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
   })
-  describe('Video Cover Block', () => {
+
+  it('replaces a video cover block', async () => {
     const video: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',
@@ -168,130 +166,128 @@ describe('BackgroundMediaImage', () => {
       children: []
     }
 
-    // Apollo fails to match mock on imageBlockCreate
-    it('creates a new image cover block', async () => {
-      const videoCard: TreeBlock<CardBlock> = {
-        ...card,
-        coverBlockId: video.id,
-        children: [video]
+    const videoCard: TreeBlock<CardBlock> = {
+      ...card,
+      coverBlockId: video.id,
+      children: [video]
+    }
+    const cache = new InMemoryCache()
+    cache.restore({
+      ['Journey:' + journey.id]: {
+        blocks: [{ __ref: `CardBlock:${card.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
       }
-      const cache = new InMemoryCache()
-      cache.restore({
-        ['Journey:' + journey.id]: {
-          blocks: [{ __ref: `CardBlock:${card.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        }
-      })
-      const cardBlockResult = jest.fn(() => ({
-        data: {
-          cardBlockUpdate: {
-            id: card.id,
-            coverBlockId: image.id,
-            __typename: 'CardBlock'
-          }
-        }
-      }))
-      const imageBlockResult = jest.fn(() => ({
-        data: {
-          imageBlockCreate: {
-            id: image.id,
-            src: image.src,
-            alt: image.alt,
-            __typename: 'ImageBlock',
-            parentBlockId: card.id,
-            width: image.width,
-            height: image.height,
-            parentOrder: image.parentOrder,
-            blurhash: image.blurhash
-          }
-        }
-      }))
-      const blockDeleteResult = jest.fn(() => ({
-        data: {
-          blockDelete: [
-            {
-              id: video.id,
-              __typename: 'VideoBlock'
-            }
-          ]
-        }
-      }))
-      const { getByRole } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
-                variables: {
-                  id: video.id,
-                  parentBlockId: card.parentBlockId,
-                  journeyId: journey.id
-                }
-              },
-              result: blockDeleteResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: null
-                  }
-                }
-              },
-              result: cardBlockResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
-                variables: {
-                  input: {
-                    journeyId: journey.id,
-                    parentBlockId: card.id,
-                    src: image.src,
-                    alt: image.alt
-                  }
-                }
-              },
-              result: imageBlockResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: image.id
-                  }
-                }
-              },
-              result: cardBlockResult
-            }
-          ]}
-        >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={videoCard} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = await getByRole('textbox')
-      fireEvent.change(textBox, {
-        target: { value: image.src }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-      await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
-      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-        { __ref: `CardBlock:${card.id}` },
-        { __ref: `ImageBlock:${image.id}` }
-      ])
     })
+    const cardBlockResult = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: image.id,
+          __typename: 'CardBlock'
+        }
+      }
+    }))
+    const imageBlockResult = jest.fn(() => ({
+      data: {
+        imageBlockCreate: {
+          id: image.id,
+          src: image.src,
+          alt: image.alt,
+          __typename: 'ImageBlock',
+          parentBlockId: card.id,
+          width: image.width,
+          height: image.height,
+          parentOrder: image.parentOrder,
+          blurhash: image.blurhash
+        }
+      }
+    }))
+    const blockDeleteResult = jest.fn(() => ({
+      data: {
+        blockDelete: [
+          {
+            id: video.id,
+            __typename: 'VideoBlock'
+          }
+        ]
+      }
+    }))
+    const { getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
+              variables: {
+                id: video.id,
+                parentBlockId: card.parentBlockId,
+                journeyId: journey.id
+              }
+            },
+            result: blockDeleteResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
+              variables: {
+                id: card.id,
+                journeyId: journey.id,
+                input: {
+                  coverBlockId: null
+                }
+              }
+            },
+            result: cardBlockResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: journey.id,
+                  parentBlockId: card.id,
+                  src: image.src,
+                  alt: image.alt
+                }
+              }
+            },
+            result: imageBlockResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
+              variables: {
+                id: card.id,
+                journeyId: journey.id,
+                input: {
+                  coverBlockId: image.id
+                }
+              }
+            },
+            result: cardBlockResult
+          }
+        ]}
+      >
+        <JourneyProvider value={journey}>
+          <BackgroundMediaImage cardBlock={videoCard} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const textBox = await getByRole('textbox')
+    fireEvent.change(textBox, {
+      target: { value: image.src }
+    })
+    fireEvent.blur(textBox)
+    await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `CardBlock:${card.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
   })
+
   describe('Existing image cover', () => {
     const existingCoverBlock: TreeBlock<CardBlock> = {
       ...card,

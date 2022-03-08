@@ -1,23 +1,25 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { Box } from '@mui/system'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../ThemeProvider'
-import { ImageBlockEditor } from './ImageBlockEditor'
+import { ImageBlockHeader } from './ImageBlockHeader'
 
 const ImageEditorStory = {
-  ...journeysAdminConfig,
-  component: ImageBlockEditor,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor',
+  ...simpleComponentConfig,
+  component: ImageBlockHeader,
+  title: 'Journeys-Admin/Editor/ImageBlockHeader',
   parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen',
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      viewports: [360]
+    }
   }
 }
 
@@ -43,32 +45,35 @@ const image: ImageBlock = {
   width: 300,
   height: 200,
   blurhash: '',
-  alt: 'poster'
+  alt: 'really long alt text'
 }
 
-const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <ThemeProvider>
-    <Box width={328} bgcolor="white">
-      <ImageBlockEditor
-        selectedBlock={args.selectedBlock}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    </Box>
-  </ThemeProvider>
+  <ImageBlockHeader
+    selectedBlock={args.selectedBlock}
+    showDelete={args.showDelete}
+    header={args.header}
+    caption={args.caption}
+    onDelete={onDelete}
+  />
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  selectedBlock: null
+  selectedBlock: null,
+  header: 'Header',
+  caption: 'caption',
+  showDelete: false
 }
 
-export const NoImage = Template.bind({})
-NoImage.args = {
-  selectedBlock: image
+export const Image = Template.bind({})
+Image.args = {
+  selectedBlock: image,
+  header: image.alt,
+  caption: '300x200px',
+  showDelete: true
 }
 
 export default ImageEditorStory as Meta

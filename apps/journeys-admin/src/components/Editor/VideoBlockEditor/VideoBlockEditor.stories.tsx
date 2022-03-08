@@ -60,7 +60,7 @@ const poster: TreeBlock<ImageBlock> = {
   __typename: 'ImageBlock',
   parentBlockId: video.id,
   parentOrder: 0,
-  src: 'https://via.placeholder.com/300x200',
+  src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
   width: 300,
   height: 200,
   blurhash: '',

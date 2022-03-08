@@ -1,23 +1,25 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { Box } from '@mui/system'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../ThemeProvider'
-import { ImageBlockEditor } from './ImageBlockEditor'
+import { ImageBlockThumbnail } from './ImageBlockThumbnail'
 
 const ImageEditorStory = {
-  ...journeysAdminConfig,
-  component: ImageBlockEditor,
-  title: 'Journeys-Admin/Editor/ImageBlockEditor',
+  ...simpleComponentConfig,
+  component: ImageBlockThumbnail,
+  title: 'Journeys-Admin/Editor/ImageBlockThumbnail',
   parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen',
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      viewports: [360]
+    }
   }
 }
 
@@ -46,19 +48,8 @@ const image: ImageBlock = {
   alt: 'poster'
 }
 
-const onChange = async (): Promise<void> => await Promise.resolve()
-const onDelete = async (): Promise<void> => await Promise.resolve()
-
 const Template: Story = ({ ...args }) => (
-  <ThemeProvider>
-    <Box width={328} bgcolor="white">
-      <ImageBlockEditor
-        selectedBlock={args.selectedBlock}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    </Box>
-  </ThemeProvider>
+  <ImageBlockThumbnail selectedBlock={args.selectedBlock} />
 )
 
 export const Default = Template.bind({})
@@ -66,8 +57,8 @@ Default.args = {
   selectedBlock: null
 }
 
-export const NoImage = Template.bind({})
-NoImage.args = {
+export const Image = Template.bind({})
+Image.args = {
   selectedBlock: image
 }
 
