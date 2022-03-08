@@ -43,7 +43,6 @@ describe('Icon', () => {
       </MockedProvider>
     )
     expect(getByText('Color')).toBeInTheDocument()
-    expect(getByText('Size')).toBeInTheDocument()
   })
 
   it('hides toggle options if there is no icon ', () => {
@@ -65,7 +64,6 @@ describe('Icon', () => {
       </MockedProvider>
     )
     expect(queryByText('Color')).not.toBeInTheDocument()
-    expect(queryByText('Size')).not.toBeInTheDocument()
   })
 
   it('adds icon when selecting an icon', async () => {
