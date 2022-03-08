@@ -29,7 +29,7 @@ const journeyTheme = {
 
 export const Navigate: Story = () => {
   const selectedStep = steps[3]
-  const selectedStepEnd = steps[4]
+  // const selectedStepEnd = steps[4]
 
   return (
     <Stack spacing={10}>
@@ -49,7 +49,7 @@ export const Navigate: Story = () => {
         </MockedProvider>
       </Box>
 
-      <Box>
+      {/* <Box>
         <Typography>No next card</Typography>
         <MockedProvider>
           <JourneyProvider value={journeyTheme}>
@@ -63,7 +63,7 @@ export const Navigate: Story = () => {
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
-      </Box>
+      </Box> */}
     </Stack>
   )
 }

@@ -63,6 +63,8 @@ export const actions = [
 export function Action(): ReactElement {
   const { state } = useEditor()
   const journey = useJourney()
+
+  // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
@@ -75,7 +77,9 @@ export function Action(): ReactElement {
   const selectedAction = actions.find(
     (act) => act.value === selectedBlock?.action?.__typename
   )
+
   const [action, setAction] = useState(selectedAction?.value ?? 'none')
+  const disableOption = state.selectedStep?.nextBlockId == null
 
   async function navigateAction(): Promise<void> {
     if (selectedBlock != null && state.selectedStep?.nextBlockId != null) {
@@ -154,6 +158,7 @@ export function Action(): ReactElement {
               <MenuItem
                 key={`button-action-${action.value}`}
                 value={action.value}
+                disabled={disableOption && action.value === 'NavigateAction'}
               >
                 {action.label}
               </MenuItem>

@@ -25,9 +25,6 @@ export function NavigateAction(): ReactElement {
       >
         <CardPreview selected={nextStep} steps={state.steps} />
       </Box>
-      {nextStep == null && (
-        <Typography variant="caption">No next card</Typography>
-      )}
       <Stack
         direction={'row'}
         alignItems={'center'}
