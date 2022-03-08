@@ -144,6 +144,10 @@ describe('BackgroundMediaImage', () => {
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `CardBlock:${card.id}` },
+      { __ref: `ImageBlock:${image.id}` }
+    ])
   })
 
   it('replaces a video cover block', async () => {
