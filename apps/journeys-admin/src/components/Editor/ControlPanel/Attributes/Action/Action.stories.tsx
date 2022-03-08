@@ -90,7 +90,7 @@ export const Default: Story = () => {
   )
 }
 Default.play = () => {
-  const dropDown = screen.getByRole('button')
+  const dropDown = screen.getByRole('button', { name: 'None' })
   userEvent.click(dropDown)
 }
 
@@ -128,7 +128,7 @@ export const DisabledNextStep: Story = () => {
   )
 }
 DisabledNextStep.play = () => {
-  const dropDown = screen.getByRole('button')
+  const dropDown = screen.getByRole('button', { name: 'None' })
   userEvent.click(dropDown)
 }
 
