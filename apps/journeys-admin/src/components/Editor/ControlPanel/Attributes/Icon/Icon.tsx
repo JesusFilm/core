@@ -26,15 +26,13 @@ import {
 } from '@mui/icons-material'
 import {
   IconColor,
-  IconName,
-  IconSize
+  IconName
 } from '../../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../../libs/context'
 import { IconFields } from '../../../../../../__generated__/IconFields'
 import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNameUpdate'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
 import { Color } from './Color'
-import { Size } from './Size'
 
 // icons is equivalent to IconName from global types"
 export const icons = [
@@ -209,10 +207,6 @@ export function Icon({ iconId }: IconProps): ReactElement {
             id={iconBlock.id}
             color={iconBlock.iconColor ?? IconColor.inherit}
           />
-          <Typography variant="subtitle2" sx={{ px: 6 }}>
-            Size
-          </Typography>
-          <Size id={iconBlock.id} size={iconBlock.iconSize ?? IconSize.md} />
         </Box>
       )}
     </>
