@@ -1,11 +1,18 @@
-type User @key(fields: "id") {
+type Language @key(fields: "id") {
   id: ID!
-  firstName: String!
-  lastName: String
-  email: String!
-  imageUrl: String
+  bcp47: String
+  iso3: String
+  nameNative: String
+  name(languageId: ID): [Translation]!
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
 }
 
 extend type Query {
-  me: User
+  languages(page: Int, limit: Int): [Language!]!
+  language(id: ID!): Language
 }

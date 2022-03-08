@@ -1,7 +1,12 @@
 type Language @key(fields: "id") {
   id: ID!
+  bcp47: String
+  iso3: String
+  nameNative: String
+  name(languageId: ID): [Translation]!
 }
 
 extend type Query {
-  languages: [Language!]!
+  languages(page: Int, limit: Int): [Language!]!
+  language(id: ID!): Language
 }
