@@ -228,6 +228,37 @@ async function main(): Promise<void> {
     type: 'persistent',
     fields: ['variants[*].languageId']
   })
+  if (!(await db.view('videosView').exists())) {
+    await db.createView('videosView', {
+      links: {
+        videos: {
+          fields: {
+            variants: {
+              fields: {
+                languageId: {
+                  analyzers: ['identity']
+                },
+                subtitle: {
+                  fields: {
+                    languageId: {
+                      analyzers: ['identity']
+                    }
+                  }
+                }
+              }
+            },
+            title: {
+              fields: {
+                value: {
+                  analyzers: ['text_en']
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+  }
 
   const languages = await getLanguages()
   for (const mediaComponent of await getMediaComponents()) {
