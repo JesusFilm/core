@@ -18,6 +18,9 @@ const ImageEditorStory = {
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
+  },
+  chromatic: {
+    viewports: [360]
   }
 }
 
@@ -66,8 +69,8 @@ Default.args = {
   selectedBlock: null
 }
 
-export const NoImage = Template.bind({})
-NoImage.args = {
+export const Image = Template.bind({})
+Image.args = {
   selectedBlock: image
 }
 

@@ -8,6 +8,7 @@ import {
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ImageBlockHeader } from './ImageBlockHeader'
+import { Box } from '@mui/material'
 
 const ImageEditorStory = {
   ...simpleComponentConfig,
@@ -51,13 +52,15 @@ const image: ImageBlock = {
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <ImageBlockHeader
-    selectedBlock={args.selectedBlock}
-    showDelete={args.showDelete}
-    header={args.header}
-    caption={args.caption}
-    onDelete={onDelete}
-  />
+  <Box width={328} bgcolor="white">
+    <ImageBlockHeader
+      selectedBlock={args.selectedBlock}
+      showDelete={args.showDelete}
+      header={args.header}
+      caption={args.caption}
+      onDelete={onDelete}
+    />
+  </Box>
 )
 
 export const Default = Template.bind({})

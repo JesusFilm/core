@@ -26,6 +26,9 @@ const BackgroundMediaStory = {
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
+  },
+  chromatic: {
+    viewports: [360, 1200]
   }
 }
 
