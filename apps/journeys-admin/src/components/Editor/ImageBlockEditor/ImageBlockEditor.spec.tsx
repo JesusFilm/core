@@ -49,10 +49,10 @@ describe('ImageBlockEditor', () => {
     it('displays validation messages ', async () => {
       const { getByRole, getByText } = render(
         <ImageBlockEditor
-        selectedBlock={image}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
+          selectedBlock={image}
+          onChange={onChange}
+          onDelete={onDelete}
+        />
       )
       const textBox = await getByRole('textbox')
       fireEvent.change(textBox, {
