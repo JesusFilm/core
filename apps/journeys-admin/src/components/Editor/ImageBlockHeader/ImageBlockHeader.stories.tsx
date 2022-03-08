@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
+import { Box } from '@mui/material'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -8,7 +9,6 @@ import {
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ImageBlockHeader } from './ImageBlockHeader'
-import { Box } from '@mui/material'
 
 const ImageEditorStory = {
   ...simpleComponentConfig,
