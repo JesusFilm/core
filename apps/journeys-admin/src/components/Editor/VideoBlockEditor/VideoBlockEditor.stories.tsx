@@ -2,6 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { TreeBlock } from '@core/journeys/ui'
 import { Box } from '@mui/system'
+import { MockedProvider } from '@apollo/client/testing'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -75,17 +76,19 @@ const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <ThemeProvider>
-    <Box width={328} bgcolor="white">
-      <VideoBlockEditor
-        selectedBlock={args.selectedBlock}
-        onChange={onChange}
-        onDelete={onDelete}
-        parentBlockId={card.id}
-        parentOrder={Number(card.parentOrder)}
-      />
-    </Box>
-  </ThemeProvider>
+  <MockedProvider>
+    <ThemeProvider>
+      <Box width={328} bgcolor="white">
+        <VideoBlockEditor
+          selectedBlock={args.selectedBlock}
+          onChange={onChange}
+          onDelete={onDelete}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+        />
+      </Box>
+    </ThemeProvider>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
@@ -115,6 +118,23 @@ MobileSettings.parameters = {
 }
 MobileSettings.play = async () => {
   const settingsTab = await screen.getByTestId('videoSettingsTab')
+  await userEvent.click(settingsTab)
+}
+
+export const PosterModal = Template.bind({})
+PosterModal.args = {
+  selectedBlock: {
+    ...video,
+    children: [poster]
+  }
+}
+PosterModal.parameters = {
+  chromatic: {
+    viewports: [1200]
+  }
+}
+PosterModal.play = async () => {
+  const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
   await userEvent.click(settingsTab)
 }
 
