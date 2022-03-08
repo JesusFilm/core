@@ -24,6 +24,24 @@ describe('Action', () => {
     expect(getByText('Select an Action...')).toBeInTheDocument()
   })
 
+  it('disables Next Step option if there is no next step', async () => {
+    const selectedStep = steps[4]
+    const { getByRole } = render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedStep, steps }}>
+          <Action />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.mouseDown(getByRole('button'))
+    await waitFor(() =>
+      expect(getByRole('option', { name: 'Next Step' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    )
+  })
+
   it('changes action to NavigateAction when Next Step is selected', async () => {
     const cache = new InMemoryCache()
     cache.restore({
