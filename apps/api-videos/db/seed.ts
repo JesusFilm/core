@@ -228,10 +228,6 @@ async function main(): Promise<void> {
     type: 'persistent',
     fields: ['variants[*].languageId']
   })
-  await db.collection('videos').ensureIndex({
-    type: 'fulltext',
-    fields: ['title[*].value']
-  })
 
   const languages = await getLanguages()
   for (const mediaComponent of await getMediaComponents()) {
