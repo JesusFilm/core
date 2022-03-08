@@ -68,6 +68,7 @@ export function DeleteBlock({
         break
     }
 
+    console.log('delete')
     const { data } = await blockDelete({
       variables: {
         id: selectedBlock.id,
