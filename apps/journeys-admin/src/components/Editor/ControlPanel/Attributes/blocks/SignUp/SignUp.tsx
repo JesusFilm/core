@@ -41,7 +41,7 @@ export function SignUp({
         onClick={() => {
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Trailing Icon ',
+            title: 'Button Icon',
             mobileOpen: true,
             children: <Icon id={submitIcon.id} />
           })
