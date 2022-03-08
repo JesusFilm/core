@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
+import { screen, userEvent } from '@storybook/testing-library'
 import { JourneyProvider } from '../../../../../libs/context'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
@@ -11,7 +12,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../../Drawer'
 import { GET_JOURNEY_NAMES } from './NavigateToJourneyAction/NavigateToJourneyAction'
-import { Action, ACTION_DELETE, NAVIGATE_ACTION_UPDATE } from './Action'
+import { Action, NAVIGATE_ACTION_UPDATE } from './Action'
 import { steps } from './data'
 
 const ActionStory = {
@@ -37,10 +38,8 @@ const journey: Journey = {
   userJourneys: []
 }
 
-const selectedStep = steps[1]
-const selectedBlock = selectedStep?.children[0].children[3]
-
 export const Default: Story = () => {
+  const selectedStep = steps[1]
   return (
     <MockedProvider
       mocks={[
@@ -58,7 +57,7 @@ export const Default: Story = () => {
           request: {
             query: NAVIGATE_ACTION_UPDATE,
             variables: {
-              id: selectedBlock.id,
+              id: steps[0].id,
               journeyId: 'journeyId',
               input: {}
             }
@@ -71,22 +70,6 @@ export const Default: Story = () => {
               }
             }
           }
-        },
-        {
-          request: {
-            query: ACTION_DELETE,
-            variables: {
-              journeyId: 'journeyId',
-              id: selectedBlock.id
-            }
-          },
-          result: {
-            data: {
-              blockDeleteAction: {
-                id: 'journeyId'
-              }
-            }
-          }
         }
       ]}
     >
@@ -95,7 +78,6 @@ export const Default: Story = () => {
           initialState={{
             steps,
             selectedStep,
-            selectedBlock,
             drawerChildren: <Action />,
             drawerTitle: 'Action',
             drawerMobileOpen: true
@@ -106,6 +88,48 @@ export const Default: Story = () => {
       </JourneyProvider>
     </MockedProvider>
   )
+}
+Default.play = () => {
+  const dropDown = screen.getByRole('button')
+  userEvent.click(dropDown)
+}
+
+export const DisabledNextStep: Story = () => {
+  const selectedStep = steps[4]
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_JOURNEY_NAMES
+          },
+          result: {
+            data: {
+              journeys: [journey]
+            }
+          }
+        }
+      ]}
+    >
+      <JourneyProvider value={journey}>
+        <EditorProvider
+          initialState={{
+            steps,
+            selectedStep,
+            drawerChildren: <Action />,
+            drawerTitle: 'Action',
+            drawerMobileOpen: true
+          }}
+        >
+          <Drawer />
+        </EditorProvider>
+      </JourneyProvider>
+    </MockedProvider>
+  )
+}
+DisabledNextStep.play = () => {
+  const dropDown = screen.getByRole('button')
+  userEvent.click(dropDown)
 }
 
 export default ActionStory as Meta

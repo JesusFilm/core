@@ -79,7 +79,6 @@ export function Action(): ReactElement {
   )
 
   const [action, setAction] = useState(selectedAction?.value ?? 'none')
-  const disableOption = state.selectedStep?.nextBlockId == null
 
   async function navigateAction(): Promise<void> {
     if (selectedBlock != null && state.selectedStep?.nextBlockId != null) {
@@ -158,7 +157,10 @@ export function Action(): ReactElement {
               <MenuItem
                 key={`button-action-${action.value}`}
                 value={action.value}
-                disabled={disableOption && action.value === 'NavigateAction'}
+                disabled={
+                  state.selectedStep?.nextBlockId == null &&
+                  action.value === 'NavigateAction'
+                }
               >
                 {action.label}
               </MenuItem>

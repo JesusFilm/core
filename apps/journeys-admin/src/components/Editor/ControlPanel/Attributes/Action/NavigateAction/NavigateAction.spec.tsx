@@ -36,27 +36,4 @@ describe('NavigateAction', () => {
       getByText('Default Next Step defined in the current card settings.')
     ).toBeInTheDocument()
   })
-
-  // it('shows no next card message', () => {
-  //   const selectedStep = steps[4]
-
-  //   const { getByText } = render(
-  //     <MockedProvider>
-  //       <JourneyProvider
-  //         value={
-  //           {
-  //             id: 'journeyId',
-  //             themeMode: ThemeMode.light,
-  //             themeName: ThemeName.base
-  //           } as unknown as Journey
-  //         }
-  //       >
-  //         <EditorProvider initialState={{ steps, selectedStep }}>
-  //           <NavigateAction />
-  //         </EditorProvider>
-  //       </JourneyProvider>
-  //     </MockedProvider>
-  //   )
-  //   expect(getByText('No next card')).toBeInTheDocument()
-  // })
 })
