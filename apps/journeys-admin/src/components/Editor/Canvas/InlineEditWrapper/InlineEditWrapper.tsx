@@ -1,12 +1,9 @@
 import { ReactElement } from 'react'
 import { useEditor, ActiveFab, WrapperProps } from '@core/journeys/ui'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
-import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { TypographyEdit } from './TypographyEdit'
-import { ButtonEdit } from './ButtonEdit'
 
-interface InlineEditWrapperProps
-  extends WrapperProps<TypographyFields | ButtonFields> {}
+interface InlineEditWrapperProps extends WrapperProps<TypographyFields> {}
 
 export function InlineEditWrapper({
   block,
@@ -19,8 +16,6 @@ export function InlineEditWrapper({
   const EditComponent =
     block.__typename === 'TypographyBlock' ? (
       <TypographyEdit {...block} />
-    ) : block.__typename === 'ButtonBlock' ? (
-      <ButtonEdit {...block} />
     ) : (
       <></>
     )

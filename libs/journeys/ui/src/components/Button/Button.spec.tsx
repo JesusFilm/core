@@ -144,7 +144,7 @@ describe('Button', () => {
 })
 
 describe('Admin Button', () => {
-  it('should select label on click', () => {
+  it('should edit label on click', () => {
     const { getByRole } = render(
       <EditorProvider
         initialState={{
@@ -169,5 +169,6 @@ describe('Admin Button', () => {
     fireEvent.click(getByRole('button'))
 
     expect(getByRole('button')).toHaveStyle('outline: 3px solid #C52D3A')
+    // Test editable when implemented
   })
 })
