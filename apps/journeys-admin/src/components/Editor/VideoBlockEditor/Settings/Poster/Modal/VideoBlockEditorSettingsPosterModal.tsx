@@ -11,6 +11,7 @@ import { PosterImageBlockUpdate } from '../../../../../../../__generated__/Poste
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
 import { useJourney } from '../../../../../../libs/context'
 import { ImageBlockEditor } from '../../../../ImageBlockEditor'
+import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   mutation BlockDeleteForPosterImage(
@@ -20,6 +21,7 @@ export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
+      parentOrder
     }
   }
 `
@@ -101,22 +103,7 @@ export function VideoBlockEditorSettingsPosterModal({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const blockIds = data.blockDelete.map(
-                  (deletedBlock) =>
-                    `${deletedBlock.__typename}:${deletedBlock.id}`
-                )
-                return reject(existingBlockRefs, (block) => {
-                  return blockIds.includes(block.__ref)
-                })
-              }
-            }
-          })
-        }
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
       }
     })
     if (blockDeleteError != null) return
