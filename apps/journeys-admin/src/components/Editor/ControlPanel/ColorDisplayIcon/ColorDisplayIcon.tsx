@@ -17,6 +17,13 @@ interface ColorDisplayIconProps {
   color: TypographyColor | ButtonColor | IconColor | null
 }
 
+enum DisplayColor {
+  primary = 'primary.main',
+  secondary = 'secondary.main',
+  error = 'error.main',
+  inherit = 'primary.contrastText'
+}
+
 export function ColorDisplayIcon({
   color
 }: ColorDisplayIconProps): ReactElement {
@@ -47,7 +54,8 @@ export function ColorDisplayIcon({
             height: 20,
             m: 0.5,
             borderRadius: 1000,
-            backgroundColor: `${color ?? 'primary'}.main`
+            backgroundColor:
+              color !== null ? DisplayColor[color] : DisplayColor.primary
           }}
         />
       </ThemeProvider>

@@ -421,7 +421,8 @@ describe('BackgroundMediaVideo', () => {
           ],
           id: journey.id,
           __typename: 'Journey'
-        }
+        },
+        ['VideoBlock:' + video.id]: { ...video }
       })
       const cardBlockResult = jest.fn(() => ({
         data: {
@@ -486,6 +487,7 @@ describe('BackgroundMediaVideo', () => {
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` }
       ])
+      expect(cache.extract()['VideoBlock:' + video.id]).toBeUndefined()
     })
     describe('Video Settings', () => {
       it('shows settings', async () => {
