@@ -54,8 +54,6 @@ export function RadioOption({
     const parentSelected = selectedBlock?.id === block.parentBlockId
     const siblingSelected = selectedBlock?.parentBlockId === block.parentBlockId
 
-    console.log(selectedBlock, block)
-
     if (selectedBlock?.id === block.id) {
       e.stopPropagation()
 
