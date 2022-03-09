@@ -34,13 +34,13 @@ export function VideoBlockEditorSettingsPoster({
       <Stack direction="column" justifyContent="center">
         <Typography
           variant="subtitle2"
-          color={disabled ? theme.palette.grey[400] : ''}
+          color={disabled ? theme.palette.action.disabled : ''}
         >
           Cover Image
         </Typography>
         <Typography
           variant="caption"
-          color={disabled ? theme.palette.grey[400] : ''}
+          color={disabled ? theme.palette.action.disabled : ''}
         >
           Appears while video is loading
         </Typography>
@@ -48,7 +48,7 @@ export function VideoBlockEditorSettingsPoster({
       <Box
         width={95}
         height={62}
-        sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', py: 1 }}
+        sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', p: 1 }}
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">

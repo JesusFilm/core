@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { TreeBlock } from '@core/journeys/ui'
-import { Box } from '@mui/system'
+import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
 
 import {
@@ -21,9 +21,6 @@ const BackgroundMediaStory = {
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
-  },
-  chromatic: {
-    viewports: [360, 1200]
   }
 }
 
@@ -78,7 +75,21 @@ const onDelete = async (): Promise<void> => await Promise.resolve()
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <ThemeProvider>
-      <Box width={328} bgcolor="white">
+      <MuiDrawer
+        anchor="right"
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 328
+          }
+        }}
+        ModalProps={{
+          keepMounted: true
+        }}
+        open
+      >
         <VideoBlockEditor
           selectedBlock={args.selectedBlock}
           onChange={onChange}
@@ -86,7 +97,23 @@ const Template: Story = ({ ...args }) => (
           parentBlockId={card.id}
           parentOrder={Number(card.parentOrder)}
         />
-      </Box>
+      </MuiDrawer>
+      <MuiDrawer
+        anchor="bottom"
+        variant="temporary"
+        open
+        sx={{
+          display: { xs: 'block', sm: 'none' }
+        }}
+      >
+        <VideoBlockEditor
+          selectedBlock={args.selectedBlock}
+          onChange={onChange}
+          onDelete={onDelete}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+        />
+      </MuiDrawer>
     </ThemeProvider>
   </MockedProvider>
 )
@@ -113,11 +140,11 @@ MobileSettings.args = {
 }
 MobileSettings.parameters = {
   chromatic: {
-    viewports: [360]
+    viewports: [360, 540]
   }
 }
 MobileSettings.play = async () => {
-  const settingsTab = await screen.getByTestId('videoSettingsTab')
+  const settingsTab = await screen.getAllByTestId('videoSettingsTab')[1]
   await userEvent.click(settingsTab)
 }
 
@@ -128,11 +155,7 @@ PosterModal.args = {
     children: [poster]
   }
 }
-PosterModal.parameters = {
-  chromatic: {
-    viewports: [1200]
-  }
-}
+
 PosterModal.play = async () => {
   const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
   await userEvent.click(settingsTab)

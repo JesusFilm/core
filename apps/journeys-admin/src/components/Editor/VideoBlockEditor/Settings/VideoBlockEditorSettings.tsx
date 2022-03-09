@@ -84,13 +84,13 @@ export function VideoBlockEditorSettings({
           <Stack direction="column">
             <Typography
               variant="subtitle2"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Autoplay
             </Typography>
             <Typography
               variant="caption"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Start video automatically when card appears
             </Typography>
@@ -107,13 +107,13 @@ export function VideoBlockEditorSettings({
           <Stack direction="column">
             <Typography
               variant="subtitle2"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Muted
             </Typography>
             <Typography
               variant="caption"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Video always muted on the first card
             </Typography>

@@ -18,8 +18,7 @@ const ImageEditorStory = {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen',
     chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      viewports: [360]
+      ...simpleComponentConfig.parameters.chromatic
     }
   }
 }
@@ -52,7 +51,7 @@ const image: ImageBlock = {
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <Box width={328} bgcolor="white">
+  <Box bgcolor="white">
     <ImageBlockHeader
       selectedBlock={args.selectedBlock}
       showDelete={args.showDelete}

@@ -22,16 +22,23 @@ export function ImageBlockHeader({
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Box sx={{ px: 6, py: 4 }}>
-      <Stack direction="row" spacing="16px" data-testid="imageSrcStack">
+      <Stack
+        direction="row"
+        spacing="16px"
+        data-testid="imageSrcStack"
+        justifyContent="space-between"
+      >
         <ImageBlockThumbnail selectedBlock={selectedBlock} />
-        <Stack direction="column" justifyContent="center">
+        <Stack
+          direction="column"
+          justifyContent="center"
+          sx={{ minWidth: 0, width: '100%' }}
+        >
           {!showDelete && <Typography variant="subtitle2">{header}</Typography>}
           {showDelete && (
             <Typography
               variant="subtitle2"
               sx={{
-                maxWidth: 150,
-                width: 150,
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden'

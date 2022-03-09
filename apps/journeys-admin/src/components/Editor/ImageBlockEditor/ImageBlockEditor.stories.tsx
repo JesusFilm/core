@@ -6,21 +6,21 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
 import { ImageBlockEditor } from './ImageBlockEditor'
 
 const ImageEditorStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: ImageBlockEditor,
   title: 'Journeys-Admin/Editor/ImageBlockEditor',
   parameters: {
-    ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
-  },
-  chromatic: {
-    viewports: [360]
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen',
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic
+    }
   }
 }
 
