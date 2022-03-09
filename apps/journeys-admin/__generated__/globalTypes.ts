@@ -174,6 +174,12 @@ export interface IconBlockCreateInput {
   size?: IconSize | null;
 }
 
+export interface IconBlockUpdateInput {
+  color?: IconColor | null;
+  name?: IconName | null;
+  size?: IconSize | null;
+}
+
 export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
@@ -295,6 +301,19 @@ export interface VideoBlockCreateInput {
   startAt?: number | null;
   title: string;
   videoContent: VideoContentInput;
+}
+
+export interface VideoBlockUpdateInput {
+  autoplay?: boolean | null;
+  description?: string | null;
+  endAt?: number | null;
+  fullsize?: boolean | null;
+  muted?: boolean | null;
+  parentBlockId?: string | null;
+  posterBlockId?: string | null;
+  startAt?: number | null;
+  title?: string | null;
+  videoContent?: VideoContentInput | null;
 }
 
 export interface VideoContentInput {
