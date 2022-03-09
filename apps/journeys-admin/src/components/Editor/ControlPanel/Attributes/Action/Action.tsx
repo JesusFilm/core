@@ -169,7 +169,7 @@ export function Action(): ReactElement {
         </Select>
       </FormControl>
 
-      <Typography variant="caption" color="secondary.main" sx={{ pb: 8 }}>
+      <Typography variant="caption" color="secondary.main">
         Redirect user to the selected resource
       </Typography>
 

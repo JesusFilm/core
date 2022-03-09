@@ -7,6 +7,7 @@ import { object, string } from 'yup'
 import { noop } from 'lodash'
 import InputAdornment from '@mui/material/InputAdornment'
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded'
+import Box from '@mui/material/Box'
 import { useJourney } from '../../../../../../libs/context'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { LinkActionUpdate } from '../../../../../../../__generated__/LinkActionUpdate'
@@ -76,37 +77,39 @@ export function LinkAction(): ReactElement {
   }
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={linkActionSchema}
-      onSubmit={noop}
-    >
-      {({ values, touched, errors, handleChange, handleBlur }) => (
-        <Form>
-          <TextField
-            id="link"
-            name="link"
-            variant="filled"
-            label="Paste URL here..."
-            fullWidth
-            value={values.link}
-            error={touched.link === true && Boolean(errors.link)}
-            helperText={touched.link === true && errors.link}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <InsertLinkRoundedIcon />
-                </InputAdornment>
-              )
-            }}
-            onBlur={(e) => {
-              handleBlur(e)
-              errors.link == null && handleSubmit(e)
-            }}
-            onChange={handleChange}
-          />
-        </Form>
-      )}
-    </Formik>
+    <Box sx={{ pt: 8 }}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={linkActionSchema}
+        onSubmit={noop}
+      >
+        {({ values, touched, errors, handleChange, handleBlur }) => (
+          <Form>
+            <TextField
+              id="link"
+              name="link"
+              variant="filled"
+              label="Paste URL here..."
+              fullWidth
+              value={values.link}
+              error={touched.link === true && Boolean(errors.link)}
+              helperText={touched.link === true && errors.link}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <InsertLinkRoundedIcon />
+                  </InputAdornment>
+                )
+              }}
+              onBlur={(e) => {
+                handleBlur(e)
+                errors.link == null && handleSubmit(e)
+              }}
+              onChange={handleChange}
+            />
+          </Form>
+        )}
+      </Formik>
+    </Box>
   )
 }
