@@ -1,7 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { Close } from '@mui/icons-material'
 import { Box, Divider, IconButton, Stack, Typography } from '@mui/material'
-import { reject } from 'lodash'
 import { ReactElement } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
