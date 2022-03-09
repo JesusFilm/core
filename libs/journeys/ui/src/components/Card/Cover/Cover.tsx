@@ -14,7 +14,7 @@ const greatestCommonDivisor = (a: number, b: number): number =>
 
 interface CoverProps {
   children: ReactNode
-  imageBlock: TreeBlock<ImageFields>
+  imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
 }
 
@@ -30,26 +30,31 @@ export function Cover({
   const theme = useTheme()
 
   useEffect(() => {
-    if (xsRef.current != null && lgRef.current != null) {
-      const divisor = greatestCommonDivisor(imageBlock.width, imageBlock.height)
-      const width = imageBlock.width / divisor
-      const height = imageBlock.height / divisor
-      const pixels = decode(imageBlock.blurhash, width, height, 1)
+    if (imageBlock != null) {
+      if (xsRef.current != null && lgRef.current != null) {
+        const divisor = greatestCommonDivisor(
+          imageBlock.width,
+          imageBlock.height
+        )
+        const width = imageBlock.width / divisor
+        const height = imageBlock.height / divisor
+        const pixels = decode(imageBlock.blurhash, width, height, 1)
 
-      const canvas = document.createElement('canvas')
-      canvas.setAttribute('width', `${width}px`)
-      canvas.setAttribute('height', `${height}px`)
-      const context = canvas.getContext('2d')
-      if (context != null) {
-        const imageData = context.createImageData(width, height)
-        imageData.data.set(pixels)
-        context.putImageData(imageData, 0, 0)
-        context.fillStyle = `${theme.palette.background.paper}88`
-        context.fillRect(0, 0, width, height)
-        const dataURL = canvas.toDataURL('image/webp')
-        // We need double image to get better image blending results.
-        xsRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
-        lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+        const canvas = document.createElement('canvas')
+        canvas.setAttribute('width', `${width}px`)
+        canvas.setAttribute('height', `${height}px`)
+        const context = canvas.getContext('2d')
+        if (context != null) {
+          const imageData = context.createImageData(width, height)
+          imageData.data.set(pixels)
+          context.putImageData(imageData, 0, 0)
+          context.fillStyle = `${theme.palette.background.paper}88`
+          context.fillRect(0, 0, width, height)
+          const dataURL = canvas.toDataURL('image/webp')
+          // We need double image to get better image blending results.
+          xsRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+          lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+        }
       }
     }
     if (videoRef.current != null) {
@@ -99,7 +104,7 @@ export function Cover({
           </video>
         </Box>
       ) : (
-        imageBlock.src != null && (
+        imageBlock?.src != null && (
           <Box
             data-testid="CardImageCover"
             sx={{
