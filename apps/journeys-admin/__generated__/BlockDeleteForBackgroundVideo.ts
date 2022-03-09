@@ -14,6 +14,9 @@ export interface BlockDeleteForBackgroundVideo_blockDelete {
 }
 
 export interface BlockDeleteForBackgroundVideo {
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
   blockDelete: BlockDeleteForBackgroundVideo_blockDelete[];
 }
 

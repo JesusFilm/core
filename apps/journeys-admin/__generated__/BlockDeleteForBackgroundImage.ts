@@ -14,6 +14,9 @@ export interface BlockDeleteForBackgroundImage_blockDelete {
 }
 
 export interface BlockDeleteForBackgroundImage {
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
   blockDelete: BlockDeleteForBackgroundImage_blockDelete[];
 }
 
