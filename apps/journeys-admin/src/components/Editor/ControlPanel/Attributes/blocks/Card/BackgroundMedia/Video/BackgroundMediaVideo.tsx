@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
-import { reject } from 'lodash'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -15,6 +14,7 @@ import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__gen
 import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
 import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
 import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
+import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   mutation BlockDeleteForBackgroundVideo(
@@ -24,6 +24,7 @@ export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
+      parentOrder
     }
   }
 `
@@ -114,22 +115,7 @@ export function BackgroundMediaVideo({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const blockIds = data.blockDelete.map(
-                  (deletedBlock) =>
-                    `${deletedBlock.__typename}:${deletedBlock.id}`
-                )
-                return reject(existingBlockRefs, (block) => {
-                  return blockIds.includes(block.__ref)
-                })
-              }
-            }
-          })
-        }
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
       }
     })
     await cardBlockUpdate({

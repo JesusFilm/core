@@ -403,7 +403,8 @@ describe('BackgroundMediaImage', () => {
           ],
           id: journey.id,
           __typename: 'Journey'
-        }
+        },
+        ['ImageBlock:' + image.id]: { ...image }
       })
       const cardBlockResult = jest.fn(() => ({
         data: {
@@ -416,12 +417,7 @@ describe('BackgroundMediaImage', () => {
       }))
       const blockDeleteResult = jest.fn(() => ({
         data: {
-          blockDelete: [
-            {
-              id: image.id,
-              __typename: 'ImageBlock'
-            }
-          ]
+          blockDelete: []
         }
       }))
       const { getByTestId } = render(
@@ -466,6 +462,7 @@ describe('BackgroundMediaImage', () => {
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` }
       ])
+      expect(cache.extract()['ImageBlock:' + image.id]).toBeUndefined()
     })
     it('displays validation messages ', async () => {
       const { getByRole, getByText } = render(
