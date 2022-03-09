@@ -1,5 +1,8 @@
 import { fireEvent, render } from '@testing-library/react'
-import { TreeBlock } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
+import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Drawer } from '../../../../Drawer'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   IconName,
@@ -64,9 +67,18 @@ describe('SignUp Attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open icon editing drawer', () => {
-    const { getByRole, getAllByText } = render(<SignUp {...block} />)
+  it('clicking icon properties button should open icon editing drawer', () => {
+    const { getByRole, getAllByText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <SignUp {...block} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
-    expect(getAllByText('Button Icon')).toHaveLength(2)
+    expect(getAllByText('Button Icon')).toHaveLength(3)
   })
 })
