@@ -1,6 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
+import { ThemeProvider } from '../../../../../ThemeProvider'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
+import { Drawer } from '../../../../Drawer'
 import { RadioOption } from '.'
 
 describe('RadioOption Attribute', () => {
@@ -55,8 +58,17 @@ describe('RadioOption Attribute', () => {
       },
       children: []
     }
-    const { getAllByText, getByRole } = render(<RadioOption {...block} />)
+    const { getAllByText, getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <RadioOption {...block} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
-    expect(getAllByText('Action')).toHaveLength(2)
+    expect(getAllByText('Action')).toHaveLength(3)
   })
 })
