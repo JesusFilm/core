@@ -303,10 +303,28 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
+            __typename: 'ButtonBlock',
+            id: 'button3.id',
+            parentBlockId: 'card3.id',
+            parentOrder: 2,
+            label: 'Testbutton',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: null,
+            endIconId: null,
+            action: {
+              parentBlockId: 'button3.id',
+              __typename: 'NavigateAction',
+              gtmEventName: 'gtmEventName'
+            },
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
-            parentOrder: 2,
+            parentOrder: 3,
             label: 'Do you need to change to be good enough for God?',
             description: '',
             children: [

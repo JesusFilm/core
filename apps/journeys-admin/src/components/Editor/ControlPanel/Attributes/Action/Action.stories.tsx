@@ -38,8 +38,7 @@ const journey: Journey = {
   userJourneys: []
 }
 
-export const Default: Story = () => {
-  const selectedStep = steps[1]
+const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider
       mocks={[
@@ -76,8 +75,7 @@ export const Default: Story = () => {
       <JourneyProvider value={journey}>
         <EditorProvider
           initialState={{
-            steps,
-            selectedStep,
+            ...args,
             drawerChildren: <Action />,
             drawerTitle: 'Action',
             drawerMobileOpen: true
@@ -88,48 +86,50 @@ export const Default: Story = () => {
       </JourneyProvider>
     </MockedProvider>
   )
+}
+
+export const Default = Template.bind({})
+Default.args = {
+  steps,
+  selectedStep: steps[1]
 }
 Default.play = () => {
   const dropDown = screen.getByRole('button', { name: 'None' })
   userEvent.click(dropDown)
 }
 
-export const DisabledNextStep: Story = () => {
-  const selectedStep = steps[4]
-  return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_JOURNEY_NAMES
-          },
-          result: {
-            data: {
-              journeys: [journey]
-            }
-          }
-        }
-      ]}
-    >
-      <JourneyProvider value={journey}>
-        <EditorProvider
-          initialState={{
-            steps,
-            selectedStep,
-            drawerChildren: <Action />,
-            drawerTitle: 'Action',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </MockedProvider>
-  )
+export const DisabledNextStep = Template.bind({})
+DisabledNextStep.args = {
+  steps,
+  selectedStep: steps[4]
 }
 DisabledNextStep.play = () => {
   const dropDown = screen.getByRole('button', { name: 'None' })
   userEvent.click(dropDown)
+}
+
+export const LinkAction = Template.bind({})
+LinkAction.args = {
+  selectedBlock: steps[1].children[0].children[3]
+}
+
+export const NavigateAction = Template.bind({})
+NavigateAction.args = {
+  steps,
+  selectedStep: steps[3],
+  selectedBlock: steps[3].children[0].children[2]
+}
+
+export const NavigateToBlockAction = Template.bind({})
+NavigateToBlockAction.args = {
+  steps,
+  selectedBlock: steps[4].children[0].children[4]
+}
+
+export const NavigateToJourneyAction = Template.bind({})
+NavigateToJourneyAction.args = {
+  steps,
+  selectedBlock: steps[0].children[0].children[3]
 }
 
 export default ActionStory as Meta
