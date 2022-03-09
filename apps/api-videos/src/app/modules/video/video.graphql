@@ -6,14 +6,20 @@ type Video @key(fields: "id") {
   studyQuestions: [[Translation!]!]!
   image: String
   variants: [VideoVariant]
+  # tags: TagConnection
 }
 
 type VideoVariant {
   hls: String!
   subtitle: [Translation!]!
   downloads: [Download!]!
+  # duration in seconds
   duration: Int!
   languageId: Language!
+}
+
+extend type Language @key(fields: "id") {
+  id: ID! @external
 }
 
 enum QualityType {
@@ -31,10 +37,6 @@ type Translation {
   value: String!
   language: Language!
   primary: Boolean!
-}
-
-extend type Language @key(fields: "id") {
-  id: ID! @external
 }
 
 extend type Query {

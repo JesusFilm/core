@@ -1,7 +1,0 @@
-type Video @key(fields: "id") {
-  id: ID!
-}
-
-extend type Query {
-  videos: [Video!]!
-}

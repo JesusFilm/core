@@ -80,7 +80,7 @@
       "options": {
         "commands": [
           {
-            "command": "rover subgraph introspect http://localhost:4002/graphql > apps/api-videos/schema.graphql"
+            "command": "rover subgraph introspect http://localhost:4004/graphql > apps/api-videos/schema.graphql"
           }
         ]
       }
