@@ -6,6 +6,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
@@ -59,6 +60,38 @@ const card: TreeBlock<CardBlock> = {
   children: []
 }
 
+const video: TreeBlock<VideoBlock> = {
+  id: 'video1.id',
+  __typename: 'VideoBlock',
+  parentBlockId: card.id,
+  parentOrder: 0,
+  title: 'my video',
+  startAt: 0,
+  endAt: null,
+  muted: false,
+  autoplay: true,
+  fullsize: true,
+  videoContent: {
+    __typename: 'VideoGeneric',
+    src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  },
+  posterBlockId: 'poster1.id',
+  children: []
+}
+
+const poster: TreeBlock<ImageBlock> = {
+  id: 'poster1.id',
+  __typename: 'ImageBlock',
+  parentBlockId: video.id,
+  parentOrder: 0,
+  src: 'https://via.placeholder.com/300x200',
+  width: 300,
+  height: 200,
+  blurhash: '',
+  alt: 'poster',
+  children: []
+}
+
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',
   __typename: 'ImageBlock',
@@ -72,13 +105,13 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-export const NoImage: Story = () => (
+const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <ThemeProvider>
       <JourneyProvider value={journey}>
         <EditorProvider
           initialState={{
-            selectedBlock: card,
+            ...args,
             drawerChildren: <BackgroundMedia />,
             drawerTitle: 'Background Media',
             drawerMobileOpen: true
@@ -90,32 +123,32 @@ export const NoImage: Story = () => (
     </ThemeProvider>
   </MockedProvider>
 )
+
+export const Video = Template.bind({})
+Video.args = {
+  selectedBlock: {
+    ...card,
+    children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
+    coverBlockId: video.id
+  }
+}
+
+export const NoImage = Template.bind({})
+NoImage.args = {
+  selectedBlock: card
+}
 NoImage.play = async () => {
   const imageTab = await screen.getByTestId('bgvideo-image-tab')
   await userEvent.click(imageTab)
 }
 
-export const Image: Story = () => (
-  <MockedProvider>
-    <ThemeProvider>
-      <JourneyProvider value={journey}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...card,
-              coverBlockId: image.id,
-              children: [image]
-            },
-            drawerChildren: <BackgroundMedia />,
-            drawerTitle: 'Background Media',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
-    </ThemeProvider>
-  </MockedProvider>
-)
+export const Image = Template.bind({})
+Image.args = {
+  selectedBlock: {
+    ...card,
+    coverBlockId: image.id,
+    children: [image]
+  }
+}
 
 export default BackgroundMediaStory as Meta
