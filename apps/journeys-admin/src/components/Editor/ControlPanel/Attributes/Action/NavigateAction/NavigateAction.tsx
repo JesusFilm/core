@@ -29,7 +29,7 @@ export function NavigateAction(): ReactElement {
         direction={'row'}
         alignItems={'center'}
         spacing={3}
-        sx={{ p: 9 }}
+        sx={{ pt: 8 }}
         color={'text.secondary'}
       >
         <InfoOutlinedIcon />
