@@ -22,7 +22,6 @@ export const blockDeleteUpdate = (
   journeyId: string
 ): void => {
   if (response != null) {
-    console.log(response)
     response.forEach((block) => {
       cache.modify({
         id: cache.identify({
