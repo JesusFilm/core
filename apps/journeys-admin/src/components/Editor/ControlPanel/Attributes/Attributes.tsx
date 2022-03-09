@@ -7,6 +7,7 @@ import { ReactElement, useEffect } from 'react'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
 import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
+import { Video } from './blocks/Video'
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
   const withMoveButtons = (block: ReactElement): ReactElement => {
@@ -38,11 +39,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
     }
 
     case 'VideoBlock': {
-      return step.id === selected.parentBlockId ? (
-        <p>Video Attributes</p>
-      ) : (
-        withMoveButtons(<p>Video Attributes</p>)
-      )
+      return withMoveButtons(<Video {...selected} />)
     }
 
     case 'TypographyBlock': {
