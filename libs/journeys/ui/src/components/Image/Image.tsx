@@ -37,7 +37,7 @@ export function Image({
     }
 
     dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
     dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
