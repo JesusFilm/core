@@ -80,6 +80,7 @@ interface Video {
   studyQuestions: Translation[][]
   image: string
   variants: VideoVariant[]
+  tagIds: string[]
 }
 
 async function getLanguages(): Promise<Language[]> {
@@ -95,12 +96,14 @@ async function getLanguages(): Promise<Language[]> {
   return response._embedded.mediaLanguages
 }
 
-async function getMediaComponents(): Promise<MediaComponent[]> {
+async function getMediaComponents(
+  type: 'content' | 'container'
+): Promise<MediaComponent[]> {
   const response: {
     _embedded: { mediaComponents: MediaComponent[] }
   } = await (
     await fetch(
-      `https://api.arclight.org/v2/media-components?limit=5000&isDeprecated=false&type=content&contentTypes=video&apiKey=${
+      `https://api.arclight.org/v2/media-components?limit=5000&isDeprecated=false&type=${type}&contentTypes=video&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
@@ -123,7 +126,7 @@ async function getMediaComponentLanguage(
   return response._embedded.mediaComponentLanguage
 }
 
-async function digestMediaComponent(
+async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
@@ -132,7 +135,7 @@ async function digestMediaComponent(
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
 
-  console.log('mediaComponent:', mediaComponent.mediaComponentId)
+  console.log('content:', mediaComponent.mediaComponentId)
 
   const variants: VideoVariant[] = []
   for (const mediaComponentLanguage of await getMediaComponentLanguage(
@@ -142,7 +145,6 @@ async function digestMediaComponent(
   }
 
   const body = {
-    variants,
     title: [
       {
         value: mediaComponent.title,
@@ -171,7 +173,9 @@ async function digestMediaComponent(
         primary: true
       }
     ]),
-    image: mediaComponent.imageUrls.mobileCinematicHigh
+    image: mediaComponent.imageUrls.mobileCinematicHigh,
+    tagIds: [],
+    variants
   }
 
   const video = await getVideo(mediaComponent.mediaComponentId)
@@ -211,6 +215,39 @@ async function digestMediaComponentLanguage(
   }
 }
 
+async function getMediaComponentLinks(
+  mediaComponentId: string
+): Promise<string[]> {
+  const response: {
+    linkedMediaComponentIds: { contains: string[] }
+  } = await (
+    await fetch(
+      `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${
+        process.env.ARCLIGHT_API_KEY ?? ''
+      }`
+    )
+  ).json()
+  return response.linkedMediaComponentIds.contains
+}
+
+async function digestContainer(
+  languages: Language[],
+  mediaComponent: MediaComponent
+): Promise<void> {
+  console.log('container:', mediaComponent.mediaComponentId)
+  for (const videoId of await getMediaComponentLinks(
+    mediaComponent.mediaComponentId
+  )) {
+    const video = await getVideo(videoId)
+    if (video == null) continue
+
+    if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
+    await db.collection('videos').update(videoId, {
+      tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
+    })
+  }
+}
+
 async function getVideo(videoId: string): Promise<Video | undefined> {
   const rst = await db.query(aql`
   FOR item IN ${db.collection('videos')}
@@ -233,6 +270,9 @@ async function main(): Promise<void> {
       links: {
         videos: {
           fields: {
+            tagIds: {
+              analyzers: ['identity']
+            },
             variants: {
               fields: {
                 languageId: {
@@ -261,8 +301,12 @@ async function main(): Promise<void> {
   }
 
   const languages = await getLanguages()
-  for (const mediaComponent of await getMediaComponents()) {
-    await digestMediaComponent(languages, mediaComponent)
+  for (const content of await getMediaComponents('content')) {
+    await digestContent(languages, content)
+  }
+
+  for (const container of await getMediaComponents('container')) {
+    await digestContainer(languages, container)
   }
 }
 
