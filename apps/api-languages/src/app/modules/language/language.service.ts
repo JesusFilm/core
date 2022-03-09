@@ -7,7 +7,8 @@ import { DocumentCollection } from 'arangojs/collection'
 export class LanguageService extends BaseService {
   collection: DocumentCollection = this.db.collection('languages')
 
-  async getAll<T>(offset = 0, limit = 1000): Promise<T[]> {
+  async getAll<T>(page = 1, limit = 1000): Promise<T[]> {
+    const offset = limit * (page - 1)
     const res = await this.db.query(aql`
       FOR item IN ${this.collection}
         LIMIT ${offset}, ${limit}
