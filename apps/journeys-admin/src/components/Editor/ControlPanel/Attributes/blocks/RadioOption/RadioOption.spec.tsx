@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'
 import { RadioOption } from '.'
@@ -36,7 +36,27 @@ describe('RadioOption Attribute', () => {
 
     const { getByRole } = render(<RadioOption {...block} />)
     expect(
-      getByRole('button', { name: 'Action NavigateToBlockAction' })
+      getByRole('button', { name: 'Action Selected Card' })
     ).toBeInTheDocument()
+  })
+
+  it('clicking on action attribute shows the action edit drawer', () => {
+    const block: TreeBlock<RadioOptionBlock> = {
+      id: 'radioOption1.id',
+      __typename: 'RadioOptionBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      label: 'Radio Option',
+      action: {
+        __typename: 'NavigateToBlockAction',
+        parentBlockId: 'radioOption1.id',
+        gtmEventName: 'navigateToBlock',
+        blockId: 'step2.id'
+      },
+      children: []
+    }
+    const { getAllByText, getByRole } = render(<RadioOption {...block} />)
+    fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
+    expect(getAllByText('Action')).toHaveLength(2)
   })
 })
