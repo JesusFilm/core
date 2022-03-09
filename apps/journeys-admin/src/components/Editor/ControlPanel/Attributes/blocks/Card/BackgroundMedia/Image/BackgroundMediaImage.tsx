@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
-import { reject } from 'lodash'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -14,6 +13,7 @@ import { CardBlockImageBlockCreate } from '../../../../../../../../../__generate
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
 import { ImageBlockEditor } from '../../../../../../ImageBlockEditor'
+import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   mutation BlockDeleteForBackgroundImage(
@@ -23,6 +23,7 @@ export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
+      parentOrder
     }
   }
 `
@@ -82,7 +83,7 @@ export function BackgroundMediaImage({
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
-    ) as ImageBlock | TreeBlock<VideoBlock>) ?? null
+    ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
   const imageBlock = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
@@ -110,22 +111,7 @@ export function BackgroundMediaImage({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const blockIds = data.blockDelete.map(
-                  (deletedBlock) =>
-                    `${deletedBlock.__typename}:${deletedBlock.id}`
-                )
-                return reject(existingBlockRefs, (block) => {
-                  return blockIds.includes(block.__ref)
-                })
-              }
-            }
-          })
-        }
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
       }
     })
 

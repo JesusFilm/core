@@ -174,6 +174,12 @@ export interface IconBlockCreateInput {
   size?: IconSize | null;
 }
 
+export interface IconBlockUpdateInput {
+  color?: IconColor | null;
+  name?: IconName | null;
+  size?: IconSize | null;
+}
+
 export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
