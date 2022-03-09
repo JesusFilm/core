@@ -4,7 +4,13 @@ import Button from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
-import { TreeBlock, handleAction, useEditor, ActiveTab } from '../../..'
+import {
+  TreeBlock,
+  handleAction,
+  useEditor,
+  ActiveTab,
+  ActiveFab
+} from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
@@ -48,10 +54,21 @@ export function RadioOption({
     const parentSelected = selectedBlock?.id === block.parentBlockId
     const siblingSelected = selectedBlock?.parentBlockId === block.parentBlockId
 
-    if (parentSelected || siblingSelected) {
+    console.log(selectedBlock, block)
+
+    if (selectedBlock?.id === block.id) {
       e.stopPropagation()
+
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else if (parentSelected || siblingSelected) {
+      e.stopPropagation()
+
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({
+        type: 'SetActiveTabAction',
+        activeTab: ActiveTab.Properties
+      })
       dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
       dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     }
   }

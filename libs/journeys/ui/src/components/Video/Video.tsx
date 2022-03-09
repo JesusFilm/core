@@ -4,7 +4,7 @@ import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { TreeBlock, useEditor, ActiveTab } from '../..'
+import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -154,7 +154,7 @@ export function Video({
 
       dispatch({ type: 'SetSelectedBlockAction', block })
     }
-
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
     dispatch({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Properties
