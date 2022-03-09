@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { TreeBlock } from '@core/journeys/ui'
-import { noop, reject } from 'lodash'
+import { noop } from 'lodash'
 import { object, string } from 'yup'
 import { Formik, Form } from 'formik'
 
@@ -29,6 +29,7 @@ import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__gen
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
+import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   mutation BlockDeleteForBackgroundImage(
@@ -38,6 +39,7 @@ export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
+      parentOrder
     }
   }
 `
@@ -139,22 +141,7 @@ export function BackgroundMediaImage({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const blockIds = data.blockDelete.map(
-                  (deletedBlock) =>
-                    `${deletedBlock.__typename}:${deletedBlock.id}`
-                )
-                return reject(existingBlockRefs, (block) => {
-                  return blockIds.includes(block.__ref)
-                })
-              }
-            }
-          })
-        }
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
       }
     })
 
@@ -372,7 +359,6 @@ export function BackgroundMediaImage({
                     id="src"
                     name="src"
                     variant="filled"
-                    data-testid="imgSrcTextField"
                     label="Paste URL of image..."
                     fullWidth
                     value={values.src}

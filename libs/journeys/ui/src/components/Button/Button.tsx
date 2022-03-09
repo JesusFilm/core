@@ -62,10 +62,7 @@ export function Button({
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
     } else {
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({
-        type: 'SetActiveTabAction',
-        activeTab: ActiveTab.Properties
-      })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
       dispatch({ type: 'SetSelectedBlockAction', block })
       dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     }
