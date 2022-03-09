@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import { TreeBlock, useEditor } from '@core/journeys/ui'
-import capitalize from 'lodash/capitalize'
+import { List } from '@mui/icons-material'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
-import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
-  const { id, color } = block
+  const { id } = block
 
   const { dispatch } = useEditor()
 
@@ -14,9 +14,9 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
     <>
       <Attribute
         id={`${id}-video-options`}
-        icon={<ColorDisplayIcon color={color} />}
+        icon={<List />}
         name="Options"
-        value={capitalize(color?.toString() ?? 'primary')}
+        value="Edit"
         description="Video Options"
         onClick={() => {
           dispatch({

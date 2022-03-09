@@ -1,38 +1,19 @@
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
-import { reject } from 'lodash'
 
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { useJourney } from '../../../../../../../../libs/context'
-import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
-import { BlockDeleteForBackgroundVideo } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundVideo'
-import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundVideoUpdate'
-import { CardBlockVideoBlockCreate } from '../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
-import { CardBlockVideoBlockUpdate } from '../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
-import { VideoBlockEditor } from '../../../../../../VideoBlockEditor'
+import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
+import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { VideoBlockUpdate } from '../../../../../../../../__generated__/VideoBlockUpdate'
+import { BlockDeleteForVideo } from '../../../../../../../../__generated__/BlockDeleteForVideo'
+import { useJourney } from '../../../../../../../libs/context'
 
 export const BLOCK_DELETE_FOR_VIDEO = gql`
   mutation BlockDeleteForVideo($id: ID!, $parentBlockId: ID!, $journeyId: ID!) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
-    }
-  }
-`
-
-export const VIDEO_BLOCK_CREATE = gql`
-  mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
-    videoBlockCreate(input: $input) {
-      id
-      title
-      startAt
-      endAt
-      muted
-      autoplay
-      videoContent {
-        src
-      }
-      posterBlockId
     }
   }
 `
@@ -58,123 +39,24 @@ export const VIDEO_BLOCK_UPDATE = gql`
   }
 `
 
-interface VideoOptionsProps {
-  selectedBlock: TreeBlock<VideoBlock>
-}
-
-export function VideoOptions({
-  selectedBlock
-}: VideoOptionsProps): ReactElement {
-  const [cardBlockUpdate] = useMutation<CardBlockBackgroundVideoUpdate>(
-    CARD_BLOCK_COVER_VIDEO_UPDATE
-  )
-  const [VideoBlockCreate] = useMutation<CardBlockVideoBlockCreate>(
-    CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE
-  )
-  const [VideoBlockUpdate] = useMutation<CardBlockVideoBlockUpdate>(
-    CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE
-  )
-  const [blockDelete] = useMutation<BlockDeleteForBackgroundVideo>(
-    BLOCK_DELETE_FOR_BACKGROUND_VIDEO
-  )
+export function VideoOptions(): ReactElement {
+  const {
+    state: { selectedBlock }
+  } = useEditor()
   const { id: journeyId } = useJourney()
-  const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
+  const [VideoBlockUpdate] = useMutation<VideoBlockUpdate>(VIDEO_BLOCK_UPDATE)
+  const [blockDelete] = useMutation<BlockDeleteForVideo>(BLOCK_DELETE_FOR_VIDEO)
+  const videoBlock = selectedBlock as TreeBlock<VideoBlock>
 
-  const deleteCoverBlock = async (): Promise<void> => {
+  const deleteVideoBlock = async (): Promise<void> => {
     await blockDelete({
       variables: {
-        id: coverBlock.id,
-        parentBlockId: coverBlock.parentBlockId,
+        id: videoBlock.id,
+        parentBlockId: videoBlock.parentBlockId,
         journeyId: journeyId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const blockIds = data.blockDelete.map(
-                  (deletedBlock) =>
-                    `${deletedBlock.__typename}:${deletedBlock.id}`
-                )
-                return reject(existingBlockRefs, (block) => {
-                  return blockIds.includes(block.__ref)
-                })
-              }
-            }
-          })
-        }
-      }
-    })
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journeyId,
-        input: {
-          coverBlockId: null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: null,
-          __typename: 'CardBlock'
-        }
-      }
-    })
-  }
-
-  const createVideoBlock = async (block): Promise<void> => {
-    const { data } = await VideoBlockCreate({
-      variables: {
-        input: {
-          journeyId: journeyId,
-          parentBlockId: cardBlock.id,
-          title: block.title ?? block.videoContent.src,
-          startAt: block.startAt,
-          endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-          muted: block.muted,
-          autoplay: block.autoplay,
-          posterBlockId: block.posterBlockId,
-          videoContent: block.videoContent
-        }
-      },
-      update(cache, { data }) {
-        if (data?.videoBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newBlockRef = cache.writeFragment({
-                  id: `VideoBlock:${data.videoBlockCreate.id}`,
-                  data: data.videoBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newBlockRef]
-              }
-            }
-          })
-        }
-      }
-    })
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journeyId,
-        input: {
-          coverBlockId: data?.videoBlockCreate?.id ?? null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: data?.videoBlockCreate?.id ?? null,
-          __typename: 'CardBlock'
-        }
+        blockDeleteUpdate(videoBlock, data?.blockDelete, cache, journeyId)
       }
     })
   }
@@ -191,7 +73,7 @@ export function VideoOptions({
       journeyId: string
       input: VideoBlockUpdateInput
     } = {
-      id: coverBlock.id,
+      id: videoBlock.id,
       journeyId: journeyId,
       input: {
         title: block.title,
@@ -203,10 +85,7 @@ export function VideoOptions({
       }
     }
     // Don't update Arclight with src
-    if (
-      videoContent.src !==
-      (coverBlock as TreeBlock<VideoBlock>).videoContent.src
-    ) {
+    if (videoContent.src !== videoBlock.videoContent.src) {
       variables = {
         ...variables,
         input: { ...variables.input, videoContent: { src: videoContent.src } }
@@ -216,7 +95,7 @@ export function VideoOptions({
       variables,
       optimisticResponse: {
         videoBlockUpdate: {
-          id: coverBlock.id,
+          id: videoBlock.id,
           ...block,
           __typename: 'VideoBlock',
           endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
@@ -227,27 +106,16 @@ export function VideoOptions({
   }
 
   const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
-    if (
-      coverBlock != null &&
-      coverBlock?.__typename.toString() !== 'VideoBlock'
-    ) {
-      // remove existing cover block if type changed
-      await deleteCoverBlock()
-    }
-    if (videoBlock == null) {
-      await createVideoBlock(block)
-    } else {
-      await updateVideoBlock(block)
-    }
+    await updateVideoBlock(block)
   }
 
   return (
     <VideoBlockEditor
       selectedBlock={videoBlock}
       onChange={handleChange}
-      onDelete={deleteCoverBlock}
-      parentBlockId={cardBlock.id}
-      parentOrder={cardBlock.parentOrder ?? 0}
+      onDelete={deleteVideoBlock}
+      parentBlockId={videoBlock.parentBlockId}
+      parentOrder={0}
     />
   )
 }
