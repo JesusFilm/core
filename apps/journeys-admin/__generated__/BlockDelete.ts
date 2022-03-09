@@ -13,6 +13,9 @@ export interface BlockDelete_blockDelete {
 }
 
 export interface BlockDelete {
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
   blockDelete: BlockDelete_blockDelete[];
 }
 

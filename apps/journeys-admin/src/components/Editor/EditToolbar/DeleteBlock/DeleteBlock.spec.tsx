@@ -77,6 +77,7 @@ describe('DeleteBlock', () => {
           {
             id: selectedBlock.id,
             parentBlockId: selectedBlock.parentBlockId,
+            parentOrder: selectedBlock.parentOrder,
             journeyId: 'journeyId'
           }
         ]
@@ -142,6 +143,7 @@ describe('DeleteBlock', () => {
           {
             id: selectedBlock.id,
             parentBlockId: selectedBlock.parentBlockId,
+            parentOrder: selectedBlock.parentOrder,
             journeyId: 'journeyId'
           }
         ]
@@ -187,6 +189,7 @@ describe('DeleteBlock', () => {
           {
             id: selectedBlock.id,
             parentBlockId: selectedBlock.parentBlockId,
+            parentOrder: selectedBlock.parentOrder,
             journeyId: 'journeyId'
           }
         ]
@@ -232,6 +235,7 @@ describe('DeleteBlock', () => {
           {
             id: selectedBlock.id,
             parentBlockId: selectedBlock.parentBlockId,
+            parentOrder: selectedBlock.parentOrder,
             journeyId: 'journeyId'
           }
         ]
@@ -277,6 +281,7 @@ describe('DeleteBlock', () => {
           {
             id: selectedBlock.id,
             parentBlockId: selectedBlock.parentBlockId,
+            parentOrder: selectedBlock.parentOrder,
             journeyId: 'journeyId'
           }
         ]

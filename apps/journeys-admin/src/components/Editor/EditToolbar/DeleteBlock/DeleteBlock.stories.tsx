@@ -68,7 +68,8 @@ const Template: Story = ({ ...args }) => (
               blockDelete: [
                 {
                   id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId
+                  parentBlockId: selectedBlock.parentBlockId,
+                  parentOrder: selectedBlock.parentOrder
                 }
               ]
             }

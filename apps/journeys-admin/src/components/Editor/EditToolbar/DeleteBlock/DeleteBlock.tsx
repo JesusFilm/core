@@ -9,11 +9,13 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
+import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE = gql`
   mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID!) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
       id
+      parentOrder
     }
   }
 `
@@ -68,7 +70,6 @@ export function DeleteBlock({
         break
     }
 
-    console.log('delete')
     const { data } = await blockDelete({
       variables: {
         id: selectedBlock.id,
@@ -76,20 +77,7 @@ export function DeleteBlock({
         parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = [], { readField }) {
-                const ids = data.blockDelete.map(({ id }) => id)
-                return existingBlockRefs.filter((blockRef) => {
-                  const id = readField('id', blockRef) as string
-                  return id != null && !ids.includes(id)
-                })
-              }
-            }
-          })
-        }
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
       }
     })
 
