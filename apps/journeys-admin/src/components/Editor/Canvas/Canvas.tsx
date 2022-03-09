@@ -136,7 +136,8 @@ export function Canvas(): ReactElement {
                     <BlockRenderer
                       block={step}
                       wrappers={{
-                        TypographyWrapper: InlineEditWrapper
+                        TypographyWrapper: InlineEditWrapper,
+                        ButtonWrapper: InlineEditWrapper
                       }}
                     />
                   </Box>
