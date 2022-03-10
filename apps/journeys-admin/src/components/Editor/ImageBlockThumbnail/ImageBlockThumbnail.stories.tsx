@@ -15,11 +15,7 @@ const ImageEditorStory = {
   title: 'Journeys-Admin/Editor/ImageBlockThumbnail',
   parameters: {
     ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      viewports: [360]
-    }
+    layout: 'fullscreen'
   }
 }
 
