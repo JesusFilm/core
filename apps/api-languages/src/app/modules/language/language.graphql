@@ -2,8 +2,7 @@ type Language @key(fields: "id") {
   id: ID!
   bcp47: String
   iso3: String
-  nameNative: String
-  name(languageId: ID): [Translation]!
+  name(languageId: String, primary: Boolean): [Translation]!
 }
 
 extend type Query {
