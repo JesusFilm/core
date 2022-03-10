@@ -39,7 +39,11 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
     }
 
     case 'VideoBlock': {
-      return withMoveButtons(<Video {...selected} />)
+      return step.id === selected.parentBlockId ? (
+        <Video {...selected} />
+      ) : (
+        withMoveButtons(<Video {...selected} />)
+      )
     }
 
     case 'TypographyBlock': {

@@ -16,8 +16,9 @@ interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   parentBlockId: string
   parentOrder: number
+  showDelete?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
-  onDelete: () => Promise<void>
+  onDelete?: () => Promise<void> | undefined
 }
 
 export function VideoBlockEditor({
@@ -25,6 +26,7 @@ export function VideoBlockEditor({
   parentBlockId,
   parentOrder,
   onChange,
+  showDelete = true,
   onDelete
 }: VideoBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
@@ -40,7 +42,7 @@ export function VideoBlockEditor({
 
   const handleVideoDelete = async (): Promise<void> => {
     setTabValue(0)
-    await onDelete()
+    if (onDelete != null) await onDelete()
   }
 
   return (
@@ -55,7 +57,7 @@ export function VideoBlockEditor({
         caption={
           selectedBlock?.videoContent?.src == null ? 'Formats: MP4, HLS' : ''
         }
-        showDelete={selectedBlock?.videoContent?.src != null}
+        showDelete={showDelete && selectedBlock?.videoContent?.src != null}
         onDelete={handleVideoDelete}
       />
       <Box
