@@ -15,6 +15,7 @@ import {
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../../../../../libs/context'
+import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import {
   BackgroundMediaVideo,
   CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -73,97 +74,98 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 describe('BackgroundMediaVideo', () => {
-  describe('No existing cover', () => {
-    it('creates a new video cover block', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        ['Journey:' + journey.id]: {
-          blocks: [{ __ref: `CardBlock:${card.id}` }],
-          id: journey.id,
-          __typename: 'Journey'
-        }
-      })
-      const cardBlockResult = jest.fn(() => ({
-        data: {
-          cardBlockUpdate: {
-            id: card.id,
-            coverBlockId: video.id,
-            __typename: 'CardBlock'
-          }
-        }
-      }))
-      const videoBlockResult = jest.fn(() => ({
-        data: {
-          videoBlockCreate: {
-            id: video.id,
-            title: video.title,
-            startAt: video.startAt,
-            endAt: video.endAt,
-            muted: video.muted,
-            autoplay: video.autoplay,
-            posterBlockId: video.posterBlockId,
-            videoContent: video.videoContent,
-            __typename: 'VideoBlock'
-          }
-        }
-      }))
-      const { getAllByRole } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
-                variables: {
-                  input: {
-                    journeyId: journey.id,
-                    parentBlockId: card.id,
-                    title: video.title,
-                    startAt: video.startAt,
-                    endAt: video.endAt,
-                    muted: video.muted,
-                    autoplay: video.autoplay,
-                    posterBlockId: video.posterBlockId,
-                    videoContent: { src: video.videoContent.src }
-                  }
-                }
-              },
-              result: videoBlockResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: video.id
-                  }
-                }
-              },
-              result: cardBlockResult
-            }
-          ]}
-        >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={card} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = getAllByRole('textbox')[0]
-      fireEvent.change(textBox, {
-        target: { value: video.videoContent.src }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-      await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
-      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-        { __ref: `CardBlock:${card.id}` },
-        { __ref: `VideoBlock:${video.id}` }
-      ])
+  it('creates a new video cover block', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      ['Journey:' + journey.id]: {
+        blocks: [{ __ref: `CardBlock:${card.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      }
     })
+    const cardBlockResult = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: video.id,
+          __typename: 'CardBlock'
+        }
+      }
+    }))
+    const videoBlockResult = jest.fn(() => ({
+      data: {
+        videoBlockCreate: {
+          id: video.id,
+          title: video.title,
+          startAt: video.startAt,
+          endAt: video.endAt,
+          muted: video.muted,
+          autoplay: video.autoplay,
+          posterBlockId: video.posterBlockId,
+          videoContent: video.videoContent,
+          __typename: 'VideoBlock'
+        }
+      }
+    }))
+    const { getAllByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: journey.id,
+                  parentBlockId: card.id,
+                  title: video.title,
+                  startAt: video.startAt,
+                  endAt: video.endAt,
+                  muted: video.muted,
+                  autoplay: video.autoplay,
+                  posterBlockId: video.posterBlockId,
+                  videoContent: { src: video.videoContent.src }
+                }
+              }
+            },
+            result: videoBlockResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
+              variables: {
+                id: card.id,
+                journeyId: journey.id,
+                input: {
+                  coverBlockId: video.id
+                }
+              }
+            },
+            result: cardBlockResult
+          }
+        ]}
+      >
+        <JourneyProvider value={journey}>
+          <ThemeProvider>
+            <BackgroundMediaVideo cardBlock={card} />
+          </ThemeProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const textBox = getAllByRole('textbox')[0]
+    fireEvent.change(textBox, {
+      target: { value: video.videoContent.src }
+    })
+    fireEvent.blur(textBox)
+    await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `CardBlock:${card.id}` },
+      { __ref: `VideoBlock:${video.id}` }
+    ])
   })
-  describe('Image Cover Block', () => {
+
+  it('replaces existing image cover block', async () => {
     const image: TreeBlock<ImageBlock> = {
       id: 'image1.id',
       __typename: 'ImageBlock',
@@ -181,145 +183,136 @@ describe('BackgroundMediaVideo', () => {
       coverBlockId: image.id,
       children: [image]
     }
-    it('shows placeholders on ImageBlock', () => {
-      const { getByText } = render(
-        <MockedProvider>
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={videoCard} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      expect(getByText('Select Video File')).toBeInTheDocument()
+    const cache = new InMemoryCache()
+    cache.restore({
+      ['Journey:' + journey.id]: {
+        blocks: [
+          { __ref: `CardBlock:${card.id}` },
+          { __ref: `ImageBlock:${image.id}` }
+        ],
+        id: journey.id,
+        __typename: 'Journey'
+      }
     })
-    it('creates a new video cover block', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        ['Journey:' + journey.id]: {
-          blocks: [
-            { __ref: `CardBlock:${card.id}` },
-            { __ref: `ImageBlock:${image.id}` }
-          ],
-          id: journey.id,
-          __typename: 'Journey'
+    const cardBlockResult = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: image.id,
+          __typename: 'CardBlock'
         }
-      })
-      const cardBlockResult = jest.fn(() => ({
-        data: {
-          cardBlockUpdate: {
-            id: card.id,
-            coverBlockId: image.id,
-            __typename: 'CardBlock'
+      }
+    }))
+    const videoBlockResult = jest.fn(() => ({
+      data: {
+        videoBlockCreate: {
+          id: video.id,
+          title: video.title,
+          startAt: video.startAt,
+          endAt: video.endAt,
+          muted: video.muted,
+          autoplay: video.autoplay,
+          parentBlockId: card.id,
+          posterBlockId: video.posterBlockId,
+          fullsize: video.fullsize,
+          videoContent: video.videoContent,
+          __typename: 'VideoBlock'
+        }
+      }
+    }))
+    const blockDeleteResult = jest.fn(() => ({
+      data: {
+        blockDelete: [
+          {
+            id: image.id,
+            __typename: 'ImageBlock'
           }
-        }
-      }))
-      const videoBlockResult = jest.fn(() => ({
-        data: {
-          videoBlockCreate: {
-            id: video.id,
-            title: video.title,
-            startAt: video.startAt,
-            endAt: video.endAt,
-            muted: video.muted,
-            autoplay: video.autoplay,
-            parentBlockId: card.id,
-            posterBlockId: video.posterBlockId,
-            fullsize: video.fullsize,
-            videoContent: video.videoContent,
-            __typename: 'VideoBlock'
+        ]
+      }
+    }))
+    const { getAllByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
+              variables: {
+                id: image.id,
+                parentBlockId: image.parentBlockId,
+                journeyId: journey.id
+              }
+            },
+            result: blockDeleteResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
+              variables: {
+                id: card.id,
+                journeyId: journey.id,
+                input: {
+                  coverBlockId: null
+                }
+              }
+            },
+            result: cardBlockResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: journey.id,
+                  parentBlockId: card.id,
+                  title: video.title,
+                  startAt: video.startAt,
+                  endAt: video.endAt,
+                  muted: video.muted,
+                  autoplay: video.autoplay,
+                  posterBlockId: video.posterBlockId,
+                  videoContent: { src: video.videoContent.src }
+                }
+              }
+            },
+            result: videoBlockResult
+          },
+          {
+            request: {
+              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
+              variables: {
+                id: card.id,
+                journeyId: journey.id,
+                input: {
+                  coverBlockId: video.id
+                }
+              }
+            },
+            result: cardBlockResult
           }
-        }
-      }))
-      const blockDeleteResult = jest.fn(() => ({
-        data: {
-          blockDelete: [
-            {
-              id: image.id,
-              __typename: 'ImageBlock'
-            }
-          ]
-        }
-      }))
-      const { getAllByRole } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
-                variables: {
-                  id: image.id,
-                  parentBlockId: image.parentBlockId,
-                  journeyId: journey.id
-                }
-              },
-              result: blockDeleteResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: null
-                  }
-                }
-              },
-              result: cardBlockResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
-                variables: {
-                  input: {
-                    journeyId: journey.id,
-                    parentBlockId: card.id,
-                    title: video.title,
-                    startAt: video.startAt,
-                    endAt: video.endAt,
-                    muted: video.muted,
-                    autoplay: video.autoplay,
-                    posterBlockId: video.posterBlockId,
-                    videoContent: { src: video.videoContent.src }
-                  }
-                }
-              },
-              result: videoBlockResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: video.id
-                  }
-                }
-              },
-              result: cardBlockResult
-            }
-          ]}
-        >
-          <JourneyProvider value={journey}>
+        ]}
+      >
+        <JourneyProvider value={journey}>
+          <ThemeProvider>
             <BackgroundMediaVideo cardBlock={videoCard} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      const textBox = getAllByRole('textbox')[0]
-      fireEvent.change(textBox, {
-        target: { value: video.videoContent.src }
-      })
-      fireEvent.blur(textBox)
-      await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
-      await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
-      await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-        { __ref: `CardBlock:${card.id}` },
-        { __ref: `VideoBlock:${video.id}` }
-      ])
+          </ThemeProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const textBox = getAllByRole('textbox')[0]
+    fireEvent.change(textBox, {
+      target: { value: video.videoContent.src }
     })
+    fireEvent.blur(textBox)
+    await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
+    await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+      { __ref: `CardBlock:${card.id}` },
+      { __ref: `VideoBlock:${video.id}` }
+    ])
   })
+
   describe('Existing video cover', () => {
     const existingCoverBlock: TreeBlock<CardBlock> = {
       ...card,
@@ -387,20 +380,22 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo
-              cardBlock={{
-                ...existingCoverBlock,
-                children: [
-                  {
-                    ...video,
-                    videoContent: {
-                      src: 'https://example.com/video2.mp4',
-                      __typename: 'VideoGeneric'
+            <ThemeProvider>
+              <BackgroundMediaVideo
+                cardBlock={{
+                  ...existingCoverBlock,
+                  children: [
+                    {
+                      ...video,
+                      videoContent: {
+                        src: 'https://example.com/video2.mp4',
+                        __typename: 'VideoGeneric'
+                      }
                     }
-                  }
-                ]
-              }}
-            />
+                  ]
+                }}
+              />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -478,12 +473,14 @@ describe('BackgroundMediaVideo', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
+          <ThemeProvider>
+            <JourneyProvider value={journey}>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </JourneyProvider>
+          </ThemeProvider>
         </MockedProvider>
       )
-      const button = await getByTestId('deleteVideo')
+      const button = await getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(blockDeleteResult).toHaveBeenCalled()
@@ -497,7 +494,9 @@ describe('BackgroundMediaVideo', () => {
         const { getAllByRole, getByRole } = render(
           <MockedProvider>
             <JourneyProvider value={journey}>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <ThemeProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
         )
@@ -560,7 +559,9 @@ describe('BackgroundMediaVideo', () => {
             ]}
           >
             <JourneyProvider value={journey}>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <ThemeProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
         )
@@ -621,7 +622,9 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -681,7 +684,9 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            <ThemeProvider>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -741,9 +746,11 @@ describe('BackgroundMediaVideo', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
-            <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-          </JourneyProvider>
+          <ThemeProvider>
+            <JourneyProvider value={journey}>
+              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+            </JourneyProvider>
+          </ThemeProvider>
         </MockedProvider>
       )
       fireEvent.click(await getByRole('tab', { name: 'Settings' }))

@@ -1,7 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
+import { ThemeProvider } from '../../../ThemeProvider'
 import { VideoBlockEditorSettings } from './VideoBlockEditorSettings'
 
 const video: TreeBlock<VideoBlock> = {
@@ -27,12 +29,16 @@ describe('VideoBlockEditorSettings', () => {
   it('should update autoplay', () => {
     const onChange = jest.fn()
     const { getAllByRole } = render(
-      <VideoBlockEditorSettings
-        selectedBlock={video}
-        posterBlock={null}
-        parentOrder={0}
-        onChange={onChange}
-      />
+      <ThemeProvider>
+        <MockedProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            parentOrder={0}
+            onChange={onChange}
+          />
+        </MockedProvider>
+      </ThemeProvider>
     )
     const checkBoxes = getAllByRole('checkbox')
     fireEvent.click(checkBoxes[0])
@@ -44,12 +50,16 @@ describe('VideoBlockEditorSettings', () => {
   it('should update muted', () => {
     const onChange = jest.fn()
     const { getAllByRole } = render(
-      <VideoBlockEditorSettings
-        selectedBlock={video}
-        posterBlock={null}
-        parentOrder={0}
-        onChange={onChange}
-      />
+      <ThemeProvider>
+        <MockedProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            parentOrder={0}
+            onChange={onChange}
+          />
+        </MockedProvider>
+      </ThemeProvider>
     )
     const checkBoxes = getAllByRole('checkbox')
     fireEvent.click(checkBoxes[1])
@@ -61,12 +71,16 @@ describe('VideoBlockEditorSettings', () => {
   it('should update startAt', async () => {
     const onChange = jest.fn()
     const { getAllByRole } = render(
-      <VideoBlockEditorSettings
-        selectedBlock={video}
-        posterBlock={null}
-        parentOrder={0}
-        onChange={onChange}
-      />
+      <ThemeProvider>
+        <MockedProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            parentOrder={0}
+            onChange={onChange}
+          />
+        </MockedProvider>
+      </ThemeProvider>
     )
     const textbox = getAllByRole('textbox')[0]
 
@@ -82,12 +96,16 @@ describe('VideoBlockEditorSettings', () => {
   it('should update endAt', async () => {
     const onChange = jest.fn()
     const { getAllByRole } = render(
-      <VideoBlockEditorSettings
-        selectedBlock={video}
-        posterBlock={null}
-        parentOrder={0}
-        onChange={onChange}
-      />
+      <ThemeProvider>
+        <MockedProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            parentOrder={0}
+            onChange={onChange}
+          />
+        </MockedProvider>
+      </ThemeProvider>
     )
     const textbox = getAllByRole('textbox')[1]
 

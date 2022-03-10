@@ -1,0 +1,1 @@
+export { ImageBlockThumbnail } from './ImageBlockThumbnail'
