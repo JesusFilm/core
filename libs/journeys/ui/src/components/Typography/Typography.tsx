@@ -43,6 +43,7 @@ export function Typography({
       color={color ?? undefined}
       paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
+      whiteSpace={'pre-line'}
       sx={{
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'

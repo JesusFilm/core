@@ -67,10 +67,19 @@ describe('SignUp Attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open icon editing drawer', () => {
-    const { getByRole, getAllByText } = render(<SignUp {...block} />)
+  it('clicking icon properties button should open icon editing drawer', () => {
+    const { getByRole, getAllByText } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <SignUp {...block} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
-    expect(getAllByText('Button Icon')).toHaveLength(2)
+    expect(getAllByText('Button Icon')).toHaveLength(3)
   })
 
   it('action property button should open action edit drawer', async () => {
