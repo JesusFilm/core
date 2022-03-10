@@ -174,6 +174,12 @@ export interface IconBlockCreateInput {
   size?: IconSize | null;
 }
 
+export interface IconBlockUpdateInput {
+  color?: IconColor | null;
+  name?: IconName | null;
+  size?: IconSize | null;
+}
+
 export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
@@ -197,6 +203,26 @@ export interface JourneyUpdateInput {
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   title?: string | null;
+}
+
+export interface LinkActionInput {
+  gtmEventName?: string | null;
+  target?: string | null;
+  url: string;
+}
+
+export interface NavigateActionInput {
+  gtmEventName?: string | null;
+}
+
+export interface NavigateToBlockActionInput {
+  blockId: string;
+  gtmEventName?: string | null;
+}
+
+export interface NavigateToJourneyActionInput {
+  gtmEventName?: string | null;
+  journeyId: string;
 }
 
 export interface RadioOptionBlockCreateInput {
@@ -275,6 +301,19 @@ export interface VideoBlockCreateInput {
   startAt?: number | null;
   title: string;
   videoContent: VideoContentInput;
+}
+
+export interface VideoBlockUpdateInput {
+  autoplay?: boolean | null;
+  description?: string | null;
+  endAt?: number | null;
+  fullsize?: boolean | null;
+  muted?: boolean | null;
+  parentBlockId?: string | null;
+  posterBlockId?: string | null;
+  startAt?: number | null;
+  title?: string | null;
+  videoContent?: VideoContentInput | null;
 }
 
 export interface VideoContentInput {

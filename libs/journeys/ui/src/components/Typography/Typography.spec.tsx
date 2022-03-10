@@ -44,7 +44,7 @@ describe('Typography', () => {
 })
 
 describe('Admin Typography', () => {
-  it('should edit text on click ', () => {
+  it('should select text on click ', () => {
     const { getByText } = render(
       <EditorProvider
         initialState={{
@@ -69,6 +69,5 @@ describe('Admin Typography', () => {
     fireEvent.click(getByText(block.content))
 
     expect(getByText(block.content)).toHaveStyle('outline: 3px solid #C52D3A')
-    // Check editable when implemented
   })
 })

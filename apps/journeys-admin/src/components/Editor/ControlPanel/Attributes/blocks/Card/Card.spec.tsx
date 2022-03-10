@@ -196,7 +196,7 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <EditorProvider>
+            <EditorProvider initialState={{ selectedBlock: card }}>
               <Drawer />
               <Card {...card} />
             </EditorProvider>

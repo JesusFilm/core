@@ -28,7 +28,7 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/transformer/__generated__/BlockFields'
 
-interface WrapperProps<T = Block> {
+export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
   children: ReactNode
 }
