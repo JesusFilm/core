@@ -10,12 +10,14 @@ import { ImageBlockHeader } from '../ImageBlockHeader'
 
 interface ImageBlockEditorProps {
   selectedBlock: ImageBlock | null
+  showDelete?: boolean
   onChange: (block: ImageBlock) => Promise<void>
-  onDelete: () => Promise<void>
+  onDelete?: () => Promise<void>
 }
 
 export function ImageBlockEditor({
   selectedBlock,
+  showDelete = true,
   onChange,
   onDelete
 }: ImageBlockEditorProps): ReactElement {
@@ -40,7 +42,7 @@ export function ImageBlockEditor({
   }
 
   const handleImageDelete = async (): Promise<void> => {
-    await onDelete()
+    if (onDelete != null) await onDelete()
   }
 
   const formik = useFormik({
@@ -61,7 +63,7 @@ export function ImageBlockEditor({
             ? 'Min width 1024px'
             : `${selectedBlock.width} x ${selectedBlock.height}px`
         }
-        showDelete={selectedBlock != null}
+        showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
       />
       <Box sx={{ py: 3, px: 6 }}>
