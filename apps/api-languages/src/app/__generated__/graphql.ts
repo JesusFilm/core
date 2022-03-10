@@ -12,7 +12,6 @@ export class Language {
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
-    nameNative?: Nullable<string>;
     name: Nullable<Translation>[];
 }
 

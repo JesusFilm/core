@@ -6,15 +6,18 @@ describe('LangaugeResolver', () => {
   let resolver: LanguageResolver, service: LanguageService
 
   const language = {
-    id: '1',
-    bscp47: 'TEC',
-    iso3: 'TEC',
-    nameNative: 'Teke, Central',
+    id: '20615',
+    bcp47: 'zh',
     name: [
       {
-        value: 'Teke, Central',
-        languageId: '529',
-        primary: true
+        value: '普通話',
+        primary: true,
+        languageId: '20615'
+      },
+      {
+        value: 'Chinese, Mandarin',
+        primary: false,
+        languageId: '529'
       }
     ]
   }
@@ -48,8 +51,18 @@ describe('LangaugeResolver', () => {
   })
 
   describe('name', () => {
-    it('should return translation', () => {
-      expect(resolver.name(language, '529')).toEqual([...language.name])
+    it('should return translations', () => {
+      expect(resolver.name(language)).toEqual(language.name)
+    })
+
+    it('should return translations filtered by languageId', () => {
+      expect(resolver.name(language, '529')).toEqual([language.name[1]])
+    })
+
+    it('should return translations filtered by primary', () => {
+      expect(resolver.name(language, undefined, true)).toEqual([
+        language.name[0]
+      ])
     })
   })
 })

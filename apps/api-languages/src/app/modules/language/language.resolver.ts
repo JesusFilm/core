@@ -1,5 +1,5 @@
 import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql'
-import { KeyAsId } from '@core/nest/decorators'
+import { KeyAsId, TranslationField } from '@core/nest/decorators'
 import { Language } from '../../__generated__/graphql'
 import { LanguageService } from './language.service'
 
@@ -23,14 +23,10 @@ export class LanguageResolver {
   }
 
   @ResolveField()
+  @TranslationField('name')
   name(
     @Parent() language,
-    @Args('languageId') languageId: string
-  ): Array<{ value: string; languageId: string; primary: boolean }> {
-    if (languageId == null) return language.name
-
-    return language.name.filter(
-      (translation) => translation.languageId === languageId
-    )
-  }
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
 }
