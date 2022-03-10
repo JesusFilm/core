@@ -1,1 +1,0 @@
-export { VideoBlockEditorSettingsPosterModal } from './VideoBlockEditorSettingsPosterModal'

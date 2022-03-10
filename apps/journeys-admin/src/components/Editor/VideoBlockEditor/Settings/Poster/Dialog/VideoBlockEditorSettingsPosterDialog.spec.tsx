@@ -16,12 +16,12 @@ import {
 import { JourneyProvider } from '../../../../../../libs/context'
 
 import {
-  VideoBlockEditorSettingsPosterModal,
+  VideoBlockEditorSettingsPosterDialog,
   POSTER_IMAGE_BLOCK_CREATE,
   VIDEO_BLOCK_POSTER_IMAGE_UPDATE,
   POSTER_IMAGE_BLOCK_UPDATE,
   BLOCK_DELETE_FOR_POSTER_IMAGE
-} from './VideoBlockEditorSettingsPosterModal'
+} from './VideoBlockEditorSettingsPosterDialog'
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -73,7 +73,7 @@ const image: ImageBlock = {
 
 const onClose = jest.fn()
 
-describe('VideoBlockEditorSettingsPosterModal', () => {
+describe('VideoBlockEditorSettingsPosterDialog', () => {
   describe('No existing Image', () => {
     it('creates a new image poster block', async () => {
       const cache = new InMemoryCache()
@@ -142,10 +142,11 @@ describe('VideoBlockEditorSettingsPosterModal', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <VideoBlockEditorSettingsPosterModal
+            <VideoBlockEditorSettingsPosterDialog
               selectedBlock={null}
               parentBlockId={video.id}
               onClose={onClose}
+              open={true}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -218,10 +219,11 @@ describe('VideoBlockEditorSettingsPosterModal', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <VideoBlockEditorSettingsPosterModal
+            <VideoBlockEditorSettingsPosterDialog
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
               onClose={onClose}
+              open={true}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -300,10 +302,11 @@ describe('VideoBlockEditorSettingsPosterModal', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <VideoBlockEditorSettingsPosterModal
+            <VideoBlockEditorSettingsPosterDialog
               selectedBlock={image}
               parentBlockId={video.id}
               onClose={onClose}
+              open={true}
             />
           </JourneyProvider>
         </MockedProvider>

@@ -39,7 +39,7 @@ const image: ImageBlock = {
 }
 
 describe('VideoBlockEditorSettingsPoster', () => {
-  it('shows edit poster image modal', () => {
+  it('shows edit poster image dialog', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>

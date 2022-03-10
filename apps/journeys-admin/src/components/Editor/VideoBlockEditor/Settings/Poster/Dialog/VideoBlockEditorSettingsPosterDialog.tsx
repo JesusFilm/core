@@ -1,6 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import { Close } from '@mui/icons-material'
-import { Box, Divider, IconButton, Stack, Typography } from '@mui/material'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Typography
+} from '@mui/material'
 import { ReactElement } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
@@ -71,17 +78,19 @@ export const POSTER_IMAGE_BLOCK_UPDATE = gql`
   }
 `
 
-interface VideoBlockEditorSettingsPosterModalProps {
+interface VideoBlockEditorSettingsPosterDialogProps {
   selectedBlock: ImageBlock | null
   parentBlockId: string | undefined
+  open: boolean
   onClose: () => void
 }
 
-export function VideoBlockEditorSettingsPosterModal({
+export function VideoBlockEditorSettingsPosterDialog({
   selectedBlock,
   parentBlockId,
+  open,
   onClose
-}: VideoBlockEditorSettingsPosterModalProps): ReactElement {
+}: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
   const { id: journeyId } = useJourney()
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
@@ -207,23 +216,11 @@ export function VideoBlockEditorSettingsPosterModal({
   }
 
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 350,
-        bgcolor: 'background.paper',
-        border: '1px solid #000',
-        boxShadow: 24,
-        paddingBottom: 4
-      }}
-    >
-      <Box sx={{ px: 6, py: 2 }}>
+    <Dialog open={open} onClose={onClose} aria-labelledby="poster-dialog-title">
+      <DialogTitle>
         <Stack direction="row" justifyContent="space-between">
           <Typography
-            id="modal-modal-title"
+            id="poster-dialog-title"
             variant="subtitle1"
             component="div"
             justifyContent="center"
@@ -235,13 +232,14 @@ export function VideoBlockEditorSettingsPosterModal({
             <Close />
           </IconButton>
         </Stack>
-      </Box>
-      <Divider />
-      <ImageBlockEditor
-        selectedBlock={selectedBlock}
-        onChange={handleChange}
-        onDelete={deleteCoverBlock}
-      />
-    </Box>
+      </DialogTitle>
+      <DialogContent>
+        <ImageBlockEditor
+          selectedBlock={selectedBlock}
+          onChange={handleChange}
+          onDelete={deleteCoverBlock}
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
