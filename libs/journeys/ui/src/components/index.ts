@@ -1,4 +1,5 @@
 export { BlockRenderer } from './BlockRenderer'
+export type { WrapperProps } from './BlockRenderer'
 export { Button } from './Button'
 export { Card, CardWrapper, CardCover } from './Card'
 export { Image } from './Image'

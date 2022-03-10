@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
-  GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock
+  GetJourney_journey_blocks_SignUpBlock as SignUpBlock
 } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
@@ -69,7 +69,7 @@ export function Action(): ReactElement {
 
   // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as
-    | TreeBlock<RadioOptionBlock>
+    | TreeBlock<SignUpBlock>
     | TreeBlock<ButtonBlock>
     | undefined
 
