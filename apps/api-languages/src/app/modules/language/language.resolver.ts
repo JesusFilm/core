@@ -9,8 +9,11 @@ export class LanguageResolver {
 
   @Query()
   @KeyAsId()
-  async languages(): Promise<Language[]> {
-    return await this.languageService.getAll()
+  async languages(
+    @Args('page') page: number,
+    @Args('limit') limit: number
+  ): Promise<Language[]> {
+    return await this.languageService.getAll(page, limit)
   }
 
   @Query()

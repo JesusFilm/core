@@ -7,6 +7,6 @@ type Language @key(fields: "id") {
 }
 
 extend type Query {
-  languages: [Language!]!
+  languages(page: Int, limit: Int): [Language!]!
   language(id: ID!): Language
 }

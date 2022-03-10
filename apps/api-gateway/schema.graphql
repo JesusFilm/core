@@ -456,7 +456,7 @@ type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!): Language @join__field(graph: LANGUAGES)
-  languages: [Language!]! @join__field(graph: LANGUAGES)
+  languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
 }
 
