@@ -80,6 +80,7 @@ export function VideoBlockEditor({
             data-testid="videoSettingsTab"
           />
         </Tabs>
+        <Divider />
         <TabPanel name="videoSrc" value={tabValue} index={0}>
           <VideoBlockEditorSource
             selectedBlock={selectedBlock}
