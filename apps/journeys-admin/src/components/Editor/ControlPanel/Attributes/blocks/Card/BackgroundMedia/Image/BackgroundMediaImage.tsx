@@ -83,7 +83,7 @@ export function BackgroundMediaImage({
   const coverBlock =
     (cardBlock?.children.find(
       (child) => child.id === cardBlock?.coverBlockId
-    ) as ImageBlock | TreeBlock<VideoBlock>) ?? null
+    ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
   const imageBlock = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 

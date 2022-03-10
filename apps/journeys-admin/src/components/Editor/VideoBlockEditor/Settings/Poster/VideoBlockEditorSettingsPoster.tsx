@@ -1,17 +1,10 @@
 import { Create } from '@mui/icons-material'
-import {
-  Box,
-  IconButton,
-  Modal,
-  Stack,
-  Typography,
-  useTheme
-} from '@mui/material'
+import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material'
 import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
-import { VideoBlockEditorSettingsPosterModal } from './Modal'
+import { VideoBlockEditorSettingsPosterDialog } from './Dialog'
 
 interface BackgroundMediaCoverImageProps {
   selectedBlock: ImageBlock | null
@@ -34,21 +27,20 @@ export function VideoBlockEditorSettingsPoster({
       <Stack direction="column" justifyContent="center">
         <Typography
           variant="subtitle2"
-          color={disabled ? theme.palette.grey[400] : ''}
+          color={disabled ? theme.palette.action.disabled : ''}
         >
           Cover Image
         </Typography>
         <Typography
           variant="caption"
-          color={disabled ? theme.palette.grey[400] : ''}
+          color={disabled ? theme.palette.action.disabled : ''}
         >
           Appears while video is loading
         </Typography>
       </Stack>
       <Box
-        width={95}
         height={62}
-        sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', py: 1 }}
+        sx={{ backgroundColor: 'rgba(0, 0, 0, 0.06)', p: 1 }}
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
@@ -66,23 +58,17 @@ export function VideoBlockEditorSettingsPoster({
               <Create
                 sx={{
                   color: disabled
-                    ? theme.palette.grey[400]
+                    ? theme.palette.action.disabled
                     : theme.palette.primary.main
                 }}
               ></Create>
             </IconButton>
-            <Modal
-              open={open}
+            <VideoBlockEditorSettingsPosterDialog
+              selectedBlock={selectedBlock}
+              parentBlockId={parentBlockId}
               onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <VideoBlockEditorSettingsPosterModal
-                selectedBlock={selectedBlock}
-                parentBlockId={parentBlockId}
-                onClose={handleClose}
-              />
-            </Modal>
+              open={open}
+            />
           </Stack>
         </Stack>
       </Box>

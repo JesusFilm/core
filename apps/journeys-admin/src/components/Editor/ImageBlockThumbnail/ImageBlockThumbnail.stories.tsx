@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
+import { Box } from '@mui/material'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -15,11 +16,7 @@ const ImageEditorStory = {
   title: 'Journeys-Admin/Editor/ImageBlockThumbnail',
   parameters: {
     ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      viewports: [360]
-    }
+    layout: 'fullscreen'
   }
 }
 
@@ -49,7 +46,9 @@ const image: ImageBlock = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <ImageBlockThumbnail selectedBlock={args.selectedBlock} />
+  <Box bgcolor="white">
+    <ImageBlockThumbnail selectedBlock={args.selectedBlock} />
+  </Box>
 )
 
 export const Default = Template.bind({})

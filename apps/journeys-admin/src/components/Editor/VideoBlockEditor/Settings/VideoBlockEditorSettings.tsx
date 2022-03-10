@@ -84,13 +84,13 @@ export function VideoBlockEditorSettings({
           <Stack direction="column">
             <Typography
               variant="subtitle2"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Autoplay
             </Typography>
             <Typography
               variant="caption"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Start video automatically when card appears
             </Typography>
@@ -107,13 +107,13 @@ export function VideoBlockEditorSettings({
           <Stack direction="column">
             <Typography
               variant="subtitle2"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Muted
             </Typography>
             <Typography
               variant="caption"
-              color={disabled ? theme.palette.grey[400] : ''}
+              color={disabled ? theme.palette.action.disabled : ''}
             >
               Video always muted on the first card
             </Typography>
@@ -126,11 +126,11 @@ export function VideoBlockEditorSettings({
           ></Switch>
         </Stack>
         <Divider />
-        <Stack direction="row" justifyContent="space-around">
+        <Stack direction="row" justifyContent="space-around" spacing={3}>
           <TimeField
             showSeconds
             value={formik.values.startAt}
-            style={{ width: 120 }}
+            style={{ width: '100%' }}
             onChange={formik.handleChange}
             input={
               <TextField
@@ -161,7 +161,7 @@ export function VideoBlockEditorSettings({
             showSeconds
             value={formik.values.endAt}
             onChange={formik.handleChange}
-            style={{ width: 120 }}
+            style={{ width: '100%' }}
             input={
               <TextField
                 id="endAt"

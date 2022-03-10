@@ -18,7 +18,9 @@ export function ImageBlockThumbnail({
         overflow: 'hidden',
         borderRadius: 8,
         height: 55,
-        width: 55
+        width: 55,
+        backgroundColor: '#EFEFEF',
+        minWidth: 55
       }}
     >
       {selectedBlock?.src != null && (

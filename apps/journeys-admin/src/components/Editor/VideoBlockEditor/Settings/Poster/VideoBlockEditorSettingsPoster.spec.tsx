@@ -39,7 +39,7 @@ const image: ImageBlock = {
 }
 
 describe('VideoBlockEditorSettingsPoster', () => {
-  it('displays Modal', () => {
+  it('shows edit poster image dialog', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -51,9 +51,9 @@ describe('VideoBlockEditorSettingsPoster', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('posterCreateButton'))
-    expect(getByRole('textbox')).toBeInTheDocument()
+    expect(getByRole('dialog')).toBeInTheDocument()
   })
-  it('disables button', () => {
+  it('disables edit poster image button', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>

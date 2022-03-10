@@ -69,4 +69,31 @@ describe('ImageBlockEditor', () => {
       )
     })
   })
+  it('triggers onChange', async () => {
+    const { getByRole } = render(
+      <ImageBlockEditor
+        selectedBlock={image}
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    )
+    const textBox = await getByRole('textbox')
+    fireEvent.change(textBox, {
+      target: { value: 'https://example.com/123' }
+    })
+    fireEvent.blur(textBox)
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
+  })
+  it('triggers onDelete', async () => {
+    const { getByRole } = render(
+      <ImageBlockEditor
+        selectedBlock={image}
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    )
+    const deleteButton = await getByRole('button')
+    fireEvent.click(deleteButton)
+    await waitFor(() => expect(onDelete).toHaveBeenCalled())
+  })
 })

@@ -1,7 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import { Close } from '@mui/icons-material'
-import { Box, Divider, IconButton, Stack, Typography } from '@mui/material'
-import { reject } from 'lodash'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Typography
+} from '@mui/material'
 import { ReactElement } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
@@ -11,6 +17,7 @@ import { PosterImageBlockUpdate } from '../../../../../../../__generated__/Poste
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
 import { useJourney } from '../../../../../../libs/context'
 import { ImageBlockEditor } from '../../../../ImageBlockEditor'
+import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
 export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   mutation BlockDeleteForPosterImage(
@@ -20,6 +27,7 @@ export const BLOCK_DELETE_FOR_POSTER_IMAGE = gql`
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
       id
+      parentOrder
     }
   }
 `
@@ -70,17 +78,19 @@ export const POSTER_IMAGE_BLOCK_UPDATE = gql`
   }
 `
 
-interface VideoBlockEditorSettingsPosterModalProps {
+interface VideoBlockEditorSettingsPosterDialogProps {
   selectedBlock: ImageBlock | null
   parentBlockId: string | undefined
+  open: boolean
   onClose: () => void
 }
 
-export function VideoBlockEditorSettingsPosterModal({
+export function VideoBlockEditorSettingsPosterDialog({
   selectedBlock,
   parentBlockId,
+  open,
   onClose
-}: VideoBlockEditorSettingsPosterModalProps): ReactElement {
+}: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
   const { id: journeyId } = useJourney()
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
@@ -101,22 +111,7 @@ export function VideoBlockEditorSettingsPosterModal({
         journeyId: journeyId
       },
       update(cache, { data }) {
-        if (data?.blockDelete != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const blockIds = data.blockDelete.map(
-                  (deletedBlock) =>
-                    `${deletedBlock.__typename}:${deletedBlock.id}`
-                )
-                return reject(existingBlockRefs, (block) => {
-                  return blockIds.includes(block.__ref)
-                })
-              }
-            }
-          })
-        }
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
       }
     })
     if (blockDeleteError != null) return
@@ -221,27 +216,16 @@ export function VideoBlockEditorSettingsPosterModal({
   }
 
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 350,
-        bgcolor: 'background.paper',
-        border: '1px solid #000',
-        boxShadow: 24,
-        paddingBottom: 4
-      }}
-    >
-      <Box sx={{ px: 6, py: 2 }}>
+    <Dialog open={open} onClose={onClose} aria-labelledby="poster-dialog-title">
+      <DialogTitle>
         <Stack direction="row" justifyContent="space-between">
           <Typography
-            id="modal-modal-title"
+            id="poster-dialog-title"
             variant="subtitle1"
             component="div"
             justifyContent="center"
             paddingTop={2}
+            sx={{ textTransform: 'initial' }}
           >
             Cover Image
           </Typography>
@@ -249,13 +233,14 @@ export function VideoBlockEditorSettingsPosterModal({
             <Close />
           </IconButton>
         </Stack>
-      </Box>
-      <Divider />
-      <ImageBlockEditor
-        selectedBlock={selectedBlock}
-        onChange={handleChange}
-        onDelete={deleteCoverBlock}
-      />
-    </Box>
+      </DialogTitle>
+      <DialogContent sx={{ p: 0 }}>
+        <ImageBlockEditor
+          selectedBlock={selectedBlock}
+          onChange={handleChange}
+          onDelete={deleteCoverBlock}
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
