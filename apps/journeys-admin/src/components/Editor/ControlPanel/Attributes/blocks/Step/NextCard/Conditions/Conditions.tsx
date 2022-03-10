@@ -45,7 +45,6 @@ export function Conditions(): ReactElement {
       optimisticResponse: {
         stepBlockUpdate: {
           id,
-          journeyId: journey.id,
           __typename: 'StepBlock',
           locked: !locked
         }
@@ -61,7 +60,7 @@ export function Conditions(): ReactElement {
       <ToggleOption
         heading={'Lock the next step'}
         description={"Don't allow to skip the current card"}
-        checked={selectedBlock.locked}
+        checked={locked}
         handleChange={handleChange}
       >
         <Box display={'flex'} alignItems={'center'} color={'text.secondary'}>

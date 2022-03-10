@@ -40,7 +40,6 @@ describe('Cards', () => {
       data: {
         stepBlockUpdate: {
           id: 'step1.id',
-          journeyId: 'journeyId',
           nextBlockId: 'step2.id'
         }
       }

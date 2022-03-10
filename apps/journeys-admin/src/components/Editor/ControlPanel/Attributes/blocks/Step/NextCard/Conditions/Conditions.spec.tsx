@@ -24,7 +24,6 @@ describe('Conditions', () => {
       data: {
         stepBlockUpdate: {
           id: 'step1.id',
-          journeyId: 'journeyId',
           locked: false
         }
       }
