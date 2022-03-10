@@ -8,6 +8,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import Divider from '@mui/material/Divider'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import { useEditor } from '@core/journeys/ui'
+import SettingsIcon from '@mui/icons-material/Settings'
 import { DeleteBlock } from '../DeleteBlock'
 
 export function Menu(): ReactElement {
@@ -51,7 +52,7 @@ export function Menu(): ReactElement {
         <Divider />
         <MenuItem>
           <ListItemIcon>
-            <EditRoundedIcon />
+            <SettingsIcon />
           </ListItemIcon>
           <ListItemText>Journey Settings</ListItemText>
         </MenuItem>
