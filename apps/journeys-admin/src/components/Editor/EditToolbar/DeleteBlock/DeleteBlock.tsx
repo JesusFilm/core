@@ -66,6 +66,7 @@ export function DeleteBlock({
     if (selectedBlock == null) return
 
     const toDeleteParentOrder = selectedBlock.parentOrder
+    const toDeleteBlockType = selectedBlock.__typename
 
     const { data } = await blockDelete({
       variables: {
@@ -82,10 +83,15 @@ export function DeleteBlock({
       toDeleteParentOrder != null &&
       updateSelected(toDeleteParentOrder, data.blockDelete, selectedStep)
 
-    enqueueSnackbar('Block Deleted', {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    toDeleteBlockType !== 'StepBlock'
+      ? enqueueSnackbar('Block Deleted', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      : enqueueSnackbar('Card Deleted', {
+          variant: 'success',
+          preventDuplicate: true
+        })
   }
 
   return variant === 'button' ? (
