@@ -2,11 +2,12 @@ import { ReactElement } from 'react'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, searchBlocks, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
+import last from 'lodash/last'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
@@ -53,7 +54,7 @@ export function DeleteBlock({
       })
     } else if (deletedStep != null && steps.length > 0) {
       const stepToSet =
-        steps.find((step) => step.nextBlockId === deletedStep.id) ?? steps[0]
+        steps.find((step) => step.nextBlockId === deletedStep.id) ?? last(steps)
       dispatch({
         type: 'SetSelectedStepAction',
         step: stepToSet
