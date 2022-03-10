@@ -126,11 +126,11 @@ export function VideoBlockEditorSettings({
           ></Switch>
         </Stack>
         <Divider />
-        <Stack direction="row" justifyContent="space-around">
+        <Stack direction="row" justifyContent="space-around" spacing={3}>
           <TimeField
             showSeconds
             value={formik.values.startAt}
-            style={{ width: 120 }}
+            style={{ width: '100%' }}
             onChange={formik.handleChange}
             input={
               <TextField
@@ -161,7 +161,7 @@ export function VideoBlockEditorSettings({
             showSeconds
             value={formik.values.endAt}
             onChange={formik.handleChange}
-            style={{ width: 120 }}
+            style={{ width: '100%' }}
             input={
               <TextField
                 id="endAt"

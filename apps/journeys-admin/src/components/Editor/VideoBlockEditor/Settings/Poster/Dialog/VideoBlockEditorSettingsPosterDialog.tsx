@@ -225,6 +225,7 @@ export function VideoBlockEditorSettingsPosterDialog({
             component="div"
             justifyContent="center"
             paddingTop={2}
+            sx={{ textTransform: 'initial' }}
           >
             Cover Image
           </Typography>
@@ -233,7 +234,7 @@ export function VideoBlockEditorSettingsPosterDialog({
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ p: 0 }}>
         <ImageBlockEditor
           selectedBlock={selectedBlock}
           onChange={handleChange}

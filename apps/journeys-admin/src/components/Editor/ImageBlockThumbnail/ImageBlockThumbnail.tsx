@@ -19,6 +19,7 @@ export function ImageBlockThumbnail({
         borderRadius: 8,
         height: 55,
         width: 55,
+        backgroundColor: '#EFEFEF',
         minWidth: 55
       }}
     >
