@@ -7,15 +7,56 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Divider from '@mui/material/Divider'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
+import { useEditor } from '@core/journeys/ui'
 import { DeleteBlock } from '../DeleteBlock'
 
 export function Menu(): ReactElement {
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+  }
+
+  function BlockMenu(): ReactElement {
+    return (
+      <>
+        <MenuItem>
+          <ListItemIcon>
+            <EditRoundedIcon />
+          </ListItemIcon>
+          <ListItemText>Edit Block</ListItemText>
+        </MenuItem>
+        <Divider />
+        <DeleteBlock variant="list-item" />
+      </>
+    )
+  }
+
+  function CardMenu(): ReactElement {
+    return (
+      <>
+        <MenuItem>
+          <ListItemIcon>
+            <EditRoundedIcon />
+          </ListItemIcon>
+          <ListItemText>Edit Card</ListItemText>
+        </MenuItem>
+        <DeleteBlock variant="list-item" />
+        <Divider />
+        <MenuItem>
+          <ListItemIcon>
+            <EditRoundedIcon />
+          </ListItemIcon>
+          <ListItemText>Journey Settings</ListItemText>
+        </MenuItem>
+      </>
+    )
   }
 
   return (
@@ -39,14 +80,11 @@ export function Menu(): ReactElement {
           'aria-labelledby': 'edit-journey-actions'
         }}
       >
-        <MenuItem>
-          <ListItemIcon>
-            <EditRoundedIcon />
-          </ListItemIcon>
-          <ListItemText>Edit Block</ListItemText>
-        </MenuItem>
-        <Divider />
-        <DeleteBlock variant="list-item" />
+        {selectedBlock?.__typename === 'StepBlock' ? (
+          <CardMenu />
+        ) : (
+          <BlockMenu />
+        )}
       </MuiMenu>
     </>
   )
