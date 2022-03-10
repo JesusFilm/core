@@ -93,11 +93,11 @@ Button.play = () => {
   userEvent.click(button)
 }
 
-export const ListItem = Template.bind({})
-ListItem.args = {
+export const MenuItem = Template.bind({})
+MenuItem.args = {
   variant: 'list-item'
 }
-ListItem.play = () => {
+MenuItem.play = () => {
   const button = screen.getByRole('menuitem')
   userEvent.click(button)
 }

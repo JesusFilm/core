@@ -7,17 +7,17 @@ import { Menu as DeleteMenu } from '.'
 const MenuStory = {
   ...simpleComponentConfig,
   component: DeleteMenu,
-  title: 'Journeys-Admin/Editor/EditToolbar'
+  title: 'Journeys-Admin/Editor/EditToolbar/Menu'
 }
 
-export const Menu: Story = () => {
+export const Block: Story = () => {
   return (
     <MockedProvider>
       <DeleteMenu />
     </MockedProvider>
   )
 }
-Menu.play = () => {
+Block.play = () => {
   const menuButton = screen.getByRole('button')
   userEvent.click(menuButton)
 }
