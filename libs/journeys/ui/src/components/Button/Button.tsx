@@ -1,7 +1,7 @@
 import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
-import { handleAction, TreeBlock, useEditor, ActiveTab } from '../..'
+import { handleAction, TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
@@ -50,9 +50,14 @@ export function Button({
       ...props
     }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (selectedBlock?.id === block.id) {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (

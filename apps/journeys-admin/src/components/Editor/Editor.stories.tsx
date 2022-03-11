@@ -81,7 +81,7 @@ const blocks: GetJourney_journey_blocks[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIconId: 'icon',
+    startIconId: 'icon0-1.id',
     endIconId: null,
     action: {
       __typename: 'NavigateAction',
@@ -90,9 +90,9 @@ const blocks: GetJourney_journey_blocks[] = [
     }
   },
   {
-    id: 'icon0',
+    id: 'icon0-1.id',
     __typename: 'IconBlock',
-    parentBlockId: 'button0',
+    parentBlockId: 'button0.id',
     parentOrder: 0,
     iconName: IconName.PlayArrowRounded,
     iconColor: null,
@@ -157,7 +157,7 @@ const blocks: GetJourney_journey_blocks[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIconId: 'icon1',
+    startIconId: 'icon1-1.id',
     endIconId: null,
     action: {
       __typename: 'NavigateAction',
@@ -166,9 +166,9 @@ const blocks: GetJourney_journey_blocks[] = [
     }
   },
   {
-    id: 'icon1',
+    id: 'icon1-1.id',
     __typename: 'IconBlock',
-    parentBlockId: 'button1',
+    parentBlockId: 'button1.id',
     parentOrder: 0,
     iconName: IconName.PlayArrowRounded,
     iconColor: null,
@@ -402,9 +402,18 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'SignUp1',
     parentBlockId: 'card5.id',
     parentOrder: 1,
-    submitIconId: null,
+    submitIconId: 'icon5-1.id',
     submitLabel: null,
     action: null
+  },
+  {
+    id: 'icon5-1.id',
+    __typename: 'IconBlock',
+    parentBlockId: 'SignUp1',
+    parentOrder: 0,
+    iconName: null,
+    iconColor: null,
+    iconSize: null
   },
   {
     id: 'step6.id',
@@ -476,7 +485,7 @@ const blocks: GetJourney_journey_blocks[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIconId: 'icon',
+    startIconId: 'icon6-1.id',
     endIconId: null,
     action: {
       __typename: 'NavigateToBlockAction',
@@ -486,9 +495,9 @@ const blocks: GetJourney_journey_blocks[] = [
     }
   },
   {
-    id: 'icon',
+    id: 'icon6-1.id',
     __typename: 'IconBlock',
-    parentBlockId: 'button',
+    parentBlockId: 'button3.id',
     parentOrder: 0,
     iconName: IconName.PlayArrowRounded,
     iconColor: null,

@@ -28,6 +28,7 @@ export function VideoBlockEditorSettingsPoster({
         <Typography
           variant="subtitle2"
           color={disabled ? theme.palette.action.disabled : ''}
+          sx={{ letterSpacing: 0 }}
         >
           Cover Image
         </Typography>
