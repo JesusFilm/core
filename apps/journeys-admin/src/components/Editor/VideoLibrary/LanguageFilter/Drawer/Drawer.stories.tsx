@@ -1,6 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
+import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { GET_LANGUAGES } from './Drawer'
 import { Drawer } from '.'
 
 const DrawerStory = {
@@ -19,16 +21,67 @@ const Template: Story = ({ onSelect }) => {
   }
 
   return (
-    <Drawer
-      open={open}
-      onClose={() => setOpen(false)}
-      onChange={handleChange}
-      selectedIds={selectedIds}
-      languages={[
-        { id: 'en', name: 'English', nativeName: 'English' },
-        { id: 'zh-Hans', name: 'Simplified Chinese', nativeName: '简体中文' }
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_LANGUAGES,
+            variables: {
+              languageId: '529'
+            }
+          },
+          result: {
+            data: {
+              languages: [
+                {
+                  id: '529',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                },
+                {
+                  id: '496',
+                  name: [
+                    {
+                      value: 'Français',
+                      primary: true
+                    },
+                    {
+                      value: 'French',
+                      primary: false
+                    }
+                  ]
+                },
+                {
+                  id: '1106',
+                  name: [
+                    {
+                      value: 'Deutsch',
+                      primary: true
+                    },
+                    {
+                      value: 'German, Standard',
+                      primary: false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
       ]}
-    />
+    >
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        onChange={handleChange}
+        selectedIds={selectedIds}
+        currentLanguageId="529"
+      />
+    </MockedProvider>
   )
 }
 

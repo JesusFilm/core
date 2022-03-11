@@ -15,32 +15,43 @@ import Typography from '@mui/material/Typography'
 import { Close } from '@mui/icons-material'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
+import { gql, useQuery } from '@apollo/client'
+import { GetLanguages } from '../../../../../../__generated__/GetLanguages'
 
 export const DRAWER_WIDTH = 328
-
-interface Language {
-  id: string
-  name: string
-  nativeName: string
-}
 
 interface DrawerProps {
   open?: boolean
   onClose: () => void
   onChange: (selectedIds: string[]) => void
-  languages: Language[]
   selectedIds: string[]
+  currentLanguageId: string
 }
+
+export const GET_LANGUAGES = gql`
+  query GetLanguages($languageId: ID) {
+    languages {
+      id
+      name(languageId: $languageId, primary: true) {
+        value
+        primary
+      }
+    }
+  }
+`
 
 export function Drawer({
   open,
   onClose: handleClose,
   onChange: handleChange,
   selectedIds: initialSelectedIds,
-  languages
+  currentLanguageId
 }: DrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds)
+  const { data } = useQuery<GetLanguages>(GET_LANGUAGES, {
+    variables: { languageId: currentLanguageId }
+  })
 
   useEffect(() => {
     setSelectedIds(initialSelectedIds)
@@ -99,7 +110,7 @@ export function Drawer({
         </Toolbar>
       </AppBar>
       <List sx={{ flexGrow: 1 }}>
-        {languages.map(({ id, name, nativeName }) => (
+        {data?.languages?.map(({ id, name }) => (
           <ListItem disablePadding key={id}>
             <ListItemButton role={undefined} onClick={handleToggle(id)} dense>
               <ListItemIcon>
@@ -111,7 +122,19 @@ export function Drawer({
                   inputProps={{ 'aria-labelledby': id }}
                 />
               </ListItemIcon>
-              <ListItemText id={id} primary={name} secondary={nativeName} />
+              <ListItemText
+                id={id}
+                primary={
+                  name.find((translation) => translation?.primary === false)
+                    ?.value ??
+                  name.find((translation) => translation?.primary === true)
+                    ?.value
+                }
+                secondary={
+                  name.find((translation) => translation?.primary === true)
+                    ?.value
+                }
+              />
             </ListItemButton>
           </ListItem>
         ))}
