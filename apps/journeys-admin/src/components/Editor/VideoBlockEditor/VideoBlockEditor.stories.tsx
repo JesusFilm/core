@@ -1,7 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { TreeBlock } from '@core/journeys/ui'
-import { Box } from '@mui/system'
+import MuiDrawer from '@mui/material/Drawer'
+import { MockedProvider } from '@apollo/client/testing'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -60,7 +61,7 @@ const poster: TreeBlock<ImageBlock> = {
   __typename: 'ImageBlock',
   parentBlockId: video.id,
   parentOrder: 0,
-  src: 'https://via.placeholder.com/300x200',
+  src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
   width: 300,
   height: 200,
   blurhash: '',
@@ -72,17 +73,49 @@ const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <ThemeProvider>
-    <Box width={328} bgcolor="white">
-      <VideoBlockEditor
-        selectedBlock={args.selectedBlock}
-        onChange={onChange}
-        onDelete={onDelete}
-        parentBlockId={card.id}
-        parentOrder={Number(card.parentOrder)}
-      />
-    </Box>
-  </ThemeProvider>
+  <MockedProvider>
+    <ThemeProvider>
+      <MuiDrawer
+        anchor="right"
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 328
+          }
+        }}
+        ModalProps={{
+          keepMounted: true
+        }}
+        open
+      >
+        <VideoBlockEditor
+          selectedBlock={args.selectedBlock}
+          onChange={onChange}
+          onDelete={onDelete}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+        />
+      </MuiDrawer>
+      <MuiDrawer
+        anchor="bottom"
+        variant="temporary"
+        open
+        sx={{
+          display: { xs: 'block', sm: 'none' }
+        }}
+      >
+        <VideoBlockEditor
+          selectedBlock={args.selectedBlock}
+          onChange={onChange}
+          onDelete={onDelete}
+          parentBlockId={card.id}
+          parentOrder={Number(card.parentOrder)}
+        />
+      </MuiDrawer>
+    </ThemeProvider>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
@@ -107,11 +140,24 @@ MobileSettings.args = {
 }
 MobileSettings.parameters = {
   chromatic: {
-    viewports: [360]
+    viewports: [360, 540]
   }
 }
 MobileSettings.play = async () => {
-  const settingsTab = await screen.getByTestId('videoSettingsTab')
+  const settingsTab = await screen.getAllByTestId('videoSettingsTab')[1]
+  await userEvent.click(settingsTab)
+}
+
+export const PosterModal = Template.bind({})
+PosterModal.args = {
+  selectedBlock: {
+    ...video,
+    children: [poster]
+  }
+}
+
+PosterModal.play = async () => {
+  const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
   await userEvent.click(settingsTab)
 }
 
