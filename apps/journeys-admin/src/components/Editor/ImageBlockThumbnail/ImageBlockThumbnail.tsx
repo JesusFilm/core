@@ -18,7 +18,9 @@ export function ImageBlockThumbnail({
         overflow: 'hidden',
         borderRadius: 8,
         height: 55,
-        width: 55
+        width: 55,
+        backgroundColor: '#EFEFEF',
+        minWidth: 55
       }}
     >
       {selectedBlock?.src != null && (
@@ -40,6 +42,7 @@ export function ImageBlockThumbnail({
             verticalAlign: 'center'
           }}
           justifyContent="center"
+          data-testid="imageBlockThumbnailPlaceholder"
         >
           <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }} />
         </Box>

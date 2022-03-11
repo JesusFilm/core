@@ -6,10 +6,10 @@
 import { ImageBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CardBlockImageBlockUpdate
+// GraphQL mutation operation: PosterImageBlockUpdate
 // ====================================================
 
-export interface CardBlockImageBlockUpdate_imageBlockUpdate {
+export interface PosterImageBlockUpdate_imageBlockUpdate {
   __typename: "ImageBlock";
   id: string;
   src: string | null;
@@ -24,11 +24,11 @@ export interface CardBlockImageBlockUpdate_imageBlockUpdate {
   blurhash: string;
 }
 
-export interface CardBlockImageBlockUpdate {
-  imageBlockUpdate: CardBlockImageBlockUpdate_imageBlockUpdate;
+export interface PosterImageBlockUpdate {
+  imageBlockUpdate: PosterImageBlockUpdate_imageBlockUpdate;
 }
 
-export interface CardBlockImageBlockUpdateVariables {
+export interface PosterImageBlockUpdateVariables {
   id: string;
   journeyId: string;
   input: ImageBlockUpdateInput;
