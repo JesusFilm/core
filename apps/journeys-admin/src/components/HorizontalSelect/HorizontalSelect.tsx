@@ -22,6 +22,7 @@ export function HorizontalSelect({
   return (
     <Stack
       direction="row"
+      data-testid="horizontal-select"
       spacing={1}
       sx={{
         overflowX: 'auto',
