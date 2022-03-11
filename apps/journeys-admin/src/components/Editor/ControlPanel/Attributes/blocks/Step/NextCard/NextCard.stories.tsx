@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { Drawer } from '../../../../../Drawer'
@@ -101,9 +102,40 @@ Default.args = {
   selectedBlock: noSelectedBlock
 }
 
+export const DefaultMobileConditions = Template.bind({})
+DefaultMobileConditions.args = {
+  selectedBlock: noSelectedBlock
+}
+
+DefaultMobileConditions.parameters = {
+  chromatic: {
+    viewports: [360, 540]
+  }
+}
+DefaultMobileConditions.play = () => {
+  const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
+  await userEvent.click(conditionsTab)
+}
+
 export const Selected = Template.bind({})
 Selected.args = {
   selectedBlock: selectedBlock
+}
+
+export const SelectedMobileConditions = Template.bind({})
+SelectedMobileConditions.args = {
+  selectedBlock: noSelectedBlock
+}
+
+SelectedMobileConditions.parameters = {
+  chromatic: {
+    viewports: [360, 540]
+  }
+}
+
+SelectedMobileConditions.play = async () => {
+  const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
+  await userEvent.click(conditionsTab)
 }
 
 export default NextCardStory as Meta
