@@ -1,7 +1,15 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
+import { JourneyProvider } from '../../../../../../libs/context'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../__generated__/GetJourney'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Step } from '.'
@@ -36,10 +44,20 @@ describe('Step', () => {
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <Drawer />
-              <Step {...step} />
-            </EditorProvider>
+            <JourneyProvider
+              value={
+                {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.light,
+                  themeName: ThemeName.base
+                } as unknown as Journey
+              }
+            >
+              <EditorProvider initialState={{ selectedBlock: step }}>
+                <Drawer />
+                <Step {...step} />
+              </EditorProvider>
+            </JourneyProvider>
           </ThemeProvider>
         </MockedProvider>
       )
