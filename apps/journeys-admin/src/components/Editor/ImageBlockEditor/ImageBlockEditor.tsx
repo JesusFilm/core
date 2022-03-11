@@ -43,7 +43,6 @@ export function ImageBlockEditor({
 
   const handleImageDelete = async (): Promise<void> => {
     if (onDelete != null) await onDelete()
-    await onDelete()
   }
 
   const formik = useFormik({
