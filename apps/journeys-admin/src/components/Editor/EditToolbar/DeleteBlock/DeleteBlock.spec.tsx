@@ -295,8 +295,8 @@ describe('DeleteBlock', () => {
               request: {
                 query: BLOCK_DELETE,
                 variables: {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
+                  id: selectedStep.children[0].id,
+                  parentBlockId: selectedStep.children[0].parentBlockId,
                   journeyId: 'journeyId'
                 }
               },
