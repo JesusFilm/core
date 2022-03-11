@@ -109,7 +109,7 @@ export function Drawer({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <List sx={{ flexGrow: 1 }}>
+      <List sx={{ flexGrow: 1, overflowY: 'auto' }}>
         {data?.languages?.map(({ id, name }) => (
           <ListItem disablePadding key={id}>
             <ListItemButton role={undefined} onClick={handleToggle(id)} dense>
