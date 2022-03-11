@@ -39,12 +39,14 @@ export function Step({
       }
       description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
       onClick={() => {
-        dispatch({
-          type: 'SetDrawerPropsAction',
-          title: 'Next Card Properties',
-          mobileOpen: true,
-          children: <NextCard id={id} />
-        })
+        if (nextBlock != null) {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Next Card Properties',
+            mobileOpen: true,
+            children: <NextCard />
+          })
+        }
       }}
     />
   )
