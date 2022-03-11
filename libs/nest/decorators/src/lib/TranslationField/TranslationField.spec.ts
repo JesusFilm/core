@@ -1,5 +1,5 @@
-import { TranslationField } from '.'
 import type { Translation } from './TranslationField'
+import { TranslationField } from '.'
 
 describe('TranslationField', () => {
   describe('when array of translations', () => {

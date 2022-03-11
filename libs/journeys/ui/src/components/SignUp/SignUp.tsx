@@ -5,7 +5,7 @@ import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, useEditor, ActiveTab } from '../..'
+import { TreeBlock, handleAction, useEditor, ActiveTab, ActiveFab } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
@@ -100,9 +100,14 @@ export const SignUp = ({
       ...props
     }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (selectedBlock?.id === block.id) {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (

@@ -4,7 +4,13 @@ export interface Translation {
   value: string
 }
 
-export function TranslationField(name: string) {
+export function TranslationField(
+  name: string
+): (
+  _target: unknown,
+  _propertyKey: string,
+  descriptor: PropertyDescriptor
+) => void {
   return (
     _target: unknown,
     _propertyKey: string,
@@ -35,7 +41,7 @@ function filterTranslations(
   translations: Translation[],
   languageId?: string,
   primary?: boolean
-) {
+): Translation[] {
   if (translations == null || (languageId == null && primary == null))
     return translations
 
