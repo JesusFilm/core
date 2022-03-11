@@ -1,7 +1,6 @@
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
 import { CardPreview } from '../../../../../CardPreview'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -71,16 +70,10 @@ export function NavigateToBlockAction(): ReactElement {
   }
 
   return (
-    <Box
-      sx={{
-        mx: -7
-      }}
-    >
-      <CardPreview
-        selected={currentActionStep}
-        steps={state.steps}
-        onSelect={handleSelectStep}
-      />
-    </Box>
+    <CardPreview
+      selected={currentActionStep}
+      steps={state.steps}
+      onSelect={handleSelectStep}
+    />
   )
 }
