@@ -83,7 +83,7 @@ describe('SignUp Attributes', () => {
   })
 
   it('action property button should open action edit drawer', async () => {
-    const { getByRole, getAllByText } = render(
+    const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
@@ -94,6 +94,6 @@ describe('SignUp Attributes', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
-    expect(getAllByText('Form Submission')).toHaveLength(2)
+    expect(getByTestId('drawer-title')).toHaveTextContent('Form Submission')
   })
 })

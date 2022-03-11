@@ -58,7 +58,7 @@ describe('RadioOption Attribute', () => {
       },
       children: []
     }
-    const { getAllByText, getByRole } = render(
+    const { getByTestId, getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
@@ -69,6 +69,6 @@ describe('RadioOption Attribute', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
-    expect(getAllByText('Action')).toHaveLength(3)
+    expect(getByTestId('drawer-title')).toHaveTextContent('Action')
   })
 })
