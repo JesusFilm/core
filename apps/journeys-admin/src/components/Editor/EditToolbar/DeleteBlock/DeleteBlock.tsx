@@ -47,22 +47,22 @@ export function DeleteBlock({
   function updateSelected(
     parentOrder: number,
     siblings,
-    deletedStep?: TreeBlock<StepBlock>
+    type: string,
+    currentStep?: TreeBlock<StepBlock>
   ): void {
-    // If 0, need to selected other sibling blocks
     if (siblings.length > 0) {
-      const toSetParentOrder = parentOrder > 0 ? parentOrder - 1 : 0
-      const blockToSelect = siblings.find(
-        (sibling) => sibling.parentOrder === toSetParentOrder
-      )
+      const blockToSelect =
+        siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
+        last(siblings)
       dispatch({
         type: 'SetSelectedBlockByIdAction',
         id: blockToSelect.id
       })
-    } else if (deletedStep != null && steps.length > 0) {
-      // needs to select parent card if block
+    } else if (currentStep != null && steps.length > 0) {
       const stepToSet =
-        steps.find((step) => step.nextBlockId === deletedStep.id) ?? last(steps)
+        type !== 'StepBlock'
+          ? currentStep
+          : steps.find((step) => step.nextBlockId === step.id) ?? last(steps)
       dispatch({
         type: 'SetSelectedStepAction',
         step: stepToSet
@@ -71,7 +71,6 @@ export function DeleteBlock({
   }
 
   const handleDeleteBlock = async (): Promise<void> => {
-    console.log('delete')
     if (selectedBlock == null) return
 
     const toDeleteParentOrder = selectedBlock.parentOrder
@@ -90,7 +89,12 @@ export function DeleteBlock({
 
     data?.blockDelete != null &&
       toDeleteParentOrder != null &&
-      updateSelected(toDeleteParentOrder, data.blockDelete, selectedStep)
+      updateSelected(
+        toDeleteParentOrder,
+        data.blockDelete,
+        toDeleteBlockType,
+        selectedStep
+      )
 
     handleCloseModal()
 
@@ -104,7 +108,7 @@ export function DeleteBlock({
           preventDuplicate: true
         })
   }
-
+  console.log(selectedBlock)
   return (
     <>
       <DeleteModal
