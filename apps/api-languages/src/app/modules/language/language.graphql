@@ -1,0 +1,11 @@
+type Language @key(fields: "id") {
+  id: ID!
+  bcp47: String
+  iso3: String
+  name(languageId: ID, primary: Boolean): [Translation]!
+}
+
+extend type Query {
+  languages(page: Int, limit: Int): [Language!]!
+  language(id: ID!): Language
+}
