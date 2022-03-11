@@ -46,10 +46,13 @@ export function DeleteBlock({
 
   function updateSelected(
     parentOrder: number,
-    siblings,
+    siblings, // TODO: add type here
     type: string,
     currentStep?: TreeBlock<StepBlock>
   ): void {
+    //  TODO: please double check this logic
+    // running into issues with cards with image block as it has parent order null but its still being returned as a sibling
+    // running into issues with the grid block, after deleting an element inside, the next block is not correctly being slected
     if (siblings.length > 0) {
       const blockToSelect =
         siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
