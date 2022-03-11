@@ -1,0 +1,33 @@
+type Video @key(fields: "id") {
+  id: ID!
+  title: [Translation!]!
+  snippet: [Translation!]!
+  description: [Translation!]!
+  studyQuestions: [[Translation!]!]!
+  image: String
+  variantLanguages: [Language!]!
+  # tags
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
+extend type VideoVariant {
+  subtitle: [Translation!]!
+}
+
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
+input VideosFilter {
+  availableVariantLanguageIds: [ID]
+  title: String
+}
+
+extend type Query {
+  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+}

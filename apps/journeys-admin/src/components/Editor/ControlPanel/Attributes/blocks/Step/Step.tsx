@@ -43,9 +43,7 @@ export function Step({
           type: 'SetDrawerPropsAction',
           title: 'Next Card Properties',
           mobileOpen: true,
-          children: (
-            <NextCard id={id} nextBlockId={nextBlockId} locked={locked} />
-          )
+          children: <NextCard id={id} />
         })
       }}
     />

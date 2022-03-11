@@ -1,0 +1,48 @@
+type Video @key(fields: "id") {
+  id: ID!
+  title: [Translation!]!
+  snippet: [Translation!]!
+  description: [Translation!]!
+  studyQuestions: [[Translation!]!]!
+  image: String
+  variantLanguages: [Language!]!
+  variant(languageId: ID): VideoVariant
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
+type VideoVariant {
+  subtitle: [Translation!]!
+  hls: String!
+  downloads: [Download!]!
+  duration: Int!
+  language: Language!
+}
+
+input VideosFilter {
+  availableVariantLanguageIds: [ID]
+  title: String
+}
+
+enum QualityType {
+  low
+  high
+}
+
+type Download {
+  quality: QualityType!
+  size: Float!
+  url: String!
+}
+
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
+extend type Query {
+  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+}

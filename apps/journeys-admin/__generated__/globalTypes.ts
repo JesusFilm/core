@@ -239,6 +239,11 @@ export interface SignUpResponseCreateInput {
   name: string;
 }
 
+export interface StepBlockUpdateInput {
+  locked?: boolean | null;
+  nextBlockId?: string | null;
+}
+
 export interface TypographyBlockCreateInput {
   align?: TypographyAlign | null;
   color?: TypographyColor | null;
