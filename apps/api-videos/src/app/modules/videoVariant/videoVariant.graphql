@@ -4,6 +4,7 @@ type VideoVariant {
   # duration in seconds
   duration: Int!
   language: Language!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 enum QualityType {

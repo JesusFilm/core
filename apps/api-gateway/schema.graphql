@@ -719,12 +719,12 @@ type Video
   @join__owner(graph: VIDEOS)
   @join__type(graph: VIDEOS, key: "id")
 {
-  description: [Translation!]! @join__field(graph: VIDEOS)
+  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
-  snippet: [Translation!]! @join__field(graph: VIDEOS)
-  studyQuestions: [[Translation!]!]! @join__field(graph: VIDEOS)
-  title: [Translation!]! @join__field(graph: VIDEOS)
+  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
@@ -849,7 +849,7 @@ enum VideoResponseStateEnum {
 }
 
 input VideosFilter {
-  availableVariantLanguageIds: [ID]
+  availableVariantLanguageIds: [ID!]
   title: String
 }
 
@@ -876,5 +876,5 @@ type VideoVariant {
   duration: Int!
   hls: String!
   language: Language!
-  subtitle: [Translation!]!
+  subtitle(languageId: ID, primary: Boolean): [Translation]!
 }
