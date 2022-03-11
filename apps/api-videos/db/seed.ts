@@ -145,6 +145,7 @@ async function digestContent(
   }
 
   const body = {
+    primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
         value: mediaComponent.title,

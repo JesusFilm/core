@@ -1,0 +1,22 @@
+type VideoVariant {
+  hls: String!
+  downloads: [Download!]!
+  # duration in seconds
+  duration: Int!
+  language: Language!
+}
+
+enum QualityType {
+  low
+  high
+}
+
+type Download {
+  quality: QualityType!
+  size: Float!
+  url: String!
+}
+
+extend type Video {
+  variant(languageId: ID): VideoVariant
+}

@@ -5,15 +5,27 @@ type Video @key(fields: "id") {
   description: [Translation!]!
   studyQuestions: [[Translation!]!]!
   image: String
-  variants: [VideoVariant]
+  variantLanguages: [Language!]!
+  variant(languageId: ID): VideoVariant
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
 }
 
 type VideoVariant {
-  hls: String!
   subtitle: [Translation!]!
+  hls: String!
   downloads: [Download!]!
   duration: Int!
-  languageId: Language!
+  language: Language!
+}
+
+input VideosFilter {
+  availableVariantLanguageIds: [ID]
+  title: String
 }
 
 enum QualityType {
@@ -23,14 +35,8 @@ enum QualityType {
 
 type Download {
   quality: QualityType!
-  size: Int!
+  size: Float!
   url: String!
-}
-
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
 }
 
 extend type Language @key(fields: "id") {
@@ -38,5 +44,5 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  videos: [Video!]!
+  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
 }

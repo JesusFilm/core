@@ -12,6 +12,11 @@ export enum QualityType {
     high = "high"
 }
 
+export class VideosFilter {
+    availableVariantLanguageIds?: Nullable<Nullable<string>[]>;
+    title?: Nullable<string>;
+}
+
 export class Video {
     __typename?: 'Video';
     id: string;
@@ -20,23 +25,8 @@ export class Video {
     description: Translation[];
     studyQuestions: undefined[];
     image?: Nullable<string>;
-    variants?: Nullable<Nullable<VideoVariant>[]>;
-}
-
-export class VideoVariant {
-    __typename?: 'VideoVariant';
-    hls: string;
-    subtitle: Translation[];
-    downloads: Download[];
-    duration: number;
-    languageId: Language;
-}
-
-export class Download {
-    __typename?: 'Download';
-    quality: QualityType;
-    size: number;
-    url: string;
+    variantLanguages: Language[];
+    variant?: Nullable<VideoVariant>;
 }
 
 export class Translation {
@@ -46,12 +36,28 @@ export class Translation {
     primary: boolean;
 }
 
+export class VideoVariant {
+    __typename?: 'VideoVariant';
+    subtitle: Translation[];
+    hls: string;
+    downloads: Download[];
+    duration: number;
+    language: Language;
+}
+
+export class Download {
+    __typename?: 'Download';
+    quality: QualityType;
+    size: number;
+    url: string;
+}
+
 export class Language {
     id: string;
 }
 
 export abstract class IQuery {
-    abstract videos(): Video[] | Promise<Video[]>;
+    abstract videos(where?: Nullable<VideosFilter>, page?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 }
 
 type Nullable<T> = T | null;

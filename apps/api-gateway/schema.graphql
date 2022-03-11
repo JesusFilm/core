@@ -140,7 +140,7 @@ scalar DateTime
 
 type Download {
   quality: QualityType!
-  size: Int!
+  size: Float!
   url: String!
 }
 
@@ -470,7 +470,7 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  videos: [Video!]! @join__field(graph: VIDEOS)
+  videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block {
@@ -724,7 +724,8 @@ type Video
   snippet: [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions: [[Translation!]!]! @join__field(graph: VIDEOS)
   title: [Translation!]! @join__field(graph: VIDEOS)
-  variants: [VideoVariant] @join__field(graph: VIDEOS)
+  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
+  variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
 
 type VideoArclight implements VideoContent {
@@ -846,6 +847,11 @@ enum VideoResponseStateEnum {
   PLAYING
 }
 
+input VideosFilter {
+  availableVariantLanguageIds: [ID]
+  title: String
+}
+
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -868,6 +874,6 @@ type VideoVariant {
   downloads: [Download!]!
   duration: Int!
   hls: String!
-  languageId: Language!
+  language: Language!
   subtitle: [Translation!]!
 }

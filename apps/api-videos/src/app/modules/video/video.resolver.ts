@@ -1,6 +1,13 @@
-import { Resolver, Query } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  ResolveField,
+  Parent,
+  Args,
+  Info
+} from '@nestjs/graphql'
 import { KeyAsId } from '@core/nest/decorators'
-import { Video } from '../../__generated__/graphql'
+import { Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
@@ -9,7 +16,31 @@ export class VideoResolver {
 
   @Query()
   @KeyAsId()
-  async videos(): Promise<Video[]> {
-    return await this.videoService.getAll()
+  async videos(
+    @Info() info,
+    @Args('where') where?: VideosFilter,
+    @Args('page') page?: number,
+    @Args('limit') limit?: number
+  ): Promise<Video[]> {
+    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
+      .find(({ name }) => name.value === 'variant')
+      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+    return await this.videoService.filterAll(
+      where?.title,
+      where?.availableVariantLanguageIds ?? undefined,
+      variantLanguageId,
+      page,
+      limit
+    )
+  }
+}
+
+@Resolver('Translation')
+export class TranslationResolver {
+  @ResolveField('language')
+  async language(
+    @Parent() translation
+  ): Promise<{ __typename: string; id: string }> {
+    return { __typename: 'Language', id: translation.languageId }
   }
 }
