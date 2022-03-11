@@ -1,0 +1,1 @@
+export { VideoBlockEditorSettingsPosterDialog } from './VideoBlockEditorSettingsPosterDialog'

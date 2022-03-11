@@ -15,6 +15,7 @@ import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { useJourney } from '../../../libs/context'
+import { InlineEditWrapper } from './InlineEditWrapper'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -132,7 +133,13 @@ export function Canvas(): ReactElement {
               <FramePortal width={356} height={536}>
                 <ThemeProvider themeName={themeName} themeMode={themeMode}>
                   <Box sx={{ p: 1, height: '100%' }}>
-                    <BlockRenderer block={step} />
+                    <BlockRenderer
+                      block={step}
+                      wrappers={{
+                        TypographyWrapper: InlineEditWrapper,
+                        ButtonWrapper: InlineEditWrapper
+                      }}
+                    />
                   </Box>
                 </ThemeProvider>
               </FramePortal>

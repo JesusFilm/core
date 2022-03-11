@@ -14,6 +14,7 @@ export {
   Video,
   VideoTrigger
 } from './components'
+export type { WrapperProps } from './components'
 export {
   handleAction,
   useEditor,

@@ -76,6 +76,7 @@
     "react-firebaseui": "^6.0.0",
     "react-helmet": "^6.1.0",
     "react-router-dom": "5.3.0",
+    "react-simple-timefield": "^3.2.5",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "rxjs": "^7.1.0",
