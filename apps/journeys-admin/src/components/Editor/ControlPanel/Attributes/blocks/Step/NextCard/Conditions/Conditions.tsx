@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
@@ -31,36 +32,41 @@ export function Conditions(): ReactElement {
     state: { selectedBlock }
   } = useEditor()
   const journey = useJourney()
-  const { id, locked } = selectedBlock as TreeBlock<StepFields>
+  const theme = useTheme()
+  const block = selectedBlock as TreeBlock<StepFields>
 
   async function handleChange(): Promise<void> {
     await stepBlockLockUpdate({
       variables: {
-        id,
+        id: block.id,
         journeyId: journey.id,
         input: {
-          locked: !locked
+          locked: !block.locked
         }
       },
       optimisticResponse: {
         stepBlockUpdate: {
-          id,
+          id: block.id,
           __typename: 'StepBlock',
-          locked: !locked
+          locked: !block.locked
         }
       }
     })
   }
 
   return (
-    <Box sx={{ px: 6, py: 4 }}>
-      <Typography variant="subtitle2" gutterBottom>
+    <Box sx={{ p: 4, pl: 6 }}>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{ [theme.breakpoints.down('sm')]: { display: 'none' }, mb: 4 }}
+      >
         Conditions
       </Typography>
       <ToggleOption
         heading={'Lock the next step'}
         description={"Don't allow to skip the current card"}
-        checked={locked}
+        checked={block.locked}
         handleChange={handleChange}
       >
         <Box display={'flex'} alignItems={'center'} color={'text.secondary'}>

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useTheme } from '@mui/material'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -29,6 +30,7 @@ export function Cards(): ReactElement {
     state: { steps, selectedBlock }
   } = useEditor()
   const journey = useJourney()
+  const theme = useTheme()
   const { id, nextBlockId } = selectedBlock as TreeBlock<StepFields>
 
   const nextStep: TreeBlock<StepFields> | undefined = steps.find(
@@ -56,8 +58,11 @@ export function Cards(): ReactElement {
 
   return (
     <>
-      <Box sx={{ px: 6, py: 4 }}>
-        <Typography variant="subtitle2" gutterBottom>
+      <Box sx={{ pl: 6, pr: 4, pt: 4 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}
+        >
           Cards
         </Typography>
       </Box>
