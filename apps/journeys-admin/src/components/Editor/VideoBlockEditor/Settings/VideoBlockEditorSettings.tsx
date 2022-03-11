@@ -60,7 +60,6 @@ export function VideoBlockEditorSettings({
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const value = event.target.checked
-    if (selectedBlock?.autoplay === value) return
 
     const block = {
       ...selectedBlock,
