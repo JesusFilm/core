@@ -5,7 +5,15 @@ import Divider from '@mui/material/Divider'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
-import { Card, Step, Typography, Button, SignUp, RadioOption } from './blocks'
+import {
+  Card,
+  Step,
+  Typography,
+  Button,
+  SignUp,
+  RadioOption,
+  Video
+} from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
 
 function AttributesContent({ selected, step }: AttributesProps): ReactElement {
@@ -39,9 +47,9 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
 
     case 'VideoBlock': {
       return step.id === selected.parentBlockId ? (
-        <p>Video Attributes</p>
+        <Video {...selected} />
       ) : (
-        withMoveButtons(<p>Video Attributes</p>)
+        withMoveButtons(<Video {...selected} />)
       )
     }
 
