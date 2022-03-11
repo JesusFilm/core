@@ -78,8 +78,7 @@ export function Button({
       sx={{
         ...sx,
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px',
-        minHeight: '36.5px'
+        outlineOffset: '5px'
       }}
       onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
       fullWidth
