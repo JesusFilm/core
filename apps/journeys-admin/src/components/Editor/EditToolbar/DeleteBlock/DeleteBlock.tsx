@@ -8,16 +8,11 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
 import last from 'lodash/last'
-import Modal from '@mui/material/Modal'
-import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import Button from '@mui/material/Button'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
+import { DeleteModal } from './DeleteModal'
 
 export const BLOCK_DELETE = gql`
   mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID!) {
@@ -76,8 +71,8 @@ export function DeleteBlock({
   }
 
   const handleDeleteBlock = async (): Promise<void> => {
+    console.log('delete')
     if (selectedBlock == null) return
-    handleCloseModal()
 
     const toDeleteParentOrder = selectedBlock.parentOrder
     const toDeleteBlockType = selectedBlock.__typename
@@ -97,6 +92,8 @@ export function DeleteBlock({
       toDeleteParentOrder != null &&
       updateSelected(toDeleteParentOrder, data.blockDelete, selectedStep)
 
+    handleCloseModal()
+
     toDeleteBlockType !== 'StepBlock'
       ? enqueueSnackbar('Block Deleted', {
           variant: 'success',
@@ -110,51 +107,11 @@ export function DeleteBlock({
 
   return (
     <>
-      <Modal
+      <DeleteModal
+        handleDelete={handleDeleteBlock}
         open={open}
-        onClose={handleCloseModal}
-        aria-labelledby="delete-card-modal"
-        aria-describedby="delete-card-modal"
-        sx={{
-          height: '188px',
-          width: '372px',
-          m: 'auto'
-        }}
-      >
-        <Card
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            px: 2,
-            pb: 2
-          }}
-        >
-          <CardContent>
-            <Typography variant="subtitle1" gutterBottom>
-              Delete Card?
-            </Typography>
-            <Typography variant="body1">
-              Are you sure you would like to delete this card?
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ ml: 'auto' }}>
-            <Button
-              color="secondary"
-              onClick={handleCloseModal}
-              sx={{ fontWeight: 'normal' }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleDeleteBlock}
-              sx={{ fontWeight: 'normal', pl: 6 }}
-            >
-              Delete
-            </Button>
-          </CardActions>
-        </Card>
-      </Modal>
-
+        handleClose={handleCloseModal}
+      />
       {variant === 'button' ? (
         <IconButton
           id="delete-block-actions"
