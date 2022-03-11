@@ -4,8 +4,8 @@ import { TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { Image } from './Image'
 
-describe('Video', () => {
-  it('should display Video Options', () => {
+describe('Image', () => {
+  it('should display Image Options', () => {
     const image: TreeBlock<ImageBlock> = {
       id: 'image1.id',
       __typename: 'ImageBlock',
