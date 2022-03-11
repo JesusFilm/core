@@ -22,3 +22,7 @@ export interface GetLanguages_languages {
 export interface GetLanguages {
   languages: GetLanguages_languages[];
 }
+
+export interface GetLanguagesVariables {
+  languageId?: string | null;
+}
