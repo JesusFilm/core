@@ -8,7 +8,6 @@ import { Typography } from '@mui/material'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import {
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock
