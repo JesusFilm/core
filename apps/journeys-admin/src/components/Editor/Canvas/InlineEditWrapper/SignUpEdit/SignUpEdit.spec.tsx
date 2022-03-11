@@ -8,7 +8,7 @@ import { SignUpEdit, SIGN_UP_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('SignUpEdit', () => {
   const props: TreeBlock<SignUpFields> = {
-    id: 'signUpBlockId1',
+    id: 'signUp.id',
     __typename: 'SignUpBlock',
     parentBlockId: 'card0.id',
     parentOrder: 1,
@@ -23,7 +23,7 @@ describe('SignUpEdit', () => {
         <SignUpEdit {...props} />
       </MockedProvider>
     )
-    const input = getByRole('textbox')
+    const input = getByRole('textbox', { name: '' })
     fireEvent.click(input)
     expect(input).toHaveFocus()
   })
@@ -35,7 +35,7 @@ describe('SignUpEdit', () => {
           {
             __typename: 'SignUpBlock',
             id: 'signUp.id',
-            label: 'updated label'
+            submitLabel: 'updated label'
           }
         ]
       }
@@ -51,7 +51,7 @@ describe('SignUpEdit', () => {
                 id: 'signUp.id',
                 journeyId: 'journeyId',
                 input: {
-                  label: 'updated label'
+                  submitLabel: 'updated label'
                 }
               }
             },
@@ -67,7 +67,7 @@ describe('SignUpEdit', () => {
       </MockedProvider>
     )
 
-    const input = getByRole('textbox')
+    const input = getByRole('textbox', { name: '' })
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
     fireEvent.blur(input)
