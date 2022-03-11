@@ -1,8 +1,5 @@
 type Translation {
   value: String!
+  language: Language!
   primary: Boolean!
-}
-
-extend type Translation {
-  language: Language
 }
