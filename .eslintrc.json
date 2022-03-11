@@ -27,7 +27,10 @@
     "import/no-named-default": "error",
     "import/no-anonymous-default-export": "error",
     "import/dynamic-import-chunkname": "error",
-    "@typescript-eslint/no-empty-function": { "allow": ["decoratedFunctions"] }
+    "@typescript-eslint/no-empty-function": [
+      "error",
+      { "allow": ["decoratedFunctions"] }
+    ]
   },
   "overrides": [
     {
