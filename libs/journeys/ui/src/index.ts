@@ -14,11 +14,13 @@ export {
   Video,
   VideoTrigger
 } from './components'
+export type { WrapperProps } from './components'
 export {
   handleAction,
   useEditor,
   EditorProvider,
   ActiveTab,
+  ActiveFab,
   searchBlocks,
   journeyUiConfig,
   simpleComponentConfig,
@@ -29,6 +31,7 @@ export {
   CARD_FIELDS,
   GRID_CONTAINER_FIELDS,
   GRID_ITEM_FIELDS,
+  ICON_FIELDS,
   IMAGE_FIELDS,
   RADIO_OPTION_FIELDS,
   RADIO_QUESTION_FIELDS,

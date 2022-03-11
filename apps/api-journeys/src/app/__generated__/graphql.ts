@@ -202,14 +202,13 @@ export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
     journeyId: string;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
 
 export class IconBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
@@ -258,7 +257,6 @@ export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    submitIconId?: Nullable<string>;
     submitLabel: string;
 }
 
@@ -496,7 +494,7 @@ export class IconBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }

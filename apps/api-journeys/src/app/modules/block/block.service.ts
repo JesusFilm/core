@@ -45,16 +45,16 @@ export class BlockService extends BaseService {
   async updateChildrenParentOrder(
     journeyId: string,
     parentBlockId: string
-  ): Promise<Array<{ _key: string; parentOrder: number }>> {
+  ): Promise<Block[]> {
     const siblings = await this.getSiblings(journeyId, parentBlockId)
     return await this.reorderSiblings(siblings)
   }
 
   async reorderSiblings(
     siblings: Block[] | Array<{ _key: string; parentOrder: number }>
-  ): Promise<Array<{ _key: string; parentOrder: number }>> {
+  ): Promise<Block[]> {
     const updatedSiblings = siblings.map((block, index) => ({
-      _key: block._key,
+      ...block,
       parentOrder: index
     }))
     return await this.updateAll(updatedSiblings)
@@ -86,8 +86,21 @@ export class BlockService extends BaseService {
     journeyId: string
   ): Promise<Block[]> {
     const res: Block = await this.remove(blockId)
-    await this.updateChildrenParentOrder(journeyId, parentBlockId)
-    return await this.removeAllBlocksForParentId([blockId], [res])
+    await this.removeAllBlocksForParentId([blockId], [res])
+    const result = await this.updateChildrenParentOrder(
+      journeyId,
+      parentBlockId
+    )
+    return result as unknown as Block[]
+  }
+
+  async validateBlock(
+    id: string | null,
+    parentBlockId: string | null
+  ): Promise<boolean> {
+    const block: Block | null = id != null ? await this.get(id) : null
+
+    return block != null ? block.parentBlockId === parentBlockId : false
   }
 
   collection: DocumentCollection = this.db.collection('blocks')

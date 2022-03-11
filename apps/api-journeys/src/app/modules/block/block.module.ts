@@ -4,6 +4,7 @@ import { DatabaseModule } from '@core/nest/database'
 import { BlockService } from './block.service'
 import { BlockResolver } from './block.resolver'
 import { CardBlockResolver } from './card/card.resolver'
+import { IconBlockResolver } from './icon/icon.resolver'
 import { ImageBlockResolver } from './image/image.resolver'
 import { SignUpBlockResolver } from './signUp/signUp.resolver'
 import { StepBlockResolver } from './step/step.resolver'
@@ -27,6 +28,7 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     BlockResolver,
     ButtonBlockResolver,
     CardBlockResolver,
+    IconBlockResolver,
     ImageBlockResolver,
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,

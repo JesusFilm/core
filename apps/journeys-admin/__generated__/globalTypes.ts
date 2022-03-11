@@ -165,12 +165,33 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface IconBlockCreateInput {
+  color?: IconColor | null;
+  id?: string | null;
+  journeyId: string;
+  name?: IconName | null;
+  parentBlockId: string;
+  size?: IconSize | null;
+}
+
+export interface IconBlockUpdateInput {
+  color?: IconColor | null;
+  name?: IconName | null;
+  size?: IconSize | null;
+}
+
 export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  src?: string | null;
+}
+
+export interface ImageBlockUpdateInput {
+  alt?: string | null;
+  parentBlockId?: string | null;
   src?: string | null;
 }
 
@@ -182,6 +203,26 @@ export interface JourneyUpdateInput {
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   title?: string | null;
+}
+
+export interface LinkActionInput {
+  gtmEventName?: string | null;
+  target?: string | null;
+  url: string;
+}
+
+export interface NavigateActionInput {
+  gtmEventName?: string | null;
+}
+
+export interface NavigateToBlockActionInput {
+  blockId: string;
+  gtmEventName?: string | null;
+}
+
+export interface NavigateToJourneyActionInput {
+  gtmEventName?: string | null;
+  journeyId: string;
 }
 
 export interface RadioOptionBlockCreateInput {
@@ -208,8 +249,13 @@ export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  submitIconId?: string | null;
   submitLabel: string;
+}
+
+export interface SignUpBlockUpdateInput {
+  parentBlockId?: string | null;
+  submitIconId?: string | null;
+  submitLabel?: string | null;
 }
 
 export interface SignUpResponseCreateInput {
@@ -217,6 +263,11 @@ export interface SignUpResponseCreateInput {
   email: string;
   id?: string | null;
   name: string;
+}
+
+export interface StepBlockUpdateInput {
+  locked?: boolean | null;
+  nextBlockId?: string | null;
 }
 
 export interface TypographyBlockCreateInput {
@@ -250,6 +301,19 @@ export interface VideoBlockCreateInput {
   startAt?: number | null;
   title: string;
   videoContent: VideoContentInput;
+}
+
+export interface VideoBlockUpdateInput {
+  autoplay?: boolean | null;
+  description?: string | null;
+  endAt?: number | null;
+  fullsize?: boolean | null;
+  muted?: boolean | null;
+  parentBlockId?: string | null;
+  posterBlockId?: string | null;
+  startAt?: number | null;
+  title?: string | null;
+  videoContent?: VideoContentInput | null;
 }
 
 export interface VideoContentInput {

@@ -2,13 +2,13 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { ReactElement, SyntheticEvent } from 'react'
-import { TreeBlock, useEditor, ActiveTab } from '@core/journeys/ui'
+import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '@core/journeys/ui'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview } from '../../CardPreview'
 import { Attributes } from './Attributes'
 import { BlocksTab } from './BlocksTab'
-import { AddFab } from './AddFab'
+import { Fab } from './Fab'
 
 export function ControlPanel(): ReactElement {
   const {
@@ -23,9 +23,10 @@ export function ControlPanel(): ReactElement {
     dispatch({ type: 'SetActiveTabAction', activeTab: newValue })
   }
 
-  const handleSelectStep = (step: TreeBlock<StepBlock>): void => {
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+  const handleSelectStepPreview = (step: TreeBlock<StepBlock>): void => {
     dispatch({ type: 'SetSelectedStepAction', step })
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
   }
 
   const handleAddFabClick = (): void => {
@@ -35,9 +36,9 @@ export function ControlPanel(): ReactElement {
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ position: 'absolute', top: '-64px', right: 20, zIndex: 1 }}>
-        <AddFab
+        <Fab
           visible={activeTab !== ActiveTab.Blocks}
-          onClick={handleAddFabClick}
+          onAddClick={handleAddFabClick}
         />
       </Box>
       <Box
@@ -73,7 +74,7 @@ export function ControlPanel(): ReactElement {
       <TabPanel name="control-panel" value={activeTab} index={0}>
         <CardPreview
           selected={selectedStep}
-          onSelect={handleSelectStep}
+          onSelect={handleSelectStepPreview}
           steps={steps}
           showAddButton
         />

@@ -46,7 +46,7 @@ export class BlockResolver {
     @Args('id') _key: string,
     @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
-  ): Promise<Array<{ _key: string; parentOrder: number }>> {
+  ): Promise<Block[]> {
     const selectedBlock: Block = await this.blockService.get(_key)
 
     if (
