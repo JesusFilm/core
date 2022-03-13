@@ -46,20 +46,19 @@ export function DeleteBlock({
 
   function updateSelected(
     parentOrder: number,
-    siblings, // TODO: add type here
+    siblings: BlockDelete['blockDelete'],
     type: string,
     currentStep?: TreeBlock<StepBlock>
   ): void {
-    //  TODO: please double check this logic
-    // running into issues with cards with image block as it has parent order null but its still being returned as a sibling
-    // running into issues with the grid block, after deleting an element inside, the next block is not correctly being slected
+    // BUG: parentOrder being added to coverImage, causes problems when dispatching next block to select
+    // BUG: siblings not returning correct data for blocks nested in a gridBlock
     if (siblings.length > 0) {
       const blockToSelect =
         siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
         last(siblings)
       dispatch({
         type: 'SetSelectedBlockByIdAction',
-        id: blockToSelect.id
+        id: blockToSelect?.id
       })
     } else if (currentStep != null && steps.length > 0) {
       const stepToSet =
@@ -111,7 +110,6 @@ export function DeleteBlock({
           preventDuplicate: true
         })
   }
-  console.log(selectedBlock)
   return (
     <>
       <DeleteModal
