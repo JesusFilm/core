@@ -112,7 +112,7 @@ DefaultMobileConditions.parameters = {
     viewports: [360, 540]
   }
 }
-DefaultMobileConditions.play = () => {
+DefaultMobileConditions.play = async () => {
   const conditionsTab = await screen.getByRole('tab', { name: 'Conditions' })
   await userEvent.click(conditionsTab)
 }
