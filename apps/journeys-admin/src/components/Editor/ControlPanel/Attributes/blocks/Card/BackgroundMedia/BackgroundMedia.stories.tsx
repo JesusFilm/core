@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 
@@ -84,7 +83,7 @@ const poster: TreeBlock<ImageBlock> = {
   __typename: 'ImageBlock',
   parentBlockId: video.id,
   parentOrder: 0,
-  src: 'https://via.placeholder.com/300x200',
+  src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
   width: 300,
   height: 200,
   blurhash: '',
@@ -97,7 +96,7 @@ const image: TreeBlock<ImageBlock> = {
   __typename: 'ImageBlock',
   parentBlockId: card.id,
   parentOrder: 0,
-  src: 'https://source.unsplash.com/random/1920x1080',
+  src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
   alt: 'random image from unsplash',
   width: 1920,
   height: 1080,
@@ -131,15 +130,6 @@ Video.args = {
     children: [{ ...video, posterBlockId: poster.id, children: [poster] }],
     coverBlockId: video.id
   }
-}
-
-export const NoImage = Template.bind({})
-NoImage.args = {
-  selectedBlock: card
-}
-NoImage.play = async () => {
-  const imageTab = await screen.getByTestId('bgvideo-image-tab')
-  await userEvent.click(imageTab)
 }
 
 export const Image = Template.bind({})

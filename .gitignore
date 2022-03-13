@@ -39,6 +39,7 @@ testem.log
 Thumbs.db
 
 #local .env files
+.env
 .env*local
 
 # kube secrets

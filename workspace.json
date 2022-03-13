@@ -3,6 +3,7 @@
   "projects": {
     "api-gateway": "apps/api-gateway",
     "api-journeys": "apps/api-journeys",
+    "api-languages": "apps/api-languages",
     "api-users": "apps/api-users",
     "apollo-logging": "libs/apollo/logging",
     "journeys": "apps/journeys",
