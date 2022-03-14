@@ -14,49 +14,42 @@ import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
 
 // to be replaced with the query
-const arclightVideo = {
-  mediaComponentId: '5_0-NUA0201-0-0',
-  uuid: 'nua1-uuid',
-  descriptors: {
-    nodes: [
+const videos = [
+  {
+    id: '2_Acts7302-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+    title: [
       {
-        value:
-          'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense.',
-        descriptorType: 'DESCRIPTION'
-      },
-      {
-        value: 'This is a short description for the video nua1',
-        descriptorType: 'SHORT_DESCRIPTION'
-      },
-      {
-        value: 'Fact or fiction',
-        descriptorType: 'TITLE'
+        primary: true,
+        value: 'Jesus Taken Up Into Heaven',
+        language: {
+          id: '529'
+        }
       }
-    ]
-  },
-  visuals: {
-    nodes: [
+    ],
+    variant: {
+      duration: 144,
+      hls: 'https://arc.gt/opsgn'
+    },
+    description: [
       {
-        visualType: 'THUMBNAIL',
-        url: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1631&q=80'
-      }
-    ]
-  },
-  trackRecordings: {
-    nodes: [
-      {
-        durationMilliseconds: 94000
+        primary: true,
+        value: 'Jesus promises the Holy Spirit; then ascends into the clouds.',
+        language: {
+          id: '529'
+        }
       }
     ]
   }
-}
+]
 
 export const DRAWER_WIDTH = 328
 
 interface VideoDetailsContentProps {
   videoId: string
   handleOpen?: () => void
-  onSelect?: (id: string) => void
+  onSelect?: (source: string) => void
 }
 
 export function VideoDetailsContent({
@@ -69,8 +62,14 @@ export function VideoDetailsContent({
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
 
   const handleOnClick = (): void => {
-    if (onSelect != null) onSelect(videoId)
+    if (onSelect != null) onSelect(videos[0].variant.hls)
   }
+
+  const time = videos?.[0].variant?.duration
+  const duration =
+    time < 3600
+      ? new Date(time * 1000).toISOString().substring(14, 19)
+      : new Date(time * 1000).toISOString().substring(11, 19)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -96,9 +95,7 @@ export function VideoDetailsContent({
         },
         responsive: true,
         muted: true,
-        poster: arclightVideo?.visuals.nodes.find(
-          (arclight) => arclight.visualType === 'THUMBNAIL'
-        )?.url
+        poster: videos?.[0]?.image
       })
       playerRef.current.on('playing', () => {
         setIsPlaying(true)
@@ -136,6 +133,7 @@ export function VideoDetailsContent({
         }}
       >
         <Box
+          data-testid={`VideoDetails-${videos?.[0]?.id}`}
           sx={{
             display: 'flex',
             height: 169,
@@ -154,9 +152,7 @@ export function VideoDetailsContent({
             playsInline
           >
             <source
-              src={
-                'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
-              }
+              src={videos?.[0]?.variant?.hls}
               type="application/x-mpegURL"
             />
           </video>
@@ -176,24 +172,19 @@ export function VideoDetailsContent({
                 zIndex: 1
               }}
             >
-              1:32
+              {duration}
             </Typography>
           )}
         </Box>
         <Box sx={{ pb: 2, pt: 5 }}>
           <Typography variant="subtitle1">
-            {
-              arclightVideo?.descriptors.nodes.find(
-                (type) => type.descriptorType === 'TITLE'
-              )?.value
-            }
+            {videos?.[0]?.title?.find((title) => title.primary)?.value}
           </Typography>
         </Box>
         <Typography variant="caption">
           {
-            arclightVideo?.descriptors.nodes.find(
-              (type) => type.descriptorType === 'DESCRIPTION'
-            )?.value
+            videos?.[0]?.description?.find((description) => description.primary)
+              ?.value
           }
         </Typography>
       </Box>
@@ -201,17 +192,16 @@ export function VideoDetailsContent({
         <Button
           data-testid="VideoDetailsLanguageButton"
           variant="contained"
-          size="medium"
+          size="small"
           onClick={() => console.log('open language drawer')}
           endIcon={<ArrowDropDown />}
-          sx={{ mr: 2 }}
         >
           Other Languages
         </Button>
         <Button
           data-testid="VideoDetailsSelectButton"
           variant="contained"
-          size="medium"
+          size="small"
           startIcon={<Check />}
           onClick={handleOnClick}
         >

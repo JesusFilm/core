@@ -7,7 +7,7 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum QualityType {
+export enum VideoVariantDownloadQuality {
     low = "low",
     high = "high"
 }
@@ -36,20 +36,20 @@ export class Video {
     variant?: Nullable<VideoVariant>;
 }
 
+export class VideoVariantDownload {
+    __typename?: 'VideoVariantDownload';
+    quality: VideoVariantDownloadQuality;
+    size: number;
+    url: string;
+}
+
 export class VideoVariant {
     __typename?: 'VideoVariant';
     hls: string;
-    downloads: Download[];
+    downloads: VideoVariantDownload[];
     duration: number;
     language: Language;
     subtitle: Translation[];
-}
-
-export class Download {
-    __typename?: 'Download';
-    quality: QualityType;
-    size: number;
-    url: string;
 }
 
 export class Language {

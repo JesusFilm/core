@@ -1,12 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { VideoDetails } from '.'
 
 const VideoDetailsStory = {
   ...journeysAdminConfig,
   component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoDetails',
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
@@ -25,7 +25,7 @@ const Template: Story = ({ videoId, onSelect }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  videoId: 'nua1-uuid'
+  videoId: '2_0-AndreasStory'
 }
 
 export default VideoDetailsStory as Meta
