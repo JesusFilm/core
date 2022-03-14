@@ -3,8 +3,7 @@ import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   mockCollectionSaveResult,
-  mockCollectionRemoveResult,
-  mockDbQueryResult
+  mockCollectionRemoveResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 import { VideoService } from './video.service'

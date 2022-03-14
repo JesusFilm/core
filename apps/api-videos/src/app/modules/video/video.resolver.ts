@@ -1,8 +1,6 @@
 import {
   Resolver,
   Query,
-  ResolveField,
-  Parent,
   Args,
   Info
 } from '@nestjs/graphql'
@@ -32,15 +30,5 @@ export class VideoResolver {
       page,
       limit
     )
-  }
-}
-
-@Resolver('Translation')
-export class TranslationResolver {
-  @ResolveField('language')
-  async language(
-    @Parent() translation
-  ): Promise<{ __typename: string; id: string }> {
-    return { __typename: 'Language', id: translation.languageId }
   }
 }
