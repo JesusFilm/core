@@ -6,7 +6,6 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Divider from '@mui/material/Divider'
-import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import { useEditor } from '@core/journeys/ui'
 import SettingsIcon from '@mui/icons-material/Settings'
 import NextLink from 'next/link'
@@ -31,14 +30,6 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
-        <MenuItem>
-          <ListItemIcon>
-            <EditRoundedIcon />
-          </ListItemIcon>
-          <ListItemText>Edit Block</ListItemText>
-        </MenuItem>
-        <Divider />
-
         <DeleteBlock variant="list-item" />
       </>
     )
@@ -47,13 +38,6 @@ export function Menu(): ReactElement {
   function CardMenu(): ReactElement {
     return (
       <>
-        <MenuItem>
-          <ListItemIcon>
-            <EditRoundedIcon />
-          </ListItemIcon>
-          <ListItemText>Edit Card</ListItemText>
-        </MenuItem>
-
         <DeleteBlock variant="list-item" />
         <Divider />
 
