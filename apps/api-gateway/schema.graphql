@@ -359,7 +359,7 @@ type Language
   bcp47: String @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation]! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 type LinkAction implements Action {
