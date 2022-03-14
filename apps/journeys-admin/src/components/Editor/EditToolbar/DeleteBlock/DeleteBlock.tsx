@@ -49,6 +49,7 @@ export function DeleteBlock({
     parentOrder: number,
     siblings: BlockDelete['blockDelete'],
     type: string,
+    steps: Array<TreeBlock<StepBlock>>,
     currentStep?: TreeBlock<StepBlock>
   ): void {
     // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
@@ -96,6 +97,7 @@ export function DeleteBlock({
         toDeleteParentOrder,
         data.blockDelete,
         toDeleteBlockType,
+        steps,
         selectedStep
       )
 
