@@ -72,13 +72,13 @@ export class BlockResolver {
   )
   async blockDelete(
     @Args('id') id: string,
-    @Args('parentBlockId') parentBlockId: string,
-    @Args('journeyId') journeyId: string
+    @Args('journeyId') journeyId: string,
+    @Args('parentBlockId') parentBlockId?: string
   ): Promise<Block[]> {
     return await this.blockService.removeBlockAndChildren(
       id,
-      parentBlockId,
-      journeyId
+      journeyId,
+      parentBlockId
     )
   }
 

@@ -221,8 +221,8 @@ describe('BlockService', () => {
       expect(
         await service.removeBlockAndChildren(
           block._key,
-          block.parentBlockId,
-          journey.id
+          journey.id,
+          block.parentBlockId
         )
       ).toEqual([
         { _key: block._key, parentOrder: 0 },
@@ -232,6 +232,13 @@ describe('BlockService', () => {
         journey.id,
         block.parentBlockId
       )
+    })
+
+    it('should remove blocks and return empty array', async () => {
+      expect(
+        await service.removeBlockAndChildren(block._key, journey.id)
+      ).toEqual([])
+      expect(service.updateChildrenParentOrder).not.toHaveBeenCalled()
     })
 
     it('should update parent order', async () => {
