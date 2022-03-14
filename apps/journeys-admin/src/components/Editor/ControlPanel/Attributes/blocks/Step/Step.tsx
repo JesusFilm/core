@@ -43,7 +43,7 @@ export function Step({
           type: 'SetDrawerPropsAction',
           title: 'Next Card Properties',
           mobileOpen: true,
-          children: <NextCard id={id} />
+          children: <NextCard />
         })
       }}
     />
