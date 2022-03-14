@@ -12,7 +12,8 @@ import {
   Button,
   SignUp,
   RadioOption,
-  Video
+  Video,
+  Image
 } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
 
@@ -51,6 +52,10 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       ) : (
         withMoveButtons(<Video {...selected} />)
       )
+    }
+
+    case 'ImageBlock': {
+      return withMoveButtons(<Image {...selected} />) // eslint-disable-line
     }
 
     case 'TypographyBlock': {

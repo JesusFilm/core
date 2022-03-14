@@ -7,3 +7,7 @@ subgraphs:
     routing_url: http://127.0.0.1:4002/graphql
     schema:
       file: ../api-users/schema.graphql
+  languages:
+    routing_url: http://127.0.0.1:4003/graphql
+    schema:
+      file: ../api-languages/schema.graphql
