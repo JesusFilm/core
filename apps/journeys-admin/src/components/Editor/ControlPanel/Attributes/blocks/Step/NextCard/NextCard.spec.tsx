@@ -1,11 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../__generated__/GetJourney'
-import { NextCard, STEP_BLOCK_LOCK_UPDATE } from './NextCard'
+import { fireEvent, render } from '@testing-library/react'
+import { JourneyProvider } from '../../../../../../../libs/context'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../../__generated__/globalTypes'
+import { NextCard } from './NextCard'
 
 describe('NextCard', () => {
-  it('changes the locked step state on click', async () => {
+  it('changes between cards and conditions tabs', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       id: 'step1.id',
       __typename: 'StepBlock',
@@ -16,41 +24,41 @@ describe('NextCard', () => {
       children: []
     }
 
-    const result = jest.fn(() => ({
-      data: {
-        stepBlockUpdate: {
-          id: 'step1.id',
-          locked: false
-        }
-      }
-    }))
-
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: STEP_BLOCK_LOCK_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                input: {
-                  locked: true,
-                  nextBlockId: selectedBlock.nextBlockId
-                }
-              }
-            },
-            result
+      <MockedProvider>
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
           }
-        ]}
-      >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <NextCard id="step1.id" />
-        </EditorProvider>
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <NextCard />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('checkbox')).not.toBeChecked()
-    fireEvent.click(getByRole('checkbox'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+
+    fireEvent.click(getByRole('tab', { name: 'Conditions' }))
+
+    expect(getByRole('tab', { name: 'Conditions' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+
+    fireEvent.click(getByRole('tab', { name: 'Cards' }))
+
+    expect(getByRole('tab', { name: 'Cards' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 })

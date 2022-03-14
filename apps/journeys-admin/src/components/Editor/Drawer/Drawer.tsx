@@ -31,6 +31,7 @@ function DrawerContent({
             noWrap
             component="div"
             sx={{ flexGrow: 1 }}
+            data-testid="drawer-title"
           >
             {title}
           </Typography>
