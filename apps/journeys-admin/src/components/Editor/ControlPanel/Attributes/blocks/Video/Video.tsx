@@ -19,15 +19,13 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
     })
 
   return (
-    <>
-      <Attribute
-        id={`${id}-video-options`}
-        icon={<VideoLibrary />}
-        name="Video Source"
-        value={block?.title ?? ''}
-        description="Video Options"
-        onClick={openDrawer}
-      />
-    </>
+    <Attribute
+      id={`${id}-video-options`}
+      icon={<VideoLibrary />}
+      name="Video Source"
+      value={block?.title ?? ''}
+      description="Video Options"
+      onClick={openDrawer}
+    />
   )
 }
