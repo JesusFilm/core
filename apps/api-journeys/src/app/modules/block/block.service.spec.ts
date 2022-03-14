@@ -180,7 +180,8 @@ describe('BlockService', () => {
     it('should update parent order', async () => {
       service.getSiblings = jest.fn().mockReturnValue([
         { _key: block._key, parentOrder: 1 },
-        { _key: block._key, parentOrder: 2 }
+        { _key: block._key, parentOrder: 2 },
+        { _key: block._key, parentOrder: null }
       ])
       service.reorderSiblings = jest.fn().mockReturnValue([
         { _key: block._key, parentOrder: 0 },
