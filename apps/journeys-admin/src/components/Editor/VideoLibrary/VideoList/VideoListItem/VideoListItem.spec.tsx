@@ -9,31 +9,37 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('Video List Item', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  const tempData = {
-    id: 'nua-1',
-    title: 'NUA - Episode: Fact or Fiction',
-    description: 'This is a short description for the video nua1',
-    poster:
-      'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1631&q=80',
-    time: 94000,
-    onSelect: () => console.log('onSelect')
+
+  const video = {
+    id: '2_0-AndreasStory',
+    title: "Andreas' Story",
+    description:
+      'After living a life full of fighter planes and porsches, Andreas realizes something is missing.',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
+    duration: 186
   }
+
   it('should render the content of VideoListItem', () => {
-    const { getByText } = render(
+    // onSelect will only work when VideoDetails merged in
+    const onSelect = jest.fn()
+    const { getByText, getByRole } = render(
       <VideoListItem
-        id={tempData.id}
-        title={tempData.title}
-        description={tempData.description}
-        poster={tempData.poster}
-        time={tempData.time}
-        onSelect={tempData.onSelect}
+        id={video.id}
+        title={video.title}
+        description={video.description}
+        image={video.image}
+        duration={video.duration}
+        onSelect={onSelect}
       />
     )
-    expect(getByText('NUA - Episode: Fact or Fiction')).toBeInTheDocument()
+    expect(getByText("Andreas' Story")).toBeInTheDocument()
     expect(
-      getByText('This is a short description for the video nua1')
+      getByText(
+        'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
+      )
     ).toBeInTheDocument()
-    expect(getByText('1:34')).toBeInTheDocument()
+    expect(getByText('03:06')).toBeInTheDocument()
   })
 
   // add back test on calling VideoDetails on VideoListItem click

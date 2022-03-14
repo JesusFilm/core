@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { VideoList } from '.'
+import { MockedProvider } from '@apollo/client/testing'
+import { GET_VIDEOS } from './VideoList'
+import { videos } from './VideoListData'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -10,26 +13,73 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Video List', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
-  it('should render a video list item', () => {
-    const { getAllByRole } = render(
-      <VideoList onSelect={() => console.log('onSelect')} />
+  it('should render a video list item', async () => {
+    const onSelect = jest.fn()
+    const { getByTestId, getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEOS,
+              variables: {
+                where: {
+                  availableVariantLanguageIds: ['529'],
+                  title: null
+                }
+              }
+            },
+            result: {
+              data: {
+                videos: videos
+              }
+            }
+          }
+        ]}
+      >
+        <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
+      </MockedProvider>
     )
-
-    const videoListItem = getAllByRole('button')
-    expect(videoListItem[0]).toHaveClass('MuiListItemButton-root')
-    expect(videoListItem[0]).toHaveTextContent('Fact or fiction')
-    expect(videoListItem[0]).toHaveTextContent('1:34')
+    expect(getByTestId('VideoListLoadMore')).toHaveTextContent('No More Videos')
+    await waitFor(() =>
+      expect(getAllByRole('button')[0]).toHaveTextContent("Andreas' Story")
+    )
+    expect(getAllByRole('button')[0]).toHaveClass('MuiListItemButton-root')
+    expect(getAllByRole('button')[1]).toHaveTextContent('Brand_Video')
+    expect(getAllByRole('button')[2]).toHaveTextContent('The Demoniac')
   })
 
   it('should render more video list items on click', async () => {
+    const onSelect = jest.fn()
     const { getByTestId, getAllByRole } = render(
-      <VideoList onSelect={() => console.log('onSelect')} />
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEOS,
+              variables: {
+                where: {
+                  availableVariantLanguageIds: ['529'],
+                  title: null
+                }
+              }
+            },
+            result: {
+              data: {
+                videos: [...videos, ...videos]
+              }
+            }
+          }
+        ]}
+      >
+        <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
+      </MockedProvider>
     )
-    expect(getAllByRole('button')[0]).toHaveTextContent('Fact or fiction')
-    expect(getAllByRole('button')).toHaveLength(5)
-    expect(getAllByRole('button')[5]).toBeUndefined()
+    await waitFor(() =>
+      expect(getAllByRole('button')[0]).toHaveTextContent("Andreas' Story")
+    )
+    expect(getAllByRole('button')[0]).toHaveClass('MuiListItemButton-root')
+    expect(getAllByRole('button')[4]).not.toHaveTextContent('Brand_Video')
     fireEvent.click(getByTestId('VideoListLoadMore'))
-    await waitFor(() => expect(getAllByRole('button')).toHaveLength(9))
-    expect(getAllByRole('button')[4]).toHaveTextContent('Fact or fiction')
+    expect(getAllByRole('button')[4]).toHaveTextContent('Brand_Video')
   })
 })

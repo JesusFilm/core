@@ -4,13 +4,12 @@ import Box from '@mui/system/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 
-// props to be updated according to the arclight changes
 interface VideoListItemProps {
-  id?: string
-  title?: string
-  description?: string
-  poster?: string
-  time: number
+  id: string
+  title: string
+  description: string
+  image: string
+  duration: number
   onSelect: (id: string) => void
 }
 
@@ -18,34 +17,20 @@ export function VideoListItem({
   id,
   title,
   description,
-  poster,
-  time,
+  image,
+  duration: time,
   onSelect
 }: VideoListItemProps): ReactElement {
-  const [convertedTime, setConvertedTime] = useState<string>()
   const [open, setOpen] = useState<boolean>(false)
 
   const handleOpen = (): void => {
     setOpen(!open)
   }
 
-  useEffect((): void => {
-    let seconds = Math.floor((time % 60000) / 1000)
-    let minutes = Math.floor(time / 60000)
-    let hours = Math.floor(minutes / 60)
-
-    hours = hours < 10 ? 0 + hours : hours
-    minutes = minutes < 10 ? 0 + minutes : minutes
-    seconds = seconds < 10 ? 0 + seconds : seconds
-
-    if (minutes < 59) {
-      return setConvertedTime(minutes.toString() + ':' + seconds.toString())
-    }
-
-    return setConvertedTime(
-      hours.toString() + ':' + minutes.toString() + ':' + seconds.toString()
-    )
-  }, [time])
+  const duration =
+    time < 3600
+      ? new Date(time * 1000).toISOString().substring(14, 19)
+      : new Date(time * 1000).toISOString().substring(11, 19)
 
   return (
     <>
@@ -65,7 +50,7 @@ export function VideoListItem({
             }
           }}
         />
-        {poster != null && (
+        {image != null && (
           <Box>
             <Box
               sx={{
@@ -78,7 +63,7 @@ export function VideoListItem({
                 borderRadius: 2,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
-                backgroundImage: `url(${poster})`
+                backgroundImage: `url(${image})`
               }}
             >
               <Typography
@@ -91,7 +76,7 @@ export function VideoListItem({
                   borderRadius: 2
                 }}
               >
-                {convertedTime}
+                {duration}
               </Typography>
             </Box>
           </Box>

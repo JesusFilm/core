@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { VideoList } from '.'
+import { MockedProvider } from '@apollo/client/testing'
+import { GET_VIDEOS } from './VideoList'
+import { videos } from './VideoListData'
 
 const VideoListStory = {
   ...journeysAdminConfig,
@@ -9,7 +12,30 @@ const VideoListStory = {
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ onSelect }) => <VideoList onSelect={onSelect} />
+const Template: Story = ({ onSelect }) => (
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_VIDEOS,
+          variables: {
+            where: {
+              availableVariantLanguageIds: ['529'],
+              title: null
+            }
+          }
+        },
+        result: {
+          data: {
+            videos: videos
+          }
+        }
+      }
+    ]}
+  >
+    <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
+  </MockedProvider>
+)
 
 export const Default = Template.bind({})
 

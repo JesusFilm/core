@@ -65,7 +65,8 @@ export function VideoLibrary({
       </AppBar>
       {/* search */}
       {/* language */}
-      <VideoList onSelect={onSelect} />
+      {/* currentLanguageIds should come from the search component */}
+      <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
     </Drawer>
   )
 }

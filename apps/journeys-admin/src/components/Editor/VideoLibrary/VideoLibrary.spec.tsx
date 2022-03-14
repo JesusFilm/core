@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { VideoLibrary } from '.'
+import { MockedProvider } from '@apollo/client/testing'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -14,7 +15,11 @@ describe('Video Library', () => {
     )
 
     it('should render the Video Library on the right', () => {
-      const { getByText, getByTestId } = render(<VideoLibrary open={true} />)
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <VideoLibrary open={true} />
+        </MockedProvider>
+      )
       expect(getByText('Video Library')).toBeInTheDocument()
       expect(getByTestId('VideoList').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
@@ -24,7 +29,9 @@ describe('Video Library', () => {
     it('should close VideoLibrary on close Icon click', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
-        <VideoLibrary open={true} onClose={onClose} />
+        <MockedProvider>
+          <VideoLibrary open={true} onClose={onClose} />
+        </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
         getByTestId('CloseIcon')
@@ -40,7 +47,11 @@ describe('Video Library', () => {
     )
 
     it('should render the VideoLibrary from the bottom', () => {
-      const { getByText, getByTestId } = render(<VideoLibrary open={true} />)
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <VideoLibrary open={true} />
+        </MockedProvider>
+      )
       expect(getByText('Video Library')).toBeInTheDocument()
       expect(getByTestId('VideoList').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'

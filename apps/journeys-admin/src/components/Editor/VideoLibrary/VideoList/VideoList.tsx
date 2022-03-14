@@ -2,56 +2,87 @@ import { ReactElement, useState } from 'react'
 import Divider from '@mui/material/Divider'
 import LoadingButton from '@mui/lab/LoadingButton'
 import AddRounded from '@mui/icons-material/AddRounded'
+import { gql, useQuery } from '@apollo/client'
 import List from '@mui/material/List'
 import { Box } from '@mui/system'
+import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
-import { arclightMediaUnits } from './VideoListData'
+
+export const GET_VIDEOS = gql`
+  query GetVideos($where: VideosFilter, $limit: Int, $page: Int) {
+    videos(where: $where, limit: $limit, page: $page) {
+      id
+      image
+      snippet {
+        primary
+        value
+        language {
+          id
+        }
+      }
+      title {
+        primary
+        value
+        language {
+          id
+        }
+      }
+      variant {
+        duration
+      }
+    }
+  }
+`
 
 interface VideoListProps {
   onSelect: (id: string) => void
+  currentLanguageIds?: string[]
+  // are we getting these values from the search component?
+  // title?: string
+  // limit?: number
+  // page?: number
 }
 
-export function VideoList({ onSelect }: VideoListProps): ReactElement {
+export function VideoList({
+  onSelect,
+  currentLanguageIds
+}: VideoListProps): ReactElement {
   const [visibleVideos, setVisibleVideos] = useState(4)
-  const [isLoading, setIsLoading] = useState(false)
 
-  // to be replaced with the query
-  const arclightContent = arclightMediaUnits.nodes.length
+  const { loading, data } = useQuery<GetVideos>(GET_VIDEOS, {
+    variables: {
+      where: {
+        availableVariantLanguageIds: currentLanguageIds,
+        title: null
+      }
+    }
+  })
+
+  const videosLength = data?.videos.length
 
   const handleClick = (): void => {
-    setIsLoading(true)
-    setTimeout(
-      () =>
-        setVisibleVideos((previousVisibleVideos) => previousVisibleVideos + 4),
-      1000
-    )
-    setTimeout(() => setIsLoading(false), 1500)
+    setVisibleVideos((previousVisibleVideos) => previousVisibleVideos + 4)
   }
 
   return (
     <>
       <List data-testId="VideoList" sx={{ px: 6 }}>
         <Divider />
-        {arclightMediaUnits.nodes.slice(0, visibleVideos).map((arclight) => (
+        {data?.videos?.slice(0, visibleVideos).map((video) => (
           <>
             <VideoListItem
-              id={arclight.uuid}
+              id={video.id}
               title={
-                arclight.descriptors.nodes.find(
-                  (type) => type.descriptorType === 'TITLE'
-                )?.value
+                video.title.find((title) => title.language.id === '529')
+                  ?.value ?? 'Title'
               }
               description={
-                arclight.descriptors.nodes.find(
-                  (type) => type.descriptorType === 'SHORT_DESCRIPTION'
-                )?.value
+                video.snippet.find(
+                  (snippet) => snippet.language.id === '529' ?? ''
+                )?.value ?? 'Description'
               }
-              poster={
-                arclight.visuals.nodes.find(
-                  (type) => type.visualType === 'THUMBNAIL'
-                )?.url
-              }
-              time={arclight.trackRecordings.nodes[0].durationMilliseconds}
+              image={video.image ?? ''}
+              duration={video.variant?.duration ?? 0}
               onSelect={onSelect}
             />
             <Divider />
@@ -65,13 +96,19 @@ export function VideoList({ onSelect }: VideoListProps): ReactElement {
           data-testid="VideoListLoadMore"
           variant="outlined"
           onClick={handleClick}
-          loading={isLoading}
-          startIcon={visibleVideos >= arclightContent ? null : <AddRounded />}
-          disabled={visibleVideos >= arclightContent}
+          loading={loading}
+          startIcon={
+            videosLength != null && visibleVideos >= videosLength ? null : (
+              <AddRounded />
+            )
+          }
+          disabled={videosLength != null && visibleVideos >= videosLength}
           loadingPosition="start"
           size="medium"
         >
-          {arclightContent > visibleVideos ? 'Load More' : 'No More Videos'}
+          {videosLength != null && videosLength > visibleVideos
+            ? 'Load More'
+            : 'No More Videos'}
         </LoadingButton>
       </Box>
     </>
