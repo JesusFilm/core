@@ -9,12 +9,16 @@ import Divider from '@mui/material/Divider'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import { useEditor } from '@core/journeys/ui'
 import SettingsIcon from '@mui/icons-material/Settings'
+import NextLink from 'next/link'
 import { DeleteBlock } from '../DeleteBlock'
+import { useJourney } from '../../../../libs/context'
 
 export function Menu(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
+
+  const journey = useJourney()
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -34,6 +38,7 @@ export function Menu(): ReactElement {
           <ListItemText>Edit Block</ListItemText>
         </MenuItem>
         <Divider />
+
         <DeleteBlock variant="list-item" />
       </>
     )
@@ -48,14 +53,18 @@ export function Menu(): ReactElement {
           </ListItemIcon>
           <ListItemText>Edit Card</ListItemText>
         </MenuItem>
+
         <DeleteBlock variant="list-item" />
         <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <SettingsIcon />
-          </ListItemIcon>
-          <ListItemText>Journey Settings</ListItemText>
-        </MenuItem>
+
+        <NextLink href={`/journeys/${journey.slug}`} passHref>
+          <MenuItem>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText>Journey Settings</ListItemText>
+          </MenuItem>
+        </NextLink>
       </>
     )
   }

@@ -50,8 +50,7 @@ export function DeleteBlock({
     type: string,
     currentStep?: TreeBlock<StepBlock>
   ): void {
-    // BUG: parentOrder being added to coverImage, causes problems when dispatching next block to select
-    // BUG: siblings not returning correct data for blocks nested in a gridBlock
+    // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
     if (siblings.length > 0) {
       const blockToSelect =
         siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
