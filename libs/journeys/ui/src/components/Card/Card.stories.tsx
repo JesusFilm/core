@@ -15,7 +15,7 @@ import {
 import { CardFields } from './__generated__/CardFields'
 import { Card } from './Card'
 
-const Demo: Meta = {
+const Demo = {
   ...journeyUiConfig,
   component: Card,
   title: 'Journeys-Ui/Card'
@@ -315,4 +315,4 @@ ImageBlur.args = {
   fullscreen: true
 }
 
-export default Demo
+export default Demo as Meta

@@ -202,14 +202,13 @@ export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
     journeyId: string;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
 
 export class IconBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
@@ -258,7 +257,6 @@ export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    submitIconId?: Nullable<string>;
     submitLabel: string;
 }
 
@@ -496,7 +494,7 @@ export class IconBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    name: IconName;
+    name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
@@ -643,13 +641,15 @@ export class VideoResponse implements Response {
 }
 
 export abstract class IMutation {
-    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): Block | Promise<Block>;
+    abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
-    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateAction(id: string, journeyId: string, input: NavigateActionInput): NavigateAction | Promise<NavigateAction>;
 
-    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
 
-    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): Block | Promise<Block>;
+    abstract blockUpdateNavigateToJourneyAction(id: string, journeyId: string, input: NavigateToJourneyActionInput): NavigateToJourneyAction | Promise<NavigateToJourneyAction>;
+
+    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
 
     abstract blockDelete(id: string, parentBlockId: string, journeyId: string): Block[] | Promise<Block[]>;
 

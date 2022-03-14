@@ -2,10 +2,18 @@ import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
+import { v4 as uuidv4 } from 'uuid'
 import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
 import { NewSignUpButton } from '.'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('SignUp', () => {
   const selectedStep: TreeBlock = {
@@ -32,19 +40,31 @@ describe('SignUp', () => {
   }
 
   it('should check if the mutation gets called', async () => {
+    mockUuidv4.mockReturnValueOnce('signUpBlockId')
+    mockUuidv4.mockReturnValueOnce('iconId')
+
     const result = jest.fn(() => ({
       data: {
         signUpBlockCreate: {
+          id: 'signUpBlockId'
+        },
+        submitIcon: {
+          id: 'iconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'signUpBlockId',
+          name: null
+        },
+        signUpBlockUpdate: {
           id: 'signUpBlockId',
           parentBlockId: 'cardId',
           journeyId: 'journeyId',
+          submitIconId: 'iconId',
           submitLabel: 'Submit',
           action: {
             __typename: 'NavigateToBlockAction',
             gtmEventName: 'gtmEventName',
             blockId: 'def'
-          },
-          submitIconId: null
+          }
         }
       }
     }))
@@ -56,9 +76,22 @@ describe('SignUp', () => {
               query: SIGN_UP_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'signUpBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
+
                   submitLabel: 'Submit'
+                },
+                iconBlockCreateInput: {
+                  id: 'iconId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'signUpBlockId',
+                  name: null
+                },
+                id: 'signUpBlockId',
+                journeyId: 'journeyId',
+                updateInput: {
+                  submitIconId: 'iconId'
                 }
               }
             },
@@ -78,6 +111,9 @@ describe('SignUp', () => {
   })
 
   it('should update the cache', async () => {
+    mockUuidv4.mockReturnValueOnce('signUpBlockId')
+    mockUuidv4.mockReturnValueOnce('iconId')
+
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
@@ -89,18 +125,32 @@ describe('SignUp', () => {
     const result = jest.fn(() => ({
       data: {
         signUpBlockCreate: {
+          __typename: 'SignUpBlock',
+          id: 'signUpBlockId'
+        },
+        submitIcon: {
+          __typename: 'IconBlock',
+          id: 'iconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'signUpBlockId',
+          parentOrder: null,
+          iconName: null,
+          iconColor: null,
+          iconSize: null
+        },
+        signUpBlockUpdate: {
+          __typename: 'SignUpBlock',
           id: 'signUpBlockId',
           parentBlockId: 'cardId',
-          journeyId: 'journeyId',
           parentOrder: 0,
+          journeyId: 'journeyId',
+          submitIconId: 'iconId',
           submitLabel: 'Submit',
-          __typename: 'SignUpBlock',
           action: {
             __typename: 'NavigateToBlockAction',
             gtmEventName: 'gtmEventName',
             blockId: 'def'
-          },
-          submitIconId: null
+          }
         }
       }
     }))
@@ -113,9 +163,21 @@ describe('SignUp', () => {
               query: SIGN_UP_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'signUpBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   submitLabel: 'Submit'
+                },
+                iconBlockCreateInput: {
+                  id: 'iconId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'signUpBlockId',
+                  name: null
+                },
+                id: 'signUpBlockId',
+                journeyId: 'journeyId',
+                updateInput: {
+                  submitIconId: 'iconId'
                 }
               }
             },
@@ -134,7 +196,8 @@ describe('SignUp', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'VideoBlock:videoBlockId' },
-      { __ref: 'SignUpBlock:signUpBlockId' }
+      { __ref: 'SignUpBlock:signUpBlockId' },
+      { __ref: 'IconBlock:iconId' }
     ])
   })
 })

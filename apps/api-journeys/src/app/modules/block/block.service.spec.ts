@@ -11,7 +11,8 @@ import { DocumentCollection } from 'arangojs/collection'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  Block
 } from '../../__generated__/graphql'
 import { BlockService } from './block.service'
 
@@ -179,7 +180,8 @@ describe('BlockService', () => {
     it('should update parent order', async () => {
       service.getSiblings = jest.fn().mockReturnValue([
         { _key: block._key, parentOrder: 1 },
-        { _key: block._key, parentOrder: 2 }
+        { _key: block._key, parentOrder: 2 },
+        { _key: block._key, parentOrder: null }
       ])
       service.reorderSiblings = jest.fn().mockReturnValue([
         { _key: block._key, parentOrder: 0 },
@@ -209,20 +211,23 @@ describe('BlockService', () => {
       service.updateChildrenParentOrder = jest.fn(
         async () =>
           await Promise.resolve([
-            { _key: block._key, parentOrder: 0 },
-            { _key: block._key, parentOrder: 1 }
+            { _key: block._key, parentOrder: 0 } as unknown as Block,
+            { _key: block._key, parentOrder: 1 } as unknown as Block
           ])
       )
     })
 
-    it('should remove blocks', async () => {
+    it('should remove blocks and return siblings', async () => {
       expect(
         await service.removeBlockAndChildren(
           block._key,
           block.parentBlockId,
           journey.id
         )
-      ).toEqual([block, block, block])
+      ).toEqual([
+        { _key: block._key, parentOrder: 0 },
+        { _key: block._key, parentOrder: 1 }
+      ])
       expect(service.updateChildrenParentOrder).toHaveBeenCalledWith(
         journey.id,
         block.parentBlockId
@@ -247,6 +252,23 @@ describe('BlockService', () => {
         { _key: block._key, parentOrder: 0 },
         { _key: block._key, parentOrder: 1 }
       ])
+    })
+
+    describe('validateBlock', () => {
+      beforeEach(() => {
+        ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+          mockDbQueryResult(service.db, [block])
+        )
+      })
+      it('should return false with non-existent id', async () => {
+        expect(await service.validateBlock(null, '1')).toEqual(false)
+      })
+      it('should return false with incorrect parent id', async () => {
+        expect(await service.validateBlock('1', 'wrongParent')).toEqual(false)
+      })
+      it('should validate block', async () => {
+        expect(await service.validateBlock('1', '3')).toEqual(true)
+      })
     })
   })
 })

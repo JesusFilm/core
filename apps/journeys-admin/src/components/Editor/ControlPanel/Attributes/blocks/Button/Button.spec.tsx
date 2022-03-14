@@ -58,6 +58,7 @@ describe('Button attributes', () => {
       endIconId: 'icon2',
       action: {
         __typename: 'NavigateToBlockAction',
+        parentBlockId: 'button.id',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       },
@@ -86,7 +87,7 @@ describe('Button attributes', () => {
     }
     const { getByRole } = render(<Button {...block} />)
     expect(
-      getByRole('button', { name: 'Action NavigateToBlockAction' })
+      getByRole('button', { name: 'Action Selected Card' })
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Color Secondary' })).toBeInTheDocument()
     expect(
@@ -94,10 +95,10 @@ describe('Button attributes', () => {
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Variant Text' })).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Leading Icon ChatBubbleOutlineRounded' })
+      getByRole('button', { name: 'Leading Icon Chat Bubble' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Trailing Icon ChevronRightRounded' })
+      getByRole('button', { name: 'Trailing Icon Chevron Right' })
     ).toBeInTheDocument()
   })
 })
