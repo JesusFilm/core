@@ -1,9 +1,9 @@
 type Video @key(fields: "id") {
   id: ID!
-  title: [Translation!]!
-  snippet: [Translation!]!
-  description: [Translation!]!
-  studyQuestions: [[Translation!]!]!
+  title(languageId: ID, primary: Boolean): [Translation!]!
+  snippet(languageId: ID, primary: Boolean): [Translation!]!
+  description(languageId: ID, primary: Boolean): [Translation!]!
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
   variant(languageId: ID): VideoVariant
@@ -15,17 +15,17 @@ type Translation {
   primary: Boolean!
 }
 
+input VideosFilter {
+  availableVariantLanguageIds: [ID!]
+  title: String
+}
+
 type VideoVariant {
-  subtitle: [Translation!]!
   hls: String!
   downloads: [Download!]!
   duration: Int!
   language: Language!
-}
-
-input VideosFilter {
-  availableVariantLanguageIds: [ID]
-  title: String
+  subtitle(languageId: ID, primary: Boolean): [Translation]!
 }
 
 enum QualityType {

@@ -12,14 +12,14 @@ export class Language {
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
-    name: Nullable<Translation>[];
+    name: Translation[];
 }
 
 export class Translation {
     __typename?: 'Translation';
     value: string;
+    language: Language;
     primary: boolean;
-    language?: Nullable<Language>;
 }
 
 export abstract class IQuery {

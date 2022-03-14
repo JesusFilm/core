@@ -1,12 +1,5 @@
-type Video @key(fields: "id") {
-  id: ID!
-  title: [Translation!]!
-  snippet: [Translation!]!
-  description: [Translation!]!
-  studyQuestions: [[Translation!]!]!
-  image: String
-  variantLanguages: [Language!]!
-  # tags
+extend type Language @key(fields: "id") {
+  id: ID! @external
 }
 
 type Translation {
@@ -15,16 +8,18 @@ type Translation {
   primary: Boolean!
 }
 
-extend type VideoVariant {
-  subtitle: [Translation!]!
-}
-
-extend type Language @key(fields: "id") {
-  id: ID! @external
+type Video @key(fields: "id") {
+  id: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
+  snippet(languageId: ID, primary: Boolean): [Translation!]!
+  description(languageId: ID, primary: Boolean): [Translation!]!
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
+  image: String
+  variantLanguages: [Language!]!
 }
 
 input VideosFilter {
-  availableVariantLanguageIds: [ID]
+  availableVariantLanguageIds: [ID!]
   title: String
 }
 

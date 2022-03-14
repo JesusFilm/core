@@ -9,7 +9,7 @@ export class VideoService extends BaseService {
 
   async filterAll<T>(
     title,
-    availableVariantLanguageIds: (string | null)[] = [],
+    availableVariantLanguageIds: string[] = [],
     variantLangugeId,
     page = 1,
     limit = 100

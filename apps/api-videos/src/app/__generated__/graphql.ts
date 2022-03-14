@@ -13,20 +13,8 @@ export enum QualityType {
 }
 
 export class VideosFilter {
-    availableVariantLanguageIds?: Nullable<Nullable<string>[]>;
+    availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-}
-
-export class Video {
-    __typename?: 'Video';
-    id: string;
-    title: Translation[];
-    snippet: Translation[];
-    description: Translation[];
-    studyQuestions: undefined[];
-    image?: Nullable<string>;
-    variantLanguages: Language[];
-    variant?: Nullable<VideoVariant>;
 }
 
 export class Translation {
@@ -36,13 +24,25 @@ export class Translation {
     primary: boolean;
 }
 
+export class Video {
+    __typename?: 'Video';
+    id: string;
+    title: Translation[];
+    snippet: Translation[];
+    description: Translation[];
+    studyQuestions: Translation[];
+    image?: Nullable<string>;
+    variantLanguages: Language[];
+    variant?: Nullable<VideoVariant>;
+}
+
 export class VideoVariant {
     __typename?: 'VideoVariant';
-    subtitle: Translation[];
     hls: string;
     downloads: Download[];
     duration: number;
     language: Language;
+    subtitle: Translation[];
 }
 
 export class Download {
