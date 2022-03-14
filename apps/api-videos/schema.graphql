@@ -1,3 +1,9 @@
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 type Video @key(fields: "id") {
   id: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
@@ -9,34 +15,28 @@ type Video @key(fields: "id") {
   variant(languageId: ID): VideoVariant
 }
 
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
 }
 
-type VideoVariant {
-  hls: String!
-  downloads: [Download!]!
-  duration: Int!
-  language: Language!
-  subtitle(languageId: ID, primary: Boolean): [Translation]!
-}
-
-enum QualityType {
+enum VideoVariantDownloadQuality {
   low
   high
 }
 
-type Download {
-  quality: QualityType!
+type VideoVariantDownload {
+  quality: VideoVariantDownloadQuality!
   size: Float!
   url: String!
+}
+
+type VideoVariant {
+  hls: String!
+  downloads: [VideoVariantDownload!]!
+  duration: Int!
+  language: Language!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 extend type Language @key(fields: "id") {
