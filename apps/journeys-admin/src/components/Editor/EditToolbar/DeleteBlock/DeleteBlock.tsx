@@ -44,6 +44,7 @@ export function DeleteBlock({
   const handleOpenModal = (): void => setOpen(true)
   const handleCloseModal = (): void => setOpen(false)
 
+  // TODO: move this function out of component and refactor to return a dispatch object for easier testing
   function updateSelected(
     parentOrder: number,
     siblings: BlockDelete['blockDelete'],
@@ -109,6 +110,8 @@ export function DeleteBlock({
           preventDuplicate: true
         })
   }
+
+  // TODO: disable if no block is selected
   return (
     <>
       <DeleteModal

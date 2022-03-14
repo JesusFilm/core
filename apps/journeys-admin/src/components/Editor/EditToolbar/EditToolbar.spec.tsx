@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { EditToolbar } from '.'
 
 describe('Edit Toolbar', () => {
   it('should render Toolbar', () => {
-    const { getByRole, getAllByRole, getByTestId } = render(
+    const { getAllByRole, getByTestId } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[]}>
+        <MockedProvider>
           <EditToolbar />
         </MockedProvider>
       </SnackbarProvider>
@@ -18,8 +18,5 @@ describe('Edit Toolbar', () => {
     expect(getAllByRole('button')[1]).toContainElement(
       getByTestId('MoreVertIcon')
     )
-    fireEvent.click(getAllByRole('button')[1])
-    expect(getByRole('menu')).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete Block' })).toBeInTheDocument()
   })
 })
