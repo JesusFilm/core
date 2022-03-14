@@ -51,17 +51,17 @@ const card = (index: number): TreeBlock<CardBlock> => {
   }
 }
 
-const selectedBlock: TreeBlock<StepBlock> = {
+const block0: TreeBlock<StepBlock> = {
   id: 'step0.id',
   __typename: 'StepBlock',
   parentBlockId: null,
-  nextBlockId: 'step1.id',
+  nextBlockId: 'step2.id',
   parentOrder: 0,
   locked: true,
   children: [card(0)]
 }
 
-const noSelectedBlock: TreeBlock<StepBlock> = {
+const block1: TreeBlock<StepBlock> = {
   id: 'step1.id',
   __typename: 'StepBlock',
   parentBlockId: null,
@@ -69,6 +69,26 @@ const noSelectedBlock: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: false,
   children: [card(1)]
+}
+
+const block2: TreeBlock<StepBlock> = {
+  id: 'step2.id',
+  __typename: 'StepBlock',
+  parentBlockId: null,
+  nextBlockId: 'step3.id',
+  parentOrder: 0,
+  locked: true,
+  children: [card(2)]
+}
+
+const block3: TreeBlock<StepBlock> = {
+  id: 'step3.id',
+  __typename: 'StepBlock',
+  parentBlockId: null,
+  nextBlockId: 'step4.id',
+  parentOrder: 0,
+  locked: true,
+  children: [card(3)]
 }
 
 const journeyTheme = {
@@ -84,7 +104,7 @@ const Template: Story = ({ ...args }) => {
         <EditorProvider
           initialState={{
             ...args,
-            steps: [selectedBlock, noSelectedBlock],
+            steps: [block0, block1, block2, block3],
             drawerTitle: 'Next Card Properties',
             drawerChildren: <NextCard />,
             drawerMobileOpen: true
@@ -99,12 +119,14 @@ const Template: Story = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  selectedBlock: noSelectedBlock
+  selectedBlock: block1
 }
 
+// TODO: Hide VR only story from sidebar
+// https://github.com/storybookjs/storybook/issues/9209
 export const DefaultMobileConditions = Template.bind({})
 DefaultMobileConditions.args = {
-  selectedBlock: noSelectedBlock
+  selectedBlock: block1
 }
 
 DefaultMobileConditions.parameters = {
@@ -119,12 +141,12 @@ DefaultMobileConditions.play = async () => {
 
 export const Selected = Template.bind({})
 Selected.args = {
-  selectedBlock: selectedBlock
+  selectedBlock: block0
 }
 
 export const SelectedMobileConditions = Template.bind({})
 SelectedMobileConditions.args = {
-  selectedBlock: noSelectedBlock
+  selectedBlock: block0
 }
 
 SelectedMobileConditions.parameters = {
