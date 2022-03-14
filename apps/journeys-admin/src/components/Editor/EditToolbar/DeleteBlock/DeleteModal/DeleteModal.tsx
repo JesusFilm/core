@@ -12,6 +12,8 @@ interface DeleteModalProps {
   handleClose: () => void
 }
 
+// TODO: remane modal to dialog
+
 export function DeleteModal({
   handleDelete,
   open,

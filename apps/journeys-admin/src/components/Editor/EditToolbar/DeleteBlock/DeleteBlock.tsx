@@ -61,6 +61,7 @@ export function DeleteBlock({
         id: blockToSelect?.id
       })
     } else if (currentStep != null && steps.length > 0) {
+      // BUG: always selecting first step
       const stepToSet =
         type !== 'StepBlock'
           ? currentStep
@@ -111,7 +112,6 @@ export function DeleteBlock({
         })
   }
 
-  // TODO: disable if no block is selected
   return (
     <>
       <DeleteModal
@@ -126,12 +126,14 @@ export function DeleteBlock({
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"
+          disabled={selectedBlock == null}
           onClick={label === 'Block' ? handleDeleteBlock : handleOpenModal}
         >
           <DeleteOutlineRounded />
         </IconButton>
       ) : (
         <MenuItem
+          disabled={selectedBlock == null}
           onClick={label === 'Block' ? handleDeleteBlock : handleOpenModal}
         >
           <ListItemIcon>

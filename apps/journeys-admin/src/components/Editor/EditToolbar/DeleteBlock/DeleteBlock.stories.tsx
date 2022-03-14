@@ -51,42 +51,53 @@ const selectedStep: TreeBlock<StepBlock> = {
   ]
 }
 
-const Template: Story = ({ ...args }) => (
-  <SnackbarProvider>
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: BLOCK_DELETE,
-            variables: {
-              id: selectedBlock.id,
-              parentBlockId: selectedBlock.parentBlockId
-            }
-          },
-          result: {
-            data: {
-              blockDelete: [
-                {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
-                  parentOrder: selectedBlock.parentOrder
-                }
-              ]
+const Template: Story = ({ ...args }) => {
+  const {
+    state: { selectedBlock }
+  } = args
+
+  return (
+    <SnackbarProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BLOCK_DELETE,
+              variables: {
+                id: selectedBlock?.id,
+                parentBlockId: selectedBlock?.parentBlockId
+              }
+            },
+            result: {
+              data: {
+                blockDelete: [
+                  {
+                    id: selectedBlock?.id,
+                    parentBlockId: selectedBlock?.parentBlockId,
+                    parentOrder: selectedBlock?.parentOrder
+                  }
+                ]
+              }
             }
           }
-        }
-      ]}
-    >
-      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <DeleteBlock variant={args.variant} />
-      </EditorProvider>
-    </MockedProvider>
-  </SnackbarProvider>
-)
+        ]}
+      >
+        <EditorProvider initialState={args.state}>
+          <DeleteBlock variant={args.variant} />
+        </EditorProvider>
+      </MockedProvider>
+    </SnackbarProvider>
+  )
+}
 
 export const Button = Template.bind({})
 Button.args = {
-  variant: 'button'
+  variant: 'button',
+  state: {
+    selectedBlock,
+    selectedStep,
+    steps: [selectedStep]
+  }
 }
 Button.play = () => {
   const button = screen.getByRole('button')
@@ -95,11 +106,23 @@ Button.play = () => {
 
 export const MenuItem = Template.bind({})
 MenuItem.args = {
-  variant: 'list-item'
+  variant: 'list-item',
+  state: { selectedBlock, selectedStep, steps: [selectedStep] }
 }
 MenuItem.play = () => {
   const button = screen.getByRole('menuitem')
   userEvent.click(button)
+}
+
+export const disabledButton = Template.bind({})
+disabledButton.args = {
+  variant: 'button',
+  state: {}
+}
+export const disabledMenuItem = Template.bind({})
+disabledMenuItem.args = {
+  variant: 'list-item',
+  state: {}
 }
 
 export default DeleteBlockStory as Meta

@@ -315,50 +315,14 @@ describe('DeleteBlock', () => {
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
   })
 
-  // TODO: change this to check for disabled button instead
-  it('should not delete if no block selected', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        blockDelete: [
-          {
-            id: selectedBlock.id,
-            parentBlockId: selectedBlock.parentBlockId,
-            parentOrder: selectedBlock.parentOrder,
-            journeyId: 'journeyId'
-          }
-        ]
-      }
-    }))
+  it('should be disabled if nothing is selected', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE,
-                variables: {
-                  id: selectedBlock.id,
-                  parentBlockId: selectedBlock.parentBlockId,
-                  journeyId: 'journeyId'
-                }
-              },
-              result
-            }
-          ]}
-        >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-            <EditorProvider
-              initialState={{
-                selectedStep
-              }}
-            >
-              <DeleteBlock variant="button" />
-            </EditorProvider>
-          </JourneyProvider>
+        <MockedProvider>
+          <DeleteBlock variant={'button'} />
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).not.toHaveBeenCalled())
+    expect(getByRole('button')).toBeDisabled()
   })
 })
