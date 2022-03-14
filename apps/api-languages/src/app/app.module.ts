@@ -1,6 +1,10 @@
 import { join } from 'path'
 import { Module } from '@nestjs/common'
-import { GraphQLFederationModule } from '@nestjs/graphql'
+import { GraphQLModule } from '@nestjs/graphql'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig
+} from '@nestjs/apollo'
 import { LanguageModule } from './modules/language/language.module'
 import { TranslationModule } from './modules/translation/translation.module'
 
@@ -8,7 +12,8 @@ import { TranslationModule } from './modules/translation/translation.module'
   imports: [
     LanguageModule,
     TranslationModule,
-    GraphQLFederationModule.forRoot({
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
       typePaths: [
         join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql'),
         join(process.cwd(), 'assets/**/*.graphql')
