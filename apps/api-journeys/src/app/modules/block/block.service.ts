@@ -46,7 +46,9 @@ export class BlockService extends BaseService {
     journeyId: string,
     parentBlockId: string
   ): Promise<Block[]> {
-    const siblings = await this.getSiblings(journeyId, parentBlockId)
+    const siblings = await (
+      await this.getSiblings(journeyId, parentBlockId)
+    ).filter((block) => block.parentOrder != null)
     return await this.reorderSiblings(siblings)
   }
 

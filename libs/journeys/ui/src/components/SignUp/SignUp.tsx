@@ -3,6 +3,7 @@ import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
+import { SxProps } from '@mui/system/styleFunctionSx'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, handleAction, useEditor, ActiveTab, ActiveFab } from '../..'
@@ -23,6 +24,8 @@ export const SIGN_UP_RESPONSE_CREATE = gql`
 `
 interface SignUpProps extends TreeBlock<SignUpFields> {
   uuid?: () => string
+  editableSubmitLabel?: ReactElement
+  sx?: SxProps
 }
 
 interface SignUpFormValues {
@@ -36,8 +39,10 @@ export const SignUp = ({
   submitIconId,
   // Use translated string when i18n is in
   submitLabel,
+  editableSubmitLabel,
   action,
   children,
+  sx,
   ...props
 }: SignUpProps): ReactElement => {
   const submitIcon = children.find((block) => block.id === submitIconId) as
@@ -156,8 +161,9 @@ export const SignUp = ({
             startIcon={
               submitIcon != null ? <Icon {...submitIcon} /> : undefined
             }
+            sx={{ ...sx }}
           >
-            {submitLabel ?? 'Submit'}
+            {editableSubmitLabel ?? submitLabel ?? 'Submit'}
           </Button>
         </Form>
       )}
