@@ -12,6 +12,7 @@ import {
   Button,
   SignUp,
   RadioOption,
+  Video,
   Image
 } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
@@ -47,9 +48,9 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
 
     case 'VideoBlock': {
       return step.id === selected.parentBlockId ? (
-        <p>Video Attributes</p>
+        <Video {...selected} />
       ) : (
-        withMoveButtons(<p>Video Attributes</p>)
+        withMoveButtons(<Video {...selected} />)
       )
     }
 
