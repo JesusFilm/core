@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { VideoLibrary } from '.'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoLibrary } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

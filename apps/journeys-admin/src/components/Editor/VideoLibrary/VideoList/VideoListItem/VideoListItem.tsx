@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import ListItemText from '@mui/material/ListItemText'

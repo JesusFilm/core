@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { journeysAdminConfig } from '../../../libs/storybook'
-import { VideoLibrary } from '.'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VIDEOS } from './VideoList/VideoList'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { videos } from './VideoList/VideoListData'
+import { GET_VIDEOS } from './VideoList/VideoList'
+import { VideoLibrary } from '.'
 
 const VideoLibraryStory = {
   ...journeysAdminConfig,

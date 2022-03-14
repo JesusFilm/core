@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { VideoList } from '.'
 import { MockedProvider } from '@apollo/client/testing'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { GET_VIDEOS } from './VideoList'
 import { videos } from './VideoListData'
+import { VideoList } from '.'
 
 const VideoListStory = {
   ...journeysAdminConfig,

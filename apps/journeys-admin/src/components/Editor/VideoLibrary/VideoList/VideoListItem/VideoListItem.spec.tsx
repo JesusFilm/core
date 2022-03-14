@@ -21,9 +21,8 @@ describe('Video List Item', () => {
   }
 
   it('should render the content of VideoListItem', () => {
-    // onSelect will only work when VideoDetails merged in
     const onSelect = jest.fn()
-    const { getByText, getByRole } = render(
+    const { getByText } = render(
       <VideoListItem
         id={video.id}
         title={video.title}

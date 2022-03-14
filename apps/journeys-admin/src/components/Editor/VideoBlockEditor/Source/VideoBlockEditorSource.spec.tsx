@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { VideoBlockEditorSource } from './VideoBlockEditorSource'
 
 const video = {
@@ -13,7 +14,13 @@ const video = {
   videoContent: { src: 'https://example.com/123.mp4' }
 }
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('VideoBlockEditorSource', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   it('displays validation message', async () => {
     const onChange = jest.fn()
     const { getByRole, getByText } = render(

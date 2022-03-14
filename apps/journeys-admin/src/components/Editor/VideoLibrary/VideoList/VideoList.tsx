@@ -69,17 +69,16 @@ export function VideoList({
       <List data-testId="VideoList" sx={{ px: 6 }}>
         <Divider />
         {data?.videos?.slice(0, visibleVideos).map((video) => (
+          // what should be the indicator to get the text value
           <>
             <VideoListItem
               id={video.id}
               title={
-                video.title.find((title) => title.language.id === '529')
-                  ?.value ?? 'Title'
+                video.title.find((title) => title.primary)?.value ?? 'Title'
               }
               description={
-                video.snippet.find(
-                  (snippet) => snippet.language.id === '529' ?? ''
-                )?.value ?? 'Description'
+                video.snippet.find((snippet) => snippet.primary)?.value ??
+                'Description'
               }
               image={video.image ?? ''}
               duration={video.variant?.duration ?? 0}
