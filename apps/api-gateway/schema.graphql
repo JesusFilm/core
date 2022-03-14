@@ -138,6 +138,12 @@ input CardBlockUpdateInput {
 """DateTime custom scalar"""
 scalar DateTime
 
+type Download {
+  quality: QualityType!
+  size: Float!
+  url: String!
+}
+
 enum GridAlignItems {
   baseline
   center
@@ -289,7 +295,9 @@ scalar join__FieldSet
 
 enum join__Graph {
   JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
+  LANGUAGES @join__graph(name: "languages" url: "http://127.0.0.1:4003/graphql")
   USERS @join__graph(name: "users" url: "http://127.0.0.1:4002/graphql")
+  VIDEOS @join__graph(name: "videos" url: "http://127.0.0.1:4004/graphql")
 }
 
 type Journey
@@ -349,6 +357,17 @@ input JourneyUpdateInput {
   title: String
 }
 
+type Language
+  @join__owner(graph: LANGUAGES)
+  @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: VIDEOS, key: "id")
+{
+  bcp47: String @join__field(graph: LANGUAGES)
+  id: ID! @join__field(graph: LANGUAGES)
+  iso3: String @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation]! @join__field(graph: LANGUAGES)
+}
+
 type LinkAction implements Action {
   gtmEventName: String
   parentBlockId: ID!
@@ -363,6 +382,7 @@ input LinkActionInput {
 }
 
 type Mutation {
+  """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID!): [Block!]! @join__field(graph: JOURNEYS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
@@ -438,12 +458,20 @@ input NavigateToJourneyActionInput {
   journeyId: String!
 }
 
+enum QualityType {
+  high
+  low
+}
+
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
+  language(id: ID!): Language @join__field(graph: LANGUAGES)
+  languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
+  videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block {
@@ -595,6 +623,12 @@ enum ThemeName {
   base
 }
 
+type Translation {
+  language: Language!
+  primary: Boolean!
+  value: String!
+}
+
 enum TypographyAlign {
   center
   left
@@ -679,6 +713,20 @@ enum UserJourneyRole {
   editor
   inviteRequested
   owner
+}
+
+type Video
+  @join__owner(graph: VIDEOS)
+  @join__type(graph: VIDEOS, key: "id")
+{
+  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  id: ID! @join__field(graph: VIDEOS)
+  image: String @join__field(graph: VIDEOS)
+  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
+  variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
 
 type VideoArclight implements VideoContent {
@@ -800,6 +848,11 @@ enum VideoResponseStateEnum {
   PLAYING
 }
 
+input VideosFilter {
+  availableVariantLanguageIds: [ID!]
+  title: String
+}
+
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -816,4 +869,12 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
+}
+
+type VideoVariant {
+  downloads: [Download!]!
+  duration: Int!
+  hls: String!
+  language: Language!
+  subtitle(languageId: ID, primary: Boolean): [Translation]!
 }
