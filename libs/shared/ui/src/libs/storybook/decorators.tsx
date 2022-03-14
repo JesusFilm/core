@@ -1,6 +1,6 @@
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
-import { ThemeProvider } from '../../index'
+import { ThemeProvider } from '../../components/ThemeProvider'
 import {
   ThemeMode,
   ThemeName
@@ -42,6 +42,7 @@ const ThemeContainer = ({
   )
 }
 
+/* eslint-disable react/no-children-prop */
 export const ThemeDecorator = ({
   mode,
   layout,

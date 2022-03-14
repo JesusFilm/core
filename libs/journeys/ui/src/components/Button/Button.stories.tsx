@@ -75,6 +75,7 @@ Size.args = {
   children: []
 }
 
+/* eslint-disable react/no-children-prop */
 const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
   return (
     <StoryCard>

@@ -1,7 +1,7 @@
 import { makeVar, useReactiveVar } from '@apollo/client'
 import { useCallback } from 'react'
 import { BlockFields_StepBlock as StepFields } from '../transformer/__generated__/BlockFields'
-import { TreeBlock } from '..'
+import { TreeBlock } from '../transformer'
 
 export const activeBlockVar = makeVar<TreeBlock<StepFields> | null>(null)
 export const previousBlocksVar = makeVar<TreeBlock[]>([])
