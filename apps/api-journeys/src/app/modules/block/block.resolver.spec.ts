@@ -75,13 +75,13 @@ describe('BlockResolver', () => {
 
   describe('blockDelete', () => {
     it('removes the block and its children', async () => {
-      const data = await resolver.blockDelete('image1', 'card1', '2')
+      const data = await resolver.blockDelete('image1', '2', 'card1')
 
       expect(service.removeBlockAndChildren).toBeCalledTimes(1)
       expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
         'image1',
-        'card1',
-        '2'
+        '2',
+        'card1'
       )
       expect(data).toEqual([image1, image2, image3])
     })
