@@ -12,7 +12,7 @@ import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
-import { DeleteModal } from './DeleteModal'
+import { DeleteDialogue } from './DeleteDialogue'
 
 export const BLOCK_DELETE = gql`
   mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {
@@ -116,7 +116,7 @@ export function DeleteBlock({
 
   return (
     <>
-      <DeleteModal
+      <DeleteDialogue
         handleDelete={handleDeleteBlock}
         open={open}
         handleClose={handleCloseModal}

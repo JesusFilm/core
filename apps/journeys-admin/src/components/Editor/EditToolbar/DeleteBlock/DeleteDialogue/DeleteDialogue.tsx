@@ -6,19 +6,17 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 
-interface DeleteModalProps {
+interface DeleteDialogueProps {
   handleDelete: () => void
   open: boolean
   handleClose: () => void
 }
 
-// TODO: remane modal to dialog
-
-export function DeleteModal({
+export function DeleteDialogue({
   handleDelete,
   open,
   handleClose
-}: DeleteModalProps): ReactElement {
+}: DeleteDialogueProps): ReactElement {
   return (
     <Modal
       open={open}
