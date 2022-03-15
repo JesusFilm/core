@@ -14,8 +14,7 @@ import {
   TypographyColor
 } from '../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../libs/context'
-import { BLOCK_DELETE } from './DeleteBlock'
-import { DeleteBlock } from '.'
+import { DeleteBlock, BLOCK_DELETE, updateSelected } from './DeleteBlock'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
   id: 'typography0.id',
@@ -28,6 +27,16 @@ const selectedBlock: TreeBlock<TypographyBlock> = {
   align: TypographyAlign.center,
   children: []
 }
+const block1: TreeBlock<TypographyBlock> = {
+  ...selectedBlock,
+  id: 'typography1.id',
+  parentOrder: 1
+}
+const block2: TreeBlock<TypographyBlock> = {
+  ...selectedBlock,
+  id: 'typography2.id',
+  parentOrder: 2
+}
 
 const selectedStep: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',
@@ -35,7 +44,7 @@ const selectedStep: TreeBlock<StepBlock> = {
   parentBlockId: 'journeyId',
   parentOrder: 0,
   locked: true,
-  nextBlockId: null,
+  nextBlockId: 'step2.id',
   children: [
     {
       id: 'card1.id',
@@ -47,10 +56,28 @@ const selectedStep: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      children: [selectedBlock]
+      children: [selectedBlock, block1, block2]
     }
   ]
 }
+
+const step1: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step1.id',
+  parentBlockId: 'journeyId',
+  parentOrder: 1,
+  locked: true,
+  nextBlockId: 'step2.id',
+  children: []
+}
+
+const step2: TreeBlock<StepBlock> = {
+  ...step1,
+  id: 'step2.id',
+  parentOrder: 2,
+  nextBlockId: 'stepId'
+}
+const steps: Array<TreeBlock<StepBlock>> = [selectedStep, step1, step2]
 
 describe('DeleteBlock', () => {
   it('should delete a block on button click', async () => {
@@ -324,5 +351,71 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     expect(getByRole('button')).toBeDisabled()
+  })
+
+  describe('updatedSelected', () => {
+    it('should select the next child block', () => {
+      const input = {
+        parentOrder: 1,
+        siblings: selectedStep.children[0].children,
+        type: 'TypographyBlock',
+        steps
+      }
+      expect(updateSelected(input)).toEqual({
+        type: 'SetSelectedBlockByIdAction',
+        id: 'typography1.id'
+      })
+    })
+    it('should select the new last block when last block deleted', () => {
+      const input = {
+        parentOrder: 2,
+        siblings: selectedStep.children[0].children,
+        type: 'TypographyBlock',
+        steps
+      }
+      expect(updateSelected(input)).toEqual({
+        type: 'SetSelectedBlockByIdAction',
+        id: 'typography2.id'
+      })
+    })
+    it('should select the parent block when all children blocks deleted', () => {
+      const input = {
+        parentOrder: 0,
+        siblings: [],
+        type: 'TypographyBlock',
+        steps,
+        currentStep: selectedStep
+      }
+      expect(updateSelected(input)).toEqual({
+        type: 'SetSelectedStepAction',
+        step: selectedStep
+      })
+    })
+    it('should select the previous linked step when entire step deleted', () => {
+      const input = {
+        parentOrder: 2,
+        siblings: [],
+        type: 'StepBlock',
+        steps,
+        currentStep: step2
+      }
+      expect(updateSelected(input)).toEqual({
+        type: 'SetSelectedStepAction',
+        step: step1
+      })
+    })
+    it('should select the last step when an unlinked step is deleted', () => {
+      const input = {
+        parentOrder: 1,
+        siblings: [],
+        type: 'StepBlock',
+        steps,
+        currentStep: step1
+      }
+      expect(updateSelected(input)).toEqual({
+        type: 'SetSelectedStepAction',
+        step: step2
+      })
+    })
   })
 })

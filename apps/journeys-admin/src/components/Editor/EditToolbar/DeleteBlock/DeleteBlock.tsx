@@ -22,19 +22,27 @@ export const BLOCK_DELETE = gql`
     }
   }
 `
-interface UpdatedSeletedProps {
+interface UpdatedSeletedReturn {
   type: 'SetSelectedBlockByIdAction' | 'SetSelectedStepAction'
   id?: string
   step?: TreeBlock<StepBlock>
 }
 
-function updateSelected(
-  parentOrder: number,
-  siblings: BlockDelete['blockDelete'],
-  type: string,
-  steps: Array<TreeBlock<StepBlock>>,
+interface UpdatedSelectedProps {
+  parentOrder: number
+  siblings: BlockDelete['blockDelete']
+  type: string
+  steps: Array<TreeBlock<StepBlock>>
   currentStep?: TreeBlock<StepBlock>
-): UpdatedSeletedProps | null {
+}
+
+export function updateSelected({
+  parentOrder,
+  siblings,
+  type,
+  steps,
+  currentStep
+}: UpdatedSelectedProps): UpdatedSeletedReturn | null {
   // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
   if (siblings.length > 0) {
     const blockToSelect =
@@ -96,13 +104,13 @@ export function DeleteBlock({
     })
 
     if (data?.blockDelete != null && toDeleteParentOrder != null) {
-      const toDispatch = updateSelected(
-        toDeleteParentOrder,
-        data.blockDelete,
-        toDeleteBlockType,
+      const toDispatch = updateSelected({
+        parentOrder: toDeleteParentOrder,
+        siblings: data.blockDelete,
+        type: toDeleteBlockType,
         steps,
-        selectedStep
-      )
+        currentStep: selectedStep
+      })
       toDispatch != null && dispatch(toDispatch)
     }
 
