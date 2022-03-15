@@ -19,7 +19,6 @@ export abstract class BaseService {
   async getAll<T>(): Promise<T[]> {
     const rst = await this.db.query(aql`
     FOR item IN ${this.collection}
-    limit 100
       RETURN item`)
     return await rst.all()
   }
