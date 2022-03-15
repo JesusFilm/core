@@ -138,12 +138,6 @@ input CardBlockUpdateInput {
 """DateTime custom scalar"""
 scalar DateTime
 
-type Download {
-  quality: QualityType!
-  size: Float!
-  url: String!
-}
-
 enum GridAlignItems {
   baseline
   center
@@ -365,7 +359,7 @@ type Language
   bcp47: String @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation]! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 type LinkAction implements Action {
@@ -456,11 +450,6 @@ type NavigateToJourneyAction implements Action {
 input NavigateToJourneyActionInput {
   gtmEventName: String
   journeyId: String!
-}
-
-enum QualityType {
-  high
-  low
 }
 
 type Query {
@@ -872,9 +861,20 @@ type VideoTriggerBlock implements Block {
 }
 
 type VideoVariant {
-  downloads: [Download!]!
+  downloads: [VideoVariantDownload!]!
   duration: Int!
   hls: String!
   language: Language!
-  subtitle(languageId: ID, primary: Boolean): [Translation]!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
+}
+
+type VideoVariantDownload {
+  quality: VideoVariantDownloadQuality!
+  size: Float!
+  url: String!
+}
+
+enum VideoVariantDownloadQuality {
+  high
+  low
 }
