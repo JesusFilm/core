@@ -7,19 +7,13 @@ export const videos = [
       {
         primary: true,
         value:
-          'After living a life full of fighter planes and porsches, Andreas realizes something is missing.',
-        language: {
-          id: '529'
-        }
+          'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
       }
     ],
     title: [
       {
         primary: true,
-        value: "Andreas' Story",
-        language: {
-          id: '529'
-        }
+        value: "Andreas' Story"
       }
     ],
     variant: {
@@ -33,19 +27,13 @@ export const videos = [
     snippet: [
       {
         primary: true,
-        value: 'Brand Video',
-        language: {
-          id: '529'
-        }
+        value: 'Brand Video'
       }
     ],
     title: [
       {
         primary: true,
-        value: 'Brand_Video',
-        language: {
-          id: '529'
-        }
+        value: 'Brand_Video'
       }
     ],
     variant: {
@@ -60,19 +48,13 @@ export const videos = [
       {
         primary: true,
         value:
-          'Powerfully-told, this is the famous Biblical account of Jesus healing a man by casting out demons.',
-        language: {
-          id: '529'
-        }
+          'Powerfully-told, this is the famous Biblical account of Jesus healing a man by casting out demons.'
       }
     ],
     title: [
       {
         primary: true,
-        value: 'The Demoniac',
-        language: {
-          id: '529'
-        }
+        value: 'The Demoniac'
       }
     ],
     variant: {

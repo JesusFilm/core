@@ -13,7 +13,7 @@ export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
-  onSelect?: (id: string) => void
+  onSelect?: (source: string) => void
 }
 
 export function VideoLibrary({
@@ -23,8 +23,8 @@ export function VideoLibrary({
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const onSelect = (id: string): void => {
-    if (handleSelect != null) handleSelect(id)
+  const onSelect = (source: string): void => {
+    if (handleSelect != null) handleSelect(source)
     if (onClose != null) onClose()
   }
 
@@ -65,7 +65,7 @@ export function VideoLibrary({
       </AppBar>
       {/* search */}
       {/* language */}
-      {/* currentLanguageIds should come from the search component */}
+      {/* currentLanguageIds value is temporary */}
       <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
     </Drawer>
   )

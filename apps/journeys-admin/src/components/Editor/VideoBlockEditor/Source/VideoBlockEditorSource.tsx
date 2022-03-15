@@ -25,6 +25,11 @@ export function VideoBlockEditorSource({
   onChange
 }: VideoBlockEditorSourceProps): ReactElement {
   const [openVideoLibrary, setOpenVideoLibrary] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState<string>()
+
+  const onSelect = (source: string): void => {
+    setSelectedVideo(source)
+  }
 
   const onClick = (): void => {
     setOpenVideoLibrary(true)
@@ -83,44 +88,62 @@ export function VideoBlockEditorSource({
   })
 
   return (
-    <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
-      <form>
-        <TextField
-          id="src"
-          name="src"
-          variant="filled"
-          label="Paste URL of video..."
-          fullWidth
-          value={formik.values.src}
-          onChange={formik.handleChange}
-          onBlur={async (e) => {
-            formik.handleBlur(e)
-            await handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
-          }}
-          helperText={
-            formik.touched.src === true
-              ? formik.errors.src
-              : 'Make sure video address is permanent'
-          }
-          error={formik.touched.src === true && Boolean(formik.errors.src)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <LinkIcon />
-              </InputAdornment>
-            )
-          }}
-        />
-      </form>
-      <Button
-        variant="text"
-        size="small"
-        startIcon={<SubscriptionsRounded />}
-        onClick={onClick}
+    <>
+      <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
+        <form>
+          <TextField
+            id="src"
+            name="src"
+            variant="filled"
+            label="Paste URL of video..."
+            fullWidth
+            value={selectedVideo != null ? selectedVideo : formik.values.src}
+            onChange={formik.handleChange}
+            onBlur={async (e) => {
+              formik.handleBlur(e)
+              await handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
+            }}
+            helperText={
+              formik.touched.src === true
+                ? formik.errors.src
+                : 'Make sure video address is permanent'
+            }
+            error={formik.touched.src === true && Boolean(formik.errors.src)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LinkIcon />
+                </InputAdornment>
+              )
+            }}
+          />
+        </form>
+      </Box>
+      <Box
+        sx={{
+          pb: 2,
+          px: 6,
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}
       >
-        Select a Video
-      </Button>
-      <VideoLibrary open={openVideoLibrary} onClose={handleClose} />
-    </Box>
+        <Button
+          variant="text"
+          size="small"
+          startIcon={<SubscriptionsRounded />}
+          onClick={onClick}
+          sx={{
+            px: 2
+          }}
+        >
+          Select a Video
+        </Button>
+      </Box>
+      <VideoLibrary
+        open={openVideoLibrary}
+        onClose={handleClose}
+        onSelect={onSelect}
+      />
+    </>
   )
 }

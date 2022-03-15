@@ -330,7 +330,7 @@ export interface VideoResponseCreateInput {
 }
 
 export interface VideosFilter {
-  availableVariantLanguageIds?: (string | null)[] | null;
+  availableVariantLanguageIds?: string[] | null;
   title?: string | null;
 }
 

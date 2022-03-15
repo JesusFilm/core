@@ -9,23 +9,17 @@ import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
 
 export const GET_VIDEOS = gql`
-  query GetVideos($where: VideosFilter, $limit: Int, $page: Int) {
-    videos(where: $where, limit: $limit, page: $page) {
+  query GetVideos($where: VideosFilter) {
+    videos(where: $where) {
       id
       image
       snippet {
         primary
         value
-        language {
-          id
-        }
       }
       title {
         primary
         value
-        language {
-          id
-        }
       }
       variant {
         duration
@@ -35,12 +29,8 @@ export const GET_VIDEOS = gql`
 `
 
 interface VideoListProps {
-  onSelect: (id: string) => void
+  onSelect: (source: string) => void
   currentLanguageIds?: string[]
-  // are we getting these values from the search component?
-  // title?: string
-  // limit?: number
-  // page?: number
 }
 
 export function VideoList({
@@ -69,7 +59,6 @@ export function VideoList({
       <List data-testId="VideoList" sx={{ px: 6 }}>
         <Divider />
         {data?.videos?.slice(0, visibleVideos).map((video) => (
-          // what should be the indicator to get the text value
           <>
             <VideoListItem
               id={video.id}

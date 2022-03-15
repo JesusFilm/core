@@ -10,7 +10,7 @@ interface VideoListItemProps {
   description: string
   image: string
   duration: number
-  onSelect: (id: string) => void
+  onSelect: (source: string) => void
 }
 
 export function VideoListItem({
