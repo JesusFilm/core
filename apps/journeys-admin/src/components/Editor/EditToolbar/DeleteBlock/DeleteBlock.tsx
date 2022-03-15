@@ -22,6 +22,40 @@ export const BLOCK_DELETE = gql`
     }
   }
 `
+interface UpdatedSeletedProps {
+  type: 'SetSelectedBlockByIdAction' | 'SetSelectedStepAction'
+  id?: string
+  step?: TreeBlock<StepBlock>
+}
+
+function updateSelected(
+  parentOrder: number,
+  siblings: BlockDelete['blockDelete'],
+  type: string,
+  steps: Array<TreeBlock<StepBlock>>,
+  currentStep?: TreeBlock<StepBlock>
+): UpdatedSeletedProps | null {
+  // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
+  if (siblings.length > 0) {
+    const blockToSelect =
+      siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
+      last(siblings)
+    return {
+      type: 'SetSelectedBlockByIdAction',
+      id: blockToSelect?.id
+    }
+  } else if (currentStep != null && steps.length > 0) {
+    const stepToSet =
+      type !== 'StepBlock'
+        ? currentStep
+        : steps.find((step) => step.nextBlockId === currentStep.id) ??
+          last(steps)
+    return {
+      type: 'SetSelectedStepAction',
+      step: stepToSet
+    }
+  } else return null
+}
 
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
@@ -44,36 +78,6 @@ export function DeleteBlock({
   const handleOpenModal = (): void => setOpen(true)
   const handleCloseModal = (): void => setOpen(false)
 
-  // TODO: move this function out of component and refactor to return a dispatch object for easier testing
-  function updateSelected(
-    parentOrder: number,
-    siblings: BlockDelete['blockDelete'],
-    type: string,
-    steps: Array<TreeBlock<StepBlock>>,
-    currentStep?: TreeBlock<StepBlock>
-  ): void {
-    // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
-    if (siblings.length > 0) {
-      const blockToSelect =
-        siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
-        last(siblings)
-      dispatch({
-        type: 'SetSelectedBlockByIdAction',
-        id: blockToSelect?.id
-      })
-    } else if (currentStep != null && steps.length > 0) {
-      const stepToSet =
-        type !== 'StepBlock'
-          ? currentStep
-          : steps.find((step) => step.nextBlockId === currentStep.id) ??
-            last(steps)
-      dispatch({
-        type: 'SetSelectedStepAction',
-        step: stepToSet
-      })
-    }
-  }
-
   const handleDeleteBlock = async (): Promise<void> => {
     if (selectedBlock == null) return
 
@@ -91,15 +95,16 @@ export function DeleteBlock({
       }
     })
 
-    data?.blockDelete != null &&
-      toDeleteParentOrder != null &&
-      updateSelected(
+    if (data?.blockDelete != null && toDeleteParentOrder != null) {
+      const toDispatch = updateSelected(
         toDeleteParentOrder,
         data.blockDelete,
         toDeleteBlockType,
         steps,
         selectedStep
       )
+      toDispatch != null && dispatch(toDispatch)
+    }
 
     handleCloseModal()
 
