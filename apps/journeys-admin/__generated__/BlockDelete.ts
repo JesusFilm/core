@@ -23,5 +23,5 @@ export interface BlockDelete {
 export interface BlockDeleteVariables {
   id: string;
   journeyId: string;
-  parentBlockId: string;
+  parentBlockId?: string | null;
 }

@@ -15,7 +15,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../..
 import { DeleteModal } from './DeleteModal'
 
 export const BLOCK_DELETE = gql`
-  mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID!) {
+  mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
       id
       parentOrder
@@ -62,11 +62,11 @@ export function DeleteBlock({
         id: blockToSelect?.id
       })
     } else if (currentStep != null && steps.length > 0) {
-      // BUG: always selecting first step
       const stepToSet =
         type !== 'StepBlock'
           ? currentStep
-          : steps.find((step) => step.nextBlockId === step.id) ?? last(steps)
+          : steps.find((step) => step.nextBlockId === currentStep.id) ??
+            last(steps)
       dispatch({
         type: 'SetSelectedStepAction',
         step: stepToSet
@@ -84,7 +84,7 @@ export function DeleteBlock({
       variables: {
         id: selectedBlock.id,
         journeyId,
-        parentBlockId: selectedBlock.parentBlockId ?? 0
+        parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
         blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
