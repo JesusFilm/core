@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
-describe('LangaugeResolver', () => {
+describe('VideoResolver', () => {
   let resolver: VideoResolver, service: VideoService
 
   const video = {
