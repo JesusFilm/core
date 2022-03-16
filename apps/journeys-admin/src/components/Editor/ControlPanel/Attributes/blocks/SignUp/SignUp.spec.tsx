@@ -60,7 +60,7 @@ describe('SignUp Attributes', () => {
   it('shows filled attributes', () => {
     const { getByRole } = render(<SignUp {...block} />)
     expect(
-      getByRole('button', { name: 'Action LinkAction' })
+      getByRole('button', { name: 'Action URL/Website' })
     ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Button Icon Arrow Forward' })
@@ -80,5 +80,20 @@ describe('SignUp Attributes', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
     expect(getAllByText('Button Icon')).toHaveLength(3)
+  })
+
+  it('action property button should open action edit drawer', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <SignUp {...block} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
+    expect(getByTestId('drawer-title')).toHaveTextContent('Form Submission')
   })
 })

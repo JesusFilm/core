@@ -5,18 +5,18 @@ import { reject } from 'lodash'
 import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
 
 const getNestedChildRefs = (
-  block: TreeBlock<Block>,
+  block: TreeBlock<Block> | Block,
   results: string[] = []
 ): string[] => {
   results.push(`${block.__typename}:${block.id}`)
-  block.children.forEach((child) => {
+  ;(block as TreeBlock<Block>).children?.forEach((child) => {
     results = getNestedChildRefs(child, results)
   })
   return results
 }
 
 export const blockDeleteUpdate = (
-  selectedBlock: TreeBlock<Block>,
+  selectedBlock: TreeBlock<Block> | Block,
   response,
   cache: ApolloCache<any>, // eslint-disable-line
   journeyId: string

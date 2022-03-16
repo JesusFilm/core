@@ -180,7 +180,8 @@ describe('BlockService', () => {
     it('should update parent order', async () => {
       service.getSiblings = jest.fn().mockReturnValue([
         { _key: block._key, parentOrder: 1 },
-        { _key: block._key, parentOrder: 2 }
+        { _key: block._key, parentOrder: 2 },
+        { _key: block._key, parentOrder: null }
       ])
       service.reorderSiblings = jest.fn().mockReturnValue([
         { _key: block._key, parentOrder: 0 },
@@ -220,8 +221,8 @@ describe('BlockService', () => {
       expect(
         await service.removeBlockAndChildren(
           block._key,
-          block.parentBlockId,
-          journey.id
+          journey.id,
+          block.parentBlockId
         )
       ).toEqual([
         { _key: block._key, parentOrder: 0 },
@@ -231,6 +232,13 @@ describe('BlockService', () => {
         journey.id,
         block.parentBlockId
       )
+    })
+
+    it('should remove blocks and return empty array', async () => {
+      expect(
+        await service.removeBlockAndChildren(block._key, journey.id)
+      ).toEqual([])
+      expect(service.updateChildrenParentOrder).not.toHaveBeenCalled()
     })
 
     it('should update parent order', async () => {

@@ -229,14 +229,10 @@ export function BackgroundMediaVideo({
       optimisticResponse: {
         videoBlockUpdate: {
           id: coverBlock.id,
+          ...block,
           __typename: 'VideoBlock',
-          title: block.title,
-          startAt: block.startAt,
           endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-          muted: block.muted,
-          autoplay: block.autoplay,
-          posterBlockId: block.posterBlockId,
-          videoContent: videoContent
+          videoContent
         }
       }
     })

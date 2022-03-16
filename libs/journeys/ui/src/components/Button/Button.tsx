@@ -1,10 +1,16 @@
 import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
+import { SxProps } from '@mui/system/styleFunctionSx'
 import MuiButton from '@mui/material/Button'
 import { handleAction, TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
+
+interface ButtonProps extends TreeBlock<ButtonFields> {
+  editableLabel?: ReactElement
+  sx?: SxProps
+}
 
 export function Button({
   buttonVariant,
@@ -15,8 +21,10 @@ export function Button({
   endIconId,
   action,
   children,
+  sx,
+  editableLabel,
   ...props
-}: TreeBlock<ButtonFields>): ReactElement {
+}: ButtonProps): ReactElement {
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>
     | undefined
@@ -68,13 +76,14 @@ export function Button({
       startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
       endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
       sx={{
+        ...sx,
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
       onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
       fullWidth
     >
-      {label}
+      {editableLabel ?? label}
     </MuiButton>
   )
 }

@@ -6,6 +6,7 @@ import { Attribute } from '../..'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Icon, icons } from '../../Icon'
+import { Action, actions } from '../../Action/Action'
 
 export function SignUp({
   id,
@@ -24,9 +25,19 @@ export function SignUp({
         id={`${id}-signup-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        value={action?.__typename.toString() ?? 'None'}
+        value={
+          actions.find((act) => act.value === action?.__typename)?.label ??
+          'None'
+        }
         description="Form Submission"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Form Submission',
+            mobileOpen: true,
+            children: <Action />
+          })
+        }}
       />
 
       <Attribute

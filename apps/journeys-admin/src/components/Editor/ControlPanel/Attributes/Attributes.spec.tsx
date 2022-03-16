@@ -89,8 +89,7 @@ describe('Attributes', () => {
 
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
-    // TODO: Update this when adding Video Attributes
-    expect(getByText('Video Attributes')).toBeInTheDocument()
+    expect(getByText('Video Source')).toBeInTheDocument()
   })
 
   it('should render video properties with move buttons ', () => {
@@ -106,8 +105,7 @@ describe('Attributes', () => {
 
     expect(queryByText('Unlocked Card')).not.toBeInTheDocument()
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
-    // TODO: Update this when adding Video Attributes
-    expect(getByText('Video Attributes')).toBeInTheDocument()
+    expect(getByText('Video Source')).toBeInTheDocument()
   })
 
   it('should render typography properties with move buttons ', () => {
