@@ -34,7 +34,7 @@ describe('VideoBlockResolver', () => {
       mediaComponentId: '2_0-FallingPlates',
       languageId: '529',
       src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },    
+    }
   }
 
   const block2 = {
