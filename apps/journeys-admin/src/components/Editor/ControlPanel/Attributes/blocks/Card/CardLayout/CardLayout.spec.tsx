@@ -129,7 +129,7 @@ describe('CardLayout', () => {
     })
     const result = jest.fn(() => ({
       data: {
-        block: { id: 'card1.id', fullscreen: true }
+        cardBlockUpdate: { id: 'card1.id', fullscreen: true }
       }
     }))
     const card: TreeBlock<CardBlock> = {

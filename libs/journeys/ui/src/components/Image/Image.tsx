@@ -44,7 +44,7 @@ export function Image({
 
   return (
     <Box
-      data-testId={`image-${props.id}`}
+      data-testid={`image-${props.id}`}
       sx={{
         borderRadius: (theme) => theme.spacing(4),
         overflow: 'hidden',

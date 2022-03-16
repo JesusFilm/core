@@ -263,12 +263,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
       }))
       const blockDeleteResult = jest.fn(() => ({
         data: {
-          blockDelete: [
-            {
-              id: image.id,
-              __typename: 'ImageBlock'
-            }
-          ]
+          blockDelete: []
         }
       }))
       const { getByTestId } = render(

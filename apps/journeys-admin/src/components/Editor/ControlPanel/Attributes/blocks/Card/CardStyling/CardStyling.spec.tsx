@@ -154,7 +154,7 @@ describe('CardStyling', () => {
     })
     const result = jest.fn(() => ({
       data: {
-        block: {
+        cardBlockUpdate: {
           id: 'card1.id',
           themeMode: ThemeMode.dark,
           __typename: 'CardBlock'
