@@ -46,8 +46,8 @@ export function DeleteBlock({
   const handleDeleteBlock = async (): Promise<void> => {
     if (selectedBlock == null) return
 
-    const toDeleteParentOrder = selectedBlock.parentOrder
-    const toDeleteBlockType = selectedBlock.__typename
+    const deletedBlockParentOrder = selectedBlock.parentOrder
+    const deletedBlockType = selectedBlock.__typename
 
     const { data } = await blockDelete({
       variables: {
@@ -60,20 +60,20 @@ export function DeleteBlock({
       }
     })
 
-    if (data?.blockDelete != null && toDeleteParentOrder != null) {
+    if (data?.blockDelete != null && deletedBlockParentOrder != null) {
       const selected = getSelected({
-        parentOrder: toDeleteParentOrder,
+        parentOrder: deletedBlockParentOrder,
         siblings: data.blockDelete,
-        type: toDeleteBlockType,
+        type: deletedBlockType,
         steps,
-        toDeleteStep: selectedStep
+        selectedStep
       })
       selected != null && dispatch(selected)
     }
 
     handleCloseModal()
 
-    toDeleteBlockType !== 'StepBlock'
+    deletedBlockType !== 'StepBlock'
       ? enqueueSnackbar('Block Deleted', {
           variant: 'success',
           preventDuplicate: true

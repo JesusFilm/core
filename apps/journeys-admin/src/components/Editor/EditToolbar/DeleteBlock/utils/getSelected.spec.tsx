@@ -103,7 +103,7 @@ describe('updatedSelected', () => {
       siblings: [],
       type: 'TypographyBlock',
       steps,
-      toDeleteStep: selectedStep
+      selectedStep
     }
     expect(getSelected(input)).toEqual({
       type: 'SetSelectedStepAction',
@@ -116,7 +116,7 @@ describe('updatedSelected', () => {
       siblings: [],
       type: 'StepBlock',
       steps,
-      toDeleteStep: step2
+      selectedStep: step2
     }
     expect(getSelected(input)).toEqual({
       type: 'SetSelectedStepAction',
@@ -129,7 +129,7 @@ describe('updatedSelected', () => {
       siblings: [],
       type: 'StepBlock',
       steps,
-      toDeleteStep: step1
+      selectedStep: step1
     }
     expect(getSelected(input)).toEqual({
       type: 'SetSelectedStepAction',
@@ -143,7 +143,7 @@ describe('updatedSelected', () => {
       siblings: [],
       type: 'StepBlock',
       steps: [],
-      toDeleteStep: selectedStep
+      selectedStep
     }
     expect(getSelected(input)).toEqual(null)
   })

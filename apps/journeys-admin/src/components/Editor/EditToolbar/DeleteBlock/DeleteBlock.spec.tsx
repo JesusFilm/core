@@ -290,7 +290,7 @@ describe('DeleteBlock', () => {
       }
     }))
 
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
@@ -322,6 +322,7 @@ describe('DeleteBlock', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
+    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
   })
 
   it('should be disabled if nothing is selected', () => {

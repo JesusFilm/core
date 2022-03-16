@@ -2,12 +2,14 @@ import { fireEvent, render } from '@testing-library/react'
 import { DeleteDialog } from '.'
 
 describe('DeleteDialog', () => {
+  const handleClose = jest.fn()
+  const handleDelete = jest.fn()
   it('should, render the dialogue', () => {
     const { getByText, getByRole } = render(
       <DeleteDialog
-        handleDelete={jest.fn()}
+        handleDelete={handleDelete}
         open={true}
-        handleClose={jest.fn()}
+        handleClose={handleClose}
       />
     )
     expect(getByText('Delete Card?')).toBeInTheDocument()
@@ -19,10 +21,9 @@ describe('DeleteDialog', () => {
   })
 
   it('it should call the close function', () => {
-    const handleClose = jest.fn()
     const { getByRole } = render(
       <DeleteDialog
-        handleDelete={jest.fn()}
+        handleDelete={handleDelete}
         open={true}
         handleClose={handleClose}
       />
@@ -32,12 +33,11 @@ describe('DeleteDialog', () => {
   })
 
   it('should call the delete function', () => {
-    const handleDelete = jest.fn()
     const { getByRole } = render(
       <DeleteDialog
         handleDelete={handleDelete}
         open={true}
-        handleClose={jest.fn()}
+        handleClose={handleClose}
       />
     )
     fireEvent.click(getByRole('button', { name: 'Delete' }))

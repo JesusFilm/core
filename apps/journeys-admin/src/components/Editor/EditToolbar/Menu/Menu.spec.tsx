@@ -11,7 +11,7 @@ import { JourneyProvider } from '../../../../libs/context'
 import { Menu } from '.'
 
 describe('EditToolbar Menu', () => {
-  it('should render the block menu on icon click', () => {
+  it('should open the block menu on icon click', () => {
     const selectedBlock: TreeBlock<TypographyBlock> = {
       id: 'typography0.id',
       __typename: 'TypographyBlock',
@@ -39,7 +39,7 @@ describe('EditToolbar Menu', () => {
     expect(getByRole('menuitem', { name: 'Delete Block' })).toBeInTheDocument()
   })
 
-  it('should render the card menu on icon click', () => {
+  it('should open the card menu on icon click', () => {
     const selectedBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'stepId',

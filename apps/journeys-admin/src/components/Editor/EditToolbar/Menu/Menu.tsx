@@ -28,11 +28,7 @@ export function Menu(): ReactElement {
   }
 
   function BlockMenu(): ReactElement {
-    return (
-      <>
-        <DeleteBlock variant="list-item" />
-      </>
-    )
+    return <DeleteBlock variant="list-item" />
   }
 
   function CardMenu(): ReactElement {
@@ -40,7 +36,6 @@ export function Menu(): ReactElement {
       <>
         <DeleteBlock variant="list-item" />
         <Divider />
-
         <NextLink href={`/journeys/${journey.slug}`} passHref>
           <MenuItem>
             <ListItemIcon>

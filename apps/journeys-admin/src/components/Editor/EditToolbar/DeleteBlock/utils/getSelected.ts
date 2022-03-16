@@ -14,7 +14,7 @@ interface getSelectedProps {
   siblings: BlockDelete['blockDelete']
   type: string
   steps: Array<TreeBlock<StepBlock>>
-  toDeleteStep?: TreeBlock<StepBlock>
+  selectedStep?: TreeBlock<StepBlock>
 }
 
 export default function getSelected({
@@ -22,7 +22,7 @@ export default function getSelected({
   siblings,
   type,
   steps,
-  toDeleteStep
+  selectedStep
 }: getSelectedProps): getSeletedReturn | null {
   // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
   if (siblings.length > 0) {
@@ -33,11 +33,13 @@ export default function getSelected({
       type: 'SetSelectedBlockByIdAction',
       id: blockToSelect?.id
     }
-  } else if (toDeleteStep != null && steps.length > 0) {
+  } else if (selectedStep != null && steps.length > 0) {
+    // BUG: newly created blocks after deletion is selecting the first step
+    // REFACTOR: update algorithm to always selected the step to the left of deleted step
     const stepToSet =
       type !== 'StepBlock'
-        ? toDeleteStep
-        : steps.find((step) => step.nextBlockId === toDeleteStep.id) ??
+        ? selectedStep
+        : steps.find((step) => step.nextBlockId === selectedStep.id) ??
           last(steps)
     return {
       type: 'SetSelectedStepAction',
