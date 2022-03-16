@@ -10,7 +10,6 @@ import { Block, Journey } from '../../__generated__/graphql'
 export class BlockService extends BaseService {
   @KeyAsId()
   async forJourney(journey: Journey): Promise<Block[]> {
-    console.log('jid', journey.id)
     const primaryImageBlockId = journey.primaryImageBlock?.id ?? null
     const res = await this.db.query(aql`
       FOR block in ${this.collection}
