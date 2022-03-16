@@ -33,16 +33,16 @@ interface UpdatedSelectedProps {
   siblings: BlockDelete['blockDelete']
   type: string
   steps: Array<TreeBlock<StepBlock>>
-  currentStep?: TreeBlock<StepBlock>
+  toDeleteStep?: TreeBlock<StepBlock>
 }
 
-// siblings is an empty array when a stepBlock is delete, so currentStep is used as the deleteStep
-export function updateSelected({
+// siblings is an empty array when a stepBlock is delete, so toDeleteStep and steps are used to find the next step to selected
+export function setDispatchObject({
   parentOrder,
   siblings,
   type,
   steps,
-  currentStep
+  toDeleteStep
 }: UpdatedSelectedProps): UpdatedSeletedReturn | null {
   // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
   if (siblings.length > 0) {
@@ -53,11 +53,11 @@ export function updateSelected({
       type: 'SetSelectedBlockByIdAction',
       id: blockToSelect?.id
     }
-  } else if (currentStep != null && steps.length > 0) {
+  } else if (toDeleteStep != null && steps.length > 0) {
     const stepToSet =
       type !== 'StepBlock'
-        ? currentStep
-        : steps.find((step) => step.nextBlockId === currentStep.id) ??
+        ? toDeleteStep
+        : steps.find((step) => step.nextBlockId === toDeleteStep.id) ??
           last(steps)
     return {
       type: 'SetSelectedStepAction',
@@ -105,12 +105,12 @@ export function DeleteBlock({
     })
 
     if (data?.blockDelete != null && toDeleteParentOrder != null) {
-      const toDispatch = updateSelected({
+      const toDispatch = setDispatchObject({
         parentOrder: toDeleteParentOrder,
         siblings: data.blockDelete,
         type: toDeleteBlockType,
         steps,
-        currentStep: selectedStep
+        toDeleteStep: selectedStep
       })
       toDispatch != null && dispatch(toDispatch)
     }

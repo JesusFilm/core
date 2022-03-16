@@ -14,7 +14,7 @@ import {
   TypographyColor
 } from '../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../libs/context'
-import { DeleteBlock, BLOCK_DELETE, updateSelected } from './DeleteBlock'
+import { DeleteBlock, BLOCK_DELETE, setDispatchObject } from './DeleteBlock'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
   id: 'typography0.id',
@@ -361,7 +361,7 @@ describe('DeleteBlock', () => {
         type: 'TypographyBlock',
         steps
       }
-      expect(updateSelected(input)).toEqual({
+      expect(setDispatchObject(input)).toEqual({
         type: 'SetSelectedBlockByIdAction',
         id: 'typography1.id'
       })
@@ -373,7 +373,7 @@ describe('DeleteBlock', () => {
         type: 'TypographyBlock',
         steps
       }
-      expect(updateSelected(input)).toEqual({
+      expect(setDispatchObject(input)).toEqual({
         type: 'SetSelectedBlockByIdAction',
         id: 'typography2.id'
       })
@@ -384,9 +384,9 @@ describe('DeleteBlock', () => {
         siblings: [],
         type: 'TypographyBlock',
         steps,
-        currentStep: selectedStep
+        toDeleteStep: selectedStep
       }
-      expect(updateSelected(input)).toEqual({
+      expect(setDispatchObject(input)).toEqual({
         type: 'SetSelectedStepAction',
         step: selectedStep
       })
@@ -397,9 +397,9 @@ describe('DeleteBlock', () => {
         siblings: [],
         type: 'StepBlock',
         steps,
-        currentStep: step2
+        toDeleteStep: step2
       }
-      expect(updateSelected(input)).toEqual({
+      expect(setDispatchObject(input)).toEqual({
         type: 'SetSelectedStepAction',
         step: step1
       })
@@ -410,12 +410,23 @@ describe('DeleteBlock', () => {
         siblings: [],
         type: 'StepBlock',
         steps,
-        currentStep: step1
+        toDeleteStep: step1
       }
-      expect(updateSelected(input)).toEqual({
+      expect(setDispatchObject(input)).toEqual({
         type: 'SetSelectedStepAction',
         step: step2
       })
+    })
+
+    it('should return null when last card is deleted', () => {
+      const input = {
+        parentOrder: 0,
+        siblings: [],
+        type: 'StepBlock',
+        steps: [selectedStep],
+        toDeleteStep: selectedStep
+      }
+      expect(setDispatchObject(input)).toEqual(null)
     })
   })
 })
