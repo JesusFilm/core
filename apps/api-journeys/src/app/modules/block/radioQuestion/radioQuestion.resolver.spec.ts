@@ -156,10 +156,7 @@ describe('RadioQuestionBlockResolver', () => {
         block.journeyId,
         radioQuestionInput
       )
-      expect(service.update).toHaveBeenCalledWith(
-        block.id,
-        radioQuestionInput
-      )
+      expect(service.update).toHaveBeenCalledWith(block.id, radioQuestionInput)
     })
   })
 })
