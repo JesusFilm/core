@@ -27,6 +27,8 @@ on:
         required: true
       KUBE_CONFIG_DATA:
         required: true
+      ARCLIGHT_API_KEY:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -124,6 +126,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v2
         env:
           DATABASE_DB: ${{ env.ENV_SUFFIX }}
+          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
         with:
           targets: seed
           projects: ${{ inputs.name }}
