@@ -43,6 +43,12 @@
             "command": "nx serve api-users"
           },
           {
+            "command": "nx serve api-languages"
+          },
+          {
+            "command": "nx serve api-videos"
+          },
+          {
             "command": "nx serve api-gateway"
           },
           {

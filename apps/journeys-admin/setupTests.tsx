@@ -8,3 +8,5 @@ jest.mock('next/image', () => ({
     return <img {...props} alt={props.alt} />
   }
 }))
+
+Element.prototype.scrollIntoView = jest.fn()
