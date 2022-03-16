@@ -145,42 +145,43 @@ export function Action(): ReactElement {
   }
 
   return (
-    <Stack sx={{ px: 6, pt: 4 }}>
-      <FormControl variant="filled">
-        <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
-          Navigate to:
-        </InputLabel>
+    <>
+      <Stack sx={{ pt: 4, px: 6 }}>
+        <FormControl variant="filled">
+          <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
+            Navigate to:
+          </InputLabel>
 
-        <Select
-          onChange={handleChange}
-          value={action}
-          IconComponent={KeyboardArrowDownRoundedIcon}
-        >
-          {actions.map((action) => {
-            return (
-              <MenuItem
-                key={`button-action-${action.value}`}
-                value={action.value}
-                disabled={
-                  state.selectedStep?.nextBlockId == null &&
-                  action.value === 'NavigateAction'
-                }
-              >
-                {action.label}
-              </MenuItem>
-            )
-          })}
-        </Select>
-      </FormControl>
+          <Select
+            onChange={handleChange}
+            value={action}
+            IconComponent={KeyboardArrowDownRoundedIcon}
+          >
+            {actions.map((action) => {
+              return (
+                <MenuItem
+                  key={`button-action-${action.value}`}
+                  value={action.value}
+                  disabled={
+                    state.selectedStep?.nextBlockId == null &&
+                    action.value === 'NavigateAction'
+                  }
+                >
+                  {action.label}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
 
-      <Typography variant="caption" color="secondary.main">
-        Redirect user to the selected resource
-      </Typography>
-
-      {action === 'NavigateAction' && <NavigateAction />}
+        <Typography variant="caption" color="secondary.main">
+          Redirect user to the selected resource
+        </Typography>
+        {action === 'NavigateAction' && <NavigateAction />}
+        {action === 'LinkAction' && <LinkAction />}
+        {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
+      </Stack>
       {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-      {action === 'NavigateToJourneyAction' && <NavigateToJourneyAction />}
-      {action === 'LinkAction' && <LinkAction />}
-    </Stack>
+    </>
   )
 }

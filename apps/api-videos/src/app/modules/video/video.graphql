@@ -2,12 +2,6 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
 type Video @key(fields: "id") {
   id: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
@@ -25,4 +19,5 @@ input VideosFilter {
 
 extend type Query {
   videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+  video(id: ID!): Video!
 }

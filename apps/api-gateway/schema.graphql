@@ -138,12 +138,6 @@ input CardBlockUpdateInput {
 """DateTime custom scalar"""
 scalar DateTime
 
-type Download {
-  quality: QualityType!
-  size: Float!
-  url: String!
-}
-
 enum GridAlignItems {
   baseline
   center
@@ -365,7 +359,7 @@ type Language
   bcp47: String @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation]! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 type LinkAction implements Action {
@@ -383,7 +377,7 @@ input LinkActionInput {
 
 type Mutation {
   """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID!): [Block!]! @join__field(graph: JOURNEYS)
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): LinkAction! @join__field(graph: JOURNEYS)
@@ -458,11 +452,6 @@ input NavigateToJourneyActionInput {
   journeyId: String!
 }
 
-enum QualityType {
-  high
-  low
-}
-
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
@@ -471,6 +460,7 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
+  video(id: ID!): Video! @join__field(graph: VIDEOS)
   videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
@@ -872,9 +862,20 @@ type VideoTriggerBlock implements Block {
 }
 
 type VideoVariant {
-  downloads: [Download!]!
+  downloads: [VideoVariantDownload!]!
   duration: Int!
   hls: String!
   language: Language!
-  subtitle(languageId: ID, primary: Boolean): [Translation]!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
+}
+
+type VideoVariantDownload {
+  quality: VideoVariantDownloadQuality!
+  size: Float!
+  url: String!
+}
+
+enum VideoVariantDownloadQuality {
+  high
+  low
 }

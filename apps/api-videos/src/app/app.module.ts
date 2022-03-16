@@ -3,9 +3,11 @@ import { Module } from '@nestjs/common'
 import { GraphQLFederationModule } from '@nestjs/graphql'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
+import { TranslationModule } from './modules/translation/translation.module'
 
 @Module({
   imports: [
+    TranslationModule,
     VideoModule,
     VideoVariantModule,
     GraphQLFederationModule.forRoot({

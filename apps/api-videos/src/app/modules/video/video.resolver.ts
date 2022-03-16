@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  Query,
-  ResolveField,
-  Parent,
-  Args,
-  Info
-} from '@nestjs/graphql'
+import { Resolver, Query, Args, Info } from '@nestjs/graphql'
 import { KeyAsId } from '@core/nest/decorators'
 import { Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
@@ -25,22 +18,22 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return await this.videoService.filterAll(
-      where?.title,
-      where?.availableVariantLanguageIds ?? undefined,
+    return await this.videoService.filterAll({
+      title: where?.title ?? undefined,
+      availableVariantLanguageIds:
+        where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
       page,
       limit
-    )
+    })
   }
-}
 
-@Resolver('Translation')
-export class TranslationResolver {
-  @ResolveField('language')
-  async language(
-    @Parent() translation
-  ): Promise<{ __typename: string; id: string }> {
-    return { __typename: 'Language', id: translation.languageId }
+  @Query()
+  @KeyAsId()
+  async video(@Info() info, @Args('id') _key: string): Promise<Video> {
+    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
+      .find(({ name }) => name.value === 'variant')
+      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+    return await this.videoService.getVideo(_key, variantLanguageId)
   }
 }
