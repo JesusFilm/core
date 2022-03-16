@@ -26,7 +26,8 @@ describe('VideoResolver', () => {
     const videoService = {
       provide: VideoService,
       useFactory: () => ({
-        filterAll: jest.fn(() => [video, video])
+        filterAll: jest.fn(() => [video, video]),
+        getVideo: jest.fn(() => video)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
