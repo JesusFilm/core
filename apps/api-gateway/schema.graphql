@@ -460,7 +460,6 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  video(id: ID!): Video! @join__field(graph: VIDEOS)
   videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 

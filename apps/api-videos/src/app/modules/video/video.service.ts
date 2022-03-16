@@ -58,28 +58,4 @@ export class VideoService extends BaseService {
     `)
     return await res.all()
   }
-
-  async getVideo<T>(_key: string, variantLanguageId): Promise<T> {
-    const res = await this.db.query(aql`
-    FOR item in ${this.collection}
-      FILTER item._key == ${_key}
-      LIMIT 1
-      RETURN {
-        _key: item._key,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
-        variant: NTH(item.variants[* 
-          FILTER CURRENT.languageId == NOT_NULL(${
-            variantLanguageId ?? null
-          }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
-      }
-    `)
-    return await res.next()
-  }
 }
