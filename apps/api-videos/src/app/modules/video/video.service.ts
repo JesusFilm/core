@@ -3,17 +3,25 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 
+interface VideosFilter {
+  title?: string
+  availableVariantLanguageIds?: string[]
+  variantLanguageId?: string
+  page?: number
+  limit?: number
+}
 @Injectable()
 export class VideoService extends BaseService {
   collection: DocumentCollection = this.db.collection('videos')
 
-  async filterAll<T>(
-    title,
-    availableVariantLanguageIds: string[] = [],
-    variantLangugeId,
-    page = 1,
-    limit = 100
-  ): Promise<T[]> {
+  async filterAll<T>(filter?: VideosFilter): Promise<T[]> {
+    const {
+      title,
+      availableVariantLanguageIds = [],
+      variantLanguageId,
+      page = 1,
+      limit = 100
+    } = filter ?? {}
     const offset = limit * (page - 1)
     const videosView = this.db.view('videosView')
     const search = aql.join(
@@ -41,7 +49,7 @@ export class VideoService extends BaseService {
         tagIds: item.tagIds,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
-            variantLangugeId ?? null
+            variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),

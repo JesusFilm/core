@@ -1,9 +1,4 @@
-import {
-  Resolver,
-  Query,
-  Args,
-  Info
-} from '@nestjs/graphql'
+import { Resolver, Query, Args, Info } from '@nestjs/graphql'
 import { KeyAsId } from '@core/nest/decorators'
 import { Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
@@ -23,12 +18,13 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return await this.videoService.filterAll(
-      where?.title,
-      where?.availableVariantLanguageIds ?? undefined,
+    return await this.videoService.filterAll({
+      title: where?.title ?? undefined,
+      availableVariantLanguageIds:
+        where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
       page,
       limit
-    )
+    })
   }
 }
