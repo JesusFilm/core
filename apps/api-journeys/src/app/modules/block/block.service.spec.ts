@@ -244,7 +244,7 @@ describe('BlockService', () => {
         ])
       )
       service.getSiblings = jest.fn(
-        async () => await Promise.resolve([blockWithId, blockWithId])
+        async () => await Promise.resolve([blockWithId, blockWithId] as Block[])
       )
       expect(
         await service.updateChildrenParentOrder(journey.id, block.parentBlockId)
