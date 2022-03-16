@@ -15,21 +15,21 @@ describe('UserJourneyResolver', () => {
   let resolver: UserJourneyResolver, service: UserJourneyService
 
   const userJourney = {
-    _key: '1',
+    id: '1',
     userId: '1',
     journeyId: '2',
     role: UserJourneyRole.editor
   }
 
   const actorUserJourney = {
-    _key: '2',
+    id: '2',
     userId: '2',
     journeyId: '2',
     role: UserJourneyRole.owner
   }
 
   const userJourneyInvited = {
-    _key: '1',
+    id: '1',
     userId: '1',
     journeyId: '1',
     role: UserJourneyRole.inviteRequested
@@ -39,7 +39,7 @@ describe('UserJourneyResolver', () => {
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
   const journey = {
-    _key: '1',
+    id: '1',
     title: 'published',
     status: JourneyStatus.published,
     locale: 'en-US',
@@ -55,7 +55,7 @@ describe('UserJourneyResolver', () => {
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn((_key) => (_key === journey._key ? journey : undefined)),
+      get: jest.fn((id) => (id === journey.id ? journey : undefined)),
       getBySlug: jest.fn((slug) =>
         slug === journey.slug ? journey : undefined
       )
@@ -66,7 +66,7 @@ describe('UserJourneyResolver', () => {
     provide: UserJourneyService,
     useFactory: () => ({
       get: jest.fn((key) => {
-        if (key === actorUserJourney._key) return actorUserJourney
+        if (key === actorUserJourney.id) return actorUserJourney
         return userJourney
       }),
       getAll: jest.fn(() => [userJourney, userJourney]),
@@ -90,15 +90,15 @@ describe('UserJourneyResolver', () => {
 
   describe('userJourneyRequest', () => {
     it('creates a UserJourney when journeyId is databaseId', async () => {
-      await resolver.userJourneyRequest(journey._key, IdType.databaseId, '1')
+      await resolver.userJourneyRequest(journey.id, IdType.databaseId, '1')
       expect(service.save).toHaveBeenCalledWith(
-        omit(userJourneyInvited, ['_key'])
+        omit(userJourneyInvited, ['id'])
       )
     })
     it('creates a UserJourney when journeyId is slug', async () => {
       await resolver.userJourneyRequest(journey.slug, IdType.slug, '1')
       expect(service.save).toHaveBeenCalledWith(
-        omit(userJourneyInvited, ['_key'])
+        omit(userJourneyInvited, ['id'])
       )
     })
 
@@ -114,7 +114,7 @@ describe('UserJourneyResolver', () => {
   describe('userJourneyApprove', () => {
     it('updates a UserJourney to editor status', async () => {
       await resolver
-        .userJourneyApprove(userJourney._key, actorUserJourney.userId)
+        .userJourneyApprove(userJourney.id, actorUserJourney.userId)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
         role: UserJourneyRole.editor
@@ -122,7 +122,7 @@ describe('UserJourneyResolver', () => {
     })
     it('should not update a UserJourney to editor status', async () => {
       await resolver
-        .userJourneyApprove(userJourney._key, userJourney.userId)
+        .userJourneyApprove(userJourney.id, userJourney.userId)
         .catch((err) => console.log(err))
       expect(service.update).not.toHaveBeenCalled()
     })
@@ -131,7 +131,7 @@ describe('UserJourneyResolver', () => {
   describe('userJourneyPromote', () => {
     it('updates a UserJourney to owner status', async () => {
       await resolver
-        .userJourneyPromote(userJourney._key, actorUserJourney.userId)
+        .userJourneyPromote(userJourney.id, actorUserJourney.userId)
         .catch((err) => console.log(err))
       expect(service.update).toHaveBeenCalledWith('1', {
         role: UserJourneyRole.owner
@@ -142,13 +142,13 @@ describe('UserJourneyResolver', () => {
     })
     it('should not update a UserJourney', async () => {
       await resolver
-        .userJourneyPromote(userJourney._key, userJourney.userId)
+        .userJourneyPromote(userJourney.id, userJourney.userId)
         .catch((err) => console.log(err))
       expect(service.update).not.toHaveBeenCalled()
     })
     it('should not update a UserJourney scenario 2', async () => {
       await resolver
-        .userJourneyPromote(actorUserJourney._key, actorUserJourney.userId)
+        .userJourneyPromote(actorUserJourney.id, actorUserJourney.userId)
         .catch((err) => console.log(err))
       expect(service.update).not.toHaveBeenCalled()
     })
@@ -157,9 +157,9 @@ describe('UserJourneyResolver', () => {
   describe('userJourneyRemove', () => {
     it('removes a UserJourney', async () => {
       await resolver
-        .userJourneyRemove(actorUserJourney._key, actorUserJourney.userId)
+        .userJourneyRemove(actorUserJourney.id, actorUserJourney.userId)
         .catch((err) => console.log(err))
-      expect(service.remove).toHaveBeenCalledWith(actorUserJourney._key)
+      expect(service.remove).toHaveBeenCalledWith(actorUserJourney.id)
     })
   })
 })

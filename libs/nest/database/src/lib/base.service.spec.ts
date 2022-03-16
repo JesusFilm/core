@@ -3,6 +3,8 @@ import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
+import { omit } from 'lodash'
+
 import { mockCollectionUpdateAllResult } from './dbMock'
 import { BaseService } from './base.service'
 
@@ -24,6 +26,14 @@ const block = {
   fullscreen: true
 }
 
+const blockResponse = omit(
+  {
+    id: '1',
+    ...block
+  },
+  ['_key']
+)
+
 const block2 = {
   _key: '2',
   journeyId: '2',
@@ -36,6 +46,14 @@ const block2 = {
   themeName: 'base',
   fullscreen: true
 }
+
+const blockResponse2 = omit(
+  {
+    id: '2',
+    ...block2
+  },
+  ['_key']
+)
 
 describe('Base Service', () => {
   let service: MockService
@@ -65,7 +83,10 @@ describe('Base Service', () => {
       ).updateAll.mockReturnValue(
         mockCollectionUpdateAllResult(service.collection, [block, block2])
       )
-      expect(await service.updateAll([block, block2])).toEqual([block, block2])
+      expect(await service.updateAll([block, block2])).toEqual([
+        blockResponse,
+        blockResponse2
+      ])
       expect(service.collection.updateAll).toHaveBeenCalledWith(
         [block, block2],
         { returnNew: true }

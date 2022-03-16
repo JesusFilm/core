@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
@@ -13,7 +14,7 @@ describe('CardBlockResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'CardBlock',
     parentBlockId: '3',
@@ -42,19 +43,6 @@ describe('CardBlockResolver', () => {
     __typename: 'CardBlock',
     parentBlockId: '3',
     parentOrder: 2,
-    backgroundColor: '#FFF',
-    coverBlockId: '4',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    fullscreen: true
-  }
-
-  const blockResponse = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'CardBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
     backgroundColor: '#FFF',
     coverBlockId: '4',
     themeMode: ThemeMode.light,
@@ -93,11 +81,8 @@ describe('CardBlockResolver', () => {
 
   describe('CardBlock', () => {
     it('returns CardBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
@@ -117,9 +102,9 @@ describe('CardBlockResolver', () => {
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
       resolver
-        .cardBlockUpdate(block._key, block.journeyId, blockUpdate)
+        .cardBlockUpdate(block.id, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
-      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })
 

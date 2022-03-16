@@ -11,7 +11,7 @@ describe('LinkActionResolver', () => {
   let resolver: LinkActionResolver, service: BlockService
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
     parentBlockId: '3',
@@ -59,11 +59,11 @@ describe('LinkActionResolver', () => {
 
   it('updates link action', async () => {
     await resolver.blockUpdateLinkAction(
-      block._key,
+      block.id,
       block.journeyId,
       linkActionInput
     )
-    expect(service.update).toHaveBeenCalledWith(block._key, {
+    expect(service.update).toHaveBeenCalledWith(block.id, {
       action: { ...linkActionInput, parentBlockId: block.action.parentBlockId }
     })
   })
@@ -76,7 +76,7 @@ describe('LinkActionResolver', () => {
     service.get = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateLinkAction(
-        wrongBlock._key,
+        wrongBlock.id,
         wrongBlock.journeyId,
         linkActionInput
       )

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { KeyAsId } from '@core/nest/decorators'
+
 import {
   Journey,
   JourneyStatus,
@@ -10,6 +12,7 @@ import {
 
 @Injectable()
 export class JourneyService extends BaseService {
+  @KeyAsId()
   async getAllPublishedJourneys(): Promise<Journey[]> {
     const rst = await this.db.query(aql`
     FOR journey IN ${this.collection}
@@ -18,6 +21,7 @@ export class JourneyService extends BaseService {
     return await rst.all()
   }
 
+  @KeyAsId()
   async getBySlug(_key: string): Promise<Journey> {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}
@@ -28,6 +32,7 @@ export class JourneyService extends BaseService {
     return await result.next()
   }
 
+  @KeyAsId()
   async getAllByOwnerEditor(userId: string): Promise<Journey[]> {
     const result = await this.db.query(aql`
     FOR userJourney in userJourneys

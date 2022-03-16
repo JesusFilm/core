@@ -13,7 +13,7 @@ describe('VideoBlockResolver', () => {
     service: BlockService
 
   const block1 = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'VideoBlock',
     parentBlockId: '3',
@@ -29,36 +29,15 @@ describe('VideoBlockResolver', () => {
   }
 
   const blockResponse1 = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
+    ...block1,
     videoContent: {
       mediaComponentId: '2_0-FallingPlates',
       languageId: '529',
       src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullscreen: true
+    },    
   }
 
   const block2 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: true
-  }
-
-  const blockResponse2 = {
     id: '1',
     journeyId: '2',
     __typename: 'VideoBlock',
@@ -173,7 +152,7 @@ describe('VideoBlockResolver', () => {
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns VideoBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse2)
+      expect(await blockResolver.block('1')).toEqual(block2)
     })
   })
 
