@@ -2,17 +2,16 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
-import last from 'lodash/last'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
 import { DeleteDialog } from './DeleteDialog'
+import { getSelected } from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
   mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {
@@ -22,49 +21,6 @@ export const BLOCK_DELETE = gql`
     }
   }
 `
-interface UpdatedSeletedReturn {
-  type: 'SetSelectedBlockByIdAction' | 'SetSelectedStepAction'
-  id?: string
-  step?: TreeBlock<StepBlock>
-}
-
-interface UpdatedSelectedProps {
-  parentOrder: number
-  siblings: BlockDelete['blockDelete']
-  type: string
-  steps: Array<TreeBlock<StepBlock>>
-  toDeleteStep?: TreeBlock<StepBlock>
-}
-
-// siblings is an empty array when a stepBlock is delete, so toDeleteStep and steps are used to find the next step to selected
-export function setDispatchObject({
-  parentOrder,
-  siblings,
-  type,
-  steps,
-  toDeleteStep
-}: UpdatedSelectedProps): UpdatedSeletedReturn | null {
-  // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
-  if (siblings.length > 0) {
-    const blockToSelect =
-      siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
-      last(siblings)
-    return {
-      type: 'SetSelectedBlockByIdAction',
-      id: blockToSelect?.id
-    }
-  } else if (toDeleteStep != null && steps.length > 0) {
-    const stepToSet =
-      type !== 'StepBlock'
-        ? toDeleteStep
-        : steps.find((step) => step.nextBlockId === toDeleteStep.id) ??
-          last(steps)
-    return {
-      type: 'SetSelectedStepAction',
-      step: stepToSet
-    }
-  } else return null
-}
 
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
@@ -105,14 +61,14 @@ export function DeleteBlock({
     })
 
     if (data?.blockDelete != null && toDeleteParentOrder != null) {
-      const toDispatch = setDispatchObject({
+      const selected = getSelected({
         parentOrder: toDeleteParentOrder,
         siblings: data.blockDelete,
         type: toDeleteBlockType,
         steps,
         toDeleteStep: selectedStep
       })
-      toDispatch != null && dispatch(toDispatch)
+      selected != null && dispatch(selected)
     }
 
     handleCloseModal()

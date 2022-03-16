@@ -14,7 +14,7 @@ import {
   TypographyColor
 } from '../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../libs/context'
-import { DeleteBlock, BLOCK_DELETE, setDispatchObject } from './DeleteBlock'
+import { DeleteBlock, BLOCK_DELETE } from './DeleteBlock'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
   id: 'typography0.id',
@@ -60,24 +60,6 @@ const selectedStep: TreeBlock<StepBlock> = {
     }
   ]
 }
-
-const step1: TreeBlock<StepBlock> = {
-  __typename: 'StepBlock',
-  id: 'step1.id',
-  parentBlockId: 'journeyId',
-  parentOrder: 1,
-  locked: true,
-  nextBlockId: 'step2.id',
-  children: []
-}
-
-const step2: TreeBlock<StepBlock> = {
-  ...step1,
-  id: 'step2.id',
-  parentOrder: 2,
-  nextBlockId: 'stepId'
-}
-const steps: Array<TreeBlock<StepBlock>> = [selectedStep, step1, step2]
 
 describe('DeleteBlock', () => {
   it('should delete a block on button click', async () => {
@@ -351,82 +333,5 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     expect(getByRole('button')).toBeDisabled()
-  })
-
-  describe('updatedSelected', () => {
-    it('should select the next child block', () => {
-      const input = {
-        parentOrder: 1,
-        siblings: selectedStep.children[0].children,
-        type: 'TypographyBlock',
-        steps
-      }
-      expect(setDispatchObject(input)).toEqual({
-        type: 'SetSelectedBlockByIdAction',
-        id: 'typography1.id'
-      })
-    })
-    it('should select the new last block when last block deleted', () => {
-      const input = {
-        parentOrder: 2,
-        siblings: selectedStep.children[0].children,
-        type: 'TypographyBlock',
-        steps
-      }
-      expect(setDispatchObject(input)).toEqual({
-        type: 'SetSelectedBlockByIdAction',
-        id: 'typography2.id'
-      })
-    })
-    it('should select the parent block when all children blocks deleted', () => {
-      const input = {
-        parentOrder: 0,
-        siblings: [],
-        type: 'TypographyBlock',
-        steps,
-        toDeleteStep: selectedStep
-      }
-      expect(setDispatchObject(input)).toEqual({
-        type: 'SetSelectedStepAction',
-        step: selectedStep
-      })
-    })
-    it('should select the previous linked step when entire step deleted', () => {
-      const input = {
-        parentOrder: 2,
-        siblings: [],
-        type: 'StepBlock',
-        steps,
-        toDeleteStep: step2
-      }
-      expect(setDispatchObject(input)).toEqual({
-        type: 'SetSelectedStepAction',
-        step: step1
-      })
-    })
-    it('should select the last step when an unlinked step is deleted', () => {
-      const input = {
-        parentOrder: 1,
-        siblings: [],
-        type: 'StepBlock',
-        steps,
-        toDeleteStep: step1
-      }
-      expect(setDispatchObject(input)).toEqual({
-        type: 'SetSelectedStepAction',
-        step: step2
-      })
-    })
-
-    it('should return null when last card is deleted', () => {
-      const input = {
-        parentOrder: 0,
-        siblings: [],
-        type: 'StepBlock',
-        steps: [],
-        toDeleteStep: selectedStep
-      }
-      expect(setDispatchObject(input)).toEqual(null)
-    })
   })
 })
