@@ -44,7 +44,7 @@ const selectedStep: TreeBlock<StepBlock> = {
   parentBlockId: 'journeyId',
   parentOrder: 0,
   locked: true,
-  nextBlockId: 'step2.id',
+  nextBlockId: null,
   children: [
     {
       id: 'card1.id',

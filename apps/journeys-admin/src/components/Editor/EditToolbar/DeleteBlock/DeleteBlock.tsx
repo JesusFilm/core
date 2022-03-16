@@ -36,6 +36,7 @@ interface UpdatedSelectedProps {
   currentStep?: TreeBlock<StepBlock>
 }
 
+// siblings is an empty array when a stepBlock is delete, so currentStep is used as the deleteStep
 export function updateSelected({
   parentOrder,
   siblings,
