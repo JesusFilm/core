@@ -11,7 +11,7 @@ import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { DeleteDialog } from './DeleteDialog'
-import { getSelected } from './utils/getSelected'
+import getSelected from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
   mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {

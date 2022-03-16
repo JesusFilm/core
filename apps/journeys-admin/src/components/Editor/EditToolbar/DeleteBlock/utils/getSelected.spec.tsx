@@ -8,7 +8,7 @@ import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import { getSelected } from './getSelected'
+import getSelected from './getSelected'
 
 describe('updatedSelected', () => {
   const selectedBlock: TreeBlock<TypographyBlock> = {
