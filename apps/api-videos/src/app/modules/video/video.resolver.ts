@@ -27,13 +27,4 @@ export class VideoResolver {
       limit
     })
   }
-
-  @Query()
-  @KeyAsId()
-  async video(@Info() info, @Args('id') _key: string): Promise<Video> {
-    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
-      .find(({ name }) => name.value === 'variant')
-      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return await this.videoService.getVideo(_key, variantLanguageId)
-  }
 }
