@@ -1,10 +1,10 @@
 import { fireEvent, render } from '@testing-library/react'
-import { DeleteDialogue } from '.'
+import { DeleteDialog } from '.'
 
-describe('DeleteDialogue', () => {
+describe('DeleteDialog', () => {
   it('should, render the dialogue', () => {
     const { getByText, getByRole } = render(
-      <DeleteDialogue
+      <DeleteDialog
         handleDelete={jest.fn()}
         open={true}
         handleClose={jest.fn()}
@@ -21,7 +21,7 @@ describe('DeleteDialogue', () => {
   it('it should call the close function', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
-      <DeleteDialogue
+      <DeleteDialog
         handleDelete={jest.fn()}
         open={true}
         handleClose={handleClose}
@@ -34,7 +34,7 @@ describe('DeleteDialogue', () => {
   it('should call the delete function', () => {
     const handleDelete = jest.fn()
     const { getByRole } = render(
-      <DeleteDialogue
+      <DeleteDialog
         handleDelete={handleDelete}
         open={true}
         handleClose={jest.fn()}
