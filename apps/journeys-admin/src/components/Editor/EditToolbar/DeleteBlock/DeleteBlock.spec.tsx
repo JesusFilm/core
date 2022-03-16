@@ -423,7 +423,7 @@ describe('DeleteBlock', () => {
         parentOrder: 0,
         siblings: [],
         type: 'StepBlock',
-        steps: [selectedStep],
+        steps: [],
         toDeleteStep: selectedStep
       }
       expect(setDispatchObject(input)).toEqual(null)
