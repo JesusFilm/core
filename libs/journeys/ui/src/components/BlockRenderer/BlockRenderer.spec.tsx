@@ -14,8 +14,8 @@ describe('BlockRenderer', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -33,8 +33,8 @@ describe('BlockRenderer', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -303,9 +303,10 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       submitLabel: null,
-      submitIcon: null,
+      submitIconId: null,
       action: {
         __typename: 'NavigateAction',
+        parentBlockId: 'signUp',
         gtmEventName: 'gtmEventName'
       },
       children: []
@@ -326,9 +327,10 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       submitLabel: null,
-      submitIcon: null,
+      submitIconId: null,
       action: {
         __typename: 'NavigateAction',
+        parentBlockId: 'signUp',
         gtmEventName: 'gtmEventName'
       },
       children: []
@@ -377,8 +379,8 @@ describe('BlockRenderer', () => {
           buttonVariant: null,
           buttonColor: null,
           size: null,
-          startIcon: null,
-          endIcon: null,
+          startIconId: null,
+          endIconId: null,
           action: null,
           children: []
         }
@@ -406,8 +408,8 @@ describe('BlockRenderer', () => {
           buttonVariant: null,
           buttonColor: null,
           size: null,
-          startIcon: null,
-          endIcon: null,
+          startIconId: null,
+          endIconId: null,
           action: null,
           children: []
         }
@@ -505,6 +507,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       posterBlockId: null,
       parentOrder: 0,
+      fullsize: null,
       children: []
     }
     const { getByTestId } = render(
@@ -530,6 +533,7 @@ describe('BlockRenderer', () => {
       startAt: null,
       parentBlockId: null,
       posterBlockId: null,
+      fullsize: null,
       parentOrder: 0,
       children: []
     }

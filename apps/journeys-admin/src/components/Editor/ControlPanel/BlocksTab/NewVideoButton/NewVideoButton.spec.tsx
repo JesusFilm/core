@@ -36,6 +36,7 @@ describe('Video', () => {
         videoBlockCreate: {
           id: 'videoBlockId',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           title: '',
           muted: false,
@@ -45,7 +46,8 @@ describe('Video', () => {
           posterBlockId: null,
           videoContent: {
             src: null
-          }
+          },
+          fullsize: true
         }
       }
     }))
@@ -64,7 +66,8 @@ describe('Video', () => {
                   videoContent: {
                     src: null
                   },
-                  title: ''
+                  title: '',
+                  fullsize: true
                 }
               }
             },
@@ -97,6 +100,7 @@ describe('Video', () => {
         videoBlockCreate: {
           id: 'videoBlockId',
           parentBlockId: 'cardId',
+          parentOrder: 0,
           journeyId: 'journeyId',
           title: '',
           muted: false,
@@ -107,7 +111,8 @@ describe('Video', () => {
           videoContent: {
             src: null
           },
-          __typename: 'VideoBlock'
+          __typename: 'VideoBlock',
+          fullsize: true
         }
       }
     }))
@@ -127,7 +132,8 @@ describe('Video', () => {
                   videoContent: {
                     src: null
                   },
-                  title: ''
+                  title: '',
+                  fullsize: true
                 }
               }
             },

@@ -3,10 +3,12 @@ import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
+import { SxProps } from '@mui/system/styleFunctionSx'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, useEditor, ActiveTab } from '../..'
+import { TreeBlock, handleAction, useEditor, ActiveTab, ActiveFab } from '../..'
 import { Icon } from '../Icon'
+import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
 import { TextField } from './TextField'
@@ -22,6 +24,8 @@ export const SIGN_UP_RESPONSE_CREATE = gql`
 `
 interface SignUpProps extends TreeBlock<SignUpFields> {
   uuid?: () => string
+  editableSubmitLabel?: ReactElement
+  sx?: SxProps
 }
 
 interface SignUpFormValues {
@@ -32,12 +36,19 @@ interface SignUpFormValues {
 export const SignUp = ({
   id: blockId,
   uuid = uuidv4,
-  submitIcon,
+  submitIconId,
   // Use translated string when i18n is in
   submitLabel,
+  editableSubmitLabel,
   action,
+  children,
+  sx,
   ...props
 }: SignUpProps): ReactElement => {
+  const submitIcon = children.find((block) => block.id === submitIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
   const router = useRouter()
   const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
@@ -87,15 +98,21 @@ export const SignUp = ({
 
     const block: TreeBlock<SignUpFields> = {
       id: blockId,
-      submitIcon,
+      submitIconId,
       submitLabel,
       action,
+      children,
       ...props
     }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (selectedBlock?.id === block.id) {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (
@@ -144,8 +161,9 @@ export const SignUp = ({
             startIcon={
               submitIcon != null ? <Icon {...submitIcon} /> : undefined
             }
+            sx={{ ...sx }}
           >
-            {submitLabel ?? 'Submit'}
+            {editableSubmitLabel ?? submitLabel ?? 'Submit'}
           </Button>
         </Form>
       )}

@@ -3,33 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, IconName, IconColor, IconSize } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
 // ====================================================
 
-export interface ButtonFields_startIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
-export interface ButtonFields_endIcon {
-  __typename: "Icon";
-  name: IconName;
-  color: IconColor | null;
-  size: IconSize | null;
-}
-
 export interface ButtonFields_action_NavigateAction {
   __typename: "NavigateAction";
+  parentBlockId: string;
   gtmEventName: string | null;
 }
 
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
@@ -42,12 +30,14 @@ export interface ButtonFields_action_NavigateToJourneyAction_journey {
 
 export interface ButtonFields_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   journey: ButtonFields_action_NavigateToJourneyAction_journey | null;
 }
 
 export interface ButtonFields_action_LinkAction {
   __typename: "LinkAction";
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
@@ -63,7 +53,7 @@ export interface ButtonFields {
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
   size: ButtonSize | null;
-  startIcon: ButtonFields_startIcon | null;
-  endIcon: ButtonFields_endIcon | null;
+  startIconId: string | null;
+  endIconId: string | null;
   action: ButtonFields_action | null;
 }

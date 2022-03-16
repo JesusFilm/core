@@ -1,48 +1,6 @@
 """DateTime custom scalar"""
 scalar DateTime
 
-"""IconName is equivalent to the icons found in @mui/icons-material"""
-enum IconName {
-  PlayArrowRounded
-  TranslateRounded
-  CheckCircleRounded
-  RadioButtonUncheckedRounded
-  FormatQuoteRounded
-  LockOpenRounded
-  ArrowForwardRounded
-  ChatBubbleOutlineRounded
-  LiveTvRounded
-  MenuBookRounded
-  ChevronRightRounded
-  BeenhereRounded
-  SendRounded
-  SubscriptionsRounded
-  ContactSupportRounded
-}
-
-enum IconColor {
-  primary
-  secondary
-  action
-  error
-  disabled
-  inherit
-}
-
-enum IconSize {
-  sm
-  md
-  lg
-  xl
-  inherit
-}
-
-type Icon {
-  name: IconName!
-  color: IconColor
-  size: IconSize
-}
-
 enum ThemeMode {
   dark
   light
@@ -53,6 +11,7 @@ enum ThemeName {
 }
 
 interface Action {
+  parentBlockId: ID!
   gtmEventName: String
 }
 
@@ -61,21 +20,25 @@ NavigateAction is an Action that navigates to the nextBlockId field set on the
 closest ancestor StepBlock.
 """
 type NavigateAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   blockId: String!
 }
 
 type NavigateToJourneyAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   journeyId: String!
   journey: Journey
 }
 
 type LinkAction implements Action {
+  parentBlockId: ID!
   gtmEventName: String
   url: String!
   target: String
@@ -151,9 +114,19 @@ type ButtonBlock implements Block {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
-  startIcon: Icon
-  endIcon: Icon
+  startIconId: ID
+  endIconId: ID
   action: Action
+}
+
+input ButtonBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
 }
 
 input ButtonBlockUpdateInput {
@@ -162,6 +135,8 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIconId: ID
+  endIconId: ID
 }
 
 type CardBlock implements Block {
@@ -261,6 +236,70 @@ type GridItemBlock implements Block {
   sm: Int!
 }
 
+"""IconName is equivalent to the icons found in @mui/icons-material"""
+enum IconName {
+  PlayArrowRounded
+  TranslateRounded
+  CheckCircleRounded
+  RadioButtonUncheckedRounded
+  FormatQuoteRounded
+  LockOpenRounded
+  ArrowForwardRounded
+  ChatBubbleOutlineRounded
+  LiveTvRounded
+  MenuBookRounded
+  ChevronRightRounded
+  BeenhereRounded
+  SendRounded
+  SubscriptionsRounded
+  ContactSupportRounded
+}
+
+enum IconColor {
+  primary
+  secondary
+  action
+  error
+  disabled
+  inherit
+}
+
+enum IconSize {
+  sm
+  md
+  lg
+  xl
+  inherit
+}
+
+type IconBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  parentBlockId: ID!
+  journeyId: ID!
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
+input IconBlockUpdateInput {
+  name: IconName
+  color: IconColor
+  size: IconSize
+}
+
 type ImageBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -287,6 +326,7 @@ input ImageBlockCreateInput {
   journeyId: ID!
   src: String
   alt: String!
+  blurhash: String
 }
 
 input ImageBlockUpdateInput {
@@ -344,7 +384,7 @@ type SignUpBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   action: Action
-  submitIcon: Icon
+  submitIconId: ID
   submitLabel: String
 }
 
@@ -353,6 +393,12 @@ input SignUpBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   submitLabel: String!
+}
+
+input SignUpBlockUpdateInput {
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 type StepBlock implements Block {
@@ -581,8 +627,11 @@ input JourneyCreateInput {
   """
   Slug should be unique amongst all journeys
   (server will throw BAD_USER_INPUT error if not)
+  If not required will use title formatted with kebab-case
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
   """
-  slug: String!
+  slug: String
 }
 
 input JourneyUpdateInput {
@@ -674,14 +723,21 @@ enum UserJourneyRole {
 }
 
 extend type Mutation {
-  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): Block!
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): Block!
-  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): Block!
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): Block!
+  blockDeleteAction(id: ID!, journeyId: ID!): Block!
+  blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
+  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
+  blockUpdateNavigateToJourneyAction(id: ID!, journeyId: ID!, input: NavigateToJourneyActionInput!): NavigateToJourneyAction!
+  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
+
+  """blockDelete returns the updated sibling blocks on successful delete"""
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(id: ID!, journeyId: ID!, input: CardBlockUpdateInput!): CardBlock!
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
+  iconBlockUpdate(id: ID!, journeyId: ID!, input: IconBlockUpdateInput!): IconBlock!
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock!
   imageBlockUpdate(id: ID!, journeyId: ID!, input: ImageBlockUpdateInput!): ImageBlock!
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
@@ -689,6 +745,7 @@ extend type Mutation {
   radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
   radioQuestionBlockUpdate(id: ID!, journeyId: ID!, input: RadioQuestionBlockUpdateInput!): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
+  signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!

@@ -29,8 +29,8 @@ export const Default: Story = () => {
     buttonVariant: null,
     buttonColor: null,
     size: null,
-    startIcon: null,
-    endIcon: null,
+    startIconId: null,
+    endIconId: null,
     action: null,
     children: []
   }
@@ -50,7 +50,7 @@ export const Default: Story = () => {
 }
 export const Filled: Story = () => {
   const block: TreeBlock<ButtonBlock> = {
-    id: 'button.id',
+    id: 'button1.id',
     __typename: 'ButtonBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
@@ -58,24 +58,36 @@ export const Filled: Story = () => {
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.secondary,
     size: ButtonSize.large,
-    startIcon: {
-      __typename: 'Icon',
-      name: IconName.ChatBubbleOutlineRounded,
-      color: IconColor.secondary,
-      size: IconSize.lg
-    },
-    endIcon: {
-      __typename: 'Icon',
-      name: IconName.ChevronRightRounded,
-      color: IconColor.secondary,
-      size: IconSize.lg
-    },
+    startIconId: 'icon1',
+    endIconId: 'icon2',
     action: {
       __typename: 'NavigateToBlockAction',
+      parentBlockId: 'button1.id',
       gtmEventName: 'navigateToBlock',
       blockId: 'step2.id'
     },
-    children: []
+    children: [
+      {
+        id: 'icon1',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.ChatBubbleOutlineRounded,
+        iconColor: IconColor.secondary,
+        iconSize: IconSize.lg,
+        children: []
+      },
+      {
+        id: 'icon2',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 1,
+        iconName: IconName.ChevronRightRounded,
+        iconColor: IconColor.secondary,
+        iconSize: IconSize.lg,
+        children: []
+      }
+    ]
   }
   return (
     <Stack

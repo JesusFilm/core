@@ -2,7 +2,10 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
+} from '../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
@@ -10,8 +13,11 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant
+  TypographyVariant,
+  ThemeMode,
+  ThemeName
 } from '../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../libs/context'
 import { CardPreview } from '.'
 
 const CardPreviewStory = {
@@ -88,18 +94,25 @@ const steps: Array<TreeBlock<StepBlock>> = [
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
             size: ButtonSize.large,
-            startIcon: {
-              __typename: 'Icon',
-              name: IconName.PlayArrowRounded,
-              color: null,
-              size: IconSize.md
-            },
-            endIcon: null,
+            startIconId: 'icon',
+            endIconId: null,
             action: {
               __typename: 'NavigateAction',
+              parentBlockId: 'button',
               gtmEventName: 'gtmEventName'
             },
-            children: []
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -109,7 +122,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step1.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
     children: [
@@ -167,18 +180,25 @@ const steps: Array<TreeBlock<StepBlock>> = [
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
             size: ButtonSize.large,
-            startIcon: {
-              __typename: 'Icon',
-              name: IconName.PlayArrowRounded,
-              color: null,
-              size: IconSize.md
-            },
-            endIcon: null,
+            startIconId: 'icon',
+            endIconId: null,
             action: {
               __typename: 'NavigateAction',
+              parentBlockId: 'button',
               gtmEventName: 'gtmEventName'
             },
-            children: []
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -188,7 +208,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step2.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
     children: [
@@ -242,6 +262,20 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'One of many ways to God',
                 action: {
                   __typename: 'NavigateAction',
+                  parentBlockId: 'radioOption1.id',
+                  gtmEventName: 'gtmEventName'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption2.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
+                label: 'One great lie...',
+                action: {
+                  __typename: 'NavigateAction',
+                  parentBlockId: 'radioOption2.id',
                   gtmEventName: 'gtmEventName'
                 },
                 children: []
@@ -250,22 +284,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 id: 'radioOption3.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
-                parentOrder: 1,
-                label: 'One great lie...',
-                action: {
-                  __typename: 'NavigateAction',
-                  gtmEventName: 'gtmEventName'
-                },
-                children: []
-              },
-              {
-                id: 'radioOption4.id',
-                __typename: 'RadioOptionBlock',
-                parentBlockId: 'radioQuestion1.id',
                 parentOrder: 2,
                 label: 'One true way to God',
                 action: {
                   __typename: 'NavigateAction',
+                  parentBlockId: 'radioOption3.id',
                   gtmEventName: 'gtmEventName'
                 },
                 children: []
@@ -280,7 +303,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 3,
     locked: false,
     nextBlockId: 'step4.id',
     children: [
@@ -334,18 +357,20 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 label: 'Yes, God likes good people',
                 action: {
                   __typename: 'NavigateAction',
+                  parentBlockId: 'radioOption1.id',
                   gtmEventName: 'gtmEventName'
                 },
                 children: []
               },
               {
-                id: 'radioOption3.id',
+                id: 'radioOption2.id',
                 __typename: 'RadioOptionBlock',
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
                 action: {
                   __typename: 'NavigateAction',
+                  parentBlockId: 'radioOption2.id',
                   gtmEventName: 'gtmEventName'
                 },
                 children: []
@@ -360,7 +385,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step4.id',
     __typename: 'StepBlock',
     parentBlockId: null,
-    parentOrder: 0,
+    parentOrder: 4,
     locked: false,
     nextBlockId: null,
     children: [
@@ -430,19 +455,26 @@ const steps: Array<TreeBlock<StepBlock>> = [
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
             size: ButtonSize.large,
-            startIcon: {
-              __typename: 'Icon',
-              name: IconName.PlayArrowRounded,
-              color: null,
-              size: IconSize.md
-            },
-            endIcon: null,
+            startIconId: 'icon',
+            endIconId: null,
             action: {
               __typename: 'NavigateToBlockAction',
+              parentBlockId: 'button',
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
             },
-            children: []
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -450,19 +482,35 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = () => {
+const Template: Story = ({ ...args }) => {
   const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
   return (
     <MockedProvider>
-      <CardPreview
-        onSelect={(step) => setSelectedStep(step)}
-        selected={selected}
-        steps={steps}
-      />
+      <JourneyProvider
+        value={
+          {
+            id: 'journeyId',
+            themeMode: ThemeMode.light,
+            themeName: ThemeName.base
+          } as unknown as Journey
+        }
+      >
+        <CardPreview
+          onSelect={(step) => setSelectedStep(step)}
+          selected={selected}
+          steps={args.steps ?? steps}
+          showAddButton={args.showAddButton}
+        />
+      </JourneyProvider>
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
+
+export const AddButton = Template.bind({})
+AddButton.args = {
+  showAddButton: true
+}
 
 export default CardPreviewStory as Meta

@@ -1,20 +1,38 @@
 import { ReactElement, MouseEvent } from 'react'
 import { useRouter } from 'next/router'
+import { SxProps } from '@mui/system/styleFunctionSx'
 import MuiButton from '@mui/material/Button'
+import { handleAction, TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
+import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
-import { handleAction, TreeBlock, useEditor, ActiveTab } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
+
+interface ButtonProps extends TreeBlock<ButtonFields> {
+  editableLabel?: ReactElement
+  sx?: SxProps
+}
 
 export function Button({
   buttonVariant,
   label,
   buttonColor,
   size,
-  startIcon,
-  endIcon,
+  startIconId,
+  endIconId,
   action,
+  children,
+  sx,
+  editableLabel,
   ...props
-}: TreeBlock<ButtonFields>): ReactElement {
+}: ButtonProps): ReactElement {
+  const startIcon = children.find((block) => block.id === startIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
+  const endIcon = children.find((block) => block.id === endIconId) as
+    | TreeBlock<IconFields>
+    | undefined
+
   const router = useRouter()
   const handleClick = (): void => {
     handleAction(router, action)
@@ -33,15 +51,21 @@ export function Button({
       label,
       buttonColor,
       size,
-      startIcon,
-      endIcon,
+      startIconId,
+      endIconId,
       action,
+      children,
       ...props
     }
 
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (selectedBlock?.id === block.id) {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+    } else {
+      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
+      dispatch({ type: 'SetSelectedBlockAction', block })
+      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    }
   }
 
   return (
@@ -49,34 +73,17 @@ export function Button({
       variant={buttonVariant ?? 'contained'}
       color={buttonColor ?? undefined}
       size={size ?? undefined}
-      startIcon={
-        startIcon != null && (
-          <Icon
-            __typename="Icon"
-            name={startIcon.name}
-            color={startIcon.color}
-            size={startIcon.size}
-          />
-        )
-      }
-      endIcon={
-        endIcon != null && (
-          <Icon
-            __typename="Icon"
-            name={endIcon.name}
-            color={endIcon.color}
-            size={endIcon.size}
-          />
-        )
-      }
+      startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
+      endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
       sx={{
+        ...sx,
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
       onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
       fullWidth
     >
-      {label}
+      {editableLabel ?? label}
     </MuiButton>
   )
 }

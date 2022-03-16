@@ -1,0 +1,90 @@
+{
+  "root": "apps/api-videos",
+  "sourceRoot": "apps/api-videos/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/api-videos",
+        "main": "apps/api-videos/src/main.ts",
+        "tsConfig": "apps/api-videos/tsconfig.app.json",
+        "assets": [
+          "apps/api-videos/src/assets",
+          {
+            "glob": "**/*.graphql",
+            "input": "apps/api-videos/src/app/",
+            "output": "./assets"
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api-videos/src/environments/environment.ts",
+              "with": "apps/api-videos/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "seed": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx ts-node apps/api-videos/db/seed.ts"
+      }
+    },
+    "serve-nowatch": {
+      "executor": "@nrwl/node:execute",
+      "options": {
+        "buildTarget": "api-videos:build"
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve-nowatch api-videos"
+          },
+          {
+            "command": "npx ts-node apps/api-videos/src/generate-typings.ts"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-videos/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-videos"],
+      "options": {
+        "jestConfig": "apps/api-videos/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "generate-graphql": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rover subgraph introspect http://localhost:4004/graphql > apps/api-videos/schema.graphql"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

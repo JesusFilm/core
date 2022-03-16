@@ -33,6 +33,7 @@ const videoBlock: TreeBlock<VideoFields> = {
   startAt: null,
   endAt: null,
   posterBlockId: null,
+  fullsize: null,
   children: []
 }
 
@@ -139,6 +140,7 @@ NoVideoSource.args = {
   startAt: null,
   endAt: null,
   posterBlockId: null,
+  fullsize: null,
   children: []
 }
 

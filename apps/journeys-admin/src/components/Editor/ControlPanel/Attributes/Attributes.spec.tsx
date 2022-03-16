@@ -67,6 +67,7 @@ describe('Attributes', () => {
     startAt: 10,
     endAt: null,
     muted: null,
+    fullsize: null,
     posterBlockId: 'posterBlockId',
     videoContent: {
       __typename: 'VideoArclight',
@@ -88,8 +89,7 @@ describe('Attributes', () => {
 
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     expect(queryByTestId('move-block-buttons')).not.toBeInTheDocument()
-    // TODO: Update this when adding Video Attributes
-    expect(getByText('Video Attributes')).toBeInTheDocument()
+    expect(getByText('Video Source')).toBeInTheDocument()
   })
 
   it('should render video properties with move buttons ', () => {
@@ -105,8 +105,7 @@ describe('Attributes', () => {
 
     expect(queryByText('Unlocked Card')).not.toBeInTheDocument()
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
-    // TODO: Update this when adding Video Attributes
-    expect(getByText('Video Attributes')).toBeInTheDocument()
+    expect(getByText('Video Source')).toBeInTheDocument()
   })
 
   it('should render typography properties with move buttons ', () => {
@@ -143,8 +142,8 @@ describe('Attributes', () => {
       buttonVariant: null,
       buttonColor: null,
       size: null,
-      startIcon: null,
-      endIcon: null,
+      startIconId: null,
+      endIconId: null,
       action: null,
       children: []
     }
@@ -210,7 +209,7 @@ describe('Attributes', () => {
       parentOrder: 0,
       submitLabel: null,
       action: null,
-      submitIcon: null,
+      submitIconId: null,
       children: []
     }
     const { getByTestId, getByRole } = render(

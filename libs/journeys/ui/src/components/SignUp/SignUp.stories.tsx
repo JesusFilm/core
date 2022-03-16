@@ -9,10 +9,7 @@ import {
 } from '../..'
 import { IconName } from '../../../__generated__/globalTypes'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
-import {
-  SignUpFields,
-  SignUpFields_submitIcon
-} from './__generated__/SignUpFields'
+import { SignUpFields } from './__generated__/SignUpFields'
 
 const Demo = {
   ...journeyUiConfig,
@@ -21,22 +18,16 @@ const Demo = {
   title: 'Journeys-Ui/SignUp'
 }
 
-const icon: SignUpFields_submitIcon = {
-  __typename: 'Icon',
-  name: IconName.LockOpenRounded,
-  size: null,
-  color: null
-}
-
 const signUpProps: TreeBlock<SignUpFields> = {
   id: 'signUpBlockId1',
   __typename: 'SignUpBlock',
   parentBlockId: null,
   parentOrder: 0,
-  submitIcon: null,
+  submitIconId: null,
   submitLabel: null,
   action: {
     __typename: 'NavigateToBlockAction',
+    parentBlockId: 'signUpBlockId1',
     gtmEventName: 'gtmEventName',
     blockId: 'step2.id'
   },
@@ -83,8 +74,20 @@ export const Default = Template.bind({})
 
 export const CustomButton = Template.bind({})
 CustomButton.args = {
-  submitIcon: icon,
-  submitLabel: 'Unlock Now'
+  submitIconId: 'icon',
+  submitLabel: 'Unlock Now',
+  children: [
+    {
+      id: 'icon',
+      __typename: 'IconBlock',
+      parentBlockId: 'parent',
+      parentOrder: 0,
+      iconName: IconName.LockOpenRounded,
+      iconSize: null,
+      iconColor: null,
+      children: []
+    }
+  ]
 }
 
 // export const SubmitError = Template.bind({})

@@ -8,11 +8,7 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import {
-  ButtonFields,
-  ButtonFields_startIcon as StartIcon,
-  ButtonFields_endIcon as EndIcon
-} from './__generated__/ButtonFields'
+import { ButtonFields } from './__generated__/ButtonFields'
 import { Button } from '.'
 
 const ButtonDemo = {
@@ -32,7 +28,7 @@ const Template: Story<ButtonStoryProps> = ({ ...args }) => (
 )
 
 export const Variant = Template.bind({})
-Variant.args = { label: ButtonVariant.contained }
+Variant.args = { label: ButtonVariant.contained, children: [] }
 
 const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
@@ -50,7 +46,8 @@ const ColorTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Color = ColorTemplate.bind({})
 Color.args = {
-  variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error]
+  variants: [ButtonColor.primary, ButtonColor.secondary, ButtonColor.error],
+  children: []
 }
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
@@ -74,17 +71,11 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
 
 export const Size = SizeTemplate.bind({})
 Size.args = {
-  variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large]
+  variants: [ButtonSize.small, ButtonSize.medium, ButtonSize.large],
+  children: []
 }
 
 const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
-  const icon: StartIcon | EndIcon = {
-    __typename: 'Icon',
-    name: IconName.CheckCircleRounded,
-    color: null,
-    size: IconSize.md
-  }
-
   return (
     <StoryCard>
       {args.variants.map((variant: string, i) => (
@@ -93,8 +84,35 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
           id="id"
           key={i}
           label={`${variant} Icon`}
-          startIcon={variant === 'Start' ? icon : null}
-          endIcon={variant === 'End' ? icon : null}
+          startIconId={'start'}
+          endIconId={'end'}
+          children={
+            variant === 'Start'
+              ? [
+                  {
+                    id: 'start',
+                    __typename: 'IconBlock',
+                    parentBlockId: 'id',
+                    parentOrder: 0,
+                    iconName: IconName.CheckCircleRounded,
+                    iconColor: null,
+                    iconSize: IconSize.md,
+                    children: []
+                  }
+                ]
+              : [
+                  {
+                    id: 'end',
+                    __typename: 'IconBlock',
+                    parentBlockId: 'id',
+                    parentOrder: 0,
+                    iconName: IconName.CheckCircleRounded,
+                    iconColor: null,
+                    iconSize: IconSize.md,
+                    children: []
+                  }
+                ]
+          }
         />
       ))}
     </StoryCard>

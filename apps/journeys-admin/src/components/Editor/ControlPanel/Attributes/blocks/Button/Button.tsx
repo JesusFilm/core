@@ -11,8 +11,11 @@ import {
   ButtonVariant
 } from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
+import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
+import { Action, actions } from '../../Action/Action'
+import { Icon, icons } from '../../Icon'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
@@ -22,20 +25,39 @@ export function Button({
   buttonVariant,
   buttonColor,
   size,
-  startIcon,
-  endIcon,
-  action
+  startIconId,
+  endIconId,
+  action,
+  children
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
+
+  const startIcon = children.find(
+    (block) => block.id === startIconId
+  ) as TreeBlock<IconFields>
+
+  const endIcon = children.find(
+    (block) => block.id === endIconId
+  ) as TreeBlock<IconFields>
+
+  const selectedAction = actions.find((act) => act.value === action?.__typename)
+
   return (
     <>
       <Attribute
         id={`${id}-button-action`}
         icon={<LinkRoundedIcon />}
         name="Action"
-        value={action?.__typename?.toString() ?? 'None'}
+        value={selectedAction?.label ?? 'None'}
         description="Action"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Action',
+            mobileOpen: true,
+            children: <Action />
+          })
+        }}
       />
 
       <Attribute
@@ -90,18 +112,38 @@ export function Button({
         id={`${id}-button-leading-icon`}
         icon={<InfoOutlinedIcon />}
         name="Leading Icon"
-        value={startIcon?.name.toString() ?? 'None'}
+        value={
+          icons.find(({ value }) => value === startIcon?.iconName)?.label ??
+          'None'
+        }
         description="Leading Icon"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Leading Icon ',
+            mobileOpen: true,
+            children: <Icon id={startIcon.id} />
+          })
+        }}
       />
 
       <Attribute
         id={`${id}-button-trailing-icon`}
         icon={<InfoOutlinedIcon />}
         name="Trailing Icon"
-        value={endIcon?.name.toString() ?? 'None'}
+        value={
+          icons.find(({ value }) => value === endIcon?.iconName)?.label ??
+          'None'
+        }
         description="Trailing Icon"
-        // onClick to open drawer
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Trailing Icon ',
+            mobileOpen: true,
+            children: <Icon id={endIcon.id} />
+          })
+        }}
       />
     </>
   )

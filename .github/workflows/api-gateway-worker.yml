@@ -26,7 +26,7 @@ jobs:
   build-and-deploy:
     environment: Production
     env:
-      ENV_SUFFIX: ${{ github.ref_name }}
+      ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
@@ -82,6 +82,22 @@ jobs:
         if: ${{ inputs.branch }} == 'main'
         run: rover subgraph introspect http://ad67299f5087f4d1b845926ce1832198-64788321.us-east-2.elb.amazonaws.com:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
+      - name: Build api-languages-stage schema
+        if: ${{ inputs.branch }} == 'stage'
+        run: rover subgraph introspect https://api-languages-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-languages-schema.graphql
+
+      - name: Build api-languages-main schema
+        if: ${{ inputs.branch }} == 'main'
+        run: rover subgraph introspect https://api-languages.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-languages-schema.graphql
+
+      - name: Build api-videos-stage schema
+        if: ${{ inputs.branch }} == 'stage'
+        run: rover subgraph introspect https://api-videos-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-videos-schema.graphql
+
+      - name: Build api-videos-main schema
+        if: ${{ inputs.branch }} == 'main'
+        run: rover subgraph introspect https://api-videos.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-videos-schema.graphql
+
       - name: Build api-gateway schema
         run: rover supergraph compose --config apps/api-gateway/supergraph-$ENV_SUFFIX.yml > dist/apps/api-gateway/schema.graphql
 
@@ -102,9 +118,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .  -f apps/${{ inputs.name }}/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_SUFFIX .  -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster

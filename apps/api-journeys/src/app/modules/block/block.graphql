@@ -10,5 +10,9 @@ extend type Journey {
 }
 
 extend type Mutation {
+  """
+  blockDelete returns the updated sibling blocks on successful delete
+  """
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
 }

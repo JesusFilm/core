@@ -18,12 +18,13 @@ describe('NavigateActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName'
     }
   }
 
   const navigateActionInput = {
-    gtmEventName: 'gtmEventName',
+    gtmEventName: 'gtmEventNameUpdated',
     blockId: null,
     journeyId: null,
     url: null,
@@ -34,6 +35,7 @@ describe('NavigateActionResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
+        get: jest.fn().mockResolvedValue(block),
         update: jest.fn((navigateActionInput) => navigateActionInput)
       })
     }
@@ -60,7 +62,29 @@ describe('NavigateActionResolver', () => {
       navigateActionInput
     )
     expect(service.update).toHaveBeenCalledWith(block._key, {
-      action: { ...navigateActionInput }
+      action: {
+        ...navigateActionInput,
+        parentBlockId: block.action.parentBlockId
+      }
     })
+  })
+
+  it('throws an error if typename is wrong', async () => {
+    const wrongBlock = {
+      ...block,
+      __typename: 'WrongBlock'
+    }
+    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    await resolver
+      .blockUpdateNavigateAction(
+        wrongBlock._key,
+        wrongBlock.journeyId,
+        navigateActionInput
+      )
+      .catch((error) => {
+        expect(error.message).toEqual(
+          'This block does not support navigate actions'
+        )
+      })
   })
 })

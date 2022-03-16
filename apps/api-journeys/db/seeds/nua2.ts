@@ -126,7 +126,7 @@ export async function nua2(): Promise<void> {
   })
   await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
 
-  await db.collection('blocks').save({
+  const button1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: card1._key,
@@ -134,9 +134,6 @@ export async function nua2(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'large',
-    startIcon: {
-      name: 'PlayArrowRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: step2._key
@@ -144,16 +141,45 @@ export async function nua2(): Promise<void> {
     parentOrder: 3
   })
 
+  const icon1a = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button1._key,
+    name: 'PlayArrowRounded',
+    size: 'lg',
+    parentOrder: 0
+  })
+  const icon1b = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button1._key,
+    name: null
+  })
+  await db
+    .collection('blocks')
+    .update(button1._key, { startIconId: icon1a._key, endIconId: icon1b._key })
+
+  const videoCard = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'CardBlock',
+    parentBlockId: step2._key,
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    fullscreen: false,
+    parentOrder: 0
+  })
+
   const video = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'VideoBlock',
-    parentBlockId: step2._key,
+    parentBlockId: videoCard._key,
     videoContent: {
       mediaComponentId: '5_0-NUA0301-0-0',
       languageId: '529'
     },
     autoplay: true,
     title: 'What About The Ressurection?',
+    fullsize: true,
     parentOrder: 0
   })
 
@@ -264,10 +290,20 @@ export async function nua2(): Promise<void> {
     }
   ])
 
+  const videoCard1 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'CardBlock',
+    parentBlockId: step4._key,
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    fullscreen: false,
+    parentOrder: 0
+  })
+
   const video1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'VideoBlock',
-    parentBlockId: step4._key,
+    parentBlockId: videoCard1._key,
     videoContent: {
       mediaComponentId: '5_0-NUA0301-0-0',
       languageId: '529'
@@ -275,6 +311,7 @@ export async function nua2(): Promise<void> {
     autoplay: true,
     title: 'What About The Ressurection?',
     startAt: 109,
+    fullsize: true,
     parentOrder: 0
   })
 
@@ -366,7 +403,7 @@ export async function nua2(): Promise<void> {
   })
   await db.collection('blocks').update(step5._key, { nextBlockId: step6._key })
 
-  await db.collection('blocks').save({
+  const button2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ButtonBlock',
     parentBlockId: card5._key,
@@ -374,9 +411,6 @@ export async function nua2(): Promise<void> {
     variant: 'contained',
     color: 'primary',
     size: 'medium',
-    startIcon: {
-      name: 'ContactSupportRounded'
-    },
     action: {
       gtmEventName: 'click',
       blockId: step6._key
@@ -384,10 +418,38 @@ export async function nua2(): Promise<void> {
     parentOrder: 4
   })
 
+  const icon2a = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button2._key,
+    name: 'ContactSupportRounded',
+    size: 'md',
+    parentOrder: 4
+  })
+  const icon2b = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'IconBlock',
+    parentBlockId: button2._key,
+    name: null
+  })
+  await db
+    .collection('blocks')
+    .update(button2._key, { startIconId: icon2a._key, endIconId: icon2b._key })
+
+  const videoCard2 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'CardBlock',
+    parentBlockId: step6._key,
+    themeMode: ThemeMode.dark,
+    themeName: ThemeName.base,
+    fullscreen: false,
+    parentOrder: 0
+  })
+
   const video2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'VideoBlock',
-    parentBlockId: step6._key,
+    parentBlockId: videoCard2._key,
     videoContent: {
       mediaComponentId: '5_0-NUA0301-0-0',
       languageId: '529'
@@ -395,6 +457,7 @@ export async function nua2(): Promise<void> {
     autoplay: true,
     title: 'What About The Ressurection?',
     startAt: 272,
+    fullsize: true,
     parentOrder: 0
   })
 

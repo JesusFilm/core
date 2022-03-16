@@ -23,6 +23,7 @@ describe('NavigateToJourneyActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -37,6 +38,7 @@ describe('NavigateToJourneyActionResolver', () => {
     label: 'label',
     description: 'description',
     action: {
+      parentBlockId: '1',
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
@@ -122,8 +124,27 @@ describe('NavigateToJourneyActionResolver', () => {
         navigateToJourneyInput
       )
       expect(service.update).toHaveBeenCalledWith(block._key, {
-        action: { ...navigateToJourneyInput }
+        action: { ...navigateToJourneyInput, parentBlockId: block._key }
       })
     })
+  })
+
+  it('throws an error if typename is wrong', async () => {
+    const wrongBlock = {
+      ...block,
+      __typename: 'WrongBlock'
+    }
+    service.get = jest.fn().mockResolvedValue(wrongBlock)
+    await resolver
+      .blockUpdateNavigateToJourneyAction(
+        wrongBlock._key,
+        wrongBlock.journeyId,
+        navigateToJourneyInput
+      )
+      .catch((error) => {
+        expect(error.message).toEqual(
+          'This block does not support navigate to journey actions'
+        )
+      })
   })
 })

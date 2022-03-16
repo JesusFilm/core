@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeyUiConfig, TreeBlock } from '../..'
 import {
   TypographyColor,
@@ -14,7 +15,7 @@ import {
 import { CardFields } from './__generated__/CardFields'
 import { Card } from './Card'
 
-const Demo: Meta = {
+const Demo = {
   ...journeyUiConfig,
   component: Card,
   title: 'Journeys-Ui/Card'
@@ -23,21 +24,23 @@ const Demo: Meta = {
 const Template: Story<TreeBlock<CardFields>> = ({ ...props }) => {
   const theme = useTheme()
   return (
-    <Box
-      sx={{
-        height: 'calc(100vh - 80px)',
-        maxHeight: 'calc(100vh - 80px)',
-        [theme.breakpoints.up('sm')]: {
-          maxHeight: '460px'
-        },
-        [theme.breakpoints.up('lg')]: {
-          maxWidth: '854px',
-          maxHeight: '480px'
-        }
-      }}
-    >
-      <Card {...props} />
-    </Box>
+    <MockedProvider>
+      <Box
+        sx={{
+          height: 'calc(100vh - 80px)',
+          maxHeight: 'calc(100vh - 80px)',
+          [theme.breakpoints.up('sm')]: {
+            maxHeight: '460px'
+          },
+          [theme.breakpoints.up('lg')]: {
+            maxWidth: '854px',
+            maxHeight: '480px'
+          }
+        }}
+      >
+        <Card {...props} />
+      </Box>
+    </MockedProvider>
   )
 }
 
@@ -74,15 +77,21 @@ const children: TreeBlock[] = [
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
     size: ButtonSize.large,
-    startIcon: {
-      __typename: 'Icon',
-      name: IconName.PlayArrowRounded,
-      color: null,
-      size: IconSize.md
-    },
-    endIcon: null,
+    startIconId: 'icon',
+    endIconId: null,
     action: null,
-    children: []
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.PlayArrowRounded,
+        iconColor: null,
+        iconSize: IconSize.md,
+        children: []
+      }
+    ]
   }
 ]
 
@@ -205,6 +214,7 @@ VideoCover.args = {
         __typename: 'VideoArclight',
         src: 'https://arc.gt/hls/2_0-FallingPlates/529'
       },
+      fullsize: null,
       children: [
         {
           id: 'posterBlockId',
@@ -224,6 +234,31 @@ VideoCover.args = {
 }
 VideoCover.parameters = {
   chromatic: { delay: 400, diffThreshold: 0.85 }
+}
+
+export const VideoContent: Story<TreeBlock<CardFields>> = Template.bind({})
+VideoContent.args = {
+  coverBlockId: 'videoBlockId1',
+  children: [
+    {
+      __typename: 'VideoBlock',
+      id: 'video1.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      autoplay: false,
+      muted: true,
+      title: 'video1',
+      videoContent: {
+        __typename: 'VideoArclight',
+        src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      },
+      startAt: null,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: true,
+      children: []
+    }
+  ]
 }
 
 export const ImageBlur: Story<TreeBlock<CardFields>> = Template.bind({})
@@ -280,4 +315,4 @@ ImageBlur.args = {
   fullscreen: true
 }
 
-export default Demo
+export default Demo as Meta

@@ -1,6 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { JourneyProvider } from '../../../libs/context'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CardView, CardViewProps } from './CardView'
 import { steps } from './data'
 
@@ -12,7 +15,17 @@ const CardViewStory = {
 
 const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
   <MockedProvider>
-    <CardView slug="my-journey" {...args} />
+    <JourneyProvider
+      value={
+        {
+          id: 'journeyId',
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base
+        } as unknown as Journey
+      }
+    >
+      <CardView slug="my-journey" {...args} />
+    </JourneyProvider>
   </MockedProvider>
 )
 

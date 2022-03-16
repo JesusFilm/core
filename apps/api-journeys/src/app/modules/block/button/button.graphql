@@ -25,9 +25,19 @@ type ButtonBlock implements Block {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
-  startIcon: Icon
-  endIcon: Icon
+  startIconId: ID
+  endIconId: ID
   action: Action
+}
+
+input ButtonBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
 }
 
 input ButtonBlockUpdateInput {
@@ -36,9 +46,12 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  startIconId: ID
+  endIconId: ID
 }
 
 extend type Mutation {
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
     journeyId: ID!

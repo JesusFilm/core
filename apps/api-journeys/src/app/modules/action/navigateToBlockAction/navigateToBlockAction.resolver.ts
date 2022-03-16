@@ -1,6 +1,8 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { KeyAsId } from '@core/nest/decorators'
+import { includes } from 'lodash'
+import { UserInputError } from 'apollo-server-errors'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
   Action,
@@ -9,7 +11,7 @@ import {
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 
-@Resolver('NavigateToBlockActionResolver')
+@Resolver('NavigateToBlockAction')
 export class NavigateToBlockActionResolver {
   constructor(private readonly blockService: BlockService) {}
 
@@ -23,8 +25,35 @@ export class NavigateToBlockActionResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    return await this.blockService.update(id, {
-      action: { ...input, journeyId: null, url: null, target: null }
-    })
+    const block = await this.blockService.get<{
+      __typename: string
+      _key: string
+    }>(id)
+
+    if (
+      !includes(
+        ['SignUpBlock', 'RadioOptionBlock', 'ButtonBlock', 'VideoTriggerBlock'],
+        block.__typename
+      )
+    ) {
+      throw new UserInputError(
+        'This block does not support navigate to block actions'
+      )
+    }
+
+    const updatedBlock: { action: Action } = await this.blockService.update(
+      id,
+      {
+        action: {
+          ...input,
+          parentBlockId: block._key,
+          journeyId: null,
+          url: null,
+          target: null
+        }
+      }
+    )
+
+    return updatedBlock.action
   }
 }

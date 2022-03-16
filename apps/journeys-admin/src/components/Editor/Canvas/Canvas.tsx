@@ -2,14 +2,20 @@ import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { ReactElement, useEffect, useState } from 'react'
-import { BlockRenderer, useEditor, ActiveTab } from '@core/journeys/ui'
+import {
+  BlockRenderer,
+  useEditor,
+  ActiveTab,
+  ActiveFab
+} from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
+import { useJourney } from '../../../libs/context'
+import { InlineEditWrapper } from './InlineEditWrapper'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -23,6 +29,7 @@ export function Canvas(): ReactElement {
     state: { steps, selectedStep, selectedBlock },
     dispatch
   } = useEditor()
+  const { themeMode, themeName } = useJourney()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null) {
@@ -69,6 +76,7 @@ export function Canvas(): ReactElement {
           type: 'SetSelectedBlockAction',
           block: selectedStep
         })
+        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
@@ -123,12 +131,16 @@ export function Canvas(): ReactElement {
                 }}
               />
               <FramePortal width={356} height={536}>
-                <ThemeProvider
-                  themeName={ThemeName.base}
-                  themeMode={ThemeMode.light}
-                >
+                <ThemeProvider themeName={themeName} themeMode={themeMode}>
                   <Box sx={{ p: 1, height: '100%' }}>
-                    <BlockRenderer block={step} />
+                    <BlockRenderer
+                      block={step}
+                      wrappers={{
+                        TypographyWrapper: InlineEditWrapper,
+                        ButtonWrapper: InlineEditWrapper,
+                        SignUpWrapper: InlineEditWrapper
+                      }}
+                    />
                   </Box>
                 </ThemeProvider>
               </FramePortal>

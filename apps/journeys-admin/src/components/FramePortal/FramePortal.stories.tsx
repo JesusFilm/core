@@ -77,25 +77,32 @@ const block: TreeBlock<Block> = {
         },
         {
           __typename: 'ButtonBlock',
-          id: 'button',
+          id: 'button0.id',
           parentBlockId: 'card0.id',
           parentOrder: 3,
           label: 'Watch Now',
           buttonVariant: ButtonVariant.contained,
           buttonColor: ButtonColor.primary,
           size: ButtonSize.large,
-          startIcon: {
-            __typename: 'Icon',
-            name: IconName.PlayArrowRounded,
-            color: null,
-            size: IconSize.md
-          },
-          endIcon: null,
+          startIconId: 'icon',
+          endIconId: null,
           action: {
             __typename: 'NavigateAction',
+            parentBlockId: 'button0.id',
             gtmEventName: 'gtmEventName'
           },
-          children: []
+          children: [
+            {
+              id: 'icon',
+              __typename: 'IconBlock',
+              parentBlockId: 'button',
+              parentOrder: 0,
+              iconName: IconName.PlayArrowRounded,
+              iconColor: null,
+              iconSize: IconSize.md,
+              children: []
+            }
+          ]
         }
       ]
     }

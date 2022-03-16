@@ -9,6 +9,9 @@ on:
       repository:
         required: true
         type: string
+      branch:
+        required: true
+        type: string
     secrets:
       ARANGODB_URL:
         required: true
@@ -24,12 +27,14 @@ on:
         required: true
       KUBE_CONFIG_DATA:
         required: true
+      ARCLIGHT_API_KEY:
+        required: true
 
 jobs:
   build-and-deploy:
     environment: Production
     env:
-      ENV_SUFFIX: ${{ github.ref_name }}
+      ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
@@ -93,9 +98,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f apps/${{ inputs.name }}/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_SUFFIX . -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster
@@ -121,6 +126,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v2
         env:
           DATABASE_DB: ${{ env.ENV_SUFFIX }}
+          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
         with:
           targets: seed
           projects: ${{ inputs.name }}

@@ -2,12 +2,11 @@ import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Container from '@mui/material/Container'
-import AddIcon from '@mui/icons-material/Add'
 import { sortBy } from 'lodash'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { AddJourneyButton } from './AddJourneyButton'
 import { JourneySort, SortOrder } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
 
@@ -27,6 +26,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
+      {journeys.length > 0 && <AddJourneyButton variant="fab" />}
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
@@ -63,17 +63,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
             <Typography variant="caption" align="center" gutterBottom>
               Create a journey, then find it here.
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              size="medium"
-              sx={{
-                mt: 3,
-                alignSelf: 'center'
-              }}
-            >
-              Create a Journey
-            </Button>
+            <AddJourneyButton variant="button" />
           </Card>
         )}
       </Box>
