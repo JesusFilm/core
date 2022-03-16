@@ -40,8 +40,8 @@ export function DeleteBlock({
 
   const label = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [open, setOpen] = useState(false)
-  const handleOpenModal = (): void => setOpen(true)
-  const handleCloseModal = (): void => setOpen(false)
+  const handleOpenDialog = (): void => setOpen(true)
+  const handleCloseDialog = (): void => setOpen(false)
 
   const handleDeleteBlock = async (): Promise<void> => {
     if (selectedBlock == null) return
@@ -71,7 +71,7 @@ export function DeleteBlock({
       selected != null && dispatch(selected)
     }
 
-    handleCloseModal()
+    handleCloseDialog()
 
     deletedBlockType !== 'StepBlock'
       ? enqueueSnackbar('Block Deleted', {
@@ -89,7 +89,7 @@ export function DeleteBlock({
       <DeleteDialog
         handleDelete={handleDeleteBlock}
         open={open}
-        handleClose={handleCloseModal}
+        handleClose={handleCloseDialog}
       />
       {variant === 'button' ? (
         <IconButton
@@ -99,14 +99,14 @@ export function DeleteBlock({
           aria-haspopup="true"
           aria-expanded="true"
           disabled={selectedBlock == null}
-          onClick={label === 'Block' ? handleDeleteBlock : handleOpenModal}
+          onClick={label === 'Block' ? handleDeleteBlock : handleOpenDialog}
         >
           <DeleteOutlineRounded />
         </IconButton>
       ) : (
         <MenuItem
           disabled={selectedBlock == null}
-          onClick={label === 'Block' ? handleDeleteBlock : handleOpenModal}
+          onClick={label === 'Block' ? handleDeleteBlock : handleOpenDialog}
         >
           <ListItemIcon>
             <DeleteOutlineRounded />
