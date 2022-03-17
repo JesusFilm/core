@@ -6,6 +6,7 @@ import {
   StoryCard,
   TreeBlock
 } from '../..'
+import { Typography } from '../Typography'
 import { RadioQuestion } from './RadioQuestion'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioOptionFields } from './RadioOption/__generated__/RadioOptionFields'
@@ -109,6 +110,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
   >
     <StoryCard>
       <RadioQuestion {...props} uuid={() => 'uuid'} />
+      <Typography>Next block goes here</Typography>
     </StoryCard>
   </MockedProvider>
 )
