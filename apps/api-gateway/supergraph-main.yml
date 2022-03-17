@@ -8,10 +8,10 @@ subgraphs:
     schema:
       file: ../../dist/apps/api-gateway/api-users-schema.graphql
   languages:
-    routing_url: http://api-languages-main:4003/graphql
+    routing_url: https://api-languages-main/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-languages-schema.graphql
   videos:
-    routing_url: http://api-videos-main:4004/graphql
+    routing_url: https://api-videos-main/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-videos-schema.graphql
