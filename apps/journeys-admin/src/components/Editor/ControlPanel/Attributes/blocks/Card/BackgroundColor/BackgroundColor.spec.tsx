@@ -120,7 +120,7 @@ describe('CardStyling', () => {
     })
     const result = jest.fn(() => ({
       data: {
-        block: { id: 'card1.id', backgroundColor: '#DCDDE5' }
+        cardBlockUpdate: { id: 'card1.id', backgroundColor: '#DCDDE5' }
       }
     }))
     const card: TreeBlock<CardBlock> = {

@@ -30,6 +30,7 @@ interface VideoBlockEditorSettingsProps {
   posterBlock: ImageBlock | null
   parentOrder?: number
   disabled?: boolean
+  forBackground?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
 }
 
@@ -37,6 +38,7 @@ export function VideoBlockEditorSettings({
   selectedBlock,
   posterBlock,
   parentOrder = 0,
+  forBackground = false,
   disabled = false,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
@@ -98,7 +100,7 @@ export function VideoBlockEditorSettings({
             checked={selectedBlock?.autoplay ?? true}
             name="autoplay"
             onChange={handleSwitchChange}
-            disabled={disabled}
+            disabled={disabled || forBackground}
           />
         </Stack>
         <Divider />
@@ -121,7 +123,7 @@ export function VideoBlockEditorSettings({
             checked={selectedBlock?.muted ?? parentOrder === 0}
             name="muted"
             onChange={handleSwitchChange}
-            disabled={disabled}
+            disabled={disabled || forBackground}
           ></Switch>
         </Stack>
         <Divider />

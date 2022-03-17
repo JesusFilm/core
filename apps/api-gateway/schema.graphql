@@ -291,6 +291,7 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages" url: "http://127.0.0.1:4003/graphql")
   USERS @join__graph(name: "users" url: "http://127.0.0.1:4002/graphql")
+  VIDEOS @join__graph(name: "videos" url: "http://127.0.0.1:4004/graphql")
 }
 
 type Journey
@@ -353,11 +354,12 @@ input JourneyUpdateInput {
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: VIDEOS, key: "id")
 {
   bcp47: String @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation]! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 type LinkAction implements Action {
@@ -458,6 +460,8 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
+  video(id: ID!): Video! @join__field(graph: VIDEOS)
+  videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block {
@@ -701,6 +705,20 @@ enum UserJourneyRole {
   owner
 }
 
+type Video
+  @join__owner(graph: VIDEOS)
+  @join__type(graph: VIDEOS, key: "id")
+{
+  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  id: ID! @join__field(graph: VIDEOS)
+  image: String @join__field(graph: VIDEOS)
+  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
+  variantLanguages: [Language!]! @join__field(graph: VIDEOS)
+}
+
 type VideoArclight implements VideoContent {
   languageId: String!
   mediaComponentId: String!
@@ -820,6 +838,11 @@ enum VideoResponseStateEnum {
   PLAYING
 }
 
+input VideosFilter {
+  availableVariantLanguageIds: [ID!]
+  title: String
+}
+
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -836,4 +859,23 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
+}
+
+type VideoVariant {
+  downloads: [VideoVariantDownload!]!
+  duration: Int!
+  hls: String!
+  language: Language!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
+}
+
+type VideoVariantDownload {
+  quality: VideoVariantDownloadQuality!
+  size: Float!
+  url: String!
+}
+
+enum VideoVariantDownloadQuality {
+  high
+  low
 }
