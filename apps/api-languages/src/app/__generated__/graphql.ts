@@ -18,8 +18,8 @@ export class Language {
 export class Translation {
     __typename?: 'Translation';
     value: string;
-    language: Language;
     primary: boolean;
+    language?: Nullable<Language>;
 }
 
 export abstract class IQuery {
