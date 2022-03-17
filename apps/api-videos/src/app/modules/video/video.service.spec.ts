@@ -229,9 +229,7 @@ describe('VideoService', () => {
     }
 
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [video])
-      )
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [video]))
     })
 
     it('should return a video', async () => {

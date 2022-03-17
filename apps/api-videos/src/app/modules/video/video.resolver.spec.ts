@@ -86,7 +86,7 @@ describe('VideoResolver', () => {
   })
 
   describe('video', () => {
-    it('returns a video', async () => {
+    it('return a video', async () => {
       const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
