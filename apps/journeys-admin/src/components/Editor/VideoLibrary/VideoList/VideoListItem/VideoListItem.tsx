@@ -6,10 +6,10 @@ import ListItemButton from '@mui/material/ListItemButton'
 
 interface VideoListItemProps {
   id: string
-  title: string
-  description: string
-  image: string
-  duration: number
+  title?: string
+  description?: string
+  image?: string
+  duration?: number
   onSelect: (source: string) => void
 }
 
@@ -18,7 +18,7 @@ export function VideoListItem({
   title,
   description,
   image,
-  duration: time,
+  duration: time = 0,
   onSelect
 }: VideoListItemProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)

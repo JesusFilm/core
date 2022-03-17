@@ -62,15 +62,10 @@ export function VideoList({
           <>
             <VideoListItem
               id={video.id}
-              title={
-                video.title.find((title) => title.primary)?.value ?? 'Title'
-              }
-              description={
-                video.snippet.find((snippet) => snippet.primary)?.value ??
-                'Description'
-              }
+              title={video.title.find(({ primary }) => primary)?.value}
+              description={video.snippet.find(({ primary }) => primary)?.value}
               image={video.image ?? ''}
-              duration={video.variant?.duration ?? 0}
+              duration={video.variant?.duration}
               onSelect={onSelect}
             />
             <Divider />
