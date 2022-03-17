@@ -59,7 +59,7 @@ export class VideoService extends BaseService {
     return await res.all()
   }
 
-  async getVideo<T>(_key: string, variantLanguageId): Promise<T> {
+  async getVideo<T>(_key: string, variantLanguageId?: string): Promise<T> {
     const res = await this.db.query(aql`
     FOR item in ${this.collection}
       FILTER item._key == ${_key}

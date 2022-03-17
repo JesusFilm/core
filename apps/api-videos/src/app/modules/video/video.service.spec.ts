@@ -239,7 +239,7 @@ describe('VideoService', () => {
     })
 
     it('should return a video even without a langaugeId', async () => {
-      expect(await service.getVideo('20615', null)).toEqual(video)
+      expect(await service.getVideo('20615')).toEqual(video)
     })
   })
 })
