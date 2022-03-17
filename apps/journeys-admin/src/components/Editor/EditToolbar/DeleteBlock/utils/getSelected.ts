@@ -1,5 +1,4 @@
 import { TreeBlock } from '@core/journeys/ui'
-import last from 'lodash/last'
 import findIndex from 'lodash/findIndex'
 import { BlockDelete } from '../../../../../../__generated__/BlockDelete'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../__generated__/GetJourney'
@@ -28,8 +27,8 @@ export default function getSelected({
   // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
   if (siblings.length > 0) {
     const blockToSelect =
-      siblings.find((sibling) => sibling.parentOrder === parentOrder) ??
-      last(siblings)
+      siblings.find((sibling) => sibling.parentOrder === parentOrder - 1) ??
+      siblings[parentOrder]
     return {
       type: 'SetSelectedBlockByIdAction',
       id: blockToSelect?.id

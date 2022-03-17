@@ -75,7 +75,7 @@ describe('updatedSelected', () => {
 
   const steps: Array<TreeBlock<StepBlock>> = [selectedStep, step1, step2]
 
-  it('should select the next child block', () => {
+  it('should select the block before deleted block by default', () => {
     const input: GetSelectedProps = {
       parentOrder: 1,
       siblings: selectedStep.children[0].children,
@@ -84,21 +84,21 @@ describe('updatedSelected', () => {
     }
     const expected: GetSelectedReturn = {
       type: 'SetSelectedBlockByIdAction',
-      id: 'typography1.id'
+      id: 'typography0.id'
     }
     expect(getSelected(input)).toEqual(expected)
   })
 
-  it('should select the new last block when last block deleted', () => {
+  it('should select the block after deleted block if its the first block', () => {
     const input: GetSelectedProps = {
-      parentOrder: 2,
+      parentOrder: 0,
       siblings: selectedStep.children[0].children,
       type: 'TypographyBlock',
       steps
     }
     const expected: GetSelectedReturn = {
       type: 'SetSelectedBlockByIdAction',
-      id: 'typography2.id'
+      id: 'typography0.id'
     }
     expect(getSelected(input)).toEqual(expected)
   })
