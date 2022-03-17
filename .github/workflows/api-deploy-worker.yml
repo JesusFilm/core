@@ -27,6 +27,8 @@ on:
         required: true
       KUBE_CONFIG_DATA:
         required: true
+      ARCLIGHT_API_KEY:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -70,14 +72,14 @@ jobs:
         id: affected-apps
 
       - name: Build ${{ inputs.name }}
-        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build
           projects: ${{ inputs.name }}
 
       - name: Configure AWS credentials
-        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -85,12 +87,12 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -102,7 +104,7 @@ jobs:
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster
-        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: kodermax/kubectl-aws-eks@master
         env:
           RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
@@ -110,7 +112,7 @@ jobs:
           args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
 
       - name: Verify Kubernetes deployment
-        if: contains(steps.affected-apps.outputs.apps, ${{ inputs.name }})
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: kodermax/kubectl-aws-eks@master
         with:
           args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
@@ -120,10 +122,11 @@ jobs:
         id: affected-dbs
 
       - name: Seed Database
-        if: contains(steps.affected-dbs.outputs.dbs, ${{ inputs.name }})
+        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
         uses: mansagroup/nrwl-nx-action@v2
         env:
           DATABASE_DB: ${{ env.ENV_SUFFIX }}
+          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
         with:
           targets: seed
           projects: ${{ inputs.name }}
