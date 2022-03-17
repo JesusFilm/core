@@ -4,13 +4,13 @@ import findIndex from 'lodash/findIndex'
 import { BlockDelete } from '../../../../../../__generated__/BlockDelete'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../__generated__/GetJourney'
 
-interface getSeletedReturn {
+export interface GetSelectedReturn {
   type: 'SetSelectedBlockByIdAction' | 'SetSelectedStepAction'
   id?: string
   step?: TreeBlock<StepBlock>
 }
 
-interface getSelectedProps {
+export interface GetSelectedProps {
   parentOrder: number
   siblings: BlockDelete['blockDelete']
   type: string
@@ -24,7 +24,7 @@ export default function getSelected({
   type,
   steps,
   selectedStep
-}: getSelectedProps): getSeletedReturn | null {
+}: GetSelectedProps): GetSelectedReturn | null {
   // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
   if (siblings.length > 0) {
     const blockToSelect =
@@ -34,7 +34,7 @@ export default function getSelected({
       type: 'SetSelectedBlockByIdAction',
       id: blockToSelect?.id
     }
-  } else if (selectedStep != null && steps.length > 0) {
+  } else if (selectedStep != null && steps.length > 1) {
     const stepToSet =
       type !== 'StepBlock' ? selectedStep : findNextStep(steps, selectedStep)
     return {

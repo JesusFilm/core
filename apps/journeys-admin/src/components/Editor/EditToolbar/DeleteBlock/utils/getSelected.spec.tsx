@@ -8,7 +8,7 @@ import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import getSelected from './getSelected'
+import getSelected, { GetSelectedReturn, GetSelectedProps } from './getSelected'
 
 describe('updatedSelected', () => {
   const selectedBlock: TreeBlock<TypographyBlock> = {
@@ -72,31 +72,37 @@ describe('updatedSelected', () => {
     parentOrder: 2,
     nextBlockId: 'stepId'
   }
+
   const steps: Array<TreeBlock<StepBlock>> = [selectedStep, step1, step2]
+
   it('should select the next child block', () => {
-    const input = {
+    const input: GetSelectedProps = {
       parentOrder: 1,
       siblings: selectedStep.children[0].children,
       type: 'TypographyBlock',
       steps
     }
-    expect(getSelected(input)).toEqual({
+    const expected: GetSelectedReturn = {
       type: 'SetSelectedBlockByIdAction',
       id: 'typography1.id'
-    })
+    }
+    expect(getSelected(input)).toEqual(expected)
   })
+
   it('should select the new last block when last block deleted', () => {
-    const input = {
+    const input: GetSelectedProps = {
       parentOrder: 2,
       siblings: selectedStep.children[0].children,
       type: 'TypographyBlock',
       steps
     }
-    expect(getSelected(input)).toEqual({
+    const expected: GetSelectedReturn = {
       type: 'SetSelectedBlockByIdAction',
       id: 'typography2.id'
-    })
+    }
+    expect(getSelected(input)).toEqual(expected)
   })
+
   it('should select the parent block when all children blocks deleted', () => {
     const input = {
       parentOrder: 0,
@@ -105,12 +111,14 @@ describe('updatedSelected', () => {
       steps,
       selectedStep
     }
-    expect(getSelected(input)).toEqual({
+    const expected: GetSelectedReturn = {
       type: 'SetSelectedStepAction',
       step: selectedStep
-    })
+    }
+    expect(getSelected(input)).toEqual(expected)
   })
-  it('should select the previous linked step when entire step deleted', () => {
+
+  it('should select the step before the deleted step by deafult', () => {
     const input = {
       parentOrder: 2,
       siblings: [],
@@ -118,23 +126,26 @@ describe('updatedSelected', () => {
       steps,
       selectedStep: step2
     }
-    expect(getSelected(input)).toEqual({
+    const expected: GetSelectedReturn = {
       type: 'SetSelectedStepAction',
       step: step1
-    })
+    }
+    expect(getSelected(input)).toEqual(expected)
   })
-  it('should select the last step when an unlinked step is deleted', () => {
+
+  it('should select the step after the deleted step if deleted step is the first step', () => {
     const input = {
       parentOrder: 1,
       siblings: [],
       type: 'StepBlock',
       steps,
-      selectedStep: step1
+      selectedStep: selectedStep
     }
-    expect(getSelected(input)).toEqual({
+    const expected: GetSelectedReturn = {
       type: 'SetSelectedStepAction',
-      step: step2
-    })
+      step: step1
+    }
+    expect(getSelected(input)).toEqual(expected)
   })
 
   it('should return null when last card is deleted', () => {
@@ -142,7 +153,7 @@ describe('updatedSelected', () => {
       parentOrder: 0,
       siblings: [],
       type: 'StepBlock',
-      steps: [],
+      steps: [selectedStep],
       selectedStep
     }
     expect(getSelected(input)).toEqual(null)
