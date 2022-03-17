@@ -17,6 +17,7 @@ interface VideoBlockEditorProps {
   parentBlockId: string
   parentOrder: number
   showDelete?: boolean
+  forBackground?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
   onDelete?: () => Promise<void> | undefined
 }
@@ -26,6 +27,7 @@ export function VideoBlockEditor({
   parentBlockId,
   parentOrder,
   showDelete = true,
+  forBackground = false,
   onChange,
   onDelete
 }: VideoBlockEditorProps): ReactElement {
@@ -103,6 +105,7 @@ export function VideoBlockEditor({
             parentOrder={parentOrder}
             onChange={onChange}
             disabled={selectedBlock == null}
+            forBackground={forBackground}
           />
         </TabPanel>
       </Box>
@@ -120,6 +123,7 @@ export function VideoBlockEditor({
           parentOrder={parentOrder}
           onChange={onChange}
           disabled={selectedBlock == null}
+          forBackground={forBackground}
         />
       </Box>
     </>

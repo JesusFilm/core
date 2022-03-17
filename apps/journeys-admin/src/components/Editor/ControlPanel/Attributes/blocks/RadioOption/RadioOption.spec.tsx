@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../ThemeProvider'
@@ -7,7 +7,7 @@ import { Drawer } from '../../../../Drawer'
 import { RadioOption } from '.'
 
 describe('RadioOption Attribute', () => {
-  it('shows default attributes', () => {
+  it('shows default attributes', async () => {
     const block: TreeBlock<RadioOptionBlock> = {
       id: 'radioOption1.id',
       __typename: 'RadioOptionBlock',
@@ -18,10 +18,12 @@ describe('RadioOption Attribute', () => {
       children: []
     }
     const { getByRole } = render(<RadioOption {...block} />)
-    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    )
   })
 
-  it('shows filled attributes', () => {
+  it('shows filled attributes', async () => {
     const block: TreeBlock<RadioOptionBlock> = {
       id: 'radioOption1.id',
       __typename: 'RadioOptionBlock',
@@ -38,12 +40,14 @@ describe('RadioOption Attribute', () => {
     }
 
     const { getByRole } = render(<RadioOption {...block} />)
-    expect(
-      getByRole('button', { name: 'Action Selected Card' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Action Selected Card' })
+      ).toBeInTheDocument()
+    )
   })
 
-  it('clicking on action attribute shows the action edit drawer', () => {
+  it('clicking on action attribute shows the action edit drawer', async () => {
     const block: TreeBlock<RadioOptionBlock> = {
       id: 'radioOption1.id',
       __typename: 'RadioOptionBlock',
@@ -69,6 +73,8 @@ describe('RadioOption Attribute', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Action')
+    await waitFor(() =>
+      expect(getByTestId('drawer-title')).toHaveTextContent('Action')
+    )
   })
 })

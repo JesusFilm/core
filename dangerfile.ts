@@ -99,8 +99,17 @@ export default async () => {
     fail('Please add milestone to this PR.')
   }
 
-  // check PR has requested reviewers
-  if (currentPR.data.requested_reviewers.length === 0) {
+  // pull reviews for PR from GitHub API
+  const reviews = await danger.github.api.pulls.listReviews({
+    ...danger.github.thisPR,
+    pull_number: danger.github.thisPR.number
+  })
+
+  // check PR has requested reviewers or completed reviews
+  if (
+    currentPR.data.requested_reviewers.length === 0 &&
+    reviews.data.length === 0
+  ) {
     fail('Please request a reviewer for this PR.')
   }
 }

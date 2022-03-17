@@ -26,7 +26,8 @@ describe('VideoResolver', () => {
     const videoService = {
       provide: VideoService,
       useFactory: () => ({
-        filterAll: jest.fn(() => [video, video])
+        filterAll: jest.fn(() => [video, video]),
+        getVideo: jest.fn(() => video)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
@@ -81,6 +82,38 @@ describe('VideoResolver', () => {
         page: 2,
         limit: 200
       })
+    })
+  })
+
+  describe('video', () => {
+    it('return a video', async () => {
+      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
+      expect(await resolver.video(info, '20615')).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
+    })
+
+    it('return a filtered video', async () => {
+      const info = {
+        fieldNodes: [
+          {
+            selectionSet: {
+              selections: [
+                {
+                  name: { value: 'variant' },
+                  arguments: [
+                    {
+                      name: { value: 'languageId' },
+                      value: { value: 'en' }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+      expect(await resolver.video(info, '20615')).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
     })
   })
 })

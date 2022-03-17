@@ -16,7 +16,7 @@ export interface GetLanguages_languages_name {
 export interface GetLanguages_languages {
   __typename: "Language";
   id: string;
-  name: (GetLanguages_languages_name | null)[];
+  name: GetLanguages_languages_name[];
 }
 
 export interface GetLanguages {

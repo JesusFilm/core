@@ -56,6 +56,7 @@ describe('VideoOptions', () => {
     const videoBlockResult = jest.fn(() => ({
       data: {
         videoBlockUpdate: {
+          id: video.id,
           title: video.title,
           startAt: video.startAt,
           endAt: video.endAt,

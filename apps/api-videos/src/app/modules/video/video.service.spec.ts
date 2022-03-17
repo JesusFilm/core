@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDbQueryResult } from '@core/nest/database'
 import { Database, aql } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
@@ -206,6 +207,37 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.filterAll({ variantLanguageId: 'en' })).toEqual([])
+    })
+  })
+
+  describe('getVideo', () => {
+    const video = {
+      id: '20615',
+      bcp47: 'zh',
+      name: [
+        {
+          value: '普通話',
+          primary: true,
+          videoId: '20615'
+        },
+        {
+          value: 'Chinese, Mandarin',
+          primary: false,
+          videoId: '529'
+        }
+      ]
+    }
+
+    beforeEach(() => {
+      db.query.mockReturnValue(mockDbQueryResult(service.db, [video]))
+    })
+
+    it('should return a video', async () => {
+      expect(await service.getVideo('20615', '529')).toEqual(video)
+    })
+
+    it('should return a video even without a langaugeId', async () => {
+      expect(await service.getVideo('20615')).toEqual(video)
     })
   })
 })

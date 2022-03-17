@@ -260,6 +260,7 @@ export function BackgroundMediaVideo({
       onDelete={deleteCoverBlock}
       parentBlockId={cardBlock.id}
       parentOrder={cardBlock.parentOrder ?? 0}
+      forBackground
     />
   )
 }
