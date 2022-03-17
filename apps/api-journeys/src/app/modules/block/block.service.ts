@@ -84,15 +84,15 @@ export class BlockService extends BaseService {
 
   async removeBlockAndChildren(
     blockId: string,
-    parentBlockId: string,
-    journeyId: string
+    journeyId: string,
+    parentBlockId?: string
   ): Promise<Block[]> {
     const res: Block = await this.remove(blockId)
     await this.removeAllBlocksForParentId([blockId], [res])
-    const result = await this.updateChildrenParentOrder(
-      journeyId,
-      parentBlockId
-    )
+    const result =
+      parentBlockId == null
+        ? []
+        : await this.updateChildrenParentOrder(journeyId, parentBlockId)
     return result as unknown as Block[]
   }
 

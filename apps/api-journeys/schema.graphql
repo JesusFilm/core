@@ -730,7 +730,7 @@ extend type Mutation {
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
-  blockDelete(id: ID!, parentBlockId: ID!, journeyId: ID!): [Block!]!
+  blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
