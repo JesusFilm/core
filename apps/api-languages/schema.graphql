@@ -2,7 +2,7 @@ type Language @key(fields: "id") {
   id: ID!
   bcp47: String
   iso3: String
-  name(languageId: ID, primary: Boolean): [Translation]!
+  name(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 type Translation {

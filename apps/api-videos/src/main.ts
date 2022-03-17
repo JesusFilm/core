@@ -4,7 +4,7 @@ import { json } from 'body-parser'
 import { AppModule } from './app/app.module'
 
 async function bootstrap(): Promise<void> {
-  const port = process.env.PORT ?? '4003'
+  const port = process.env.PORT ?? '4004'
   const app = await NestFactory.create(AppModule)
   await app.use(json({ limit: '50mb' }))
   await app.listen(port, () => {
