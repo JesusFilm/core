@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import Typography from '@mui/material/Typography'
 import {
   journeyUiConfig,
   simpleComponentConfig,
@@ -109,6 +110,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
   >
     <StoryCard>
       <RadioQuestion {...props} uuid={() => 'uuid'} />
+      <Typography>Next block goes here</Typography>
     </StoryCard>
   </MockedProvider>
 )
