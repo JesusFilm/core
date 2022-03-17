@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 
 interface DeleteDialogProps {
   handleDelete: () => void
@@ -24,21 +25,29 @@ export function DeleteDialog({
       aria-labelledby="delete-card-dialog"
       aria-describedby="delete-card-dialog"
     >
-      <DialogTitle>Delete Card?</DialogTitle>
+      <DialogTitle>
+        <Typography variant="subtitle1" sx={{ textTransform: 'none' }}>
+          Delete Card?
+        </Typography>
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you would like to delete this card?
+          <Typography variant="body1" color="secondary.dark">
+            Are you sure you would like to delete this card?
+          </Typography>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button
-          color="secondary"
           onClick={handleClose}
-          sx={{ fontWeight: 'normal' }}
+          sx={{ fontWeight: 'normal', color: 'secondary.light' }}
         >
           Cancel
         </Button>
-        <Button onClick={handleDelete} sx={{ fontWeight: 'normal', ml: 6 }}>
+        <Button
+          onClick={handleDelete}
+          sx={{ fontWeight: 'normal', ml: 6, color: 'primary.light' }}
+        >
           Delete
         </Button>
       </DialogActions>
