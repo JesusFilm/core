@@ -37,8 +37,6 @@ describe('Selected Card', () => {
 
   const steps = [selectedBlock, nextBlock, lastBlock]
 
-  console.log('STEPS', steps)
-
   it('updates nextBlockId to the step itself on remove button click', async () => {
     const result = jest.fn(() => ({
       data: {
