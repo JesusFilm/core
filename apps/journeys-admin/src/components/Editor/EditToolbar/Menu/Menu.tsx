@@ -34,7 +34,7 @@ export function Menu(): ReactElement {
   function CardMenu(): ReactElement {
     return (
       <>
-        <DeleteBlock variant="list-item" />
+        <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />
         <NextLink href={`/journeys/${journey.slug}`} passHref>
           <MenuItem>

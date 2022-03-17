@@ -322,6 +322,7 @@ describe('DeleteBlock', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([])
+    await waitFor(() => expect(queryByRole('menu')).not.toBeInTheDocument())
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
   })
 
