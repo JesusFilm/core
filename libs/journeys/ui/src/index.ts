@@ -45,6 +45,8 @@ export {
   isActiveBlockOrDescendant,
   activeBlockVar,
   previousBlocksVar,
-  treeBlocksVar
+  treeBlocksVar,
+  SetSelectedStepAction,
+  SetSelectedBlockByIdAction
 } from './libs'
 export type { TreeBlock } from './libs'

@@ -1,17 +1,11 @@
-import { TreeBlock } from '@core/journeys/ui'
+import {
+  TreeBlock,
+  SetSelectedStepAction,
+  SetSelectedBlockByIdAction
+} from '@core/journeys/ui'
 import findIndex from 'lodash/findIndex'
 import { BlockDelete } from '../../../../../../__generated__/BlockDelete'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../__generated__/GetJourney'
-
-export interface SetSelectedBlockByIdAction {
-  type: 'SetSelectedBlockByIdAction'
-  id: string
-}
-
-export interface SetSelectedStepAction {
-  type: 'SetSelectedStepAction'
-  step: TreeBlock<StepBlock>
-}
 
 export interface GetSelectedProps {
   parentOrder: number

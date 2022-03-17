@@ -1,4 +1,8 @@
-import { TreeBlock } from '@core/journeys/ui'
+import {
+  TreeBlock,
+  SetSelectedStepAction,
+  SetSelectedBlockByIdAction
+} from '@core/journeys/ui'
 import {
   TypographyVariant,
   TypographyAlign,
@@ -8,11 +12,7 @@ import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import getSelected, {
-  SetSelectedBlockByIdAction,
-  SetSelectedStepAction,
-  GetSelectedProps
-} from './getSelected'
+import getSelected, { GetSelectedProps } from './getSelected'
 
 describe('updatedSelected', () => {
   const selectedBlock: TreeBlock<TypographyBlock> = {

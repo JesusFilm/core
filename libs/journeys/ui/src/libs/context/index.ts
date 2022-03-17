@@ -2,5 +2,7 @@ export {
   useEditor,
   EditorProvider,
   ActiveTab,
-  ActiveFab
+  ActiveFab,
+  SetSelectedStepAction,
+  SetSelectedBlockByIdAction
 } from './EditorContext'
