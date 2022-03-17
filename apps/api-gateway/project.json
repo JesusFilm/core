@@ -50,9 +50,6 @@
           },
           {
             "command": "nx serve api-gateway"
-          },
-          {
-            "command": "nx serve api-languages"
           }
         ],
         "parallel": true
