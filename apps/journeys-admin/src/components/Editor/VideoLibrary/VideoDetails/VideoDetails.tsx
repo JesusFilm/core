@@ -12,37 +12,30 @@ import IconButton from '@mui/material/IconButton'
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
+import { gql, useQuery } from '@apollo/client'
+import { GetVideo } from '../../../../../__generated__/GetVideo'
+import { Drawer as LanguageDrawer } from '../LanguageFilter/Drawer/Drawer'
 
-// to be replaced with the query
-const videos = [
-  {
-    id: '2_Acts7302-0-0',
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-    title: [
-      {
-        primary: true,
-        value: 'Jesus Taken Up Into Heaven',
-        language: {
-          id: '529'
-        }
+export const GET_VIDEO = gql`
+  query GetVideo($videoId: String!) {
+    video(videoId: $videoId) {
+      id
+      image
+      title {
+        primary
+        value
       }
-    ],
-    variant: {
-      duration: 144,
-      hls: 'https://arc.gt/opsgn'
-    },
-    description: [
-      {
-        primary: true,
-        value: 'Jesus promises the Holy Spirit; then ascends into the clouds.',
-        language: {
-          id: '529'
-        }
+      description {
+        primary
+        value
       }
-    ]
+      variant {
+        duration
+        hls
+      }
+    }
   }
-]
+`
 
 export const DRAWER_WIDTH = 328
 
@@ -60,19 +53,26 @@ export function VideoDetailsContent({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
-
-  const handleOnClick = (): void => {
-    if (onSelect != null) onSelect(videos[0].variant.hls)
+  const [open, setOpen] = useState<boolean>(false)
+  const [selectedIds, setSelectedIds] = useState(['en'])
+  // need to discuss how we're passing langaugeIds around
+  const handleChange = (selectedIds: string[]): void => {
+    setSelectedIds(selectedIds)
+    // onSelect(selectedIds)
   }
 
-  const time = videos?.[0].variant?.duration
+  const { data } = useQuery<GetVideo>(GET_VIDEO, {
+    variables: { videoId }
+  })
+
+  const time = data?.video.variant?.duration ?? 0
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
 
   useEffect(() => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: false,
         controls: true,
@@ -95,13 +95,13 @@ export function VideoDetailsContent({
         },
         responsive: true,
         muted: true,
-        poster: videos?.[0]?.image
+        poster: data.video.image ?? ''
       })
       playerRef.current.on('playing', () => {
         setIsPlaying(true)
       })
     }
-  }, [])
+  }, [data])
 
   return (
     <>
@@ -133,7 +133,7 @@ export function VideoDetailsContent({
         }}
       >
         <Box
-          data-testid={`VideoDetails-${videos?.[0]?.id}`}
+          data-testid={`VideoDetails-${data?.video.id ?? ''}`}
           sx={{
             display: 'flex',
             height: 169,
@@ -152,7 +152,7 @@ export function VideoDetailsContent({
             playsInline
           >
             <source
-              src={videos?.[0]?.variant?.hls}
+              src={data?.video.variant?.hls}
               type="application/x-mpegURL"
             />
           </video>
@@ -178,14 +178,11 @@ export function VideoDetailsContent({
         </Box>
         <Box sx={{ pb: 2, pt: 5 }}>
           <Typography variant="subtitle1">
-            {videos?.[0]?.title?.find((title) => title.primary)?.value}
+            {data?.video?.title?.find(({ primary }) => primary)?.value}
           </Typography>
         </Box>
         <Typography variant="caption">
-          {
-            videos?.[0]?.description?.find((description) => description.primary)
-              ?.value
-          }
+          {data?.video?.description?.find(({ primary }) => primary)?.value}
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mx: 4 }}>
@@ -193,7 +190,7 @@ export function VideoDetailsContent({
           data-testid="VideoDetailsLanguageButton"
           variant="contained"
           size="small"
-          onClick={() => console.log('open language drawer')}
+          onClick={() => setOpen(true)}
           endIcon={<ArrowDropDown />}
         >
           Other Languages
@@ -203,11 +200,22 @@ export function VideoDetailsContent({
           variant="contained"
           size="small"
           startIcon={<Check />}
-          onClick={handleOnClick}
+          onClick={
+            onSelect != null
+              ? () => onSelect(data?.video.variant?.hls ?? '')
+              : undefined
+          }
         >
           Select Video
         </Button>
       </Box>
+      <LanguageDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        onChange={handleChange}
+        selectedIds={selectedIds}
+        currentLanguageId="529"
+      />
     </>
   )
 }
