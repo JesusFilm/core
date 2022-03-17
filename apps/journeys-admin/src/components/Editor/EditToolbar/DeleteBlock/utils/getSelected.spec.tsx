@@ -8,7 +8,11 @@ import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import getSelected, { GetSelectedReturn, GetSelectedProps } from './getSelected'
+import getSelected, {
+  SetSelectedBlockByIdAction,
+  SetSelectedStepAction,
+  GetSelectedProps
+} from './getSelected'
 
 describe('updatedSelected', () => {
   const selectedBlock: TreeBlock<TypographyBlock> = {
@@ -82,7 +86,7 @@ describe('updatedSelected', () => {
       type: 'TypographyBlock',
       steps
     }
-    const expected: GetSelectedReturn = {
+    const expected: SetSelectedBlockByIdAction = {
       type: 'SetSelectedBlockByIdAction',
       id: 'typography0.id'
     }
@@ -96,7 +100,7 @@ describe('updatedSelected', () => {
       type: 'TypographyBlock',
       steps
     }
-    const expected: GetSelectedReturn = {
+    const expected: SetSelectedBlockByIdAction = {
       type: 'SetSelectedBlockByIdAction',
       id: 'typography0.id'
     }
@@ -111,7 +115,7 @@ describe('updatedSelected', () => {
       steps,
       selectedStep
     }
-    const expected: GetSelectedReturn = {
+    const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',
       step: selectedStep
     }
@@ -126,7 +130,7 @@ describe('updatedSelected', () => {
       steps,
       selectedStep: step2
     }
-    const expected: GetSelectedReturn = {
+    const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',
       step: step1
     }
@@ -141,7 +145,7 @@ describe('updatedSelected', () => {
       steps,
       selectedStep: selectedStep
     }
-    const expected: GetSelectedReturn = {
+    const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',
       step: step1
     }
