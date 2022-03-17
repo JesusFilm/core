@@ -209,12 +209,7 @@ describe('BackgroundMediaImage', () => {
     }))
     const blockDeleteResult = jest.fn(() => ({
       data: {
-        blockDelete: [
-          {
-            id: video.id,
-            __typename: 'VideoBlock'
-          }
-        ]
+        blockDelete: []
       }
     }))
     const { getByRole } = render(
