@@ -125,15 +125,10 @@ export function Drawer({
               <ListItemText
                 id={id}
                 primary={
-                  name.find((translation) => translation?.primary === false)
-                    ?.value ??
-                  name.find((translation) => translation?.primary === true)
-                    ?.value
+                  name.find(({ primary }) => !primary)?.value ??
+                  name.find(({ primary }) => primary)?.value
                 }
-                secondary={
-                  name.find((translation) => translation?.primary === true)
-                    ?.value
-                }
+                secondary={name.find(({ primary }) => primary)?.value}
               />
             </ListItemButton>
           </ListItem>
