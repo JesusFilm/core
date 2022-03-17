@@ -118,7 +118,7 @@ async function getMediaComponentLanguage(
     _embedded: { mediaComponentLanguage: MediaComponentLanguage[] }
   } = await (
     await fetch(
-      `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?apiKey=${
+      `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
