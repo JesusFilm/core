@@ -19,6 +19,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
@@ -33,6 +34,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
   api-languages:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
@@ -47,6 +49,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
   api-videos:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
@@ -61,6 +64,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
 
   api-gateway:
     needs: [api-journeys, api-users, api-languages, api-videos]
