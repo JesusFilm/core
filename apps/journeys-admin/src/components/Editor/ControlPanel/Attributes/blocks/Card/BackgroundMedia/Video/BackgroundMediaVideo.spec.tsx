@@ -222,12 +222,7 @@ describe('BackgroundMediaVideo', () => {
     }))
     const blockDeleteResult = jest.fn(() => ({
       data: {
-        blockDelete: [
-          {
-            id: image.id,
-            __typename: 'ImageBlock'
-          }
-        ]
+        blockDelete: []
       }
     }))
     const { getAllByRole } = render(
@@ -343,6 +338,7 @@ describe('BackgroundMediaVideo', () => {
       const videoBlockResult = jest.fn(() => ({
         data: {
           videoBlockUpdate: {
+            id: video.id,
             title: video.title,
             startAt: video.startAt,
             endAt: video.endAt,
@@ -435,12 +431,7 @@ describe('BackgroundMediaVideo', () => {
       }))
       const blockDeleteResult = jest.fn(() => ({
         data: {
-          blockDelete: [
-            {
-              id: video.id,
-              __typename: 'VideoBlock'
-            }
-          ]
+          blockDelete: []
         }
       }))
       const { getByTestId } = render(
@@ -522,7 +513,8 @@ describe('BackgroundMediaVideo', () => {
         })
         const videoBlockResult = jest.fn(() => ({
           data: {
-            imageBlockUpdate: {
+            videoBlockUpdate: {
+              id: video.id,
               title: video.title,
               startAt: video.startAt,
               endAt: video.endAt,
@@ -585,7 +577,8 @@ describe('BackgroundMediaVideo', () => {
       })
       const videoBlockResult = jest.fn(() => ({
         data: {
-          imageBlockUpdate: {
+          videoBlockUpdate: {
+            id: video.id,
             title: video.title,
             startAt: video.startAt,
             endAt: video.endAt,
@@ -647,7 +640,8 @@ describe('BackgroundMediaVideo', () => {
       })
       const videoBlockResult = jest.fn(() => ({
         data: {
-          imageBlockUpdate: {
+          videoBlockUpdate: {
+            id: video.id,
             title: video.title,
             startAt: 11,
             endAt: video.endAt,
@@ -710,7 +704,8 @@ describe('BackgroundMediaVideo', () => {
       })
       const videoBlockResult = jest.fn(() => ({
         data: {
-          imageBlockUpdate: {
+          videoBlockUpdate: {
+            id: video.id,
             title: video.title,
             startAt: video.startAt,
             endAt: 31,
