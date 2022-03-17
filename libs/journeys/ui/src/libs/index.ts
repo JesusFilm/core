@@ -28,11 +28,8 @@ export {
   previousBlocksVar,
   treeBlocksVar
 } from './useBlocks/blocks'
-export {
-  useEditor,
-  EditorProvider,
-  ActiveTab,
-  ActiveFab,
+export { useEditor, EditorProvider, ActiveTab, ActiveFab } from './context'
+export type {
   SetSelectedStepAction,
   SetSelectedBlockByIdAction
 } from './context'
