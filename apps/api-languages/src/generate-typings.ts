@@ -1,10 +1,9 @@
 import { join } from 'path'
-import { GraphQLDefinitionsFactory } from '@nestjs/graphql'
+import { GraphQLFederationDefinitionsFactory } from '@nestjs/graphql'
 
-const definitionsFactory = new GraphQLDefinitionsFactory()
+const definitionsFactory = new GraphQLFederationDefinitionsFactory()
 definitionsFactory
   .generate({
-    federation: true,
     typePaths: [join(process.cwd(), 'apps/api-languages/src/app/**/*.graphql')],
     path: join(
       process.cwd(),
