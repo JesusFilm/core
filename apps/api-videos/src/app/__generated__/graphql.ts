@@ -58,6 +58,8 @@ export class Language {
 
 export abstract class IQuery {
     abstract videos(where?: Nullable<VideosFilter>, page?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+
+    abstract video(id: string): Video | Promise<Video>;
 }
 
 type Nullable<T> = T | null;
