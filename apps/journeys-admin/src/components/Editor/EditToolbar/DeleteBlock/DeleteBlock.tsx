@@ -53,6 +53,8 @@ export function DeleteBlock({
 
     const deletedBlockParentOrder = selectedBlock.parentOrder
     const deletedBlockType = selectedBlock.__typename
+    const stepsBeforeDelete = steps
+    const stepBeforeDelete = selectedStep
 
     const { data } = await blockDelete({
       variables: {
@@ -70,8 +72,8 @@ export function DeleteBlock({
         parentOrder: deletedBlockParentOrder,
         siblings: data.blockDelete,
         type: deletedBlockType,
-        steps,
-        selectedStep
+        steps: stepsBeforeDelete,
+        selectedStep: stepBeforeDelete
       })
       selected != null && dispatch(selected)
     }

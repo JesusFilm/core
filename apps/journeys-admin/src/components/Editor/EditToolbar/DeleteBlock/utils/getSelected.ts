@@ -1,5 +1,6 @@
 import { TreeBlock } from '@core/journeys/ui'
 import last from 'lodash/last'
+import findIndex from 'lodash/findIndex'
 import { BlockDelete } from '../../../../../../__generated__/BlockDelete'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../__generated__/GetJourney'
 
@@ -13,7 +14,7 @@ interface getSelectedProps {
   parentOrder: number
   siblings: BlockDelete['blockDelete']
   type: string
-  steps: Array<TreeBlock<StepBlock>>
+  steps: Array<TreeBlock<StepBlock>> // all steps before deletion
   selectedStep?: TreeBlock<StepBlock>
 }
 
@@ -34,16 +35,25 @@ export default function getSelected({
       id: blockToSelect?.id
     }
   } else if (selectedStep != null && steps.length > 0) {
-    // BUG: newly created blocks after deletion is selecting the first step
-    // REFACTOR: update algorithm to always selected the step to the left of deleted step
     const stepToSet =
-      type !== 'StepBlock'
-        ? selectedStep
-        : steps.find((step) => step.nextBlockId === selectedStep.id) ??
-          last(steps)
+      type !== 'StepBlock' ? selectedStep : findNextStep(steps, selectedStep)
     return {
       type: 'SetSelectedStepAction',
       step: stepToSet
     }
   } else return null
+}
+
+function findNextStep(
+  steps: Array<TreeBlock<StepBlock>>,
+  selectedStep: TreeBlock<StepBlock>
+): TreeBlock<StepBlock> {
+  const i = findIndex(steps, (step) => step.id === selectedStep.id)
+  if (i === -1) {
+    return steps[0]
+  } else if (i > 0) {
+    return steps[i - 1]
+  } else {
+    return steps[i + 1]
+  }
 }
