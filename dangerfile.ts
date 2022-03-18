@@ -28,7 +28,7 @@ export default async () => {
   // check branch has well-formed name
   if (
     danger.github.pr.head.ref.match(
-      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z\-]+[a-z]/g
+      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9\-]+[a-z0-9]/g
     ) === null
   ) {
     fail('Your branch does not match the naming convention.')
