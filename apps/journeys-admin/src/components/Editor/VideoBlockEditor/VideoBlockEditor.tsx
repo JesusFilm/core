@@ -16,14 +16,18 @@ interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   parentBlockId: string
   parentOrder: number
+  showDelete?: boolean
+  forBackground?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
-  onDelete: () => Promise<void>
+  onDelete?: () => Promise<void> | undefined
 }
 
 export function VideoBlockEditor({
   selectedBlock,
   parentBlockId,
   parentOrder,
+  showDelete = true,
+  forBackground = false,
   onChange,
   onDelete
 }: VideoBlockEditorProps): ReactElement {
@@ -40,7 +44,7 @@ export function VideoBlockEditor({
 
   const handleVideoDelete = async (): Promise<void> => {
     setTabValue(0)
-    await onDelete()
+    if (onDelete != null) await onDelete()
   }
 
   return (
@@ -55,7 +59,7 @@ export function VideoBlockEditor({
         caption={
           selectedBlock?.videoContent?.src == null ? 'Formats: MP4, HLS' : ''
         }
-        showDelete={selectedBlock?.videoContent?.src != null}
+        showDelete={showDelete && selectedBlock?.videoContent?.src != null}
         onDelete={handleVideoDelete}
       />
       <Box
@@ -101,6 +105,7 @@ export function VideoBlockEditor({
             parentOrder={parentOrder}
             onChange={onChange}
             disabled={selectedBlock == null}
+            forBackground={forBackground}
           />
         </TabPanel>
       </Box>
@@ -118,6 +123,7 @@ export function VideoBlockEditor({
           parentOrder={parentOrder}
           onChange={onChange}
           disabled={selectedBlock == null}
+          forBackground={forBackground}
         />
       </Box>
     </>

@@ -1,13 +1,15 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   EditorProvider,
   TreeBlock,
   ActiveFab,
   Button,
+  SignUp,
   Typography
 } from '@core/journeys/ui'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
+import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../__generated__/StepFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
@@ -76,7 +78,7 @@ describe('InlineEditWrapper', () => {
     expect(input).toBeInTheDocument()
   })
 
-  it('should edit button on double click', async () => {
+  it('should edit button label on double click', async () => {
     const block: TreeBlock<ButtonFields> = {
       __typename: 'ButtonBlock',
       id: 'button.id',
@@ -113,5 +115,40 @@ describe('InlineEditWrapper', () => {
     expect(input).toBeInTheDocument()
     fireEvent.click(input)
     expect(input).toBeInTheDocument()
+  })
+
+  it('should edit sign up button label on double click', async () => {
+    const block: TreeBlock<SignUpFields> = {
+      __typename: 'SignUpBlock',
+      id: 'signUp.id',
+      parentBlockId: 'parent.id',
+      parentOrder: 0,
+      submitLabel: 'test label',
+      submitIconId: null,
+      action: null,
+      children: []
+    }
+
+    const { getByDisplayValue, getByText } = render(
+      <MockedProvider>
+        <EditorProvider
+          initialState={{
+            steps: [step(block)],
+            activeFab: ActiveFab.Add
+          }}
+        >
+          <InlineEditWrapper block={block}>
+            <SignUp {...block} />
+          </InlineEditWrapper>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('test label'))
+    fireEvent.click(getByText('test label'))
+    const input = getByDisplayValue('test label')
+    await waitFor(() => expect(input).toBeInTheDocument())
+    fireEvent.click(input)
+    await waitFor(() => expect(input).toBeInTheDocument())
   })
 })

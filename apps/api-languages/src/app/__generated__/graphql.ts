@@ -12,7 +12,7 @@ export class Language {
     id: string;
     bcp47?: Nullable<string>;
     iso3?: Nullable<string>;
-    name: Nullable<Translation>[];
+    name: Translation[];
 }
 
 export class Translation {
