@@ -38,27 +38,34 @@ export const GET_VIDEO = gql`
 `
 
 export const DRAWER_WIDTH = 328
-
-interface VideoDetailsContentProps {
+interface VideoDetailsProps {
+  open: boolean
   videoId: string
   handleOpen?: () => void
-  onSelect?: (source: string) => void
+  onSelect?: (id: string) => void
 }
 
-export function VideoDetailsContent({
+export function VideoDetails({
+  open,
   videoId,
   handleOpen,
-  onSelect
-}: VideoDetailsContentProps): ReactElement {
+  onSelect: handleSelect
+}: VideoDetailsProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
-  const [open, setOpen] = useState<boolean>(false)
+  const [openLanguage, setOpenLanguage] = useState<boolean>(false)
   const [selectedIds, setSelectedIds] = useState(['en'])
   // need to discuss how we're passing langaugeIds around
   const handleChange = (selectedIds: string[]): void => {
     setSelectedIds(selectedIds)
     // onSelect(selectedIds)
+  }
+
+  const onSelect = (id: string): void => {
+    if (handleSelect != null) handleSelect(id)
+    if (handleOpen != null) handleOpen()
   }
 
   const { data } = useQuery<GetVideo>(GET_VIDEO, {
@@ -104,7 +111,21 @@ export function VideoDetailsContent({
   }, [data])
 
   return (
-    <>
+    <Drawer
+      anchor={smUp ? 'right' : 'bottom'}
+      variant="temporary"
+      open={open}
+      elevation={smUp ? 1 : 0}
+      hideBackdrop
+      sx={{
+        display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          width: smUp ? DRAWER_WIDTH : '100%',
+          height: '100%'
+        }
+      }}
+    >
       <AppBar position="static" color="default">
         <Toolbar>
           <Typography
@@ -190,7 +211,7 @@ export function VideoDetailsContent({
           data-testid="VideoDetailsLanguageButton"
           variant="contained"
           size="small"
-          onClick={() => setOpen(true)}
+          onClick={() => setOpenLanguage(true)}
           endIcon={<ArrowDropDown />}
         >
           Other Languages
@@ -210,56 +231,11 @@ export function VideoDetailsContent({
         </Button>
       </Box>
       <LanguageDrawer
-        open={open}
-        onClose={() => setOpen(false)}
+        open={openLanguage}
+        onClose={() => setOpenLanguage(false)}
         onChange={handleChange}
         selectedIds={selectedIds}
         currentLanguageId="529"
-      />
-    </>
-  )
-}
-
-interface VideoDetailsProps {
-  open: boolean
-  videoId: string
-  handleOpen?: () => void
-  onSelect?: (id: string) => void
-}
-
-export function VideoDetails({
-  open,
-  videoId,
-  handleOpen,
-  onSelect: handleSelect
-}: VideoDetailsProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  const onSelect = (id: string): void => {
-    if (handleSelect != null) handleSelect(id)
-    if (handleOpen != null) handleOpen()
-  }
-
-  return (
-    <Drawer
-      anchor={smUp ? 'right' : 'bottom'}
-      variant="temporary"
-      open={open}
-      elevation={smUp ? 1 : 0}
-      hideBackdrop
-      sx={{
-        display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: smUp ? DRAWER_WIDTH : '100%',
-          height: '100%'
-        }
-      }}
-    >
-      <VideoDetailsContent
-        videoId={videoId}
-        handleOpen={handleOpen}
-        onSelect={onSelect}
       />
     </Drawer>
   )
