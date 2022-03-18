@@ -1,13 +1,15 @@
-import { ChangeEvent, ReactElement } from 'react'
-import { InputAdornment, TextField } from '@mui/material'
+import { ChangeEvent, ReactElement, useState } from 'react'
+import { Button, InputAdornment, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { TreeBlock } from '@core/journeys/ui'
+import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
 import { Link as LinkIcon } from '@mui/icons-material'
 import { noop } from 'lodash'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
+import { VideoLibrary } from '../../VideoLibrary'
 
 interface VideoBlockEditorSourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null
@@ -22,6 +24,21 @@ export function VideoBlockEditorSource({
   parentOrder,
   onChange
 }: VideoBlockEditorSourceProps): ReactElement {
+  const [openVideoLibrary, setOpenVideoLibrary] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState<string>()
+
+  const onSelect = (source: string): void => {
+    setSelectedVideo(source)
+  }
+
+  const onClick = (): void => {
+    setOpenVideoLibrary(true)
+  }
+
+  const handleClose = (): void => {
+    setOpenVideoLibrary(false)
+  }
+
   const handleVideoSrcChange = async (
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
@@ -71,35 +88,62 @@ export function VideoBlockEditorSource({
   })
 
   return (
-    <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
-      <form>
-        <TextField
-          id="src"
-          name="src"
-          variant="filled"
-          label="Paste URL of video..."
-          fullWidth
-          value={formik.values.src}
-          onChange={formik.handleChange}
-          onBlur={async (e) => {
-            formik.handleBlur(e)
-            await handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
+    <>
+      <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
+        <form>
+          <TextField
+            id="src"
+            name="src"
+            variant="filled"
+            label="Paste URL of video..."
+            fullWidth
+            value={selectedVideo != null ? selectedVideo : formik.values.src}
+            onChange={formik.handleChange}
+            onBlur={async (e) => {
+              formik.handleBlur(e)
+              await handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
+            }}
+            helperText={
+              formik.touched.src === true
+                ? formik.errors.src
+                : 'Make sure video address is permanent'
+            }
+            error={formik.touched.src === true && Boolean(formik.errors.src)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LinkIcon />
+                </InputAdornment>
+              )
+            }}
+          />
+        </form>
+      </Box>
+      <Box
+        sx={{
+          pb: 2,
+          px: 6,
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}
+      >
+        <Button
+          variant="text"
+          size="small"
+          startIcon={<SubscriptionsRounded />}
+          onClick={onClick}
+          sx={{
+            px: 2
           }}
-          helperText={
-            formik.touched.src === true
-              ? formik.errors.src
-              : 'Make sure video address is permanent'
-          }
-          error={formik.touched.src === true && Boolean(formik.errors.src)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <LinkIcon />
-              </InputAdornment>
-            )
-          }}
-        />
-      </form>
-    </Box>
+        >
+          Select a Video
+        </Button>
+      </Box>
+      <VideoLibrary
+        open={openVideoLibrary}
+        onClose={handleClose}
+        onSelect={onSelect}
+      />
+    </>
   )
 }

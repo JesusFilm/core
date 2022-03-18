@@ -12,6 +12,8 @@ import {
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
+import { videos } from '../VideoLibrary/VideoList/VideoListData'
+import { GET_VIDEOS } from '../VideoLibrary/VideoList/VideoList'
 import { VideoBlockEditor } from './VideoBlockEditor'
 
 const BackgroundMediaStory = {
@@ -73,7 +75,26 @@ const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <MockedProvider>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_VIDEOS,
+          variables: {
+            where: {
+              availableVariantLanguageIds: ['529'],
+              title: null
+            }
+          }
+        },
+        result: {
+          data: {
+            videos: videos
+          }
+        }
+      }
+    ]}
+  >
     <ThemeProvider>
       <MuiDrawer
         anchor="right"
