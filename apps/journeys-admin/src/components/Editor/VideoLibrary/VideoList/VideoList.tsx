@@ -31,11 +31,13 @@ export const GET_VIDEOS = gql`
 interface VideoListProps {
   onSelect: (source: string) => void
   currentLanguageIds?: string[]
+  title?: string
 }
 
 export function VideoList({
   onSelect,
-  currentLanguageIds
+  currentLanguageIds,
+  title
 }: VideoListProps): ReactElement {
   const [visibleVideos, setVisibleVideos] = useState(4)
 
@@ -43,7 +45,7 @@ export function VideoList({
     variables: {
       where: {
         availableVariantLanguageIds: currentLanguageIds,
-        title: null
+        title: title != null ? title : null
       }
     }
   })

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
@@ -8,6 +8,7 @@ import { Close } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import { VideoList } from './VideoList'
+import { VideoSearch } from './VideoSearch'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
@@ -22,6 +23,7 @@ export function VideoLibrary({
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const [title, setTitle] = useState<string>()
 
   const onSelect = (source: string): void => {
     if (handleSelect != null) handleSelect(source)
@@ -63,10 +65,14 @@ export function VideoLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
-      {/* search */}
+      <VideoSearch title={title} setTitle={setTitle} />
       {/* language */}
       {/* currentLanguageIds value is temporary */}
-      <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
+      <VideoList
+        onSelect={onSelect}
+        currentLanguageIds={['529']}
+        title={title}
+      />
     </Drawer>
   )
 }

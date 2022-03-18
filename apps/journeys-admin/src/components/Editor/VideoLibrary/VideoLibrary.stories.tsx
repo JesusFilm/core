@@ -48,4 +48,61 @@ const Template: Story = ({ onSelect }) => {
 
 export const Default = Template.bind({})
 
+const Search: Story = ({ onSelect }) => {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: 'Andreas'
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: [
+                {
+                  id: '2_0-AndreasStory',
+                  image:
+                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
+                  snippet: [
+                    {
+                      primary: true,
+                      value:
+                        'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
+                    }
+                  ],
+                  title: [
+                    {
+                      primary: true,
+                      value: "Andreas' Story"
+                    }
+                  ],
+                  variant: {
+                    duration: 186
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]}
+    >
+      <VideoLibrary
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={onSelect}
+      />
+    </MockedProvider>
+  )
+}
+
+export const SearchByTitleAndreas = Search.bind({})
+
 export default VideoLibraryStory as Meta
