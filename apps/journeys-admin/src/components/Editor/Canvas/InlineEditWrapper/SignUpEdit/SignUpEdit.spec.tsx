@@ -17,7 +17,7 @@ describe('SignUpEdit', () => {
     action: null,
     children: []
   }
-  it('selects the input on click', () => {
+  it('selects the input on click', async () => {
     const { getByRole } = render(
       <MockedProvider>
         <SignUpEdit {...props} />
@@ -25,7 +25,7 @@ describe('SignUpEdit', () => {
     )
     const input = getByRole('textbox', { name: '' })
     fireEvent.click(input)
-    expect(input).toHaveFocus()
+    await waitFor(() => expect(input).toHaveFocus())
   })
 
   it('saves the signUp label on blur', async () => {
