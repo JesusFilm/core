@@ -3,13 +3,18 @@ import MuiTypography from '@mui/material/Typography'
 import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
 
+interface TypographyProps extends TreeBlock<TypographyFields> {
+  editableContent?: ReactElement
+}
+
 export function Typography({
   variant,
   color,
   align,
   content,
+  editableContent,
   ...props
-}: TreeBlock<TypographyFields>): ReactElement {
+}: TypographyProps): ReactElement {
   const {
     state: { selectedBlock },
     dispatch
@@ -50,7 +55,7 @@ export function Typography({
       }}
       onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
-      {content}
+      {editableContent ?? content}
     </MuiTypography>
   )
 }
