@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:16-alpine
 WORKDIR /app
 COPY ./dist/apps/api-users .
 EXPOSE 4002
