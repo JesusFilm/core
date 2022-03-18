@@ -25,6 +25,6 @@ jobs:
         run: npm install -g npm
       - uses: bahmutov/npm-install@v1
       - name: Danger JS
-        run: nx danger ci
+        run: npx danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
