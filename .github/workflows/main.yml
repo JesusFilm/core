@@ -32,7 +32,7 @@ jobs:
       - name: Prettier
         run: npx prettier --check .
       - name: lint commit messages
-        uses: wagoid/commitlint-github-action@v4
+        run: npx commitlint --from c771142 # earliest good commit to main
       - name: Check for file changes due to codegen
         run: ./tools/scripts/check-git-status.sh
   build:
