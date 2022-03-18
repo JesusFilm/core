@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import {
   Button,
   Card,
@@ -30,7 +30,7 @@ import {
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
-  children: ReactNode
+  children: ReactElement
 }
 
 type WrapperFn<T = Block> = (props: WrapperProps<T>) => ReactElement
@@ -55,7 +55,7 @@ interface BlockRenderProps {
   wrappers?: WrappersProps
 }
 
-const DefaultWrapper: WrapperFn = ({ children }) => <>{children}</>
+const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,

@@ -29,9 +29,7 @@ export function InlineEditWrapper({
       <></>
     )
 
-  return activeFab === ActiveFab.Save && selectedBlock?.id === block.id ? (
-    EditComponent
-  ) : (
-    <>{children}</>
-  )
+  return activeFab === ActiveFab.Save && selectedBlock?.id === block.id
+    ? EditComponent
+    : children
 }

@@ -49,7 +49,12 @@ export function Card({
           coverBlock.__typename === 'ImageBlock' &&
           coverBlock.src != null
             ? `url(${coverBlock.src})`
-            : undefined
+            : undefined,
+        '& > *': {
+          '&:last-child': {
+            marginBottom: '0px'
+          }
+        }
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
