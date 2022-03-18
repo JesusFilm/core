@@ -3,7 +3,9 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UserInputError } from 'apollo-server-errors'
 import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { encode } from 'blurhash'
-import { createCanvas, loadImage, Image } from 'canvas'
+import axios from 'axios'
+import * as sharp from 'sharp' // eslint-disable-line
+
 import { BlockService } from '../block.service'
 import {
   ImageBlock,
@@ -12,18 +14,6 @@ import {
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
-
-const getImageData = (image: Image): ImageData => {
-  const canvas = createCanvas(image.width, image.height)
-  const context = canvas.getContext('2d')
-  context.drawImage(image, 0, 0)
-  return context.getImageData(0, 0, image.width, image.height)
-}
-
-const encodeImageToBlurhash = (image: Image): string => {
-  const imageData = getImageData(image)
-  return encode(imageData.data, imageData.width, imageData.height, 4, 4)
-}
 
 async function handleImage(
   input
@@ -36,21 +26,33 @@ async function handleImage(
   }
   if (input.src == null) return defaultBlock
 
-  let image: Image
   try {
-    image = await loadImage(input.src)
+    const response = await axios.get(input.src, { responseType: 'arraybuffer' })
+    const { data: pixels, info: metadata } = await sharp(response.data)
+      .raw()
+      .ensureAlpha()
+      .toBuffer({ resolveWithObject: true })
+    defaultBlock.width = metadata.width
+    defaultBlock.height = metadata.height
+    const data = new Uint8ClampedArray(pixels)
+    defaultBlock.blurhash = encode(
+      data,
+      defaultBlock.width,
+      defaultBlock.height,
+      4,
+      4
+    )
   } catch (ex) {
     throw new UserInputError(ex.message, {
       argumentName: 'src'
     })
   }
-  const blurhash = input.blurhash ?? encodeImageToBlurhash(image)
 
   const block = {
     ...input,
-    width: image.width,
-    height: image.height,
-    blurhash: blurhash
+    width: defaultBlock.width,
+    height: defaultBlock.height,
+    blurhash: defaultBlock.blurhash
   }
 
   return block
