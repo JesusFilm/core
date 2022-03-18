@@ -3,8 +3,10 @@ import Divider from '@mui/material/Divider'
 import LoadingButton from '@mui/lab/LoadingButton'
 import AddRounded from '@mui/icons-material/AddRounded'
 import { gql, useQuery } from '@apollo/client'
-import List from '@mui/material/List'
 import { Box } from '@mui/system'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
 
@@ -56,7 +58,7 @@ export function VideoList({
     setVisibleVideos((previousVisibleVideos) => previousVisibleVideos + 4)
   }
 
-  return (
+  return videosLength !== 0 ? (
     <>
       <List data-testId="VideoList" sx={{ px: 6 }}>
         <Divider />
@@ -97,5 +99,22 @@ export function VideoList({
         </LoadingButton>
       </Box>
     </>
+  ) : (
+    <ListItem
+      sx={{
+        px: 6
+      }}
+    >
+      <ListItemText
+        primary="No Results Found"
+        secondary="If you search videos in a different language, please select it first in the dropdown above."
+        secondaryTypographyProps={{
+          style: {
+            overflow: 'hidden',
+            paddingTop: '4px'
+          }
+        }}
+      />
+    </ListItem>
   )
 }

@@ -82,4 +82,35 @@ describe('Video List', () => {
     fireEvent.click(getByTestId('VideoListLoadMore'))
     expect(getAllByRole('button')[4]).toHaveTextContent('Brand_Video')
   })
+
+  it('should render No More Videos if video length is 0', async () => {
+    const onSelect = jest.fn()
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEOS,
+              variables: {
+                where: {
+                  availableVariantLanguageIds: ['529'],
+                  title: null
+                }
+              }
+            },
+            result: {
+              data: {
+                videos: []
+              }
+            }
+          }
+        ]}
+      >
+        <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByText('No Results Found')).toBeInTheDocument()
+    )
+  })
 })
