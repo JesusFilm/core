@@ -1,11 +1,11 @@
-import { ReactElement, MouseEvent } from 'react'
+import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
+import { TreeBlock } from '../..'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -35,8 +35,7 @@ export function RadioQuestion({
   label,
   description,
   children,
-  uuid = uuidv4,
-  ...props
+  uuid = uuidv4
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
@@ -63,42 +62,8 @@ export function RadioQuestion({
 
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
-  const {
-    state: { selectedBlock },
-    dispatch
-  } = useEditor()
-
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    const block: TreeBlock<RadioQuestionFields> = {
-      id: blockId,
-      label,
-      description,
-      children,
-      ...props
-    }
-
-    if (selectedBlock?.id === block.id) {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    } else {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-    }
-  }
-
   return (
-    <StyledRadioQuestion
-      data-testid={`radioQuestion-${blockId}`}
-      sx={{
-        // TODO: Pass this in via Selection Wrapper
-        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px'
-      }}
-      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
-    >
+    <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
       <Typography variant="h3" gutterBottom>
         {label}
       </Typography>

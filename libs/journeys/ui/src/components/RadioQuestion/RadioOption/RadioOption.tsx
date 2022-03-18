@@ -1,16 +1,10 @@
-import { ReactElement, MouseEvent } from 'react'
-import { useTheme } from '@mui/material/styles'
-import Button from '@mui/material/Button'
+import { ReactElement } from 'react'
+import { styled } from '@mui/material/styles'
+import Button, { ButtonProps } from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
-import {
-  TreeBlock,
-  handleAction,
-  useEditor,
-  ActiveTab,
-  ActiveFab
-} from '../../..'
+import { TreeBlock, handleAction } from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
@@ -20,6 +14,17 @@ export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   onClick?: (selected: string) => void
 }
 
+const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
+  fontFamily: theme.typography.body2.fontFamily,
+  fontSize: theme.typography.body2.fontSize,
+  fontWeight: 600,
+  lineHeight: theme.typography.body2.lineHeight,
+  textAlign: 'start',
+  justifyContent: 'flex-start',
+  borderRadius: '8px',
+  padding: '14px 10px 14px 14px'
+}))
+
 export function RadioOption({
   className,
   label,
@@ -27,10 +32,8 @@ export function RadioOption({
   id,
   disabled = false,
   selected = false,
-  onClick,
-  ...props
+  onClick
 }: RadioOptionProps): ReactElement {
-  const theme = useTheme()
   const router = useRouter()
 
   const handleClick = (): void => {
@@ -38,45 +41,12 @@ export function RadioOption({
     onClick?.(id)
   }
 
-  const {
-    state: { selectedBlock },
-    dispatch
-  } = useEditor()
-
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    const block: TreeBlock<RadioOptionFields> = {
-      id,
-      label,
-      action,
-      ...props
-    }
-
-    const parentSelected = selectedBlock?.id === block.parentBlockId
-    const siblingSelected = selectedBlock?.parentBlockId === block.parentBlockId
-
-    if (selectedBlock?.id === block.id) {
-      e.stopPropagation()
-
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    } else if (parentSelected || siblingSelected) {
-      e.stopPropagation()
-
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({
-        type: 'SetActiveTabAction',
-        activeTab: ActiveTab.Properties
-      })
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-    }
-  }
-
   return (
-    <Button
+    <StyledRadioOption
       variant="contained"
       className={className}
       disabled={disabled}
-      onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
+      onClick={handleClick}
       startIcon={
         selected ? (
           <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
@@ -84,21 +54,8 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
-      sx={{
-        fontFamily: theme.typography.body2.fontFamily,
-        fontSize: theme.typography.body2.fontSize,
-        fontWeight: 600,
-        lineHeight: theme.typography.body2.lineHeight,
-        textAlign: 'start',
-        justifyContent: 'flex-start',
-        borderRadius: '8px',
-        padding: '14px 10px 14px 14px',
-        outline: selectedBlock?.id === id ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px',
-        zIndex: selectedBlock?.id === id ? 1 : 0
-      }}
     >
       {label}
-    </Button>
+    </StyledRadioOption>
   )
 }

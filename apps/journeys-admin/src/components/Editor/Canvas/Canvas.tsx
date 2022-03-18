@@ -16,6 +16,7 @@ import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { useJourney } from '../../../libs/context'
 import { InlineEditWrapper } from './InlineEditWrapper'
+import { SelectableWrapper } from './SelectableWrapper'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -136,6 +137,7 @@ export function Canvas(): ReactElement {
                     <BlockRenderer
                       block={step}
                       wrappers={{
+                        Wrapper: SelectableWrapper,
                         TypographyWrapper: InlineEditWrapper,
                         ButtonWrapper: InlineEditWrapper,
                         SignUpWrapper: InlineEditWrapper
