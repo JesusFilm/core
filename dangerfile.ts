@@ -1,4 +1,5 @@
 import { danger, warn, markdown } from 'danger'
+import lint from '@commitlint/lint'
 
 export default async () => {
   // ignore dependabot
@@ -38,14 +39,14 @@ export default async () => {
   }
 
   // check PR has well-formed title
-  if (
-    danger.github.pr.title.match(
-      /^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test): .+/g
-    ) === null
-  ) {
-    fail(
-      'Please ensure your PR title matches convention. See https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-pr for more details.'
-    )
+  const commitlintReport = await lint(danger.github.pr.title)
+  if (!commitlintReport.valid) {
+    fail('Please ensure your PR title matches commitlint convention.')
+    let errors = ''
+    commitlintReport.errors.forEach((error) => {
+      errors = `${errors}# ${error.message}\n`
+    })
+    markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
 
   // check PR has description
