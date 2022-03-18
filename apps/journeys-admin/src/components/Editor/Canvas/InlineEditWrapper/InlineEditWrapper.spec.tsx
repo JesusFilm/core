@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   EditorProvider,
@@ -147,8 +147,8 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
     const input = getByDisplayValue('test label')
-    expect(input).toBeInTheDocument()
+    await waitFor(() => expect(input).toBeInTheDocument())
     fireEvent.click(input)
-    expect(input).toBeInTheDocument()
+    await waitFor(() => expect(input).toBeInTheDocument())
   })
 })
