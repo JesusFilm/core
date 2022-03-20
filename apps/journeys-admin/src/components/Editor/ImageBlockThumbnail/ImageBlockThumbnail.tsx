@@ -29,7 +29,7 @@ export function ImageBlockThumbnail({
           alt={selectedBlock.alt}
           width={55}
           height={55}
-          objectFit="cover"
+          object-fit="cover"
         />
       )}
       {selectedBlock?.src == null && (

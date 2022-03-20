@@ -17,6 +17,7 @@ import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY } from '../[journeySlug]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
+import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 
 function JourneyEditPage(): ReactElement {
   const router = useRouter()
@@ -41,6 +42,7 @@ function JourneyEditPage(): ReactElement {
               title={data.journey.title}
               showDrawer
               backHref={`/journeys/${router.query.journeySlug as string}`}
+              Menu={<EditToolbar />}
               AuthUser={AuthUser}
             >
               <JourneyEdit />
