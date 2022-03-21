@@ -1,11 +1,12 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { KeyAsId } from '@core/nest/decorators'
 import { includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
+
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
   Action,
+  Block,
   NavigateToBlockActionInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
@@ -19,16 +20,16 @@ export class NavigateToBlockActionResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @KeyAsId()
   async blockUpdateNavigateToBlockAction(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
     @Args('input') input: NavigateToBlockActionInput
   ): Promise<Action> {
-    const block = await this.blockService.get<{
-      __typename: string
-      _key: string
-    }>(id)
+    const block = await this.blockService.get<
+      Block & {
+        __typename: string
+      }
+    >(id)
 
     if (
       !includes(
@@ -46,7 +47,7 @@ export class NavigateToBlockActionResolver {
       {
         action: {
           ...input,
-          parentBlockId: block._key,
+          parentBlockId: block.id,
           journeyId: null,
           url: null,
           target: null

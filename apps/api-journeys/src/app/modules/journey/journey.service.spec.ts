@@ -6,6 +6,8 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { keyAsId } from '@core/nest/decorators'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -46,6 +48,8 @@ describe('JourneyService', () => {
     slug: 'published-slug'
   }
 
+  const journeyWithId = keyAsId(journey)
+
   describe('getAll', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
@@ -54,7 +58,7 @@ describe('JourneyService', () => {
     })
 
     it('should return an array of journeys', async () => {
-      expect(await service.getAll()).toEqual([journey, journey])
+      expect(await service.getAll()).toEqual([journeyWithId, journeyWithId])
     })
   })
 
@@ -66,7 +70,7 @@ describe('JourneyService', () => {
     })
 
     it('should return a journey', async () => {
-      expect(await service.get('1')).toEqual(journey)
+      expect(await service.get('1')).toEqual(journeyWithId)
     })
   })
 
@@ -78,7 +82,7 @@ describe('JourneyService', () => {
     })
 
     it('should return a journey', async () => {
-      expect(await service.getBySlug('slug')).toEqual(journey)
+      expect(await service.getBySlug('slug')).toEqual(journeyWithId)
     })
   })
 
@@ -90,7 +94,7 @@ describe('JourneyService', () => {
     })
 
     it('should return published journeys', async () => {
-      expect(await service.getAllPublishedJourneys()).toEqual([journey])
+      expect(await service.getAllPublishedJourneys()).toEqual([journeyWithId])
     })
   })
 
@@ -102,7 +106,7 @@ describe('JourneyService', () => {
     })
 
     it('should return all for user', async () => {
-      expect(await service.getAllByOwnerEditor('1')).toEqual([journey])
+      expect(await service.getAllByOwnerEditor('1')).toEqual([journeyWithId])
     })
   })
 
@@ -116,7 +120,7 @@ describe('JourneyService', () => {
     })
 
     it('should return a saved journey', async () => {
-      expect(await service.save(journey)).toEqual(journey)
+      expect(await service.save(journey)).toEqual(journeyWithId)
     })
   })
 
@@ -130,7 +134,7 @@ describe('JourneyService', () => {
     })
 
     it('should return a saved journey', async () => {
-      expect(await service.update(journey._key, journey)).toEqual(journey)
+      expect(await service.update(journey._key, journey)).toEqual(journeyWithId)
     })
   })
 })

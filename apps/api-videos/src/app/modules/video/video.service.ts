@@ -2,6 +2,7 @@ import { BaseService } from '@core/nest/database'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
+import { KeyAsId } from '@core/nest/decorators'
 
 interface VideosFilter {
   title?: string
@@ -14,6 +15,7 @@ interface VideosFilter {
 export class VideoService extends BaseService {
   collection: DocumentCollection = this.db.collection('videos')
 
+  @KeyAsId()
   async filterAll<T>(filter?: VideosFilter): Promise<T[]> {
     const {
       title,

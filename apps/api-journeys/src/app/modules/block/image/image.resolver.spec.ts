@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { ImageBlockCreateInput } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
@@ -13,17 +14,6 @@ describe('ImageBlockResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'ImageBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
-    src: 'https://source.unsplash.com/random/1920x1080',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080
-  }
-  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'ImageBlock',
@@ -52,8 +42,8 @@ describe('ImageBlockResolver', () => {
     alt: 'grid image'
   }
 
-  const imageBlockResponse = {
-    _key: input.id,
+  const inputWithId = {
+    id: input.id,
     parentBlockId: input.parentBlockId,
     parentOrder: 2,
     journeyId: input.journeyId,
@@ -105,11 +95,8 @@ describe('ImageBlockResolver', () => {
 
   describe('ImageBlock', () => {
     it('returns ImageBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
@@ -120,7 +107,7 @@ describe('ImageBlockResolver', () => {
         input.journeyId,
         input.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(imageBlockResponse)
+      expect(service.save).toHaveBeenCalledWith(inputWithId)
     })
   })
 

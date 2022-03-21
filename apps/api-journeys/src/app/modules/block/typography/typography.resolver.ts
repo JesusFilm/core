@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
+
 import {
   TypographyBlock,
   TypographyBlockCreateInput,
@@ -20,7 +20,6 @@ export class TypographyBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async typographyBlockCreate(
     @Args('input') input: TypographyBlockCreateInput & { __typename }
   ): Promise<TypographyBlock> {
@@ -36,7 +35,6 @@ export class TypographyBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )

@@ -1,5 +1,5 @@
 import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql'
-import { KeyAsId, TranslationField } from '@core/nest/decorators'
+import { TranslationField } from '@core/nest/decorators'
 import { Language } from '../../__generated__/graphql'
 import { LanguageService } from './language.service'
 
@@ -8,7 +8,6 @@ export class LanguageResolver {
   constructor(private readonly languageService: LanguageService) {}
 
   @Query()
-  @KeyAsId()
   async languages(
     @Args('page') page: number,
     @Args('limit') limit: number
@@ -17,9 +16,8 @@ export class LanguageResolver {
   }
 
   @Query()
-  @KeyAsId()
-  async language(@Args('id') _key: string): Promise<Language> {
-    return await this.languageService.get(_key)
+  async language(@Args('id') id: string): Promise<Language> {
+    return await this.languageService.get(id)
   }
 
   @ResolveField()

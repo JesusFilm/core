@@ -6,6 +6,8 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { keyAsId } from '@core/nest/decorators'
+
 import { UserService } from './user.service'
 
 describe('UserService', () => {
@@ -37,6 +39,8 @@ describe('UserService', () => {
     imageUrl: 'po'
   }
 
+  const userWithId = keyAsId(user)
+
   describe('getAll', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
@@ -45,7 +49,7 @@ describe('UserService', () => {
     })
 
     it('should return an array of users', async () => {
-      expect(await service.getAll()).toEqual([user, user])
+      expect(await service.getAll()).toEqual([userWithId, userWithId])
     })
   })
 
@@ -57,7 +61,7 @@ describe('UserService', () => {
     })
 
     it('should return a user', async () => {
-      expect(await service.get('1')).toEqual(user)
+      expect(await service.get('1')).toEqual(userWithId)
     })
   })
 
@@ -69,7 +73,7 @@ describe('UserService', () => {
     })
 
     it('should return a user', async () => {
-      expect(await service.getByUserId('1')).toEqual(user)
+      expect(await service.getByUserId('1')).toEqual(userWithId)
     })
   })
 
@@ -81,7 +85,7 @@ describe('UserService', () => {
     })
 
     it('should return a saved user', async () => {
-      expect(await service.save(user)).toEqual(user)
+      expect(await service.save(user)).toEqual(userWithId)
     })
   })
 })

@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { KeyAsId, IdAsKey } from '@core/nest/decorators'
 import {
   IconBlock,
   IconBlockCreateInput,
@@ -21,7 +20,6 @@ export class IconBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async iconBlockCreate(
     @Args('input') input: IconBlockCreateInput & { __typename }
   ): Promise<IconBlock> {
@@ -34,7 +32,6 @@ export class IconBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
