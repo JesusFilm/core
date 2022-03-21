@@ -18,7 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Upgrade NPM
+        run: npm install -g npm
+      - uses: bahmutov/npm-install@v1
       - name: Danger JS
-        uses: danger/danger-js@9.1.6
+        run: npx danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

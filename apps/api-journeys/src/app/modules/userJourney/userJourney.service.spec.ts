@@ -7,6 +7,8 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { keyAsId } from '@core/nest/decorators'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -43,6 +45,8 @@ describe('UserJourneyService', () => {
     role: UserJourneyRole.editor
   }
 
+  const userJourneyWithId = keyAsId(userJourney)
+
   const journey = {
     id: '1',
     title: 'published',
@@ -65,8 +69,8 @@ describe('UserJourneyService', () => {
 
     it('should return an array of userjourneys', async () => {
       expect(await service.forJourney(journey)).toEqual([
-        userJourney,
-        userJourney
+        userJourneyWithId,
+        userJourneyWithId
       ])
     })
   })
@@ -79,7 +83,7 @@ describe('UserJourneyService', () => {
     })
 
     it('should return a userjourney', async () => {
-      expect(await service.forJourneyUser('1', '2')).toEqual(userJourney)
+      expect(await service.forJourneyUser('1', '2')).toEqual(userJourneyWithId)
     })
   })
 
@@ -93,7 +97,7 @@ describe('UserJourneyService', () => {
     })
 
     it('should return a removed userJourney', async () => {
-      expect(await service.remove('1')).toEqual(userJourney)
+      expect(await service.remove('1')).toEqual(userJourneyWithId)
     })
   })
 
@@ -107,7 +111,7 @@ describe('UserJourneyService', () => {
     })
 
     it('should return a saved userJourney', async () => {
-      expect(await service.save(userJourney)).toEqual(userJourney)
+      expect(await service.save(userJourney)).toEqual(userJourneyWithId)
     })
   })
 
@@ -121,7 +125,7 @@ describe('UserJourneyService', () => {
     })
 
     it('should return an updated userJourney', async () => {
-      expect(await service.update('1', userJourney)).toEqual(userJourney)
+      expect(await service.update('1', userJourney)).toEqual(userJourneyWithId)
     })
   })
 })

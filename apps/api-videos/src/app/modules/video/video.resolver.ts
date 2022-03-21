@@ -1,5 +1,4 @@
 import { Resolver, Query, Args, Info } from '@nestjs/graphql'
-import { KeyAsId } from '@core/nest/decorators'
 import { Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
@@ -8,7 +7,6 @@ export class VideoResolver {
   constructor(private readonly videoService: VideoService) {}
 
   @Query()
-  @KeyAsId()
   async videos(
     @Info() info,
     @Args('where') where?: VideosFilter,
