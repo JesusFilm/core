@@ -49,12 +49,7 @@ export function Card({
           coverBlock.__typename === 'ImageBlock' &&
           coverBlock.src != null
             ? `url(${coverBlock.src})`
-            : undefined,
-        '& > *': {
-          '&:last-child': {
-            marginBottom: '0px'
-          }
-        }
+            : undefined
       }}
     >
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
@@ -97,7 +92,18 @@ export function Card({
             borderRadius: (theme) => theme.spacing(4)
           }}
         >
-          <Box sx={{ margin: 'auto', width: '100%', maxWidth: 500 }}>
+          <Box
+            sx={{
+              margin: 'auto',
+              width: '100%',
+              maxWidth: 500,
+              '& > *': {
+                '&:last-child': {
+                  marginBottom: '0px'
+                }
+              }
+            }}
+          >
             {renderedChildren}
           </Box>
         </Box>
