@@ -37,7 +37,7 @@ describe('JourneyResolver', () => {
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
   const journey = {
-    _key: '1',
+    id: '1',
     title: 'published',
     status: JourneyStatus.published,
     locale: 'en-US',
@@ -51,18 +51,6 @@ describe('JourneyResolver', () => {
   }
 
   const block = {
-    _key: '2',
-    journeyId: '1',
-    __typename: 'ImageBlock',
-    parentBlockId: '3',
-    parentOrder: 2,
-    src: 'https://source.unsplash.com/random/1920x1080',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080
-  }
-
-  const blockResponse = {
     id: '2',
     journeyId: '1',
     __typename: 'ImageBlock',
@@ -85,16 +73,7 @@ describe('JourneyResolver', () => {
   }
 
   const journeyResponse = {
-    id: '1',
-    title: 'published',
-    locale: 'en-US',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlockId: '2',
-    slug: 'published-slug',
-    createdAt,
-    publishedAt,
+    ...journey,
     status: JourneyStatus.published
   }
 
@@ -136,13 +115,6 @@ describe('JourneyResolver', () => {
   }
 
   const userJourney = {
-    _key: '1',
-    userId: '1',
-    journeyId: '1',
-    role: UserJourneyRole.editor
-  }
-
-  const userJourneyResponse = {
     id: '1',
     userId: '1',
     journeyId: '1',
@@ -150,14 +122,14 @@ describe('JourneyResolver', () => {
   }
 
   const ownerUserJourney = {
-    _key: '2',
+    id: '2',
     userId: '2',
     journeyId: '1',
     role: UserJourneyRole.owner
   }
 
   const invitedUserJourney = {
-    _key: '3',
+    id: '3',
     userId: '3',
     journeyId: '1',
     role: UserJourneyRole.inviteRequested
@@ -196,8 +168,8 @@ describe('JourneyResolver', () => {
     provide: UserJourneyService,
     useFactory: () => ({
       get: jest.fn((key) => {
-        if (key === ownerUserJourney._key) return ownerUserJourney
-        if (key === invitedUserJourney._key) return invitedUserJourney
+        if (key === ownerUserJourney.id) return ownerUserJourney
+        if (key === invitedUserJourney.id) return invitedUserJourney
         return userJourney
       }),
       save: jest.fn((input) => input),
@@ -230,7 +202,7 @@ describe('JourneyResolver', () => {
       expect(await resolver.adminJourney('2', 'slug')).toEqual(journeyResponse)
       expect(service.getBySlug).toHaveBeenCalledWith('slug')
       expect(ujService.forJourneyUser).toHaveBeenCalledWith(
-        userJourneyResponse.journeyId,
+        userJourney.journeyId,
         '2'
       )
     })
@@ -279,16 +251,14 @@ describe('JourneyResolver', () => {
 
   describe('Blocks', () => {
     it('returns Block', async () => {
-      expect(await resolver.blocks(journeyResponse)).toEqual([blockResponse])
+      expect(await resolver.blocks(journeyResponse)).toEqual([block])
     })
   })
 
   // need working example to diagnose
   describe('primaryImageBlock', () => {
     it('returns primaryImageBlock', async () => {
-      expect(await resolver.primaryImageBlock(piJourneyResponse)).toEqual(
-        blockResponse
-      )
+      expect(await resolver.primaryImageBlock(piJourneyResponse)).toEqual(block)
     })
     it('should return null', async () => {
       expect(await resolver.primaryImageBlock(piJourneyResponsenull)).toEqual(
@@ -397,8 +367,8 @@ describe('JourneyResolver', () => {
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
       expect(await resolver.userJourneys(journeyResponse)).toEqual([
-        userJourneyResponse,
-        userJourneyResponse
+        userJourney,
+        userJourney
       ])
       expect(ujService.forJourney).toHaveBeenCalledWith(journeyResponse)
     })

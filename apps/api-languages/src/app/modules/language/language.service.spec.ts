@@ -7,6 +7,8 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { keyAsId } from '@core/nest/decorators'
+
 import { LanguageService } from './language.service'
 
 describe('LanguageService', () => {
@@ -41,6 +43,8 @@ describe('LanguageService', () => {
     ]
   }
 
+  const languageWithId = keyAsId(language)
+
   describe('getAll', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
@@ -49,7 +53,10 @@ describe('LanguageService', () => {
     })
 
     it('should retun an array of languages', async () => {
-      expect(await service.getAll(1, 2)).toEqual([language, language])
+      expect(await service.getAll(1, 2)).toEqual([
+        languageWithId,
+        languageWithId
+      ])
     })
   })
 
@@ -63,7 +70,7 @@ describe('LanguageService', () => {
     })
 
     it('should return a language', async () => {
-      expect(await service.save(language)).toEqual(language)
+      expect(await service.save(language)).toEqual(languageWithId)
     })
   })
 
@@ -77,7 +84,7 @@ describe('LanguageService', () => {
     })
 
     it('should return a language', async () => {
-      expect(await service.remove('1')).toEqual(language)
+      expect(await service.remove('1')).toEqual(languageWithId)
     })
   })
 })

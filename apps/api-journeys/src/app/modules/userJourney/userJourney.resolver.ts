@@ -6,7 +6,7 @@ import {
   Query,
   ResolveField
 } from '@nestjs/graphql'
-import { CurrentUserId, IdAsKey, KeyAsId } from '@core/nest/decorators'
+import { CurrentUserId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { AuthenticationError, UserInputError } from 'apollo-server-errors'
@@ -27,20 +27,18 @@ export class UserJourneyResolver {
   ) {}
 
   @Query()
-  @IdAsKey()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @KeyAsId()
   async userJourneyRequest(
     @Args('journeyId') journeyId: string,
     @Args('idType') idType: IdType = IdType.slug,
     @CurrentUserId() userId: string
   ): Promise<UserJourney> {
-    const journey =
+    const journey: Journey =
       idType === IdType.slug
         ? await this.journeyService.getBySlug(journeyId)
         : await this.journeyService.get(journeyId)
@@ -49,12 +47,11 @@ export class UserJourneyResolver {
 
     return await this.userJourneyService.save({
       userId,
-      journeyId: (journey as { _key: string })._key,
+      journeyId: journey.id,
       role: 'inviteRequested'
     })
   }
 
-  @KeyAsId()
   async checkOwnership(id: string, userId: string): Promise<UserJourney> {
     // can only update user journey roles if you are the journey's owner.
     const actor: UserJourney = await this.userJourneyService.forJourneyUser(
@@ -78,7 +75,6 @@ export class UserJourneyResolver {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @KeyAsId()
   async userJourneyApprove(
     @Args('id') id: string,
     @CurrentUserId() userId: string
@@ -92,7 +88,6 @@ export class UserJourneyResolver {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @KeyAsId()
   async userJourneyPromote(
     @Args('id') id: string,
     @CurrentUserId() userId: string
@@ -117,7 +112,6 @@ export class UserJourneyResolver {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @KeyAsId()
   async userJourneyRemove(
     @Args('id') id: string,
     @CurrentUserId() userId: string
@@ -128,7 +122,6 @@ export class UserJourneyResolver {
   }
 
   @ResolveField()
-  @KeyAsId()
   async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
     return await this.journeyService.get(userJourney.journeyId)
   }

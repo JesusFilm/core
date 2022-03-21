@@ -120,7 +120,7 @@ export function SelectedCard(): ReactElement {
       {nextStep != null && nextStep.id !== id && (
         <IconButton
           onClick={handleRemoveCustomNextStep}
-          data-testId="removeCustomNextStep"
+          data-testid="removeCustomNextStep"
         >
           <RemoveCircleOutlineRoundedIcon color="primary" />
         </IconButton>

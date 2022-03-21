@@ -23,9 +23,7 @@ export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
 `
 interface ButtonEditProps extends TreeBlock<ButtonFields> {}
 
-interface StyledInputProps
-  extends InputBaseProps,
-    Pick<TreeBlock<ButtonFields>, 'buttonVariant' | 'buttonColor'> {}
+interface StyledInputProps extends InputBaseProps {}
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
@@ -78,8 +76,6 @@ export function ButtonEdit({
   const input = (
     <StyledInput
       name={`edit-${id}`}
-      buttonVariant={buttonVariant}
-      buttonColor={buttonColor}
       fullWidth
       multiline
       autoFocus

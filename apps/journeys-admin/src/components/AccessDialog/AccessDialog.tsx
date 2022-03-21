@@ -174,6 +174,9 @@ function UserJourneyList({
 function ListItem({ id, user, role }: UserJourney): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+
+  useEffect(() => () => setAnchorEl(null), [])
+
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
   }

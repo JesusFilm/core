@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { RadioOptionBlock } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
@@ -17,26 +18,6 @@ describe('RadioQuestionBlockResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
-    action: {
-      gtmEventName: 'gtmEventName',
-      blockId: '4'
-    }
-  }
-
-  const blockWithId = {
-    ...block,
-    id: block._key,
-    _key: undefined
-  }
-
-  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -51,8 +32,8 @@ describe('RadioQuestionBlockResolver', () => {
   }
 
   const actionResponse = {
-    ...blockResponse.action,
-    parentBlockId: block._key
+    ...block.action,
+    parentBlockId: block.id
   }
 
   const radioOptionInput = {
@@ -120,11 +101,8 @@ describe('RadioQuestionBlockResolver', () => {
 
   describe('RadioOptionBlock', () => {
     it('returns RadioOptionBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
@@ -132,7 +110,7 @@ describe('RadioQuestionBlockResolver', () => {
     it('returns RadioOptionBlock action with parentBlockId', async () => {
       expect(
         await radioOptionBlockResolver.action(
-          blockWithId as unknown as RadioOptionBlock
+          block as unknown as RadioOptionBlock
         )
       ).toEqual(actionResponse)
     })
@@ -163,25 +141,22 @@ describe('RadioQuestionBlockResolver', () => {
   describe('radioOptionBlockUpdate', () => {
     it('updates a RadioOptionBlock', async () => {
       await radioOptionBlockResolver.radioOptionBlockUpdate(
-        block._key,
+        block.id,
         block.journeyId,
         radioOptionUpdate
       )
-      expect(service.update).toHaveBeenCalledWith(block._key, radioOptionUpdate)
+      expect(service.update).toHaveBeenCalledWith(block.id, radioOptionUpdate)
     })
   })
 
   describe('radioQuestionBlockUpdate', () => {
     it('updates a RadioQuestionBlock', async () => {
       await resolver.radioQuestionBlockUpdate(
-        block._key,
+        block.id,
         block.journeyId,
         radioQuestionInput
       )
-      expect(service.update).toHaveBeenCalledWith(
-        block._key,
-        radioQuestionInput
-      )
+      expect(service.update).toHaveBeenCalledWith(block.id, radioQuestionInput)
     })
   })
 })

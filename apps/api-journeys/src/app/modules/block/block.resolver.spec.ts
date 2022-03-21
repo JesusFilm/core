@@ -51,9 +51,9 @@ describe('BlockResolver', () => {
       getSiblings: jest.fn(() => [image1, image2, image3]),
       removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
       reorderSiblings: jest.fn(() => [
-        { _key: 'image2', parentOrder: 0 },
-        { _key: 'image3', parentOrder: 1 },
-        { _key: 'image1', parentOrder: 2 }
+        { id: 'image2', parentOrder: 0 },
+        { id: 'image3', parentOrder: 1 },
+        { id: 'image1', parentOrder: 2 }
       ])
     })
   }
@@ -112,9 +112,9 @@ describe('BlockResolver', () => {
           get: jest.fn(() => coverImage1),
           getSiblings: jest.fn(() => [coverImage1, image2, image3]),
           reorderSiblings: jest.fn(() => [
-            { _key: 'image2', parentOrder: 0 },
-            { _key: 'image3', parentOrder: 1 },
-            { _key: 'image1', parentOrder: 2 }
+            { id: 'image2', parentOrder: 0 },
+            { id: 'image3', parentOrder: 1 },
+            { id: 'image1', parentOrder: 2 }
           ])
         })
       }

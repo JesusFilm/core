@@ -40,7 +40,12 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
       </Head>
       <ThemeProvider>
         <ApolloProvider client={apolloClient}>
-          <SnackbarProvider>
+          <SnackbarProvider
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+          >
             <Component {...pageProps} />
           </SnackbarProvider>
         </ApolloProvider>

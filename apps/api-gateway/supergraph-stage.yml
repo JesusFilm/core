@@ -1,9 +1,17 @@
 subgraphs:
   journeys:
-    routing_url: http://api-journeys-stage:4001/graphql
+    routing_url: http://api-journeys-stage:443/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-journeys-schema.graphql
   users:
-    routing_url: http://api-users-stage:4002/graphql
+    routing_url: http://api-users-stage:443/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-users-schema.graphql
+  languages:
+    routing_url: http://api-languages-stage:443/graphql
+    schema:
+      file: ../../dist/apps/api-gateway/api-languages-schema.graphql
+  videos:
+    routing_url: http://api-videos-stage:443/graphql
+    schema:
+      file: ../../dist/apps/api-gateway/api-videos-schema.graphql

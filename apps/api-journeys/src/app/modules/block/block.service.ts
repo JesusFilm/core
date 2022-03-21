@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { KeyAsId } from '@core/nest/decorators'
 
 import { Block, Journey } from '../../__generated__/graphql'
 
 @Injectable()
 export class BlockService extends BaseService {
+  @KeyAsId()
   async forJourney(journey: Journey): Promise<Block[]> {
     const primaryImageBlockId = journey.primaryImageBlock?.id ?? null
     const res = await this.db.query(aql`
@@ -19,6 +21,7 @@ export class BlockService extends BaseService {
     return await res.all()
   }
 
+  @KeyAsId()
   async getSiblings(
     journeyId: string,
     parentBlockId?: string | null
@@ -82,6 +85,7 @@ export class BlockService extends BaseService {
     ])
   }
 
+  @KeyAsId()
   async removeBlockAndChildren(
     blockId: string,
     journeyId: string,
