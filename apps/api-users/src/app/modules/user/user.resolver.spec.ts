@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+
 import { UserResolver } from './user.resolver'
 import { UserService } from './user.service'
 
@@ -6,14 +7,6 @@ describe('UserResolver', () => {
   let resolver: UserResolver
 
   const user = {
-    _key: '1',
-    firstName: 'fo',
-    lastName: 'sho',
-    email: 'tho@no.co',
-    imageUrl: 'po'
-  }
-
-  const userResponse = {
     id: '1',
     firstName: 'fo',
     lastName: 'sho',
@@ -39,15 +32,15 @@ describe('UserResolver', () => {
 
   describe('me', () => {
     it('returns User', async () => {
-      expect(await resolver.me(user._key)).toEqual(userResponse)
+      expect(await resolver.me(user.id)).toEqual(user)
     })
   })
 
   describe('resolveReference', () => {
     it('returns User', async () => {
       expect(
-        await resolver.resolveReference({ __typename: 'User', id: user._key })
-      ).toEqual(userResponse)
+        await resolver.resolveReference({ __typename: 'User', id: user.id })
+      ).toEqual(user)
     })
   })
 })

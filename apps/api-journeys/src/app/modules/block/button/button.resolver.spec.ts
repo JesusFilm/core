@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
@@ -19,31 +20,6 @@ describe('Button', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'ButtonBlock',
-    parentBlockId: '0',
-    parentOrder: 1,
-    label: 'label',
-    variant: ButtonVariant.contained,
-    color: ButtonColor.primary,
-    size: ButtonSize.large,
-    startIconId: 'start1',
-    endIconId: 'end1',
-    action: {
-      gtmEventName: 'gtmEventName',
-      url: 'https://jesusfilm.org',
-      target: 'target'
-    }
-  }
-
-  const blockWithId = {
-    ...block,
-    id: block._key,
-    _key: undefined
-  }
-
-  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'ButtonBlock',
@@ -63,8 +39,8 @@ describe('Button', () => {
   }
 
   const actionResponse = {
-    ...blockResponse.action,
-    parentBlockId: block._key
+    ...block.action,
+    parentBlockId: block.id
   }
 
   const blockInput: ButtonBlockCreateInput & { __typename: string } = {
@@ -79,7 +55,7 @@ describe('Button', () => {
   }
 
   const blockCreateResponse = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'ButtonBlock',
     parentBlockId: '0',
@@ -140,19 +116,16 @@ describe('Button', () => {
 
   describe('ButtonBlock', () => {
     it('returns ButtonBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
   describe('action', () => {
     it('returns ButtonBlock action with parentBlockId', async () => {
-      expect(
-        await resolver.action(blockWithId as unknown as ButtonBlock)
-      ).toEqual(actionResponse)
+      expect(await resolver.action(block as unknown as ButtonBlock)).toEqual(
+        actionResponse
+      )
     })
   })
 
@@ -175,8 +148,8 @@ describe('Button', () => {
       mockValidate.mockResolvedValueOnce(true)
       mockValidate.mockResolvedValueOnce(true)
 
-      await resolver.buttonBlockUpdate(block._key, block.journeyId, blockUpdate)
-      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+      await resolver.buttonBlockUpdate(block.id, block.journeyId, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
 
     it('should throw error with an invalid startIconId', async () => {
@@ -187,7 +160,7 @@ describe('Button', () => {
       mockValidate.mockResolvedValueOnce(true)
 
       await resolver
-        .buttonBlockUpdate(block._key, block.journeyId, {
+        .buttonBlockUpdate(block.id, block.journeyId, {
           ...blockUpdate,
           startIconId: 'wrong!'
         })
@@ -205,7 +178,7 @@ describe('Button', () => {
       mockValidate.mockResolvedValueOnce(false)
 
       await resolver
-        .buttonBlockUpdate(block._key, block.journeyId, {
+        .buttonBlockUpdate(block.id, block.journeyId, {
           ...blockUpdate,
           endIconId: 'wrong!'
         })

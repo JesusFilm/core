@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UserInputError } from 'apollo-server-errors'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { encode } from 'blurhash'
 import axios from 'axios'
 import * as sharp from 'sharp' // eslint-disable-line
@@ -67,7 +66,6 @@ export class ImageBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async imageBlockCreate(
     @Args('input') input: ImageBlockCreateInput & { __typename }
   ): Promise<ImageBlock> {
@@ -87,7 +85,6 @@ export class ImageBlockResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @KeyAsId()
   async imageBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
