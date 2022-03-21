@@ -10,7 +10,7 @@ describe('NavigateToBlockActionResolver', () => {
   let resolver: NavigateToBlockActionResolver, service: BlockService
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
     parentBlockId: '3',
@@ -60,11 +60,11 @@ describe('NavigateToBlockActionResolver', () => {
 
   it('updates the navigate to block action', async () => {
     await resolver.blockUpdateNavigateToBlockAction(
-      block._key,
+      block.id,
       block.journeyId,
       navigateToBlockInput
     )
-    expect(service.update).toHaveBeenCalledWith(block._key, {
+    expect(service.update).toHaveBeenCalledWith(block.id, {
       action: {
         ...navigateToBlockInput,
         parentBlockId: block.action.parentBlockId
@@ -80,7 +80,7 @@ describe('NavigateToBlockActionResolver', () => {
     service.get = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateNavigateToBlockAction(
-        wrongBlock._key,
+        wrongBlock.id,
         wrongBlock.journeyId,
         navigateToBlockInput
       )

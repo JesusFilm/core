@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   Action,
   RadioOptionBlock,
@@ -35,7 +34,6 @@ export class RadioOptionBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async radioOptionBlockCreate(
     @Args('input') input: RadioOptionBlockCreateInput & { __typename }
   ): Promise<RadioOptionBlock> {
@@ -51,7 +49,6 @@ export class RadioOptionBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
@@ -74,7 +71,6 @@ export class RadioQuestionBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async radioQuestionBlockCreate(
     @Args('input') input: RadioQuestionBlockCreateInput & { __typename }
   ): Promise<RadioQuestionBlock> {
@@ -90,7 +86,6 @@ export class RadioQuestionBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )

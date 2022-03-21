@@ -1,7 +1,7 @@
 import { UserInputError } from 'apollo-server-errors'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
+
 import {
   Action,
   SignUpBlock,
@@ -33,7 +33,6 @@ export class SignUpBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async signUpBlockCreate(
     @Args('input') input: SignUpBlockCreateInput & { __typename }
   ): Promise<SignUpBlock> {
@@ -49,7 +48,6 @@ export class SignUpBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )

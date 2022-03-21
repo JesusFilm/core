@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import {
@@ -18,20 +19,9 @@ describe('Icon', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'IconBlock',
-    parentBlockId: '0',
-    parentOrder: 0,
-    name: 'ArrowForwardRounded',
-    color: 'secondary',
-    size: 'lg'
-  }
-
-  const blockResponse = {
-    __typename: 'IconBlock',
     id: '1',
     journeyId: '2',
+    __typename: 'IconBlock',
     parentBlockId: '0',
     parentOrder: 0,
     name: 'ArrowForwardRounded',
@@ -49,15 +39,9 @@ describe('Icon', () => {
     size: IconSize.lg
   }
 
-  const createResponse = {
-    _key: '1',
-    __typename: 'IconBlock',
-    journeyId: '2',
-    parentBlockId: '0',
-    parentOrder: null,
-    name: 'ArrowForwardRounded',
-    color: 'secondary',
-    size: 'lg'
+  const create = {
+    ...block,
+    parentOrder: null
   }
 
   const inputUpdate = {
@@ -107,26 +91,26 @@ describe('Icon', () => {
 
   describe('IconBlock', () => {
     it('returns IconBlock', async () => {
-      expect(await resolver.block('1')).toEqual(blockResponse)
-      expect(await resolver.blocks()).toEqual([blockResponse, blockResponse])
+      expect(await resolver.block('1')).toEqual(block)
+      expect(await resolver.blocks()).toEqual([block, block])
     })
   })
 
   describe('IconBlockCreate', () => {
     it('creates an IconBlock', async () => {
       await iconBlockResolver.iconBlockCreate(input)
-      expect(service.save).toHaveBeenCalledWith(createResponse)
+      expect(service.save).toHaveBeenCalledWith(create)
     })
   })
 
   describe('IconBlockUpdate', () => {
     it('updates a IconBlock', async () => {
       void iconBlockResolver.iconBlockUpdate(
-        block._key,
+        block.id,
         block.journeyId,
         inputUpdate
       )
-      expect(service.update).toHaveBeenCalledWith(block._key, updateResponse)
+      expect(service.update).toHaveBeenCalledWith(block.id, updateResponse)
     })
   })
 })

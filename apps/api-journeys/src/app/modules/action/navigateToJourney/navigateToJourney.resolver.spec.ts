@@ -15,21 +15,6 @@ describe('NavigateToJourneyActionResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      journeyId: '4'
-    }
-  }
-
-  const blockResponse = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -45,16 +30,6 @@ describe('NavigateToJourneyActionResolver', () => {
   }
 
   const journey = {
-    _key: '4',
-    title: 'Fact or Fiction',
-    status: JourneyStatus.published,
-    locale: 'en-US',
-    themeMode: 'light',
-    themeName: 'base',
-    slug: 'fact-or-fiction'
-  }
-
-  const journeyResponse = {
     id: '4',
     title: 'Fact or Fiction',
     status: JourneyStatus.published,
@@ -110,21 +85,21 @@ describe('NavigateToJourneyActionResolver', () => {
 
   describe('NavigateToJourneyAction', () => {
     it('returns NavigateToJourneyAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
+      expect(await blockResolver.block('1')).toEqual(block)
     })
 
     it('returns Journey from action', async () => {
-      expect(await resolver.journey(block.action)).toEqual(journeyResponse)
+      expect(await resolver.journey(block.action)).toEqual(journey)
     })
 
     it('updates the navigate to journey action', async () => {
       await resolver.blockUpdateNavigateToJourneyAction(
-        block._key,
+        block.id,
         block.journeyId,
         navigateToJourneyInput
       )
-      expect(service.update).toHaveBeenCalledWith(block._key, {
-        action: { ...navigateToJourneyInput, parentBlockId: block._key }
+      expect(service.update).toHaveBeenCalledWith(block.id, {
+        action: { ...navigateToJourneyInput, parentBlockId: block.id }
       })
     })
   })
@@ -137,7 +112,7 @@ describe('NavigateToJourneyActionResolver', () => {
     service.get = jest.fn().mockResolvedValue(wrongBlock)
     await resolver
       .blockUpdateNavigateToJourneyAction(
-        wrongBlock._key,
+        wrongBlock.id,
         wrongBlock.journeyId,
         navigateToJourneyInput
       )
