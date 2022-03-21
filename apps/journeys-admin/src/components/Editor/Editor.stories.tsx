@@ -15,6 +15,7 @@ import {
 import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../PageWrapper'
 import { JourneyEdit } from './JourneyEdit'
+import { EditToolbar } from './EditToolbar'
 import { Editor } from '.'
 
 const EditorStory = {
@@ -528,6 +529,7 @@ const Template: Story = () => (
       <PageWrapper
         title="NUA Journey: Ep.3 – Decision"
         showDrawer
+        Menu={<EditToolbar />}
         backHref="/journeys/nua-journey-ep-3-decision"
       >
         <JourneyEdit />

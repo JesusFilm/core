@@ -1,8 +1,8 @@
 import { UserInputError } from 'apollo-server-errors'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
 import { has } from 'lodash'
+
 import { BlockService } from '../block.service'
 import {
   UserJourneyRole,
@@ -48,7 +48,6 @@ export class VideoBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput & { __typename }
   ): Promise<VideoBlock> {
@@ -72,7 +71,6 @@ export class VideoBlockResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @KeyAsId()
   async videoBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,

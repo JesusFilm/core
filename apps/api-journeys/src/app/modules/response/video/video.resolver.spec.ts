@@ -7,15 +7,6 @@ describe('VideoResponseResolver', () => {
   let resolver: VideoResponseResolver
 
   const response = {
-    _key: '1',
-    __typename: 'VideoResponse',
-    blockId: '2',
-    userId: '3',
-    state: VideoResponseStateEnum.PLAYING,
-    position: 30
-  }
-
-  const responseResponse = {
     id: '1',
     __typename: 'VideoResponse',
     blockId: '2',
@@ -40,9 +31,7 @@ describe('VideoResponseResolver', () => {
 
   describe('videoResponseCreate', () => {
     it('returns VideoResponse', async () => {
-      expect(await resolver.videoResponseCreate(response)).toEqual(
-        responseResponse
-      )
+      expect(await resolver.videoResponseCreate(response)).toEqual(response)
     })
   })
 })
