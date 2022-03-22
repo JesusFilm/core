@@ -11,6 +11,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { AccessDialog } from '../../../AccessDialog'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -26,6 +27,8 @@ export function JourneyCardMenu({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
 
+  const [openDialog, setOpenDialog] = useState(false)
+
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
@@ -34,7 +37,7 @@ export function JourneyCardMenu({
   }
 
   return (
-    <div>
+    <>
       <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
@@ -66,7 +69,10 @@ export function JourneyCardMenu({
           </MenuItem>
         </Link>
 
-        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+        <MenuItem
+          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+          onClick={() => setOpenDialog(true)}
+        >
           <ListItemIcon>
             <PeopleIcon color="secondary" />
           </ListItemIcon>
@@ -103,6 +109,12 @@ export function JourneyCardMenu({
           </Link>
         )}
       </Menu>
-    </div>
+
+      <AccessDialog
+        journeySlug={slug}
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+      />
+    </>
   )
 }
