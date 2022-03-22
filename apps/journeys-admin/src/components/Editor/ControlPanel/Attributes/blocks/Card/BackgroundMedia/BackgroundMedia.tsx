@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import {
   ToggleButton,
   ToggleButtonGroup,
-  Divider,
   Stack,
   styled
 } from '@mui/material'
@@ -23,8 +22,8 @@ export function BackgroundMedia(): ReactElement {
     selectedBlock?.__typename === 'CardBlock'
       ? selectedBlock
       : selectedBlock?.children.find(
-          (child) => child.__typename === 'CardBlock'
-        )
+        (child) => child.__typename === 'CardBlock'
+      )
   ) as TreeBlock<CardBlock>
 
   const coverBlock =
@@ -91,7 +90,6 @@ export function BackgroundMedia(): ReactElement {
           </ToggleButton>
         </StyledToggleButtonGroup>
       </Box>
-      <Divider sx={{ sm: 'none' }} />
       {blockType === 'ImageBlock' && (
         <BackgroundMediaImage cardBlock={cardBlock} />
       )}
