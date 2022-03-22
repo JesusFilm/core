@@ -50,7 +50,8 @@ describe('Step', () => {
   })
 
   it('should render empty block', () => {
-    const { baseElement } = render(<Step {...block} children={[]} />) // eslint-disable-line react/no-children-prop
+    // eslint-disable-next-line react/no-children-prop
+    const { baseElement } = render(<Step {...block} children={[]} />)
     expect(baseElement).toContainHTML('<body><div /></body>')
   })
 })

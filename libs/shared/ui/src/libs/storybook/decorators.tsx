@@ -42,7 +42,6 @@ const ThemeContainer = ({
   )
 }
 
-/* eslint-disable react/no-children-prop */
 export const ThemeDecorator = ({
   mode,
   layout,
@@ -60,8 +59,12 @@ export const ThemeDecorator = ({
             overflowX: 'hidden'
           }}
         >
-          <ThemeContainer mode="light" children={children} layout={layout} />
-          <ThemeContainer mode="dark" children={children} layout={layout} />
+          <ThemeContainer mode="light" layout={layout}>
+            {children}
+          </ThemeContainer>
+          <ThemeContainer mode="dark" layout={layout}>
+            {children}
+          </ThemeContainer>
         </div>
       )
     default:

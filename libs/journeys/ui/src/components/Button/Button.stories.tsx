@@ -75,7 +75,6 @@ Size.args = {
   children: []
 }
 
-/* eslint-disable react/no-children-prop */
 const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
   return (
     <StoryCard>
@@ -87,6 +86,7 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
           label={`${variant} Icon`}
           startIconId={'start'}
           endIconId={'end'}
+          // eslint-disable-next-line react/no-children-prop
           children={
             variant === 'Start'
               ? [

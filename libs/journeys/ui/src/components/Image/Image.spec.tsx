@@ -33,7 +33,6 @@ describe('Image', () => {
   })
 })
 
-/* eslint-disable jsx-a11y/alt-text */
 describe('Admin Image', () => {
   it('should select image on click', () => {
     const { getByRole, getByTestId } = render(
@@ -53,7 +52,7 @@ describe('Admin Image', () => {
           }
         }}
       >
-        <Image {...block} />
+        <Image {...block} alt={block.alt} />
       </EditorProvider>
     )
 
