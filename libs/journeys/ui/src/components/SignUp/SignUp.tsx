@@ -136,7 +136,8 @@ export const SignUp = ({
             flexDirection: 'column',
             outline:
               selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-            outlineOffset: '5px'
+            outlineOffset: '5px',
+            marginBottom: '16px'
           }}
           onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
         >
