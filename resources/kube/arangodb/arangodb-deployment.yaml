@@ -2,9 +2,16 @@ apiVersion: 'database.arangodb.com/v1alpha'
 kind: 'ArangoDeployment'
 metadata:
   name: 'arangodb'
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: arangodb.core.jesusfilm.org
 spec:
-  mode: Single
+  environment: Production
+  mode: ActiveFailover
+  image: arangodb/arangodb:3.9.0
+  externalAccess:
+    type: None
   tls:
     caSecretName: None
+  single:
+    resources:
+      requests:
+        storage: 20Gi
+      storageClassName: ebs-sc
