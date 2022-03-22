@@ -1,15 +1,14 @@
-interface VideoContent {
-  src: String
+extend type Video @key(fields: "id variant { language { id } }") {
+  id: ID! @external
+  variant: VideoVariant @external
 }
 
-type VideoArclight implements VideoContent {
-  mediaComponentId: String!
-  languageId: String!
-  src: String
+extend type VideoVariant @key(fields: "language { id }") {
+  language: Language! @external
 }
 
-type VideoGeneric implements VideoContent {
-  src: String
+extend type Language @key(fields: "id") {
+  id: ID! @external
 }
 
 type VideoBlock implements Block {
@@ -17,7 +16,6 @@ type VideoBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  title: String!
   """
   startAt dictates at which point of time the video should start playing
   """
@@ -26,10 +24,8 @@ type VideoBlock implements Block {
   endAt dictates at which point of time the video should end
   """
   endAt: Int
-  description: String
   muted: Boolean
   autoplay: Boolean
-  videoContent: VideoContent!
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
@@ -37,21 +33,15 @@ type VideoBlock implements Block {
   """
   posterBlockId: ID
   fullsize: Boolean
-}
-
-input VideoContentInput {
-  mediaComponentId: String
-  languageId: String
-  src: String
+  video: Video
 }
 
 input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  title: String!
   """
-  startAt dictates at which point of time the video should start playing
+  startAt dictates at which point of time the video should start playing ()
   """
   startAt: Int
   """
@@ -61,7 +51,11 @@ input VideoBlockCreateInput {
   description: String
   muted: Boolean
   autoplay: Boolean
-  videoContent: VideoContentInput!
+  """
+  videoId
+  """
+  videoId: ID!
+  videoVariantLanguageId: ID!
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
@@ -72,8 +66,6 @@ input VideoBlockCreateInput {
 }
 
 input VideoBlockUpdateInput {
-  parentBlockId: ID
-  title: String
   """
   startAt dictates at which point of time the video should start playing
   """
@@ -82,10 +74,10 @@ input VideoBlockUpdateInput {
   endAt dictates at which point of time the video should end
   """
   endAt: Int
-  description: String
   muted: Boolean
   autoplay: Boolean
-  videoContent: VideoContentInput
+  videoId: ID
+  videoVariantLanguageId: ID
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used

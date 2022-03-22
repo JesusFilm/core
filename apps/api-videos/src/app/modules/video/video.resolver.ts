@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, Info } from '@nestjs/graphql'
+import { Resolver, Query, Args, Info, ResolveReference } from '@nestjs/graphql'
 import { Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
@@ -32,5 +32,17 @@ export class VideoResolver {
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return await this.videoService.getVideo(id, variantLanguageId)
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: {
+    __typename: 'Video'
+    id: string
+    variant: { __typename: 'VideoVariant'; languageId: string }
+  }): Promise<Video> {
+    return await this.videoService.getVideo(
+      reference.id,
+      reference.variant.languageId
+    )
   }
 }

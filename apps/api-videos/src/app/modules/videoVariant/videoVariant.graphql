@@ -9,7 +9,7 @@ type VideoVariantDownload {
   url: String!
 }
 
-type VideoVariant {
+type VideoVariant @key(fields: "language { id }") {
   hls: String!
   downloads: [VideoVariantDownload!]!
   # duration in seconds

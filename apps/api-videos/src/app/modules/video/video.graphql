@@ -2,7 +2,7 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
-type Video @key(fields: "id") {
+type Video @key(fields: "id variant { language { id } }") {
   id: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!

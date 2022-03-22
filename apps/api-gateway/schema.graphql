@@ -354,6 +354,7 @@ input JourneyUpdateInput {
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   bcp47: String @join__field(graph: LANGUAGES)
@@ -707,7 +708,8 @@ enum UserJourneyRole {
 
 type Video
   @join__owner(graph: VIDEOS)
-  @join__type(graph: VIDEOS, key: "id")
+  @join__type(graph: VIDEOS, key: "id variant{language{id}}")
+  @join__type(graph: JOURNEYS, key: "id variant{language{id}}")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
@@ -719,15 +721,8 @@ type Video
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
 
-type VideoArclight implements VideoContent {
-  languageId: String!
-  mediaComponentId: String!
-  src: String
-}
-
 type VideoBlock implements Block {
   autoplay: Boolean
-  description: String
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
@@ -747,8 +742,7 @@ type VideoBlock implements Block {
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
-  title: String!
-  videoContent: VideoContent!
+  video: Video
 }
 
 input VideoBlockCreateInput {
@@ -770,21 +764,23 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
 
-  """startAt dictates at which point of time the video should start playing"""
+  """
+  startAt dictates at which point of time the video should start playing ()
+  """
   startAt: Int
-  title: String!
-  videoContent: VideoContentInput!
+
+  """videoId"""
+  videoId: ID!
+  videoVariantLanguageId: ID!
 }
 
 input VideoBlockUpdateInput {
   autoplay: Boolean
-  description: String
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
   fullsize: Boolean
   muted: Boolean
-  parentBlockId: ID
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -795,22 +791,8 @@ input VideoBlockUpdateInput {
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
-  title: String
-  videoContent: VideoContentInput
-}
-
-interface VideoContent {
-  src: String
-}
-
-input VideoContentInput {
-  languageId: String
-  mediaComponentId: String
-  src: String
-}
-
-type VideoGeneric implements VideoContent {
-  src: String
+  videoId: ID
+  videoVariantLanguageId: ID
 }
 
 type VideoResponse implements Response {
@@ -861,12 +843,16 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
-type VideoVariant {
-  downloads: [VideoVariantDownload!]!
-  duration: Int!
-  hls: String!
-  language: Language!
-  subtitle(languageId: ID, primary: Boolean): [Translation!]!
+type VideoVariant
+  @join__owner(graph: VIDEOS)
+  @join__type(graph: VIDEOS, key: "language{id}")
+  @join__type(graph: JOURNEYS, key: "language{id}")
+{
+  downloads: [VideoVariantDownload!]! @join__field(graph: VIDEOS)
+  duration: Int! @join__field(graph: VIDEOS)
+  hls: String! @join__field(graph: VIDEOS)
+  language: Language! @join__field(graph: VIDEOS)
+  subtitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 }
 
 type VideoVariantDownload {

@@ -116,4 +116,17 @@ describe('VideoResolver', () => {
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
     })
   })
+
+  describe('resolveReference', () => {
+    it('returns video', async () => {
+      expect(
+        await resolver.resolveReference({
+          __typename: 'Video',
+          id: '20615',
+          variant: { __typename: 'VideoVariant', languageId: 'en' }
+        })
+      ).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+    })
+  })
 })
