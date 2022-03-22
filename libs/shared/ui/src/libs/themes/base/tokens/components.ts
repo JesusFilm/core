@@ -6,20 +6,14 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: spacingThemeToken.spacing(4),
-          '&:last-child': {
-            marginBottom: 0
-          }
+          marginBottom: spacingThemeToken.spacing(4)
         }
       },
       variants: [
         {
           props: { variant: 'overline', gutterBottom: true },
           style: {
-            marginBottom: spacingThemeToken.spacing(1),
-            '&:last-child': {
-              marginBottom: 0
-            }
+            marginBottom: spacingThemeToken.spacing(1)
           }
         }
       ]
@@ -54,8 +48,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
             minHeight: '42px',
             marginBottom: spacingThemeToken.spacing(3),
             borderRadius: '16px',
-            fontWeight: 700,
-            '&:last-child': { marginBottom: 0 }
+            fontWeight: 700
           }
         },
         {
@@ -64,8 +57,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
             minHeight: '36.5px',
             marginBottom: spacingThemeToken.spacing(2),
             borderRadius: '12px',
-            fontWeight: 700,
-            '&:last-child': { marginBottom: 0 }
+            fontWeight: 700
           }
         },
         {
@@ -73,8 +65,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           style: {
             minHeight: '30.75px',
             marginBottom: spacingThemeToken.spacing(1),
-            borderRadius: '8px',
-            '&:last-child': { marginBottom: 0 }
+            borderRadius: '8px'
           }
         }
       ]

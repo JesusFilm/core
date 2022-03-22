@@ -20,7 +20,12 @@ export const StoryCard = ({
         display: 'flex',
         flexDirection: 'column',
         p: 7,
-        borderRadius: (theme) => theme.spacing(4)
+        borderRadius: (theme) => theme.spacing(4),
+        '& > *': {
+          '&:last-child': {
+            marginBottom: '0px'
+          }
+        }
       }}
       elevation={3}
     >
