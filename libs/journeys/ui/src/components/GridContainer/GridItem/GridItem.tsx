@@ -23,6 +23,14 @@ export function GridItem({
       md={12 as GridSize}
       sm={sm as GridSize}
       xs={12 as GridSize}
+      sx={{
+        '& > *': {
+          '&:last-child': {
+            marginBottom: '0px'
+          }
+        },
+        mb: 4
+      }}
     >
       {children?.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
