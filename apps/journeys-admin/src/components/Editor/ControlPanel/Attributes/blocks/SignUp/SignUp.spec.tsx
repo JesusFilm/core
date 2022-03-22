@@ -1,8 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
-import { ThemeProvider } from '../../../../../ThemeProvider'
-import { Drawer } from '../../../../Drawer'
+import { TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   IconName,
@@ -68,32 +65,8 @@ describe('SignUp Attributes', () => {
   })
 
   it('clicking icon properties button should open icon editing drawer', () => {
-    const { getByRole, getAllByText } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <SignUp {...block} />
-          </EditorProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
+    const { getByRole, getAllByText } = render(<SignUp {...block} />)
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
-    expect(getAllByText('Button Icon')).toHaveLength(3)
-  })
-
-  it('action property button should open action edit drawer', async () => {
-    const { getByRole, getByTestId } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <SignUp {...block} />
-          </EditorProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Form Submission')
+    expect(getAllByText('Button Icon')).toHaveLength(2)
   })
 })
