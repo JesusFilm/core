@@ -8,7 +8,7 @@ import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
-import { CardCover } from '.'
+import { Cover as CardCover } from './Cover'
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps

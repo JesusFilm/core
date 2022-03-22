@@ -55,7 +55,7 @@ export function ImageBlockHeader({
         {showDelete && (
           <Stack direction="column" justifyContent="center">
             <IconButton onClick={onDelete} data-testid="imageBlockHeaderDelete">
-              <DeleteOutline color="primary"></DeleteOutline>
+              <DeleteOutline color="primary" />
             </IconButton>
           </Stack>
         )}

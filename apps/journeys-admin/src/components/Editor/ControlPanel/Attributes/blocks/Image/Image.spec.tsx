@@ -19,7 +19,7 @@ describe('Image', () => {
       children: []
     }
 
-    const { getByText } = render(<Image {...image} />) // eslint-disable-line
+    const { getByText } = render(<Image {...image} alt={image.alt} />)
 
     expect(getByText('Image Source')).toBeInTheDocument()
     expect(getByText(image.alt)).toBeInTheDocument()

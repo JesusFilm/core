@@ -1,6 +1,6 @@
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
-import { ThemeProvider } from '../../index'
+import { ThemeProvider } from '../../components/ThemeProvider'
 import {
   ThemeMode,
   ThemeName
@@ -59,8 +59,12 @@ export const ThemeDecorator = ({
             overflowX: 'hidden'
           }}
         >
-          <ThemeContainer mode="light" children={children} layout={layout} />
-          <ThemeContainer mode="dark" children={children} layout={layout} />
+          <ThemeContainer mode="light" layout={layout}>
+            {children}
+          </ThemeContainer>
+          <ThemeContainer mode="dark" layout={layout}>
+            {children}
+          </ThemeContainer>
         </div>
       )
     default:

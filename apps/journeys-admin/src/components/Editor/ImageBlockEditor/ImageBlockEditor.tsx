@@ -93,11 +93,11 @@ export function ImageBlockEditor({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LinkIcon></LinkIcon>
+                      <LinkIcon />
                     </InputAdornment>
                   )
                 }}
-              ></TextField>
+              />
             </form>
           </Stack>
         </Box>
