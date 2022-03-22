@@ -305,8 +305,8 @@ export class VideoBlockCreateInput {
     description?: Nullable<string>;
     muted?: Nullable<boolean>;
     autoplay?: Nullable<boolean>;
-    videoId: string;
-    videoVariantLanguageId: string;
+    videoId?: Nullable<string>;
+    videoVariantLanguageId?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
 }

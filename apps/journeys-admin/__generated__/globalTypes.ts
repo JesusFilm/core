@@ -299,8 +299,8 @@ export interface VideoBlockCreateInput {
   parentBlockId: string;
   posterBlockId?: string | null;
   startAt?: number | null;
-  videoId: string;
-  videoVariantLanguageId: string;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
 }
 
 export interface VideoBlockUpdateInput {

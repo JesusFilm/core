@@ -769,9 +769,15 @@ input VideoBlockCreateInput {
   """
   startAt: Int
 
-  """videoId"""
-  videoId: ID!
-  videoVariantLanguageId: ID!
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 }
 
 input VideoBlockUpdateInput {

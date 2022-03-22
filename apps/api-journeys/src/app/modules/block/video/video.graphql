@@ -52,10 +52,13 @@ input VideoBlockCreateInput {
   muted: Boolean
   autoplay: Boolean
   """
-  videoId
+  videoId and videoVariantLanguageId both need to be set to select a video
   """
-  videoId: ID!
-  videoVariantLanguageId: ID!
+  videoId: ID
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
