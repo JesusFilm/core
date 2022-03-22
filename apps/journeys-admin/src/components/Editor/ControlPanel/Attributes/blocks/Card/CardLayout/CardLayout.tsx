@@ -36,8 +36,8 @@ export function CardLayout(): ReactElement {
     selectedBlock?.__typename === 'CardBlock'
       ? selectedBlock
       : selectedBlock?.children.find(
-          (child) => child.__typename === 'CardBlock'
-        )
+        (child) => child.__typename === 'CardBlock'
+      )
   ) as TreeBlock<CardBlock> | undefined
 
   const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
@@ -94,6 +94,14 @@ export function CardLayout(): ReactElement {
           onChange={async (val) => await handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
         >
+          <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
+            <Image
+              src={cardLayoutContained}
+              alt="Contained"
+              width={89}
+              height={137}
+            />
+          </Box>
           <Box
             sx={{ display: 'flex' }}
             id="false"
@@ -102,14 +110,6 @@ export function CardLayout(): ReactElement {
           >
             <Image
               src={cardLayoutExpanded}
-              alt="Contained"
-              width={89}
-              height={137}
-            />
-          </Box>
-          <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
-            <Image
-              src={cardLayoutContained}
               alt="Expanded"
               width={89}
               height={137}
