@@ -55,10 +55,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: card1._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0803-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
     muted: true,
     autoplay: true,
     startAt: 11,
@@ -172,10 +170,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0803-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
     parentOrder: 0,
@@ -292,10 +288,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard1._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0803-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
     startAt: 158,
@@ -438,10 +432,8 @@ export async function nua8(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard2._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0803-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
     startAt: 221,
