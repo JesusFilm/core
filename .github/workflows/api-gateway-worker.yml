@@ -76,11 +76,11 @@ jobs:
 
       - name: Build api-journeys-stage schema
         if: inputs.branch == 'stage'
-        run: rover subgraph introspect https://api-users.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
+        run: rover subgraph introspect https://api-users-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
       - name: Build api-users-main schema
         if: inputs.branch == 'main'
-        run: rover subgraph introspect https://api-users-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
+        run: rover subgraph introspect https://api-users.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
       - name: Build api-languages-stage schema
         if: inputs.branch == 'stage'
