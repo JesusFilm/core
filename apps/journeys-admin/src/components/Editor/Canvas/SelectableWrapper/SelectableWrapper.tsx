@@ -22,6 +22,13 @@ export function SelectableWrapper({
     block.__typename !== 'CardBlock' &&
     block.__typename !== 'IconBlock'
 
+  const isInlineEditable =
+    isSelectable &&
+    block.__typename !== 'VideoBlock' &&
+    block.__typename !== 'ImageBlock' &&
+    block.__typename !== 'GridContainerBlock' &&
+    block.__typename !== 'GridItemBlock'
+
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
 
@@ -31,12 +38,8 @@ export function SelectableWrapper({
         selectedBlock?.parentBlockId === block.parentBlockId
 
       if (selectedBlock?.id === block.id) {
-        e.stopPropagation()
-
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
       } else if (parentSelected || siblingSelected) {
-        e.stopPropagation()
-
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
         dispatch({
           type: 'SetActiveTabAction',
@@ -46,7 +49,7 @@ export function SelectableWrapper({
         dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
       }
     } else {
-      if (selectedBlock?.id === block.id) {
+      if (selectedBlock?.id === block.id && isInlineEditable) {
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
       } else {
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
