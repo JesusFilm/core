@@ -68,6 +68,21 @@ export function Button({
     }
   }
 
+  let marginTop: number
+  switch (size) {
+    case 'small':
+      marginTop = 0
+      break
+    case 'medium':
+      marginTop = 1
+      break
+    case 'large':
+      marginTop = 2
+      break
+    default:
+      marginTop = 1 // since default size is medium
+  }
+
   return (
     <MuiButton
       variant={buttonVariant ?? 'contained'}
@@ -77,6 +92,8 @@ export function Button({
       endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
       sx={{
         ...sx,
+        mt: marginTop,
+        mb: 4,
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
