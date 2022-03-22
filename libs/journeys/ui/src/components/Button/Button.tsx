@@ -77,6 +77,7 @@ export function Button({
       endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
       sx={{
         ...sx,
+        mb: 5,
         outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px'
       }}
