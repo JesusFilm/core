@@ -11,7 +11,6 @@ import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
-import { get } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BlockService } from '../block/block.service'
@@ -31,12 +30,6 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { JourneyService } from './journey.service'
-
-function resolveStatus(journey: Journey): Journey {
-  journey.status =
-    journey.publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
-  return journey
-}
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
 
@@ -58,14 +51,14 @@ export class JourneyResolver {
     @CurrentUserId() userId: string,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug
-  ): Promise<Journey> {
+  ): Promise<Journey | null> {
     const result: Journey =
       idType === IdType.slug
         ? await this.journeyService.getBySlug(id)
         : await this.journeyService.get(id)
-    const resolved = resolveStatus(result)
+    if (result == null) return null
     const ujResult = await this.userJourneyService.forJourneyUser(
-      get(resolved, 'id'),
+      result.id,
       userId
     )
     if (ujResult == null)
@@ -75,7 +68,7 @@ export class JourneyResolver {
     if (ujResult.role === UserJourneyRole.inviteRequested)
       throw new ForbiddenError('User invitation pending.')
 
-    return resolved
+    return result
   }
 
   @Query()
@@ -92,8 +85,8 @@ export class JourneyResolver {
       idType === IdType.slug
         ? await this.journeyService.getBySlug(id)
         : await this.journeyService.get(id)
-    const resolved = resolveStatus(result)
-    return resolved.status === JourneyStatus.published ? resolved : null
+    if (result?.publishedAt == null) return null
+    return result
   }
 
   @Mutation()
@@ -174,14 +167,19 @@ export class JourneyResolver {
 
   @ResolveField()
   async primaryImageBlock(
-    @Parent() journey: Journey
+    @Parent() journey: Journey & { primaryImageBlockId?: string | null }
   ): Promise<ImageBlock | null> {
-    if (journey.primaryImageBlock?.id == null) return null
-    return await this.blockService.get(journey.primaryImageBlock.id)
+    if (journey.primaryImageBlockId == null) return null
+    return await this.blockService.get(journey.primaryImageBlockId)
   }
 
   @ResolveField()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
+  }
+
+  @ResolveField()
+  status(@Parent() { publishedAt }: Journey): JourneyStatus {
+    return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
   }
 }
