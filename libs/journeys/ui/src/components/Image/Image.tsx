@@ -15,7 +15,7 @@ export function Image({
 }: TreeBlock<ImageFields>): ReactElement {
   return (
     <Box
-      data-testId={`image-${id}`}
+      data-testid={`image-${id}`}
       sx={{
         borderRadius: (theme) => theme.spacing(4),
         overflow: 'hidden',

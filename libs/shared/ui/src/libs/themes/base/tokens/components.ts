@@ -37,38 +37,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
       },
       defaultProps: {
         disableRipple: true
-      },
-      variants: [
-        {
-          props: {
-            variant: 'contained',
-            size: 'large'
-          },
-          style: {
-            minHeight: '42px',
-            marginBottom: spacingThemeToken.spacing(3),
-            borderRadius: '16px',
-            fontWeight: 700
-          }
-        },
-        {
-          props: { variant: 'contained', size: 'medium' },
-          style: {
-            minHeight: '36.5px',
-            marginBottom: spacingThemeToken.spacing(2),
-            borderRadius: '12px',
-            fontWeight: 700
-          }
-        },
-        {
-          props: { variant: 'contained', size: 'small' },
-          style: {
-            minHeight: '30.75px',
-            marginBottom: spacingThemeToken.spacing(1),
-            borderRadius: '8px'
-          }
-        }
-      ]
+      }
     },
     MuiFormControl: {
       styleOverrides: {
