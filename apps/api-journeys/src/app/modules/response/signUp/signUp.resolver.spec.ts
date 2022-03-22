@@ -6,15 +6,6 @@ describe('SignUpResponseResolver', () => {
   let resolver: SignUpResponseResolver
 
   const response = {
-    _key: '1',
-    __typename: 'SignUpResponse',
-    blockId: '2',
-    userId: '3',
-    name: 'Robert Smith',
-    email: 'robert.smith@jesusfilm.org'
-  }
-
-  const responseResponse = {
     id: '1',
     __typename: 'SignUpResponse',
     blockId: '2',
@@ -39,9 +30,7 @@ describe('SignUpResponseResolver', () => {
 
   describe('SignUpResponse', () => {
     it('returns SignUpResponse', async () => {
-      expect(await resolver.signUpResponseCreate(response)).toEqual(
-        responseResponse
-      )
+      expect(await resolver.signUpResponseCreate(response)).toEqual(response)
     })
   })
 })

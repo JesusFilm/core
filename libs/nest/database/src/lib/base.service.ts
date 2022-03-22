@@ -3,6 +3,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { aql, Database } from 'arangojs'
 import { DeepMockProxy } from 'jest-mock-extended'
 import { DocumentData, Patch } from 'arangojs/documents'
+import { KeyAsId, IdAsKey } from '@core/nest/decorators'
 
 @Injectable()
 export abstract class BaseService {
@@ -16,6 +17,7 @@ export abstract class BaseService {
     return str.replace(/'/g, '')
   }
 
+  @KeyAsId()
   async getAll<T>(): Promise<T[]> {
     const rst = await this.db.query(aql`
     FOR item IN ${this.collection}
@@ -23,6 +25,7 @@ export abstract class BaseService {
     return await rst.all()
   }
 
+  @KeyAsId()
   async get<T>(_key: string): Promise<T> {
     const rst = await this.db.query(aql`
     FOR item IN ${this.collection}
@@ -32,11 +35,13 @@ export abstract class BaseService {
     return await rst.next()
   }
 
+  @KeyAsId()
   async update<T, T2>(_key: string, body: T2): Promise<T> {
     const result = await this.collection.update(_key, body, { returnNew: true })
     return result.new
   }
 
+  @IdAsKey()
   async updateAll<T>(
     arr: Array<Patch<DocumentData<T>> & ({ _key: string } | { _id: string })>
   ): Promise<T[]> {
@@ -46,11 +51,13 @@ export abstract class BaseService {
     return result.map((item) => item.new)
   }
 
+  @IdAsKey()
   async save<T, T2>(body: T2): Promise<T> {
     const result = await this.collection.save(body, { returnNew: true })
     return result.new
   }
 
+  @KeyAsId()
   async remove<T>(_key: string): Promise<T> {
     const result = await this.collection.remove(_key, { returnOld: true })
     return result.old

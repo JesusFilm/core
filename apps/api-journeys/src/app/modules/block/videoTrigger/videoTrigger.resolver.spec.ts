@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
+import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { VideoTriggerResolver } from './videoTrigger.resolver'
@@ -8,7 +11,7 @@ describe('VideoTriggerBlockResolver', () => {
   let resolver: VideoTriggerResolver, blockResolver: BlockResolver
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'VideoTriggerBlock',
     parentBlockId: '3',
@@ -18,12 +21,6 @@ describe('VideoTriggerBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       journeyId: '4'
     }
-  }
-
-  const blockWithId = {
-    ...block,
-    id: block._key,
-    _key: undefined
   }
 
   const blockResponse = {
@@ -41,7 +38,7 @@ describe('VideoTriggerBlockResolver', () => {
 
   const actionResponse = {
     ...blockResponse.action,
-    parentBlockId: block._key
+    parentBlockId: block.id
   }
 
   const blockService = {
@@ -54,7 +51,16 @@ describe('VideoTriggerBlockResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BlockResolver, blockService, VideoTriggerResolver]
+      providers: [
+        BlockResolver,
+        blockService,
+        VideoTriggerResolver,
+        UserJourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
     blockResolver = module.get<BlockResolver>(BlockResolver)
@@ -73,7 +79,7 @@ describe('VideoTriggerBlockResolver', () => {
   describe('action', () => {
     it('returns VideoTriggerBlock action with parentBlockId', async () => {
       expect(
-        await resolver.action(blockWithId as unknown as VideoTriggerBlock)
+        await resolver.action(block as unknown as VideoTriggerBlock)
       ).toEqual(actionResponse)
     })
   })

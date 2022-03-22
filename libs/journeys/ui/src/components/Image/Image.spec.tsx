@@ -52,7 +52,7 @@ describe('Admin Image', () => {
           }
         }}
       >
-        <Image {...block} />
+        <Image {...block} alt={block.alt} />
       </EditorProvider>
     )
 

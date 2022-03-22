@@ -124,7 +124,7 @@ export function VideoBlockEditorSettings({
             name="muted"
             onChange={handleSwitchChange}
             disabled={disabled || forBackground}
-          ></Switch>
+          />
         </Stack>
         <Divider />
         <Stack direction="row" justifyContent="space-around" spacing={3}>

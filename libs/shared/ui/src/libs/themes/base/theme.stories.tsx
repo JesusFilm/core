@@ -111,6 +111,7 @@ const ColorTokens = ({
                   color: paletteColor.contrastText,
                   p: theme.spacing(3)
                 }}
+                key={variant}
               >
                 <Typography
                   {...props}
@@ -160,6 +161,7 @@ const ColorTokens = ({
                 color: paletteColor.contrastText,
                 p: theme.spacing(3)
               }}
+              key={variant}
             >
               <Typography {...props} variant="overline">
                 {`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
@@ -227,6 +229,7 @@ const PaletteTokens = ({
                   : palette[100],
               p: (theme) => theme.spacing(2)
             }}
+            key={variant}
           >
             <Typography {...props} variant="overline">
               {`${variant}`}

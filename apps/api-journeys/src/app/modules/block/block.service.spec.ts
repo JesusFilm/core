@@ -8,6 +8,8 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
+import { keyAsId } from '@core/nest/decorators'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -37,32 +39,6 @@ describe('BlockService', () => {
     jest.resetAllMocks()
   })
 
-  const block = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'CardBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
-    backgroundColor: '#FFF',
-    coverBlockId: '4',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    fullscreen: true
-  }
-
-  const blockResponse = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'CardBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
-    backgroundColor: '#FFF',
-    coverBlockId: '4',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    fullscreen: true
-  }
-
   const journey = {
     id: '1',
     title: 'published',
@@ -76,6 +52,20 @@ describe('BlockService', () => {
     slug: 'published-slug'
   }
 
+  const block = {
+    _key: '1',
+    journeyId: journey.id,
+    __typename: 'CardBlock',
+    parentBlockId: '3',
+    parentOrder: 0,
+    backgroundColor: '#FFF',
+    coverBlockId: '4',
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
+    fullscreen: true
+  }
+  const blockWithId = keyAsId(block)
+
   describe('getAll', () => {
     beforeEach(() => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
@@ -84,7 +74,7 @@ describe('BlockService', () => {
     })
 
     it('should return an array of all blocks', async () => {
-      expect(await service.getAll()).toEqual([block, block])
+      expect(await service.getAll()).toEqual([blockWithId, blockWithId])
     })
   })
 
@@ -96,7 +86,10 @@ describe('BlockService', () => {
     })
 
     it('should return all blocks in a journey', async () => {
-      expect(await service.forJourney(journey)).toEqual([block, block])
+      expect(await service.forJourney(journey)).toEqual([
+        blockWithId,
+        blockWithId
+      ])
     })
   })
 
@@ -110,7 +103,7 @@ describe('BlockService', () => {
     it('should return all siblings of a block', async () => {
       expect(
         await service.getSiblings(block.journeyId, block.parentBlockId)
-      ).toEqual([block, block])
+      ).toEqual([blockWithId, blockWithId])
     })
   })
 
@@ -122,7 +115,7 @@ describe('BlockService', () => {
     })
 
     it('should return a block', async () => {
-      expect(await service.get('1')).toEqual(block)
+      expect(await service.get('1')).toEqual(blockWithId)
     })
   })
 
@@ -136,7 +129,7 @@ describe('BlockService', () => {
     })
 
     it('should return a saved block', async () => {
-      expect(await service.save(block)).toEqual(block)
+      expect(await service.save(block)).toEqual(blockWithId)
     })
   })
 
@@ -150,7 +143,7 @@ describe('BlockService', () => {
     })
 
     it('should return an updated block', async () => {
-      expect(await service.update(block._key, block)).toEqual(block)
+      expect(await service.update(block._key, block)).toEqual(blockWithId)
     })
   })
 
@@ -225,8 +218,8 @@ describe('BlockService', () => {
           block.parentBlockId
         )
       ).toEqual([
-        { _key: block._key, parentOrder: 0 },
-        { _key: block._key, parentOrder: 1 }
+        { id: block._key, parentOrder: 0 },
+        { id: block._key, parentOrder: 1 }
       ])
       expect(service.updateChildrenParentOrder).toHaveBeenCalledWith(
         journey.id,
@@ -251,7 +244,7 @@ describe('BlockService', () => {
         ])
       )
       service.getSiblings = jest.fn(
-        async () => await Promise.resolve([blockResponse, blockResponse])
+        async () => await Promise.resolve([blockWithId, blockWithId] as Block[])
       )
       expect(
         await service.updateChildrenParentOrder(journey.id, block.parentBlockId)

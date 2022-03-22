@@ -73,7 +73,8 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
 
   if (data.journey === null) {
     return {
-      notFound: true
+      notFound: true,
+      revalidate: 60
     }
   } else {
     return {
