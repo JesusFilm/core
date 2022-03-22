@@ -101,7 +101,7 @@ export function CardLayout(): ReactElement {
             data-testid="false"
           >
             <Image
-              src={cardLayoutContained}
+              src={cardLayoutExpanded}
               alt="Contained"
               width={89}
               height={137}
@@ -109,7 +109,7 @@ export function CardLayout(): ReactElement {
           </Box>
           <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
             <Image
-              src={cardLayoutExpanded}
+              src={cardLayoutContained}
               alt="Expanded"
               width={89}
               height={137}
