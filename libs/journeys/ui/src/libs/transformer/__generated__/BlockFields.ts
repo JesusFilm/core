@@ -266,9 +266,14 @@ export interface BlockFields_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface BlockFields_VideoBlock_videoContent {
-  __typename: "VideoArclight" | "VideoGeneric";
-  src: string | null;
+export interface BlockFields_VideoBlock_video_variant {
+  __typename: "VideoVariant";
+  hls: string;
+}
+
+export interface BlockFields_VideoBlock_video {
+  __typename: "Video";
+  variant: BlockFields_VideoBlock_video_variant | null;
 }
 
 export interface BlockFields_VideoBlock {
@@ -276,7 +281,6 @@ export interface BlockFields_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  title: string;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -294,7 +298,7 @@ export interface BlockFields_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  videoContent: BlockFields_VideoBlock_videoContent;
+  video: BlockFields_VideoBlock_video | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateAction {

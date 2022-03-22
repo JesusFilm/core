@@ -16,13 +16,14 @@ export const VIDEO_BLOCK_UPDATE = gql`
   ) {
     videoBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
-      title
       startAt
       endAt
       muted
       autoplay
-      videoContent {
-        src
+      video {
+        variant {
+          hls
+        }
       }
       posterBlockId
     }

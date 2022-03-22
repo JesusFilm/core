@@ -7,9 +7,14 @@
 // GraphQL fragment: VideoFields
 // ====================================================
 
-export interface VideoFields_videoContent {
-  __typename: "VideoArclight" | "VideoGeneric";
-  src: string | null;
+export interface VideoFields_video_variant {
+  __typename: "VideoVariant";
+  hls: string;
+}
+
+export interface VideoFields_video {
+  __typename: "Video";
+  variant: VideoFields_video_variant | null;
 }
 
 export interface VideoFields {
@@ -17,7 +22,6 @@ export interface VideoFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  title: string;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -35,5 +39,5 @@ export interface VideoFields {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  videoContent: VideoFields_videoContent;
+  video: VideoFields_video | null;
 }

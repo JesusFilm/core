@@ -46,13 +46,14 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
   mutation CardBlockVideoBlockCreate($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
       id
-      title
       startAt
       endAt
       muted
       autoplay
-      videoContent {
-        src
+      video {
+        variant {
+          hls
+        }
       }
       posterBlockId
     }
@@ -67,13 +68,14 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
   ) {
     videoBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
-      title
       startAt
       endAt
       muted
       autoplay
-      videoContent {
-        src
+      video {
+        variant {
+          hls
+        }
       }
       posterBlockId
     }

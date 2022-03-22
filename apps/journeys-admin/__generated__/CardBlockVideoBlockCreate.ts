@@ -9,15 +9,19 @@ import { VideoBlockCreateInput } from "./globalTypes";
 // GraphQL mutation operation: CardBlockVideoBlockCreate
 // ====================================================
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_videoContent {
-  __typename: "VideoArclight" | "VideoGeneric";
-  src: string | null;
+export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
+  __typename: "VideoVariant";
+  hls: string;
+}
+
+export interface CardBlockVideoBlockCreate_videoBlockCreate_video {
+  __typename: "Video";
+  variant: CardBlockVideoBlockCreate_videoBlockCreate_video_variant | null;
 }
 
 export interface CardBlockVideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
   id: string;
-  title: string;
   /**
    * startAt dictates at which point of time the video should start playing
    */
@@ -28,7 +32,7 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate {
   endAt: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
-  videoContent: CardBlockVideoBlockCreate_videoBlockCreate_videoContent;
+  video: CardBlockVideoBlockCreate_videoBlockCreate_video | null;
   /**
    * posterBlockId is present if a child block should be used as a poster.
    * This child block should not be rendered normally, instead it should be used
