@@ -29,14 +29,14 @@ const adminPrimaryColor = adminTheme.palette
 
 const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
   '& .MuiInputBase-input': {
-    textAlign: 'inherit'
+    textAlign: 'inherit',
+    textTransform: 'inherit'
   },
   color: 'inherit',
   fontSize: 'inherit',
   fontWeight: 'inherit',
   lineHeight: 'inherit',
   letterSpacing: 'inherit',
-  textTransform: 'inherit',
   padding: 0,
   caretColor: adminPrimaryColor.main
 }))
