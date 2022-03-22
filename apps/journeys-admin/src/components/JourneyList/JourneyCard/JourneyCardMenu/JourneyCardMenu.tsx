@@ -37,7 +37,7 @@ export function JourneyCardMenu({
   }
 
   return (
-    <div>
+    <>
       <IconButton
         id="journey-actions"
         aria-controls="journey-actions"
@@ -115,6 +115,6 @@ export function JourneyCardMenu({
         open={openDialog}
         onClose={() => setOpenDialog(false)}
       />
-    </div>
+    </>
   )
 }
