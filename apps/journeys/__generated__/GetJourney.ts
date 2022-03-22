@@ -303,6 +303,14 @@ export interface GetJourney_journey_blocks_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoId: string | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoVariantLanguageId: string | null;
   video: GetJourney_journey_blocks_VideoBlock_video | null;
 }
 

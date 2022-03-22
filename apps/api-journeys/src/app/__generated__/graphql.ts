@@ -566,6 +566,8 @@ export class VideoBlock implements Block {
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
     video?: Nullable<Video>;
+    videoId?: Nullable<string>;
+    videoVariantLanguageId?: Nullable<string>;
 }
 
 export class VideoTriggerBlock implements Block {

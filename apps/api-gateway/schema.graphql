@@ -743,6 +743,16 @@ type VideoBlock implements Block {
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
   video: Video
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 }
 
 input VideoBlockCreateInput {

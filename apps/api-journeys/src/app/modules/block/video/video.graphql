@@ -34,6 +34,14 @@ type VideoBlock implements Block {
   posterBlockId: ID
   fullsize: Boolean
   video: Video
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 }
 
 input VideoBlockCreateInput {

@@ -39,5 +39,13 @@ export interface VideoFields {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoId: string | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoVariantLanguageId: string | null;
   video: VideoFields_video | null;
 }

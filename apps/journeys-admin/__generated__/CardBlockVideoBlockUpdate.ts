@@ -32,6 +32,14 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
   endAt: number | null;
   muted: boolean | null;
   autoplay: boolean | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoId: string | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoVariantLanguageId: string | null;
   video: CardBlockVideoBlockUpdate_videoBlockUpdate_video | null;
   /**
    * posterBlockId is present if a child block should be used as a poster.

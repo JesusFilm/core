@@ -802,7 +802,7 @@ const imageBlocks: TreeBlock[] = [
   }
 ]
 
-const videoBlock: TreeBlock[] = [
+const videoBlocks: TreeBlock[] = [
   {
     id: 'step1.id',
     __typename: 'StepBlock',
@@ -816,12 +816,14 @@ const videoBlock: TreeBlock[] = [
         __typename: 'VideoBlock',
         parentBlockId: 'card1.id',
         parentOrder: 0,
-        title: '',
         autoplay: true,
         muted: true,
-        videoContent: {
-          __typename: 'VideoArclight',
-          src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+        video: {
+          __typename: 'Video',
+          variant: {
+            __typename: 'VideoVariant',
+            hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+          }
         },
         endAt: null,
         startAt: null,
@@ -920,13 +922,15 @@ const videoBlock: TreeBlock[] = [
         __typename: 'VideoBlock',
         parentBlockId: 'card3.id',
         parentOrder: 0,
-        title: '',
         autoplay: false,
         muted: false,
         posterBlockId: 'posterBlockId',
-        videoContent: {
-          __typename: 'VideoArclight',
-          src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+        video: {
+          __typename: 'Video',
+          variant: {
+            __typename: 'VideoVariant',
+            hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+          }
         },
         endAt: null,
         startAt: null,
@@ -961,13 +965,15 @@ const videoBlock: TreeBlock[] = [
         __typename: 'VideoBlock',
         parentBlockId: 'card3.id',
         parentOrder: 0,
-        title: '',
         autoplay: true,
         muted: false,
         posterBlockId: null,
-        videoContent: {
-          __typename: 'VideoArclight',
-          src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+        video: {
+          __typename: 'Video',
+          variant: {
+            __typename: 'VideoVariant',
+            hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+          }
         },
         endAt: null,
         startAt: 10,
@@ -1004,11 +1010,11 @@ WithContent.args = {
   blocks: imageBlocks
 }
 
-export const WithVideoContent: Story<ConductorProps> = Template.bind({})
-WithVideoContent.args = {
-  blocks: videoBlock
+export const WithVideo: Story<ConductorProps> = Template.bind({})
+WithVideo.args = {
+  blocks: videoBlocks
 }
-WithVideoContent.parameters = {
+WithVideo.parameters = {
   chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 
