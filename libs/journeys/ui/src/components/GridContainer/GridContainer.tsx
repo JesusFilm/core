@@ -24,6 +24,7 @@ export function GridContainer({
       direction={kebabCase(direction) as GridDirection}
       alignItems={kebabCase(alignItems)}
       justifyContent={kebabCase(justifyContent)}
+      sx={{ mb: 4 }}
     >
       {children?.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />

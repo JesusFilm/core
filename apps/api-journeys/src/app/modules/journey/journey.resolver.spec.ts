@@ -37,25 +37,25 @@ describe('JourneyResolver', () => {
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
   const journey = {
-    id: '1',
+    id: 'journeyId',
+    slug: 'journey-slug',
     title: 'published',
     status: JourneyStatus.published,
     locale: 'en-US',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlockId: '2',
-    slug: 'published-slug',
+    primaryImageBlockId: null,
     publishedAt,
     createdAt
   }
 
   const block = {
-    id: '2',
-    journeyId: '1',
+    id: 'blockId',
+    journeyId: 'journeyId',
     __typename: 'ImageBlock',
-    parentBlockId: '3',
-    parentOrder: 2,
+    parentBlockId: null,
+    parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
     width: 1920,
@@ -72,74 +72,25 @@ describe('JourneyResolver', () => {
     slug: 'published-slug'
   }
 
-  const journeyResponse = {
-    ...journey,
-    status: JourneyStatus.published
-  }
-
-  const piJourneyResponse = {
-    id: '1',
-    title: 'published',
-    locale: 'en-US',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlock: {
-      id: '2',
-      src: '',
-      width: 1,
-      height: 1,
-      alt: '',
-      blurhash: '',
-      journeyId: '1',
-      parentOrder: 0
-    },
-    slug: 'published-slug',
-    createdAt,
-    publishedAt,
-    status: JourneyStatus.published
-  }
-
-  const piJourneyResponsenull = {
-    id: '1',
-    title: 'published',
-    locale: 'en-US',
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    description: null,
-    primaryImageBlock: null,
-    slug: 'published-slug',
-    createdAt,
-    publishedAt,
-    status: JourneyStatus.published
-  }
-
   const userJourney = {
-    id: '1',
-    userId: '1',
-    journeyId: '1',
+    id: 'userJourneyId',
+    userId: 'userId',
+    journeyId: 'journeyId',
     role: UserJourneyRole.editor
   }
 
-  const ownerUserJourney = {
-    id: '2',
-    userId: '2',
-    journeyId: '1',
-    role: UserJourneyRole.owner
-  }
-
   const invitedUserJourney = {
-    id: '3',
-    userId: '3',
-    journeyId: '1',
+    id: 'invitedUserJourneyId',
+    userId: 'invitedUserId',
+    journeyId: 'journeyId',
     role: UserJourneyRole.inviteRequested
   }
 
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn(() => journey),
-      getBySlug: jest.fn(() => journey),
+      get: jest.fn((id) => (id === journey.id ? journey : null)),
+      getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
       save: jest.fn((input) => input),
@@ -151,33 +102,19 @@ describe('JourneyResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
-      getSiblings: jest.fn(() => [block]),
-      get: jest.fn(() => block),
-      save: jest.fn((input) => ({
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        createdAt,
-        locale: 'en-US',
-        status: JourneyStatus.draft,
-        ...input
-      }))
+      get: jest.fn(() => block)
     })
   }
 
   const userJourneyService = {
     provide: UserJourneyService,
     useFactory: () => ({
-      get: jest.fn((key) => {
-        if (key === ownerUserJourney.id) return ownerUserJourney
-        if (key === invitedUserJourney.id) return invitedUserJourney
-        return userJourney
-      }),
       save: jest.fn((input) => input),
       forJourney: jest.fn(() => [userJourney, userJourney]),
       forJourneyUser: jest.fn((journeyId, userId) => {
-        if (userId === ownerUserJourney.userId) return ownerUserJourney
         if (userId === invitedUserJourney.userId) return invitedUserJourney
-        return userJourney
+        if (userId === userJourney.userId) return userJourney
+        return null
       })
     })
   }
@@ -197,73 +134,117 @@ describe('JourneyResolver', () => {
     ujService = module.get<UserJourneyService>(UserJourneyService)
   })
 
-  describe('adminJourney', () => {
-    it('returns Journey', async () => {
-      expect(await resolver.adminJourney('2', 'slug')).toEqual(journeyResponse)
-      expect(service.getBySlug).toHaveBeenCalledWith('slug')
-      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
-        userJourney.journeyId,
-        '2'
-      )
-    })
-
-    it('returns Journey by id', async () => {
-      expect(await resolver.adminJourney('2', '1', IdType.databaseId)).toEqual(
-        journeyResponse
-      )
-      expect(service.get).toHaveBeenCalledWith('1')
-    })
-  })
-
-  describe('journey', () => {
-    it('returns Journey', async () => {
-      expect(await resolver.journey('slug')).toEqual(journeyResponse)
-      expect(service.getBySlug).toHaveBeenCalledWith('slug')
-    })
-
-    it('returns Journey by id', async () => {
-      expect(await resolver.journey('1', IdType.databaseId)).toEqual(
-        journeyResponse
-      )
-      expect(service.get).toHaveBeenCalledWith('1')
-    })
-  })
-
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
-      expect(await resolver.adminJourneys('1')).toEqual([
-        journeyResponse,
-        journeyResponse
-      ])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('1')
+      expect(await resolver.adminJourneys('userId')).toEqual([journey, journey])
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId')
     })
   })
 
   describe('journeys', () => {
     it('should get published journeys', async () => {
-      expect(await resolver.journeys()).toEqual([
-        journeyResponse,
-        journeyResponse
-      ])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalled()
+      expect(await resolver.journeys()).toEqual([journey, journey])
+      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith()
     })
   })
 
-  describe('Blocks', () => {
-    it('returns Block', async () => {
-      expect(await resolver.blocks(journeyResponse)).toEqual([block])
+  describe('adminJourney', () => {
+    it('returns Journey by slug', async () => {
+      expect(
+        await resolver.adminJourney('userId', 'journey-slug', IdType.slug)
+      ).toEqual(journey)
+      expect(service.getBySlug).toHaveBeenCalledWith('journey-slug')
+      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
+        userJourney.journeyId,
+        userJourney.userId
+      )
+    })
+
+    it('returns Journey by id', async () => {
+      expect(
+        await resolver.adminJourney('userId', 'journeyId', IdType.databaseId)
+      ).toEqual(journey)
+      expect(service.get).toHaveBeenCalledWith('journeyId')
+      expect(ujService.forJourneyUser).toHaveBeenCalledWith(
+        userJourney.journeyId,
+        userJourney.userId
+      )
+    })
+
+    it('returns null if no journey found', async () => {
+      expect(
+        await resolver.adminJourney('userId', '404', IdType.databaseId)
+      ).toEqual(null)
+      expect(service.get).toHaveBeenCalledWith('404')
+    })
+
+    it('throws error if user is unknown', async () => {
+      await expect(
+        async () =>
+          await resolver.adminJourney(
+            'unknownUserId',
+            'journeyId',
+            IdType.databaseId
+          )
+      ).rejects.toThrow(
+        'User has not received an invitation to edit this journey.'
+      )
+      expect(service.get).toHaveBeenCalledWith('journeyId')
+    })
+
+    it('throws error if user is invited', async () => {
+      await expect(
+        async () =>
+          await resolver.adminJourney(
+            'invitedUserId',
+            'journeyId',
+            IdType.databaseId
+          )
+      ).rejects.toThrow('User invitation pending.')
+      expect(service.get).toHaveBeenCalledWith('journeyId')
+    })
+  })
+
+  describe('journey', () => {
+    it('returns Journey by slug', async () => {
+      expect(await resolver.journey('journey-slug', IdType.slug)).toEqual(
+        journey
+      )
+      expect(service.getBySlug).toHaveBeenCalledWith('journey-slug')
+    })
+
+    it('returns Journey by id', async () => {
+      expect(await resolver.journey('journeyId', IdType.databaseId)).toEqual(
+        journey
+      )
+      expect(service.get).toHaveBeenCalledWith('journeyId')
+    })
+
+    it('returns null if no journey found', async () => {
+      expect(await resolver.journey('404', IdType.databaseId)).toEqual(null)
+      expect(service.get).toHaveBeenCalledWith('404')
+    })
+  })
+
+  describe('blocks', () => {
+    it('returns blocks', async () => {
+      expect(await resolver.blocks(journey)).toEqual([block])
     })
   })
 
   // need working example to diagnose
   describe('primaryImageBlock', () => {
     it('returns primaryImageBlock', async () => {
-      expect(await resolver.primaryImageBlock(piJourneyResponse)).toEqual(block)
+      expect(
+        await resolver.primaryImageBlock({
+          ...journey,
+          primaryImageBlockId: 'blockId'
+        })
+      ).toEqual(block)
     })
+
     it('should return null', async () => {
-      expect(await resolver.primaryImageBlock(piJourneyResponsenull)).toEqual(
-        null
-      )
+      expect(await resolver.primaryImageBlock(journey)).toEqual(null)
     })
   })
 
@@ -366,11 +347,23 @@ describe('JourneyResolver', () => {
 
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
-      expect(await resolver.userJourneys(journeyResponse)).toEqual([
+      expect(await resolver.userJourneys(journey)).toEqual([
         userJourney,
         userJourney
       ])
-      expect(ujService.forJourney).toHaveBeenCalledWith(journeyResponse)
+      expect(ujService.forJourney).toHaveBeenCalledWith(journey)
+    })
+  })
+
+  describe('status', () => {
+    it('should return draft', async () => {
+      expect(resolver.status({ ...journey, publishedAt: null })).toEqual(
+        JourneyStatus.draft
+      )
+    })
+
+    it('should return published', async () => {
+      expect(resolver.status(journey)).toEqual(JourneyStatus.published)
     })
   })
 })

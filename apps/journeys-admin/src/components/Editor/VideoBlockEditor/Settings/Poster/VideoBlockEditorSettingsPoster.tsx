@@ -62,7 +62,7 @@ export function VideoBlockEditorSettingsPoster({
                     ? theme.palette.action.disabled
                     : theme.palette.primary.main
                 }}
-              ></Create>
+              />
             </IconButton>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={selectedBlock}

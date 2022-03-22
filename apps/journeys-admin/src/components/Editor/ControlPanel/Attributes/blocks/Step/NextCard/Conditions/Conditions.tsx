@@ -65,7 +65,7 @@ export function Conditions(): ReactElement {
       </Typography>
       <ToggleOption
         heading={'Lock the next step'}
-        description={"Don't allow to skip the current card"}
+        description={'Prevent skipping of current card'}
         checked={block.locked}
         handleChange={handleChange}
       >

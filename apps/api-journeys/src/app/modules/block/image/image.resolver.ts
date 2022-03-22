@@ -3,7 +3,8 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UserInputError } from 'apollo-server-errors'
 import { encode } from 'blurhash'
 import axios from 'axios'
-import * as sharp from 'sharp' // eslint-disable-line
+// eslint-disable-next-line import/no-namespace
+import * as sharp from 'sharp'
 
 import { BlockService } from '../block.service'
 import {

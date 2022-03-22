@@ -128,7 +128,16 @@ export function Video({
         })
       }
     }
-  }, [handleVideoResponse, startAt, muted, autoplay, blockId, posterBlock])
+  }, [
+    handleVideoResponse,
+    startAt,
+    muted,
+    autoplay,
+    blockId,
+    posterBlock,
+    mobile,
+    selectedBlock
+  ])
 
   useEffect(() => {
     if (selectedBlock !== undefined) {

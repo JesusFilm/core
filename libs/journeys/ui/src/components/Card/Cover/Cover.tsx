@@ -147,7 +147,12 @@ export function Cover({
               )} ${theme.spacing(7)}`,
               sm: theme.spacing(7, 8, 7, 4)
             },
-            overflow: 'auto'
+            overflow: 'auto',
+            '& > *': {
+              '&:last-child': {
+                marginBottom: '0px'
+              }
+            }
           }}
         >
           {children}
@@ -209,7 +214,19 @@ export function Cover({
                 overflow: 'hidden'
               }}
             >
-              <Box sx={{ transform: 'skewY(10deg)', px: 7 }}>{children}</Box>
+              <Box
+                sx={{
+                  transform: 'skewY(10deg)',
+                  px: 7,
+                  '& > *': {
+                    '&:last-child': {
+                      marginBottom: '0px'
+                    }
+                  }
+                }}
+              >
+                {children}
+              </Box>
               <Box
                 ref={lgRef}
                 sx={{
