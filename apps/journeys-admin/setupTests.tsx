@@ -3,10 +3,10 @@ import './test/createMatchMedia'
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props) => {
+  default: ({ src, alt }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={props.src} alt={props.alt} />
-  }
+    <img src={src} alt={alt} />
+  )
 }))
 
 Element.prototype.scrollIntoView = jest.fn()

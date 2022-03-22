@@ -78,7 +78,7 @@ export function CardLayout(): ReactElement {
               textAlign: 'center'
             }}
           >
-            <VerticalSplit fontSize="large"></VerticalSplit>
+            <VerticalSplit fontSize="large" />
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">

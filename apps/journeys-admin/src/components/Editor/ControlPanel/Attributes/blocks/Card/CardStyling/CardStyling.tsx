@@ -83,7 +83,7 @@ export function CardStyling(): ReactElement {
               borderRadius: 2
             }}
           >
-            <ColorLens fontSize="large"></ColorLens>
+            <ColorLens fontSize="large" />
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">

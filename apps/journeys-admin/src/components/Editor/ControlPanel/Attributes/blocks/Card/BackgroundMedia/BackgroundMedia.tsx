@@ -75,7 +75,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-video-tab"
           >
             <Stack direction="row" spacing="8px">
-              <Videocam></Videocam>
+              <Videocam />
               <span>Video</span>
             </Stack>
           </ToggleButton>
@@ -85,7 +85,7 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-image-tab"
           >
             <Stack direction="row" spacing="8px">
-              <ImageIcon></ImageIcon>
+              <ImageIcon />
               <span>Image</span>
             </Stack>
           </ToggleButton>
