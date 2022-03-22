@@ -123,5 +123,20 @@ describe('VideoBlockResolver', () => {
         }
       })
     })
+
+    it('returns null if videoId is not set', async () => {
+      expect(
+        await resolver.video({ ...createdBlock, videoId: undefined })
+      ).toEqual(null)
+    })
+
+    it('returns null if videoVariantLanguageId is not set', async () => {
+      expect(
+        await resolver.video({
+          ...createdBlock,
+          videoVariantLanguageId: undefined
+        })
+      ).toEqual(null)
+    })
   })
 })

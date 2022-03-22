@@ -48,7 +48,7 @@ export class VideoBlockResolver {
   @ResolveField('video')
   video(
     @Parent()
-    block: VideoBlock & { videoId: string; videoVariantLanguageId: string }
+    block: VideoBlock & { videoId?: string; videoVariantLanguageId?: string }
   ): {
     __typename: 'Video'
     id: string
@@ -59,7 +59,9 @@ export class VideoBlockResolver {
         id: string
       }
     }
-  } {
+  } | null {
+    if (block.videoId == null || block.videoVariantLanguageId == null)
+      return null
     return {
       __typename: 'Video',
       id: block.videoId,
