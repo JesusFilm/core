@@ -28,8 +28,7 @@ export function GridItem({
           '&:last-child': {
             marginBottom: '0px'
           }
-        },
-        mb: 4
+        }
       }}
     >
       {children?.map((block) => (
