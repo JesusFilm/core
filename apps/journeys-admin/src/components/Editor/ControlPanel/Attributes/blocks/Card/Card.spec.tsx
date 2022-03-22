@@ -132,11 +132,15 @@ describe('Card', () => {
             __typename: 'VideoBlock',
             parentBlockId: 'card1.id',
             parentOrder: 0,
-            videoContent: {
-              __typename: 'VideoArclight',
-              src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              variant: {
+                __typename: 'VideoVariant',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
             },
-            title: '#FallingPlates',
             posterBlockId: null,
             muted: true,
             autoplay: true,
@@ -178,11 +182,15 @@ describe('Card', () => {
             __typename: 'VideoBlock',
             parentBlockId: 'card1.id',
             parentOrder: 0,
-            videoContent: {
-              __typename: 'VideoArclight',
-              src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              variant: {
+                __typename: 'VideoVariant',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
             },
-            title: '#FallingPlates',
             posterBlockId: null,
             muted: true,
             autoplay: true,

@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
-
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -43,19 +42,10 @@ export const CARD_BLOCK_COVER_VIDEO_UPDATE = gql`
 `
 
 export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
+  ${VIDEO_FIELDS}
   mutation CardBlockVideoBlockCreate($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
-      id
-      startAt
-      endAt
-      muted
-      autoplay
-      video {
-        variant {
-          hls
-        }
-      }
-      posterBlockId
+      ...VideoFields
     }
   }
 `
@@ -67,17 +57,7 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
     $input: VideoBlockUpdateInput!
   ) {
     videoBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      startAt
-      endAt
-      muted
-      autoplay
-      video {
-        variant {
-          hls
-        }
-      }
-      posterBlockId
+      ...VideoFields
     }
   }
 `
@@ -144,7 +124,6 @@ export function BackgroundMediaVideo({
         input: {
           journeyId: journeyId,
           parentBlockId: cardBlock.id,
-          title: block.title ?? block.videoContent.src,
           startAt: block.startAt,
           endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
           muted: block.muted,

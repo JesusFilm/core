@@ -25,11 +25,7 @@ export const Default: Story = () => {
                 journeyId: 'journeyId',
                 parentBlockId: 'cardId',
                 autoplay: true,
-                muted: false,
-                videoContent: {
-                  src: null
-                },
-                title: ''
+                muted: false
               }
             }
           },
@@ -39,15 +35,12 @@ export const Default: Story = () => {
                 id: 'videoBlockId',
                 parentBlockId: 'cardId',
                 journeyId: 'journeyId',
-                title: '',
                 muted: false,
                 autoplay: true,
                 startAt: null,
                 endAt: null,
                 posterBlockId: null,
-                videoContent: {
-                  src: null
-                }
+                video: null
               }
             }
           }

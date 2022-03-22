@@ -20,6 +20,8 @@ export const VIDEO_BLOCK_UPDATE = gql`
       endAt
       muted
       autoplay
+      videoId
+      videoVariantLanguageId
       video {
         variant {
           hls

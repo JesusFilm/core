@@ -22,6 +22,10 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video {
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  muted: boolean | null;
+  autoplay: boolean | null;
   /**
    * startAt dictates at which point of time the video should start playing
    */
@@ -30,8 +34,13 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
    * endAt dictates at which point of time the video should end
    */
   endAt: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
+  posterBlockId: string | null;
+  fullsize: boolean | null;
   /**
    * videoId and videoVariantLanguageId both need to be set to select a video
    */
@@ -41,12 +50,6 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
    */
   videoVariantLanguageId: string | null;
   video: CardBlockVideoBlockUpdate_videoBlockUpdate_video | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
-  posterBlockId: string | null;
 }
 
 export interface CardBlockVideoBlockUpdate {

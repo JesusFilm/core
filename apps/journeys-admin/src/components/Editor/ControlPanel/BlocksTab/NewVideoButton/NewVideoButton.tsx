@@ -44,10 +44,6 @@ export function NewVideoButton(): ReactElement {
             parentBlockId: card.id,
             autoplay: true,
             muted: false,
-            videoContent: {
-              src: null
-            },
-            title: '',
             fullsize: true
           }
         },

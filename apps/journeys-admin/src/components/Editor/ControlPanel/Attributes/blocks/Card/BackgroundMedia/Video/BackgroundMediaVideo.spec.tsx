@@ -59,15 +59,19 @@ const video: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   parentBlockId: 'card1.id',
   parentOrder: 0,
-  title: 'watch',
   startAt: 0,
   endAt: null,
   muted: true,
   autoplay: true,
   fullsize: true,
-  videoContent: {
-    __typename: 'VideoGeneric',
-    src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    variant: {
+      __typename: 'VideoVariant',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
   },
   posterBlockId: null,
   children: []
@@ -383,9 +387,14 @@ describe('BackgroundMediaVideo', () => {
                   children: [
                     {
                       ...video,
-                      videoContent: {
-                        src: 'https://example.com/video2.mp4',
-                        __typename: 'VideoGeneric'
+                      videoId: '2_0-FallingPlates',
+                      videoVariantLanguageId: '529',
+                      video: {
+                        __typename: 'Video',
+                        variant: {
+                          __typename: 'VideoVariant',
+                          hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+                        }
                       }
                     }
                   ]
@@ -514,15 +523,8 @@ describe('BackgroundMediaVideo', () => {
         const videoBlockResult = jest.fn(() => ({
           data: {
             videoBlockUpdate: {
-              id: video.id,
-              title: video.title,
-              startAt: video.startAt,
-              endAt: video.endAt,
-              muted: video.muted,
-              autoplay: false,
-              posterBlockId: video.posterBlockId,
-              videoContent: video.videoContent,
-              __typename: 'VideoBlock'
+              ...video,
+              autoplay: false
             }
           }
         }))

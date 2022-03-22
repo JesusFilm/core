@@ -818,6 +818,8 @@ const videoBlocks: TreeBlock[] = [
         parentOrder: 0,
         autoplay: true,
         muted: true,
+        videoId: '2_0-FallingPlates',
+        videoVariantLanguageId: '529',
         video: {
           __typename: 'Video',
           variant: {
@@ -925,6 +927,8 @@ const videoBlocks: TreeBlock[] = [
         autoplay: false,
         muted: false,
         posterBlockId: 'posterBlockId',
+        videoId: '2_0-FallingPlates',
+        videoVariantLanguageId: '529',
         video: {
           __typename: 'Video',
           variant: {
@@ -968,6 +972,8 @@ const videoBlocks: TreeBlock[] = [
         autoplay: true,
         muted: false,
         posterBlockId: null,
+        videoId: '2_0-FallingPlates',
+        videoVariantLanguageId: '529',
         video: {
           __typename: 'Video',
           variant: {

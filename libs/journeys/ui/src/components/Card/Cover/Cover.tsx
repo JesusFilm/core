@@ -91,14 +91,10 @@ export function Cover({
           data-testid="CardVideoCover"
         >
           <video ref={videoRef} className="video-js" playsInline>
-            {videoBlock.videoContent.src != null && (
+            {videoBlock.video?.variant?.hls != null && (
               <source
-                src={videoBlock.videoContent.src}
-                type={
-                  videoBlock.videoContent.__typename === 'VideoArclight'
-                    ? 'application/x-mpegURL'
-                    : undefined
-                }
+                src={videoBlock.video.variant.hls}
+                type="application/x-mpegURL"
               />
             )}
           </video>

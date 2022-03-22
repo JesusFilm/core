@@ -102,14 +102,18 @@ describe('CardBlock', () => {
               parentOrder: 0,
               muted: true,
               autoplay: true,
-              title: 'video',
               startAt: null,
               endAt: null,
               posterBlockId: 'posterBlockId',
               fullsize: null,
-              videoContent: {
-                __typename: 'VideoArclight',
-                src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              videoId: '2_0-FallingPlates',
+              videoVariantLanguageId: '529',
+              video: {
+                __typename: 'Video',
+                variant: {
+                  __typename: 'VideoVariant',
+                  hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+                }
               },
               children: [
                 {

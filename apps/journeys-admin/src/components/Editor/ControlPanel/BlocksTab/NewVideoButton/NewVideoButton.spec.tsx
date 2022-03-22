@@ -44,9 +44,7 @@ describe('Video', () => {
           startAt: null,
           endAt: null,
           posterBlockId: null,
-          videoContent: {
-            src: null
-          },
+          video: null,
           fullsize: true
         }
       }
@@ -63,10 +61,6 @@ describe('Video', () => {
                   parentBlockId: 'cardId',
                   autoplay: true,
                   muted: false,
-                  videoContent: {
-                    src: null
-                  },
-                  title: '',
                   fullsize: true
                 }
               }
@@ -108,9 +102,7 @@ describe('Video', () => {
           startAt: null,
           endAt: null,
           posterBlockId: null,
-          videoContent: {
-            src: null
-          },
+          video: null,
           __typename: 'VideoBlock',
           fullsize: true
         }
@@ -129,10 +121,6 @@ describe('Video', () => {
                   parentBlockId: 'cardId',
                   autoplay: true,
                   muted: false,
-                  videoContent: {
-                    src: null
-                  },
-                  title: '',
                   fullsize: true
                 }
               }

@@ -1,16 +1,27 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { TreeBlock } from '@core/journeys/ui'
 import { VideoBlockEditorSource } from './VideoBlockEditorSource'
 
-const video = {
+const video: TreeBlock = {
   __typename: 'VideoBlock',
+  id: 'videoBlockId',
+  parentOrder: 0,
+  fullsize: true,
   autoplay: true,
   endAt: null,
   muted: true,
   parentBlockId: 'card.id',
   posterBlockId: null,
   startAt: 0,
-  title: '123.mp4',
-  videoContent: { src: 'https://example.com/123.mp4' }
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    variant: {
+      __typename: 'VideoVariant',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
+  }
 }
 
 describe('VideoBlockEditorSource', () => {
