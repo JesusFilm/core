@@ -116,7 +116,10 @@ describe('VideoBlockResolver', () => {
         id: 'videoId',
         variant: {
           __typename: 'VideoVariant',
-          languageId: 'videoVariantLanguageId'
+          language: {
+            __typename: 'Language',
+            id: 'videoVariantLanguageId'
+          }
         }
       })
     })
