@@ -5,7 +5,8 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock } from '../..'
+import { TreeBlock, BlockRenderer } from '../..'
+import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -23,6 +24,7 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
 
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
+  wrappers?: WrappersProps
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
@@ -34,7 +36,8 @@ export function RadioQuestion({
   label,
   description,
   children,
-  uuid = uuidv4
+  uuid = uuidv4,
+  wrappers
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
@@ -61,6 +64,22 @@ export function RadioQuestion({
 
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
+  const options = children?.map(
+    (option) =>
+      option.__typename === 'RadioOptionBlock' &&
+      (wrappers != null ? (
+        <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
+      ) : (
+        <RadioOption
+          {...option}
+          key={option.id}
+          selected={selectedId === option.id}
+          disabled={Boolean(selectedId)}
+          onClick={handleClick}
+        />
+      ))
+  )
+
   return (
     <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
       <Typography variant="h3" gutterBottom>
@@ -72,18 +91,7 @@ export function RadioQuestion({
         </Typography>
       )}
       <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
-        {children?.map(
-          (option) =>
-            option.__typename === 'RadioOptionBlock' && (
-              <RadioOption
-                {...option}
-                key={option.id}
-                selected={selectedId === option.id}
-                disabled={Boolean(selectedId)}
-                onClick={handleClick}
-              />
-            )
-        )}
+        {options}
       </ButtonGroup>
     </StyledRadioQuestion>
   )

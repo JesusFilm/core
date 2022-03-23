@@ -127,7 +127,7 @@ export function BlockRenderer({
       return (
         <Wrapper block={block}>
           <RadioQuestionWrapper block={block}>
-            <RadioQuestion {...block} />
+            <RadioQuestion {...block} wrappers={wrappers} />
           </RadioQuestionWrapper>
         </Wrapper>
       )

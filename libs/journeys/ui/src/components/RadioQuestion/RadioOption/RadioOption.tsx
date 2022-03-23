@@ -21,7 +21,7 @@ const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   lineHeight: theme.typography.body2.lineHeight,
   textAlign: 'start',
   justifyContent: 'flex-start',
-  borderRadius: '8px',
+  borderRadius: 'inherit',
   padding: '14px 10px 14px 14px'
 }))
 

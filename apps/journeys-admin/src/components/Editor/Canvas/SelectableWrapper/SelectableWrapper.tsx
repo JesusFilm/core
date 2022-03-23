@@ -1,9 +1,9 @@
 import { ReactElement, MouseEvent } from 'react'
 import {
-  useEditor,
   ActiveTab,
   ActiveFab,
-  WrapperProps
+  WrapperProps,
+  useEditor
 } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
 
@@ -29,17 +29,18 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
+  // TODO: Test via E2E
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
     if (block.__typename === 'RadioOptionBlock') {
       const parentSelected = selectedBlock?.id === block.parentBlockId
       const siblingSelected =
         selectedBlock?.parentBlockId === block.parentBlockId
 
       if (selectedBlock?.id === block.id) {
+        e.stopPropagation()
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
       } else if (parentSelected || siblingSelected) {
+        e.stopPropagation()
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
         dispatch({
           type: 'SetActiveTabAction',
@@ -50,8 +51,10 @@ export function SelectableWrapper({
       }
     } else {
       if (selectedBlock?.id === block.id && isInlineEditable) {
+        e.stopPropagation()
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
       } else {
+        e.stopPropagation()
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
         dispatch({
           type: 'SetActiveTabAction',
@@ -65,13 +68,19 @@ export function SelectableWrapper({
 
   return isSelectable ? (
     <Box
+      data-testid={`selected-${block.id}`}
+      className={
+        block.__typename === 'RadioOptionBlock'
+          ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
+          : ''
+      }
       sx={{
         '&:last-child': {
           '& > *': {
             marginBottom: '0px'
           }
         },
-        borderRadius: '4px',
+        borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
         outline: selectedBlock?.id === block.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px',
         zIndex: selectedBlock?.id === block.id ? 1 : 0
