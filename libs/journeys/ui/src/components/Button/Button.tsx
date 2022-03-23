@@ -45,13 +45,8 @@ export function Button({
   }
 
   return (
-    // Margins added via Box so it's ignored by admin selection border outline
-    <Box
-      sx={{
-        mb: 4,
-        mt: size === 'large' ? 2 : size === 'medium' ? 1 : 0
-      }}
-    >
+    // Margin added via Box so it's ignored by admin selection border outline
+    <Box sx={{ mb: 4 }}>
       <StyledButton
         variant={buttonVariant ?? 'contained'}
         color={buttonColor ?? undefined}
