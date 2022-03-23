@@ -28,7 +28,7 @@ export const simpleComponentConfig = {
     ...journeysAdminConfig.parameters,
     chromatic: {
       ...journeysAdminConfig.parameters.chromatic,
-      viewports: [1200]
+      viewports: [600]
     }
   }
 }

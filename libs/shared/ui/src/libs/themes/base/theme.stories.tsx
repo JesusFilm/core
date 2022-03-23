@@ -10,14 +10,14 @@ import {
 } from '@mui/material/styles'
 import { Breakpoint } from '@mui/system'
 
-import { sharedUiConfig, themes, useBreakpoints } from '../../../index'
+import { simpleComponentConfig, themes, useBreakpoints } from '../../../index'
 
 const ThemeDemo = {
-  ...sharedUiConfig,
+  ...simpleComponentConfig,
   component: Typography,
   title: 'Default Theme',
   parameters: {
-    ...sharedUiConfig.parameters,
+    ...simpleComponentConfig.parameters,
     theme: 'dark'
   }
 }
