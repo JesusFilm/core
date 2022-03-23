@@ -1,28 +1,40 @@
 {
-  "root": "apps/watch-admin-e2e",
-  "sourceRoot": "apps/watch-admin-e2e/src",
+  "root": "apps/journeys-e2e",
+  "sourceRoot": "apps/journeys-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "start-server-and-test \"nx serve journeys:serve-all\" 4100 \"nx _e2e journeys-e2e\""
+          }
+        ]
+      }
+    },
+    "_e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/watch-admin-e2e/cypress.json",
-        "devServerTarget": "watch-admin:serve"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "watch-admin:serve:production"
-        }
+        "cypressConfig": "apps/journeys-e2e/cypress.json",
+        "tsConfig": "apps/journeys-e2e/tsconfig.e2e.json",
+        "baseUrl": "http://localhost:4100"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/watch-admin-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": ["apps/journeys-e2e/**/*.{js,ts}"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/journeys-e2e/tsconfig.json"
       }
     }
   },
   "tags": [],
-  "implicitDependencies": ["watch-admin"]
+  "implicitDependencies": ["journeys"]
 }
