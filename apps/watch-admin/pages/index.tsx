@@ -16,7 +16,7 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title="Journeys" />
       <PageWrapper title="Journeys" AuthUser={AuthUser}>
-        {data?.journeys != null && <JourneyList journeys={data.journeys} />}
+        <></>
       </PageWrapper>
     </>
   )
@@ -27,9 +27,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(async ({ AuthUser }) => {
   const apolloClient = initializeApollo({
     token: (await AuthUser.getIdToken()) ?? ''
-  })
-  await apolloClient.query({
-    query: GET_JOURNEYS
   })
 
   return addApolloState(apolloClient, {
