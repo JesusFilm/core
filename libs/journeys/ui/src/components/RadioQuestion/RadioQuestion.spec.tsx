@@ -153,9 +153,6 @@ it('should display the correct options with wrappers', () => {
       <RadioQuestion
         {...block}
         wrappers={{
-          Wrapper: ({ children }) => (
-            <div data-testid="wrapper">{children}</div>
-          ),
           RadioOptionWrapper: ({ children }) => (
             <div data-testid="radioOptionWrapper">{children}</div>
           )
@@ -163,10 +160,12 @@ it('should display the correct options with wrappers', () => {
       />
     </MockedProvider>
   )
-  expect(getAllByTestId('wrapper')).toHaveLength(2)
-  expect(getAllByTestId('radioOptionWrapper')).toHaveLength(2)
-  expect(getByText('Option 1')).toBeInTheDocument()
-  expect(getByText('Option 2')).toBeInTheDocument()
+  expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+    getByText('Option 1')
+  )
+  expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
+    getByText('Option 2')
+  )
 })
 
 describe('Admin RadioQuestion', () => {

@@ -13,8 +13,8 @@ import {
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { ImageFields } from '../../../../../__generated__/ImageFields'
+import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
-
 import { StepFields } from '../../../../../__generated__/StepFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
@@ -61,7 +61,7 @@ describe('SelectableWrapper', () => {
     children: []
   }
 
-  const radioOption1 = {
+  const radioOption1: TreeBlock<RadioOptionFields> = {
     __typename: 'RadioOptionBlock',
     id: 'RadioOption1',
     label: 'Option 1',

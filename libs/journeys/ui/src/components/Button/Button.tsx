@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles'
 import MuiButton, { ButtonProps as MuiButtonProps } from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { handleAction, TreeBlock } from '../..'
+import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
@@ -58,6 +59,18 @@ export function Button({
         endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
         onClick={handleClick}
         fullWidth
+        sx={
+          editableLabel != null
+            ? {
+                '&:hover': {
+                  backgroundColor:
+                    buttonVariant === ButtonVariant.text
+                      ? 'transparent'
+                      : `${buttonColor ?? 'primary'}.main`
+                }
+              }
+            : undefined
+        }
       >
         {editableLabel ?? label}
       </StyledButton>
