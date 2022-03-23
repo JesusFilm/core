@@ -17,8 +17,6 @@ export const StoryCard = ({
   const Card = (
     <Paper
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
         p: 7,
         borderRadius: (theme) => theme.spacing(4)
       }}
