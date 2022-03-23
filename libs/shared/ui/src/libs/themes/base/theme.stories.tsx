@@ -18,11 +18,7 @@ const ThemeDemo = {
   title: 'Default Theme',
   parameters: {
     ...sharedUiConfig.parameters,
-    theme: 'dark',
-    chromatic: {
-      ...sharedUiConfig.parameters.chromatic,
-      viewports: [600]
-    }
+    theme: 'dark'
   }
 }
 

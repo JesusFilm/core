@@ -19,3 +19,14 @@ export const sharedUiConfig = {
     ...rootParameters
   }
 }
+
+// Simple components are not responsive, simplify VR testing
+export const simpleComponentConfig = {
+  parameters: {
+    ...sharedUiConfig.parameters,
+    chromatic: {
+      ...sharedUiConfig.parameters?.chromatic,
+      viewports: [600]
+    }
+  }
+}
