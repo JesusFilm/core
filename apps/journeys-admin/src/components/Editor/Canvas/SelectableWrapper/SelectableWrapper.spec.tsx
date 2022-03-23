@@ -61,6 +61,16 @@ describe('SelectableWrapper', () => {
     children: []
   }
 
+  const radioOption1 = {
+    __typename: 'RadioOptionBlock',
+    id: 'RadioOption1',
+    label: 'Option 1',
+    parentBlockId: 'RadioQuestion1',
+    parentOrder: 0,
+    action: null,
+    children: []
+  }
+
   const radioQuestionBlock: TreeBlock<RadioQuestionFields> = {
     __typename: 'RadioQuestionBlock',
     id: 'RadioQuestion1',
@@ -69,15 +79,7 @@ describe('SelectableWrapper', () => {
     parentBlockId: 'parent.id',
     parentOrder: 0,
     children: [
-      {
-        __typename: 'RadioOptionBlock',
-        id: 'RadioOption1',
-        label: 'Option 1',
-        parentBlockId: 'RadioQuestion1',
-        parentOrder: 0,
-        action: null,
-        children: []
-      },
+      radioOption1,
       {
         __typename: 'RadioOptionBlock',
         id: 'RadioOption2',
@@ -101,7 +103,7 @@ describe('SelectableWrapper', () => {
     children: []
   }
 
-  const step = (block: TreeBlock): TreeBlock<StepFields> => {
+  const step = (blocks: TreeBlock[]): TreeBlock<StepFields> => {
     return {
       __typename: 'StepBlock',
       id: 'parent.id',
@@ -109,16 +111,18 @@ describe('SelectableWrapper', () => {
       parentOrder: 0,
       locked: true,
       nextBlockId: null,
-      children: [block]
+      children: blocks
     }
   }
 
-  it('should select basic block on click', async () => {
+  it('should select blocks on click', async () => {
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
         <EditorProvider
           initialState={{
-            steps: [step(imageBlock)],
+            steps: [
+              step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
+            ],
             activeFab: ActiveFab.Add
           }}
         >
@@ -126,12 +130,6 @@ describe('SelectableWrapper', () => {
             <Image {...imageBlock} alt={'imageAlt'} />
           </SelectableWrapper>
           {/* Video */}
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
           <SelectableWrapper block={typographyBlock}>
             <Typography {...typographyBlock} />
           </SelectableWrapper>
@@ -150,11 +148,6 @@ describe('SelectableWrapper', () => {
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
-    fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
-    expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
-      zIndex: '1'
-    })
     fireEvent.click(getByText('typography content'))
     expect(getByTestId(`selected-${typographyBlock.id}`)).toHaveStyle({
       outline: '3px solid #C52D3A',
@@ -173,12 +166,12 @@ describe('SelectableWrapper', () => {
     })
   })
 
-  it('should select inline editable block on click', async () => {
-    const { getByTestId, getByText, getByRole } = render(
+  it('should select inline editable blocks on click', async () => {
+    const { getByTestId, getByText } = render(
       <MockedProvider>
         <EditorProvider
           initialState={{
-            steps: [step(typographyBlock)],
+            steps: [step([typographyBlock, buttonBlock, signUpBlock])],
             activeFab: ActiveFab.Add
           }}
         >
@@ -191,12 +184,6 @@ describe('SelectableWrapper', () => {
           <SelectableWrapper block={signUpBlock}>
             <SignUp {...signUpBlock} />
           </SelectableWrapper>
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
         </EditorProvider>
       </MockedProvider>
     )
@@ -214,27 +201,21 @@ describe('SelectableWrapper', () => {
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
+
     fireEvent.click(getByText('sign up label'))
     fireEvent.click(getByText('sign up label'))
     expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
-
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
-      zIndex: '1'
-    })
   })
 
-  it('should select radio option on click', async () => {
+  it('should select radio question on radio option click', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider>
         <EditorProvider
           initialState={{
-            steps: [step(typographyBlock)],
+            steps: [step([radioQuestionBlock])],
             activeFab: ActiveFab.Add
           }}
         >
@@ -253,11 +234,55 @@ describe('SelectableWrapper', () => {
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
-    fireEvent.click(getByRole('button', { name: 'Option 2' }))
-    expect(getByTestId(`selected-RadioOption2`)).toHaveStyle({
+  })
+
+  it('should select radio option on click when radio question selected', async () => {
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider
+          initialState={{
+            selectedBlock: radioQuestionBlock,
+            steps: [step([radioQuestionBlock])],
+            activeFab: ActiveFab.Add
+          }}
+        >
+          <SelectableWrapper block={radioQuestionBlock}>
+            <RadioQuestion
+              {...radioQuestionBlock}
+              wrappers={{ Wrapper: SelectableWrapper }}
+            />
+          </SelectableWrapper>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
+  })
+
+  it('should select radio option on click when sibling option selected', async () => {
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <EditorProvider
+          initialState={{
+            selectedBlock: radioOption1,
+            steps: [step([radioQuestionBlock])],
+            activeFab: ActiveFab.Add
+          }}
+        >
+          <SelectableWrapper block={radioQuestionBlock}>
+            <RadioQuestion
+              {...radioQuestionBlock}
+              wrappers={{ Wrapper: SelectableWrapper }}
+            />
+          </SelectableWrapper>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
     expect(getByTestId(`selected-RadioOption1`)).toHaveStyle({
       outline: '3px solid #C52D3A',

@@ -147,6 +147,28 @@ describe('RadioQuestion', () => {
   })
 })
 
+it('should display the correct options with wrappers', () => {
+  const { getByText, getAllByTestId } = render(
+    <MockedProvider mocks={[]} addTypename={false}>
+      <RadioQuestion
+        {...block}
+        wrappers={{
+          Wrapper: ({ children }) => (
+            <div data-testid="wrapper">{children}</div>
+          ),
+          RadioOptionWrapper: ({ children }) => (
+            <div data-testid="radioOptionWrapper">{children}</div>
+          )
+        }}
+      />
+    </MockedProvider>
+  )
+  expect(getAllByTestId('wrapper')).toHaveLength(2)
+  expect(getAllByTestId('radioOptionWrapper')).toHaveLength(2)
+  expect(getByText('Option 1')).toBeInTheDocument()
+  expect(getByText('Option 2')).toBeInTheDocument()
+})
+
 describe('Admin RadioQuestion', () => {
   const card: TreeBlock = {
     id: 'card0.id',
@@ -160,25 +182,6 @@ describe('Admin RadioQuestion', () => {
     fullscreen: false,
     children: [block]
   }
-
-  it('should select whole block on option click ', () => {
-    const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: card
-          }}
-        >
-          <RadioQuestion {...block} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    const radioQuestion = getByTestId(`radioQuestion-${block.id}`)
-
-    fireEvent.click(getByText('Option 1'))
-
-    expect(radioQuestion).toHaveStyle('outline: 3px solid #C52D3A')
-  })
 
   it('should edit label on click ', () => {
     const { getByTestId, getByText } = render(
