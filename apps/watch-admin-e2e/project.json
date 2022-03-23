@@ -1,0 +1,28 @@
+{
+  "root": "apps/watch-admin-e2e",
+  "sourceRoot": "apps/watch-admin-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/watch-admin-e2e/cypress.json",
+        "devServerTarget": "watch-admin:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "watch-admin:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/watch-admin-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["watch-admin"]
+}
