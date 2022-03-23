@@ -29,7 +29,7 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
-  // TODO: Test via E2E
+  // TODO: Test dispatch via E2E
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     if (block.__typename === 'RadioOptionBlock') {
       const parentSelected = selectedBlock?.id === block.parentBlockId

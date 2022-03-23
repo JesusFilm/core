@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
-import { styled } from '@mui/material/styles'
-import MuiButton, { ButtonProps as MuiButtonProps } from '@mui/material/Button'
+import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { handleAction, TreeBlock } from '../..'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
@@ -12,13 +11,6 @@ import { ButtonFields } from './__generated__/ButtonFields'
 export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
 }
-
-const StyledButton = styled(MuiButton)<MuiButtonProps>(({ theme, size }) => ({
-  minHeight:
-    size === 'large' ? '42px' : size === 'medium' ? '36.5px' : '30.75px',
-  borderRadius: size === 'large' ? '16px' : size === 'medium' ? '12px' : '8px',
-  fontWeight: size === 'small' ? undefined : 700
-}))
 
 export function Button({
   buttonVariant,
@@ -47,7 +39,7 @@ export function Button({
   return (
     // Margin added via Box so it's ignored by admin selection border outline
     <Box sx={{ mb: 4 }}>
-      <StyledButton
+      <MuiButton
         variant={buttonVariant ?? 'contained'}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
@@ -69,7 +61,7 @@ export function Button({
         }
       >
         {editableLabel ?? label}
-      </StyledButton>
+      </MuiButton>
     </Box>
   )
 }

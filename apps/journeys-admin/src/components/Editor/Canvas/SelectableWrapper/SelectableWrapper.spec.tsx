@@ -139,6 +139,12 @@ describe('SelectableWrapper', () => {
           <SelectableWrapper block={signUpBlock}>
             <SignUp {...signUpBlock} />
           </SelectableWrapper>
+          <SelectableWrapper block={radioQuestionBlock}>
+            <RadioQuestion
+              {...radioQuestionBlock}
+              wrappers={{ Wrapper: SelectableWrapper }}
+            />
+          </SelectableWrapper>
         </EditorProvider>
       </MockedProvider>
     )
@@ -161,6 +167,11 @@ describe('SelectableWrapper', () => {
     })
     fireEvent.click(getByText('sign up label'))
     expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
+      outline: '3px solid #C52D3A',
+      zIndex: '1'
+    })
+    fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
+    expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })

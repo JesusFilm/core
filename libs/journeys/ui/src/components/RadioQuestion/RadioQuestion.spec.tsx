@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { TreeBlock, EditorProvider } from '../..'
+import { TreeBlock } from '../..'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
 
@@ -166,59 +166,4 @@ it('should display the correct options with wrappers', () => {
   expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
     getByText('Option 2')
   )
-})
-
-describe('Admin RadioQuestion', () => {
-  const card: TreeBlock = {
-    id: 'card0.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step0.id',
-    coverBlockId: null,
-    parentOrder: 0,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: [block]
-  }
-
-  it('should edit label on click ', () => {
-    const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: card
-          }}
-        >
-          <RadioQuestion {...block} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    const radioQuestion = getByTestId(`radioQuestion-${block.id}`)
-
-    fireEvent.click(getByText(block.label))
-
-    expect(radioQuestion).toHaveStyle('outline: 3px solid #C52D3A')
-    // Check editable when implemented
-  })
-
-  it('should edit description on click ', () => {
-    const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: card
-          }}
-        >
-          <RadioQuestion {...block} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    const radioQuestion = getByTestId(`radioQuestion-${block.id}`)
-
-    fireEvent.click(getByText('Description'))
-
-    expect(radioQuestion).toHaveStyle('outline: 3px solid #C52D3A;')
-    // Check editable when implemented
-  })
 })

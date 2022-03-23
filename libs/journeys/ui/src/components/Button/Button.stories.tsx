@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import Typography from '@mui/material/Typography'
 import { journeyUiConfig, StoryCard, TreeBlock } from '../..'
 import {
   ButtonVariant,
@@ -53,18 +52,13 @@ Color.args = {
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
     {args.variants.map((variant, i) => (
-      <>
-        <Button
-          {...args}
-          id="id"
-          key={i}
-          label={`${variant ?? ''}`}
-          size={variant as ButtonSize}
-        />
-        <Typography variant="h6" gutterBottom>
-          Some element under it
-        </Typography>
-      </>
+      <Button
+        {...args}
+        id="id"
+        key={i}
+        label={`${variant ?? ''}`}
+        size={variant as ButtonSize}
+      />
     ))}
   </StoryCard>
 )
