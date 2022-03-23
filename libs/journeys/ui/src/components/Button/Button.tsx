@@ -45,10 +45,11 @@ export function Button({
   }
 
   return (
-    // Margin-bottom added via Box so it's ignored by admin selection border outline
+    // Margins added via Box so it's ignored by admin selection border outline
     <Box
       sx={{
-        mb: size === 'large' ? 3 : size === 'medium' ? 2 : 1
+        mb: 4,
+        mt: size === 'large' ? 2 : size === 'medium' ? 1 : 0
       }}
     >
       <StyledButton
