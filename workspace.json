@@ -11,6 +11,8 @@
     "journeys-admin": "apps/journeys-admin",
     "journeys-admin-e2e": "apps/journeys-admin-e2e",
     "journeys-e2e": "apps/journeys-e2e",
+    "watch": "apps/watch",
+    "watch-e2e": "apps/watch-e2e",
     "journeys-ui": "libs/journeys/ui",
     "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",

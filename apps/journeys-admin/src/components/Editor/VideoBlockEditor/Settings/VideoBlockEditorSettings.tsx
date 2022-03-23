@@ -137,7 +137,7 @@ export function VideoBlockEditorSettings({
               <TextField
                 id="startAt"
                 name="startAt"
-                label="Starts At"
+                label="Starts at"
                 value={formik.values.startAt}
                 variant="filled"
                 disabled={disabled}
@@ -167,7 +167,7 @@ export function VideoBlockEditorSettings({
               <TextField
                 id="endAt"
                 name="endAt"
-                label="Ends At"
+                label="Ends at"
                 value={formik.values.endAt}
                 variant="filled"
                 disabled={disabled}
