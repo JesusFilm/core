@@ -38,9 +38,21 @@ export function Button({
 
   return (
     // Margin added via Box so it's ignored by admin selection border outline
-    <Box sx={{ mb: 4 }}>
+    <Box
+      sx={{
+        mb: 4,
+        mt:
+          size === 'large'
+            ? 6
+            : size === 'medium'
+            ? 5
+            : size === 'small'
+            ? 4
+            : 5
+      }}
+    >
       <MuiButton
-        variant={buttonVariant ?? 'contained'}
+        variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
         startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
