@@ -20,12 +20,8 @@ export const StoryCard = ({
         p: 7,
         borderRadius: (theme) => theme.spacing(4),
         '& > *': {
-          '&:first-child': {
-            marginTop: '0px'
-          },
-          '&:last-child': {
-            marginBottom: '0px'
-          }
+          '&:first-child': { mt: 0 },
+          '&:last-child': { mb: 0 }
         }
       }}
       elevation={3}

@@ -98,12 +98,8 @@ export function Card({
               width: '100%',
               maxWidth: 500,
               '& > *': {
-                '&:first-child': {
-                  marginTop: '0px'
-                },
-                '&:last-child': {
-                  marginBottom: '0px'
-                }
+                '&:first-child': { mt: 0 },
+                '&:last-child': { mb: 0 }
               }
             }}
           >

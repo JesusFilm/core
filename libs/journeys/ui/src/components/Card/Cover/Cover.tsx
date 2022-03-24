@@ -149,12 +149,8 @@ export function Cover({
             },
             overflow: 'auto',
             '& > *': {
-              '&:first-child': {
-                marginTop: '0px'
-              },
-              '&:last-child': {
-                marginBottom: '0px'
-              }
+              '&:first-child': { mt: 0 },
+              '&:last-child': { mb: 0 }
             }
           }}
         >
@@ -222,12 +218,8 @@ export function Cover({
                   transform: 'skewY(10deg)',
                   px: 7,
                   '& > *': {
-                    '&:first-child': {
-                      marginTop: '0px'
-                    },
-                    '&:last-child': {
-                      marginBottom: '0px'
-                    }
+                    '&:first-child': { mt: 0 },
+                    '&:last-child': { mb: 0 }
                   }
                 }}
               >
