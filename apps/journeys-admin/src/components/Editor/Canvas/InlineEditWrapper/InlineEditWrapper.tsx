@@ -5,6 +5,7 @@ import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { TypographyEdit } from './TypographyEdit'
 import { ButtonEdit } from './ButtonEdit'
+import { RadioOptionEdit } from './RadioOptionEdit'
 import { SignUpEdit } from './SignUpEdit'
 
 interface InlineEditWrapperProps
@@ -25,8 +26,10 @@ export function InlineEditWrapper({
       <ButtonEdit {...block} />
     ) : block.__typename === 'SignUpBlock' ? (
       <SignUpEdit {...block} />
+    ) : block.__typename === 'RadioOptionBlock' ? (
+      <RadioOptionEdit {...block} />
     ) : (
-      <></>
+      children
     )
 
   return activeFab === ActiveFab.Save && selectedBlock?.id === block.id
