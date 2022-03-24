@@ -17,14 +17,11 @@ export const StoryCard = ({
   const Card = (
     <Paper
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
         p: 7,
         borderRadius: (theme) => theme.spacing(4),
         '& > *': {
-          '&:last-child': {
-            marginBottom: '0px'
-          }
+          '&:first-child': { mt: 0 },
+          '&:last-child': { mb: 0 }
         }
       }}
       elevation={3}
