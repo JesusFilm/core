@@ -7,6 +7,7 @@ export const journeysConfig = {
 
 // Simple components are not responsive, simplify VR testing
 export const simpleComponentConfig = {
+  ...journeysConfig,
   parameters: {
     ...journeysConfig.parameters,
     chromatic: {

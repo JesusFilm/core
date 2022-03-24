@@ -6,7 +6,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../../../libs/context'
 import {
   JourneyStatus,
@@ -17,16 +17,12 @@ import { Drawer } from '../../../../../Drawer'
 import { CardStyling } from '.'
 
 const CardStylingStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: CardStyling,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/CardStyling',
   parameters: {
-    ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      viewports: [360, 600]
-    }
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
   }
 }
 
