@@ -149,6 +149,9 @@ export function Cover({
             },
             overflow: 'auto',
             '& > *': {
+              '&:first-child': {
+                marginTop: '0px'
+              },
               '&:last-child': {
                 marginBottom: '0px'
               }
@@ -219,6 +222,9 @@ export function Cover({
                   transform: 'skewY(10deg)',
                   px: 7,
                   '& > *': {
+                    '&:first-child': {
+                      marginTop: '0px'
+                    },
                     '&:last-child': {
                       marginBottom: '0px'
                     }

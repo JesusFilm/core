@@ -25,6 +25,9 @@ export function GridItem({
       xs={12 as GridSize}
       sx={{
         '& > *': {
+          '&:first-child': {
+            marginTop: '0px'
+          },
           '&:last-child': {
             marginBottom: '0px'
           }
