@@ -84,6 +84,7 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
+      fullWidth
       sx={{
         fontFamily: theme.typography.body2.fontFamily,
         fontSize: theme.typography.body2.fontSize,
