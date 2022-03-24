@@ -14,8 +14,8 @@ import { VideoBlockEditorSettings } from './Settings/VideoBlockEditorSettings'
 
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
-  parentBlockId: string
-  parentOrder: number
+  parentBlockId?: string | null
+  parentOrder?: number | null
   showDelete?: boolean
   forBackground?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
@@ -38,7 +38,7 @@ export function VideoBlockEditor({
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
   ) as ImageBlock | null
 
-  const handleTabChange = (event, newValue): void => {
+  const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
   }
 
@@ -52,14 +52,11 @@ export function VideoBlockEditor({
       <ImageBlockHeader
         selectedBlock={posterBlock}
         header={
-          selectedBlock?.title == null
+          selectedBlock?.video?.variant?.hls == null
             ? 'Select Video File'
-            : selectedBlock.title
+            : selectedBlock.video.variant.hls
         }
-        caption={
-          selectedBlock?.videoContent?.src == null ? 'Formats: MP4, HLS' : ''
-        }
-        showDelete={showDelete && selectedBlock?.videoContent?.src != null}
+        showDelete={showDelete && selectedBlock?.video != null}
         onDelete={handleVideoDelete}
       />
       <Box
@@ -80,7 +77,7 @@ export function VideoBlockEditor({
           <Tab
             label="Settings"
             {...tabA11yProps('videoSettings', 1)}
-            disabled={selectedBlock?.videoContent?.src == null}
+            disabled={selectedBlock?.video == null}
             data-testid="videoSettingsTab"
           />
         </Tabs>

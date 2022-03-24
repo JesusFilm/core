@@ -32,6 +32,6 @@ describe('Video', () => {
     const { getByText } = render(<Video {...video} />)
 
     expect(getByText('Video Source')).toBeInTheDocument()
-    expect(getByText(video.title)).toBeInTheDocument()
+    expect(getByText(video.video?.variant?.hls ?? '')).toBeInTheDocument()
   })
 })

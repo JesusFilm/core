@@ -28,7 +28,7 @@ import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSetting
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   posterBlock: ImageBlock | null
-  parentOrder?: number
+  parentOrder?: number | null
   disabled?: boolean
   forBackground?: boolean
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>

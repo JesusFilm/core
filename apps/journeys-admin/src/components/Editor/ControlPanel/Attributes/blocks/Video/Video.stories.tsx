@@ -23,15 +23,9 @@ export const Default: Story = () => {
     muted: true,
     autoplay: true,
     fullsize: true,
-    videoId: '2_0-FallingPlates',
-    videoVariantLanguageId: '529',
-    video: {
-      __typename: 'Video',
-      variant: {
-        __typename: 'VideoVariant',
-        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      }
-    },
+    videoId: null,
+    videoVariantLanguageId: null,
+    video: null,
     posterBlockId: null,
     children: []
   }
@@ -49,6 +43,7 @@ export const Default: Story = () => {
     </Stack>
   )
 }
+
 export const Filled: Story = () => {
   const video: TreeBlock<VideoBlock> = {
     id: 'video1.id',

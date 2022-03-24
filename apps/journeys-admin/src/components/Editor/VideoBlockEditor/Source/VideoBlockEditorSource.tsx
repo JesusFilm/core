@@ -11,8 +11,8 @@ import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../
 
 interface VideoBlockEditorSourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null
-  parentOrder: number
-  parentBlockId: string
+  parentOrder?: number | null
+  parentBlockId?: string | null
   onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
 }
 
@@ -27,13 +27,8 @@ export function VideoBlockEditorSource({
   ): Promise<void> => {
     const src = event.target.value
 
-    if (
-      !(await srcSchema.isValid({ src })) ||
-      src === selectedBlock?.videoContent.src
-    )
+    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.videoId)
       return
-
-    const title = src.replace(/(.*\/)*/, '').replace(/\?.*/, '')
 
     const block =
       selectedBlock == null
@@ -64,7 +59,7 @@ export function VideoBlockEditorSource({
 
   const formik = useFormik({
     initialValues: {
-      src: (selectedBlock as VideoBlock)?.videoContent?.src ?? ''
+      src: selectedBlock?.videoId ?? ''
     },
     validationSchema: srcSchema,
     onSubmit: noop
