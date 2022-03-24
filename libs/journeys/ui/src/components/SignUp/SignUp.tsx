@@ -1,4 +1,4 @@
-import { ReactElement, MouseEvent } from 'react'
+import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
@@ -7,7 +7,7 @@ import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, useEditor, ActiveTab, ActiveFab } from '../..'
+import { TreeBlock, handleAction, useEditor } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
@@ -90,31 +90,8 @@ export const SignUp = ({
   }
 
   const {
-    state: { selectedBlock },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
-
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    const block: TreeBlock<SignUpFields> = {
-      id: blockId,
-      submitIconId,
-      submitLabel,
-      action,
-      children,
-      ...props
-    }
-
-    if (selectedBlock?.id === block.id) {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    } else {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-    }
-  }
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -137,14 +114,8 @@ export const SignUp = ({
             data-testid={`signUp-${blockId}`}
             style={{
               display: 'flex',
-              flexDirection: 'column',
-              outline:
-                selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-              outlineOffset: '5px'
+              flexDirection: 'column'
             }}
-            onClick={
-              selectedBlock === undefined ? undefined : handleSelectBlock
-            }
           >
             <TextField
               {...formikProps}
