@@ -1,11 +1,11 @@
 import { Story, Meta } from '@storybook/react'
 import PaletteIcon from '@mui/icons-material/Palette'
 import { EditorProvider } from '@core/journeys/ui'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { Attribute } from '.'
 
 const AttributeStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Attribute,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Attribute'
 }

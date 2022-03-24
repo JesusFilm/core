@@ -1,20 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import { sharedUiConfig } from '../..'
+import { simpleComponentConfig } from '../..'
 import { CopyTextFieldProps } from './CopyTextField'
 import { CopyTextField } from '.'
 
 const Demo = {
-  ...sharedUiConfig,
+  ...simpleComponentConfig,
   component: CopyTextField,
-  title: 'Shared-Ui/CopyTextField',
-  parameters: {
-    ...sharedUiConfig.parameters,
-    chromatic: {
-      ...sharedUiConfig.parameters.chromatic,
-      viewports: [1200]
-    }
-  }
+  title: 'Shared-Ui/CopyTextField'
 }
 const Template: Story<CopyTextFieldProps> = ({ ...args }) => {
   return (
