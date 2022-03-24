@@ -49,6 +49,7 @@ export function RadioOption({
       className={className}
       disabled={disabled}
       onClick={handleClick}
+      fullWidth
       startIcon={
         selected ? (
           <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />

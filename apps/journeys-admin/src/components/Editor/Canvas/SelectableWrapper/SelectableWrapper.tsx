@@ -75,10 +75,11 @@ export function SelectableWrapper({
           : ''
       }
       sx={{
+        '&:first-child': {
+          '& > *': { mt: '0px' }
+        },
         '&:last-child': {
-          '& > *': {
-            marginBottom: '0px'
-          }
+          '& > *': { mb: '0px' }
         },
         borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
         outline: selectedBlock?.id === block.id ? '3px solid #C52D3A' : 'none',
