@@ -8,19 +8,12 @@ import {
 } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '../../../libs/storybook'
 
 const AdminThemeDemo = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: Typography,
-  title: 'Admin Theme',
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    chromatic: {
-      ...journeysAdminConfig.parameters.chromatic,
-      viewports: [600]
-    }
-  }
+  title: 'Admin Theme'
 }
 
 interface ColorStoryProps extends Omit<TypographyProps, 'css'> {
