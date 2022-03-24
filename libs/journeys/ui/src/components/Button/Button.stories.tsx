@@ -51,6 +51,9 @@ Color.args = {
 
 const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
   <StoryCard>
+    <Typography variant="overline" gutterBottom>
+      Some element above
+    </Typography>
     {args.variants.map((variant, i) => (
       <Button
         {...args}
@@ -60,6 +63,9 @@ const SizeTemplate: Story<ButtonStoryProps> = ({ ...args }) => (
         size={variant as ButtonSize}
       />
     ))}
+    <Typography variant="body1" gutterBottom>
+      Some element below
+    </Typography>
   </StoryCard>
 )
 

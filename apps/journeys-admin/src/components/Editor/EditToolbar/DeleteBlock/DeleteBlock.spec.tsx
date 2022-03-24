@@ -184,7 +184,7 @@ describe('DeleteBlock', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
+    await fireEvent.click(getByRole('menuitem', { name: 'Delete Block' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:card1.id' }

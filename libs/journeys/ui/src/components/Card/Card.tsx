@@ -98,9 +98,8 @@ export function Card({
               width: '100%',
               maxWidth: 500,
               '& > *': {
-                '&:last-child': {
-                  marginBottom: '0px'
-                }
+                '&:first-child': { mt: 0 },
+                '&:last-child': { mb: 0 }
               }
             }}
           >
