@@ -17,11 +17,12 @@ export const StoryCard = ({
   const Card = (
     <Paper
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
         p: 7,
         borderRadius: (theme) => theme.spacing(4),
         '& > *': {
+          '&:first-child': {
+            marginTop: '0px'
+          },
           '&:last-child': {
             marginBottom: '0px'
           }
