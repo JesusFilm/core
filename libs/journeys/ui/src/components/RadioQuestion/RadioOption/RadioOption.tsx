@@ -54,6 +54,7 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
+      fullWidth
     >
       {label}
     </StyledRadioOption>
