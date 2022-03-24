@@ -2,6 +2,8 @@ import { ReactElement } from 'react'
 import { useEditor, ActiveFab, WrapperProps } from '@core/journeys/ui'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
+import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
+import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { TypographyEdit } from './TypographyEdit'
 import { ButtonEdit } from './ButtonEdit'
@@ -9,7 +11,13 @@ import { RadioOptionEdit } from './RadioOptionEdit'
 import { SignUpEdit } from './SignUpEdit'
 
 interface InlineEditWrapperProps
-  extends WrapperProps<TypographyFields | ButtonFields | SignUpFields> {}
+  extends WrapperProps<
+    | TypographyFields
+    | ButtonFields
+    | SignUpFields
+    | RadioQuestionFields
+    | RadioOptionFields
+  > {}
 
 export function InlineEditWrapper({
   block,
