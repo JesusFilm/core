@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState, MouseEvent } from 'react'
+import { ReactElement, useState, MouseEvent } from 'react'
 import Box from '@mui/material/Box'
 import { ToggleButton, ToggleButtonGroup, Stack, styled } from '@mui/material'
 import { Image as ImageIcon, Videocam } from '@mui/icons-material'
@@ -28,9 +28,6 @@ export function BackgroundMedia(): ReactElement {
   const [blockType, setBlockType] = useState(
     coverBlock?.__typename.toString() ?? 'VideoBlock'
   )
-  useEffect(() => {
-    setBlockType(coverBlock?.__typename.toString() ?? 'VideoBlock')
-  }, [setBlockType, coverBlock])
 
   const handleTypeChange = (
     event: MouseEvent<HTMLElement>,

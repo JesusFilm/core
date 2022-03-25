@@ -216,7 +216,13 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="poster-dialog-title">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby="poster-dialog-title"
+      fullWidth={true}
+      maxWidth="xs"
+    >
       <DialogTitle>
         <Stack direction="row" justifyContent="space-between">
           <Typography

@@ -17,10 +17,7 @@ const ImageEditorStory = {
   title: 'Journeys-Admin/Editor/ImageBlockEditor',
   parameters: {
     ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic
-    }
+    layout: 'fullscreen'
   }
 }
 

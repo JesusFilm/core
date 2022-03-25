@@ -13,6 +13,7 @@ import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../__generated__/StepFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
+import { SelectableWrapper } from '../SelectableWrapper'
 import { InlineEditWrapper } from '.'
 
 describe('InlineEditWrapper', () => {
@@ -54,7 +55,7 @@ describe('InlineEditWrapper', () => {
   })
 
   it('should edit typography on double click', async () => {
-    const { getByDisplayValue, getByText } = render(
+    const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
         <EditorProvider
           initialState={{
@@ -62,15 +63,21 @@ describe('InlineEditWrapper', () => {
             activeFab: ActiveFab.Add
           }}
         >
-          <InlineEditWrapper block={typographyBlock}>
-            <Typography {...typographyBlock} />
-          </InlineEditWrapper>
+          <SelectableWrapper block={typographyBlock}>
+            <InlineEditWrapper block={typographyBlock}>
+              <Typography {...typographyBlock} />
+            </InlineEditWrapper>
+          </SelectableWrapper>
         </EditorProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByText('test content'))
     fireEvent.click(getByText('test content'))
+    expect(getByTestId(`selected-${typographyBlock.id}`)).toHaveStyle({
+      outline: '3px solid #C52D3A',
+      zIndex: '1'
+    })
     const input = getByDisplayValue('test content')
     expect(input).toBeInTheDocument()
     // Check it doesn't deselected on click
@@ -94,7 +101,7 @@ describe('InlineEditWrapper', () => {
       children: []
     }
 
-    const { getByDisplayValue, getByText } = render(
+    const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
         <EditorProvider
           initialState={{
@@ -102,15 +109,22 @@ describe('InlineEditWrapper', () => {
             activeFab: ActiveFab.Add
           }}
         >
-          <InlineEditWrapper block={block}>
-            <Button {...block} />
-          </InlineEditWrapper>
+          <SelectableWrapper block={block}>
+            <InlineEditWrapper block={block}>
+              <Button {...block} />
+            </InlineEditWrapper>
+          </SelectableWrapper>
         </EditorProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
+    expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+      outline: '3px solid #C52D3A',
+      zIndex: '1'
+    })
+
     const input = getByDisplayValue('test label')
     expect(input).toBeInTheDocument()
     fireEvent.click(input)
@@ -129,7 +143,7 @@ describe('InlineEditWrapper', () => {
       children: []
     }
 
-    const { getByDisplayValue, getByText } = render(
+    const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
         <EditorProvider
           initialState={{
@@ -137,15 +151,22 @@ describe('InlineEditWrapper', () => {
             activeFab: ActiveFab.Add
           }}
         >
-          <InlineEditWrapper block={block}>
-            <SignUp {...block} />
-          </InlineEditWrapper>
+          {' '}
+          <SelectableWrapper block={block}>
+            <InlineEditWrapper block={block}>
+              <SignUp {...block} />
+            </InlineEditWrapper>
+          </SelectableWrapper>
         </EditorProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
+    expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+      outline: '3px solid #C52D3A',
+      zIndex: '1'
+    })
     const input = getByDisplayValue('test label')
     await waitFor(() => expect(input).toBeInTheDocument())
     fireEvent.click(input)
