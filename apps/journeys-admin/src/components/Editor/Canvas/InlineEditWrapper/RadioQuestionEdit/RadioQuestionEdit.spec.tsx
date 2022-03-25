@@ -16,7 +16,7 @@ describe('RadioQuestionEdit', () => {
     description: 'description',
     children: []
   }
-  it('selects the heading input on click', () => {
+  it('selects the heading input by default on click', () => {
     const { getAllByRole } = render(
       <MockedProvider>
         <RadioQuestionEdit {...props} />
@@ -74,21 +74,6 @@ describe('RadioQuestionEdit', () => {
     fireEvent.change(input, { target: { value: '    updated heading    ' } })
     fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('selects the description input on click', async () => {
-    const { getAllByRole } = render(
-      <MockedProvider>
-        <RadioQuestionEdit {...props} />
-      </MockedProvider>
-    )
-    const descriptionInput = getAllByRole('textbox')[1]
-    fireEvent.click(descriptionInput)
-    expect(descriptionInput).toHaveFocus()
-    expect(descriptionInput).toHaveAttribute(
-      'placeholder',
-      'Type your description here...'
-    )
   })
 
   it('saves the description content on blur', async () => {

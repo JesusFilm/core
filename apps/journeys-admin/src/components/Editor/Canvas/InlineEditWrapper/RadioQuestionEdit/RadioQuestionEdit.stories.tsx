@@ -146,8 +146,6 @@ Description.args = {
 Description.play = () => {
   const descriptionInput = screen.getAllByRole('textbox')[1]
   userEvent.click(descriptionInput)
-  userEvent.click(descriptionInput)
-  userEvent.click(descriptionInput)
 }
 
 export default RadioQuestionEditStory as Meta
