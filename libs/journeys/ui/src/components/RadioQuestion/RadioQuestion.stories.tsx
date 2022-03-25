@@ -1,12 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Typography from '@mui/material/Typography'
-import {
-  journeyUiConfig,
-  simpleComponentConfig,
-  StoryCard,
-  TreeBlock
-} from '../..'
+import { simpleComponentConfig, StoryCard, TreeBlock } from '../..'
 import { RadioQuestion } from './RadioQuestion'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioOptionFields } from './RadioOption/__generated__/RadioOptionFields'
@@ -75,7 +70,6 @@ const longLabel: Array<TreeBlock<RadioOptionFields>> = [
 ]
 
 const Demo = {
-  ...journeyUiConfig,
   ...simpleComponentConfig,
   component: RadioQuestion,
   title: 'Journeys-Ui/RadioQuestion'
