@@ -34,6 +34,7 @@ const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
   color: 'inherit',
   fontSize: 'inherit',
   fontWeight: 'inherit',
+  fontFamily: 'inherit',
   lineHeight: 'inherit',
   letterSpacing: 'inherit',
   textTransform: 'inherit',

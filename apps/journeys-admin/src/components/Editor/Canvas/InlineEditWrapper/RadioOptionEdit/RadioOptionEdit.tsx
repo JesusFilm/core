@@ -35,6 +35,7 @@ const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
   color: 'inherit',
   fontSize: 'inherit',
   fontWeight: 'inherit',
+  fontFamily: 'inherit',
   lineHeight: 'inherit',
   letterSpacing: 'inherit',
   padding: '0px',
@@ -77,6 +78,7 @@ export function RadioOptionEdit({
       multiline
       autoFocus
       value={value}
+      placeholder="Type your text here..."
       onBlur={handleSaveBlock}
       onChange={(e) => {
         setValue(e.currentTarget.value)
