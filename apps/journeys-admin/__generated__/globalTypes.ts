@@ -244,6 +244,12 @@ export interface RadioQuestionBlockCreateInput {
   parentBlockId: string;
 }
 
+export interface RadioQuestionBlockUpdateInput {
+  description?: string | null;
+  label?: string | null;
+  parentBlockId?: string | null;
+}
+
 export interface RadioQuestionResponseCreateInput {
   blockId: string;
   id?: string | null;
