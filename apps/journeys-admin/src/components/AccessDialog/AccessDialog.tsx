@@ -20,6 +20,7 @@ import { gql, useLazyQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { CopyTextField } from '@core/shared/ui'
+import { useAuthUser } from 'next-firebase-auth'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -60,11 +61,18 @@ export function AccessDialog({
   onClose
 }: AccessDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const AuthUser = useAuthUser()
+  const currentUser = AuthUser.email
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeySlug }
     })
+
+  const disable =
+    data?.journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.email === currentUser
+    )?.role !== UserJourneyRole.owner
 
   useEffect(() => {
     if (open === true) {
@@ -99,11 +107,10 @@ export function AccessDialog({
             <CopyTextField
               value={
                 typeof window !== 'undefined'
-                  ? `${
-                      window.location.host.endsWith('.chromatic.com')
-                        ? 'https://admin.nextstep.is'
-                        : window.location.origin
-                    }/journeys/${journeySlug}`
+                  ? `${window.location.host.endsWith('.chromatic.com')
+                    ? 'https://admin.nextstep.is'
+                    : window.location.origin
+                  }/journeys/${journeySlug}`
                   : undefined
               }
               messageText="Editor invite link copied"
@@ -117,6 +124,7 @@ export function AccessDialog({
               userJourneys={data?.journey?.userJourneys?.filter(
                 ({ role }) => role === UserJourneyRole.inviteRequested
               )}
+              disable={disable}
             />
           )}
           <UserJourneyList
@@ -125,6 +133,7 @@ export function AccessDialog({
             userJourneys={data?.journey?.userJourneys?.filter(
               ({ role }) => role !== UserJourneyRole.inviteRequested
             )}
+            disable={disable}
           />
         </List>
       </DialogContent>
@@ -136,22 +145,24 @@ interface UserJourneyListProps {
   title: string
   loading?: boolean
   userJourneys?: UserJourney[] | null
+  disable: boolean
 }
 
 function UserJourneyList({
   title,
   loading,
-  userJourneys
+  userJourneys,
+  disable
 }: UserJourneyListProps): ReactElement {
   return (
     <>
       {((userJourneys?.length != null && userJourneys.length > 0) ||
         loading === true) && (
-        <>
-          <Divider sx={{ my: 2 }} />
-          <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
-        </>
-      )}
+          <>
+            <Divider sx={{ my: 2 }} />
+            <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
+          </>
+        )}
       {loading === true &&
         [0, 1, 2].map((i) => (
           <MuiListItem sx={{ px: 0 }} key={i}>
@@ -165,15 +176,25 @@ function UserJourneyList({
           </MuiListItem>
         ))}
       {userJourneys?.map((userJourney) => (
-        <ListItem key={userJourney.id} {...userJourney} />
+        <ListItem
+          key={userJourney.id}
+          userJourney={userJourney}
+          disabled={disable}
+        />
       ))}
     </>
   )
 }
 
-function ListItem({ id, user, role }: UserJourney): ReactElement {
+interface ListItemProps {
+  userJourney: UserJourney
+  disabled: boolean
+}
+
+function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+  const { id, role, user } = userJourney
 
   useEffect(() => () => setAnchorEl(null), [])
 
@@ -201,7 +222,7 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
-            disabled={role === 'owner'}
+            disabled={disabled || role === 'owner'}
             endIcon={<ArrowDropDownIcon />}
             sx={{
               color: 'text.primary',
