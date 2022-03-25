@@ -1,12 +1,10 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
-import InputBase, { InputBaseProps } from '@mui/material/InputBase'
 import { RadioQuestion, TreeBlock } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
-import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 import { RadioQuestionBlockUpdateContent } from '../../../../../../__generated__/RadioQuestionBlockUpdateContent'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
+import { InlineEditInput } from '../InlineEditInput'
 
 export const RADIO_QUESTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioQuestionBlockUpdateContent(
@@ -22,26 +20,6 @@ export const RADIO_QUESTION_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {}
-
-interface StyledInputProps extends InputBaseProps {}
-
-const adminPrimaryColor = adminTheme.palette
-  .primary as SimplePaletteColorOptions
-
-const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
-  '& .MuiInputBase-input': {
-    textAlign: 'inherit',
-    textTransform: 'inherit'
-  },
-  color: 'inherit',
-  fontSize: 'inherit',
-  fontWeight: 'inherit',
-  fontFamily: 'inherit',
-  lineHeight: 'inherit',
-  letterSpacing: 'inherit',
-  padding: 0,
-  caretColor: adminPrimaryColor.main
-}))
 
 export function RadioQuestionEdit({
   id,
@@ -79,7 +57,7 @@ export function RadioQuestionEdit({
   }
 
   const labelInput = (
-    <StyledInput
+    <InlineEditInput
       name={`edit-heading-${id}`}
       multiline
       fullWidth
@@ -95,7 +73,7 @@ export function RadioQuestionEdit({
   )
 
   const descriptionInput = (
-    <StyledInput
+    <InlineEditInput
       name={`edit-description-${id}`}
       multiline
       fullWidth

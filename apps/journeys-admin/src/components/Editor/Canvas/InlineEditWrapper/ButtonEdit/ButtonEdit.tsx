@@ -1,12 +1,10 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
-import InputBase, { InputBaseProps } from '@mui/material/InputBase'
 import { Button, TreeBlock } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
-import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
+import { InlineEditInput } from '../InlineEditInput'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
   mutation ButtonBlockUpdateContent(
@@ -21,26 +19,6 @@ export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface ButtonEditProps extends TreeBlock<ButtonFields> {}
-
-interface StyledInputProps extends InputBaseProps {}
-
-const adminPrimaryColor = adminTheme.palette
-  .primary as SimplePaletteColorOptions
-
-const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
-  '& .MuiInputBase-input': {
-    textAlign: 'inherit'
-  },
-  color: 'inherit',
-  fontSize: 'inherit',
-  fontWeight: 'inherit',
-  fontFamily: 'inherit',
-  lineHeight: 'inherit',
-  letterSpacing: 'inherit',
-  textTransform: 'inherit',
-  padding: '0px',
-  caretColor: adminPrimaryColor.main
-}))
 
 export function ButtonEdit({
   id,
@@ -74,7 +52,7 @@ export function ButtonEdit({
   }
 
   const input = (
-    <StyledInput
+    <InlineEditInput
       name={`edit-${id}`}
       fullWidth
       multiline
