@@ -26,7 +26,6 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
 
   it('should update journey description on submit', async () => {
     const updatedJourney = {
-      // id: defaultJourney.id,
       description: 'New Description'
     }
 
