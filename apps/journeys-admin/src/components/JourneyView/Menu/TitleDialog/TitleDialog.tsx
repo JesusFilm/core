@@ -16,6 +16,7 @@ import { useJourney } from '../../../../libs/context'
 export const JOURNEY_TITLE_UPDATE = gql`
   mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
+      id
       title
     }
   }
@@ -42,7 +43,11 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     await journeyUpdate({
       variables: { id: journey.id, input: updatedJourney },
       optimisticResponse: {
-        journeyUpdate: { __typename: 'Journey', ...updatedJourney }
+        journeyUpdate: {
+          id: journey.id,
+          __typename: 'Journey',
+          ...updatedJourney
+        }
       }
     })
 

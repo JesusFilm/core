@@ -11,6 +11,7 @@ import { JourneyUpdateInput } from "./globalTypes";
 
 export interface JourneyTitleUpdate_journeyUpdate {
   __typename: "Journey";
+  id: string;
   title: string;
 }
 
