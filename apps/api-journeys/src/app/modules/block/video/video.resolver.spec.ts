@@ -22,10 +22,7 @@ describe('VideoBlockResolver', () => {
     videoVariantLanguageId: 'videoVariantLanguageId'
   }
 
-  const createdBlock: VideoBlock & {
-    videoId: string
-    videoVariantLanguageId: string
-  } = {
+  const createdBlock: VideoBlock = {
     id: 'abc',
     __typename: 'VideoBlock',
     parentOrder: 0,
@@ -46,10 +43,7 @@ describe('VideoBlockResolver', () => {
     fullsize: true
   }
 
-  const updatedBlock: VideoBlock & {
-    videoId: string
-    videoVariantLanguageId: string
-  } = {
+  const updatedBlock: VideoBlock = {
     id: 'abc',
     __typename: 'VideoBlock',
     parentOrder: 0,

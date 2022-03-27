@@ -123,7 +123,7 @@ describe('VideoResolver', () => {
         await resolver.resolveReference({
           __typename: 'Video',
           id: '20615',
-          variant: { __typename: 'VideoVariant', languageId: 'en' }
+          variant: { __typename: 'VideoVariant', language: { id: 'en' } }
         })
       ).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
