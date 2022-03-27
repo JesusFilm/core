@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { useState } from 'react'
+import { AuthUser } from 'next-firebase-auth'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
@@ -71,6 +72,14 @@ export const Default: Story = () => {
       ]}
     >
       <AccessDialog
+        AuthUser={
+          {
+            id: 'userId1',
+            displayName: 'Amin One',
+            imageUrl: 'https://bit.ly/3Gth4Yf',
+            email: 'amin@email.com'
+          } as unknown as AuthUser
+        }
         journeySlug="journeySlug"
         open={open}
         onClose={() => setOpen(false)}

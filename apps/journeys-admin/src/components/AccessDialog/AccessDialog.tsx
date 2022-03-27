@@ -20,7 +20,7 @@ import { gql, useLazyQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { CopyTextField } from '@core/shared/ui'
-import { useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { AuthUser } from 'next-firebase-auth'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -53,16 +53,17 @@ interface AccessDialogProps {
   journeySlug: string
   open?: boolean
   onClose?: () => void
+  AuthUser?: AuthUser
 }
 
 export function AccessDialog({
   journeySlug,
   open,
-  onClose
+  onClose,
+  AuthUser
 }: AccessDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const AuthUser = useAuthUser()
-  const currentUserId = AuthUser.id
+  const currentUserId = AuthUser?.id
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
@@ -266,5 +267,3 @@ function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
     </>
   )
 }
-
-export default withAuthUser<AccessDialogProps>(AccessDialog)

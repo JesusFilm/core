@@ -1,5 +1,6 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { AuthUser } from 'next-firebase-auth'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
 import { AccessAvatarsProps } from './AccessAvatars'
@@ -18,6 +19,13 @@ const AccessAvatarsDemo = {
   component: AccessAvatars,
   title: 'Journeys-Admin/AccessAvatars'
 }
+
+const authUser = {
+  id: 'userId1',
+  displayName: 'Amin One',
+  imageUrl: 'https://bit.ly/3Gth4Yf',
+  email: 'amin@email.com'
+} as unknown as AuthUser
 
 const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
   <MockedProvider
@@ -81,21 +89,24 @@ const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
 export const Default: Story<AccessAvatarsProps> = Template.bind({})
 Default.args = {
   journeySlug: 'journeySlug',
-  userJourneys: [userJourney1, userJourney2, userJourney3]
+  userJourneys: [userJourney1, userJourney2, userJourney3],
+  AuthUser: authUser
 }
 
 export const Medium: Story<AccessAvatarsProps> = Template.bind({})
 Medium.args = {
   journeySlug: 'journeySlug',
   userJourneys: [userJourney1, userJourney2, userJourney3],
-  size: 'medium'
+  size: 'medium',
+  AuthUser: authUser
 }
 
 export const Large: Story<AccessAvatarsProps> = Template.bind({})
 Large.args = {
   journeySlug: 'journeySlug',
   userJourneys: [userJourney1, userJourney2, userJourney3],
-  size: 'large'
+  size: 'large',
+  AuthUser: authUser
 }
 
 export const Overflow: Story<AccessAvatarsProps> = Template.bind({})
@@ -108,7 +119,8 @@ Overflow.args = {
     userJourney4,
     userJourney5,
     userJourney6
-  ]
+  ],
+  AuthUser: authUser
 }
 
 export const NoImage: Story<AccessAvatarsProps> = Template.bind({})
@@ -118,7 +130,8 @@ NoImage.args = {
     { ...userJourney1, user: { ...userJourney1.user, imageUrl: null } },
     { ...userJourney2, user: { ...userJourney2.user, imageUrl: null } },
     { ...userJourney3, user: { ...userJourney3.user, imageUrl: null } }
-  ]
+  ],
+  AuthUser: authUser
 }
 
 export default AccessAvatarsDemo as Meta

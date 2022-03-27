@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Container from '@mui/material/Container'
 import { sortBy } from 'lodash'
+import { AuthUser } from 'next-firebase-auth'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { AddJourneyButton } from './AddJourneyButton'
 import { JourneySort, SortOrder } from './JourneySort'
@@ -12,9 +13,13 @@ import { JourneyCard } from './JourneyCard'
 
 export interface JourneysListProps {
   journeys: Journey[]
+  AuthUser?: AuthUser
 }
 
-export function JourneyList({ journeys }: JourneysListProps): ReactElement {
+export function JourneyList({
+  journeys,
+  AuthUser
+}: JourneysListProps): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
 
   const sortedJourneys =
@@ -44,7 +49,7 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
       </Stack>
       <Box sx={{ mb: { xs: 4, sm: 5 } }} data-testid="journey-list">
         {sortedJourneys.map((journey) => (
-          <JourneyCard key={journey.id} journey={journey} />
+          <JourneyCard AuthUser={AuthUser} key={journey.id} journey={journey} />
         ))}
         {sortedJourneys.length === 0 && (
           <Card

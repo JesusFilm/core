@@ -10,15 +10,20 @@ import Link from 'next/link'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
+import { AuthUser } from 'next-firebase-auth'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
 
 interface JourneyCardProps {
   journey: Journey
+  AuthUser?: AuthUser
 }
 
-export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
+export function JourneyCard({
+  journey,
+  AuthUser
+}: JourneyCardProps): ReactElement {
   const date = parseISO(journey.createdAt)
   const formattedDate = intlFormat(date, {
     day: 'numeric',
@@ -88,6 +93,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           <Grid item>
             {journey.userJourneys != null && (
               <AccessAvatars
+                AuthUser={AuthUser}
                 journeySlug={journey.slug}
                 userJourneys={journey.userJourneys}
               />
