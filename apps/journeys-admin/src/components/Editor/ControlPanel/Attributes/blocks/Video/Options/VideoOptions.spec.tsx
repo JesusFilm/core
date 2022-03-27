@@ -15,23 +15,6 @@ import { JourneyProvider } from '../../../../../../../libs/context'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { VideoOptions, VIDEO_BLOCK_UPDATE } from './VideoOptions'
 
-const journey: Journey = {
-  __typename: 'Journey',
-  id: 'journeyId',
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  title: 'my journey',
-  slug: 'my-journey',
-  locale: 'en-US',
-  description: 'my cool journey',
-  status: JourneyStatus.draft,
-  createdAt: '2021-11-19T12:34:56.647Z',
-  publishedAt: null,
-  blocks: [] as TreeBlock[],
-  primaryImageBlock: null,
-  userJourneys: []
-}
-
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
   __typename: 'VideoBlock',
@@ -59,18 +42,7 @@ describe('VideoOptions', () => {
   it('updates video block', async () => {
     const videoBlockResult = jest.fn(() => ({
       data: {
-        videoBlockUpdate: {
-          id: video.id,
-          title: video.title,
-          startAt: video.startAt,
-          endAt: video.endAt,
-          muted: video.muted,
-          autoplay: video.autoplay,
-          parentOrder: video.parentOrder,
-          posterBlockId: video.posterBlockId,
-          videoContent: video.videoContent,
-          __typename: 'VideoBlock'
-        }
+        videoBlockUpdate: video
       }
     }))
     const { getAllByRole } = render(
@@ -81,15 +53,10 @@ describe('VideoOptions', () => {
               query: VIDEO_BLOCK_UPDATE,
               variables: {
                 id: video.id,
-                journeyId: journey.id,
+                journeyId: 'journeyId',
                 input: {
-                  title: video.title,
-                  startAt: video.startAt,
-                  endAt: video.endAt,
-                  muted: video.muted,
-                  autoplay: video.autoplay,
-                  posterBlockId: video.posterBlockId,
-                  videoContent: { src: video.videoContent.src }
+                  videoId: '5_0-NUA0201-0-0',
+                  videoVariantLanguageId: '529'
                 }
               }
             },
@@ -97,14 +64,11 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <ThemeProvider>
             <EditorProvider
               initialState={{
-                selectedBlock: {
-                  ...video,
-                  videoContent: { ...video.videoContent, src: '' }
-                }
+                selectedBlock: video
               }}
             >
               <VideoOptions />
@@ -113,11 +77,12 @@ describe('VideoOptions', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    const textBox = await getAllByRole('textbox')[0]
-    await fireEvent.change(textBox, {
-      target: { value: video.videoContent.src }
+    const textbox = await getAllByRole('textbox', { name: 'Video ID' })[0]
+    fireEvent.focus(textbox)
+    await fireEvent.change(textbox, {
+      target: { value: '5_0-NUA0201-0-0' }
     })
-    fireEvent.blur(textBox)
+    fireEvent.blur(textbox)
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
   })
 })

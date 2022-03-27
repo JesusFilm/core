@@ -28,29 +28,16 @@ export function VideoOptions(): ReactElement {
   const { id: journeyId } = useJourney()
   const [videoBlockUpdate] = useMutation<VideoBlockUpdate>(VIDEO_BLOCK_UPDATE)
 
-  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
-    if (block == null || selectedBlock == null) return
+  const handleChange = async (input: VideoBlockUpdateInput): Promise<void> => {
+    if (selectedBlock == null) return
 
-    const variables: {
-      id: string
-      journeyId: string
-      input: VideoBlockUpdateInput
-    } = {
-      id: selectedBlock.id,
-      journeyId: journeyId,
-      input: {
-        ...pick(block, [
-          'autoplay',
-          'fullsize',
-          'muted',
-          'startAt',
-          'videoId',
-          'videoVariantLanguageId'
-        ]),
-        endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null
+    await videoBlockUpdate({
+      variables: {
+        id: selectedBlock.id,
+        journeyId: journeyId,
+        input
       }
-    }
-    await videoBlockUpdate({ variables })
+    })
   }
 
   return selectedBlock != null ? (
@@ -58,8 +45,6 @@ export function VideoOptions(): ReactElement {
       selectedBlock={selectedBlock as TreeBlock<VideoBlock>}
       onChange={handleChange}
       showDelete={false}
-      parentBlockId={selectedBlock.parentBlockId}
-      parentOrder={selectedBlock.parentOrder}
     />
   ) : (
     <></>

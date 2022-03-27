@@ -1,67 +1,32 @@
-import { ChangeEvent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { InputAdornment, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { TreeBlock } from '@core/journeys/ui'
 import { Link as LinkIcon } from '@mui/icons-material'
 import { noop } from 'lodash'
-import { object, string } from 'yup'
 import { useFormik } from 'formik'
-
+import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
 
 interface VideoBlockEditorSourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   parentOrder?: number | null
   parentBlockId?: string | null
-  onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
+  onChange: (block: VideoBlockUpdateInput) => Promise<void>
 }
 
 export function VideoBlockEditorSource({
   selectedBlock,
-  parentBlockId,
-  parentOrder,
   onChange
 }: VideoBlockEditorSourceProps): ReactElement {
-  const handleVideoSrcChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const src = event.target.value
-
-    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.videoId)
-      return
-
-    const block =
-      selectedBlock == null
-        ? {
-            parentBlockId: parentBlockId,
-            __typename: 'VideoBlock',
-            title: title,
-            autoplay: true,
-            muted: parentOrder === 0,
-            startAt: 0,
-            endAt: null,
-            posterBlockId: null,
-            videoContent: {
-              src: src
-            }
-          }
-        : {
-            ...selectedBlock,
-            title: title,
-            videoContent: { src: src }
-          }
-    await onChange(block as TreeBlock<VideoBlock>)
-  }
-
-  const srcSchema = object().shape({
-    src: string().url('Please enter a valid url').required('Required')
-  })
-
-  const formik = useFormik({
+  const { values, handleChange, handleBlur } = useFormik({
     initialValues: {
-      src: selectedBlock?.videoId ?? ''
+      videoId: selectedBlock?.videoId,
+      videoVariantLanguageId: selectedBlock?.videoVariantLanguageId
     },
-    validationSchema: srcSchema,
+    validate: async (values) => {
+      await onChange(values)
+    },
     onSubmit: noop
   })
 
@@ -69,23 +34,28 @@ export function VideoBlockEditorSource({
     <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
       <form>
         <TextField
-          id="src"
-          name="src"
+          name="videoId"
           variant="filled"
-          label="Paste URL of video..."
           fullWidth
-          value={formik.values.src}
-          onChange={formik.handleChange}
-          onBlur={async (e) => {
-            formik.handleBlur(e)
-            await handleVideoSrcChange(e as ChangeEvent<HTMLInputElement>)
+          value={values.videoId}
+          onChange={handleChange}
+          label="Video ID"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LinkIcon />
+              </InputAdornment>
+            )
           }}
-          helperText={
-            formik.touched.src === true
-              ? formik.errors.src
-              : 'Make sure video address is permanent'
-          }
-          error={formik.touched.src === true && Boolean(formik.errors.src)}
+        />
+        <TextField
+          name="videoVariantLanguageId"
+          variant="filled"
+          fullWidth
+          value={values.videoVariantLanguageId}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          label="Video Variant Language ID"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
