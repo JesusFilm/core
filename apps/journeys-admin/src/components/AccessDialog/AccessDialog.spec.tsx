@@ -1,7 +1,9 @@
+import type { ComponentType } from 'react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { AccessDialog, GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
@@ -12,6 +14,24 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+const mockFirebaseUser = {
+  displayName: 'Banana Manana',
+  // ... other fields from firebaseUser that you may use
+}
+
+const getMockAuthUser = (isLoggedIn = true) => ({
+  id: isLoggedIn ? 'userId1' : null,
+  email: isLoggedIn ? 'amin@email.com' : null,
+  emailVerified: isLoggedIn,
+  getIdToken: jest.fn(async () => (isLoggedIn ? 'i_am_a_token' : null)),
+  clientInitialized: isLoggedIn,
+  firebaseUser: isLoggedIn ? mockFirebaseUser : null,
+  signOut: jest.fn(),
+  serialize: jest.fn(() => 'serialized_auth_user'),
+})
+
+jest.mock('next-firebase-auth')
 
 const mocks = [
   {
@@ -150,6 +170,14 @@ const mocks = [
 ]
 
 describe('AccessDialog', () => {
+  const mockWithAuthUser = withAuthUser as jest.Mock
+  const mockUseAuthUser = useAuthUser as jest.Mock
+
+  beforeEach(() => {
+    mockUseAuthUser.mockReturnValue(getMockAuthUser())
+    mockWithAuthUser.mockImplementation(() => (wrappedComponent: ComponentType) => wrappedComponent)
+  })
+
   it('allows invitee to be approved as editor', async () => {
     const cache = new InMemoryCache()
     const { getByRole } = render(

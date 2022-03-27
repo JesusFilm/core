@@ -20,7 +20,7 @@ import { gql, useLazyQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { CopyTextField } from '@core/shared/ui'
-import { useAuthUser } from 'next-firebase-auth'
+import { useAuthUser, withAuthUser } from 'next-firebase-auth'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -266,3 +266,5 @@ function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
     </>
   )
 }
+
+export default withAuthUser<AccessDialogProps>(AccessDialog)
