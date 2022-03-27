@@ -62,7 +62,7 @@ export function AccessDialog({
 }: AccessDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const AuthUser = useAuthUser()
-  const currentUser = AuthUser.email
+  const currentUserId = AuthUser.id
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
@@ -71,7 +71,7 @@ export function AccessDialog({
 
   const disable =
     data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === currentUser
+      (userJourney) => userJourney.user?.id === currentUserId
     )?.role !== UserJourneyRole.owner
 
   useEffect(() => {
@@ -107,11 +107,10 @@ export function AccessDialog({
             <CopyTextField
               value={
                 typeof window !== 'undefined'
-                  ? `${
-                      window.location.host.endsWith('.chromatic.com')
-                        ? 'https://admin.nextstep.is'
-                        : window.location.origin
-                    }/journeys/${journeySlug}`
+                  ? `${window.location.host.endsWith('.chromatic.com')
+                    ? 'https://admin.nextstep.is'
+                    : window.location.origin
+                  }/journeys/${journeySlug}`
                   : undefined
               }
               messageText="Editor invite link copied"
@@ -159,11 +158,11 @@ function UserJourneyList({
     <>
       {((userJourneys?.length != null && userJourneys.length > 0) ||
         loading === true) && (
-        <>
-          <Divider sx={{ my: 2 }} />
-          <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
-        </>
-      )}
+          <>
+            <Divider sx={{ my: 2 }} />
+            <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
+          </>
+        )}
       {loading === true &&
         [0, 1, 2].map((i) => (
           <MuiListItem sx={{ px: 0 }} key={i}>
