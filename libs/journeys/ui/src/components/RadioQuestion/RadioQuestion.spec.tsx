@@ -145,25 +145,44 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
   })
-})
 
-it('should display the correct options with wrappers', () => {
-  const { getByText, getAllByTestId } = render(
-    <MockedProvider mocks={[]} addTypename={false}>
-      <RadioQuestion
-        {...block}
-        wrappers={{
-          RadioOptionWrapper: ({ children }) => (
-            <div data-testid="radioOptionWrapper">{children}</div>
-          )
-        }}
-      />
-    </MockedProvider>
-  )
-  expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
-    getByText('Option 1')
-  )
-  expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
-    getByText('Option 2')
-  )
+  it('render editable question props', () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <RadioQuestion
+          {...block}
+          editableLabel={<input name="editableLabel" />}
+          editableDescription={<input name="editableDescription" />}
+          addOption={<button name="addOption" />}
+        />
+      </MockedProvider>
+    )
+
+    expect(getByRole('input', { name: 'editableLabel' })).toBeInTheDocument()
+    expect(
+      getByRole('input', { name: 'editableDescription' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'addOption' })).toBeInTheDocument()
+  })
+
+  it('should display options with wrappers', () => {
+    const { getByText, getAllByTestId } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <RadioQuestion
+          {...block}
+          wrappers={{
+            RadioOptionWrapper: ({ children }) => (
+              <div data-testid="radioOptionWrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+      getByText('Option 1')
+    )
+    expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
+      getByText('Option 2')
+    )
+  })
 })

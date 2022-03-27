@@ -27,6 +27,7 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   wrappers?: WrappersProps
   editableLabel?: ReactElement
   editableDescription?: ReactElement
+  addOption?: ReactElement
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
@@ -41,7 +42,8 @@ export function RadioQuestion({
   uuid = uuidv4,
   wrappers,
   editableLabel,
-  editableDescription
+  editableDescription,
+  addOption
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
@@ -71,7 +73,7 @@ export function RadioQuestion({
   const options = children?.map(
     (option) =>
       option.__typename === 'RadioOptionBlock' &&
-      (wrappers != null ? (
+      (wrappers != null || addOption != null ? (
         <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
       ) : (
         <RadioOption
@@ -96,6 +98,7 @@ export function RadioQuestion({
       )}
       <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
         {options}
+        {addOption}
       </ButtonGroup>
     </StyledRadioQuestion>
   )

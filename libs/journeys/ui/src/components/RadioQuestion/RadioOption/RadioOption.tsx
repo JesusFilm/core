@@ -8,14 +8,13 @@ import { TreeBlock, handleAction } from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
-  className?: string
   selected?: boolean
   disabled?: boolean
   onClick?: (selected: string) => void
   editableLabel?: ReactElement
 }
 
-const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
+export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
   fontFamily: theme.typography.body2.fontFamily,
   fontSize: theme.typography.body2.fontSize,
   fontWeight: 600,
@@ -27,7 +26,6 @@ const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
 }))
 
 export function RadioOption({
-  className,
   label,
   action,
   id,
@@ -46,7 +44,6 @@ export function RadioOption({
   return (
     <StyledRadioOption
       variant="contained"
-      className={className}
       disabled={disabled}
       onClick={handleClick}
       fullWidth
