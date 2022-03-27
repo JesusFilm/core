@@ -16,9 +16,6 @@ export const VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
   mutation VideoBlockCreate($input: VideoBlockCreateInput!) {
     videoBlockCreate(input: $input) {
-      id
-      parentBlockId
-      parentOrder
       ...VideoFields
     }
   }

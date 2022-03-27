@@ -1,8 +1,6 @@
 import { ReactElement } from 'react'
-import { useEditor, TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
+import { useEditor, VIDEO_FIELDS } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
-import { pick } from 'lodash'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
 import { VideoBlockUpdate } from '../../../../../../../../__generated__/VideoBlockUpdate'
@@ -40,9 +38,9 @@ export function VideoOptions(): ReactElement {
     })
   }
 
-  return selectedBlock != null ? (
+  return selectedBlock != null && selectedBlock.__typename === 'VideoBlock' ? (
     <VideoBlockEditor
-      selectedBlock={selectedBlock as TreeBlock<VideoBlock>}
+      selectedBlock={selectedBlock}
       onChange={handleChange}
       showDelete={false}
     />

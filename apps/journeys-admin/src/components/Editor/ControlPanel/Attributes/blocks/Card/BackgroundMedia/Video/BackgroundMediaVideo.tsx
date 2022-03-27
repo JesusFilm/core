@@ -51,6 +51,7 @@ export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
 `
 
 export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
+  ${VIDEO_FIELDS}
   mutation CardBlockVideoBlockUpdate(
     $id: ID!
     $journeyId: ID!
@@ -77,10 +78,10 @@ export function BackgroundMediaVideo({
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundVideoUpdate>(
     CARD_BLOCK_COVER_VIDEO_UPDATE
   )
-  const [VideoBlockCreate] = useMutation<CardBlockVideoBlockCreate>(
+  const [videoBlockCreate] = useMutation<CardBlockVideoBlockCreate>(
     CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE
   )
-  const [VideoBlockUpdate] = useMutation<CardBlockVideoBlockUpdate>(
+  const [videoBlockUpdate] = useMutation<CardBlockVideoBlockUpdate>(
     CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE
   )
   const [blockDelete] = useMutation<BlockDeleteForBackgroundVideo>(
@@ -118,18 +119,15 @@ export function BackgroundMediaVideo({
     })
   }
 
-  const createVideoBlock = async (block): Promise<void> => {
-    const { data } = await VideoBlockCreate({
+  const createVideoBlock = async (
+    input: VideoBlockUpdateInput
+  ): Promise<void> => {
+    const { data } = await videoBlockCreate({
       variables: {
         input: {
           journeyId: journeyId,
           parentBlockId: cardBlock.id,
-          startAt: block.startAt,
-          endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-          muted: block.muted,
-          autoplay: block.autoplay,
-          posterBlockId: block.posterBlockId,
-          videoContent: block.videoContent
+          ...input
         }
       },
       update(cache, { data }) {
@@ -172,65 +170,27 @@ export function BackgroundMediaVideo({
     })
   }
 
-  const updateVideoBlock = async (block): Promise<void> => {
-    if (block == null) return
-
-    const videoContent = {
-      src: block.videoContent.src,
-      __typename: block.videoContent.__typename ?? 'VideoGeneric'
-    }
-    let variables: {
-      id: string
-      journeyId: string
-      input: VideoBlockUpdateInput
-    } = {
-      id: coverBlock.id,
-      journeyId: journeyId,
-      input: {
-        title: block.title,
-        startAt: block.startAt,
-        endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-        muted: block.muted,
-        autoplay: block.autoplay,
-        posterBlockId: block.posterBlockId
-      }
-    }
-    // Don't update Arclight with src
-    if (
-      videoContent.src !==
-      (coverBlock as TreeBlock<VideoBlock>).videoContent.src
-    ) {
-      variables = {
-        ...variables,
-        input: { ...variables.input, videoContent: { src: videoContent.src } }
-      }
-    }
-    await VideoBlockUpdate({
-      variables,
-      optimisticResponse: {
-        videoBlockUpdate: {
-          id: coverBlock.id,
-          ...block,
-          __typename: 'VideoBlock',
-          endAt: (block.endAt ?? 0) > (block.startAt ?? 0) ? block.endAt : null,
-          videoContent
-        }
+  const updateVideoBlock = async (
+    input: VideoBlockUpdateInput
+  ): Promise<void> => {
+    await videoBlockUpdate({
+      variables: {
+        id: coverBlock.id,
+        journeyId: journeyId,
+        input
       }
     })
   }
 
-  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
-    if (
-      coverBlock != null &&
-      coverBlock?.__typename.toString() !== 'VideoBlock'
-    ) {
+  const handleChange = async (input: VideoBlockUpdateInput): Promise<void> => {
+    if (coverBlock != null && coverBlock.__typename !== 'VideoBlock') {
       // remove existing cover block if type changed
       await deleteCoverBlock()
     }
     if (videoBlock == null) {
-      await createVideoBlock(block)
+      await createVideoBlock(input)
     } else {
-      await updateVideoBlock(block)
+      await updateVideoBlock(input)
     }
   }
 
@@ -239,9 +199,6 @@ export function BackgroundMediaVideo({
       selectedBlock={videoBlock}
       onChange={handleChange}
       onDelete={deleteCoverBlock}
-      parentBlockId={cardBlock.id}
-      parentOrder={cardBlock.parentOrder ?? 0}
-      forBackground
     />
   )
 }

@@ -31,8 +31,8 @@ export function VideoBlockEditorSource({
   })
 
   return (
-    <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
-      <form>
+    <form>
+      <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
         <TextField
           name="videoId"
           variant="filled"
@@ -47,6 +47,7 @@ export function VideoBlockEditorSource({
               </InputAdornment>
             )
           }}
+          sx={{ pb: 2 }}
         />
         <TextField
           name="videoVariantLanguageId"
@@ -64,7 +65,7 @@ export function VideoBlockEditorSource({
             )
           }}
         />
-      </form>
-    </Box>
+      </Box>
+    </form>
   )
 }
