@@ -1,15 +1,15 @@
-import { ReactElement, MouseEvent } from 'react'
+import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
-import { SxProps } from '@mui/system/styleFunctionSx'
 import MuiButton from '@mui/material/Button'
-import { handleAction, TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
+import Box from '@mui/material/Box'
+import { handleAction, TreeBlock } from '../..'
+import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
 
-interface ButtonProps extends TreeBlock<ButtonFields> {
+export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
-  sx?: SxProps
 }
 
 export function Button({
@@ -21,9 +21,7 @@ export function Button({
   endIconId,
   action,
   children,
-  sx,
-  editableLabel,
-  ...props
+  editableLabel
 }: ButtonProps): ReactElement {
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>
@@ -38,69 +36,44 @@ export function Button({
     handleAction(router, action)
   }
 
-  const {
-    state: { selectedBlock },
-    dispatch
-  } = useEditor()
-
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    const block: TreeBlock<ButtonFields> = {
-      buttonVariant,
-      label,
-      buttonColor,
-      size,
-      startIconId,
-      endIconId,
-      action,
-      children,
-      ...props
-    }
-
-    if (selectedBlock?.id === block.id) {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    } else {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-    }
-  }
-
-  let marginTop: number
-  switch (size) {
-    case 'small':
-      marginTop = 0
-      break
-    case 'medium':
-      marginTop = 1
-      break
-    case 'large':
-      marginTop = 2
-      break
-    default:
-      marginTop = 1 // since default size is medium
-  }
-
   return (
-    <MuiButton
-      variant={buttonVariant ?? 'contained'}
-      color={buttonColor ?? undefined}
-      size={size ?? undefined}
-      startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
-      endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+    // Margin added via Box so it's ignored by admin selection border outline
+    <Box
       sx={{
-        ...sx,
-        mt: marginTop,
         mb: 4,
-        outline: selectedBlock?.id === props.id ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px'
+        mt:
+          size === 'large'
+            ? 6
+            : size === 'medium'
+            ? 5
+            : size === 'small'
+            ? 4
+            : 5
       }}
-      onClick={selectedBlock === undefined ? handleClick : handleSelectBlock}
-      fullWidth
     >
-      {editableLabel ?? label}
-    </MuiButton>
+      <MuiButton
+        variant={buttonVariant ?? ButtonVariant.contained}
+        color={buttonColor ?? undefined}
+        size={size ?? undefined}
+        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
+        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+        onClick={handleClick}
+        fullWidth
+        sx={
+          editableLabel != null
+            ? {
+                '&:hover': {
+                  backgroundColor:
+                    buttonVariant === ButtonVariant.text
+                      ? 'transparent'
+                      : `${buttonColor ?? 'primary'}.main`
+                }
+              }
+            : undefined
+        }
+      >
+        {editableLabel ?? label}
+      </MuiButton>
+    </Box>
   )
 }

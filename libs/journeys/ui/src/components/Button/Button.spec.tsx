@@ -7,7 +7,7 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { handleAction, TreeBlock, EditorProvider } from '../..'
+import { handleAction, TreeBlock } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { Button } from '.'
 
@@ -140,34 +140,5 @@ describe('Button', () => {
         blockId: 'def'
       }
     )
-  })
-})
-
-describe('Admin Button', () => {
-  it('should select label on click', () => {
-    const { getByRole } = render(
-      <EditorProvider
-        initialState={{
-          selectedBlock: {
-            id: 'card0.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step0.id',
-            coverBlockId: null,
-            parentOrder: 0,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [block]
-          }
-        }}
-      >
-        <Button {...block} />
-      </EditorProvider>
-    )
-
-    fireEvent.click(getByRole('button'))
-
-    expect(getByRole('button')).toHaveStyle('outline: 3px solid #C52D3A')
   })
 })

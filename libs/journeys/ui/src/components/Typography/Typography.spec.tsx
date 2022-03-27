@@ -1,10 +1,10 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import {
   TypographyAlign,
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { TreeBlock, EditorProvider } from '../..'
+import { TreeBlock } from '../..'
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
 
@@ -40,34 +40,5 @@ describe('Typography', () => {
       <Typography {...block} variant={TypographyVariant.caption} />
     )
     expect(getByText('Hello World!').tagName).toEqual('P')
-  })
-})
-
-describe('Admin Typography', () => {
-  it('should select text on click ', () => {
-    const { getByText } = render(
-      <EditorProvider
-        initialState={{
-          selectedBlock: {
-            id: 'card0.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step0.id',
-            parentOrder: 0,
-            coverBlockId: null,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [block]
-          }
-        }}
-      >
-        <Typography {...block} />
-      </EditorProvider>
-    )
-
-    fireEvent.click(getByText(block.content))
-
-    expect(getByText(block.content)).toHaveStyle('outline: 3px solid #C52D3A')
   })
 })

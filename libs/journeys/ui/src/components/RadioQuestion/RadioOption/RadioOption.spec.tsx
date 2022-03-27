@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { TreeBlock, handleAction, EditorProvider } from '../../..'
+import { TreeBlock, handleAction } from '../../..'
 import { RadioOption } from './RadioOption'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
@@ -58,56 +58,6 @@ describe('RadioOption', () => {
         gtmEventName: 'gtmEventName',
         blockId: 'def'
       }
-    )
-  })
-})
-
-describe('Admin RadioOption', () => {
-  it('should edit option on click if parent is selectedBlock', () => {
-    const { getByRole } = render(
-      <EditorProvider
-        initialState={{
-          selectedBlock: {
-            __typename: 'RadioQuestionBlock',
-            id: 'RadioQuestion1',
-            label: 'Label',
-            description: 'Description',
-            parentBlockId: 'RadioQuestion1',
-            parentOrder: 0,
-            children: [block]
-          }
-        }}
-      >
-        <RadioOption {...block} />
-      </EditorProvider>
-    )
-
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
-
-    expect(getByRole('button', { name: 'Option 1' })).toHaveStyle(
-      'outline: 3px solid #C52D3A'
-    )
-    // Check editable when implemented
-  })
-
-  it('should edit option on click if sibling is selectedBlock', () => {
-    const { getByRole } = render(
-      <EditorProvider
-        initialState={{
-          selectedBlock: {
-            ...block,
-            id: 'radioOption2.id',
-            label: 'Option 2'
-          }
-        }}
-      >
-        <RadioOption {...block} />
-      </EditorProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
-
-    expect(getByRole('button', { name: 'Option 1' })).toHaveStyle(
-      'outline: 3px solid #C52D3A;'
     )
   })
 })
