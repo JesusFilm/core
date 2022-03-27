@@ -108,10 +108,11 @@ export function AccessDialog({
             <CopyTextField
               value={
                 typeof window !== 'undefined'
-                  ? `${window.location.host.endsWith('.chromatic.com')
-                    ? 'https://admin.nextstep.is'
-                    : window.location.origin
-                  }/journeys/${journeySlug}`
+                  ? `${
+                      window.location.host.endsWith('.chromatic.com')
+                        ? 'https://admin.nextstep.is'
+                        : window.location.origin
+                    }/journeys/${journeySlug}`
                   : undefined
               }
               messageText="Editor invite link copied"
@@ -159,11 +160,11 @@ function UserJourneyList({
     <>
       {((userJourneys?.length != null && userJourneys.length > 0) ||
         loading === true) && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
-          </>
-        )}
+        <>
+          <Divider sx={{ my: 2 }} />
+          <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
+        </>
+      )}
       {loading === true &&
         [0, 1, 2].map((i) => (
           <MuiListItem sx={{ px: 0 }} key={i}>
