@@ -1,9 +1,9 @@
 import { ReactElement, useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
-import { Divider, Tab, Tabs, useTheme } from '@mui/material'
+import { Divider, Tab, Tabs } from '@mui/material'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
-
+import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -14,25 +14,18 @@ import { VideoBlockEditorSettings } from './Settings/VideoBlockEditorSettings'
 
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
-  parentBlockId?: string | null
-  parentOrder?: number | null
+  onChange: (input: VideoBlockUpdateInput) => Promise<void>
   showDelete?: boolean
-  forBackground?: boolean
-  onChange: (block: TreeBlock<VideoBlock>) => Promise<void>
-  onDelete?: () => Promise<void> | undefined
+  onDelete?: () => Promise<void>
 }
 
 export function VideoBlockEditor({
   selectedBlock,
-  parentBlockId,
-  parentOrder,
   showDelete = true,
-  forBackground = false,
   onChange,
   onDelete
 }: VideoBlockEditorProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
-  const theme = useTheme()
 
   const posterBlock = selectedBlock?.children.find(
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
@@ -44,7 +37,7 @@ export function VideoBlockEditor({
 
   const handleVideoDelete = async (): Promise<void> => {
     setTabValue(0)
-    if (onDelete != null) await onDelete()
+    await onDelete?.()
   }
 
   return (
@@ -59,13 +52,7 @@ export function VideoBlockEditor({
         showDelete={showDelete && selectedBlock?.video != null}
         onDelete={handleVideoDelete}
       />
-      <Box
-        sx={{
-          [theme.breakpoints.up('sm')]: {
-            display: 'none'
-          }
-        }}
-      >
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -85,8 +72,6 @@ export function VideoBlockEditor({
         <TabPanel name="videoSrc" value={tabValue} index={0}>
           <VideoBlockEditorSource
             selectedBlock={selectedBlock}
-            parentBlockId={parentBlockId}
-            parentOrder={parentOrder}
             onChange={onChange}
           />
         </TabPanel>
@@ -99,28 +84,20 @@ export function VideoBlockEditor({
           <VideoBlockEditorSettings
             selectedBlock={selectedBlock}
             posterBlock={posterBlock}
-            parentOrder={parentOrder}
             onChange={onChange}
-            disabled={selectedBlock == null}
-            forBackground={forBackground}
           />
         </TabPanel>
       </Box>
-      <Box sx={{ [theme.breakpoints.down('sm')]: { display: 'none' } }}>
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
         <VideoBlockEditorSource
           selectedBlock={selectedBlock}
-          parentBlockId={parentBlockId}
-          parentOrder={parentOrder}
           onChange={onChange}
         />
         <Divider />
         <VideoBlockEditorSettings
           selectedBlock={selectedBlock}
           posterBlock={posterBlock}
-          parentOrder={parentOrder}
           onChange={onChange}
-          disabled={selectedBlock == null}
-          forBackground={forBackground}
         />
       </Box>
     </>
