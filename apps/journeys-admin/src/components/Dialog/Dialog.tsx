@@ -7,6 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 
 interface DialogProps {
@@ -48,12 +49,12 @@ export function Dialog({
       }}
     >
       {title != null && (
-        <Box sx={{ display: 'flex' }}>
-          <DialogTitle>{title}</DialogTitle>
+        <DialogTitle sx={{ display: 'flex' }}>
+          {title}
           <IconButton onClick={handleClose} sx={{ ml: 'auto' }}>
             <CloseRoundedIcon />
           </IconButton>
-        </Box>
+        </DialogTitle>
       )}
       <DialogContent>
         {/* Should description be combined with children? */}
