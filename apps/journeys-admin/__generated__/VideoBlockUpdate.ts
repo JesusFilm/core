@@ -11,17 +11,23 @@ import { VideoBlockUpdateInput } from "./globalTypes";
 
 export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
   __typename: "VideoVariant";
+  id: string;
   hls: string;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_video {
   __typename: "Video";
+  id: string;
   variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  muted: boolean | null;
+  autoplay: boolean | null;
   /**
    * startAt dictates at which point of time the video should start playing
    */
@@ -30,8 +36,13 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * endAt dictates at which point of time the video should end
    */
   endAt: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
+  posterBlockId: string | null;
+  fullsize: boolean | null;
   /**
    * videoId and videoVariantLanguageId both need to be set to select a video
    */
@@ -41,12 +52,6 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    */
   videoVariantLanguageId: string | null;
   video: VideoBlockUpdate_videoBlockUpdate_video | null;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
-  posterBlockId: string | null;
 }
 
 export interface VideoBlockUpdate {

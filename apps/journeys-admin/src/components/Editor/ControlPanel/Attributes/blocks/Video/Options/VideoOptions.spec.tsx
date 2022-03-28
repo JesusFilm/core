@@ -6,11 +6,6 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import {
-  JourneyStatus,
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../../../../../libs/context'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { VideoOptions, VIDEO_BLOCK_UPDATE } from './VideoOptions'
@@ -29,8 +24,10 @@ const video: TreeBlock<VideoBlock> = {
   videoVariantLanguageId: '529',
   video: {
     __typename: 'Video',
+    id: '2_0-FallingPlates',
     variant: {
       __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
     }
   },

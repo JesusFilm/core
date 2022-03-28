@@ -46,6 +46,7 @@ export class VideoVariantDownload {
 
 export class VideoVariant {
     __typename?: 'VideoVariant';
+    id: string;
     hls: string;
     downloads: VideoVariantDownload[];
     duration: number;

@@ -822,8 +822,10 @@ const videoBlocks: TreeBlock[] = [
         videoVariantLanguageId: '529',
         video: {
           __typename: 'Video',
+          id: '2_0-FallingPlates',
           variant: {
             __typename: 'VideoVariant',
+            id: '2_0-FallingPlates-529',
             hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
           }
         },
@@ -931,8 +933,10 @@ const videoBlocks: TreeBlock[] = [
         videoVariantLanguageId: '529',
         video: {
           __typename: 'Video',
+          id: '2_0-FallingPlates',
           variant: {
             __typename: 'VideoVariant',
+            id: '2_0-FallingPlates-529',
             hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
           }
         },
@@ -976,8 +980,10 @@ const videoBlocks: TreeBlock[] = [
         videoVariantLanguageId: '529',
         video: {
           __typename: 'Video',
+          id: '2_0-FallingPlates',
           variant: {
             __typename: 'VideoVariant',
+            id: '2_0-FallingPlates-529',
             hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
           }
         },

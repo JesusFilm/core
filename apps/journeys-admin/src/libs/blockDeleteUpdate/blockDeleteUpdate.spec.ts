@@ -15,9 +15,9 @@ import {
 import { blockDeleteUpdate } from './blockDeleteUpdate'
 
 const video: TreeBlock<VideoBlock> = {
-  id: 'video1.id',
+  id: 'videoId',
   __typename: 'VideoBlock',
-  parentBlockId: 'card1.id',
+  parentBlockId: 'cardId',
   parentOrder: 0,
   startAt: 0,
   endAt: null,
@@ -28,8 +28,10 @@ const video: TreeBlock<VideoBlock> = {
   videoVariantLanguageId: '529',
   video: {
     __typename: 'Video',
+    id: '2_0-FallingPlates',
     variant: {
       __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
     }
   },
@@ -38,7 +40,7 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 const image: TreeBlock<ImageBlock> = {
-  id: 'image1.id',
+  id: 'imageId',
   __typename: 'ImageBlock',
   parentBlockId: 'card1.id',
   parentOrder: 1,
@@ -51,7 +53,7 @@ const image: TreeBlock<ImageBlock> = {
 }
 
 const card: TreeBlock<CardBlock> = {
-  id: 'card1.id',
+  id: 'cardId',
   __typename: 'CardBlock',
   parentBlockId: 'step1.id',
   parentOrder: 0,
@@ -86,26 +88,24 @@ describe('blockDeleteUpdate', () => {
   it('should perform block delete logic', () => {
     const cache = new InMemoryCache()
     cache.restore({
-      ['Journey:' + journey.id]: {
+      'Journey:JourneyId': {
         blocks: [
-          { __ref: `CardBlock:${card.id}` },
-          { __ref: `VideoBlock:${video.id}` },
-          { __ref: `ImageBlock:${image.id}` }
+          { __ref: 'CardBlock:cardId' },
+          { __ref: 'VideoBlock:videoId' },
+          { __ref: 'ImageBlock:imageId' }
         ],
         id: journey.id,
         __typename: 'Journey'
       },
-      ['VideoBlock:' + video.id]: {
-        ...video
-      },
-      ['ImageBlock:' + image.id]: { ...image }
+      'VideoBlock:videoId': { ...video },
+      'ImageBlock:imageId': { ...image }
     })
     blockDeleteUpdate(video, response, cache, journey.id)
-    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-      { __ref: `CardBlock:${card.id}` },
-      { __ref: `ImageBlock:${image.id}` }
+    expect(cache.extract()['Journey:JourneyId']?.blocks).toEqual([
+      { __ref: 'CardBlock:cardId' },
+      { __ref: 'ImageBlock:imageId' }
     ])
-    expect(cache.extract()['VideoBlock:' + video.id]).toBeUndefined()
-    expect(cache.extract()['ImageBlock:' + image.id]?.parentOrder).toEqual(0)
+    expect(cache.extract()['VideoBlock:videoId']).toBeUndefined()
+    expect(cache.extract()['ImageBlock:ImageId']?.parentOrder).toEqual(0)
   })
 })

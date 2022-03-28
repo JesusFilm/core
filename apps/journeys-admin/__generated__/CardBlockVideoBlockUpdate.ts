@@ -11,11 +11,13 @@ import { VideoBlockUpdateInput } from "./globalTypes";
 
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant {
   __typename: "VideoVariant";
+  id: string;
   hls: string;
 }
 
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video {
   __typename: "Video";
+  id: string;
   variant: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant | null;
 }
 

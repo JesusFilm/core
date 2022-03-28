@@ -863,6 +863,7 @@ type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   hls: String!
+  id: String!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }

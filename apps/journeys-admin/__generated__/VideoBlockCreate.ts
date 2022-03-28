@@ -11,11 +11,13 @@ import { VideoBlockCreateInput } from "./globalTypes";
 
 export interface VideoBlockCreate_videoBlockCreate_video_variant {
   __typename: "VideoVariant";
+  id: string;
   hls: string;
 }
 
 export interface VideoBlockCreate_videoBlockCreate_video {
   __typename: "Video";
+  id: string;
   variant: VideoBlockCreate_videoBlockCreate_video_variant | null;
 }
 

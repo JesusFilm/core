@@ -89,7 +89,7 @@ export function Card({
           id={`${id}-cover-block`}
           icon={<Videocam />}
           name="Background"
-          value={coverBlock.title}
+          value={coverBlock.video?.variant?.hls ?? ''}
           description="Background Video"
           onClick={handleBackgroundMediaClick}
         />

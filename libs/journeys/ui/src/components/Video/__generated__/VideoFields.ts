@@ -9,11 +9,13 @@
 
 export interface VideoFields_video_variant {
   __typename: "VideoVariant";
+  id: string;
   hls: string;
 }
 
 export interface VideoFields_video {
   __typename: "Video";
+  id: string;
   variant: VideoFields_video_variant | null;
 }
 

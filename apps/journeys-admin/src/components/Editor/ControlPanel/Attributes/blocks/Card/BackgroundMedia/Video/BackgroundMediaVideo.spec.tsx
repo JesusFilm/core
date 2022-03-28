@@ -33,7 +33,7 @@ const card: TreeBlock<CardBlock> = {
 }
 
 const video: TreeBlock<VideoBlock> = {
-  id: 'video1.id',
+  id: 'videoId',
   __typename: 'VideoBlock',
   parentBlockId: 'cardId',
   parentOrder: 0,
@@ -46,8 +46,10 @@ const video: TreeBlock<VideoBlock> = {
   videoVariantLanguageId: '529',
   video: {
     __typename: 'Video',
+    id: '5_0-NUA0201-0-0',
     variant: {
       __typename: 'VideoVariant',
+      id: '5_0-NUA0201-0-0-529',
       hls: 'https://arc.gt/hls/5_0-NUA0201-0-0/529'
     }
   },
@@ -59,8 +61,8 @@ describe('BackgroundMediaVideo', () => {
   it('creates a new video cover block', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      ['Journey:journeyId']: {
-        blocks: [{ __ref: `CardBlock:cardId` }],
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'CardBlock:cardId' }],
         id: 'journeyId',
         __typename: 'Journey'
       }
@@ -127,14 +129,14 @@ describe('BackgroundMediaVideo', () => {
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-      { __ref: `CardBlock:cardId` },
-      { __ref: `VideoBlock:${video.id}` }
+      { __ref: 'CardBlock:cardId' },
+      { __ref: 'VideoBlock:videoId' }
     ])
   })
 
   it('replaces existing image cover block', async () => {
     const image: TreeBlock<ImageBlock> = {
-      id: 'image1.id',
+      id: 'imageId',
       __typename: 'ImageBlock',
       parentBlockId: 'cardId',
       parentOrder: 0,
@@ -152,10 +154,10 @@ describe('BackgroundMediaVideo', () => {
     }
     const cache = new InMemoryCache()
     cache.restore({
-      ['Journey:journeyId']: {
+      'Journey:journeyId': {
         blocks: [
-          { __ref: `CardBlock:cardId` },
-          { __ref: `ImageBlock:${image.id}` }
+          { __ref: 'CardBlock:cardId' },
+          { __ref: 'ImageBlock:imageId' }
         ],
         id: 'journeyId',
         __typename: 'Journey'
@@ -252,9 +254,9 @@ describe('BackgroundMediaVideo', () => {
     await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-    expect(cache.extract()[`Journey:${'journeyId'}`]?.blocks).toEqual([
-      { __ref: `CardBlock:cardId` },
-      { __ref: `VideoBlock:${video.id}` }
+    expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'CardBlock:cardId' },
+      { __ref: 'VideoBlock:videoId' }
     ])
   })
 
@@ -270,8 +272,8 @@ describe('BackgroundMediaVideo', () => {
       cache.restore({
         ['Journey:' + 'journeyId']: {
           blocks: [
-            { __ref: `CardBlock:cardId` },
-            { __ref: `VideoBlock:${video.id}` }
+            { __ref: 'CardBlock:cardId' },
+            { __ref: 'VideoBlock:videoId' }
           ],
           id: 'journeyId',
           __typename: 'Journey'
@@ -317,23 +319,23 @@ describe('BackgroundMediaVideo', () => {
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(textbox).toHaveValue('2_0-FallingPlates')
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-        { __ref: `CardBlock:cardId` },
-        { __ref: `VideoBlock:${video.id}` }
+        { __ref: 'CardBlock:cardId' },
+        { __ref: 'VideoBlock:videoId' }
       ])
     })
 
     it('deletes a video block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
-        ['Journey:journeyId']: {
+        'Journey:journeyId': {
           blocks: [
-            { __ref: `CardBlock:cardId` },
-            { __ref: `VideoBlock:${video.id}` }
+            { __ref: 'CardBlock:cardId' },
+            { __ref: 'VideoBlock:videoId' }
           ],
           id: 'journeyId',
           __typename: 'Journey'
         },
-        ['VideoBlock:' + video.id]: { ...video }
+        'VideoBlock:videoId': { ...video }
       })
       const cardBlockResult = jest.fn(() => ({
         data: {
@@ -391,9 +393,9 @@ describe('BackgroundMediaVideo', () => {
       await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
       expect(blockDeleteResult).toHaveBeenCalled()
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
-        { __ref: `CardBlock:cardId` }
+        { __ref: 'CardBlock:cardId' }
       ])
-      expect(cache.extract()['VideoBlock:' + video.id]).toBeUndefined()
+      expect(cache.extract()['VideoBlock:videoId']).toBeUndefined()
     })
 
     describe('Video Settings', () => {
@@ -421,10 +423,10 @@ describe('BackgroundMediaVideo', () => {
       it('updates autoplay', async () => {
         const cache = new InMemoryCache()
         cache.restore({
-          ['Journey:journeyId']: {
+          'Journey:journeyId': {
             blocks: [
-              { __ref: `CardBlock:cardId` },
-              { __ref: `VideoBlock:${video.id}` }
+              { __ref: 'CardBlock:cardId' },
+              { __ref: 'VideoBlock:videoId' }
             ],
             id: 'journeyId',
             __typename: 'Journey'
@@ -477,10 +479,10 @@ describe('BackgroundMediaVideo', () => {
     it('updates muted', async () => {
       const cache = new InMemoryCache()
       cache.restore({
-        ['Journey:journeyId']: {
+        'Journey:journeyId': {
           blocks: [
-            { __ref: `CardBlock:cardId` },
-            { __ref: `VideoBlock:${video.id}` }
+            { __ref: 'CardBlock:cardId' },
+            { __ref: 'VideoBlock:videoId' }
           ],
           id: 'journeyId',
           __typename: 'Journey'
@@ -529,10 +531,10 @@ describe('BackgroundMediaVideo', () => {
     it('updates startAt', async () => {
       const cache = new InMemoryCache()
       cache.restore({
-        ['Journey:journeyId']: {
+        'Journey:journeyId': {
           blocks: [
-            { __ref: `CardBlock:cardId` },
-            { __ref: `VideoBlock:${video.id}` }
+            { __ref: 'CardBlock:cardId' },
+            { __ref: 'VideoBlock:videoId' }
           ],
           id: 'journeyId',
           __typename: 'Journey'
@@ -581,10 +583,10 @@ describe('BackgroundMediaVideo', () => {
     it('updates endAt', async () => {
       const cache = new InMemoryCache()
       cache.restore({
-        ['Journey:journeyId']: {
+        'Journey:journeyId': {
           blocks: [
-            { __ref: `CardBlock:cardId` },
-            { __ref: `VideoBlock:${video.id}` }
+            { __ref: 'CardBlock:cardId' },
+            { __ref: 'VideoBlock:videoId' }
           ],
           id: 'journeyId',
           __typename: 'Journey'

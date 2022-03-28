@@ -273,11 +273,13 @@ export interface GetJourney_journey_blocks_TypographyBlock {
 
 export interface GetJourney_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
+  id: string;
   hls: string;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
+  id: string;
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
 }
 
