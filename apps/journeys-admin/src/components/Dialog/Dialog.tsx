@@ -6,11 +6,9 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 
-interface DialogProps {
+export interface DialogProps {
   open: boolean
   handleClose: () => void
   dialogAction?: DialogAction

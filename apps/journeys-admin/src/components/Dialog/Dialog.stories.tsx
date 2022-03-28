@@ -3,7 +3,7 @@ import { noop } from 'lodash'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { Dialog } from './Dialog'
+import { Dialog, DialogProps } from './Dialog'
 
 const DialogStory = {
   ...journeysAdminConfig,
@@ -11,7 +11,7 @@ const DialogStory = {
   title: 'Journeys-Admin/Dialog'
 }
 
-const Template: Story = ({ ...args }) => {
+const Template: Story = ({ ...args }: DialogProps) => {
   return <Dialog {...args} />
 }
 
