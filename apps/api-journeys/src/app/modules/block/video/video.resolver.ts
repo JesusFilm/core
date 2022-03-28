@@ -62,7 +62,7 @@ export class VideoBlockResolver {
   } | null {
     if (block.videoId == null || block.videoVariantLanguageId == null)
       return null
-      
+
     return {
       __typename: 'Video',
       id: block.videoId,
