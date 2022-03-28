@@ -694,15 +694,7 @@ export abstract class IMutation {
 
 export class Video {
     id: string;
-    variant?: Nullable<VideoVariant>;
-}
-
-export class VideoVariant {
-    language: Language;
-}
-
-export class Language {
-    id: string;
+    primaryLanguageId: string;
 }
 
 export abstract class IQuery {

@@ -38,11 +38,11 @@ export class VideoResolver {
   async resolveReference(reference: {
     __typename: 'Video'
     id: string
-    variant: { __typename: 'VideoVariant'; language: { id: string } }
+    primaryLanguageId: string
   }): Promise<Video> {
     return await this.videoService.getVideo(
       reference.id,
-      reference.variant.language.id
+      reference.primaryLanguageId
     )
   }
 }

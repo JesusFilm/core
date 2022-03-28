@@ -1,14 +1,6 @@
-extend type Video @key(fields: "id variant { language { id } }") {
+extend type Video @key(fields: "id primaryLanguageId") {
   id: ID! @external
-  variant: VideoVariant @external
-}
-
-extend type VideoVariant @key(fields: "language { id }") {
-  language: Language! @external
-}
-
-extend type Language @key(fields: "id") {
-  id: ID! @external
+  primaryLanguageId: ID! @external
 }
 
 type VideoBlock implements Block {

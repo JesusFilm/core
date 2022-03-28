@@ -4,8 +4,9 @@ type Translation {
   primary: Boolean!
 }
 
-type Video @key(fields: "id variant { language { id } }") {
+type Video @key(fields: "id primaryLanguageId") {
   id: ID!
+  primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
   description(languageId: ID, primary: Boolean): [Translation!]!
@@ -31,7 +32,7 @@ type VideoVariantDownload {
   url: String!
 }
 
-type VideoVariant @key(fields: "language { id }") {
+type VideoVariant {
   hls: String!
   downloads: [VideoVariantDownload!]!
   duration: Int!

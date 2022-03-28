@@ -354,7 +354,6 @@ input JourneyUpdateInput {
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
-  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   bcp47: String @join__field(graph: LANGUAGES)
@@ -708,12 +707,13 @@ enum UserJourneyRole {
 
 type Video
   @join__owner(graph: VIDEOS)
-  @join__type(graph: VIDEOS, key: "id variant{language{id}}")
-  @join__type(graph: JOURNEYS, key: "id variant{language{id}}")
+  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
+  @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
+  primaryLanguageId: ID! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -859,16 +859,12 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
-type VideoVariant
-  @join__owner(graph: VIDEOS)
-  @join__type(graph: VIDEOS, key: "language{id}")
-  @join__type(graph: JOURNEYS, key: "language{id}")
-{
-  downloads: [VideoVariantDownload!]! @join__field(graph: VIDEOS)
-  duration: Int! @join__field(graph: VIDEOS)
-  hls: String! @join__field(graph: VIDEOS)
-  language: Language! @join__field(graph: VIDEOS)
-  subtitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+type VideoVariant {
+  downloads: [VideoVariantDownload!]!
+  duration: Int!
+  hls: String!
+  language: Language!
+  subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 type VideoVariantDownload {

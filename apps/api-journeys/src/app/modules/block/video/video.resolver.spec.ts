@@ -108,13 +108,7 @@ describe('VideoBlockResolver', () => {
       expect(await resolver.video(createdBlock)).toEqual({
         __typename: 'Video',
         id: 'videoId',
-        variant: {
-          __typename: 'VideoVariant',
-          language: {
-            __typename: 'Language',
-            id: 'videoVariantLanguageId'
-          }
-        }
+        primaryLanguageId: 'videoVariantLanguageId'
       })
     })
 
