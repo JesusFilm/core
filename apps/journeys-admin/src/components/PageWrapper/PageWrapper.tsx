@@ -168,37 +168,39 @@ export function PageWrapper({
         variant={smUp ? 'permanent' : 'temporary'}
         anchor="left"
       >
-        <List
-          sx={{
-            mx: 'auto',
-            ml: open ? 4 : 5
-          }}
-        >
+        <List>
           <ListItem
             sx={{
-              justifyContent: 'center',
-              color: 'secondary.dark',
-              backgroundColor: 'secondary.light',
-              '&:hover': {
-                background: '#6D6D7D'
-              },
-              width: 24,
-              height: 24,
-              borderRadius: 2
+              justifyContent: open ? 'flex-start' : 'center',
+              my: 1,
             }}
-            button
-            onClick={() => setOpen(!open)}
           >
-            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+            <IconButton
+              size="large"
+              color="inherit"
+              aria-label="chevron"
+              onClick={() => setOpen(!open)}
+              sx={{
+                color: 'secondary.dark',
+                backgroundColor: 'secondary.light',
+                '&:hover': {
+                  backgroundColor: 'secondary.light'
+                },
+                width: 24,
+                height: 24,
+                borderRadius: 2,
+              }}
+            >
+              {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+            </IconButton>
           </ListItem>
-        </List>
-        <List>
           <Link href="/" passHref>
             <ListItem
               sx={{
                 justifyContent: open ? 'flex-start' : 'center',
                 color: '#6D6F81',
-                fontSize: 28
+                fontSize: 28,
+                my: 1
               }}
               button
             >
@@ -223,7 +225,8 @@ export function PageWrapper({
                 sx={{
                   flexGrow: 1,
                   justifyContent: open ? 'flex-start' : 'center',
-                  color: '#6D6F81'
+                  color: '#6D6F81',
+                  my: 1
                 }}
                 button
                 onClick={handleProfileClick}
@@ -231,7 +234,7 @@ export function PageWrapper({
                 <Avatar
                   alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
                   src={data.me.imageUrl ?? undefined}
-                  sx={{ width: 24, height: 24, ml: smUp ? 0 : 1 }}
+                  sx={{ width: 24, height: 24 }}
                 />
                 {open ? (
                   <Typography variant="h5" sx={{ ml: 5 }}>
