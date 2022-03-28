@@ -1,10 +1,10 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback, MouseEvent } from 'react'
+import { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
+import { TreeBlock, useEditor } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -33,8 +33,7 @@ export function Video({
   muted,
   posterBlockId,
   fullsize,
-  children,
-  ...props
+  children
 }: VideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -46,8 +45,7 @@ export function Video({
     VIDEO_RESPONSE_CREATE
   )
   const {
-    state: { selectedBlock, selectedStep },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
@@ -145,32 +143,6 @@ export function Video({
     }
   }, [selectedBlock])
 
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    if (props.parentBlockId !== selectedStep?.id) {
-      const block: TreeBlock<VideoFields> = {
-        id: blockId,
-        videoContent,
-        autoplay,
-        startAt,
-        muted,
-        posterBlockId,
-        children,
-        fullsize,
-        ...props
-      }
-
-      dispatch({ type: 'SetSelectedBlockAction', block })
-    }
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-  }
-
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -193,7 +165,6 @@ export function Video({
           width: '100%'
         }
       }}
-      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
       {videoContent.src != null ? (
         <>

@@ -2,25 +2,25 @@ import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
 import InputBase, { InputBaseProps } from '@mui/material/InputBase'
-import { Typography, TreeBlock } from '@core/journeys/ui'
+import { RadioOption, TreeBlock } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
-import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
-import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
+import { RadioOptionBlockUpdateContent } from '../../../../../../__generated__/RadioOptionBlockUpdateContent'
+import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 
-export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
-  mutation TypographyBlockUpdateContent(
+export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
+  mutation RadioOptionBlockUpdateContent(
     $id: ID!
     $journeyId: ID!
-    $input: TypographyBlockUpdateInput!
+    $input: RadioOptionBlockUpdateInput!
   ) {
-    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    radioOptionBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
-      content
+      label
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {}
+interface RadioOptionEditProps extends TreeBlock<RadioOptionFields> {}
 
 interface StyledInputProps extends InputBaseProps {}
 
@@ -37,38 +37,34 @@ const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
   fontWeight: 'inherit',
   lineHeight: 'inherit',
   letterSpacing: 'inherit',
-  padding: 0,
+  padding: '0px',
   caretColor: adminPrimaryColor.main
 }))
 
-export function TypographyEdit({
+export function RadioOptionEdit({
   id,
-  variant,
-  align,
-  color,
-  content,
-  ...props
-}: TypographyEditProps): ReactElement {
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
-    TYPOGRAPHY_BLOCK_UPDATE_CONTENT
+  label,
+  ...radioOptionProps
+}: RadioOptionEditProps): ReactElement {
+  const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
+    RADIO_OPTION_BLOCK_UPDATE_CONTENT
   )
-
   const journey = useJourney()
-  const [value, setValue] = useState(content)
+  const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {
-    const content = value.trimStart().trimEnd()
-    await typographyBlockUpdate({
+    const label = value.trim().replace(/\n/g, '')
+    await radioOptionBlockUpdate({
       variables: {
         id,
         journeyId: journey.id,
-        input: { content }
+        input: { label }
       },
       optimisticResponse: {
-        typographyBlockUpdate: {
+        radioOptionBlockUpdate: {
           id,
-          __typename: 'TypographyBlock',
-          content
+          __typename: 'RadioOptionBlock',
+          label
         }
       }
     })
@@ -77,8 +73,8 @@ export function TypographyEdit({
   const input = (
     <StyledInput
       name={`edit-${id}`}
-      multiline
       fullWidth
+      multiline
       autoFocus
       value={value}
       onBlur={handleSaveBlock}
@@ -90,14 +86,11 @@ export function TypographyEdit({
   )
 
   return (
-    <Typography
-      {...props}
+    <RadioOption
+      {...radioOptionProps}
       id={id}
-      variant={variant}
-      align={align}
-      color={color}
-      content={content}
-      editableContent={input}
+      label={label}
+      editableLabel={input}
     />
   )
 }
