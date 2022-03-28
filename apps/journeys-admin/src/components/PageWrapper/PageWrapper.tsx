@@ -147,7 +147,7 @@ export function PageWrapper({
       <Toolbar
         sx={{
           ml: { sm: '72px' },
-          mr: { sm: showDrawer === true ? '328px' : 0 }
+          mr: { sm: showDrawer === true ? '328px' : 0 },
         }}
       />
       <Drawer
@@ -321,7 +321,7 @@ export function PageWrapper({
           </>
         )}
       </Drawer>
-      <Box sx={{ ml: { sm: '72px' } }}>{children}</Box>
+      <Box sx={{ ml: { sm: '72px' }, mt: smUp ? 0 : '48px' }}>{children}</Box>
     </>
   )
 }
