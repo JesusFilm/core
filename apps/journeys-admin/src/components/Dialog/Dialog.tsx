@@ -2,7 +2,6 @@ import { ReactElement } from 'react'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -13,13 +12,15 @@ export interface DialogProps {
   handleClose: () => void
   dialogAction?: DialogAction
   title?: string
-  description?: string
+  closeButton?: boolean
+  divider?: boolean
   children?: ReactElement
 }
 
 interface DialogAction {
   onSubmit: () => void
-  submitText: string
+  submitLabel?: string
+  closeLabel?: string
 }
 
 export function Dialog({
@@ -27,7 +28,8 @@ export function Dialog({
   handleClose,
   dialogAction,
   title,
-  description,
+  closeButton,
+  divider,
   children
 }: DialogProps): ReactElement {
   function handleSubmit(): void {
@@ -47,26 +49,24 @@ export function Dialog({
       }}
     >
       {title != null && (
-        <DialogTitle sx={{ display: 'flex' }}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
           {title}
-          <IconButton onClick={handleClose} sx={{ ml: 'auto' }}>
-            <CloseRoundedIcon />
-          </IconButton>
+          {/* pb needs to be adjusted */}
+          {closeButton != null && closeButton && (
+            <IconButton onClick={handleClose} sx={{ ml: 'auto' }}>
+              <CloseRoundedIcon />
+            </IconButton>
+          )}
         </DialogTitle>
       )}
-      <DialogContent>
-        {/* Should description be combined with children? */}
-        {description != null && (
-          <DialogContentText>{description}</DialogContentText>
-        )}
-        {children}
-      </DialogContent>
+      <DialogContent dividers={divider}>{children}</DialogContent>
       {dialogAction != null && (
         <DialogActions>
-          {/* Should the cancel text be changeable? */}
-          {/* Should cancel button always show? */}
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>{dialogAction.submitText}</Button>
+          {/* Close button only shows when closeLabel is passed in */}
+          <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
+          <Button onClick={handleSubmit}>
+            {dialogAction.submitLabel ?? 'Save'}
+          </Button>
         </DialogActions>
       )}
     </MuiDialog>

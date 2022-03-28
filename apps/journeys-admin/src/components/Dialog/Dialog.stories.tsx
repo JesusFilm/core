@@ -20,22 +20,24 @@ Basic.args = {
   open: true,
   handleClose: noop,
   title: 'Title',
-  description: 'Would you like to confirm this action?',
   dialogAction: {
     onSubmit: noop,
-    submitText: 'Accept'
-  }
+    submitLabel: 'Accept',
+    closeLabel: 'Cancel'
+  },
+  children: <Typography>This is the description</Typography>
 }
 
 export const ExcessContent = Template.bind({})
 ExcessContent.args = {
   open: true,
   handleClose: noop,
+  closeButton: true,
+  divider: true,
+  title: 'Submission Form with a really long title example',
   dialogAction: {
-    onSubmit: noop,
-    submitText: 'Submit'
+    onSubmit: noop
   },
-  title: 'Submission Form Example',
   children: (
     <>
       <Typography>First Name:</Typography>
