@@ -147,7 +147,7 @@ export function PageWrapper({
       <Toolbar
         sx={{
           ml: { sm: '72px' },
-          mr: { sm: showDrawer === true ? '328px' : 0 },
+          mr: { sm: showDrawer === true ? '328px' : 0 }
         }}
       />
       <Drawer
