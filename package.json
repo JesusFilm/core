@@ -76,6 +76,7 @@
     "react-firebase-hooks": "^3.0.4",
     "react-firebaseui": "^6.0.0",
     "react-helmet": "^6.1.0",
+    "react-multi-carousel": "^2.8.0",
     "react-router-dom": "5.3.0",
     "react-simple-timefield": "^3.2.5",
     "reflect-metadata": "^0.1.13",
