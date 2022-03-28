@@ -12,6 +12,7 @@ export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
   disabled?: boolean
   onClick?: (selected: string) => void
+  editableLabel?: ReactElement
 }
 
 const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
@@ -32,7 +33,8 @@ export function RadioOption({
   id,
   disabled = false,
   selected = false,
-  onClick
+  onClick,
+  editableLabel
 }: RadioOptionProps): ReactElement {
   const router = useRouter()
 
@@ -47,6 +49,8 @@ export function RadioOption({
       className={className}
       disabled={disabled}
       onClick={handleClick}
+      fullWidth
+      disableRipple
       startIcon={
         selected ? (
           <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
@@ -54,9 +58,17 @@ export function RadioOption({
           <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
         )
       }
-      fullWidth
+      sx={
+        editableLabel != null
+          ? {
+              '&:hover': {
+                backgroundColor: 'primary.main'
+              }
+            }
+          : undefined
+      }
     >
-      {label}
+      {editableLabel ?? label}
     </StyledRadioOption>
   )
 }
