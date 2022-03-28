@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { noop } from 'lodash'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Dialog } from './Dialog'
 
@@ -9,7 +10,17 @@ const DialogStory = {
 }
 
 export const Default: Story = () => {
-  return <Dialog />
+  const props = {
+    open: true,
+    handleClose: noop,
+    title: 'Title',
+    description: 'Would you like to confirm this action?',
+    dialogAction: {
+      onSubmit: noop,
+      submitText: 'Accept'
+    }
+  }
+  return <Dialog {...props} />
 }
 
 export default DialogStory as Meta
