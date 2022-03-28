@@ -1,10 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { AuthUser } from 'next-firebase-auth'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { GET_ME } from './PageWrapper'
 import { PageWrapper } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('PageWrapper', () => {
+  beforeEach(() =>
+    (useMediaQuery as jest.Mock).mockImplementation(() => true)
+  )
   it('should show title', () => {
     const { getByText } = render(
       <MockedProvider>
