@@ -1,5 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { noop } from 'lodash'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Dialog } from './Dialog'
 
@@ -9,18 +11,49 @@ const DialogStory = {
   title: 'Journeys-Admin/Dialog'
 }
 
-export const Default: Story = () => {
-  const props = {
-    open: true,
-    handleClose: noop,
-    title: 'Title',
-    description: 'Would you like to confirm this action?',
-    dialogAction: {
-      onSubmit: noop,
-      submitText: 'Accept'
-    }
+const Template: Story = ({ ...args }) => {
+  return <Dialog {...args} />
+}
+
+export const Basic = Template.bind({})
+Basic.args = {
+  open: true,
+  handleClose: noop,
+  title: 'Title',
+  description: 'Would you like to confirm this action?',
+  dialogAction: {
+    onSubmit: noop,
+    submitText: 'Accept'
   }
-  return <Dialog {...props} />
+}
+
+export const ExcessContent = Template.bind({})
+ExcessContent.args = {
+  open: true,
+  handleClose: noop,
+  dialogAction: {
+    onSubmit: noop,
+    submitText: 'Submit'
+  },
+  title: 'Submission Form Example',
+  children: (
+    <>
+      <Typography>First Name:</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>Last Name:</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>Email:</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>Password:</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>Re-type password:</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>Security Question</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>Notes:</Typography>
+      <TextField fullWidth sx={{ pb: 4 }} />
+    </>
+  )
 }
 
 export default DialogStory as Meta
