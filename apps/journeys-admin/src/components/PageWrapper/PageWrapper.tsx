@@ -172,7 +172,7 @@ export function PageWrapper({
           <ListItem
             sx={{
               justifyContent: open ? 'flex-start' : 'center',
-              my: 1,
+              my: 1
             }}
           >
             <IconButton
@@ -188,7 +188,7 @@ export function PageWrapper({
                 },
                 width: 24,
                 height: 24,
-                borderRadius: 2,
+                borderRadius: 2
               }}
             >
               {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}

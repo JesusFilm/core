@@ -12,7 +12,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('PageWrapper', () => {
   describe('smUp', () => {
-    beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+    beforeEach(() =>
+      (useMediaQuery as jest.Mock).mockImplementation(() => true)
+    )
 
     it('should open and close the nav drawer on click', () => {
       const { getAllByRole, getByTestId, getByText } = render(
@@ -21,18 +23,12 @@ describe('PageWrapper', () => {
         </MockedProvider>
       )
       const button = getAllByRole('button')[0]
-      expect(button).toContainElement(
-        getByTestId('ChevronRightRoundedIcon')
-      )
+      expect(button).toContainElement(getByTestId('ChevronRightRoundedIcon'))
       fireEvent.click(button)
-      expect(button).toContainElement(
-        getByTestId('ChevronLeftRoundedIcon')
-      )
+      expect(button).toContainElement(getByTestId('ChevronLeftRoundedIcon'))
       expect(getByText('Discover')).toBeInTheDocument()
       fireEvent.click(button)
-      expect(button).toContainElement(
-        getByTestId('ChevronRightRoundedIcon')
-      )
+      expect(button).toContainElement(getByTestId('ChevronRightRoundedIcon'))
     })
     it('should show title', () => {
       const { getByText } = render(
@@ -119,7 +115,9 @@ describe('PageWrapper', () => {
   })
 
   describe('xsDown', () => {
-    beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => false))
+    beforeEach(() =>
+      (useMediaQuery as jest.Mock).mockImplementation(() => false)
+    )
 
     it('should show the navbar on mobile view', () => {
       const { getAllByRole, getByTestId, getByText } = render(
@@ -128,9 +126,7 @@ describe('PageWrapper', () => {
         </MockedProvider>
       )
       const button = getAllByRole('button')[0]
-      expect(button).toContainElement(
-        getByTestId('MenuIcon')
-      )
+      expect(button).toContainElement(getByTestId('MenuIcon'))
       fireEvent.click(button)
       expect(getByText('Discover')).toBeInTheDocument()
     })
