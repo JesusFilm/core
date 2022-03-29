@@ -24,9 +24,18 @@ describe('JourneyView/Menu/TitleDialog', () => {
 
   it('should update journey title on submit', async () => {
     const updatedJourney = {
-      id: defaultJourney.id,
       title: 'New Journey'
     }
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          ...updatedJourney
+        }
+      }
+    }))
 
     const { getByRole, getByText } = render(
       <MockedProvider
@@ -39,14 +48,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
                 input: updatedJourney
               }
             },
-            result: {
-              data: {
-                journeyUpdate: {
-                  __typename: 'Journey',
-                  ...updatedJourney
-                }
-              }
-            }
+            result
           }
         ]}
       >
@@ -60,7 +62,8 @@ describe('JourneyView/Menu/TitleDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
-      expect(getByText('Title updated successfully')).toBeInTheDocument()
+      expect(result).toHaveBeenCalled()
     })
+    expect(getByText('Title updated successfully')).toBeInTheDocument()
   })
 })

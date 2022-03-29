@@ -2,9 +2,11 @@ ARCHITECTURE=$(arch)
 
 install_from_source () {
   echo "Installing rover from source"
-  curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
-  source $HOME/.cargo/env
-  cargo install --git https://github.com/apollographql/rover.git --tag v0.2.1 rover
+  curl -O -L https://raw.githubusercontent.com/JesusFilm/core/%40apollo/rover-0.2.1-arm-64/rover
+  chmod +x rover
+  mkdir /home/node/.local
+  mkdir /home/node/.local/bin
+  mv rover /home/node/.local/bin
 }
 
 if ! command -v rover &> /dev/null

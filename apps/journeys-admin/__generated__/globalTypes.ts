@@ -232,6 +232,11 @@ export interface RadioOptionBlockCreateInput {
   parentBlockId: string;
 }
 
+export interface RadioOptionBlockUpdateInput {
+  label?: string | null;
+  parentBlockId?: string | null;
+}
+
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -299,27 +304,19 @@ export interface VideoBlockCreateInput {
   parentBlockId: string;
   posterBlockId?: string | null;
   startAt?: number | null;
-  title: string;
-  videoContent: VideoContentInput;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
   autoplay?: boolean | null;
-  description?: string | null;
   endAt?: number | null;
   fullsize?: boolean | null;
   muted?: boolean | null;
-  parentBlockId?: string | null;
   posterBlockId?: string | null;
   startAt?: number | null;
-  title?: string | null;
-  videoContent?: VideoContentInput | null;
-}
-
-export interface VideoContentInput {
-  languageId?: string | null;
-  mediaComponentId?: string | null;
-  src?: string | null;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
 }
 
 export interface VideoResponseCreateInput {
@@ -327,6 +324,11 @@ export interface VideoResponseCreateInput {
   id?: string | null;
   position?: number | null;
   state: VideoResponseStateEnum;
+}
+
+export interface VideosFilter {
+  availableVariantLanguageIds?: string[] | null;
+  title?: string | null;
 }
 
 //==============================================================

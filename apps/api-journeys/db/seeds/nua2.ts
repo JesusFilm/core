@@ -55,10 +55,8 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: card1._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0301-0-0',
+    videoVariantLanguageId: '529',
     muted: true,
     autoplay: true,
     startAt: 11,
@@ -173,10 +171,8 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0301-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: 'What About The Ressurection?',
     fullsize: true,
@@ -304,10 +300,8 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard1._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0301-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: 'What About The Ressurection?',
     startAt: 109,
@@ -450,10 +444,8 @@ export async function nua2(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard2._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA0301-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA0301-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: 'What About The Ressurection?',
     startAt: 272,

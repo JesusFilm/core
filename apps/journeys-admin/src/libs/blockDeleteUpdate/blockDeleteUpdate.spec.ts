@@ -3,7 +3,6 @@ import { TreeBlock } from '@core/journeys/ui'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
@@ -15,26 +14,32 @@ import {
 import { blockDeleteUpdate } from './blockDeleteUpdate'
 
 const video: TreeBlock<VideoBlock> = {
-  id: 'video1.id',
+  id: 'videoId',
   __typename: 'VideoBlock',
-  parentBlockId: 'card1.id',
+  parentBlockId: 'cardId',
   parentOrder: 0,
-  title: 'watch',
   startAt: 0,
   endAt: null,
   muted: true,
   autoplay: true,
   fullsize: true,
-  videoContent: {
-    __typename: 'VideoGeneric',
-    src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
   },
   posterBlockId: null,
   children: []
 }
 
 const image: TreeBlock<ImageBlock> = {
-  id: 'image1.id',
+  id: 'imageId',
   __typename: 'ImageBlock',
   parentBlockId: 'card1.id',
   parentOrder: 1,
@@ -44,19 +49,6 @@ const image: TreeBlock<ImageBlock> = {
   width: 10,
   height: 10,
   children: []
-}
-
-const card: TreeBlock<CardBlock> = {
-  id: 'card1.id',
-  __typename: 'CardBlock',
-  parentBlockId: 'step1.id',
-  parentOrder: 0,
-  coverBlockId: null,
-  backgroundColor: null,
-  themeMode: null,
-  themeName: null,
-  fullscreen: false,
-  children: [video, image]
 }
 
 const journey: Journey = {
@@ -71,7 +63,7 @@ const journey: Journey = {
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
-  blocks: [] as TreeBlock[],
+  blocks: [],
   primaryImageBlock: null,
   userJourneys: []
 }
@@ -82,26 +74,25 @@ describe('blockDeleteUpdate', () => {
   it('should perform block delete logic', () => {
     const cache = new InMemoryCache()
     cache.restore({
-      ['Journey:' + journey.id]: {
+      'Journey:journeyId': {
         blocks: [
-          { __ref: `CardBlock:${card.id}` },
-          { __ref: `VideoBlock:${video.id}` },
-          { __ref: `ImageBlock:${image.id}` }
+          { __ref: 'CardBlock:cardId' },
+          { __ref: 'VideoBlock:videoId' },
+          { __ref: 'ImageBlock:imageId' }
         ],
         id: journey.id,
         __typename: 'Journey'
       },
-      ['VideoBlock:' + video.id]: {
-        ...video
-      },
-      ['ImageBlock:' + image.id]: { ...image }
+      'VideoBlock:videoId': { ...video },
+      'ImageBlock:imageId': { ...image }
     })
     blockDeleteUpdate(video, response, cache, journey.id)
-    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-      { __ref: `CardBlock:${card.id}` },
-      { __ref: `ImageBlock:${image.id}` }
+    const extractedCache = cache.extract()
+    expect(extractedCache['Journey:journeyId']?.blocks).toEqual([
+      { __ref: 'CardBlock:cardId' },
+      { __ref: 'ImageBlock:imageId' }
     ])
-    expect(cache.extract()['VideoBlock:' + video.id]).toBeUndefined()
-    expect(cache.extract()['ImageBlock:' + image.id]?.parentOrder).toEqual(0)
+    expect(extractedCache['VideoBlock:videoId']).toBeUndefined()
+    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toEqual(0)
   })
 })

@@ -19,5 +19,8 @@ export function handleAction(
     case 'NavigateAction':
       nextActiveBlock()
       break
+    case 'LinkAction':
+      void router.push(action.url)
+      break
   }
 }

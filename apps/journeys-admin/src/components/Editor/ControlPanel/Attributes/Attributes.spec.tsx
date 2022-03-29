@@ -63,15 +63,21 @@ describe('Attributes', () => {
     parentBlockId: 'card0.id',
     parentOrder: 0,
     autoplay: false,
-    title: 'Video',
     startAt: 10,
     endAt: null,
     muted: null,
     fullsize: null,
     posterBlockId: 'posterBlockId',
-    videoContent: {
-      __typename: 'VideoArclight',
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    videoId: '2_0-FallingPlates',
+    videoVariantLanguageId: '529',
+    video: {
+      __typename: 'Video',
+      id: '2_0-FallingPlates',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '2_0-FallingPlates-529',
+        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      }
     },
     children: []
   }

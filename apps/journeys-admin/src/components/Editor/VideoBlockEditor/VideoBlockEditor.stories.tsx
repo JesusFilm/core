@@ -12,6 +12,8 @@ import {
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
+import { videos } from '../VideoLibrary/VideoList/VideoListData'
+import { GET_VIDEOS } from '../VideoLibrary/VideoList/VideoList'
 import { VideoBlockEditor } from './VideoBlockEditor'
 
 const BackgroundMediaStory = {
@@ -42,15 +44,21 @@ const video: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   parentBlockId: card.id,
   parentOrder: 0,
-  title: 'my video',
   startAt: 0,
   endAt: null,
   muted: false,
   autoplay: true,
   fullsize: true,
-  videoContent: {
-    __typename: 'VideoGeneric',
-    src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
   },
   posterBlockId: 'poster1.id',
   children: []
@@ -73,7 +81,26 @@ const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
 const Template: Story = ({ ...args }) => (
-  <MockedProvider>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_VIDEOS,
+          variables: {
+            where: {
+              availableVariantLanguageIds: ['529'],
+              title: null
+            }
+          }
+        },
+        result: {
+          data: {
+            videos: videos
+          }
+        }
+      }
+    ]}
+  >
     <ThemeProvider>
       <MuiDrawer
         anchor="right"
@@ -94,8 +121,6 @@ const Template: Story = ({ ...args }) => (
           selectedBlock={args.selectedBlock}
           onChange={onChange}
           onDelete={onDelete}
-          parentBlockId={card.id}
-          parentOrder={Number(card.parentOrder)}
         />
       </MuiDrawer>
       <MuiDrawer
@@ -110,8 +135,6 @@ const Template: Story = ({ ...args }) => (
           selectedBlock={args.selectedBlock}
           onChange={onChange}
           onDelete={onDelete}
-          parentBlockId={card.id}
-          parentOrder={Number(card.parentOrder)}
         />
       </MuiDrawer>
     </ThemeProvider>
