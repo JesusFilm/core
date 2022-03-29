@@ -2,6 +2,10 @@ import { Story, Meta } from '@storybook/react'
 import { noop } from 'lodash'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
+import MuiListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Skeleton from '@mui/material/Skeleton'
+import ListItemText from '@mui/material/ListItemText'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { Dialog, DialogProps } from './Dialog'
 
@@ -27,34 +31,47 @@ Basic.args = {
   children: <Typography>This is the description</Typography>
 }
 
-export const ExcessContent = Template.bind({})
-ExcessContent.args = {
+export const Form = Template.bind({})
+Form.args = {
   open: true,
   handleClose: noop,
+  title: 'Edit Form',
   closeButton: true,
-  divider: true,
-  title:
-    'Submission form with a really long title to test out the overflow example',
   dialogAction: {
     onSubmit: noop,
     closeLabel: 'Cancel'
   },
+  children: <TextField fullWidth label="Field Label" value="name" />
+}
+
+export const Info = Template.bind({})
+Info.args = {
+  open: true,
+  handleClose: noop,
+  title: 'Info Dialog',
+  closeButton: true,
+  divider: true,
   children: (
     <>
-      <Typography>First Name:</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
-      <Typography>Last Name:</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
-      <Typography>Email:</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
-      <Typography>Password:</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
-      <Typography>Re-type password:</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
-      <Typography>Security Question</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
-      <Typography>Notes:</Typography>
-      <TextField fullWidth sx={{ pb: 4 }} />
+      <Typography>This is the description for the information</Typography>
+      {[0, 1, 2].map((i) => (
+        <MuiListItem sx={{ px: 0 }} key={i}>
+          <ListItemAvatar>
+            <Skeleton
+              animation={false}
+              variant="circular"
+              width={40}
+              height={40}
+            />
+          </ListItemAvatar>
+          <ListItemText
+            primary={<Skeleton animation={false} variant="text" width="60%" />}
+            secondary={
+              <Skeleton animation={false} variant="text" width="30%" />
+            }
+          />
+        </MuiListItem>
+      ))}
     </>
   )
 }

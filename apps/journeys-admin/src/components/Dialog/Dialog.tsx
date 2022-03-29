@@ -32,11 +32,16 @@ const StyledDialog = styled(MuiDialog)({
     paddingTop: 20,
     alignItems: 'center',
     '& .MuiIconButton-root': {
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      height: 14,
+      width: 14
     }
   },
   '& .MuiTypography-body1': {
     color: 'secondary.light'
+  },
+  '& .MuiDialogContent-root': {
+    paddingTop: 12
   },
   '& .MuiDialogContent-dividers': {
     padding: 24
@@ -89,7 +94,7 @@ export function Dialog({
         <DialogActions>
           {/* Close button only shows when closeLabel is passed in */}
           <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
-          <Button sx={{ ml: 100 }} onClick={handleSubmit}>
+          <Button onClick={handleSubmit}>
             {dialogAction.submitLabel ?? 'Save'}
           </Button>
         </DialogActions>
