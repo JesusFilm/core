@@ -1,12 +1,6 @@
-import { ReactElement, useEffect, useState, MouseEvent } from 'react'
+import { ReactElement, useState, MouseEvent } from 'react'
 import Box from '@mui/material/Box'
-import {
-  ToggleButton,
-  ToggleButtonGroup,
-  Divider,
-  Stack,
-  styled
-} from '@mui/material'
+import { ToggleButton, ToggleButtonGroup, Stack, styled } from '@mui/material'
 import { Image as ImageIcon, Videocam } from '@mui/icons-material'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -34,9 +28,6 @@ export function BackgroundMedia(): ReactElement {
   const [blockType, setBlockType] = useState(
     coverBlock?.__typename.toString() ?? 'VideoBlock'
   )
-  useEffect(() => {
-    setBlockType(coverBlock?.__typename.toString() ?? 'VideoBlock')
-  }, [setBlockType, coverBlock])
 
   const handleTypeChange = (
     event: MouseEvent<HTMLElement>,
@@ -91,7 +82,6 @@ export function BackgroundMedia(): ReactElement {
           </ToggleButton>
         </StyledToggleButtonGroup>
       </Box>
-      <Divider sx={{ sm: 'none' }} />
       {blockType === 'ImageBlock' && (
         <BackgroundMediaImage cardBlock={cardBlock} />
       )}

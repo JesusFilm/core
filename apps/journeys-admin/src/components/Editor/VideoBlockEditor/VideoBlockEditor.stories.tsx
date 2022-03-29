@@ -142,7 +142,7 @@ MobileSettings.args = {
 }
 MobileSettings.parameters = {
   chromatic: {
-    viewports: [360, 540]
+    viewports: [360]
   }
 }
 MobileSettings.play = async () => {

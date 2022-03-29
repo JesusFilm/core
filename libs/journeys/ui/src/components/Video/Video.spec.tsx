@@ -89,7 +89,7 @@ describe('Video', () => {
   })
 })
 
-describe('Admin Video', () => {
+describe.skip('Admin Video', () => {
   it('should select video on click', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider mocks={[]}>
