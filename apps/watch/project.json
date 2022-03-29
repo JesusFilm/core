@@ -1,0 +1,106 @@
+{
+  "root": "apps/watch",
+  "sourceRoot": "apps/watch",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "root": "apps/watch",
+        "outputPath": "dist/apps/watch"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "options": {
+        "buildTarget": "watch:build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4300
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "watch:build:production",
+          "dev": false
+        }
+      }
+    },
+    "serve-all": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve-all api-gateway"
+          },
+          {
+            "command": "nx serve watch"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "watch:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/watch"],
+      "options": {
+        "jestConfig": "apps/watch/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/watch/**/*.{ts,tsx,js,jsx}"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "type-check": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/watch/tsconfig.json"
+      }
+    },
+    "demo": {
+      "executor": "@nrwl/storybook:storybook",
+      "options": {
+        "uiFramework": "@storybook/react",
+        "port": 4400,
+        "config": {
+          "configFolder": ".storybook"
+        }
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "codegen": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf node_modules/apollo-language-server/node_modules/graphql"
+          },
+          {
+            "command": "rm -rf apps/watch/__generated__"
+          },
+          {
+            "command": "npx apollo client:codegen --config apps/watch/apollo.config.js --target typescript --outputFlat apps/watch/__generated__"
+          }
+        ]
+      }
+    }
+  },
+  "tags": []
+}

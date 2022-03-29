@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { kebabCase } from 'lodash'
+import Box from '@mui/material/Box'
 import MaterialGrid, { GridDirection } from '@mui/material/Grid'
 import { TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -18,16 +19,18 @@ export function GridContainer({
   wrappers
 }: GridContainerProps): ReactElement {
   return (
-    <MaterialGrid
-      container
-      spacing={spacing}
-      direction={kebabCase(direction) as GridDirection}
-      alignItems={kebabCase(alignItems)}
-      justifyContent={kebabCase(justifyContent)}
-    >
-      {children?.map((block) => (
-        <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
-      ))}
-    </MaterialGrid>
+    <Box sx={{ mb: 4 }}>
+      <MaterialGrid
+        container
+        spacing={spacing}
+        direction={kebabCase(direction) as GridDirection}
+        alignItems={kebabCase(alignItems)}
+        justifyContent={kebabCase(justifyContent)}
+      >
+        {children?.map((block) => (
+          <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
+        ))}
+      </MaterialGrid>
+    </Box>
   )
 }

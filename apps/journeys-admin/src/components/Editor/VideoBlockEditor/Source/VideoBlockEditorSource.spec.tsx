@@ -1,17 +1,31 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { VideoBlockEditorSource } from './VideoBlockEditorSource'
+import { TreeBlock } from '@core/journeys/ui'
+import { VideoBlockEditorSource } from '.'
 
-const video = {
+const video: TreeBlock = {
   __typename: 'VideoBlock',
+  id: 'videoBlockId',
+  parentOrder: 0,
+  fullsize: true,
   autoplay: true,
   endAt: null,
   muted: true,
   parentBlockId: 'card.id',
   posterBlockId: null,
   startAt: 0,
-  title: '123.mp4',
-  videoContent: { src: 'https://example.com/123.mp4' }
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
+  },
+  children: []
 }
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -21,48 +35,53 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('VideoBlockEditorSource', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  it('displays validation message', async () => {
-    const onChange = jest.fn()
-    const { getByRole, getByText } = render(
-      <VideoBlockEditorSource
-        selectedBlock={null}
-        onChange={onChange}
-        parentOrder={0}
-        parentBlockId="card.id"
-      />
-    )
-    const textBox = await getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: '' }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
-    fireEvent.change(textBox, {
-      target: { value: 'example.com/123' }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() =>
-      expect(getByText('Please enter a valid url')).toBeInTheDocument()
-    )
-    expect(onChange).not.toBeCalled()
-  })
-
-  it('calls onChange with new block', async () => {
+  it('calls onChange when videoId textbox changes', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <VideoBlockEditorSource
-        selectedBlock={null}
+        selectedBlock={video}
         onChange={onChange}
         parentOrder={0}
         parentBlockId="card.id"
       />
     )
-    const textBox = getByRole('textbox')
-    fireEvent.focus(textBox)
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/123.mp4' }
+    const textbox = getByRole('textbox', { name: 'Video ID' })
+    expect(textbox).toHaveValue('2_0-FallingPlates')
+    fireEvent.focus(textbox)
+    fireEvent.change(textbox, {
+      target: { value: '5_0-NUA0201-0-0' }
     })
-    fireEvent.blur(textBox)
-    await waitFor(() => expect(onChange).toHaveBeenCalledWith(video))
+    fireEvent.blur(textbox)
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        videoId: '5_0-NUA0201-0-0',
+        videoVariantLanguageId: '529'
+      })
+    )
+  })
+
+  it('calls onChange when videoVariantLanguageId textbox changes', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <VideoBlockEditorSource
+        selectedBlock={video}
+        onChange={onChange}
+        parentOrder={0}
+        parentBlockId="card.id"
+      />
+    )
+    const textbox = getByRole('textbox', { name: 'Video Variant Language ID' })
+    expect(textbox).toHaveValue('529')
+    fireEvent.focus(textbox)
+    fireEvent.change(textbox, {
+      target: { value: '100' }
+    })
+    fireEvent.blur(textbox)
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        videoId: '2_0-FallingPlates',
+        videoVariantLanguageId: '100'
+      })
+    )
   })
 })

@@ -490,36 +490,19 @@ input TypographyBlockUpdateInput {
   align: TypographyAlign
 }
 
-interface VideoContent {
-  src: String
-}
-
-type VideoArclight implements VideoContent {
-  mediaComponentId: String!
-  languageId: String!
-  src: String
-}
-
-type VideoGeneric implements VideoContent {
-  src: String
-}
-
 type VideoBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  title: String!
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
-  description: String
   muted: Boolean
   autoplay: Boolean
-  videoContent: VideoContent!
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -528,21 +511,27 @@ type VideoBlock implements Block {
   """
   posterBlockId: ID
   fullsize: Boolean
-}
+  video: Video
 
-input VideoContentInput {
-  mediaComponentId: String
-  languageId: String
-  src: String
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 }
 
 input VideoBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  title: String!
 
-  """startAt dictates at which point of time the video should start playing"""
+  """
+  startAt dictates at which point of time the video should start playing
+  """
   startAt: Int
 
   """endAt dictates at which point of time the video should end"""
@@ -550,7 +539,16 @@ input VideoBlockCreateInput {
   description: String
   muted: Boolean
   autoplay: Boolean
-  videoContent: VideoContentInput!
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -562,18 +560,15 @@ input VideoBlockCreateInput {
 }
 
 input VideoBlockUpdateInput {
-  parentBlockId: ID
-  title: String
-
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
-  description: String
   muted: Boolean
   autoplay: Boolean
-  videoContent: VideoContentInput
+  videoId: ID
+  videoVariantLanguageId: ID
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -762,6 +757,11 @@ extend type Mutation {
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+}
+
+extend type Video @key(fields: "id primaryLanguageId") {
+  id: ID! @external
+  primaryLanguageId: ID! @external
 }
 
 extend type Query {

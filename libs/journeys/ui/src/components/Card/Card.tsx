@@ -92,7 +92,17 @@ export function Card({
             borderRadius: (theme) => theme.spacing(4)
           }}
         >
-          <Box sx={{ margin: 'auto', width: '100%', maxWidth: 500 }}>
+          <Box
+            sx={{
+              margin: 'auto',
+              width: '100%',
+              maxWidth: 500,
+              '& > *': {
+                '&:first-child': { mt: 0 },
+                '&:last-child': { mb: 0 }
+              }
+            }}
+          >
             {renderedChildren}
           </Box>
         </Box>

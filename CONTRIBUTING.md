@@ -62,6 +62,8 @@ Jesus Film uses [React](https://reactjs.org/) as our primary library to build ou
 
 We are building out our component library to support the growing needs of our product suite. To support this effort all of our components have stories attached for use in [Storybook](https://storybook.js.org/). These stories are published to our library which can be found on our [Chromatic Library](https://www.chromatic.com/library?appId=612c2a83fdc2b2003a5c2eb7&groupPrefix=Journeys%2FBlocks).
 
+For best practices in writing components, stories and unit tests please refer to our [wiki](https://github.com/JesusFilm/core/wiki/).
+
 ## Getting Started
 
 ### Developing inside a Container

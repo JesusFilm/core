@@ -7,7 +7,6 @@ import { useJourney } from '../../../../../libs/context'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
-import { ButtonVariant } from '../../../../../../__generated__/globalTypes'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
   mutation ButtonBlockUpdateContent(
@@ -96,14 +95,6 @@ export function ButtonEdit({
       buttonColor={buttonColor}
       label={label}
       editableLabel={input}
-      sx={{
-        '&:hover': {
-          backgroundColor:
-            buttonVariant === ButtonVariant.text
-              ? 'transparent'
-              : `${buttonColor ?? 'primary'}.main`
-        }
-      }}
     />
   )
 }

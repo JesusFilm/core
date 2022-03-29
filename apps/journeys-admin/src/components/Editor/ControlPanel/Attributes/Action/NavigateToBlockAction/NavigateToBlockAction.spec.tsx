@@ -36,7 +36,7 @@ describe('NavigateToBlockAction', () => {
           id: selectedBlock.id,
           journeyId: 'journeyId',
           gtmEventName: 'gtmEventName',
-          blockId: 'step2.id'
+          blockId: 'step0.id'
         }
       }
     }))
@@ -50,7 +50,7 @@ describe('NavigateToBlockAction', () => {
                 id: selectedBlock.id,
                 journeyId: 'journeyId',
                 input: {
-                  blockId: 'step2.id'
+                  blockId: 'step0.id'
                 }
               }
             },
@@ -74,12 +74,12 @@ describe('NavigateToBlockAction', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('preview-step2.id'))
+    fireEvent.click(getByTestId('preview-step0.id'))
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
       gtmEventName: 'gtmEventName',
-      blockId: 'step2.id'
+      blockId: 'step0.id'
     })
   })
 })
