@@ -3,7 +3,6 @@ import { TreeBlock } from '@core/journeys/ui'
 
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
@@ -52,19 +51,6 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-const card: TreeBlock<CardBlock> = {
-  id: 'cardId',
-  __typename: 'CardBlock',
-  parentBlockId: 'step1.id',
-  parentOrder: 0,
-  coverBlockId: null,
-  backgroundColor: null,
-  themeMode: null,
-  themeName: null,
-  fullscreen: false,
-  children: [video, image]
-}
-
 const journey: Journey = {
   __typename: 'Journey',
   id: 'journeyId',
@@ -77,7 +63,7 @@ const journey: Journey = {
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
-  blocks: [] as TreeBlock[],
+  blocks: [],
   primaryImageBlock: null,
   userJourneys: []
 }
