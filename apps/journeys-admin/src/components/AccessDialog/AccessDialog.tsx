@@ -206,7 +206,7 @@ function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
   const open = Boolean(anchorEl)
   const { id, role, user } = userJourney
 
-  useEffect(() => () => setAnchorEl(null), [])
+  useEffect(() => setAnchorEl(null), [])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)

@@ -235,6 +235,94 @@ describe('AccessDialog', () => {
     )
   })
 
+  it('does not allow editors to edit access', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_JOURNEY_WITH_USER_JOURNEYS,
+                variables: {
+                  id: 'journeySlug'
+                }
+              },
+              result: {
+                data: {
+                  journey: {
+                    id: 'journeyId',
+                    __typename: 'Journey',
+                    userJourneys: [
+                      {
+                        id: 'userJourneyId1',
+                        __typename: 'UserJourney',
+                        role: UserJourneyRole.owner,
+                        user: {
+                          id: 'userId1',
+                          __typename: 'User',
+                          firstName: 'Amin',
+                          lastName: 'One',
+                          imageUrl: 'https://bit.ly/3Gth4Yf',
+                          email: 'amin@email.com'
+                        }
+                      },
+                      {
+                        id: 'userJourneyId2',
+                        __typename: 'UserJourney',
+                        role: UserJourneyRole.editor,
+                        user: {
+                          id: 'userId2',
+                          __typename: 'User',
+                          firstName: 'Horace',
+                          lastName: 'Two',
+                          imageUrl: 'https://bit.ly/3rgHd6a',
+                          email: 'horace@email.com'
+                        }
+                      },
+                      {
+                        id: 'userJourneyId3',
+                        __typename: 'UserJourney',
+                        role: UserJourneyRole.inviteRequested,
+                        user: {
+                          id: 'userId3',
+                          __typename: 'User',
+                          firstName: 'Coral',
+                          lastName: 'Three',
+                          imageUrl: 'https://bit.ly/3nlwUwJ',
+                          email: 'coral@email.com'
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              request: {
+                query: GET_CURRENT_USER
+              },
+              result: {
+                data: {
+                  me: {
+                    id: 'userId2',
+                    __typename: 'User',
+                    email: 'horace@email.com'
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
+    )
+    expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
+  })
+
   it('calls on close', () => {
     const handleClose = jest.fn()
     const { getByRole } = render(
