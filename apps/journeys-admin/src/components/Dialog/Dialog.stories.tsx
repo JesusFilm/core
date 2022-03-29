@@ -28,7 +28,7 @@ Basic.args = {
     onSubmit: noop,
     submitLabel: 'Ok'
   },
-  children: <Typography>This is the description</Typography>
+  children: <Typography>This is the content</Typography>
 }
 
 export const Form = Template.bind({})
@@ -53,7 +53,7 @@ Info.args = {
   divider: true,
   children: (
     <>
-      <Typography>This is the description for the information</Typography>
+      <Typography>This is the content for the information</Typography>
       {[0, 1, 2].map((i) => (
         <MuiListItem sx={{ px: 0 }} key={i}>
           <ListItemAvatar>
