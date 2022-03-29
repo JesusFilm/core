@@ -35,7 +35,9 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
     h5: {
       fontSize: 18,
       fontWeight: 800,
-      lineHeight: '23px'
+      lineHeight: '23px',
+      textTransform: 'none',
+      letterSpacing: 0
     },
     h6: {
       fontSize: 14,

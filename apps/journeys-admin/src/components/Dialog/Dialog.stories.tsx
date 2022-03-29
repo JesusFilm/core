@@ -19,11 +19,10 @@ export const Basic = Template.bind({})
 Basic.args = {
   open: true,
   handleClose: noop,
-  title: 'Title',
+  title: 'Simple Dialog',
   dialogAction: {
     onSubmit: noop,
-    submitLabel: 'Accept',
-    closeLabel: 'Cancel'
+    submitLabel: 'Ok'
   },
   children: <Typography>This is the description</Typography>
 }
@@ -34,9 +33,11 @@ ExcessContent.args = {
   handleClose: noop,
   closeButton: true,
   divider: true,
-  title: 'Submission Form with a really long title example',
+  title:
+    'Submission form with a really long title to test out the overflow example',
   dialogAction: {
-    onSubmit: noop
+    onSubmit: noop,
+    closeLabel: 'Cancel'
   },
   children: (
     <>
