@@ -10,6 +10,7 @@ type VideoVariantDownload {
 }
 
 type VideoVariant {
+  id: String!
   hls: String!
   downloads: [VideoVariantDownload!]!
   # duration in seconds

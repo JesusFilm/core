@@ -9,11 +9,7 @@ import { ImageBlockResolver } from './image/image.resolver'
 import { SignUpBlockResolver } from './signUp/signUp.resolver'
 import { StepBlockResolver } from './step/step.resolver'
 import { TypographyBlockResolver } from './typography/typography.resolver'
-import {
-  VideoArclightResolver,
-  VideoBlockResolver,
-  VideoContentResolver
-} from './video/video.resolver'
+import { VideoBlockResolver } from './video/video.resolver'
 import { ButtonBlockResolver } from './button/button.resolver'
 import {
   RadioOptionBlockResolver,
@@ -36,8 +32,6 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     StepBlockResolver,
     TypographyBlockResolver,
     VideoBlockResolver,
-    VideoContentResolver,
-    VideoArclightResolver,
     VideoTriggerResolver
   ],
   exports: [BlockService]

@@ -60,10 +60,8 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: card1._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA1001-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA1001-0-0',
+    videoVariantLanguageId: '529',
     posterBlockId,
     muted: true,
     autoplay: true,
@@ -174,10 +172,8 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'VideoBlock',
     parentBlockId: videoCard._key,
-    videoContent: {
-      mediaComponentId: '5_0-NUA1001-0-0',
-      languageId: '529'
-    },
+    videoId: '5_0-NUA1001-0-0',
+    videoVariantLanguageId: '529',
     autoplay: true,
     title: "What' Jesus Got to Do With Me?",
     parentOrder: 0,
