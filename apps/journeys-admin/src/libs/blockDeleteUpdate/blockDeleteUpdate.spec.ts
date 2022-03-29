@@ -74,7 +74,7 @@ describe('blockDeleteUpdate', () => {
   it('should perform block delete logic', () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'Journey:JourneyId': {
+      'Journey:journeyId': {
         blocks: [
           { __ref: 'CardBlock:cardId' },
           { __ref: 'VideoBlock:videoId' },
@@ -87,11 +87,12 @@ describe('blockDeleteUpdate', () => {
       'ImageBlock:imageId': { ...image }
     })
     blockDeleteUpdate(video, response, cache, journey.id)
-    expect(cache.extract()['Journey:JourneyId']?.blocks).toEqual([
+    const extractedCache = cache.extract()
+    expect(extractedCache['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
       { __ref: 'ImageBlock:imageId' }
     ])
-    expect(cache.extract()['VideoBlock:videoId']).toBeUndefined()
-    expect(cache.extract()['ImageBlock:ImageId']?.parentOrder).toEqual(0)
+    expect(extractedCache['VideoBlock:videoId']).toBeUndefined()
+    expect(extractedCache['ImageBlock:imageId']?.parentOrder).toEqual(0)
   })
 })
