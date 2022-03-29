@@ -164,7 +164,9 @@ describe('Card', () => {
         </MockedProvider>
       )
       expect(getByText('Background Video')).toBeInTheDocument()
-      expect(getByText('#FallingPlates')).toBeInTheDocument()
+      expect(
+        getByText('https://arc.gt/hls/2_0-FallingPlates/529')
+      ).toBeInTheDocument()
     })
 
     it('shows background media drawer', () => {
@@ -215,7 +217,7 @@ describe('Card', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('#FallingPlates'))
+      fireEvent.click(getByText('https://arc.gt/hls/2_0-FallingPlates/529'))
       expect(getByText('Background Media Properties')).toBeInTheDocument()
     })
   })
