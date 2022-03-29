@@ -16,16 +16,16 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { CopyTextField } from '@core/shared/ui'
-import { AuthUser } from 'next-firebase-auth'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -49,30 +49,38 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   }
 `
 
+export const GET_CURRENT_USER = gql`
+  query GetCurrentUser {
+    me {
+      id
+      email
+    }
+  }
+`
+
 interface AccessDialogProps {
   journeySlug: string
   open?: boolean
   onClose?: () => void
-  AuthUser?: AuthUser
 }
 
 export function AccessDialog({
   journeySlug,
   open,
-  onClose,
-  AuthUser
+  onClose
 }: AccessDialogProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const currentUserId = AuthUser?.id
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeySlug }
     })
 
+  const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
+
   const disable =
     data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.id === currentUserId
+      (userJourney) => userJourney.user?.email === currentUserData?.me?.email
     )?.role !== UserJourneyRole.owner
 
   useEffect(() => {

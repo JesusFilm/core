@@ -4,7 +4,6 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import { compact } from 'lodash'
-import { AuthUser } from 'next-firebase-auth'
 import { AccessDialog } from '../AccessDialog'
 
 interface User {
@@ -40,7 +39,6 @@ export interface AccessAvatarsProps {
   size?: 'small' | 'medium' | 'large'
   xsMax?: number
   smMax?: number
-  AuthUser?: AuthUser
 }
 
 export function AccessAvatars({
@@ -48,8 +46,7 @@ export function AccessAvatars({
   userJourneys,
   size = 'small',
   xsMax = 3,
-  smMax = 5,
-  AuthUser
+  smMax = 5
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
   const children = userJourneys.map(
@@ -120,7 +117,6 @@ export function AccessAvatars({
         </AvatarGroup>
       </Box>
       <AccessDialog
-        AuthUser={AuthUser}
         journeySlug={journeySlug}
         open={open}
         onClose={() => setOpen(false)}

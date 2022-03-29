@@ -1,10 +1,13 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { AuthUser } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { AccessDialog, GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
+import {
+  AccessDialog,
+  GET_CURRENT_USER,
+  GET_JOURNEY_WITH_USER_JOURNEYS
+} from './AccessDialog'
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
 import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
 import { USER_JOURNEY_REMOVE } from './RemoveUser/RemoveUser'
@@ -147,6 +150,20 @@ const mocks = [
         }
       }
     }
+  },
+  {
+    request: {
+      query: GET_CURRENT_USER
+    },
+    result: {
+      data: {
+        me: {
+          id: 'userId1',
+          __typename: 'User',
+          email: 'amin@email.com'
+        }
+      }
+    }
   }
 ]
 
@@ -156,18 +173,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog
-            AuthUser={
-              {
-                id: 'userId1',
-                displayName: 'Amin One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com'
-              } as unknown as AuthUser
-            }
-            journeySlug="journeySlug"
-            open={true}
-          />
+          <AccessDialog journeySlug="journeySlug" open={true} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -188,18 +194,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog
-            AuthUser={
-              {
-                id: 'userId1',
-                displayName: 'Amin One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com'
-              } as unknown as AuthUser
-            }
-            journeySlug="journeySlug"
-            open={true}
-          />
+          <AccessDialog journeySlug="journeySlug" open={true} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -221,18 +216,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog
-            AuthUser={
-              {
-                id: 'userId1',
-                displayName: 'Amin One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com'
-              } as unknown as AuthUser
-            }
-            journeySlug="journeySlug"
-            open={true}
-          />
+          <AccessDialog journeySlug="journeySlug" open={true} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -257,14 +241,6 @@ describe('AccessDialog', () => {
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
           <AccessDialog
-            AuthUser={
-              {
-                id: 'userId1',
-                displayName: 'Amin One',
-                imageUrl: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com'
-              } as unknown as AuthUser
-            }
             journeySlug="journeySlug"
             open={true}
             onClose={handleClose}
@@ -296,18 +272,7 @@ describe('AccessDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <MockedProvider mocks={mocks}>
-            <AccessDialog
-              AuthUser={
-                {
-                  id: 'userId1',
-                  displayName: 'Amin One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com'
-                } as unknown as AuthUser
-              }
-              journeySlug="journeySlug"
-              open={true}
-            />
+            <AccessDialog journeySlug="journeySlug" open={true} />
           </MockedProvider>
         </SnackbarProvider>
       )
