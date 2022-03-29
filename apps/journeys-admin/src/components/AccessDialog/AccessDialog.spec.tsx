@@ -235,6 +235,19 @@ describe('AccessDialog', () => {
     )
   })
 
+  it('does not allow owners to edit their own access', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks}>
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
+    )
+  })
+
   it('does not allow editors to edit access', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -318,9 +331,10 @@ describe('AccessDialog', () => {
       </SnackbarProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
+      expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
     )
-    expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
   })
 
   it('calls on close', () => {
