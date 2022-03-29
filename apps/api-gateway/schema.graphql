@@ -707,11 +707,13 @@ enum UserJourneyRole {
 
 type Video
   @join__owner(graph: VIDEOS)
-  @join__type(graph: VIDEOS, key: "id")
+  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
+  @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
+  primaryLanguageId: ID! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -719,15 +721,8 @@ type Video
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
 
-type VideoArclight implements VideoContent {
-  languageId: String!
-  mediaComponentId: String!
-  src: String
-}
-
 type VideoBlock implements Block {
   autoplay: Boolean
-  description: String
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
@@ -747,8 +742,17 @@ type VideoBlock implements Block {
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
-  title: String!
-  videoContent: VideoContent!
+  video: Video
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 }
 
 input VideoBlockCreateInput {
@@ -770,21 +774,29 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
 
-  """startAt dictates at which point of time the video should start playing"""
+  """
+  startAt dictates at which point of time the video should start playing
+  """
   startAt: Int
-  title: String!
-  videoContent: VideoContentInput!
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  """
+  videoVariantLanguageId: ID
 }
 
 input VideoBlockUpdateInput {
   autoplay: Boolean
-  description: String
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int
   fullsize: Boolean
   muted: Boolean
-  parentBlockId: ID
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -795,22 +807,8 @@ input VideoBlockUpdateInput {
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
-  title: String
-  videoContent: VideoContentInput
-}
-
-interface VideoContent {
-  src: String
-}
-
-input VideoContentInput {
-  languageId: String
-  mediaComponentId: String
-  src: String
-}
-
-type VideoGeneric implements VideoContent {
-  src: String
+  videoId: ID
+  videoVariantLanguageId: ID
 }
 
 type VideoResponse implements Response {
@@ -865,6 +863,7 @@ type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   hls: String!
+  id: String!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
