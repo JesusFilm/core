@@ -312,6 +312,7 @@ async function main(): Promise<void> {
     await digestContainer(languages, container)
   }
 }
+
 main().catch((e) => {
   console.error(e)
   process.exit(1)
