@@ -48,7 +48,7 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
       'href',
-      '/journeys/published-journey/edit'
+      '/journeys/published-journey'
     )
   })
   it('should handle preview', () => {

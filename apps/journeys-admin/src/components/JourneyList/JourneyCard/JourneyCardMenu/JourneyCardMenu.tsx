@@ -56,7 +56,7 @@ export function JourneyCardMenu({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}/edit`} passHref>
+        <Link href={`/journeys/${slug}`} passHref>
           <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
               <EditIcon color="secondary" />
