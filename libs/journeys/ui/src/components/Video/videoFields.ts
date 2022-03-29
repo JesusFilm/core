@@ -5,15 +5,20 @@ export const VIDEO_FIELDS = gql`
     id
     parentBlockId
     parentOrder
-    title
     muted
     autoplay
     startAt
     endAt
     posterBlockId
     fullsize
-    videoContent {
-      src
+    videoId
+    videoVariantLanguageId
+    video {
+      id
+      variant {
+        id
+        hls
+      }
     }
   }
 `

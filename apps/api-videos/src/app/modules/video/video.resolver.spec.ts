@@ -116,4 +116,39 @@ describe('VideoResolver', () => {
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
     })
   })
+
+  describe('resolveReference', () => {
+    it('returns video', async () => {
+      expect(
+        await resolver.resolveReference({
+          __typename: 'Video',
+          id: '20615',
+          primaryLanguageId: 'en'
+        })
+      ).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+    })
+
+    it('returns video if primaryLanguageId is undefined', async () => {
+      expect(
+        await resolver.resolveReference({
+          __typename: 'Video',
+          id: '20615',
+          primaryLanguageId: undefined
+        })
+      ).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
+    })
+
+    it('returns video if primaryLanguageId is null', async () => {
+      expect(
+        await resolver.resolveReference({
+          __typename: 'Video',
+          id: '20615',
+          primaryLanguageId: null
+        })
+      ).toEqual(video)
+      expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
+    })
+  })
 })
