@@ -9,8 +9,8 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
 import { ImageBlockHeader } from '../ImageBlockHeader'
-import { VideoBlockEditorSource } from './Source/VideoBlockEditorSource'
-import { VideoBlockEditorSettings } from './Settings/VideoBlockEditorSettings'
+import { VideoBlockEditorSource } from './Source'
+import { VideoBlockEditorSettings } from './Settings'
 
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null

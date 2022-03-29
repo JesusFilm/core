@@ -17,9 +17,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - name: Upgrade NPM
-        run: npm install -g npm
-      - uses: bahmutov/npm-install@v1
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v2
         with:
@@ -47,9 +54,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - name: Upgrade NPM
-        run: npm install -g npm
-      - uses: bahmutov/npm-install@v1
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
       - uses: mansagroup/nrwl-nx-action@v2
         env:
           NEXT_PUBLIC_FIREBASE_CONFIG_JSON: ${{ secrets.NEXT_PUBLIC_FIREBASE_CONFIG_JSON }}
@@ -68,9 +82,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - name: Upgrade NPM
-        run: npm install -g npm
-      - uses: bahmutov/npm-install@v1
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
       - uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: generate,test
@@ -87,10 +108,17 @@ jobs:
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
-      - name: Upgrade NPM
-        run: npm install -g npm
-      - uses: bahmutov/npm-install@v1
+          node-version: '16'
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
       - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook
         with:
