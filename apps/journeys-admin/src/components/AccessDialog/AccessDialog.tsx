@@ -16,7 +16,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import { CopyTextField } from '@core/shared/ui'
@@ -25,6 +25,7 @@ import {
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
+import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -48,6 +49,15 @@ export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   }
 `
 
+export const GET_CURRENT_USER = gql`
+  query GetCurrentUser {
+    me {
+      id
+      email
+    }
+  }
+`
+
 interface AccessDialogProps {
   journeySlug: string
   open?: boolean
@@ -65,6 +75,13 @@ export function AccessDialog({
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeySlug }
     })
+
+  const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
+
+  const disable =
+    data?.journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.email === currentUserData?.me?.email
+    )?.role !== UserJourneyRole.owner
 
   useEffect(() => {
     if (open === true) {
@@ -117,6 +134,7 @@ export function AccessDialog({
               userJourneys={data?.journey?.userJourneys?.filter(
                 ({ role }) => role === UserJourneyRole.inviteRequested
               )}
+              disable={disable}
             />
           )}
           <UserJourneyList
@@ -125,6 +143,7 @@ export function AccessDialog({
             userJourneys={data?.journey?.userJourneys?.filter(
               ({ role }) => role !== UserJourneyRole.inviteRequested
             )}
+            disable={disable}
           />
         </List>
       </DialogContent>
@@ -136,12 +155,14 @@ interface UserJourneyListProps {
   title: string
   loading?: boolean
   userJourneys?: UserJourney[] | null
+  disable: boolean
 }
 
 function UserJourneyList({
   title,
   loading,
-  userJourneys
+  userJourneys,
+  disable
 }: UserJourneyListProps): ReactElement {
   return (
     <>
@@ -165,17 +186,27 @@ function UserJourneyList({
           </MuiListItem>
         ))}
       {userJourneys?.map((userJourney) => (
-        <ListItem key={userJourney.id} {...userJourney} />
+        <ListItem
+          key={userJourney.id}
+          userJourney={userJourney}
+          disabled={disable}
+        />
       ))}
     </>
   )
 }
 
-function ListItem({ id, user, role }: UserJourney): ReactElement {
+interface ListItemProps {
+  userJourney: UserJourney
+  disabled: boolean
+}
+
+function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+  const { id, role, user } = userJourney
 
-  useEffect(() => () => setAnchorEl(null), [])
+  useEffect(() => setAnchorEl(null), [])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -201,7 +232,7 @@ function ListItem({ id, user, role }: UserJourney): ReactElement {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick}
-            disabled={role === 'owner'}
+            disabled={disabled || role === 'owner'}
             endIcon={<ArrowDropDownIcon />}
             sx={{
               color: 'text.primary',
