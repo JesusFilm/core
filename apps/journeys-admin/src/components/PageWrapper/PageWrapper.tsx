@@ -24,7 +24,7 @@ import { AuthUser } from 'next-firebase-auth'
 import { gql, useQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
+import { useTheme, Theme } from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/Menu'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { GetMe } from '../../../__generated__/GetMe'
@@ -62,6 +62,7 @@ export function PageWrapper({
   const profileOpen = Boolean(profileAnchorEl)
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const theme = useTheme()
   const handleProfileClick = (event): void => {
     setProfileAnchorEl(event.currentTarget)
   }
@@ -160,7 +161,22 @@ export function PageWrapper({
             width: open ? '237px' : '72px',
             boxSizing: 'border-box',
             backgroundColor: '#25262E',
-            border: 0
+            border: 0,
+            ...(open && {
+              width: '237px',
+              transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen
+              }),
+              overflowX: 'hidden'
+            }),
+            ...(!open && {
+              transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen
+              }),
+              overflowX: 'hidden'
+            })
           }
         }}
         elevation={0}
