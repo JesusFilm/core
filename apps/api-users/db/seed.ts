@@ -13,7 +13,6 @@ async function main(): Promise<void> {
     unique: true
   })
 }
-
 main().catch((e) => {
   console.error(e)
   process.exit(1)

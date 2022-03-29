@@ -125,7 +125,6 @@ async function main(): Promise<void> {
     await digestMediaLanguageMetadata(mediaLanguage)
   }
 }
-
 main().catch((e) => {
   console.error(e)
   process.exit(1)
