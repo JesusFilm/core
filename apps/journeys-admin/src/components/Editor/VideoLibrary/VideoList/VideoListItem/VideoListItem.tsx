@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
+import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 
@@ -10,7 +10,7 @@ interface VideoListItemProps {
   description?: string
   image?: string
   duration?: number
-  onSelect: (source: string) => void
+  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
 }
 
 export function VideoListItem({

@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../ThemeProvider'
-import { VideoBlockEditorSettings } from './VideoBlockEditorSettings'
+import { VideoBlockEditorSettings } from '.'
 
 const video: TreeBlock = {
   id: 'video1.id',

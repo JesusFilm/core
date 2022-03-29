@@ -4,7 +4,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import AddRounded from '@mui/icons-material/AddRounded'
 import { gql, useQuery } from '@apollo/client'
 import List from '@mui/material/List'
-import { Box } from '@mui/system'
+import Box from '@mui/material/Box'
 import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
 
@@ -29,7 +29,7 @@ export const GET_VIDEOS = gql`
 `
 
 interface VideoListProps {
-  onSelect: (source: string) => void
+  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
   currentLanguageIds?: string[]
 }
 
