@@ -42,7 +42,10 @@ export function ImageBlockEditor({
   }
 
   const handleImageDelete = async (): Promise<void> => {
-    if (onDelete != null) await onDelete()
+    if (onDelete != null) {
+      await onDelete()
+      formik.resetForm({ values: { src: '' } })
+    }
   }
 
   const formik = useFormik({
@@ -93,11 +96,11 @@ export function ImageBlockEditor({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LinkIcon></LinkIcon>
+                      <LinkIcon />
                     </InputAdornment>
                   )
                 }}
-              ></TextField>
+              />
             </form>
           </Stack>
         </Box>

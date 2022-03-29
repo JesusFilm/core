@@ -1,12 +1,13 @@
-import { ReactElement, MouseEvent } from 'react'
+import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, useEditor, ActiveTab, ActiveFab } from '../..'
+import { TreeBlock, handleAction, useEditor } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
@@ -89,84 +90,64 @@ export const SignUp = ({
   }
 
   const {
-    state: { selectedBlock },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
 
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    const block: TreeBlock<SignUpFields> = {
-      id: blockId,
-      submitIconId,
-      submitLabel,
-      action,
-      children,
-      ...props
-    }
-
-    if (selectedBlock?.id === block.id) {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    } else {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-    }
-  }
-
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={selectedBlock === undefined ? signUpSchema : undefined}
-      onSubmit={(values) => {
-        if (selectedBlock === undefined) {
-          // TODO: Handle server error responses when available
-          void onSubmitHandler(values).then(() => {
-            handleAction(router, action)
-          })
+    <Box sx={{ mb: 4 }}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={
+          selectedBlock === undefined ? signUpSchema : undefined
         }
-      }}
-    >
-      {({ ...formikProps }) => (
-        <Form
-          data-testid={`signUp-${blockId}`}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            outline:
-              selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-            outlineOffset: '5px'
-          }}
-          onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
-        >
-          <TextField
-            {...formikProps}
-            id="name"
-            name="name"
-            label="Name"
-            disabled={selectedBlock !== undefined}
-          />
-          <TextField
-            {...formikProps}
-            id="email"
-            name="email"
-            label="Email"
-            disabled={selectedBlock !== undefined}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            size="large"
-            startIcon={
-              submitIcon != null ? <Icon {...submitIcon} /> : undefined
-            }
-            sx={{ ...sx }}
+        onSubmit={(values) => {
+          if (selectedBlock === undefined) {
+            // TODO: Handle server error responses when available
+            void onSubmitHandler(values).then(() => {
+              handleAction(router, action)
+            })
+          }
+        }}
+      >
+        {({ ...formikProps }) => (
+          <Form
+            data-testid={`signUp-${blockId}`}
+            style={{
+              display: 'flex',
+              flexDirection: 'column'
+            }}
           >
-            {editableSubmitLabel ?? submitLabel ?? 'Submit'}
-          </Button>
-        </Form>
-      )}
-    </Formik>
+            <TextField
+              {...formikProps}
+              id="name"
+              name="name"
+              label="Name"
+              disabled={selectedBlock !== undefined}
+            />
+            <TextField
+              {...formikProps}
+              id="email"
+              name="email"
+              label="Email"
+              disabled={selectedBlock !== undefined}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              startIcon={
+                submitIcon != null ? <Icon {...submitIcon} /> : undefined
+              }
+              sx={{
+                ...sx,
+                mb: 0
+              }}
+            >
+              {editableSubmitLabel ?? submitLabel ?? 'Submit'}
+            </Button>
+          </Form>
+        )}
+      </Formik>
+    </Box>
   )
 }

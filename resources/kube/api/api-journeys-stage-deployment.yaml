@@ -16,7 +16,7 @@ spec:
         app: api-journeys-stage
     spec:
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:c33fe910f485803718fa8d656d85816755247078
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:stage
           imagePullPolicy: IfNotPresent
           name: jfp-api-journeys
           ports:
@@ -24,16 +24,3 @@ spec:
           envFrom:
             - secretRef:
                 name: env-db-stage
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-journeys-stage
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: api-journeys-stage.core.jesusfilm.org
-spec:
-  selector:
-    app: api-journeys-stage
-  ports:
-    - port: 4001
-  type: LoadBalancer

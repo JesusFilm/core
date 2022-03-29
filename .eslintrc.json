@@ -64,6 +64,19 @@
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nrwl/nx/javascript", "standard", "prettier"],
       "rules": {}
+    },
+    {
+      "files": ["*.tsx", "*.jsx"],
+      "rules": {
+        "react/jsx-indent": ["error", 2],
+        "react/self-closing-comp": [
+          "error",
+          {
+            "component": true,
+            "html": true
+          }
+        ]
+      }
     }
   ]
 }

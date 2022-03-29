@@ -18,16 +18,14 @@ export const Default: Story = () => {
     __typename: 'VideoBlock',
     parentBlockId: 'card1.id',
     parentOrder: 0,
-    title: '',
     startAt: 0,
     endAt: null,
     muted: true,
     autoplay: true,
     fullsize: true,
-    videoContent: {
-      __typename: 'VideoGeneric',
-      src: ''
-    },
+    videoId: null,
+    videoVariantLanguageId: null,
+    video: null,
     posterBlockId: null,
     children: []
   }
@@ -45,21 +43,28 @@ export const Default: Story = () => {
     </Stack>
   )
 }
+
 export const Filled: Story = () => {
   const video: TreeBlock<VideoBlock> = {
     id: 'video1.id',
     __typename: 'VideoBlock',
     parentBlockId: 'card1.id',
     parentOrder: 0,
-    title: 'Video Name',
     startAt: 0,
     endAt: null,
     muted: true,
     autoplay: true,
     fullsize: true,
-    videoContent: {
-      __typename: 'VideoGeneric',
-      src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    videoId: '2_0-FallingPlates',
+    videoVariantLanguageId: '529',
+    video: {
+      __typename: 'Video',
+      id: '2_0-FallingPlates',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '2_0-FallingPlates-529',
+        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      }
     },
     posterBlockId: null,
     children: []

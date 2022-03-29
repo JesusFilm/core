@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -13,21 +14,6 @@ describe('ActionResolver', () => {
     service: BlockService
 
   const block1 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      blockId: '4'
-    }
-  }
-
-  const blockResponse1 = {
     id: '1',
     journeyId: '2',
     __typename: 'RadioOptionBlock',
@@ -43,28 +29,7 @@ describe('ActionResolver', () => {
   }
 
   const block2 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      journeyId: '4'
-    }
-  }
-
-  const blockResponse2 = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
+    ...block1,
     action: {
       parentBlockId: '1',
       gtmEventName: 'gtmEventName',
@@ -73,28 +38,7 @@ describe('ActionResolver', () => {
   }
 
   const block3 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      url: 'https://google.com'
-    }
-  }
-
-  const blockResponse3 = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
+    ...block1,
     action: {
       parentBlockId: '1',
       gtmEventName: 'gtmEventName',
@@ -103,28 +47,7 @@ describe('ActionResolver', () => {
   }
 
   const block4 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
-    action: {
-      parentBlockId: '1',
-      gtmEventName: 'gtmEventName',
-      url: 'https://google.com'
-    }
-  }
-
-  const blockResponse4 = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'RadioOptionBlock',
-    parentBlockId: '3',
-    parentOrder: 3,
-    label: 'label',
-    description: 'description',
+    ...block1,
     action: {
       parentBlockId: '1',
       gtmEventName: 'gtmEventName',
@@ -204,12 +127,20 @@ describe('ActionResolver', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolver, blockService]
+        providers: [
+          BlockResolver,
+          blockService,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse1)
+      expect(await blockResolver.block('1')).toEqual(block1)
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('blockId')
@@ -225,12 +156,20 @@ describe('ActionResolver', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolver, blockService]
+        providers: [
+          BlockResolver,
+          blockService,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateToBlockAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse2)
+      expect(await blockResolver.block('1')).toEqual(block2)
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('journeyId')
@@ -246,12 +185,20 @@ describe('ActionResolver', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolver, blockService]
+        providers: [
+          BlockResolver,
+          blockService,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns LinkAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse3)
+      expect(await blockResolver.block('1')).toEqual(block3)
       expect(
         ((await blockResolver.block('1')) as RadioOptionBlock).action
       ).toHaveProperty('url')
@@ -267,12 +214,20 @@ describe('ActionResolver', () => {
         })
       }
       const module: TestingModule = await Test.createTestingModule({
-        providers: [BlockResolver, blockService]
+        providers: [
+          BlockResolver,
+          blockService,
+          UserJourneyService,
+          {
+            provide: 'DATABASE',
+            useFactory: () => mockDeep<Database>()
+          }
+        ]
       }).compile()
       blockResolver = module.get<BlockResolver>(BlockResolver)
     })
     it('returns NavigateAction', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse4)
+      expect(await blockResolver.block('1')).toEqual(block4)
     })
   })
 
@@ -301,9 +256,9 @@ describe('ActionResolver', () => {
       service = await module.resolve(BlockService)
     })
     it('removes the block action', async () => {
-      await resolver.blockDeleteAction(block1._key, block1.journeyId)
+      await resolver.blockDeleteAction(block1.id, block1.journeyId)
 
-      expect(service.update).toHaveBeenCalledWith(block1._key, {
+      expect(service.update).toHaveBeenCalledWith(block1.id, {
         action: null
       })
     })

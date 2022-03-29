@@ -131,7 +131,7 @@ DefaultMobileConditions.args = {
 
 DefaultMobileConditions.parameters = {
   chromatic: {
-    viewports: [360, 540]
+    viewports: [360]
   }
 }
 DefaultMobileConditions.play = async () => {
@@ -151,7 +151,7 @@ SelectedMobileConditions.args = {
 
 SelectedMobileConditions.parameters = {
   chromatic: {
-    viewports: [360, 540]
+    viewports: [360]
   }
 }
 

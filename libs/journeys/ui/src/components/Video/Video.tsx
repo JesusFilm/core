@@ -1,10 +1,10 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback, MouseEvent } from 'react'
+import { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
+import { TreeBlock, useEditor } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -21,21 +21,16 @@ export const VIDEO_RESPONSE_CREATE = gql`
   }
 `
 
-interface VideoProps extends TreeBlock<VideoFields> {
-  uuid?: () => string
-}
-
 export function Video({
   id: blockId,
-  videoContent,
+  video,
   autoplay,
   startAt,
   muted,
   posterBlockId,
   fullsize,
-  children,
-  ...props
-}: VideoProps): ReactElement {
+  children
+}: TreeBlock<VideoFields>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const posterBlock = children.find(
@@ -46,8 +41,7 @@ export function Video({
     VIDEO_RESPONSE_CREATE
   )
   const {
-    state: { selectedBlock, selectedStep },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
@@ -128,39 +122,22 @@ export function Video({
         })
       }
     }
-  }, [handleVideoResponse, startAt, muted, autoplay, blockId, posterBlock])
+  }, [
+    handleVideoResponse,
+    startAt,
+    muted,
+    autoplay,
+    blockId,
+    posterBlock,
+    mobile,
+    selectedBlock
+  ])
 
   useEffect(() => {
     if (selectedBlock !== undefined) {
       playerRef.current?.pause()
     }
   }, [selectedBlock])
-
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    if (props.parentBlockId !== selectedStep?.id) {
-      const block: TreeBlock<VideoFields> = {
-        id: blockId,
-        videoContent,
-        autoplay,
-        startAt,
-        muted,
-        posterBlockId,
-        children,
-        fullsize,
-        ...props
-      }
-
-      dispatch({ type: 'SetSelectedBlockAction', block })
-    }
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-  }
 
   return (
     <Box
@@ -184,9 +161,8 @@ export function Video({
           width: '100%'
         }
       }}
-      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
     >
-      {videoContent.src != null ? (
+      {video?.variant?.hls != null ? (
         <>
           <video
             ref={videoRef}
@@ -194,14 +170,7 @@ export function Video({
             style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
             playsInline
           >
-            <source
-              src={videoContent.src}
-              type={
-                videoContent.__typename === 'VideoArclight'
-                  ? 'application/x-mpegURL'
-                  : undefined
-              }
-            />
+            <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
           {children?.map(
             (option) =>

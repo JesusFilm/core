@@ -47,7 +47,8 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
     subtitle1: {
       fontSize: 18,
       fontWeight: 600,
-      lineHeight: '24px'
+      lineHeight: '24px',
+      letterSpacing: 1
     },
     subtitle2: {
       fontSize: 16,

@@ -119,7 +119,7 @@ export function BackgroundColor(): ReactElement {
                 </InputAdornment>
               )
             }}
-          ></TextField>
+          />
         </Stack>
       </Box>
       {!smUp && (
@@ -131,8 +131,8 @@ export function BackgroundColor(): ReactElement {
             variant="fullWidth"
             centered
           >
-            <Tab label="Theme" {...tabA11yProps('background-color', 0)}></Tab>
-            <Tab label="Custom" {...tabA11yProps('background-color', 1)}></Tab>
+            <Tab label="Theme" {...tabA11yProps('background-color', 0)} />
+            <Tab label="Custom" {...tabA11yProps('background-color', 1)} />
           </Tabs>
           <Divider />
           <TabPanel name="background-color" value={tabValue} index={0}>

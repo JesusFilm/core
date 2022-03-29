@@ -63,4 +63,14 @@ describe('handleAction', () => {
     })
     expect(nextActiveBlock).toHaveBeenCalledWith()
   })
+
+  it('should handle LinkAction', () => {
+    handleAction(router, {
+      __typename: 'LinkAction',
+      parentBlockId: 'parent-id',
+      gtmEventName: null,
+      url: 'http://www.google.com'
+    })
+    expect(router.push).toHaveBeenCalledWith('http://www.google.com')
+  })
 })

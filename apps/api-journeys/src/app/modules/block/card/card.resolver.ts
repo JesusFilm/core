@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   CardBlock,
   CardBlockCreateInput,
@@ -20,7 +19,6 @@ export class CardBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async cardBlockCreate(
     @Args('input') input: CardBlockCreateInput & { __typename }
   ): Promise<CardBlock> {
@@ -36,7 +34,6 @@ export class CardBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )

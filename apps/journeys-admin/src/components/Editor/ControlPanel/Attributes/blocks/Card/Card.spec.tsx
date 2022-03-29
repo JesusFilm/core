@@ -132,11 +132,17 @@ describe('Card', () => {
             __typename: 'VideoBlock',
             parentBlockId: 'card1.id',
             parentOrder: 0,
-            videoContent: {
-              __typename: 'VideoArclight',
-              src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
             },
-            title: '#FallingPlates',
             posterBlockId: null,
             muted: true,
             autoplay: true,
@@ -158,7 +164,9 @@ describe('Card', () => {
         </MockedProvider>
       )
       expect(getByText('Background Video')).toBeInTheDocument()
-      expect(getByText('#FallingPlates')).toBeInTheDocument()
+      expect(
+        getByText('https://arc.gt/hls/2_0-FallingPlates/529')
+      ).toBeInTheDocument()
     })
 
     it('shows background media drawer', () => {
@@ -178,11 +186,17 @@ describe('Card', () => {
             __typename: 'VideoBlock',
             parentBlockId: 'card1.id',
             parentOrder: 0,
-            videoContent: {
-              __typename: 'VideoArclight',
-              src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
             },
-            title: '#FallingPlates',
             posterBlockId: null,
             muted: true,
             autoplay: true,
@@ -203,7 +217,7 @@ describe('Card', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('#FallingPlates'))
+      fireEvent.click(getByText('https://arc.gt/hls/2_0-FallingPlates/529'))
       expect(getByText('Background Media Properties')).toBeInTheDocument()
     })
   })

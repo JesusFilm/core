@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import {
   SignUpBlock,
   SignUpBlockCreateInput
@@ -16,26 +17,6 @@ describe('SignUpBlockResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
-    journeyId: '2',
-    parentBlockId: '0',
-    __typename: 'SignUpBlock',
-    parentOrder: 1,
-    action: {
-      gtmEventName: 'gtmEventName',
-      journeyId: '2'
-    },
-    submitIconId: 'icon1',
-    submitLabel: 'Unlock Now!'
-  }
-
-  const blockWithId = {
-    ...block,
-    id: block._key,
-    _key: undefined
-  }
-
-  const blockResponse = {
     id: '1',
     journeyId: '2',
     parentBlockId: '0',
@@ -50,8 +31,8 @@ describe('SignUpBlockResolver', () => {
   }
 
   const actionResponse = {
-    ...blockResponse.action,
-    parentBlockId: block._key
+    ...block.action,
+    parentBlockId: block.id
   }
 
   const input: SignUpBlockCreateInput & { __typename: string } = {
@@ -63,7 +44,7 @@ describe('SignUpBlockResolver', () => {
   }
 
   const signUpBlockResponse = {
-    _key: input.id,
+    id: input.id,
     parentBlockId: input.parentBlockId,
     journeyId: input.journeyId,
     __typename: 'SignUpBlock',
@@ -110,19 +91,16 @@ describe('SignUpBlockResolver', () => {
 
   describe('SignUpBlock', () => {
     it('returns SignUpBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
   describe('action', () => {
     it('returns SignUpBlock action with parentBlockId', async () => {
-      expect(
-        await resolver.action(blockWithId as unknown as SignUpBlock)
-      ).toEqual(actionResponse)
+      expect(await resolver.action(block as unknown as SignUpBlock)).toEqual(
+        actionResponse
+      )
     })
   })
 
@@ -140,8 +118,8 @@ describe('SignUpBlockResolver', () => {
       >
       mockValidate.mockResolvedValueOnce(true)
 
-      await resolver.signUpBlockUpdate(block._key, block.journeyId, blockUpdate)
-      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+      await resolver.signUpBlockUpdate(block.id, block.journeyId, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
 
     it('should throw error with an invalid submitIconId', async () => {
@@ -151,7 +129,7 @@ describe('SignUpBlockResolver', () => {
       mockValidate.mockResolvedValueOnce(false)
 
       await resolver
-        .signUpBlockUpdate(block._key, block.journeyId, {
+        .signUpBlockUpdate(block.id, block.journeyId, {
           ...blockUpdate,
           submitIconId: 'wrong!'
         })

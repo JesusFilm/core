@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -13,7 +14,7 @@ describe('StepBlockResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'StepBlock',
     parentBlockId: '3',
@@ -36,16 +37,6 @@ describe('StepBlockResolver', () => {
     __typename: 'StepBlock',
     parentBlockId: '3',
     parentOrder: 2,
-    locked: true,
-    nextBlockId: '4'
-  }
-
-  const blockResponse = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'StepBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
     locked: true,
     nextBlockId: '4'
   }
@@ -81,11 +72,8 @@ describe('StepBlockResolver', () => {
 
   describe('StepBlock', () => {
     it('returns StepBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
@@ -102,9 +90,9 @@ describe('StepBlockResolver', () => {
   describe('stepBlockUpdate', () => {
     it('updates a StepBlock', async () => {
       resolver
-        .stepBlockUpdate(block._key, block.journeyId, blockUpdate)
+        .stepBlockUpdate(block.id, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
-      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })
 

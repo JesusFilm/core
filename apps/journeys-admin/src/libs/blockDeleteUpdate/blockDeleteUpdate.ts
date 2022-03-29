@@ -18,7 +18,8 @@ const getNestedChildRefs = (
 export const blockDeleteUpdate = (
   selectedBlock: TreeBlock<Block> | Block,
   response,
-  cache: ApolloCache<any>, // eslint-disable-line
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  cache: ApolloCache<any>,
   journeyId: string
 ): void => {
   if (response != null) {

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+
 import {
   TypographyAlign,
   TypographyColor,
@@ -17,7 +18,7 @@ describe('TypographyBlockResolver', () => {
     service: BlockService
 
   const block = {
-    _key: '1',
+    id: '1',
     journeyId: '2',
     __typename: 'TypographyBlock',
     parentBlockId: '3',
@@ -44,18 +45,6 @@ describe('TypographyBlockResolver', () => {
     __typename: 'TypographyBlock',
     parentBlockId: '3',
     parentOrder: 2,
-    content: 'text',
-    variant: TypographyVariant.h2,
-    color: TypographyColor.primary,
-    align: TypographyAlign.left
-  }
-
-  const blockResponse = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'TypographyBlock',
-    parentBlockId: '3',
-    parentOrder: 7,
     content: 'text',
     variant: TypographyVariant.h2,
     color: TypographyColor.primary,
@@ -93,11 +82,8 @@ describe('TypographyBlockResolver', () => {
 
   describe('TypographyBlock', () => {
     it('returns TypographyBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse)
-      expect(await blockResolver.blocks()).toEqual([
-        blockResponse,
-        blockResponse
-      ])
+      expect(await blockResolver.block('1')).toEqual(block)
+      expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
@@ -115,11 +101,11 @@ describe('TypographyBlockResolver', () => {
   describe('typographyBlockUpdate', () => {
     it('updates a TypographyBlock', async () => {
       void resolver.typographyBlockUpdate(
-        block._key,
+        block.id,
         block.journeyId,
         blockUpdate
       )
-      expect(service.update).toHaveBeenCalledWith(block._key, blockUpdate)
+      expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })
 })

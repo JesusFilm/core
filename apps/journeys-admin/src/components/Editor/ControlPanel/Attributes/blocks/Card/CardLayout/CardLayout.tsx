@@ -78,7 +78,7 @@ export function CardLayout(): ReactElement {
               textAlign: 'center'
             }}
           >
-            <VerticalSplit fontSize="large"></VerticalSplit>
+            <VerticalSplit fontSize="large" />
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">
@@ -94,6 +94,14 @@ export function CardLayout(): ReactElement {
           onChange={async (val) => await handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
         >
+          <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
+            <Image
+              src={cardLayoutExpanded}
+              alt="Expanded"
+              width={89}
+              height={137}
+            />
+          </Box>
           <Box
             sx={{ display: 'flex' }}
             id="false"
@@ -103,14 +111,6 @@ export function CardLayout(): ReactElement {
             <Image
               src={cardLayoutContained}
               alt="Contained"
-              width={89}
-              height={137}
-            />
-          </Box>
-          <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
-            <Image
-              src={cardLayoutExpanded}
-              alt="Expanded"
               width={89}
               height={137}
             />

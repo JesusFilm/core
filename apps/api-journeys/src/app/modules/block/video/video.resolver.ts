@@ -1,42 +1,13 @@
-import { UserInputError } from 'apollo-server-errors'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
-import { has } from 'lodash'
 import { BlockService } from '../block.service'
 import {
   UserJourneyRole,
-  VideoArclight,
   VideoBlock,
   VideoBlockCreateInput,
-  VideoBlockUpdateInput,
-  VideoContent,
-  VideoContentInput
+  VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
-
-function checkVideoContentInput(input: VideoContentInput): boolean {
-  return (
-    has(input, ['src']) ||
-    (has(input, ['mediaComponentId']) && has(input, ['languageId']))
-  )
-}
-@Resolver('VideoContent')
-export class VideoContentResolver {
-  @ResolveField()
-  __resolveType(obj: VideoContent): string {
-    if (has(obj, ['mediaComponentId'])) return 'VideoArclight'
-    return 'VideoGeneric'
-  }
-}
-
-@Resolver('VideoArclight')
-export class VideoArclightResolver {
-  @ResolveField()
-  src(@Parent() obj: VideoArclight): string {
-    return `https://arc.gt/hls/${obj.mediaComponentId}/${obj.languageId}`
-  }
-}
 
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
@@ -48,36 +19,47 @@ export class VideoBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async videoBlockCreate(
-    @Args('input') input: VideoBlockCreateInput & { __typename }
+    @Args('input') input: VideoBlockCreateInput
   ): Promise<VideoBlock> {
-    input.__typename = 'VideoBlock'
-    if (checkVideoContentInput(input?.videoContent)) {
-      const siblings = await this.blockService.getSiblings(
-        input.journeyId,
-        input.parentBlockId
-      )
-      return await this.blockService.save({
-        ...input,
-        parentOrder: siblings.length
-      })
-    }
-    throw new UserInputError(
-      'VideoContentInput requires src or mediaComponentId and languageId values'
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
     )
+    return await this.blockService.save({
+      ...input,
+      __typename: 'VideoBlock',
+      parentOrder: siblings.length
+    })
   }
 
   @Mutation()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @KeyAsId()
   async videoBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
     return await this.blockService.update(id, input)
+  }
+
+  @ResolveField('video')
+  video(
+    @Parent()
+    block: VideoBlock
+  ): {
+    __typename: 'Video'
+    id: string
+    primaryLanguageId?: string | null
+  } | null {
+    if (block.videoId == null) return null
+
+    return {
+      __typename: 'Video',
+      id: block.videoId,
+      primaryLanguageId: block.videoVariantLanguageId
+    }
   }
 }

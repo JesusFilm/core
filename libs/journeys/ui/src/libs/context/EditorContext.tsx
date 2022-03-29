@@ -35,7 +35,7 @@ export interface EditorState {
   activeFab: ActiveFab
 }
 
-interface SetSelectedStepAction {
+export interface SetSelectedStepAction {
   type: 'SetSelectedStepAction'
   step?: TreeBlock<StepBlock>
 }
@@ -45,7 +45,7 @@ interface SetSelectedBlockAction {
   block?: TreeBlock
 }
 
-interface SetSelectedBlockByIdAction {
+export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   id?: string
 }

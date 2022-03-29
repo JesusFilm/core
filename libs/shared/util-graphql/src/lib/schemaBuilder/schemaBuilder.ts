@@ -1,11 +1,10 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { DocumentNode, GraphQLSchema } from 'graphql'
 import { GraphQLSchemaModule } from 'apollo-graphql'
 import { buildSubgraphSchema } from '@apollo/federation'
 
 export function schemaBuilder(input: {
   typeDefs: DocumentNode[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolvers: Array<Record<string, any>>
 }): GraphQLSchema {
   const { typeDefs, resolvers } = input

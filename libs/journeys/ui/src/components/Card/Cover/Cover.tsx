@@ -91,14 +91,10 @@ export function Cover({
           data-testid="CardVideoCover"
         >
           <video ref={videoRef} className="video-js" playsInline>
-            {videoBlock.videoContent.src != null && (
+            {videoBlock.video?.variant?.hls != null && (
               <source
-                src={videoBlock.videoContent.src}
-                type={
-                  videoBlock.videoContent.__typename === 'VideoArclight'
-                    ? 'application/x-mpegURL'
-                    : undefined
-                }
+                src={videoBlock.video.variant.hls}
+                type="application/x-mpegURL"
               />
             )}
           </video>
@@ -147,7 +143,11 @@ export function Cover({
               )} ${theme.spacing(7)}`,
               sm: theme.spacing(7, 8, 7, 4)
             },
-            overflow: 'auto'
+            overflow: 'auto',
+            '& > *': {
+              '&:first-child': { mt: 0 },
+              '&:last-child': { mb: 0 }
+            }
           }}
         >
           {children}
@@ -209,7 +209,18 @@ export function Cover({
                 overflow: 'hidden'
               }}
             >
-              <Box sx={{ transform: 'skewY(10deg)', px: 7 }}>{children}</Box>
+              <Box
+                sx={{
+                  transform: 'skewY(10deg)',
+                  px: 7,
+                  '& > *': {
+                    '&:first-child': { mt: 0 },
+                    '&:last-child': { mb: 0 }
+                  }
+                }}
+              >
+                {children}
+              </Box>
               <Box
                 ref={lgRef}
                 sx={{

@@ -16,7 +16,7 @@ spec:
         app: api-users-stage
     spec:
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:c33fe910f485803718fa8d656d85816755247078
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:stage
           imagePullPolicy: IfNotPresent
           name: jfp-api-users
           ports:
@@ -26,16 +26,3 @@ spec:
                 name: env-db-stage
             - secretRef:
                 name: env-firebase-stage
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-users-stage
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: api-users-stage.core.jesusfilm.org
-spec:
-  selector:
-    app: api-users-stage
-  ports:
-    - port: 4002
-  type: LoadBalancer
