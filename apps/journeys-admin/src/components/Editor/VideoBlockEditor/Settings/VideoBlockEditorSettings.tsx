@@ -1,13 +1,11 @@
 import { ReactElement } from 'react'
-import {
-  Divider,
-  InputAdornment,
-  Stack,
-  Switch,
-  TextField,
-  Typography
-} from '@mui/material'
-import { Box } from '@mui/system'
+import Divider from '@mui/material/Divider'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import { TreeBlock } from '@core/journeys/ui'
 import { noop } from 'lodash'
 import { useFormik } from 'formik'

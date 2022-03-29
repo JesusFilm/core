@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { TreeBlock } from '@core/journeys/ui'
-import { VideoBlockEditorSource } from './VideoBlockEditorSource'
+import { VideoBlockEditorSource } from '.'
 
 const video: TreeBlock = {
   __typename: 'VideoBlock',
@@ -27,7 +28,13 @@ const video: TreeBlock = {
   children: []
 }
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 describe('VideoBlockEditorSource', () => {
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
   it('calls onChange when videoId textbox changes', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
