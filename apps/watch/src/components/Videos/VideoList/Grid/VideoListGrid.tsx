@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { Button, Grid } from '@mui/material'
+import { AddRounded } from '@mui/icons-material'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 import { VideoListCard } from '../Card/VideoListCard'
@@ -33,7 +35,24 @@ export function VideoListGrid({
         ))}
       {!isEnd && (
         <Grid item xs={12}>
-          <Button onClick={onLoadMore}>Load More</Button>
+          <LoadingButton
+            data-testid="VideoListLoadMore"
+            variant="outlined"
+            onClick={onLoadMore}
+            loading={loading}
+            startIcon={
+              (videos?.length ?? 0) > 0 && !isEnd ? null : <AddRounded />
+            }
+            disabled={(videos?.length ?? 0) === 0 || isEnd}
+            loadingPosition="start"
+            size="medium"
+          >
+            {loading && 'Loading...'}
+            {!loading &&
+              ((videos?.length ?? 0) > 0 && !isEnd
+                ? 'Load More'
+                : 'No More Videos')}
+          </LoadingButton>
         </Grid>
       )}
     </Grid>
