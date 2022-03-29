@@ -530,7 +530,7 @@ input VideoBlockCreateInput {
   parentBlockId: ID!
 
   """
-  startAt dictates at which point of time the video should start playing ()
+  startAt dictates at which point of time the video should start playing
   """
   startAt: Int
 

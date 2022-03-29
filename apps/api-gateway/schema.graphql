@@ -775,7 +775,7 @@ input VideoBlockCreateInput {
   posterBlockId: ID
 
   """
-  startAt dictates at which point of time the video should start playing ()
+  startAt dictates at which point of time the video should start playing
   """
   startAt: Int
 
