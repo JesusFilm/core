@@ -3,7 +3,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
-import { AccessDialog, GET_JOURNEY_WITH_USER_JOURNEYS } from './AccessDialog'
+import {
+  AccessDialog,
+  GET_CURRENT_USER,
+  GET_JOURNEY_WITH_USER_JOURNEYS
+} from './AccessDialog'
 import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
 import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
 import { USER_JOURNEY_REMOVE } from './RemoveUser/RemoveUser'
@@ -146,6 +150,20 @@ const mocks = [
         }
       }
     }
+  },
+  {
+    request: {
+      query: GET_CURRENT_USER
+    },
+    result: {
+      data: {
+        me: {
+          id: 'userId1',
+          __typename: 'User',
+          email: 'amin@email.com'
+        }
+      }
+    }
   }
 ]
 
@@ -215,6 +233,108 @@ describe('AccessDialog', () => {
     expect(cache.extract()['UserJourney:userJourneyId1']?.role).toEqual(
       'editor'
     )
+  })
+
+  it('does not allow owners to edit their own access', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={mocks}>
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
+    )
+  })
+
+  it('does not allow editors to edit access', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_JOURNEY_WITH_USER_JOURNEYS,
+                variables: {
+                  id: 'journeySlug'
+                }
+              },
+              result: {
+                data: {
+                  journey: {
+                    id: 'journeyId',
+                    __typename: 'Journey',
+                    userJourneys: [
+                      {
+                        id: 'userJourneyId1',
+                        __typename: 'UserJourney',
+                        role: UserJourneyRole.owner,
+                        user: {
+                          id: 'userId1',
+                          __typename: 'User',
+                          firstName: 'Amin',
+                          lastName: 'One',
+                          imageUrl: 'https://bit.ly/3Gth4Yf',
+                          email: 'amin@email.com'
+                        }
+                      },
+                      {
+                        id: 'userJourneyId2',
+                        __typename: 'UserJourney',
+                        role: UserJourneyRole.editor,
+                        user: {
+                          id: 'userId2',
+                          __typename: 'User',
+                          firstName: 'Horace',
+                          lastName: 'Two',
+                          imageUrl: 'https://bit.ly/3rgHd6a',
+                          email: 'horace@email.com'
+                        }
+                      },
+                      {
+                        id: 'userJourneyId3',
+                        __typename: 'UserJourney',
+                        role: UserJourneyRole.inviteRequested,
+                        user: {
+                          id: 'userId3',
+                          __typename: 'User',
+                          firstName: 'Coral',
+                          lastName: 'Three',
+                          imageUrl: 'https://bit.ly/3nlwUwJ',
+                          email: 'coral@email.com'
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              request: {
+                query: GET_CURRENT_USER
+              },
+              result: {
+                data: {
+                  me: {
+                    id: 'userId2',
+                    __typename: 'User',
+                    email: 'horace@email.com'
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <AccessDialog journeySlug="journeySlug" open={true} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
+    )
+    expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
   })
 
   it('calls on close', () => {
