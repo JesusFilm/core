@@ -7,14 +7,24 @@ describe('VideoListList', () => {
   const onLoadMore = jest.fn()
   it('should display loading placeholders', async () => {
     const { getByText, getAllByTestId } = render(
-      <VideoListList videos={[]} loading={true} onLoadMore={onLoadMore} />
+      <VideoListList
+        videos={[]}
+        loading={true}
+        onLoadMore={onLoadMore}
+        isEnd={false}
+      />
     )
     expect(getAllByTestId('video-list-list-placeholder')).toHaveLength(8)
     expect(getByText('Loading...')).toBeInTheDocument()
   })
   it('should request more videos', async () => {
     const { getByText } = render(
-      <VideoListList videos={videos} loading={false} onLoadMore={onLoadMore} />
+      <VideoListList
+        videos={videos}
+        loading={false}
+        onLoadMore={onLoadMore}
+        isEnd={false}
+      />
     )
     fireEvent.click(getByText('Load More'))
     expect(onLoadMore).toHaveBeenCalled()
@@ -26,6 +36,7 @@ describe('VideoListList', () => {
         loading={false}
         onLoadMore={onLoadMore}
         variant="small"
+        isEnd={false}
       />
     )
     expect(getAllByTestId('video-list-list-image-small')[0]).toBeInTheDocument()
@@ -37,6 +48,7 @@ describe('VideoListList', () => {
         loading={false}
         onLoadMore={onLoadMore}
         variant="large"
+        isEnd={false}
       />
     )
     expect(getAllByTestId('video-list-list-image-large')[0]).toBeInTheDocument()
