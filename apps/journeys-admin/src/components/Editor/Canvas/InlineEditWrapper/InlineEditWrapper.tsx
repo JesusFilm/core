@@ -8,6 +8,7 @@ import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { TypographyEdit } from './TypographyEdit'
 import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
+import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
 
 interface InlineEditWrapperProps
@@ -36,6 +37,8 @@ export function InlineEditWrapper({
       <SignUpEdit {...block} />
     ) : block.__typename === 'RadioOptionBlock' ? (
       <RadioOptionEdit {...block} />
+    ) : block.__typename === 'RadioQuestionBlock' ? (
+      <RadioQuestionEdit {...block} />
     ) : (
       children
     )
