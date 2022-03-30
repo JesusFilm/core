@@ -1,12 +1,10 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
-import InputBase, { InputBaseProps } from '@mui/material/InputBase'
 import { SignUp, TreeBlock } from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
-import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 import { SignUpBlockUpdateContent } from '../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
+import { InlineEditInput } from '../InlineEditInput'
 
 export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
   mutation SignUpBlockUpdateContent(
@@ -21,25 +19,6 @@ export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface SignUpEditProps extends TreeBlock<SignUpFields> {}
-
-interface StyledInputProps extends InputBaseProps {}
-
-const adminPrimaryColor = adminTheme.palette
-  .primary as SimplePaletteColorOptions
-
-const StyledInput = styled(InputBase)<StyledInputProps>(() => ({
-  '& .MuiInputBase-input': {
-    textAlign: 'inherit'
-  },
-  color: 'inherit',
-  fontSize: 'inherit',
-  fontWeight: 'inherit',
-  lineHeight: 'inherit',
-  letterSpacing: 'inherit',
-  textTransform: 'inherit',
-  padding: '0px',
-  caretColor: adminPrimaryColor.main
-}))
 
 export function SignUpEdit({
   id,
@@ -72,7 +51,7 @@ export function SignUpEdit({
   }
 
   const input = (
-    <StyledInput
+    <InlineEditInput
       name={`edit-${id}`}
       fullWidth
       multiline
