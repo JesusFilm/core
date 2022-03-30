@@ -40,9 +40,6 @@ const StyledDialog = styled(MuiDialog)({
   '& .MuiTypography-body1': {
     color: 'secondary.light'
   },
-  '& .MuiDialogContent-root': {
-    paddingTop: 12
-  },
   '& .MuiDialogContent-dividers': {
     padding: 24
   },
@@ -92,8 +89,9 @@ export function Dialog({
       <DialogContent dividers={divider}>{children}</DialogContent>
       {dialogAction != null && (
         <DialogActions>
-          {/* Close button only shows when closeLabel is passed in */}
-          <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
+          {dialogAction.closeLabel != null && (
+            <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
+          )}
           <Button onClick={handleSubmit}>
             {dialogAction.submitLabel ?? 'Save'}
           </Button>

@@ -41,7 +41,12 @@ Form.args = {
     onSubmit: noop,
     closeLabel: 'Cancel'
   },
-  children: <TextField fullWidth label="Field Label" value="name" />
+  children: (
+    <>
+      <Typography>Label</Typography>
+      <TextField fullWidth value="Value" />
+    </>
+  )
 }
 
 export const Info = Template.bind({})
