@@ -145,6 +145,11 @@ export interface VideoResponseCreateInput {
   state: VideoResponseStateEnum;
 }
 
+export interface VideosFilter {
+  availableVariantLanguageIds?: string[] | null;
+  title?: string | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
