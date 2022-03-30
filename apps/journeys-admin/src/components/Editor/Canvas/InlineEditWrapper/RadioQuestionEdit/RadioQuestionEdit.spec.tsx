@@ -9,9 +9,9 @@ import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
 import { RadioQuestionEdit, RADIO_QUESTION_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('RadioQuestionEdit', () => {
-  const props: TreeBlock<RadioQuestionFields> = (
+  const props = (
     children: Array<TreeBlock<RadioOptionFields>>
-  ) => {
+  ): TreeBlock<RadioQuestionFields> => {
     return {
       __typename: 'RadioQuestionBlock',
       parentBlockId: 'card.id',
