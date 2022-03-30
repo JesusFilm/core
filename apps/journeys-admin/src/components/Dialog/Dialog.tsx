@@ -37,21 +37,24 @@ const StyledDialog = styled(MuiDialog)({
       width: 14
     }
   },
-  '& .MuiTypography-body1': {
-    color: 'secondary.light'
+  '& .MuiDialogContent-root': {
+    paddingBottom: 24
   },
   '& .MuiDialogContent-dividers': {
     padding: 24
   },
   '& .MuiDialogActions-root': {
     paddingRight: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
     '& > *': {
       '&:not(:first-of-type)': {
         marginLeft: 26
       }
     }
+  },
+  '& .MuiTypography-body1': {
+    color: 'secondary.light'
   }
 })
 

@@ -76,4 +76,52 @@ Info.args = {
   )
 }
 
+export const ExcessText = Template.bind({})
+ExcessText.args = {
+  open: true,
+  handleClose: noop,
+  title: 'Excess text',
+  closeButton: true,
+  divider: true,
+  dialogAction: {
+    onSubmit: noop,
+    closeLabel: 'Cancel'
+  },
+  children: (
+    <Typography>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit
+      magna a lectus rhoncus, quis molestie velit pellentesque. Phasellus semper
+      vestibulum arcu non egestas. Quisque erat massa, semper quis purus vitae,
+      commodo rhoncus velit. Vivamus consequat bibendum euismod. Morbi vel enim
+      pharetra, vehicula eros ullamcorper, consectetur metus. Phasellus vel
+      tincidunt nibh. Cras sit amet ornare quam, non mattis eros. Pellentesque
+      habitant morbi tristique senectus et netus et malesuada fames ac turpis
+      egestas. In hac habitasse platea dictumst. Cras non vestibulum urna.
+      Aenean interdum finibus magna sed luctus. Nullam semper efficitur viverra.
+      In hac habitasse platea dictumst. Nunc aliquet suscipit lectus, at
+      volutpat ligula auctor egestas. Nulla a velit id nisi pharetra euismod.
+      Nulla laoreet velit in neque ultrices maximus. Vivamus ullamcorper magna
+      ex. Etiam malesuada scelerisque condimentum. Vestibulum ac erat felis.
+      Quisque id aliquet sapien, quis commodo turpis. Curabitur eu vestibulum
+      orci, nec luctus odio. Quisque dapibus elit ac eros rhoncus finibus. Sed
+      quis sagittis justo. Donec justo ipsum, varius a varius eget, ultrices et
+      est. Donec eros dolor, auctor id neque at, dignissim mattis ipsum. Sed
+      dignissim nibh ut elit sodales, quis suscipit dolor consequat. Vestibulum
+      a felis quis metus placerat feugiat. Sed molestie, magna id elementum
+      tincidunt, ex sapien sodales sapien, hendrerit aliquam nibh lorem eget mi.
+      Donec vel nibh sollicitudin enim convallis varius. Aenean nec malesuada
+      ipsum. Suspendisse in diam ac metus pretium pharetra id vel tortor.
+      Integer venenatis metus quis augue feugiat, in dictum velit ultrices. In
+      dictum ligula enim, vehicula pellentesque enim tempus nec. Duis viverra
+      diam sed libero tincidunt fringilla. Integer tincidunt pulvinar venenatis.
+      Aenean quam velit, porta sed purus nec, euismod cursus risus. Curabitur at
+      vehicula quam. In hac habitasse platea dictumst. Sed ut augue nulla. Nam a
+      semper nibh. Aliquam pharetra pellentesque lectus vitae ultricies.
+      Praesent ornare, lectus quis mollis convallis, nibh erat sagittis nibh,
+      euismod tempor elit nisl a purus. Sed dignissim ultricies dictum. Ut et
+      venenatis leo. Morbi pulvinar felis mi.
+    </Typography>
+  )
+}
+
 export default DialogStory as Meta
