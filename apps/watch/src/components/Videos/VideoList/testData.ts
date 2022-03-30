@@ -1,4 +1,6 @@
-export const videos = [
+import { GetVideos_videos } from "../../../../__generated__/GetVideos";
+
+export const videos: GetVideos_videos[] = [
   {
     id: '1_cl-0-0',
     image:

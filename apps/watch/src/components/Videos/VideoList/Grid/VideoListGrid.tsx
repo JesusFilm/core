@@ -20,7 +20,7 @@ export function VideoListGrid({
   videos
 }: VideoListGridProps): ReactElement {
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={4} data-testid="video-list-grid">
       {(videos.length ?? 0) > 0 &&
         videos.map((video, index) => (
           <Grid item key={index} md={4} sm={6} xs={12} lg={3}>
@@ -29,7 +29,14 @@ export function VideoListGrid({
         ))}
       {loading &&
         [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-          <Grid item key={index} md={4} sm={6} xs={12}>
+          <Grid
+            item
+            key={index}
+            md={4}
+            sm={6}
+            xs={12}
+            data-testid="video-list-grid-placeholder"
+          >
             <VideoListCard />
           </Grid>
         ))}

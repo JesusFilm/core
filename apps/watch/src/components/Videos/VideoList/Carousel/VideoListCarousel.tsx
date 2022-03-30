@@ -1,3 +1,4 @@
+import { Box } from '@mui/system'
 import { ReactElement, useState } from 'react'
 import Carousel from 'react-multi-carousel'
 import 'react-multi-carousel/lib/styles.css'
@@ -38,28 +39,32 @@ export function VideoListCarousel({
 }: VideoListCarouselProps): ReactElement {
   const [isMoving, setIsMoving] = useState(false)
   return (
-    <Carousel
-      responsive={responsive}
-      autoPlay={false}
-      beforeChange={async (nextSlide, state) => {
-        setIsMoving(true)
-        if (nextSlide > videos.length - 7) {
-          await onLoadMore()
+    <Box data-testid="video-list-carousel">
+      <Carousel
+        responsive={responsive}
+        autoPlay={false}
+        beforeChange={async (nextSlide, state) => {
+          setIsMoving(true)
+          if (nextSlide > videos.length - 7) {
+            await onLoadMore()
+            state.totalItems = videos.length
+          }
+        }}
+        afterChange={async (nextSlide, state) => {
           state.totalItems = videos.length
-        }
-      }}
-      afterChange={async (nextSlide, state) => {
-        state.totalItems = videos.length
-        setIsMoving(false)
-      }}
-      shouldResetAutoplay={false}
-    >
-      {(videos.length ?? 0) > 0 &&
-        videos.map((video, index) => (
-          <VideoListCard video={video} key={index} disabled={isMoving} />
-        ))}
-      {loading &&
-        [1, 2, 3, 4, 5, 6, 7, 8].map((index) => <VideoListCard key={index} />)}
-    </Carousel>
+          setIsMoving(false)
+        }}
+        shouldResetAutoplay={false}
+      >
+        {(videos.length ?? 0) > 0 &&
+          videos.map((video, index) => (
+            <VideoListCard video={video} key={index} disabled={isMoving} />
+          ))}
+        {loading &&
+          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
+            <VideoListCard key={index} />
+          ))}
+      </Carousel>
+    </Box>
   )
 }

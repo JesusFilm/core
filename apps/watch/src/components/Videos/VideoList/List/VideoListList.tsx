@@ -29,7 +29,7 @@ export function VideoListList({
   onLoadMore
 }: VideoListListProps): ReactElement {
   return (
-    <List>
+    <List data-testid="video-list-list">
       {(videos.length ?? 0) > 0 &&
         videos.map((video, index) => {
           const snippet = video.snippet.find(
@@ -86,7 +86,7 @@ export function VideoListList({
         })}
       {loading &&
         [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-          <ListItemButton key={index}>
+          <ListItemButton key={index} data-testid="video-list-list-placeholder">
             <LinearProgress />
             <Box>
               <Box
