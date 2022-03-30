@@ -53,6 +53,7 @@ export function VideoListList({
               {video.image != null && (
                 <Box>
                   <Box
+                    data-testid={'video-list-list-image-'+ variant}
                     sx={{
                       justifySelf: 'end',
                       display: 'flex',

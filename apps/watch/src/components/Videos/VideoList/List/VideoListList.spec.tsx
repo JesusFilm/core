@@ -19,4 +19,26 @@ describe('VideoListList', () => {
     fireEvent.click(getByText('Load More'))
     expect(onLoadMore).toHaveBeenCalled()
   })
+  it('should render small variant', () => {
+    const { getAllByTestId } = render(
+      <VideoListList
+        videos={videos}
+        loading={false}
+        onLoadMore={onLoadMore}
+        variant="small"
+      />
+    )
+    expect(getAllByTestId('video-list-list-image-small')[0]).toBeInTheDocument()
+  })
+  it('should render large variant', () => {
+    const { getAllByTestId } = render(
+      <VideoListList
+        videos={videos}
+        loading={false}
+        onLoadMore={onLoadMore}
+        variant="large"
+      />
+    )
+    expect(getAllByTestId('video-list-list-image-large')[0]).toBeInTheDocument()
+  })
 })
