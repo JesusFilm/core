@@ -9,22 +9,22 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton'
 import { ReactElement } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui'
+import { AddRounded } from '@mui/icons-material'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
-import { AddRounded } from '@mui/icons-material'
 
 interface VideoListListProps {
   videos: GetVideos_videos[]
-  variant?: 'small' | 'large'
-  loading?: boolean
-  isEnd?: boolean
+  variant?: 'small' | 'large' | undefined
+  loading: boolean
+  isEnd: boolean
   onLoadMore: () => Promise<void>
 }
 
 export function VideoListList({
   videos,
   loading = false,
-  variant,
+  variant = 'large',
   isEnd,
   onLoadMore
 }: VideoListListProps): ReactElement {
@@ -53,7 +53,7 @@ export function VideoListList({
               {video.image != null && (
                 <Box>
                   <Box
-                    data-testid={'video-list-list-image-'+ variant}
+                    data-testid={`video-list-list-image-${variant}`}
                     sx={{
                       justifySelf: 'end',
                       display: 'flex',
