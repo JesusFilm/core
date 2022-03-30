@@ -11,15 +11,12 @@ import { noop } from 'lodash'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
 import { PlayCircle, StopCircle } from '@mui/icons-material'
+import { secondsToTimeFormat, timeFormatToSeconds } from '@core/shared/ui'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../__generated__/GetJourney'
-import {
-  secondsToTimeFormat,
-  timeFormatToSeconds
-} from '../../../../libs/timeFormat'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 

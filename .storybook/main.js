@@ -18,6 +18,17 @@ const storiesForProject = {
   'shared-ui': [
     '../libs/shared/ui/src/**/*.stories.mdx',
     '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  watch: [
+    '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/watch/src/components/**/*.stories.mdx',
+    '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  'watch-admin': [
+    '../apps/watch-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/watch-admin/src/components/**/*.stories.mdx',
+    '../apps/watch-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/watch-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -26,6 +37,8 @@ const allStories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
+  ...storiesForProject['watch'],
+  ...storiesForProject['watch-admin'],
   ...storiesForProject['shared-ui']
 ]
 
