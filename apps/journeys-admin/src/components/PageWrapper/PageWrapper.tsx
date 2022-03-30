@@ -58,18 +58,8 @@ export function PageWrapper({
   children,
   AuthUser
 }: PageWrapperProps): ReactElement {
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
-  const profileOpen = Boolean(profileAnchorEl)
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const theme = useTheme()
-  const handleProfileClick = (event): void => {
-    setProfileAnchorEl(event.currentTarget)
-  }
-  const handleProfileClose = (): void => {
-    setProfileAnchorEl(null)
-  }
-  const { data } = useQuery<GetMe>(GET_ME)
 
   return (
     <>
@@ -151,85 +141,128 @@ export function PageWrapper({
           mr: { sm: showDrawer === true ? '328px' : 0 }
         }}
       />
-      <Drawer
-        open={open}
-        sx={{
-          width: '237px',
-          flexShrink: 0,
-          display: { xs: smUp ? 'none' : 'flex', sm: 'flex' },
-          '& .MuiDrawer-paper': {
-            width: open ? '237px' : '72px',
-            boxSizing: 'border-box',
-            backgroundColor: '#25262E',
-            border: 0,
-            ...(open && {
-              width: '237px',
-              transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen
-              }),
-              overflowX: 'hidden'
+      <NavDrawer open={open} onClose={setOpen} AuthUser={AuthUser} />
+      <Box sx={{ ml: { sm: '72px' }, mt: smUp ? 0 : '48px' }}>{children}</Box>
+    </>
+  )
+}
+
+interface NavDrawerProps {
+  open: boolean
+  onClose: (value: boolean) => void,
+  AuthUser?: AuthUser
+}
+
+function NavDrawer({ open, onClose, AuthUser }: NavDrawerProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const theme = useTheme()
+
+  return (
+    <Drawer
+      open={open}
+      sx={{
+        width: '237px',
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        display: { xs: smUp ? 'none' : 'flex', sm: 'flex' },
+        '& .MuiDrawer-paper': {
+          width: open ? '237px' : '72px',
+          boxSizing: 'border-box',
+          backgroundColor: '#25262E',
+          border: 0,
+          ...(open && {
+            width: '237px',
+            transition: theme.transitions.create('width', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen
             }),
-            ...(!open && {
-              transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen
-              }),
-              overflowX: 'hidden'
-            })
-          }
-        }}
-        elevation={0}
-        hideBackdrop
-        variant={smUp ? 'permanent' : 'temporary'}
-        anchor="left"
-      >
-        <List>
-          <ListItem
+            overflowX: 'hidden'
+          }),
+          ...(!open && {
+            transition: theme.transitions.create('width', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen
+            }),
+            overflowX: 'hidden'
+          })
+        }
+      }}
+      elevation={0}
+      hideBackdrop
+      variant={smUp ? 'permanent' : 'temporary'}
+      anchor="left"
+    >
+      <DrawerContent open={open} onClose={onClose} AuthUser={AuthUser} />
+    </Drawer>
+  )
+}
+
+interface DrawerContentProps {
+  open: boolean
+  onClose: (value: boolean) => void,
+  AuthUser?: AuthUser
+}
+
+function DrawerContent({ open, onClose, AuthUser }: DrawerContentProps): ReactElement {
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const profileOpen = Boolean(profileAnchorEl)
+  const handleProfileClick = (event): void => {
+    setProfileAnchorEl(event.currentTarget)
+  }
+  const handleProfileClose = (): void => {
+    setProfileAnchorEl(null)
+  }
+  const { data } = useQuery<GetMe>(GET_ME)
+
+  return (
+    <>
+      <List>
+        <ListItem
+          sx={{
+            justifyContent: open ? 'initial' : 'center',
+            my: 1
+          }}
+        >
+          <IconButton
+            size="large"
+            color="inherit"
+            aria-label="chevron"
+            onClick={() => onClose(!open)}
             sx={{
-              justifyContent: open ? 'flex-start' : 'center',
-              my: 1
+              color: 'secondary.dark',
+              backgroundColor: 'secondary.light',
+              '&:hover': {
+                backgroundColor: 'secondary.light'
+              },
+              width: 24,
+              height: 24,
+              borderRadius: 2
             }}
           >
-            <IconButton
-              size="large"
-              color="inherit"
-              aria-label="chevron"
-              onClick={() => setOpen(!open)}
-              sx={{
-                color: 'secondary.dark',
-                backgroundColor: 'secondary.light',
-                '&:hover': {
-                  backgroundColor: 'secondary.light'
-                },
-                width: 24,
-                height: 24,
-                borderRadius: 2
-              }}
-            >
-              {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
-            </IconButton>
+            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+          </IconButton>
+        </ListItem>
+        <Link href="/" passHref>
+          <ListItem
+            sx={{
+              justifyContent: open ? 'initial' : 'center',
+              color: '#6D6F81',
+              fontSize: 28,
+              my: 1
+            }}
+            button
+          >
+            <ExploreRoundedIcon fontSize="inherit" />
+            {open ? (
+              <Typography variant="h5" sx={{ ml: 4 }}>
+                Discover
+              </Typography>
+            ) : undefined}
           </ListItem>
-          <Link href="/" passHref>
-            <ListItem
-              sx={{
-                justifyContent: open ? 'flex-start' : 'center',
-                color: '#6D6F81',
-                fontSize: 28,
-                my: 1
-              }}
-              button
-            >
-              <ExploreRoundedIcon fontSize="inherit" />
-              {open ? (
-                <Typography variant="h5" sx={{ ml: 4 }}>
-                  Discover
-                </Typography>
-              ) : undefined}
-            </ListItem>
-          </Link>
-        </List>
-        {AuthUser != null && data?.me != null && (
+        </Link>
+      </List>
+      {
+        AuthUser != null && data?.me != null && (
           <>
             <Divider sx={{ borderColor: '#383940' }} />
             <List
@@ -240,7 +273,7 @@ export function PageWrapper({
               <ListItem
                 sx={{
                   flexGrow: 1,
-                  justifyContent: open ? 'flex-start' : 'center',
+                  justifyContent: open ? 'initial' : 'center',
                   color: '#6D6F81',
                   my: 1
                 }}
@@ -262,7 +295,7 @@ export function PageWrapper({
             <Toolbar
               sx={{
                 border: 'transparent',
-                justifyContent: open ? 'flex-start' : 'center',
+                justifyContent: open ? 'initial' : 'center',
                 ml: open ? 2 : 0,
                 mb: 8
               }}
@@ -283,6 +316,7 @@ export function PageWrapper({
                 </Typography>
               ) : undefined}
             </Toolbar>
+            {/* Might split this of to its own component as well */}
             <Menu
               anchorEl={profileAnchorEl}
               open={profileOpen}
@@ -335,9 +369,8 @@ export function PageWrapper({
               </MenuItem>
             </Menu>
           </>
-        )}
-      </Drawer>
-      <Box sx={{ ml: { sm: '72px' }, mt: smUp ? 0 : '48px' }}>{children}</Box>
+        )
+      }
     </>
   )
 }
