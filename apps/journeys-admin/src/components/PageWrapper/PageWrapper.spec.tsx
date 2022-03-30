@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { AuthUser } from 'next-firebase-auth'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { GET_ME } from './PageWrapper'
+import { GET_ME } from './NavigationDrawer/DrawerContent/DrawerContent'
 import { PageWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

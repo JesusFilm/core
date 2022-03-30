@@ -4,7 +4,8 @@ import MenuRounded from '@mui/icons-material/MenuRounded'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_ME, PageWrapperProps } from './PageWrapper'
+import { PageWrapperProps } from './PageWrapper'
+import { GET_ME } from './NavigationDrawer/DrawerContent/DrawerContent'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
