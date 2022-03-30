@@ -23,7 +23,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       id={`${id}-video-options`}
       icon={<VideoLibrary />}
       name="Video Source"
-      value={block?.title ?? ''}
+      value={block?.video?.variant?.hls ?? ''}
       description="Video Options"
       onClick={openDrawer}
     />

@@ -44,6 +44,17 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           borderColor: palette[200]
         }
       }
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          fontWeight: 600,
+          fontFamily: "'Montserrat', sans-serif"
+        },
+        secondary: {
+          color: palette[800]
+        }
+      }
     }
   }
 }

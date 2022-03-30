@@ -46,7 +46,7 @@ jobs:
       - name: Checkout current branch
         uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - uses: actions/setup-node@v2
         with:
@@ -68,7 +68,7 @@ jobs:
         run: npm install -g nx --silent
 
       - name: Get affected apps
-        run: echo "::set-output name=apps::$(nx affected:apps plain)"
+        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"
         id: affected-apps
 
       - name: Build ${{ inputs.name }}
@@ -118,7 +118,7 @@ jobs:
           args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
 
       - name: Get affected app seed
-        run: echo "::set-output name=dbs::$(nx affected:apps plain --files apps/${{ inputs.name }}/db/seed.ts)"
+        run: echo "::set-output name=dbs::$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')"
         id: affected-dbs
 
       - name: Seed Database

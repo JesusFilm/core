@@ -476,10 +476,6 @@ describe('ControlPanel', () => {
                   parentBlockId: 'cardId',
                   autoplay: true,
                   muted: false,
-                  videoContent: {
-                    src: null
-                  },
-                  title: '',
                   fullsize: true
                 }
               }
@@ -497,9 +493,7 @@ describe('ControlPanel', () => {
                   startAt: null,
                   endAt: null,
                   posterBlockId: null,
-                  videoContent: {
-                    src: null
-                  },
+                  video: null,
                   fullsize: true
                 }
               }

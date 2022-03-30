@@ -25,10 +25,16 @@ const videoBlock: TreeBlock<VideoFields> = {
   parentOrder: 0,
   autoplay: false,
   muted: false,
-  title: 'video1',
-  videoContent: {
-    __typename: 'VideoArclight',
-    src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
   },
   startAt: null,
   endAt: null,
@@ -84,15 +90,6 @@ Muted.args = {
   muted: true
 }
 
-export const ExternalSource = Template.bind({})
-ExternalSource.args = {
-  ...videoBlock,
-  videoContent: {
-    __typename: 'VideoGeneric',
-    src: 'https://playertest.longtailvideo.com/adaptive/elephants_dream_v4/index.m3u8'
-  }
-}
-
 export const StartAt = Template.bind({})
 StartAt.args = {
   ...videoBlock,
@@ -132,11 +129,7 @@ NoVideoSource.args = {
   parentOrder: 0,
   autoplay: false,
   muted: false,
-  title: 'video1',
-  videoContent: {
-    __typename: 'VideoArclight',
-    src: null
-  },
+  video: null,
   startAt: null,
   endAt: null,
   posterBlockId: null,
