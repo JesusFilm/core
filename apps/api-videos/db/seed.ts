@@ -66,6 +66,7 @@ interface Download {
 }
 
 interface VideoVariant {
+  id: string
   subtitle: Translation[]
   hls: string
   languageId: string
@@ -203,6 +204,7 @@ async function digestMediaComponentLanguage(
     })
   }
   return {
+    id: mediaComponentLanguage.refId,
     subtitle:
       mediaComponentLanguage.subtitleUrls.vtt?.map(({ languageId, url }) => ({
         languageId: languageId.toString(),
@@ -310,7 +312,6 @@ async function main(): Promise<void> {
     await digestContainer(languages, container)
   }
 }
-
 main().catch((e) => {
   console.error(e)
   process.exit(1)

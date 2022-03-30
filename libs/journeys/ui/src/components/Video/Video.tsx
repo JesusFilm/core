@@ -21,20 +21,16 @@ export const VIDEO_RESPONSE_CREATE = gql`
   }
 `
 
-interface VideoProps extends TreeBlock<VideoFields> {
-  uuid?: () => string
-}
-
 export function Video({
   id: blockId,
-  videoContent,
+  video,
   autoplay,
   startAt,
   muted,
   posterBlockId,
   fullsize,
   children
-}: VideoProps): ReactElement {
+}: TreeBlock<VideoFields>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const posterBlock = children.find(
@@ -166,7 +162,7 @@ export function Video({
         }
       }}
     >
-      {videoContent.src != null ? (
+      {video?.variant?.hls != null ? (
         <>
           <video
             ref={videoRef}
@@ -174,14 +170,7 @@ export function Video({
             style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
             playsInline
           >
-            <source
-              src={videoContent.src}
-              type={
-                videoContent.__typename === 'VideoArclight'
-                  ? 'application/x-mpegURL'
-                  : undefined
-              }
-            />
+            <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
           {children?.map(
             (option) =>

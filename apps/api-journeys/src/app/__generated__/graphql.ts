@@ -296,36 +296,28 @@ export class TypographyBlockUpdateInput {
     align?: Nullable<TypographyAlign>;
 }
 
-export class VideoContentInput {
-    mediaComponentId?: Nullable<string>;
-    languageId?: Nullable<string>;
-    src?: Nullable<string>;
-}
-
 export class VideoBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
     description?: Nullable<string>;
     muted?: Nullable<boolean>;
     autoplay?: Nullable<boolean>;
-    videoContent: VideoContentInput;
+    videoId?: Nullable<string>;
+    videoVariantLanguageId?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
 }
 
 export class VideoBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    title?: Nullable<string>;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
-    description?: Nullable<string>;
     muted?: Nullable<boolean>;
     autoplay?: Nullable<boolean>;
-    videoContent?: Nullable<VideoContentInput>;
+    videoId?: Nullable<string>;
+    videoVariantLanguageId?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
 }
@@ -380,10 +372,6 @@ export interface Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-}
-
-export interface VideoContent {
-    src?: Nullable<string>;
 }
 
 export interface Response {
@@ -565,33 +553,21 @@ export class TypographyBlock implements Block {
     align?: Nullable<TypographyAlign>;
 }
 
-export class VideoArclight implements VideoContent {
-    __typename?: 'VideoArclight';
-    mediaComponentId: string;
-    languageId: string;
-    src?: Nullable<string>;
-}
-
-export class VideoGeneric implements VideoContent {
-    __typename?: 'VideoGeneric';
-    src?: Nullable<string>;
-}
-
 export class VideoBlock implements Block {
     __typename?: 'VideoBlock';
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    title: string;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
-    description?: Nullable<string>;
     muted?: Nullable<boolean>;
     autoplay?: Nullable<boolean>;
-    videoContent: VideoContent;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
+    video?: Nullable<Video>;
+    videoId?: Nullable<string>;
+    videoVariantLanguageId?: Nullable<string>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -714,6 +690,11 @@ export abstract class IMutation {
     abstract userJourneyRemove(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
+}
+
+export class Video {
+    id: string;
+    primaryLanguageId: string;
 }
 
 export abstract class IQuery {

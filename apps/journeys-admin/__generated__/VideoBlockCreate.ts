@@ -9,9 +9,16 @@ import { VideoBlockCreateInput } from "./globalTypes";
 // GraphQL mutation operation: VideoBlockCreate
 // ====================================================
 
-export interface VideoBlockCreate_videoBlockCreate_videoContent {
-  __typename: "VideoArclight" | "VideoGeneric";
-  src: string | null;
+export interface VideoBlockCreate_videoBlockCreate_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string;
+}
+
+export interface VideoBlockCreate_videoBlockCreate_video {
+  __typename: "Video";
+  id: string;
+  variant: VideoBlockCreate_videoBlockCreate_video_variant | null;
 }
 
 export interface VideoBlockCreate_videoBlockCreate {
@@ -19,7 +26,6 @@ export interface VideoBlockCreate_videoBlockCreate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  title: string;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -37,7 +43,15 @@ export interface VideoBlockCreate_videoBlockCreate {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  videoContent: VideoBlockCreate_videoBlockCreate_videoContent;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoId: string | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoVariantLanguageId: string | null;
+  video: VideoBlockCreate_videoBlockCreate_video | null;
 }
 
 export interface VideoBlockCreate {

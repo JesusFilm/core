@@ -19,6 +19,8 @@
     "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
-    "shared-util-graphql": "libs/shared/util-graphql"
+    "shared-util-graphql": "libs/shared/util-graphql",
+    "watch-admin": "apps/watch-admin",
+    "watch-admin-e2e": "apps/watch-admin-e2e"
   }
 }
