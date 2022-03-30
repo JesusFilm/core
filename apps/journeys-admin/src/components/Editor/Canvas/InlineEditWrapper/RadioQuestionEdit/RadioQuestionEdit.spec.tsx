@@ -10,7 +10,7 @@ import { RadioQuestionEdit, RADIO_QUESTION_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('RadioQuestionEdit', () => {
   const props = (
-    children: Array<TreeBlock<RadioOptionFields>>
+    children?: Array<TreeBlock<RadioOptionFields>>
   ): TreeBlock<RadioQuestionFields> => {
     return {
       __typename: 'RadioQuestionBlock',
