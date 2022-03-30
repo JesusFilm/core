@@ -29,6 +29,7 @@ export interface GetVideo_video {
   __typename: "Video";
   id: string;
   image: string | null;
+  primaryLanguageId: string;
   title: GetVideo_video_title[];
   description: GetVideo_video_description[];
   variant: GetVideo_video_variant | null;
@@ -39,5 +40,5 @@ export interface GetVideo {
 }
 
 export interface GetVideoVariables {
-  videoId: string;
+  id: string;
 }

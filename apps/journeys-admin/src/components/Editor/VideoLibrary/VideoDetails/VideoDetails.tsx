@@ -12,15 +12,16 @@ import IconButton from '@mui/material/IconButton'
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../__generated__/GetVideo'
 import { Drawer as LanguageDrawer } from '../LanguageFilter/Drawer/Drawer'
 
 export const GET_VIDEO = gql`
-  query GetVideo($videoId: String!) {
-    video(videoId: $videoId) {
+  query GetVideo($id: ID!) {
+    video(id: $id) {
       id
       image
+      primaryLanguageId
       title {
         primary
         value
@@ -40,15 +41,15 @@ export const GET_VIDEO = gql`
 export const DRAWER_WIDTH = 328
 interface VideoDetailsProps {
   open: boolean
-  videoId: string
-  handleOpen?: () => void
-  onSelect?: (id: string) => void
+  id: string
+  onClose: () => void
+  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
 }
 
 export function VideoDetails({
   open,
-  videoId,
-  handleOpen,
+  id,
+  onClose: handleClose,
   onSelect: handleSelect
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -56,21 +57,19 @@ export function VideoDetails({
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [openLanguage, setOpenLanguage] = useState<boolean>(false)
-  const [selectedIds, setSelectedIds] = useState(['en'])
-  // need to discuss how we're passing langaugeIds around
+  const [selectedIds, setSelectedIds] = useState(['529'])
+  const [loadVideo, { data }] = useLazyQuery<GetVideo>(GET_VIDEO, {
+    variables: { id }
+  })
+
   const handleChange = (selectedIds: string[]): void => {
     setSelectedIds(selectedIds)
-    // onSelect(selectedIds)
   }
 
-  const onSelect = (id: string): void => {
-    if (handleSelect != null) handleSelect(id)
-    if (handleOpen != null) handleOpen()
+  const handleVideoSelect = (): void => {
+    handleSelect(id, data?.video?.primaryLanguageId)
+    handleClose()
   }
-
-  const { data } = useQuery<GetVideo>(GET_VIDEO, {
-    variables: { videoId }
-  })
 
   const time = data?.video.variant?.duration ?? 0
   const duration =
@@ -81,34 +80,22 @@ export function VideoDetails({
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: false,
         controls: true,
-        userActions: {
-          hotkeys: true,
-          doubleClick: true
-        },
-        controlBar: {
-          playToggle: true,
-          captionsButton: true,
-          subtitlesButton: true,
-          remainingTimeDisplay: true,
-          progressControl: {
-            seekBar: true
-          },
-          fullscreenToggle: true,
-          volumePanel: {
-            inline: true
-          }
-        },
-        responsive: true,
-        muted: true,
-        poster: data.video.image ?? ''
+        autoplay: false,
+        preload: 'auto',
+        poster: data.video.image ?? undefined
       })
       playerRef.current.on('playing', () => {
         setIsPlaying(true)
       })
     }
   }, [data])
+
+  useEffect(() => {
+    if (open) {
+      void loadVideo()
+    }
+  }, [open, loadVideo])
 
   return (
     <Drawer
@@ -137,7 +124,7 @@ export function VideoDetails({
             Video Details
           </Typography>
           <IconButton
-            onClick={handleOpen}
+            onClick={handleClose}
             sx={{ display: 'inline-flex' }}
             edge="end"
           >
@@ -221,11 +208,7 @@ export function VideoDetails({
           variant="contained"
           size="small"
           startIcon={<Check />}
-          onClick={
-            onSelect != null
-              ? () => onSelect(data?.video.variant?.hls ?? '')
-              : undefined
-          }
+          onClick={handleVideoSelect}
         >
           Select Video
         </Button>
