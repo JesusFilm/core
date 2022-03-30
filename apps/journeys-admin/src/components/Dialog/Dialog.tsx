@@ -32,9 +32,7 @@ const StyledDialog = styled(MuiDialog)({
     paddingTop: 20,
     alignItems: 'center',
     '& .MuiIconButton-root': {
-      marginLeft: 'auto',
-      height: 14,
-      width: 14
+      marginLeft: 'auto'
     }
   },
   '& .MuiDialogContent-root': {
@@ -83,7 +81,7 @@ export function Dialog({
         <DialogTitle>
           <Typography variant="h5">{title}</Typography>
           {closeButton != null && closeButton && (
-            <IconButton onClick={handleClose}>
+            <IconButton size="medium" onClick={handleClose}>
               <CloseRoundedIcon />
             </IconButton>
           )}

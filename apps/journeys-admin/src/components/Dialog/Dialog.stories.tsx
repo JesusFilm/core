@@ -85,6 +85,7 @@ ExcessText.args = {
   divider: true,
   dialogAction: {
     onSubmit: noop,
+    submitLabel: 'Accept',
     closeLabel: 'Cancel'
   },
   children: (
