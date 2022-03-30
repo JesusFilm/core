@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Box from '@mui/material/Box'
@@ -28,6 +28,8 @@ import { useTheme, Theme } from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/Menu'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { GetMe } from '../../../__generated__/GetMe'
+
+const drawerWidth = '237px'
 
 export interface PageWrapperProps {
   backHref?: string
@@ -149,7 +151,7 @@ export function PageWrapper({
 
 interface NavDrawerProps {
   open: boolean
-  onClose: (value: boolean) => void,
+  onClose: (value: boolean) => void
   AuthUser?: AuthUser
 }
 
@@ -161,17 +163,15 @@ function NavDrawer({ open, onClose, AuthUser }: NavDrawerProps): ReactElement {
     <Drawer
       open={open}
       sx={{
-        width: '237px',
-        flexShrink: 0,
-        whiteSpace: 'nowrap',
+        width: drawerWidth,
         display: { xs: smUp ? 'none' : 'flex', sm: 'flex' },
         '& .MuiDrawer-paper': {
-          width: open ? '237px' : '72px',
+          width: drawerWidth,
           boxSizing: 'border-box',
           backgroundColor: '#25262E',
           border: 0,
           ...(open && {
-            width: '237px',
+            width: drawerWidth,
             transition: theme.transitions.create('width', {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen
@@ -183,7 +183,11 @@ function NavDrawer({ open, onClose, AuthUser }: NavDrawerProps): ReactElement {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.leavingScreen
             }),
-            overflowX: 'hidden'
+            overflowX: 'hidden',
+            width: `calc(${theme.spacing(18)} + 1px)`,
+            [theme.breakpoints.up('sm')]: {
+              width: `calc(${theme.spacing(18)} + 1px)`
+            }
           })
         }
       }}
@@ -199,11 +203,16 @@ function NavDrawer({ open, onClose, AuthUser }: NavDrawerProps): ReactElement {
 
 interface DrawerContentProps {
   open: boolean
-  onClose: (value: boolean) => void,
+  onClose: (value: boolean) => void
   AuthUser?: AuthUser
 }
 
-function DrawerContent({ open, onClose, AuthUser }: DrawerContentProps): ReactElement {
+function DrawerContent({
+  open,
+  onClose,
+  AuthUser
+}: DrawerContentProps): ReactElement {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -217,87 +226,98 @@ function DrawerContent({ open, onClose, AuthUser }: DrawerContentProps): ReactEl
   return (
     <>
       <List>
-        <ListItem
+        <ListItemButton
+          onClick={() => onClose(!open)}
           sx={{
             justifyContent: open ? 'initial' : 'center',
+            px: 8,
             my: 1
           }}
         >
-          <IconButton
-            size="large"
-            color="inherit"
-            aria-label="chevron"
-            onClick={() => onClose(!open)}
+          <ListItemIcon
             sx={{
+              minWidth: 0,
               color: 'secondary.dark',
+              mr: 'auto',
               backgroundColor: 'secondary.light',
               '&:hover': {
                 backgroundColor: 'secondary.light'
               },
-              width: 24,
-              height: 24,
               borderRadius: 2
             }}
           >
             {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
-          </IconButton>
-        </ListItem>
+          </ListItemIcon>
+        </ListItemButton>
         <Link href="/" passHref>
-          <ListItem
+          <ListItemButton
             sx={{
               justifyContent: open ? 'initial' : 'center',
               color: '#6D6F81',
               fontSize: 28,
+              px: 7.3,
               my: 1
             }}
-            button
           >
-            <ExploreRoundedIcon fontSize="inherit" />
-            {open ? (
-              <Typography variant="h5" sx={{ ml: 4 }}>
-                Discover
-              </Typography>
-            ) : undefined}
-          </ListItem>
-        </Link>
-      </List>
-      {
-        AuthUser != null && data?.me != null && (
-          <>
-            <Divider sx={{ borderColor: '#383940' }} />
-            <List
+            <ListItemIcon
               sx={{
-                flexGrow: 1
+                minWidth: 0,
+                mr: open ? 4 : 'auto',
+                justifyContent: 'center'
               }}
             >
-              <ListItem
+              <ExploreRoundedIcon
+                fontSize="inherit"
                 sx={{
-                  flexGrow: 1,
-                  justifyContent: open ? 'initial' : 'center',
-                  color: '#6D6F81',
-                  my: 1
+                  color: 'secondary.light'
                 }}
-                button
-                onClick={handleProfileClick}
-              >
-                <Avatar
-                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
-                  src={data.me.imageUrl ?? undefined}
-                  sx={{ width: 24, height: 24 }}
-                />
-                {open ? (
-                  <Typography variant="h5" sx={{ ml: 5 }}>
-                    Profile
-                  </Typography>
-                ) : undefined}
-              </ListItem>
-            </List>
-            <Toolbar
+              />
+            </ListItemIcon>
+            {open ? <Typography variant="h5">Discover</Typography> : undefined}
+          </ListItemButton>
+        </Link>
+      </List>
+      {AuthUser != null && data?.me != null && (
+        <>
+          <Divider sx={{ borderColor: '#383940' }} />
+          <List
+            sx={{
+              flexGrow: 1
+            }}
+          >
+            <ListItemButton
               sx={{
-                border: 'transparent',
+                flexGrow: 1,
                 justifyContent: open ? 'initial' : 'center',
-                ml: open ? 2 : 0,
-                mb: 8
+                px: 8,
+                color: '#6D6F81',
+                my: 1
+              }}
+              onClick={handleProfileClick}
+            >
+              <Avatar
+                alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+                src={data.me.imageUrl ?? undefined}
+                sx={{
+                  width: 24,
+                  height: 24,
+                  mr: open ? 5 : 'auto'
+                }}
+              />
+              {open ? <Typography variant="h5">Profile</Typography> : undefined}
+            </ListItemButton>
+          </List>
+          <Toolbar
+            sx={{
+              border: 'transparent',
+              justifyContent: open ? 'initial' : 'center',
+              mx: smUp ? 5 : 2,
+              mb: 8
+            }}
+          >
+            <Box
+              sx={{
+                mr: open ? 5 : 'auto'
               }}
             >
               <Image
@@ -307,70 +327,65 @@ function DrawerContent({ open, onClose, AuthUser }: DrawerContentProps): ReactEl
                 layout="fixed"
                 alt="Next Steps"
               />
-              {open ? (
-                <Typography
-                  variant="h5"
-                  sx={{ color: 'background.paper', ml: 4 }}
-                >
-                  NextSteps
+            </Box>
+            {open ? (
+              <Typography variant="h5" sx={{ color: 'background.paper' }}>
+                NextSteps
+              </Typography>
+            ) : undefined}
+          </Toolbar>
+          {/* Might split this of to its own component as well */}
+          <Menu
+            anchorEl={profileAnchorEl}
+            open={profileOpen}
+            onClose={handleProfileClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left'
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ py: 2, px: 4 }}
+              alignItems="center"
+            >
+              <Box>
+                <Avatar
+                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+                  src={data.me.imageUrl ?? undefined}
+                />
+              </Box>
+              <Box>
+                <Typography>
+                  {compact([data.me.firstName, data.me.lastName]).join(' ')}
                 </Typography>
-              ) : undefined}
-            </Toolbar>
-            {/* Might split this of to its own component as well */}
-            <Menu
-              anchorEl={profileAnchorEl}
-              open={profileOpen}
-              onClose={handleProfileClose}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left'
+                {data.me.email != null && (
+                  <Typography variant="body2" color="textSecondary">
+                    {data.me.email}
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+            <Divider />
+            <MenuItem
+              onClick={async () => {
+                handleProfileClose()
+                await AuthUser.signOut()
               }}
             >
-              <Stack
-                direction="row"
-                spacing={2}
-                sx={{ py: 2, px: 4 }}
-                alignItems="center"
-              >
-                <Box>
-                  <Avatar
-                    alt={compact([data.me.firstName, data.me.lastName]).join(
-                      ' '
-                    )}
-                    src={data.me.imageUrl ?? undefined}
-                  />
-                </Box>
-                <Box>
-                  <Typography>
-                    {compact([data.me.firstName, data.me.lastName]).join(' ')}
-                  </Typography>
-                  {data.me.email != null && (
-                    <Typography variant="body2" color="textSecondary">
-                      {data.me.email}
-                    </Typography>
-                  )}
-                </Box>
-              </Stack>
-              <Divider />
-              <MenuItem
-                onClick={async () => {
-                  handleProfileClose()
-                  await AuthUser.signOut()
-                }}
-              >
-                <ListItemIcon>
-                  <LogoutRoundedIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Logout</ListItemText>
-              </MenuItem>
-            </Menu>
-          </>
-        )
-      }
+              <ListItemIcon>
+                <LogoutRoundedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Logout</ListItemText>
+            </MenuItem>
+          </Menu>
+        </>
+      )}
     </>
   )
 }
