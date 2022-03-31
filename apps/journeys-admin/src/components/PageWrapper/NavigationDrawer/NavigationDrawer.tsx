@@ -77,8 +77,8 @@ export function NavigationDrawer({
   AuthUser
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
     setProfileAnchorEl(event.currentTarget)
@@ -111,11 +111,11 @@ export function NavigationDrawer({
             sx={{
               minWidth: 0,
               color: 'secondary.dark',
-              mr: 'auto',
               backgroundColor: 'secondary.light',
               '&:hover': {
                 backgroundColor: 'secondary.light'
               },
+              mr: 'auto',
               borderRadius: 2
             }}
           >
@@ -146,7 +146,7 @@ export function NavigationDrawer({
                 }}
               />
             </ListItemIcon>
-            {open ? <Typography variant="h5">Discover</Typography> : undefined}
+            {open && <Typography variant="h5">Discover</Typography>}
           </ListItemButton>
         </Link>
       </List>
@@ -162,8 +162,8 @@ export function NavigationDrawer({
               sx={{
                 flexGrow: 1,
                 justifyContent: open ? 'initial' : 'center',
-                px: 8,
                 color: '#6D6F81',
+                px: 8,
                 my: 5.5
               }}
               onClick={handleProfileClick}
@@ -177,7 +177,7 @@ export function NavigationDrawer({
                   mr: open ? 5 : 'auto'
                 }}
               />
-              {open ? <Typography variant="h5">Profile</Typography> : undefined}
+              {open && <Typography variant="h5">Profile</Typography>}
             </ListItemButton>
           </List>
           <Toolbar
@@ -201,11 +201,11 @@ export function NavigationDrawer({
                 alt="Next Steps"
               />
             </Box>
-            {open ? (
+            {open && (
               <Typography variant="h5" sx={{ color: 'background.paper' }}>
                 NextSteps
               </Typography>
-            ) : undefined}
+            )}
           </Toolbar>
           <UserMenu
             user={data.me}
