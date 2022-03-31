@@ -35,7 +35,8 @@ const StyledDialog = styled(MuiDialog)({
     paddingTop: 20,
     alignItems: 'center',
     '& .MuiIconButton-root': {
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      padding: 0
     }
   },
   '& .MuiDialogContent-root': {
