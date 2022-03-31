@@ -53,8 +53,8 @@ export function PageWrapper({
         {!smUp ? (
           <Toolbar
             sx={{
-              position: 'relative',
-              backgroundColor: 'secondary.dark'
+              backgroundColor: 'secondary.dark',
+              justifyContent: 'center'
             }}
           >
             <IconButton
@@ -63,23 +63,20 @@ export function PageWrapper({
               color="inherit"
               aria-label="open drawer"
               onClick={() => setOpen(!open)}
+              sx={{
+                position: 'absolute',
+                left: '25px'
+              }}
             >
               <MenuIcon sx={{ color: 'background.paper' }} />
             </IconButton>
-            <Box
-              sx={{
-                position: 'absolute',
-                right: '45%'
-              }}
-            >
-              <Image
-                src={taskbarIcon}
-                width={32}
-                height={32}
-                layout="fixed"
-                alt="Next Steps"
-              />
-            </Box>
+            <Image
+              src={taskbarIcon}
+              width={32}
+              height={32}
+              layout="fixed"
+              alt="Next Steps"
+            />
           </Toolbar>
         ) : (
           <></>
