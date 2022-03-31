@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { AuthUser } from 'next-firebase-auth'
 import { compact } from 'lodash'
-import { GetMe_me as User } from '../../../../../../__generated__/GetMe'
+import { GetMe_me as User } from '../../../../../__generated__/GetMe'
 
 interface UserMenuProps {
   user: User

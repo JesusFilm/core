@@ -5,7 +5,7 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapperProps } from './PageWrapper'
-import { GET_ME } from './NavigationDrawer/DrawerContent/DrawerContent'
+import { GET_ME } from './NavigationDrawer/NavigationDrawer'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
