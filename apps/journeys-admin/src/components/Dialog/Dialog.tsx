@@ -3,7 +3,7 @@ import { styled } from '@mui/system'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
+import MuiDialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -12,9 +12,8 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 export interface DialogProps {
   open: boolean
   handleClose: () => void
+  dialogTitle?: DialogTitle
   dialogAction?: DialogAction
-  title?: string
-  closeButton?: boolean
   divider?: boolean
   children?: ReactElement
 }
@@ -23,6 +22,11 @@ interface DialogAction {
   onSubmit: () => void
   submitLabel?: string
   closeLabel?: string
+}
+
+interface DialogTitle {
+  title: string
+  closeButton?: boolean
 }
 
 const StyledDialog = styled(MuiDialog)({
@@ -60,9 +64,8 @@ const StyledDialog = styled(MuiDialog)({
 export function Dialog({
   open,
   handleClose,
+  dialogTitle,
   dialogAction,
-  title,
-  closeButton,
   divider,
   children
 }: DialogProps): ReactElement {
@@ -78,15 +81,15 @@ export function Dialog({
       fullWidth={true}
       onClose={handleClose}
     >
-      {title != null && (
-        <DialogTitle>
-          <Typography variant="h5">{title}</Typography>
-          {closeButton != null && closeButton && (
+      {dialogTitle != null && (
+        <MuiDialogTitle>
+          <Typography variant="h5">{dialogTitle.title}</Typography>
+          {dialogTitle.closeButton != null && dialogTitle.closeButton && (
             <IconButton size="medium" onClick={handleClose}>
               <CloseRoundedIcon />
             </IconButton>
           )}
-        </DialogTitle>
+        </MuiDialogTitle>
       )}
       <DialogContent dividers={divider} sx={{ pt: 3 }}>
         {children}

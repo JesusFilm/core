@@ -23,7 +23,7 @@ export const Basic = Template.bind({})
 Basic.args = {
   open: true,
   handleClose: noop,
-  title: 'Simple Dialog',
+  dialogTitle: { title: 'Simple Dialog' },
   dialogAction: {
     onSubmit: noop,
     submitLabel: 'Ok'
@@ -35,8 +35,10 @@ export const Form = Template.bind({})
 Form.args = {
   open: true,
   handleClose: noop,
-  title: 'Edit Form',
-  closeButton: true,
+  dialogTitle: {
+    title: 'Edit Form',
+    closeButton: true
+  },
   dialogAction: {
     onSubmit: noop,
     closeLabel: 'Cancel'
@@ -49,8 +51,10 @@ export const MinHeight = Template.bind({})
 MinHeight.args = {
   open: true,
   handleClose: noop,
-  title: 'Minimum Height Dialog',
-  closeButton: true,
+  dialogTitle: {
+    title: 'Minimum Height Dialog',
+    closeButton: true
+  },
   children: <Typography>This is the content</Typography>
 }
 
@@ -58,8 +62,10 @@ export const Info = Template.bind({})
 Info.args = {
   open: true,
   handleClose: noop,
-  title: 'Info Dialog',
-  closeButton: true,
+  dialogTitle: {
+    title: 'Info Dialog',
+    closeButton: true
+  },
   divider: true,
   children: (
     <>
@@ -90,14 +96,16 @@ export const ExcessText = Template.bind({})
 ExcessText.args = {
   open: true,
   handleClose: noop,
-  title: 'Excess text',
-  closeButton: true,
-  divider: true,
+  dialogTitle: {
+    title: 'Excess text',
+    closeButton: true
+  },
   dialogAction: {
     onSubmit: noop,
     submitLabel: 'Accept',
     closeLabel: 'Cancel'
   },
+  divider: true,
   children: (
     <Typography>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit
