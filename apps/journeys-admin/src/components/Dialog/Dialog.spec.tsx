@@ -7,8 +7,10 @@ describe('Dialog', () => {
   const dialogProps: DialogProps = {
     open: true,
     handleClose: jest.fn(),
-    title: 'Title',
-    closeButton: true,
+    dialogTitle: {
+      title: 'Title',
+      closeButton: true
+    },
     dialogAction: {
       onSubmit: jest.fn()
     },
