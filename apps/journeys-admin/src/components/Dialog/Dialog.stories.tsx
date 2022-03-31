@@ -41,7 +41,8 @@ Form.args = {
     onSubmit: noop,
     closeLabel: 'Cancel'
   },
-  children: <TextField fullWidth label="Label" value="Value" sx={{ mt: 1 }} />
+  // text field as first child has label cut off, see issue: https://github.com/mui/material-ui/issues/29892#issuecomment-979745849
+  children: <TextField fullWidth label="Label" value="Value" margin="dense" />
 }
 
 export const Info = Template.bind({})

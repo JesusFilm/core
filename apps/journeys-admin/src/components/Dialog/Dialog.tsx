@@ -42,12 +42,13 @@ const StyledDialog = styled(MuiDialog)({
     padding: 24
   },
   '& .MuiDialogActions-root': {
-    paddingRight: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
+    padding: 8,
+    '& .MuiButton-root': {
+      padding: '10px 20px 10px 18px'
+    },
     '& > *': {
       '&:not(:first-of-type)': {
-        marginLeft: 26
+        marginLeft: 0
       }
     }
   },
@@ -87,7 +88,9 @@ export function Dialog({
           )}
         </DialogTitle>
       )}
-      <DialogContent dividers={divider}>{children}</DialogContent>
+      <DialogContent dividers={divider} sx={{ pt: 3 }}>
+        {children}
+      </DialogContent>
       {dialogAction != null && (
         <DialogActions>
           {dialogAction.closeLabel != null && (
