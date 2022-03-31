@@ -24,7 +24,7 @@ import { UserMenu } from './UserMenu'
 
 const drawerWidth = '237px'
 
-interface NavigationDrawerProps {
+export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   AuthUser?: AuthUser

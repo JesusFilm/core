@@ -13,7 +13,7 @@ import { AuthUser } from 'next-firebase-auth'
 import { compact } from 'lodash'
 import { GetMe_me as User } from '../../../../../__generated__/GetMe'
 
-interface UserMenuProps {
+export interface UserMenuProps {
   user: User
   profileOpen: boolean
   profileAnchorEl: HTMLElement | null
