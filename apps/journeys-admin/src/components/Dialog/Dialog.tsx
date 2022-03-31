@@ -4,7 +4,6 @@ import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
-import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
@@ -83,7 +82,7 @@ export function Dialog({
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
-          <Typography variant="h5">{dialogTitle.title}</Typography>
+          {dialogTitle.title}
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
             <IconButton size="medium" onClick={handleClose}>
               <CloseRoundedIcon />
