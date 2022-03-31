@@ -45,6 +45,15 @@ Form.args = {
   children: <TextField fullWidth label="Label" value="Value" margin="dense" />
 }
 
+export const MinHeight = Template.bind({})
+MinHeight.args = {
+  open: true,
+  handleClose: noop,
+  title: 'Minimum Height Dialog',
+  closeButton: true,
+  children: <Typography>This is the content</Typography>
+}
+
 export const Info = Template.bind({})
 Info.args = {
   open: true,
