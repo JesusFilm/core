@@ -5,7 +5,7 @@ export function Videos(): ReactElement {
   return (
     <VideoList
       filter={{ availableVariantLanguageIds: ['529'] }}
-      layout="carousel"
+      layout="grid"
     />
   )
 }
