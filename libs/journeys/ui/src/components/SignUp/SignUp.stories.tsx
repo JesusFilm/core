@@ -1,4 +1,5 @@
 import { Meta, Story } from '@storybook/react'
+import { within, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import {
@@ -7,6 +8,7 @@ import {
   StoryCard,
   TreeBlock
 } from '../..'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName } from '../../../__generated__/globalTypes'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
@@ -95,5 +97,30 @@ CustomButton.args = {
 //   label: 'Label',
 //   description: 'Description'
 // }
+
+const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
+  <ApolloLoadingProvider>
+    <StoryCard>
+      <SignUp {...signUpProps} uuid={() => 'uuid'} />
+    </StoryCard>
+  </ApolloLoadingProvider>
+)
+
+export const Loading = LoadingTemplate.bind({})
+Loading.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement)
+
+  const lightModeName = canvas.getAllByLabelText('Name', {
+    selector: 'input'
+  })[0]
+
+  const lightModeEmail = canvas.getAllByLabelText('Email', {
+    selector: 'input'
+  })[0]
+
+  await userEvent.type(lightModeName, 'Amin User')
+  await userEvent.type(lightModeEmail, 'amin@gmail.com')
+  await userEvent.click(canvas.getAllByRole('button', { name: 'Submit' })[0])
+}
 
 export default Demo as Meta

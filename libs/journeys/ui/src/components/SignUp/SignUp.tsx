@@ -118,6 +118,7 @@ export const SignUp = ({
             }}
           >
             <TextField
+              data-testid="signUp-nameField"
               {...formikProps}
               id="name"
               name="name"
@@ -125,6 +126,7 @@ export const SignUp = ({
               disabled={selectedBlock !== undefined}
             />
             <TextField
+              data-testid="signUp-emailField"
               {...formikProps}
               id="email"
               name="email"
