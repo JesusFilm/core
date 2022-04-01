@@ -97,7 +97,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menuItem)
 
     const dialog = getByRole('dialog')
-    const form = getByRole('group', { name: 'dialog-update-description' })
+    const form = getByRole('group')
 
     expect(dialog).toBeInTheDocument()
     expect(form).toBeInTheDocument()
