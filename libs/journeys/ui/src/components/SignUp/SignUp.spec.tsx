@@ -4,6 +4,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { TreeBlock, handleAction } from '../..'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
+// import { act } from 'react-dom/test-utils'
+// import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -163,5 +165,17 @@ describe('SignUp', () => {
   })
 
   // it('should show error when submit fails', async () => {
+  // })
+
+  // it('should be in a loading state when waiting for response', () => {
+  //   const { getByRole } = render(
+  //     <ApolloLoadingProvider>
+  //       <SignUp {...block} uuid={() => 'uuid'} />
+  //     </ApolloLoadingProvider>
+  //   )
+  //   const submit = getByRole('button', { name: 'Submit' })
+  //   expect(submit).toBeInTheDocument()
+  //   fireEvent.click(submit)
+  //   expect(submit).toHaveClass('MuiLoadingButton-loading')
   // })
 })
