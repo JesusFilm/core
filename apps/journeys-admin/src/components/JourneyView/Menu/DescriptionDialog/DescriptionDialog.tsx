@@ -87,7 +87,17 @@ export function DescriptionDialog({
     <>
       {breakpoints.md ? (
         <Dialog {...dialogProps}>
-          <Form />
+          <form onSubmit={handleSubmit}>
+            <FormControl component="fieldset" sx={{ width: '100%' }}>
+              <TextField
+                value={value}
+                multiline
+                variant="filled"
+                rows={3}
+                onChange={(e) => setValue(e.currentTarget.value)}
+              />
+            </FormControl>
+          </form>
         </Dialog>
       ) : (
         <Drawer anchor="bottom" open={open} onClose={handleClose}>
@@ -98,7 +108,11 @@ export function DescriptionDialog({
                   component="legend"
                   aria-label="dialog-update-description"
                 >
-                  <Typography variant="subtitle2" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ color: 'secondary.dark' }}
+                  >
                     Edit Description
                   </Typography>
                 </FormLabel>

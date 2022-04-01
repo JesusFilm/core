@@ -32,7 +32,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const journey = useJourney()
 
   const breakpoints = useBreakpoints()
-  const [value, setValue] = useState(journey !== undefined ? journey.title : '')
+  const [value, setValue] = useState(journey?.title ?? '')
   const [showSuccessAlert, setShowSuccessAlert] = useState(false)
 
   const handleSubmit = async (): Promise<void> => {
@@ -52,23 +52,21 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     setShowSuccessAlert(true)
   }
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setValue(event.target.value)
+  }
+
   const handleClose = (): void => {
     onClose()
   }
 
-  const Form = (): ReactElement => (
-    <form onSubmit={handleSubmit}>
-      <FormControl component="fieldset" sx={{ width: '100%' }}>
-        <TextField
-          value={value}
-          variant="filled"
-          onChange={(e) => {
-            setValue(e.currentTarget.value)
-          }}
-        />
-      </FormControl>
-    </form>
-  )
+  // const Form = (): ReactElement => (
+  //   <form onSubmit={handleSubmit}>
+  //     <FormControl component="fieldset" sx={{ width: '100%' }}>
+  //       <TextField value={value} variant="filled" onChange={handleChange} />
+  //     </FormControl>
+  //   </form>
+  // )
 
   const dialogProps = {
     open,
@@ -84,7 +82,15 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     <>
       {breakpoints.md ? (
         <Dialog {...dialogProps}>
-          <Form />
+          <form onSubmit={handleSubmit}>
+            <FormControl component="fieldset" sx={{ width: '100%' }}>
+              <TextField
+                value={value}
+                variant="filled"
+                onChange={handleChange}
+              />
+            </FormControl>
+          </form>
         </Dialog>
       ) : (
         <Drawer anchor="bottom" open={open} onClose={handleClose}>
@@ -92,11 +98,23 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
             <form onSubmit={handleSubmit}>
               <FormControl component="fieldset" sx={{ width: '100%' }}>
                 <FormLabel component="legend" aria-label="dialog-update-title">
-                  <Typography variant="subtitle2" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ color: 'secondary.dark' }}
+                  >
                     Edit Title
                   </Typography>
                 </FormLabel>
-                <Form />
+                <form onSubmit={handleSubmit}>
+                  <FormControl component="fieldset" sx={{ width: '100%' }}>
+                    <TextField
+                      value={value}
+                      variant="filled"
+                      onChange={handleChange}
+                    />
+                  </FormControl>
+                </form>
                 <Box
                   sx={{
                     display: 'flex',
