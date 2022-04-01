@@ -1,15 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import { Close } from '@mui/icons-material'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  Typography
-} from '@mui/material'
 import { ReactElement } from 'react'
-
+import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
@@ -215,38 +206,22 @@ export function VideoBlockEditorSettingsPosterDialog({
     }
   }
 
+  const dialogProps = {
+    open,
+    handleClose: onClose,
+    dialogTitle: {
+      title: 'Cover Image',
+      closeButton: true
+    }
+  }
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      aria-labelledby="poster-dialog-title"
-      fullWidth={true}
-      maxWidth="xs"
-    >
-      <DialogTitle>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography
-            id="poster-dialog-title"
-            variant="subtitle1"
-            component="div"
-            justifyContent="center"
-            paddingTop={2}
-            sx={{ textTransform: 'initial' }}
-          >
-            Cover Image
-          </Typography>
-          <IconButton onClick={onClose}>
-            <Close />
-          </IconButton>
-        </Stack>
-      </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
-        <ImageBlockEditor
-          selectedBlock={selectedBlock}
-          onChange={handleChange}
-          onDelete={deleteCoverBlock}
-        />
-      </DialogContent>
+    <Dialog {...dialogProps}>
+      <ImageBlockEditor
+        selectedBlock={selectedBlock}
+        onChange={handleChange}
+        onDelete={deleteCoverBlock}
+      />
     </Dialog>
   )
 }
