@@ -1,7 +1,10 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
+import {
+  GET_CURRENT_USER,
+  GET_JOURNEY_WITH_USER_JOURNEYS
+} from '../AccessDialog/AccessDialog'
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
@@ -68,6 +71,20 @@ const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
                   }
                 }
               ]
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_CURRENT_USER
+        },
+        result: {
+          data: {
+            me: {
+              id: 'userId1',
+              __typename: 'User',
+              email: 'amin@email.com'
             }
           }
         }

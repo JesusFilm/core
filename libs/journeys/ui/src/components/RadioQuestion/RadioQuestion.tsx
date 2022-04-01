@@ -25,6 +25,8 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
+  editableLabel?: ReactElement
+  editableDescription?: ReactElement
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
@@ -37,7 +39,9 @@ export function RadioQuestion({
   description,
   children,
   uuid = uuidv4,
-  wrappers
+  wrappers,
+  editableLabel,
+  editableDescription
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
@@ -83,11 +87,11 @@ export function RadioQuestion({
   return (
     <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
       <Typography variant="h3" gutterBottom>
-        {label}
+        {editableLabel ?? label}
       </Typography>
-      {description != null && (
+      {(description != null || editableDescription != null) && (
         <Typography variant="body2" gutterBottom>
-          {description}
+          {editableDescription ?? description}
         </Typography>
       )}
       <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
