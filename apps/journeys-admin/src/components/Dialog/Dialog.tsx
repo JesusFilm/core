@@ -85,7 +85,11 @@ export function Dialog({
         <MuiDialogTitle>
           {dialogTitle.title}
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
-            <IconButton size="medium" onClick={handleClose}>
+            <IconButton
+              size="medium"
+              onClick={handleClose}
+              data-testid="dialog-close-button"
+            >
               <CloseRoundedIcon />
             </IconButton>
           )}
