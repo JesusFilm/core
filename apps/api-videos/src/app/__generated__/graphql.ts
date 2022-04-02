@@ -15,6 +15,9 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
+    includePlaylists?: Nullable<boolean>;
+    includePlaylistVideos?: Nullable<boolean>;
+    onlyPlaylists?: Nullable<boolean>;
 }
 
 export class Translation {
@@ -34,6 +37,7 @@ export class Video {
     studyQuestions: Translation[];
     image?: Nullable<string>;
     variantLanguages: Language[];
+    playlist?: Nullable<string[]>;
     variant?: Nullable<VideoVariant>;
 }
 

@@ -13,12 +13,16 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
+  playlist: [ID!]
   variant(languageId: ID): VideoVariant
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
+  includePlaylists: Boolean
+  includePlaylistVideos: Boolean
+  onlyPlaylists: Boolean
 }
 
 enum VideoVariantDownloadQuality {

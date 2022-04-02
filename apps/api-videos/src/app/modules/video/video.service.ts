@@ -8,6 +8,9 @@ interface VideosFilter {
   title?: string
   availableVariantLanguageIds?: string[]
   variantLanguageId?: string
+  includePlaylists?: boolean
+  includePlaylistVideos?: boolean
+  onlyPlaylists?: boolean
   page?: number
   limit?: number
 }
@@ -21,6 +24,9 @@ export class VideoService extends BaseService {
       title,
       availableVariantLanguageIds = [],
       variantLanguageId,
+      includePlaylists = false,
+      includePlaylistVideos = true,
+      onlyPlaylists = false,
       page = 1,
       limit = 100
     } = filter ?? {}
@@ -37,9 +43,21 @@ export class VideoService extends BaseService {
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`
       ].filter((x) => x !== false)
     )
+    const playListFilter = aql.join(
+      [
+        onlyPlaylists && aql`FILTER item.playlist != null`,
+        !includePlaylists &&
+          !onlyPlaylists &&
+          aql`FILTER item.playlist == null`,
+        !includePlaylistVideos &&
+          !onlyPlaylists &&
+          aql`FILTER item.isInnerSeries != true`
+      ].filter((x) => x !== false)
+    )
     const res = await this.db.query(aql`
     FOR item IN ${videosView}
       ${search}
+      ${playListFilter}
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,
@@ -55,7 +73,8 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
       }
     `)
     return await res.all()
@@ -75,12 +94,15 @@ export class VideoService extends BaseService {
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        playlist: item.playlist,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
+        ],
+        playlist: item.playlist
       }
     `)
     return await res.next()

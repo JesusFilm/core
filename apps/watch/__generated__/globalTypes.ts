@@ -147,6 +147,9 @@ export interface VideoResponseCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  includePlaylistVideos?: boolean | null;
+  includePlaylists?: boolean | null;
+  onlyPlaylists?: boolean | null;
   title?: string | null;
 }
 

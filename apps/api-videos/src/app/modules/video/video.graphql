@@ -11,11 +11,15 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
+  playlist: [ID!]
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
+  includePlaylists: Boolean
+  includePlaylistVideos: Boolean
+  onlyPlaylists: Boolean
 }
 
 extend type Query {

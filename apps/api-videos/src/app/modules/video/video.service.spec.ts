@@ -10,6 +10,7 @@ import { VideoService } from './video.service'
 const DEFAULT_QUERY = aql`
     FOR item IN 
       
+      FILTER item.playlist == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -23,13 +24,15 @@ const DEFAULT_QUERY = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
       }
     `.query
 
 const QUERY_WITH_TITLE = aql`
     FOR item IN 
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en")
+      FILTER item.playlist == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -43,13 +46,15 @@ const QUERY_WITH_TITLE = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
       }
     `.query
 
 const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
     FOR item IN 
       SEARCH item.variants.languageId IN ${['en']}
+      FILTER item.playlist == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -63,7 +68,8 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
       }
     `.query
 
@@ -72,6 +78,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN ${[
   'en'
 ]}
+      FILTER item.playlist == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -85,7 +92,74 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
+      }
+    `.query
+
+const QUERY_WITH_ONLY_PLAYLISTS = aql`
+    FOR item IN 
+      
+      FILTER item.playlist != null
+      LIMIT ${0}, ${100}
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT
+        ], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
+      }
+    `.query
+
+const QUERY_WITH_PLAYLISTS = aql`
+    FOR item IN 
+      
+      
+      LIMIT ${0}, ${100}
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT
+        ], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
+      }
+    `.query
+
+const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
+    FOR item IN 
+      
+      FILTER item.playlist == null FILTER item.isInnerSeries != true
+      LIMIT @value0, @value1
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value2, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT
+        ], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        playlist: item.playlist
       }
     `.query
 
@@ -207,6 +281,50 @@ describe('VideoService', () => {
         return { all: () => [] } as unknown as ArrayCursor
       })
       expect(await service.filterAll({ variantLanguageId: 'en' })).toEqual([])
+    })
+
+    it('should query only playlists', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(QUERY_WITH_ONLY_PLAYLISTS)
+        expect(bindVars).toEqual({
+          value0: 0,
+          value1: 100,
+          value2: null
+        })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(await service.filterAll({ onlyPlaylists: true })).toEqual([])
+    })
+
+    it('should include playlists', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(QUERY_WITH_PLAYLISTS)
+        expect(bindVars).toEqual({
+          value0: 0,
+          value1: 100,
+          value2: null
+        })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(await service.filterAll({ includePlaylists: true })).toEqual([])
+    })
+
+    it('should exlude inner playlist videos', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(QUERY_WITHOUT_PLAYLIST_VIDEOS)
+        expect(bindVars).toEqual({
+          value0: 0,
+          value1: 100,
+          value2: null
+        })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(await service.filterAll({ includePlaylistVideos: false })).toEqual(
+        []
+      )
     })
   })
 
