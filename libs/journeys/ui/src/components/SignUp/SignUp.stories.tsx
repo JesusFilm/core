@@ -22,7 +22,7 @@ const Demo = {
     docs: {
       description: {
         component:
-          'In the SignUp Loading story - we are currently not able to test the loading state in the dark theme mode due to storybook limitations.'
+          'In the SignUp Loading story - we are currently not able to test the loading state in both light and dark theme at the same time due to storybook limitations. But this can be checked individually.'
       }
     }
   }
