@@ -130,7 +130,7 @@ Loading.play = async ({ canvasElement }) => {
   await userEvent.type(email, 'amin@gmail.com')
   await userEvent.click(submit[0])
 
-  // Due to the text fields having the name attribute.
+  // Due to the text fields having the same name attribute.
   // We're only able to get back one of them instead of two.
   // Therefore not being able to test the loading state in the dark theme mode
 }
