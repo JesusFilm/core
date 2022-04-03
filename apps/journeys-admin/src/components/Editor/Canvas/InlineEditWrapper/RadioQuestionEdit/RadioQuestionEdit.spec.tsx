@@ -1,17 +1,21 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
-import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../../../libs/context'
-import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
+import {
+  RadioQuestionEditProps,
+  RADIO_OPTION_BLOCK_CREATE
+} from './RadioQuestionEdit'
 import { RadioQuestionEdit, RADIO_QUESTION_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('RadioQuestionEdit', () => {
+  const onDelete = jest.fn()
+
   const props = (
     children?: Array<TreeBlock<RadioOptionFields>>
-  ): TreeBlock<RadioQuestionFields> => {
+  ): RadioQuestionEditProps => {
     return {
       __typename: 'RadioQuestionBlock',
       parentBlockId: 'card.id',
@@ -19,7 +23,8 @@ describe('RadioQuestionEdit', () => {
       id: 'radioQuestion.id',
       label: 'heading',
       description: 'description',
-      children: children ?? []
+      children: children ?? [],
+      deleteSelf: onDelete
     }
   }
 
@@ -141,6 +146,24 @@ describe('RadioQuestionEdit', () => {
     })
     fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('calls onDelete when heading and description deleted', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <RadioQuestionEdit {...props()} />
+      </MockedProvider>
+    )
+    const headingInput = getAllByRole('textbox')[0]
+    const descriptionInput = getAllByRole('textbox')[1]
+
+    fireEvent.click(headingInput)
+    fireEvent.change(headingInput, { target: { value: '' } })
+    fireEvent.click(descriptionInput)
+    fireEvent.change(descriptionInput, { target: { value: '' } })
+    fireEvent.blur(descriptionInput)
+
+    expect(onDelete).toHaveBeenCalled()
   })
 
   it('adds an option on click', async () => {

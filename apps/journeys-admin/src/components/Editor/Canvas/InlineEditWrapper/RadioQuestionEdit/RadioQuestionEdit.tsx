@@ -36,12 +36,15 @@ export const RADIO_OPTION_BLOCK_CREATE = gql`
   }
 `
 
-interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {}
+export interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
+  deleteSelf: () => void
+}
 
 export function RadioQuestionEdit({
   id,
   label,
   description,
+  deleteSelf,
   ...props
 }: RadioQuestionEditProps): ReactElement {
   const [radioQuestionBlockUpdate] =
@@ -56,24 +59,29 @@ export function RadioQuestionEdit({
   const [labelValue, setLabel] = useState(label)
   const [descriptionValue, setDescription] = useState(description)
 
-  async function handleSaveBlock(): Promise<void> {
+  async function handleUpdateBlock(): Promise<void> {
     const label = labelValue.trimStart().trimEnd()
-    const description = descriptionValue?.trimStart().trimEnd() ?? null
-    await radioQuestionBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { label, description }
-      },
-      optimisticResponse: {
-        radioQuestionBlockUpdate: {
+    const description = descriptionValue?.trimStart().trimEnd() ?? ''
+
+    if (label === '' && description === '') {
+      deleteSelf()
+    } else {
+      await radioQuestionBlockUpdate({
+        variables: {
           id,
-          __typename: 'RadioQuestionBlock',
-          label,
-          description
+          journeyId: journey.id,
+          input: { label, description }
+        },
+        optimisticResponse: {
+          radioQuestionBlockUpdate: {
+            id,
+            __typename: 'RadioQuestionBlock',
+            label,
+            description
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   const handleCreateOption = async (): Promise<void> => {
@@ -116,7 +124,7 @@ export function RadioQuestionEdit({
       autoFocus
       value={labelValue}
       placeholder="Type your question here..."
-      onBlur={handleSaveBlock}
+      onBlur={handleUpdateBlock}
       onChange={(e) => {
         setLabel(e.currentTarget.value)
       }}
@@ -131,7 +139,7 @@ export function RadioQuestionEdit({
       fullWidth
       value={descriptionValue}
       placeholder="Type your description here..."
-      onBlur={handleSaveBlock}
+      onBlur={handleUpdateBlock}
       onChange={(e) => {
         setDescription(e.currentTarget.value)
       }}
