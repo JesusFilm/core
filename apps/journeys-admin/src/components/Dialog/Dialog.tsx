@@ -95,9 +95,7 @@ export function Dialog({
           )}
         </MuiDialogTitle>
       )}
-      <DialogContent dividers={divider} sx={{ pt: 3 }}>
-        {children}
-      </DialogContent>
+      <DialogContent dividers={divider}>{children}</DialogContent>
       {dialogAction != null && (
         <DialogActions>
           {dialogAction.closeLabel != null && (
