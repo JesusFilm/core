@@ -17,7 +17,15 @@ const Demo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: SignUp,
-  title: 'Journeys-Ui/SignUp'
+  title: 'Journeys-Ui/SignUp',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'In the SignUp Loading story - we are currently not able to test the loading state in the dark theme mode due to storybook limitations.'
+      }
+    }
+  }
 }
 
 const signUpProps: TreeBlock<SignUpFields> = {
@@ -110,17 +118,21 @@ export const Loading = LoadingTemplate.bind({})
 Loading.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement)
 
-  const lightModeName = canvas.getAllByLabelText('Name', {
+  const name = canvas.getByLabelText('Name', {
     selector: 'input'
-  })[0]
-
-  const lightModeEmail = canvas.getAllByLabelText('Email', {
+  })
+  const email = canvas.getByLabelText('Email', {
     selector: 'input'
-  })[0]
+  })
+  const submit = canvas.getAllByRole('button', { name: 'Submit' })
 
-  await userEvent.type(lightModeName, 'Amin User')
-  await userEvent.type(lightModeEmail, 'amin@gmail.com')
-  await userEvent.click(canvas.getAllByRole('button', { name: 'Submit' })[0])
+  await userEvent.type(name, 'Amin User')
+  await userEvent.type(email, 'amin@gmail.com')
+  await userEvent.click(submit[0])
+
+  // Due to the text fields having the name attribute.
+  // We're only able to get back one of them instead of two.
+  // Therefore not being able to test the loading state in the dark theme mode
 }
 
 export default Demo as Meta

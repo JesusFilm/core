@@ -1,11 +1,10 @@
 import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { TreeBlock, handleAction } from '../..'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
-// import { act } from 'react-dom/test-utils'
-// import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -167,15 +166,24 @@ describe('SignUp', () => {
   // it('should show error when submit fails', async () => {
   // })
 
-  // it('should be in a loading state when waiting for response', () => {
-  //   const { getByRole } = render(
-  //     <ApolloLoadingProvider>
-  //       <SignUp {...block} uuid={() => 'uuid'} />
-  //     </ApolloLoadingProvider>
-  //   )
-  //   const submit = getByRole('button', { name: 'Submit' })
-  //   expect(submit).toBeInTheDocument()
-  //   fireEvent.click(submit)
-  //   expect(submit).toHaveClass('MuiLoadingButton-loading')
-  // })
+  it('should be in a loading state when waiting for response', async () => {
+    const { getByRole, getByLabelText } = render(
+      <ApolloLoadingProvider>
+        <SignUp {...block} uuid={() => 'uuid'} />
+      </ApolloLoadingProvider>
+    )
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button', { name: 'Submit' })
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+
+    expect(submit).not.toHaveClass('MuiLoadingButton-loading')
+
+    fireEvent.click(submit)
+
+    await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
+    expect(submit).toBeDisabled()
+  })
 })
