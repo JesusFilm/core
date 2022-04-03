@@ -146,7 +146,7 @@ describe('RadioQuestion', () => {
     expect(buttons[1]).toBeDisabled()
   })
 
-  it('render editable question props', () => {
+  it('renders editable question props', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <RadioQuestion

@@ -350,9 +350,9 @@ describe('InlineEditWrapper', () => {
       </MockedProvider>
     )
 
+    fireEvent.click(getByText('heading'))
+    fireEvent.click(getByText('heading'))
     const input = getByDisplayValue('heading')
-    fireEvent.click(getByText('heading'))
-    fireEvent.click(getByText('heading'))
     fireEvent.change(input, { target: { value: '' } })
     fireEvent.blur(input)
 
