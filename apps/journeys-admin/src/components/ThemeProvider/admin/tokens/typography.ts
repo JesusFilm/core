@@ -36,8 +36,7 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
       fontSize: 18,
       fontWeight: 800,
       lineHeight: '23px',
-      textTransform: 'none',
-      letterSpacing: 0
+      textTransform: 'none'
     },
     h6: {
       fontSize: 20,
