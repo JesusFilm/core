@@ -90,10 +90,10 @@ As an example we are going to run through the steps to get the Next Steps Journe
    - Make a copy of `apps/api-gateway/.env.example` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
    - Make a copy of `apps/api-journeys/.env.example` with the file name `apps/api-journeys/.env.local`. Open the file and set up your own environment variables.
    - Make a copy of `apps/api-users/.env.example` with the file name `apps/api-users/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/api-languages/.env.example` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/api-videos/.env.example` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/api-languages/.env.example` with the file name `apps/api-languages/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/api-videos/.env.example` with the file name `apps/api-videos/.env.local`. Open the file and set up your own environment variables.
    - Make a copy of `apps/journeys/.env.example` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/journeys-admin/.env.example` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/journeys-admin/.env.example` with the file name `apps/journeys-admin/.env.local`. Open the file and set up your own environment variables.
 1. Seed the database
    - run `nx run api-journeys:seed`
    - run `nx run api-users:seed`
@@ -108,8 +108,8 @@ As an example we are going to run through the steps to get the Next Steps Journe
      1. in your local browser navigate to [http://localhost:4200](http://localhost:4200)
    - If you would like to run all of the projects at the same time:
      1. run `nx run api-gateway:serve-all`
-     1. run `nx run journeys:serve-all`
-     1. run `nx run journeys-admin:serve-all`
+     1. run `nx run journeys:serve`
+     1. run `nx run journeys-admin:serve`
      1. ...plus any additional projects that may be added in the future.
 
 ## Adding to the code base
