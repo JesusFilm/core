@@ -152,7 +152,10 @@ export function NavigationDrawer({
       </List>
       {authUser != null && data?.me != null && (
         <>
-          <Divider variant="middle" />
+          <Divider
+            variant="middle"
+            sx={{ borderColor: 'secondary.main' }}
+          />
           <List
             sx={{
               flexGrow: 1
