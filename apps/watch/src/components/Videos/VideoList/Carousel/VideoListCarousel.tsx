@@ -1,4 +1,4 @@
-import { Box } from '@mui/system'
+import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
 import Carousel from 'react-multi-carousel'
 import 'react-multi-carousel/lib/styles.css'
