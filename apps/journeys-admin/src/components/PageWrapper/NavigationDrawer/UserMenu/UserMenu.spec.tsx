@@ -21,7 +21,7 @@ describe('UserMenu', () => {
           profileOpen={true}
           profileAnchorEl={null}
           handleProfileClose={handleProfileClose}
-          AuthUser={
+          authUser={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
@@ -37,7 +37,7 @@ describe('UserMenu', () => {
     expect(getByRole('menuitem', { name: 'Logout' })).toBeInTheDocument()
   })
 
-  it('should call singOut on logout click', () => {
+  it('should call signOut on logout click', () => {
     const { getByRole } = render(
       <MockedProvider>
         <UserMenu
@@ -52,7 +52,7 @@ describe('UserMenu', () => {
           profileOpen={true}
           profileAnchorEl={null}
           handleProfileClose={handleProfileClose}
-          AuthUser={
+          authUser={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',

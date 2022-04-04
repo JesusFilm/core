@@ -27,7 +27,7 @@ const drawerWidth = '237px'
 export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
-  AuthUser?: AuthUser
+  authUser?: AuthUser
 }
 
 export const GET_ME = gql`
@@ -48,7 +48,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   boxSizing: 'border-box',
   border: 0,
   '& .MuiDrawer-paper': {
-    backgroundColor: '#25262E',
+    backgroundColor: theme.palette.secondary.dark,
     ...(open === true && {
       width: drawerWidth,
       transition: theme.transitions.create('width', {
@@ -74,7 +74,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
 export function NavigationDrawer({
   open,
   onClose,
-  AuthUser
+  authUser
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
@@ -126,7 +126,7 @@ export function NavigationDrawer({
           <ListItemButton
             sx={{
               justifyContent: open ? 'initial' : 'center',
-              color: '#6D6F81',
+              color: 'secondary.light',
               fontSize: 28,
               px: 7.3,
               my: 5.5
@@ -150,9 +150,9 @@ export function NavigationDrawer({
           </ListItemButton>
         </Link>
       </List>
-      {AuthUser != null && data?.me != null && (
+      {authUser != null && data?.me != null && (
         <>
-          <Divider variant="middle" sx={{ borderColor: '#444451' }} />
+          <Divider variant="middle" />
           <List
             sx={{
               flexGrow: 1
@@ -162,7 +162,7 @@ export function NavigationDrawer({
               sx={{
                 flexGrow: 1,
                 justifyContent: open ? 'initial' : 'center',
-                color: '#6D6F81',
+                color: 'secondary.light',
                 px: 8,
                 my: 5.5
               }}
@@ -202,7 +202,7 @@ export function NavigationDrawer({
               />
             </Box>
             {open && (
-              <Typography variant="h5" sx={{ color: 'background.paper' }}>
+              <Typography variant="h5" sx={{ color: 'secondary.contrastText' }}>
                 NextSteps
               </Typography>
             )}
@@ -212,7 +212,7 @@ export function NavigationDrawer({
             profileOpen={profileOpen}
             profileAnchorEl={profileAnchorEl}
             handleProfileClose={handleProfileClose}
-            AuthUser={AuthUser}
+            authUser={authUser}
           />
         </>
       )}

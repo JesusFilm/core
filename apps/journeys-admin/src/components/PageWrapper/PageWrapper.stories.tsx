@@ -51,13 +51,13 @@ Complete.args = {
   backHref: '/',
   showDrawer: true,
   title: 'Journey Details',
-  AuthUser: {
+  authUser: {
     displayName: 'Amin One',
     photoURL: 'https://bit.ly/3Gth4Yf',
     email: 'amin@email.com',
     signOut: noop
   },
-  Menu: (
+  menu: (
     <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
       <MenuRounded />
     </IconButton>

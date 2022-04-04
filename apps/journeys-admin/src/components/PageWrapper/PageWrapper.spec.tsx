@@ -34,7 +34,7 @@ describe('PageWrapper', () => {
     it('should show custom menu', () => {
       const { getByText } = render(
         <MockedProvider>
-          <PageWrapper title="Journeys" Menu={<>Custom Content</>} />
+          <PageWrapper title="Journeys" menu={<>Custom Content</>} />
         </MockedProvider>
       )
       expect(getByText('Custom Content')).toBeInTheDocument()

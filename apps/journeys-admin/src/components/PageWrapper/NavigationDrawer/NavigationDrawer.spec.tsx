@@ -53,7 +53,7 @@ describe('NavigationDrawer', () => {
         <NavigationDrawer
           open={true}
           onClose={onClose}
-          AuthUser={
+          authUser={
             {
               displayName: 'Amin One',
               photoURL: 'https://bit.ly/3Gth4Yf',
