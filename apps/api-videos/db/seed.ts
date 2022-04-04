@@ -352,46 +352,53 @@ async function main(): Promise<void> {
     type: 'persistent',
     fields: ['variants[*].languageId']
   })
-  if (!(await db.view('videosView').exists())) {
-    await db.createView('videosView', {
-      links: {
-        videos: {
-          fields: {
-            tagIds: {
-              analyzers: ['identity']
-            },
-            variants: {
-              fields: {
-                languageId: {
-                  analyzers: ['identity']
-                },
-                subtitle: {
-                  fields: {
-                    languageId: {
-                      analyzers: ['identity']
-                    }
+
+  const view = {
+    links: {
+      videos: {
+        fields: {
+          tagIds: {
+            analyzers: ['identity']
+          },
+          variants: {
+            fields: {
+              languageId: {
+                analyzers: ['identity']
+              },
+              subtitle: {
+                fields: {
+                  languageId: {
+                    analyzers: ['identity']
                   }
                 }
               }
-            },
-            title: {
-              fields: {
-                value: {
-                  analyzers: ['text_en']
-                }
-              }
-            },
-            isInnerSeries: {
-              analyzers: ['identity']
-            },
-            playlist: {
-              analyzers: ['identity']
             }
+          },
+          title: {
+            fields: {
+              value: {
+                analyzers: ['text_en']
+              }
+            }
+          },
+          isInnerSeries: {
+            analyzers: ['identity']
+          },
+          playlist: {
+            analyzers: ['identity']
           }
         }
       }
-    })
+    }
   }
+  if (await db.view('videosView').exists()) {
+    console.log('updating view')
+    await db.view('videosView').updateProperties(view)
+  } else {
+    console.log('creating view')
+    await db.createView('videosView', view)
+  }
+  console.log('view created')
 
   const languages = await getLanguages()
   for (const content of await getMediaComponents('content')) {
