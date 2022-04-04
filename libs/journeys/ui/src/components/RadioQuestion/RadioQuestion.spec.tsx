@@ -151,16 +151,16 @@ describe('RadioQuestion', () => {
       <MockedProvider mocks={[]} addTypename={false}>
         <RadioQuestion
           {...block}
-          editableLabel={<input name="editableLabel" />}
-          editableDescription={<input name="editableDescription" />}
-          addOption={<button name="addOption" />}
+          editableLabel={<input aria-label="editableLabel" />}
+          editableDescription={<input aria-label="editableDescription" />}
+          addOption={<button aria-label="addOption" />}
         />
       </MockedProvider>
     )
 
-    expect(getByRole('input', { name: 'editableLabel' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'editableLabel' })).toBeInTheDocument()
     expect(
-      getByRole('input', { name: 'editableDescription' })
+      getByRole('textbox', { name: 'editableDescription' })
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'addOption' })).toBeInTheDocument()
   })
