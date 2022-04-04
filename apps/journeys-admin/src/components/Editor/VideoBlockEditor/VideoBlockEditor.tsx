@@ -1,7 +1,9 @@
 import { ReactElement, useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui'
 import Box from '@mui/material/Box'
-import { Divider, Tab, Tabs } from '@mui/material'
+import Divider from '@mui/material/Divider'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import {
