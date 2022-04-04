@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import { Grid } from '@mui/material'
-import { AddRounded } from '@mui/icons-material'
+import Grid from '@mui/material/Grid'
+import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
