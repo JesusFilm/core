@@ -18,18 +18,18 @@ export interface PageWrapperProps {
   backHref?: string
   showDrawer?: boolean
   title: string
-  Menu?: ReactNode
+  menu?: ReactNode
   children?: ReactNode
-  AuthUser?: AuthUser
+  authUser?: AuthUser
 }
 
 export function PageWrapper({
   backHref,
   showDrawer,
   title,
-  Menu: CustomMenu,
+  menu: customMenu,
   children,
-  AuthUser
+  authUser
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -102,7 +102,7 @@ export function PageWrapper({
           >
             {title}
           </Typography>
-          {CustomMenu != null && CustomMenu}
+          {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
       <Toolbar
@@ -111,7 +111,7 @@ export function PageWrapper({
           mr: { sm: showDrawer === true ? '328px' : 0 }
         }}
       />
-      <NavigationDrawer open={open} onClose={setOpen} AuthUser={AuthUser} />
+      <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
       <Box sx={{ ml: { sm: '72px' }, pt: smUp ? 0 : '48px' }}>{children}</Box>
     </>
   )

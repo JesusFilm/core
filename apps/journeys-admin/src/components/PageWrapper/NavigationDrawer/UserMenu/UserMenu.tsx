@@ -18,7 +18,7 @@ export interface UserMenuProps {
   profileOpen: boolean
   profileAnchorEl: HTMLElement | null
   handleProfileClose: () => void
-  AuthUser: AuthUser
+  authUser: AuthUser
 }
 
 export function UserMenu({
@@ -26,7 +26,7 @@ export function UserMenu({
   profileOpen,
   profileAnchorEl,
   handleProfileClose,
-  AuthUser
+  authUser
 }: UserMenuProps): ReactElement {
   return (
     <Menu
@@ -69,7 +69,7 @@ export function UserMenu({
       <MenuItem
         onClick={async () => {
           handleProfileClose()
-          await AuthUser.signOut()
+          await authUser.signOut()
         }}
       >
         <ListItemIcon>

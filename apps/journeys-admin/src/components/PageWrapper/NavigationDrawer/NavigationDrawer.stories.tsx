@@ -3,12 +3,12 @@ import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ME, NavigationDrawerProps } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 const NavigationDrawerStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: NavigationDrawer,
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
 }
@@ -40,7 +40,7 @@ const Template: Story<NavigationDrawerProps> = () => {
       <NavigationDrawer
         open={open}
         onClose={() => setOpen(!open)}
-        AuthUser={
+        authUser={
           {
             displayName: 'Amin One',
             photoURL: 'https://bit.ly/3Gth4Yf',
