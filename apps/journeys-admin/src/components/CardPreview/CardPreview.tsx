@@ -13,7 +13,9 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
+import last from 'lodash/last'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
+import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
 import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { HorizontalSelect } from '../HorizontalSelect'
@@ -41,6 +43,19 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   }
 `
 
+export const STEP_BLOCK_NEXTBLOCKID_UPDATE = gql`
+  mutation StepBlockNextBlockIdUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: StepBlockUpdateInput!
+  ) {
+    stepBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      nextBlockId
+    }
+  }
+`
+
 export function CardPreview({
   steps,
   selected,
@@ -49,6 +64,9 @@ export function CardPreview({
 }: CardPreviewProps): ReactElement {
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
+  )
+  const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
+    STEP_BLOCK_NEXTBLOCKID_UPDATE
   )
   const { id: journeyId, themeMode, themeName } = useJourney()
 
@@ -95,13 +113,36 @@ export function CardPreview({
         }
       }
     })
-    if (data?.stepBlockCreate != null)
+    if (data?.stepBlockCreate != null) {
       onSelect?.(
         transformer([
           data.stepBlockCreate,
           data.cardBlockCreate
         ])[0] as TreeBlock<StepBlock>
       )
+    }
+
+    const lastStep = last(steps)
+    const nextBlockExsists =
+      steps.find(({ id }) => id === lastStep.nextBlockId) != null
+    if (!nextBlockExsists) {
+      await stepBlockNextBlockIdUpdate({
+        variables: {
+          id: lastStep.id,
+          journeyId,
+          input: {
+            nextBlockId: stepId
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            __typename: 'StepBlock',
+            id: lastStep.id,
+            nextBlockId: stepId
+          }
+        }
+      })
+    }
   }
 
   return (
