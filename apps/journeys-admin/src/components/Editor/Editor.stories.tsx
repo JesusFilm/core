@@ -535,7 +535,7 @@ const Template: Story = () => (
       <PageWrapper
         title="NUA Journey: Ep.3 – Decision"
         showDrawer
-        Menu={<EditToolbar />}
+        menu={<EditToolbar />}
         backHref="/journeys/nua-journey-ep-3-decision"
       >
         <JourneyEdit />
