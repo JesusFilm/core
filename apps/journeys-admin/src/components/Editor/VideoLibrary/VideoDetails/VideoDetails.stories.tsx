@@ -13,7 +13,7 @@ const VideoDetailsStory = {
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: Story = ({ videoId, onSelect }) => {
+const Template: Story = ({ id, onSelect }) => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -23,7 +23,7 @@ const Template: Story = ({ videoId, onSelect }) => {
           request: {
             query: GET_VIDEO,
             variables: {
-              videoId: '2_Acts7302-0-0'
+              id: '2_Acts7302-0-0'
             }
           },
           result: {
@@ -105,9 +105,9 @@ const Template: Story = ({ videoId, onSelect }) => {
       ]}
     >
       <VideoDetails
-        videoId={videoId}
+        id={id}
         open={open}
-        handleOpen={() => setOpen(!open)}
+        onClose={() => setOpen(false)}
         onSelect={onSelect}
       />
     </MockedProvider>
@@ -116,7 +116,7 @@ const Template: Story = ({ videoId, onSelect }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  videoId: '2_Acts7302-0-0'
+  id: '2_Acts7302-0-0'
 }
 
 export default VideoDetailsStory as Meta

@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import Button from '@mui/material/Button'
 import Drawer from '@mui/material/Drawer'
+import Stack from '@mui/material/Stack'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
@@ -15,6 +16,7 @@ import Close from '@mui/icons-material/Close'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../__generated__/GetVideo'
 import { Drawer as LanguageDrawer } from '../LanguageFilter/Drawer/Drawer'
+import 'video.js/dist/video-js.css'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!) {
@@ -55,10 +57,10 @@ export function VideoDetails({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
-  const [isPlaying, setIsPlaying] = useState<boolean>(false)
-  const [openLanguage, setOpenLanguage] = useState<boolean>(false)
+  const [playing, setPlaying] = useState(false)
+  const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedIds, setSelectedIds] = useState(['529'])
-  const [loadVideo, { data }] = useLazyQuery<GetVideo>(GET_VIDEO, {
+  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id }
   })
 
@@ -80,13 +82,12 @@ export function VideoDetails({
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
+        fluid: true,
         controls: true,
-        autoplay: false,
-        preload: 'auto',
         poster: data.video.image ?? undefined
       })
       playerRef.current.on('playing', () => {
-        setIsPlaying(true)
+        setPlaying(true)
       })
     }
   }, [data])
@@ -98,121 +99,116 @@ export function VideoDetails({
   }, [open, loadVideo])
 
   return (
-    <Drawer
-      anchor={smUp ? 'right' : 'bottom'}
-      variant="temporary"
-      open={open}
-      elevation={smUp ? 1 : 0}
-      hideBackdrop
-      sx={{
-        display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: smUp ? DRAWER_WIDTH : '100%',
-          height: '100%'
-        }
-      }}
-    >
-      <AppBar position="static" color="default">
-        <Toolbar>
-          <Typography
-            variant="subtitle1"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            Video Details
-          </Typography>
-          <IconButton
-            onClick={handleClose}
-            sx={{ display: 'inline-flex' }}
-            edge="end"
-          >
-            <Close />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Box
+    <>
+      <Drawer
+        anchor={smUp ? 'right' : 'bottom'}
+        variant="temporary"
+        open={open}
+        elevation={smUp ? 1 : 0}
+        hideBackdrop
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          px: { xs: 6, sm: 3 },
-          py: 4
+          display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: smUp ? DRAWER_WIDTH : '100%',
+            height: '100%'
+          }
         }}
       >
-        <Box
-          data-testid={`VideoDetails-${data?.video.id ?? ''}`}
-          sx={{
-            display: 'flex',
-            height: 169,
-            borderRadius: 3,
-            position: 'relative',
-            overflow: 'hidden',
-            '> .video-js': {
-              width: '100%'
-            }
-          }}
-        >
-          <video
-            ref={videoRef}
-            className="video-js vjs-big-play-centered"
-            style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
-            playsInline
-          >
-            <source
-              src={data?.video.variant?.hls}
-              type="application/x-mpegURL"
-            />
-          </video>
-          {!isPlaying && (
+        <AppBar position="static" color="default">
+          <Toolbar variant="dense">
             <Typography
+              variant="subtitle1"
+              noWrap
               component="div"
-              variant="caption"
-              sx={{
-                color: 'background.paper',
-                backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                m: 2,
-                px: 1,
-                borderRadius: 2,
-                position: 'absolute',
-                right: 1,
-                bottom: 1,
-                zIndex: 1
-              }}
+              sx={{ flexGrow: 1 }}
             >
-              {duration}
+              Video Details
             </Typography>
+            <IconButton
+              onClick={handleClose}
+              sx={{ display: 'inline-flex' }}
+              edge="end"
+            >
+              <Close />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Stack spacing={4} sx={{ p: 6 }}>
+          {loading ? (
+            <></>
+          ) : (
+            <>
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                <video
+                  ref={videoRef}
+                  className="video-js vjs-big-play-centered"
+                  playsInline
+                >
+                  <source
+                    src={data?.video.variant?.hls}
+                    type="application/x-mpegURL"
+                  />
+                </video>
+                {!playing && (
+                  <Typography
+                    component="div"
+                    variant="caption"
+                    sx={{
+                      color: 'background.paper',
+                      backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                      px: 1,
+                      borderRadius: 2,
+                      position: 'absolute',
+                      right: 20,
+                      bottom: 10,
+                      zIndex: 1
+                    }}
+                  >
+                    {duration}
+                  </Typography>
+                )}
+              </Box>
+              <Box>
+                <Typography variant="subtitle1">
+                  {data?.video?.title?.find(({ primary }) => primary)?.value}
+                </Typography>
+                <Typography variant="caption">
+                  {
+                    data?.video?.description?.find(({ primary }) => primary)
+                      ?.value
+                  }
+                </Typography>
+              </Box>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => setOpenLanguage(true)}
+                  endIcon={<ArrowDropDown />}
+                  sx={{ flexGrow: 1 }}
+                >
+                  Other Languages
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<Check />}
+                  onClick={handleVideoSelect}
+                >
+                  Select
+                </Button>
+              </Stack>
+            </>
           )}
-        </Box>
-        <Box sx={{ pb: 2, pt: 5 }}>
-          <Typography variant="subtitle1">
-            {data?.video?.title?.find(({ primary }) => primary)?.value}
-          </Typography>
-        </Box>
-        <Typography variant="caption">
-          {data?.video?.description?.find(({ primary }) => primary)?.value}
-        </Typography>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mx: 4 }}>
-        <Button
-          data-testid="VideoDetailsLanguageButton"
-          variant="contained"
-          size="small"
-          onClick={() => setOpenLanguage(true)}
-          endIcon={<ArrowDropDown />}
-        >
-          Other Languages
-        </Button>
-        <Button
-          data-testid="VideoDetailsSelectButton"
-          variant="contained"
-          size="small"
-          startIcon={<Check />}
-          onClick={handleVideoSelect}
-        >
-          Select Video
-        </Button>
-      </Box>
+        </Stack>
+      </Drawer>
       <LanguageDrawer
         open={openLanguage}
         onClose={() => setOpenLanguage(false)}
@@ -220,7 +216,7 @@ export function VideoDetails({
         selectedIds={selectedIds}
         currentLanguageId="529"
       />
-    </Drawer>
+    </>
   )
 }
 
