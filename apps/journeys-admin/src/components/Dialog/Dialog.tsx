@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { styled } from '@mui/system'
+import { styled } from '@mui/material/styles'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
