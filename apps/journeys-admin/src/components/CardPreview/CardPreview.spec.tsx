@@ -8,7 +8,10 @@ import {
 } from '../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../libs/context'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
-import { STEP_AND_CARD_BLOCK_CREATE } from './CardPreview'
+import {
+  STEP_AND_CARD_BLOCK_CREATE,
+  STEP_BLOCK_NEXTBLOCKID_UPDATE
+} from './CardPreview'
 import { CardPreview } from '.'
 
 jest.mock('uuid', () => ({
@@ -49,10 +52,28 @@ describe('CardPreview', () => {
     expect(onSelect).toHaveBeenCalledWith(step)
   })
 
-  it('should create step and card when add button is clicked', async () => {
+  it('should create step and card when add button is clicked and set the nextBlockId for the previous step', async () => {
     mockUuidv4.mockReturnValueOnce('stepId')
     mockUuidv4.mockReturnValueOnce('cardId')
     const onSelect = jest.fn()
+    const result = jest.fn(() => ({
+      data: {
+        stepBlockUpdate: {
+          journeyId: 'journeyId',
+          id: 'stepId',
+          nextBlockId: 'nextBlockId'
+        }
+      }
+    }))
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      parentOrder: 0,
+      parentBlockId: null,
+      id: 'lastStepId',
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -88,11 +109,32 @@ describe('CardPreview', () => {
                 }
               }
             }
+          },
+          {
+            request: {
+              query: STEP_BLOCK_NEXTBLOCKID_UPDATE,
+              variables: {
+                id: 'lastStepId',
+                journeyId: 'journeyId',
+                input: {
+                  nextBlockId: 'stepId'
+                }
+              }
+            },
+            result
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -121,5 +163,6 @@ describe('CardPreview', () => {
         parentOrder: 0
       })
     )
+    expect(result).toHaveBeenCalled()
   })
 })

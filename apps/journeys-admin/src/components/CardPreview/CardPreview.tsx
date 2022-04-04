@@ -124,8 +124,8 @@ export function CardPreview({
 
     const lastStep = last(steps)
     const nextBlockExsists =
-      steps.find(({ id }) => id === lastStep.nextBlockId) != null
-    if (!nextBlockExsists) {
+      steps.find(({ id }) => id === lastStep?.nextBlockId) != null
+    if (!nextBlockExsists && lastStep != null) {
       await stepBlockNextBlockIdUpdate({
         variables: {
           id: lastStep.id,
