@@ -133,6 +133,7 @@ describe('Button', () => {
       expect.objectContaining({
         push: expect.any(Function)
       }),
+      false,
       {
         __typename: 'NavigateToBlockAction',
         parentBlockId: block.id,

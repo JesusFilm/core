@@ -16,12 +16,14 @@ describe('handleAction', () => {
     push: jest.fn()
   } as unknown as NextRouter
 
+  const editorMode = false
+
   it('should handle empty action', () => {
-    expect(() => handleAction(router)).not.toThrowError()
+    expect(() => handleAction(router, editorMode)).not.toThrowError()
   })
 
   it('should handle NavigateToBlockAction', () => {
-    handleAction(router, {
+    handleAction(router, editorMode, {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'parent-id',
       blockId: 'block-id',
@@ -31,7 +33,7 @@ describe('handleAction', () => {
   })
 
   it('should handle NavigateToJourneyAction', () => {
-    handleAction(router, {
+    handleAction(router, editorMode, {
       __typename: 'NavigateToJourneyAction',
       parentBlockId: 'parent-id',
       journey: {
@@ -46,7 +48,7 @@ describe('handleAction', () => {
 
   it('should handle NavigateToJourneyAction when journey is null', () => {
     expect(() =>
-      handleAction(router, {
+      handleAction(router, editorMode, {
         __typename: 'NavigateToJourneyAction',
         parentBlockId: 'parent-id',
         journey: null,
@@ -56,7 +58,7 @@ describe('handleAction', () => {
   })
 
   it('should handle NavigateAction', () => {
-    handleAction(router, {
+    handleAction(router, editorMode, {
       __typename: 'NavigateAction',
       parentBlockId: 'parent-id',
       gtmEventName: null
@@ -65,7 +67,7 @@ describe('handleAction', () => {
   })
 
   it('should handle LinkAction', () => {
-    handleAction(router, {
+    handleAction(router, editorMode, {
       __typename: 'LinkAction',
       parentBlockId: 'parent-id',
       gtmEventName: null,
