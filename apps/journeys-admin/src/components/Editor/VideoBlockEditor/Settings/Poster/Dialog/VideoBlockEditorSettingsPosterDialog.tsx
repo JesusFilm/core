@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement } from 'react'
-import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'

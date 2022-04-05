@@ -10,7 +10,8 @@ import { TreeBlock } from '@core/journeys/ui'
 import { noop } from 'lodash'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
-import { PlayCircle, StopCircle } from '@mui/icons-material'
+import PlayCircle from '@mui/icons-material/PlayCircle'
+import StopCircle from '@mui/icons-material/StopCircle'
 import { secondsToTimeFormat, timeFormatToSeconds } from '@core/shared/ui'
 
 import {

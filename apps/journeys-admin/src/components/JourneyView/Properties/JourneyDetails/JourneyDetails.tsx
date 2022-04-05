@@ -2,12 +2,10 @@ import { isThisYear, parseISO, intlFormat } from 'date-fns'
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import {
-  CheckCircleRounded,
-  EditRounded,
-  EventRounded,
-  TranslateRounded
-} from '@mui/icons-material'
+import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
+import EditRounded from '@mui/icons-material/EditRounded'
+import EventRounded from '@mui/icons-material/EventRounded'
+import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { useJourney } from '../../../../libs/context'
 

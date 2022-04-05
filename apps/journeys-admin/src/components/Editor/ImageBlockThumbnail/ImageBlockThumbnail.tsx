@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
-import { Image as ImageIcon } from '@mui/icons-material'
+import ImageIcon from '@mui/icons-material/Image'
 import Image from 'next/image'
-import { Box } from '@mui/system'
+import Box from '@mui/material/Box'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
 
