@@ -52,19 +52,95 @@ describe('CardPreview', () => {
     expect(onSelect).toHaveBeenCalledWith(step)
   })
 
-  it('should create step and card when add button is clicked and set the nextBlockId for the previous step', async () => {
+  it('should create step and card when add button is clicked', async () => {
     mockUuidv4.mockReturnValueOnce('stepId')
     mockUuidv4.mockReturnValueOnce('cardId')
     const onSelect = jest.fn()
-    const result = jest.fn(() => ({
-      data: {
-        stepBlockUpdate: {
-          journeyId: 'journeyId',
-          id: 'stepId',
-          nextBlockId: 'nextBlockId'
-        }
-      }
-    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_AND_CARD_BLOCK_CREATE,
+              variables: {
+                journeyId: 'journeyId',
+                stepId: 'stepId',
+                cardId: 'cardId'
+              }
+            },
+            result: {
+              data: {
+                stepBlockCreate: {
+                  id: 'stepId',
+                  parentBlockId: null,
+                  parentOrder: 0,
+                  locked: false,
+                  nextBlockId: null,
+                  __typename: 'StepBlock'
+                },
+                cardBlockCreate: {
+                  id: 'cardId',
+                  parentBlockId: 'stepId',
+                  parentOrder: 0,
+                  backgroundColor: null,
+                  coverBlockId: null,
+                  themeMode: null,
+                  themeName: null,
+                  fullscreen: false,
+                  __typename: 'CardBlock'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(onSelect).toHaveBeenCalledWith({
+        __typename: 'StepBlock',
+        children: [
+          {
+            __typename: 'CardBlock',
+            backgroundColor: null,
+            children: [],
+            coverBlockId: null,
+            fullscreen: false,
+            id: 'cardId',
+            parentBlockId: 'stepId',
+            parentOrder: 0,
+            themeMode: null,
+            themeName: null
+          }
+        ],
+        id: 'stepId',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 0
+      })
+    )
+  })
+
+  it('should set the nextBlockId for the previous step when a new card is created', async () => {
+    mockUuidv4.mockReturnValueOnce('stepId')
+    mockUuidv4.mockReturnValueOnce('cardId')
+
+    const onSelect = jest.fn()
+
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       parentOrder: 0,
@@ -74,6 +150,17 @@ describe('CardPreview', () => {
       nextBlockId: null,
       children: []
     }
+
+    const result = jest.fn(() => ({
+      data: {
+        stepBlockUpdate: {
+          journeyId: 'journeyId',
+          id: 'stepId',
+          nextBlockId: 'nextBlockId'
+        }
+      }
+    }))
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -138,31 +225,103 @@ describe('CardPreview', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+
     fireEvent.click(getByRole('button'))
-    await waitFor(() =>
-      expect(onSelect).toHaveBeenCalledWith({
-        __typename: 'StepBlock',
-        children: [
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should not set last step nextBlockId, if it is already connected to a valid step, when a new card is created', async () => {
+    mockUuidv4.mockReturnValueOnce('stepId')
+    mockUuidv4.mockReturnValueOnce('cardId')
+
+    const onSelect = jest.fn()
+
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      parentOrder: 0,
+      parentBlockId: null,
+      id: 'lastStepId',
+      locked: false,
+      nextBlockId: 'someStepId',
+      children: []
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        stepBlockUpdate: {
+          journeyId: 'journeyId',
+          id: 'stepId',
+          nextBlockId: 'nextBlockId'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
           {
-            __typename: 'CardBlock',
-            backgroundColor: null,
-            children: [],
-            coverBlockId: null,
-            fullscreen: false,
-            id: 'cardId',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            themeMode: null,
-            themeName: null
+            request: {
+              query: STEP_AND_CARD_BLOCK_CREATE,
+              variables: {
+                journeyId: 'journeyId',
+                stepId: 'stepId',
+                cardId: 'cardId'
+              }
+            },
+            result: {
+              data: {
+                stepBlockCreate: {
+                  id: 'stepId',
+                  parentBlockId: null,
+                  parentOrder: 0,
+                  locked: false,
+                  nextBlockId: null,
+                  __typename: 'StepBlock'
+                },
+                cardBlockCreate: {
+                  id: 'cardId',
+                  parentBlockId: 'stepId',
+                  parentOrder: 0,
+                  backgroundColor: null,
+                  coverBlockId: null,
+                  themeMode: null,
+                  themeName: null,
+                  fullscreen: false,
+                  __typename: 'CardBlock'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: STEP_BLOCK_NEXTBLOCKID_UPDATE,
+              variables: {
+                id: 'lastStepId',
+                journeyId: 'journeyId',
+                input: {
+                  nextBlockId: 'stepId'
+                }
+              }
+            },
+            result
           }
-        ],
-        id: 'stepId',
-        locked: false,
-        nextBlockId: null,
-        parentBlockId: null,
-        parentOrder: 0
-      })
+        ]}
+      >
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
+        </JourneyProvider>
+      </MockedProvider>
     )
-    expect(result).toHaveBeenCalled()
+
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
 })
