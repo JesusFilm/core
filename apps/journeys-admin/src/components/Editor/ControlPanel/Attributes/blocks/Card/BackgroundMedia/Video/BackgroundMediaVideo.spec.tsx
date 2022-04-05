@@ -11,6 +11,9 @@ import {
 } from '../../../../../../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../../../../../../libs/context'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
+import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoList/VideoList'
+import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoDetails/VideoDetails'
+import { videos } from '../../../../../../VideoLibrary/VideoList/VideoListData'
 import {
   BackgroundMediaVideo,
   CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -57,6 +60,59 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
+const getVideosMock = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null
+      }
+    }
+  },
+  result: {
+    data: {
+      videos: [...videos, ...videos, ...videos]
+    }
+  }
+}
+
+const getVideoMock = {
+  request: {
+    query: GET_VIDEO,
+    variables: {
+      id: '2_0-Brand_Video'
+    }
+  },
+  result: {
+    data: {
+      video: {
+        id: '2_0-Brand_Video',
+        image:
+          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+        primaryLanguageId: '529',
+        title: [
+          {
+            primary: true,
+            value: 'Jesus Taken Up Into Heaven'
+          }
+        ],
+        description: [
+          {
+            primary: true,
+            value:
+              'Jesus promises the Holy Spirit; then ascends into the clouds.'
+          }
+        ],
+        variant: {
+          duration: 144,
+          hls: 'https://arc.gt/opsgn'
+        }
+      }
+    }
+  }
+}
+
 describe('BackgroundMediaVideo', () => {
   it('creates a new video cover block', async () => {
     const cache = new InMemoryCache()
@@ -81,10 +137,12 @@ describe('BackgroundMediaVideo', () => {
         videoBlockCreate: video
       }
     }))
-    const { getAllByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         cache={cache}
         mocks={[
+          getVideosMock,
+          getVideoMock,
           {
             request: {
               query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -92,8 +150,8 @@ describe('BackgroundMediaVideo', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  videoId: '2_0-FallingPlates',
-                  videoVariantLanguageId: undefined
+                  videoId: '2_0-Brand_Video',
+                  videoVariantLanguageId: '529'
                 }
               }
             },
@@ -121,11 +179,13 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    const textbox = getAllByRole('textbox', { name: 'Video ID' })[0]
-    fireEvent.change(textbox, {
-      target: { value: '2_0-FallingPlates' }
-    })
-    fireEvent.blur(textbox)
+    fireEvent.click(getByRole('button', { name: 'Select a Video' }))
+    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
+    fireEvent.click(getByText('Brand Video'))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
@@ -182,10 +242,12 @@ describe('BackgroundMediaVideo', () => {
         blockDelete: []
       }
     }))
-    const { getAllByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         cache={cache}
         mocks={[
+          getVideosMock,
+          getVideoMock,
           {
             request: {
               query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
@@ -217,8 +279,8 @@ describe('BackgroundMediaVideo', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  videoId: '2_0-FallingPlates',
-                  videoVariantLanguageId: undefined
+                  videoId: '2_0-Brand_Video',
+                  videoVariantLanguageId: '529'
                 }
               }
             },
@@ -246,11 +308,13 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    const textbox = getAllByRole('textbox', { name: 'Video ID' })[0]
-    fireEvent.change(textbox, {
-      target: { value: '2_0-FallingPlates' }
-    })
-    fireEvent.blur(textbox)
+    fireEvent.click(getByRole('button', { name: 'Select a Video' }))
+    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
+    fireEvent.click(getByText('Brand Video'))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -284,10 +348,12 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole } = render(
+      const { getByRole, getByText } = render(
         <MockedProvider
           cache={cache}
           mocks={[
+            getVideosMock,
+            getVideoMock,
             {
               request: {
                 query: CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE,
@@ -295,7 +361,7 @@ describe('BackgroundMediaVideo', () => {
                   id: video.id,
                   journeyId: 'journeyId',
                   input: {
-                    videoId: '2_0-FallingPlates',
+                    videoId: '2_0-Brand_Video',
                     videoVariantLanguageId: '529'
                   }
                 }
@@ -311,13 +377,14 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      const textbox = await getAllByRole('textbox', { name: 'Video ID' })[0]
-      await fireEvent.change(textbox, {
-        target: { value: '2_0-FallingPlates' }
-      })
-      fireEvent.blur(textbox)
+      fireEvent.click(getByRole('button', { name: 'Select a Video' }))
+      await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
+      fireEvent.click(getByText('Brand Video'))
+      await waitFor(() =>
+        expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+      )
+      fireEvent.click(getByRole('button', { name: 'Select' }))
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-      expect(textbox).toHaveValue('2_0-FallingPlates')
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'CardBlock:cardId' },
         { __ref: 'VideoBlock:videoId' }
@@ -400,7 +467,7 @@ describe('BackgroundMediaVideo', () => {
 
     describe('Video Settings', () => {
       it('shows settings', async () => {
-        const { getAllByRole, getByRole } = render(
+        const { getAllByRole } = render(
           <MockedProvider>
             <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
               <ThemeProvider>
@@ -409,7 +476,6 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
-        fireEvent.click(await getByRole('tab', { name: 'Settings' }))
         expect(getAllByRole('checkbox', { name: 'Muted' })[0]).toBeChecked()
         expect(getAllByRole('checkbox', { name: 'Autoplay' })[0]).toBeChecked()
         expect(getAllByRole('textbox', { name: 'Starts At' })[0]).toHaveValue(
@@ -440,7 +506,7 @@ describe('BackgroundMediaVideo', () => {
             }
           }
         }))
-        const { getAllByRole, getByRole } = render(
+        const { getAllByRole } = render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -469,7 +535,6 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
-        fireEvent.click(await getByRole('tab', { name: 'Settings' }))
         const checkbox = await getAllByRole('checkbox', { name: 'Autoplay' })[0]
         fireEvent.click(checkbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -493,7 +558,7 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole, getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -522,7 +587,6 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(await getByRole('tab', { name: 'Settings' }))
       const checkbox = await getAllByRole('checkbox', { name: 'Muted' })[0]
       fireEvent.click(checkbox)
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -545,7 +609,7 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole, getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -574,12 +638,12 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(await getByRole('tab', { name: 'Settings' }))
       const textbox = await getAllByRole('textbox', { name: 'Starts At' })[0]
       fireEvent.change(textbox, { target: { value: '00:00:11' } })
       fireEvent.blur(textbox)
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     })
+
     it('updates endAt', async () => {
       const cache = new InMemoryCache()
       cache.restore({
@@ -597,7 +661,7 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole, getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -626,7 +690,6 @@ describe('BackgroundMediaVideo', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      fireEvent.click(await getByRole('tab', { name: 'Settings' }))
       const textbox = await getAllByRole('textbox', { name: 'Ends At' })[0]
       fireEvent.change(textbox, { target: { value: '00:00:31' } })
       fireEvent.blur(textbox)

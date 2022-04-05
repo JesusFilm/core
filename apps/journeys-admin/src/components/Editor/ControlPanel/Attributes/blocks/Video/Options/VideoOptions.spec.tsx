@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoDetails/VideoDetails'
+import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -42,9 +44,60 @@ describe('VideoOptions', () => {
         videoBlockUpdate: video
       }
     }))
-    const { getAllByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
+          {
+            request: {
+              query: GET_VIDEOS,
+              variables: {
+                where: {
+                  availableVariantLanguageIds: ['529'],
+                  title: null
+                }
+              }
+            },
+            result: {
+              data: {
+                videos: [...videos, ...videos, ...videos]
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_VIDEO,
+              variables: {
+                id: '2_0-Brand_Video'
+              }
+            },
+            result: {
+              data: {
+                video: {
+                  id: '2_0-Brand_Video',
+                  image:
+                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+                  primaryLanguageId: '529',
+                  title: [
+                    {
+                      primary: true,
+                      value: 'Jesus Taken Up Into Heaven'
+                    }
+                  ],
+                  description: [
+                    {
+                      primary: true,
+                      value:
+                        'Jesus promises the Holy Spirit; then ascends into the clouds.'
+                    }
+                  ],
+                  variant: {
+                    duration: 144,
+                    hls: 'https://arc.gt/opsgn'
+                  }
+                }
+              }
+            }
+          },
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
@@ -52,7 +105,7 @@ describe('VideoOptions', () => {
                 id: video.id,
                 journeyId: 'journeyId',
                 input: {
-                  videoId: '5_0-NUA0201-0-0',
+                  videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529'
                 }
               }
@@ -74,12 +127,13 @@ describe('VideoOptions', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    const textbox = await getAllByRole('textbox', { name: 'Video ID' })[0]
-    fireEvent.focus(textbox)
-    await fireEvent.change(textbox, {
-      target: { value: '5_0-NUA0201-0-0' }
-    })
-    fireEvent.blur(textbox)
-    await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Select a Video' }))
+    await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
+    fireEvent.click(getByText('Brand Video'))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    await waitFor(() => expect(videoBlockResult).toHaveBeenCalledWith())
   })
 })
