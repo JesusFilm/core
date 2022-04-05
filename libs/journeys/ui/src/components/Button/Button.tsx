@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import { handleAction, TreeBlock } from '../..'
+import { handleAction, TreeBlock, useEditor } from '../..'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
@@ -31,9 +31,12 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
+  const { state } = useEditor()
+  const editorMode = state.selectedBlock != null
+
   const router = useRouter()
   const handleClick = (): void => {
-    handleAction(router, action)
+    handleAction(router, editorMode, action)
   }
 
   return (

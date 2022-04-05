@@ -4,7 +4,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useRouter } from 'next/router'
-import { TreeBlock, handleAction } from '../../..'
+import { TreeBlock, handleAction, useEditor } from '../../..'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
@@ -37,9 +37,11 @@ export function RadioOption({
   editableLabel
 }: RadioOptionProps): ReactElement {
   const router = useRouter()
+  const { state } = useEditor()
+  const editorMode = state.selectedBlock != null
 
   const handleClick = (): void => {
-    handleAction(router, action)
+    handleAction(router, editorMode, action)
     onClick?.(id)
   }
 

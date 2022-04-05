@@ -4,6 +4,7 @@ import { ActionFields } from './__generated__/ActionFields'
 
 export function handleAction(
   router: NextRouter,
+  editorMode: boolean,
   action?: ActionFields | null
 ): void {
   if (action == null) return
@@ -12,7 +13,7 @@ export function handleAction(
       nextActiveBlock({ id: action.blockId })
       break
     case 'NavigateToJourneyAction':
-      if (action.journey?.slug != null) {
+      if (action.journey?.slug != null && !editorMode) {
         void router.push(`/${action.journey.slug}`)
       }
       break
@@ -20,7 +21,9 @@ export function handleAction(
       nextActiveBlock()
       break
     case 'LinkAction':
-      void router.push(action.url)
+      if (!editorMode) {
+        void router.push(action.url)
+      }
       break
   }
 }
