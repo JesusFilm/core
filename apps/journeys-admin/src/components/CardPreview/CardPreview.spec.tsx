@@ -2,6 +2,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
+import { InMemoryCache } from '@apollo/client'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
@@ -133,6 +134,82 @@ describe('CardPreview', () => {
         parentOrder: 0
       })
     )
+  })
+
+  it('should create a new cache reference for the newly created card', async () => {
+    mockUuidv4.mockReturnValueOnce('stepId')
+    mockUuidv4.mockReturnValueOnce('cardId')
+    const onSelect = jest.fn()
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
+    const { getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: STEP_AND_CARD_BLOCK_CREATE,
+              variables: {
+                journeyId: 'journeyId',
+                stepId: 'stepId',
+                cardId: 'cardId'
+              }
+            },
+            result: {
+              data: {
+                stepBlockCreate: {
+                  id: 'stepId',
+                  parentBlockId: null,
+                  parentOrder: 0,
+                  locked: false,
+                  nextBlockId: null,
+                  __typename: 'StepBlock'
+                },
+                cardBlockCreate: {
+                  id: 'cardId',
+                  parentBlockId: 'stepId',
+                  parentOrder: 0,
+                  backgroundColor: null,
+                  coverBlockId: null,
+                  themeMode: null,
+                  themeName: null,
+                  fullscreen: false,
+                  __typename: 'CardBlock'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={
+            {
+              id: 'journeyId',
+              themeMode: ThemeMode.light,
+              themeName: ThemeName.base
+            } as unknown as Journey
+          }
+        >
+          <CardPreview steps={[]} onSelect={onSelect} showAddButton />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => {
+      expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
+        { __ref: 'StepBlock:stepId' },
+        { __ref: 'CardBlock:cardId' }
+      ])
+    })
+    console.log(cache.extract()['Journey:journeyId'])
   })
 
   it('should set the nextBlockId for the previous step when a new card is created', async () => {
