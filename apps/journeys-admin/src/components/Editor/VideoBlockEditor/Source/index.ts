@@ -1,1 +1,1 @@
-export { VideoBlockEditorSource } from './VideoBlockEditorSource'
+export { Source } from './Source'

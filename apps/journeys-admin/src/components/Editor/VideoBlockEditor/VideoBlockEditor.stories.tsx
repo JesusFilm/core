@@ -154,23 +154,6 @@ Filled.args = {
   }
 }
 
-export const MobileSettings = Template.bind({})
-MobileSettings.args = {
-  selectedBlock: {
-    ...video,
-    children: [poster]
-  }
-}
-MobileSettings.parameters = {
-  chromatic: {
-    viewports: [360]
-  }
-}
-MobileSettings.play = async () => {
-  const settingsTab = await screen.getAllByTestId('videoSettingsTab')[1]
-  await userEvent.click(settingsTab)
-}
-
 export const PosterModal = Template.bind({})
 PosterModal.args = {
   selectedBlock: {
