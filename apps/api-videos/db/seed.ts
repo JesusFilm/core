@@ -84,7 +84,7 @@ interface Video {
   image: string
   variants?: VideoVariant[]
   tagIds: string[]
-  playlist?: string[]
+  episodeIds?: string[]
 }
 
 async function getLanguages(): Promise<Language[]> {
@@ -296,7 +296,7 @@ async function digestSeriesContainer(
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
-    playlist: [],
+    episodeIds: [],
     variants
   }
 }
@@ -316,7 +316,7 @@ async function digestContainer(
     const video = await getVideo(videoId)
     if (video == null) continue
 
-    if (mediaComponent.subType === 'series') series.playlist?.push(videoId)
+    if (mediaComponent.subType === 'series') series.episodeIds?.push(videoId)
 
     if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
     await db.collection('videos').update(videoId, {
@@ -384,7 +384,7 @@ async function main(): Promise<void> {
           isInnerSeries: {
             analyzers: ['identity']
           },
-          playlist: {
+          episodeIds: {
             analyzers: ['identity']
           }
         }

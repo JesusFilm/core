@@ -39,14 +39,14 @@ export function VideoListCard({
           <CardMedia component="img" image={video.image ?? ''} height="140" />
           <CardContent>
             <Typography variant="subtitle2">{video.title[0].value}</Typography>
-            {video.playlist == null && (
+            {video.episodeIds == null && (
               <Typography variant="caption">
                 {secondsToTimeFormat(video.variant?.duration ?? 0)}
               </Typography>
             )}
-            {video.playlist != null && video.playlist.length > 0 && (
+            {video.episodeIds != null && video.episodeIds.length > 0 && (
               <Typography variant="caption">
-                {video.playlist.length} episodes
+                {video.episodeIds.length} episodes
               </Typography>
             )}
           </CardContent>

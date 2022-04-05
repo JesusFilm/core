@@ -27,7 +27,7 @@ export const GET_VIDEOS = gql`
       variant {
         duration
       }
-      playlist
+      episodeIds
     }
   }
 `

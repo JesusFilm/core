@@ -11,7 +11,11 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
-  playlist: [ID!]
+  """
+   Videos containing episodes are considered playlists
+  """
+  episodeIds: [ID!]
+  episodes: [Video!]
 }
 
 input VideosFilter {

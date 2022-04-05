@@ -33,7 +33,10 @@ export interface GetVideos_videos {
   snippet: GetVideos_videos_snippet[];
   title: GetVideos_videos_title[];
   variant: GetVideos_videos_variant | null;
-  playlist: string[] | null;
+  /**
+   * Videos containing episodes are considered playlists
+   */
+  episodeIds: string[] | null;
 }
 
 export interface GetVideos {

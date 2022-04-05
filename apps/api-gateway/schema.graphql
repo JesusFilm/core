@@ -711,9 +711,12 @@ type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """Videos containing episodes are considered playlists"""
+  episodeIds: [ID!] @join__field(graph: VIDEOS)
+  episodes: [Video!] @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
-  playlist: [ID!] @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

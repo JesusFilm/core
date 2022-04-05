@@ -45,10 +45,10 @@ export class VideoService extends BaseService {
     )
     const playListFilter = aql.join(
       [
-        onlyPlaylists && aql`FILTER item.playlist != null`,
+        onlyPlaylists && aql`FILTER item.episodeIds != null`,
         !includePlaylists &&
           !onlyPlaylists &&
-          aql`FILTER item.playlist == null`,
+          aql`FILTER item.episodeIds == null`,
         !includePlaylistVideos &&
           !onlyPlaylists &&
           aql`FILTER item.isInnerSeries != true`
@@ -74,7 +74,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `)
     return await res.all()
@@ -94,7 +94,7 @@ export class VideoService extends BaseService {
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
@@ -102,9 +102,39 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `)
     return await res.next()
+  }
+
+  @KeyAsId()
+  async getVideosByIds<T>(
+    keys: string[],
+    variantLanguageId?: string
+  ): Promise<T[]> {
+    const res = await this.db.query(aql`
+    FOR item in ${this.collection}
+      FILTER item._key  ${keys}
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        episodeIds: item.episodeIds,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${
+            variantLanguageId ?? null
+          }, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
+        ],
+        episodeIds: item.episodeIds
+      }
+    `)
+    return await res.all()
   }
 }

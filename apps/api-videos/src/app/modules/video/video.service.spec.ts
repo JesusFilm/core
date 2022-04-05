@@ -10,7 +10,7 @@ import { VideoService } from './video.service'
 const DEFAULT_QUERY = aql`
     FOR item IN 
       
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -25,14 +25,14 @@ const DEFAULT_QUERY = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 
 const QUERY_WITH_TITLE = aql`
     FOR item IN 
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en")
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -47,14 +47,14 @@ const QUERY_WITH_TITLE = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 
 const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
     FOR item IN 
       SEARCH item.variants.languageId IN ${['en']}
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -69,7 +69,7 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -78,7 +78,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN ${[
   'en'
 ]}
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -93,14 +93,14 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 
 const QUERY_WITH_ONLY_PLAYLISTS = aql`
     FOR item IN 
       
-      FILTER item.playlist != null
+      FILTER item.episodeIds != null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -115,7 +115,7 @@ const QUERY_WITH_ONLY_PLAYLISTS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -137,14 +137,14 @@ const QUERY_WITH_PLAYLISTS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 
 const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
     FOR item IN 
       
-      FILTER item.playlist == null FILTER item.isInnerSeries != true
+      FILTER item.episodeIds == null FILTER item.isInnerSeries != true
       LIMIT @value0, @value1
       RETURN {
         _key: item._key,
@@ -159,7 +159,7 @@ const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        episodeIds: item.episodeIds
       }
     `.query
 

@@ -1,4 +1,12 @@
-import { Resolver, Query, Args, Info, ResolveReference } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Args,
+  Info,
+  ResolveReference,
+  ResolveField,
+  Parent
+} from '@nestjs/graphql'
 import { Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
@@ -47,5 +55,12 @@ export class VideoResolver {
       reference.id,
       reference.primaryLanguageId ?? undefined
     )
+  }
+
+  @ResolveField()
+  async episodes(@Parent() video: Video): Promise<Video[] | null> {
+    return video.episodeIds != null
+      ? await this.videoService.getVideosByIds(video.episodeIds)
+      : null
   }
 }
