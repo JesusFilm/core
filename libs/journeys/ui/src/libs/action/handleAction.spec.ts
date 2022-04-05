@@ -12,13 +12,17 @@ jest.mock('../useBlocks/blocks', () => {
 })
 
 describe('handleAction', () => {
-  const router = {
-    push: jest.fn()
-  } as unknown as NextRouter
+  let router: NextRouter
+  beforeEach(() => {
+    router = {
+      push: jest.fn()
+    } as unknown as NextRouter
+  })
 
   const editorMode = false
 
   it('should handle empty action', () => {
+    const editorMode = false
     expect(() => handleAction(router, editorMode)).not.toThrowError()
   })
 
@@ -71,8 +75,29 @@ describe('handleAction', () => {
       __typename: 'LinkAction',
       parentBlockId: 'parent-id',
       gtmEventName: null,
-      url: 'http://www.google.com'
+      url: 'https://www.google.com'
     })
-    expect(router.push).toHaveBeenCalledWith('http://www.google.com')
+    expect(router.push).toHaveBeenCalledWith('https://www.google.com')
+  })
+
+  it('should not handle Link Action, when in editor mode', () => {
+    const editorMode = true
+    handleAction(router, editorMode, {
+      __typename: 'LinkAction',
+      parentBlockId: 'parent-id',
+      gtmEventName: null,
+      url: 'https://www.google.com'
+    })
+    expect(router.push).not.toHaveBeenCalled()
+  })
+
+  it('should not handle Navigate to Journey Action, when in editor mode', () => {
+    const editorMode = true
+    handleAction(router, editorMode, {
+      __typename: 'NavigateAction',
+      parentBlockId: 'parent-id',
+      gtmEventName: null
+    })
+    expect(router.push).not.toHaveBeenCalled()
   })
 })
