@@ -123,9 +123,10 @@ export function CardPreview({
     }
 
     const lastStep = last(steps)
-    const nextBlockExsists =
+    // this check is required as nextBlockId is not updated when the corrseponding block is deleted
+    const validNextBlockId =
       steps.find(({ id }) => id === lastStep?.nextBlockId) != null
-    if (!nextBlockExsists && lastStep != null) {
+    if (!validNextBlockId && lastStep != null) {
       await stepBlockNextBlockIdUpdate({
         variables: {
           id: lastStep.id,
