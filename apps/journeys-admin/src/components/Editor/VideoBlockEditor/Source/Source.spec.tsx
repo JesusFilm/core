@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { GET_VIDEOS } from '../../VideoLibrary/VideoList/VideoList'
 import { GET_VIDEO } from '../../VideoLibrary/VideoDetails/VideoDetails'
 import { videos } from '../../VideoLibrary/VideoList/VideoListData'
-import { VideoBlockEditorSource } from '.'
+import { Source } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -69,7 +69,7 @@ describe('Source', () => {
           }
         ]}
       >
-        <VideoBlockEditorSource onChange={onChange} />
+        <Source onChange={onChange} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select a Video' }))
