@@ -13,6 +13,8 @@ import IconButton from '@mui/material/IconButton'
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
+import Chip from '@mui/material/Chip'
+import Skeleton from '@mui/material/Skeleton'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../__generated__/GetVideo'
 import { Drawer as LanguageDrawer } from '../LanguageFilter/Drawer/Drawer'
@@ -129,6 +131,7 @@ export function VideoDetails({
               onClick={handleClose}
               sx={{ display: 'inline-flex' }}
               edge="end"
+              aria-label="Close"
             >
               <Close />
             </IconButton>
@@ -136,7 +139,22 @@ export function VideoDetails({
         </AppBar>
         <Stack spacing={4} sx={{ p: 6 }}>
           {loading ? (
-            <></>
+            <>
+              <Skeleton
+                variant="rectangular"
+                width={280}
+                height={150}
+                sx={{ borderRadius: 2 }}
+              />
+              <Typography variant="subtitle1">
+                <Skeleton variant="text" />
+              </Typography>
+              <Typography variant="caption">
+                <Skeleton variant="text" />
+                <Skeleton variant="text" />
+                <Skeleton variant="text" width="85%" />
+              </Typography>
+            </>
           ) : (
             <>
               <Box
@@ -186,27 +204,29 @@ export function VideoDetails({
                   }
                 </Typography>
               </Box>
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => setOpenLanguage(true)}
-                  endIcon={<ArrowDropDown />}
-                  sx={{ flexGrow: 1 }}
-                >
-                  Other Languages
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  startIcon={<Check />}
-                  onClick={handleVideoSelect}
-                >
-                  Select
-                </Button>
-              </Stack>
             </>
           )}
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ justifyContent: 'space-between' }}
+          >
+            <Chip
+              label="Other Languages"
+              onClick={() => setOpenLanguage(true)}
+              avatar={<ArrowDropDown />}
+              disabled={loading}
+            />
+            <Button
+              variant="contained"
+              startIcon={<Check />}
+              onClick={handleVideoSelect}
+              size="small"
+              disabled={loading}
+            >
+              Select
+            </Button>
+          </Stack>
         </Stack>
       </Drawer>
       <LanguageDrawer

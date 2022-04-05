@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { GET_LANGUAGES } from '../LanguageFilter/Drawer/Drawer'
+import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
 import { GET_VIDEO } from './VideoDetails'
 import { VideoDetails } from '.'
 
@@ -32,6 +33,7 @@ const Template: Story = ({ id, onSelect }) => {
                 id: '2_Acts7302-0-0',
                 image:
                   'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+                primaryLanguageId: '529',
                 title: [
                   {
                     primary: true,
@@ -116,6 +118,24 @@ const Template: Story = ({ id, onSelect }) => {
 
 export const Default = Template.bind({})
 Default.args = {
+  id: '2_Acts7302-0-0'
+}
+
+export const Loading: Story = ({ id, onSelect }) => {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <ApolloLoadingProvider>
+      <VideoDetails
+        id={id}
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={onSelect}
+      />
+    </ApolloLoadingProvider>
+  )
+}
+Loading.args = {
   id: '2_Acts7302-0-0'
 }
 

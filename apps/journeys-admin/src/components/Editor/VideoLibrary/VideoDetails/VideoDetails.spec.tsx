@@ -8,114 +8,124 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-describe('Video Details', () => {
+describe('VideoDetails', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  it('should render details of a video', async () => {
-    const { getByText, getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VIDEO,
-              variables: {
-                videoId: '2_Acts7302-0-0'
+
+  const mocks = [
+    {
+      request: {
+        query: GET_VIDEO,
+        variables: {
+          id: '2_Acts7302-0-0'
+        }
+      },
+      result: {
+        data: {
+          video: {
+            id: '2_Acts7302-0-0',
+            primaryLanguageId: '529',
+            image:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+            title: [
+              {
+                primary: true,
+                value: 'Jesus Taken Up Into Heaven'
               }
-            },
-            result: {
-              data: {
-                video: {
-                  id: '2_Acts7302-0-0',
-                  image:
-                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
-                  title: [
-                    {
-                      primary: true,
-                      value: 'Jesus Taken Up Into Heaven'
-                    }
-                  ],
-                  description: [
-                    {
-                      primary: true,
-                      value:
-                        'Jesus promises the Holy Spirit; then ascends into the clouds.'
-                    }
-                  ],
-                  variant: {
-                    duration: 144,
-                    hls: 'https://arc.gt/opsgn'
-                  }
-                }
+            ],
+            description: [
+              {
+                primary: true,
+                value: 'Jesus promises the Holy Spirit.'
               }
+            ],
+            variant: {
+              duration: 144,
+              hls: 'https://arc.gt/opsgn'
             }
           }
-        ]}
-      >
-        <VideoDetails videoId="2_Acts7302-0-0" open={true} />
+        }
+      }
+    }
+  ]
+  it('should render details of a video', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <VideoDetails
+          id="2_Acts7302-0-0"
+          open={true}
+          onClose={jest.fn()}
+          onSelect={jest.fn()}
+        />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('Jesus Taken Up Into Heaven')).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     expect(
-      getByText('Jesus promises the Holy Spirit; then ascends into the clouds.')
+      getByRole('heading', { name: 'Jesus Taken Up Into Heaven' })
     ).toBeInTheDocument()
-    const sourceTag = getByTestId('VideoDetails-2_Acts7302-0-0').querySelector(
-      '.vjs-tech source'
-    )
+    expect(getByText('Jesus promises the Holy Spirit.')).toBeInTheDocument()
+    const videoPlayer = getByRole('region', {
+      name: 'Video Player'
+    })
+    const sourceTag = videoPlayer.querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual('https://arc.gt/opsgn')
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
-    const imageTag = getByTestId('VideoDetails-2_Acts7302-0-0').querySelector(
-      '.vjs-poster'
-    )
+    const imageTag = videoPlayer.querySelector('.vjs-poster')
     expect(imageTag).toHaveStyle(
       "background-image: url('https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg')"
     )
   })
 
   it('should close VideoDetails on close Icon click', () => {
-    const handleOpen = jest.fn()
-    const { getAllByRole, getByTestId } = render(
+    const onClose = jest.fn()
+    const { getByRole } = render(
       <MockedProvider>
         <VideoDetails
-          videoId="2_Acts7302-0-0"
+          id="2_Acts7302-0-0"
           open={true}
-          handleOpen={handleOpen}
+          onClose={onClose}
+          onSelect={jest.fn()}
         />
       </MockedProvider>
     )
-    expect(getAllByRole('button')[0]).toContainElement(getByTestId('CloseIcon'))
-    fireEvent.click(getAllByRole('button')[0])
-    expect(handleOpen).toHaveBeenCalled()
+    fireEvent.click(getByRole('button', { name: 'Close' }))
+    expect(onClose).toHaveBeenCalled()
   })
 
   it('should open the languages drawer on language button click', () => {
-    const { getByTestId, getByText } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
-        <VideoDetails videoId="2_Acts7302-0-0" open={true} />
+        <VideoDetails
+          id="2_Acts7302-0-0"
+          open={true}
+          onClose={jest.fn()}
+          onSelect={jest.fn()}
+        />
       </MockedProvider>
     )
-    expect(getByTestId('VideoDetailsLanguageButton')).toContainElement(
-      getByTestId('ArrowDropDownIcon')
-    )
-    fireEvent.click(getByTestId('VideoDetailsLanguageButton'))
+    fireEvent.click(getByRole('button', { name: 'Other Languages' }))
     expect(getByText('Language')).toBeInTheDocument()
   })
 
-  it('should call onSelect on click', async () => {
+  it('should call onSelect and onClose on select click', async () => {
     const onSelect = jest.fn()
-    const { getByTestId } = render(
-      <MockedProvider>
+    const onClose = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
         <VideoDetails
-          videoId="2_Acts7302-0-0"
+          id="2_Acts7302-0-0"
           open={true}
+          onClose={onClose}
           onSelect={onSelect}
         />
       </MockedProvider>
     )
-    expect(getByTestId('VideoDetailsSelectButton')).toContainElement(
-      getByTestId('CheckIcon')
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
-    fireEvent.click(getByTestId('VideoDetailsSelectButton'))
-    expect(onSelect).toHaveBeenCalled()
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith('2_Acts7302-0-0', '529')
+    expect(onClose).toHaveBeenCalledWith()
   })
 })
