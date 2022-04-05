@@ -4,22 +4,24 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Search from '@mui/icons-material/Search'
 
 interface VideoSearchProps {
-  title?: string
-  setTitle: (title: string) => void
+  value?: string
+  onChange: (value: string) => void
 }
 
 export function VideoSearch({
-  title,
-  setTitle
+  value,
+  onChange
 }: VideoSearchProps): ReactElement {
   return (
     <TextField
-      id="videoSearch"
-      name="videoSearch"
+      hiddenLabel
       variant="filled"
       fullWidth
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      inputProps={{
+        'aria-label': 'Search'
+      }}
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">

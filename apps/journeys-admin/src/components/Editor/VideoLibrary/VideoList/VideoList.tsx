@@ -11,8 +11,8 @@ import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
 
 export const GET_VIDEOS = gql`
-  query GetVideos($where: VideosFilter) {
-    videos(where: $where) {
+  query GetVideos($where: VideosFilter, $limit: Int!, $page: Int!) {
+    videos(where: $where, limit: $limit, page: $page) {
       id
       image
       snippet {
@@ -31,7 +31,7 @@ export const GET_VIDEOS = gql`
 `
 
 interface VideoListProps {
-  onSelect: (source: string) => void
+  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
   currentLanguageIds?: string[]
   title?: string
 }
@@ -41,10 +41,10 @@ export function VideoList({
   currentLanguageIds,
   title
 }: VideoListProps): ReactElement {
-  const [visibleVideos, setVisibleVideos] = useState(4)
-
-  const { loading, data } = useQuery<GetVideos>(GET_VIDEOS, {
+  const { loading, data, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
+      page: 0,
+      limit: 5,
       where: {
         availableVariantLanguageIds: currentLanguageIds,
         title: title != null ? title : null
@@ -52,17 +52,11 @@ export function VideoList({
     }
   })
 
-  const videosLength = data?.videos.length
-
-  const handleClick = (): void => {
-    setVisibleVideos((previousVisibleVideos) => previousVisibleVideos + 4)
-  }
-
-  return videosLength !== 0 ? (
+  return (
     <>
       <List data-testid="VideoList" sx={{ px: 6 }}>
         <Divider />
-        {data?.videos?.slice(0, visibleVideos).map((video) => (
+        {data?.videos?.map((video) => (
           <>
             <VideoListItem
               id={video.id}
@@ -75,6 +69,22 @@ export function VideoList({
             <Divider />
           </>
         ))}
+        <ListItem
+          sx={{
+            px: 6
+          }}
+        >
+          <ListItemText
+            primary="No Results Found"
+            secondary="If you search videos in a different language, please select it first in the dropdown above."
+            secondaryTypographyProps={{
+              style: {
+                overflow: 'hidden',
+                paddingTop: '4px'
+              }
+            }}
+          />
+        </ListItem>
       </List>
       <Box
         sx={{ display: 'flex', justifyContent: 'center', mx: 'auto', my: 6 }}
@@ -82,39 +92,21 @@ export function VideoList({
         <LoadingButton
           data-testid="VideoListLoadMore"
           variant="outlined"
-          onClick={handleClick}
-          loading={loading}
-          startIcon={
-            videosLength != null && visibleVideos >= videosLength ? null : (
-              <AddRounded />
-            )
+          onClick={async () =>
+            await fetchMore({
+              variables: {
+                page: 1
+              }
+            })
           }
-          disabled={videosLength != null && visibleVideos >= videosLength}
+          loading={loading}
+          startIcon={<AddRounded />}
           loadingPosition="start"
           size="medium"
         >
-          {videosLength != null && videosLength > visibleVideos
-            ? 'Load More'
-            : 'No More Videos'}
+          Load More
         </LoadingButton>
       </Box>
     </>
-  ) : (
-    <ListItem
-      sx={{
-        px: 6
-      }}
-    >
-      <ListItemText
-        primary="No Results Found"
-        secondary="If you search videos in a different language, please select it first in the dropdown above."
-        secondaryTypographyProps={{
-          style: {
-            overflow: 'hidden',
-            paddingTop: '4px'
-          }
-        }}
-      />
-    </ListItem>
   )
 }

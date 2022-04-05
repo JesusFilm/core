@@ -20,7 +20,7 @@ const Template: Story = () => {
         height: '200px'
       }}
     >
-      <VideoSearch title={title} setTitle={setTitle} />
+      <VideoSearch value={title} onChange={setTitle} />
     </Box>
   )
 }

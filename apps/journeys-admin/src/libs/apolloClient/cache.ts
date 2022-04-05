@@ -30,5 +30,23 @@ export const cache = (): InMemoryCache =>
         'VideoBlock',
         'VideoTriggerBlock'
       ]
+    },
+    typePolicies: {
+      Query: {
+        fields: {
+          videos: {
+            keyArgs: ['where'],
+            merge(existing, incoming, { args }) {
+              // Slicing is necessary because the existing data is
+              // immutable, and frozen in development.
+              const merged = existing != null ? existing.slice(0) : []
+              for (let i = 0; i < incoming.length; ++i) {
+                merged[((args?.offset as number) ?? 0) + i] = incoming[i]
+              }
+              return merged
+            }
+          }
+        }
+      }
     }
   })

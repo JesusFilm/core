@@ -65,15 +65,14 @@ export function VideoLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <VideoSearch title={title} setTitle={setTitle} />
+      <VideoSearch value={title} onChange={setTitle} />
+      {/* language */}
+      {/* currentLanguageIds value is temporary */}
       <VideoList
         onSelect={onSelect}
         currentLanguageIds={['529']}
         title={title}
       />
-      {/* language */}
-      {/* currentLanguageIds value is temporary */}
-      <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
     </Drawer>
   )
 }
