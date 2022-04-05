@@ -76,9 +76,9 @@ describe('Source', () => {
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Select Video' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
+    fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onChange).toHaveBeenCalledWith({
       videoId: '2_0-Brand_Video',
       videoVariantLanguageId: '529'
