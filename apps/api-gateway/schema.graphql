@@ -460,7 +460,7 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  video(id: ID!): Video! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
   videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
@@ -715,6 +715,7 @@ type Video
   image: String @join__field(graph: VIDEOS)
   playlist: [ID!] @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
+  seoTitle: String @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -864,7 +865,7 @@ type VideoTriggerBlock implements Block {
 type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
-  hls: String!
+  hls: String
   id: String!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!

@@ -1,5 +1,6 @@
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
+import slugify from 'slugify'
 import { ArangoDB } from './db'
 
 interface Video {
@@ -85,6 +86,7 @@ interface Video {
   variants?: VideoVariant[]
   tagIds: string[]
   playlist?: string[]
+  seoTitle: string
 }
 
 async function getLanguages(): Promise<Language[]> {
@@ -128,6 +130,28 @@ async function getMediaComponentLanguage(
     )
   ).json()
   return response._embedded.mediaComponentLanguage
+}
+
+const usedTitles: string[] = []
+
+function getIteration(slug: string): string {
+  const exists = usedTitles.find((t) => t === slug)
+  if (exists != null) {
+    const iteration = slug.match(/-(\d+)$/)
+    const title =
+      iteration == null
+        ? `${slug}-2`
+        : `${slug}-${parseInt(iteration[iteration.length - 1]) + 1}`
+    return getIteration(title)
+  }
+  return slug
+}
+
+function getSeoTitle(title: string): string {
+  const slug = slugify(title, { lower: true })
+  const newSlug = getIteration(slug)
+  usedTitles.push(newSlug)
+  return newSlug
 }
 
 async function digestContent(
@@ -182,7 +206,8 @@ async function digestContent(
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
-    variants
+    variants,
+    seoTitle: getSeoTitle(mediaComponent.title)
   }
 
   const video = await getVideo(mediaComponent.mediaComponentId)
@@ -297,7 +322,8 @@ async function digestSeriesContainer(
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
     playlist: [],
-    variants
+    variants,
+    seoTitle: getSeoTitle(mediaComponent.title)
   }
 }
 
@@ -352,6 +378,12 @@ async function main(): Promise<void> {
     type: 'persistent',
     fields: ['variants[*].languageId']
   })
+  await db.collection('videos').ensureIndex({
+    name: 'seo_title',
+    type: 'persistent',
+    fields: ['seoTitle'],
+    unique: true
+  })
 
   const view = {
     links: {
@@ -385,6 +417,9 @@ async function main(): Promise<void> {
             analyzers: ['identity']
           },
           playlist: {
+            analyzers: ['identity']
+          },
+          seoTitle: {
             analyzers: ['identity']
           }
         }

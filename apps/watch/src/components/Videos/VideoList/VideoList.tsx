@@ -28,6 +28,7 @@ export const GET_VIDEOS = gql`
         duration
       }
       playlist
+      seoTitle
     }
   }
 `

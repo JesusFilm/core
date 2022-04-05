@@ -3,46 +3,43 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideosFilter } from "./globalTypes";
-
 // ====================================================
-// GraphQL query operation: GetVideos
+// GraphQL query operation: GetVideo
 // ====================================================
 
-export interface GetVideos_videos_snippet {
+export interface GetVideo_video_description {
   __typename: "Translation";
   primary: boolean;
   value: string;
 }
 
-export interface GetVideos_videos_title {
+export interface GetVideo_video_title {
   __typename: "Translation";
   primary: boolean;
   value: string;
 }
 
-export interface GetVideos_videos_variant {
+export interface GetVideo_video_variant {
   __typename: "VideoVariant";
   duration: number;
+  hls: string | null;
 }
 
-export interface GetVideos_videos {
+export interface GetVideo_video {
   __typename: "Video";
   id: string;
   image: string | null;
-  snippet: GetVideos_videos_snippet[];
-  title: GetVideos_videos_title[];
-  variant: GetVideos_videos_variant | null;
+  description: GetVideo_video_description[];
+  title: GetVideo_video_title[];
+  variant: GetVideo_video_variant | null;
   playlist: string[] | null;
   seoTitle: string | null;
 }
 
-export interface GetVideos {
-  videos: GetVideos_videos[];
+export interface GetVideo {
+  video: GetVideo_video;
 }
 
-export interface GetVideosVariables {
-  where?: VideosFilter | null;
-  page?: number | null;
-  limit?: number | null;
+export interface GetVideoVariables {
+  id: string;
 }

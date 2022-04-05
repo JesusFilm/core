@@ -2,6 +2,11 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
+enum IdType {
+  databaseId
+  slug
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   primaryLanguageId: ID!
@@ -12,6 +17,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   playlist: [ID!]
+  seoTitle: String
 }
 
 input VideosFilter {
@@ -24,5 +30,5 @@ input VideosFilter {
 
 extend type Query {
   videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
-  video(id: ID!): Video!
+  video(id: ID!, idType: IdType): Video!
 }

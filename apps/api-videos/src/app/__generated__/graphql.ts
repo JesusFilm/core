@@ -7,6 +7,11 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum IdType {
+    databaseId = "databaseId",
+    slug = "slug"
+}
+
 export enum VideoVariantDownloadQuality {
     low = "low",
     high = "high"
@@ -38,6 +43,7 @@ export class Video {
     image?: Nullable<string>;
     variantLanguages: Language[];
     playlist?: Nullable<string[]>;
+    seoTitle?: Nullable<string>;
     variant?: Nullable<VideoVariant>;
 }
 
@@ -51,7 +57,7 @@ export class VideoVariantDownload {
 export class VideoVariant {
     __typename?: 'VideoVariant';
     id: string;
-    hls: string;
+    hls?: Nullable<string>;
     downloads: VideoVariantDownload[];
     duration: number;
     language: Language;
@@ -65,7 +71,7 @@ export class Language {
 export abstract class IQuery {
     abstract videos(where?: Nullable<VideosFilter>, page?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
-    abstract video(id: string): Video | Promise<Video>;
+    abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
 }
 
 type Nullable<T> = T | null;

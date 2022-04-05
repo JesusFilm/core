@@ -4,6 +4,11 @@ type Translation {
   primary: Boolean!
 }
 
+enum IdType {
+  databaseId
+  slug
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   primaryLanguageId: ID!
@@ -14,6 +19,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   playlist: [ID!]
+  seoTitle: String
   variant(languageId: ID): VideoVariant
 }
 
@@ -38,7 +44,7 @@ type VideoVariantDownload {
 
 type VideoVariant {
   id: String!
-  hls: String!
+  hls: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -51,5 +57,5 @@ extend type Language @key(fields: "id") {
 
 extend type Query {
   videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
-  video(id: ID!): Video!
+  video(id: ID!, idType: IdType): Video!
 }

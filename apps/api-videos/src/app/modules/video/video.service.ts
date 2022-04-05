@@ -74,7 +74,8 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist
+        playlist: item.playlist,
+        seoTitle: item.seoTitle
       }
     `)
     return await res.all()
@@ -102,7 +103,40 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        playlist: item.playlist
+        playlist: item.playlist,
+        seoTitle: item.seoTitle
+      }
+    `)
+    return await res.next()
+  }
+
+  @KeyAsId()
+  async getVideoBySeoTitle<T>(
+    seoTitle: string,
+    variantLanguageId?: string
+  ): Promise<T> {
+    const res = await this.db.query(aql`
+    FOR item in ${this.collection}
+      FILTER item.seoTitle == ${seoTitle}
+      LIMIT 1
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        playlist: item.playlist,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${
+            variantLanguageId ?? null
+          }, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
+        ],
+        playlist: item.playlist,
+        seoTitle: item.seoTitle
       }
     `)
     return await res.next()

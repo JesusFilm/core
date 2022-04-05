@@ -1,5 +1,5 @@
 import { Resolver, Query, Args, Info, ResolveReference } from '@nestjs/graphql'
-import { Video, VideosFilter } from '../../__generated__/graphql'
+import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
@@ -30,11 +30,17 @@ export class VideoResolver {
   }
 
   @Query()
-  async video(@Info() info, @Args('id') id: string): Promise<Video> {
+  async video(
+    @Info() info,
+    @Args('id') id: string,
+    @Args('idType') idType: IdType = IdType.databaseId
+  ): Promise<Video> {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return await this.videoService.getVideo(id, variantLanguageId)
+    return idType === IdType.databaseId
+      ? await this.videoService.getVideo(id, variantLanguageId)
+      : await this.videoService.getVideoBySeoTitle(id, variantLanguageId)
   }
 
   @ResolveReference()

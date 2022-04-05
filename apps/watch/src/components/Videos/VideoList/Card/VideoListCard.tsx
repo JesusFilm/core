@@ -8,6 +8,7 @@ import {
   Typography
 } from '@mui/material'
 import { secondsToTimeFormat } from '@core/shared/ui'
+import Link from 'next/link'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 
@@ -21,37 +22,41 @@ export function VideoListCard({
   disabled = false
 }: VideoListCardProps): ReactElement {
   return (
-    <Card sx={{ width: 300, height: 315, my: 5, mr: 20 }}>
-      {video == null && (
-        <>
-          <CardMedia
-            component="img"
-            image="/loading-blurhash.png"
-            height="140"
-          />
-          <CardContent>
-            <LinearProgress />
-          </CardContent>
-        </>
-      )}
-      {video != null && (
-        <CardActionArea>
-          <CardMedia component="img" image={video.image ?? ''} height="140" />
-          <CardContent>
-            <Typography variant="subtitle2">{video.title[0].value}</Typography>
-            {video.playlist == null && (
-              <Typography variant="caption">
-                {secondsToTimeFormat(video.variant?.duration ?? 0)}
+    <Link href={`/${video?.seoTitle ?? ''}`} passHref={true}>
+      <Card sx={{ width: 300, height: 315, my: 5, mr: 20 }}>
+        {video == null && (
+          <>
+            <CardMedia
+              component="img"
+              image="/loading-blurhash.png"
+              height="140"
+            />
+            <CardContent>
+              <LinearProgress />
+            </CardContent>
+          </>
+        )}
+        {video != null && (
+          <CardActionArea>
+            <CardMedia component="img" image={video.image ?? ''} height="140" />
+            <CardContent>
+              <Typography variant="subtitle2">
+                {video.title[0].value}
               </Typography>
-            )}
-            {video.playlist != null && video.playlist.length > 0 && (
-              <Typography variant="caption">
-                {video.playlist.length} episodes
-              </Typography>
-            )}
-          </CardContent>
-        </CardActionArea>
-      )}
-    </Card>
+              {video.playlist == null && (
+                <Typography variant="caption">
+                  {secondsToTimeFormat(video.variant?.duration ?? 0)}
+                </Typography>
+              )}
+              {video.playlist != null && video.playlist.length > 0 && (
+                <Typography variant="caption">
+                  {video.playlist.length} episodes
+                </Typography>
+              )}
+            </CardContent>
+          </CardActionArea>
+        )}
+      </Card>
+    </Link>
   )
 }
