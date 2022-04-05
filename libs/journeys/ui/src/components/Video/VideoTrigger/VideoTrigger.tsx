@@ -1,7 +1,7 @@
 import videojs from 'video.js'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
-import { TreeBlock, handleAction } from '../../..'
+import { TreeBlock, handleAction, useEditor } from '../../..'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
 export interface VideoTriggerProps extends TreeBlock<VideoTriggerFields> {
@@ -15,6 +15,8 @@ export function VideoTrigger({
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
   const [triggered, setTriggered] = useState(false)
+  const { state } = useEditor()
+  const editorMode = state.selectedBlock != null
 
   useEffect(() => {
     if (player != null && !triggered) {
@@ -24,16 +26,19 @@ export function VideoTrigger({
           player.pause()
           if (player.isFullscreen()) {
             player.exitFullscreen()
-            setTimeout(() => handleAction(router, triggerAction), 1000)
+            setTimeout(
+              () => handleAction(router, editorMode, triggerAction),
+              1000
+            )
           } else {
-            handleAction(router, triggerAction)
+            handleAction(router, editorMode, triggerAction)
           }
         }
       }
       player.on('timeupdate', timeUpdate)
       return () => player.off('timeupdate', timeUpdate)
     }
-  }, [player, triggerStart, router, triggerAction, triggered])
+  }, [player, triggerStart, router, triggerAction, triggered, editorMode])
 
   return <></>
 }

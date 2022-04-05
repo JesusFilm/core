@@ -92,6 +92,7 @@ export const SignUp = ({
   const {
     state: { selectedBlock }
   } = useEditor()
+  const editorMode = selectedBlock != null
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -104,7 +105,7 @@ export const SignUp = ({
           if (selectedBlock === undefined) {
             // TODO: Handle server error responses when available
             void onSubmitHandler(values).then(() => {
-              handleAction(router, action)
+              handleAction(router, editorMode, action)
             })
           }
         }}

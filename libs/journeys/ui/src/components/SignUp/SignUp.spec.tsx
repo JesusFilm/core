@@ -152,6 +152,7 @@ describe('SignUp', () => {
         {
           push: expect.any(Function)
         },
+        false,
         {
           __typename: 'LinkAction',
           parentBlockId: 'signUp0.id',

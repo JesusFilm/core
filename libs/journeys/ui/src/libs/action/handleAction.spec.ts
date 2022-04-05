@@ -22,7 +22,6 @@ describe('handleAction', () => {
   const editorMode = false
 
   it('should handle empty action', () => {
-    const editorMode = false
     expect(() => handleAction(router, editorMode)).not.toThrowError()
   })
 
