@@ -3,14 +3,14 @@ import Drawer from '@mui/material/Drawer'
 import { AuthUser } from 'next-firebase-auth'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { styled, Theme } from '@mui/material/styles'
-import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
 import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
@@ -62,10 +62,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen
-      }),
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(18)
-      }
+      })
     })
   }
 }))
@@ -96,121 +93,60 @@ export function NavigationDrawer({
       variant={smUp ? 'permanent' : 'temporary'}
       anchor="left"
     >
-      <Box
+      <List
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          width: DRAWER_WIDTH,
-          height: '100%'
+          '> .MuiListItemButton-root, > .MuiListItem-root': {
+            pl: 0,
+            mb: 6,
+            '> .MuiListItemIcon-root': {
+              color: 'secondary.light',
+              minWidth: 'unset',
+              width: '72px',
+              justifyContent: 'center'
+            }
+          }
         }}
       >
-        <List>
-          <ListItemButton
-            onClick={() => onClose(!open)}
+        <ListItemButton onClick={() => onClose(!open)}>
+          <ListItemIcon
             sx={{
-              px: 6,
-              mt: 1,
-              mb: 5.5
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
+              '> .MuiSvgIcon-root': {
                 color: 'secondary.dark',
                 backgroundColor: 'secondary.light',
-                '&:hover': {
-                  backgroundColor: 'secondary.light'
-                },
-                mr: 'auto',
                 borderRadius: 2
-              }}
-            >
-              {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+              }
+            }}
+          >
+            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
+          </ListItemIcon>
+        </ListItemButton>
+        <Link href="/" passHref>
+          <ListItemButton>
+            <ListItemIcon>
+              <ExploreRoundedIcon />
             </ListItemIcon>
+            <Typography variant="h5" sx={{ color: 'secondary.light' }}>
+              Discover
+            </Typography>
           </ListItemButton>
-          <Link href="/" passHref>
-            <ListItemButton
-              sx={{
-                color: 'secondary.light',
-                fontSize: 28,
-                px: 5.4,
-                my: 5.5
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  justifyContent: 'center',
-                  mr: 6
-                }}
-              >
-                <ExploreRoundedIcon
-                  fontSize="inherit"
-                  sx={{
-                    color: 'secondary.light'
-                  }}
-                />
-              </ListItemIcon>
-              <Typography variant="h5">Discover</Typography>
-            </ListItemButton>
-          </Link>
-        </List>
+        </Link>
         {authUser != null && data?.me != null && (
           <>
-            <Divider sx={{ borderColor: 'secondary.main' }} />
-            <List
-              sx={{
-                flexGrow: 1
-              }}
-            >
-              <ListItemButton
-                sx={{
-                  flexGrow: 1,
-                  color: 'secondary.light',
-                  px: 6,
-                  my: 5.5
-                }}
-                onClick={handleProfileClick}
-              >
+            <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
+            <ListItemButton onClick={handleProfileClick}>
+              <ListItemIcon>
                 <Avatar
                   alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
                   src={data.me.imageUrl ?? undefined}
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    mr: 6.5
-                  }}
+                  sx={{ width: 24, height: 24 }}
                 />
-                <Typography variant="h5">Profile</Typography>
-              </ListItemButton>
-            </List>
-            <Toolbar
-              sx={{
-                border: 'transparent',
-                mx: smUp ? 2 : 2,
-                mb: 8
-              }}
-            >
-              <Box
-                sx={{
-                  mr: 5.5
-                }}
-              >
-                <Image
-                  src={taskbarIcon}
-                  width={32}
-                  height={32}
-                  layout="fixed"
-                  alt="Next Steps"
-                />
-              </Box>
-              <Typography
-                variant="h5"
-                sx={{ color: 'secondary.contrastText' }}
-              >
-                NextSteps
+              </ListItemIcon>
+              <Typography variant="h5" sx={{ color: 'secondary.light' }}>
+                Profile
               </Typography>
-            </Toolbar>
+            </ListItemButton>
             <UserMenu
               user={data.me}
               profileOpen={profileOpen}
@@ -220,7 +156,39 @@ export function NavigationDrawer({
             />
           </>
         )}
-      </Box>
+      </List>
+      <Box sx={{ flexGrow: 1 }} />
+      <List
+        sx={{
+          '> .MuiListItem-root': {
+            pl: 0,
+            mb: 6,
+            '> .MuiListItemIcon-root': {
+              minWidth: 'unset',
+              width: '72px',
+              justifyContent: 'center'
+            }
+          }
+        }}
+      >
+        <ListItem>
+          <ListItemIcon>
+            <Image
+              src={taskbarIcon}
+              width={32}
+              height={32}
+              layout="fixed"
+              alt="Next Steps"
+            />
+          </ListItemIcon>
+          <Typography
+            variant="h5"
+            sx={{ color: 'secondary.contrastText', textTransform: 'uppercase' }}
+          >
+            NextSteps
+          </Typography>
+        </ListItem>
+      </List>
     </StyledNavigationDrawer>
   )
 }
