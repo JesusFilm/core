@@ -124,14 +124,14 @@ describe('VideoService', () => {
       expect(await service.filterAll()).toEqual([])
     })
 
-    it('should query with page', async () => {
+    it('should query with offset', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(DEFAULT_QUERY)
         expect(bindVars).toEqual({ value0: 200, value1: 100, value2: null })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterAll({ page: 3 })).toEqual([])
+      expect(await service.filterAll({ offset: 200 })).toEqual([])
     })
 
     it('should query with limit', async () => {

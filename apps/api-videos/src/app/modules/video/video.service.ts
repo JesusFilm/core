@@ -8,7 +8,7 @@ interface VideosFilter {
   title?: string
   availableVariantLanguageIds?: string[]
   variantLanguageId?: string
-  page?: number
+  offset?: number
   limit?: number
 }
 @Injectable()
@@ -21,10 +21,9 @@ export class VideoService extends BaseService {
       title,
       availableVariantLanguageIds = [],
       variantLanguageId,
-      page = 1,
+      offset = 0,
       limit = 100
     } = filter ?? {}
-    const offset = limit * (page - 1)
     const videosView = this.db.view('videosView')
     const search = aql.join(
       [
