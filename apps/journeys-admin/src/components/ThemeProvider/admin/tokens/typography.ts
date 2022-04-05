@@ -35,14 +35,15 @@ export const adminTypography: Pick<ThemeOptions, 'typography'> = {
     h5: {
       fontSize: 18,
       fontWeight: 800,
-      lineHeight: '23px'
+      lineHeight: '23px',
+      textTransform: 'none'
     },
     h6: {
-      fontSize: 14,
-      fontWeight: 600,
-      lineHeight: '20px',
-      letterSpacing: 2,
-      textTransform: 'uppercase'
+      fontSize: 20,
+      fontWeight: 700,
+      lineHeight: '23px',
+      letterSpacing: 0,
+      textTransform: 'none'
     },
     subtitle1: {
       fontSize: 18,
