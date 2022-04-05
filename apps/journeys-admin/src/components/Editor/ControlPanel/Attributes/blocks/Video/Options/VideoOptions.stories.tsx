@@ -6,6 +6,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoDetails/VideoDetails'
+import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
 import { VideoOptions } from './VideoOptions'
 
 const VideoOptionsStory = {
@@ -43,8 +46,62 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
-export const Default: Story = ({ ...args }) => (
-  <MockedProvider>
+export const Default: Story = () => (
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_VIDEOS,
+          variables: {
+            where: {
+              availableVariantLanguageIds: ['529'],
+              title: null
+            }
+          }
+        },
+        result: {
+          data: {
+            videos: [...videos, ...videos, ...videos]
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: {
+            id: '2_Acts7302-0-0'
+          }
+        },
+        result: {
+          data: {
+            video: {
+              id: '2_Acts7302-0-0',
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+              primaryLanguageId: '529',
+              title: [
+                {
+                  primary: true,
+                  value: 'Jesus Taken Up Into Heaven'
+                }
+              ],
+              description: [
+                {
+                  primary: true,
+                  value:
+                    'Jesus promises the Holy Spirit; then ascends into the clouds.'
+                }
+              ],
+              variant: {
+                duration: 144,
+                hls: 'https://arc.gt/opsgn'
+              }
+            }
+          }
+        }
+      }
+    ]}
+  >
     <ThemeProvider>
       <EditorProvider
         initialState={{

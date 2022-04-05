@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 
@@ -50,21 +50,6 @@ describe('VideoBlockEditor', () => {
       )
       expect(getByText('Select Video File')).toBeInTheDocument()
     })
-
-    it('has settings disabled', async () => {
-      const { getByTestId } = render(
-        <ThemeProvider>
-          <MockedProvider>
-            <VideoBlockEditor
-              selectedBlock={null}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          </MockedProvider>
-        </ThemeProvider>
-      )
-      expect(getByTestId('videoSettingsTab')).toBeDisabled()
-    })
   })
 
   describe('existing block', () => {
@@ -84,8 +69,9 @@ describe('VideoBlockEditor', () => {
       fireEvent.click(button)
       expect(onDelete).toHaveBeenCalledWith()
     })
+
     it('has settings enabled', async () => {
-      const { getByTestId } = render(
+      const { getByRole } = render(
         <ThemeProvider>
           <MockedProvider>
             <VideoBlockEditor
@@ -96,24 +82,7 @@ describe('VideoBlockEditor', () => {
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByTestId('videoSettingsTab')).toBeEnabled()
-    })
-    it('can switch to settings on Mobile', async () => {
-      const { getByTestId } = render(
-        <ThemeProvider>
-          <MockedProvider>
-            <VideoBlockEditor
-              selectedBlock={video}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          </MockedProvider>
-        </ThemeProvider>
-      )
-      await fireEvent.click(getByTestId('videoSettingsTab'))
-      await waitFor(() =>
-        expect(getByTestId('videoSettingsMobile')).toBeInTheDocument()
-      )
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
     })
   })
 })
