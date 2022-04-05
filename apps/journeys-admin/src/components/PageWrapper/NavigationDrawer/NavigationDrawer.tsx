@@ -22,7 +22,7 @@ import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { UserMenu } from './UserMenu'
 
-const drawerWidth = '237px'
+const DRAWER_WIDTH = '237px'
 
 export interface NavigationDrawerProps {
   open: boolean
@@ -43,29 +43,28 @@ export const GET_ME = gql`
 `
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: drawerWidth,
+  width: DRAWER_WIDTH,
   display: 'flex',
   boxSizing: 'border-box',
   border: 0,
   '& .MuiDrawer-paper': {
     backgroundColor: theme.palette.secondary.dark,
+    overflowX: 'hidden',
     ...(open === true && {
-      width: drawerWidth,
+      width: DRAWER_WIDTH,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen
-      }),
-      overflowX: 'hidden'
+      })
     }),
     ...(open === false && {
+      width: theme.spacing(18),
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen
       }),
-      overflowX: 'hidden',
-      width: `calc(${theme.spacing(18)})`,
       [theme.breakpoints.up('sm')]: {
-        width: `calc(${theme.spacing(18)})`
+        width: theme.spacing(18)
       }
     })
   }
@@ -97,125 +96,131 @@ export function NavigationDrawer({
       variant={smUp ? 'permanent' : 'temporary'}
       anchor="left"
     >
-      <List>
-        <ListItemButton
-          onClick={() => onClose(!open)}
-          sx={{
-            justifyContent: open ? 'initial' : 'center',
-            px: 8,
-            mt: 1,
-            mb: 5.5
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              minWidth: 0,
-              color: 'secondary.dark',
-              backgroundColor: 'secondary.light',
-              '&:hover': {
-                backgroundColor: 'secondary.light'
-              },
-              mr: 'auto',
-              borderRadius: 2
-            }}
-          >
-            {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
-          </ListItemIcon>
-        </ListItemButton>
-        <Link href="/" passHref>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: DRAWER_WIDTH,
+          height: '100%'
+        }}
+      >
+        <List>
           <ListItemButton
+            onClick={() => onClose(!open)}
             sx={{
-              justifyContent: open ? 'initial' : 'center',
-              color: 'secondary.light',
-              fontSize: 28,
-              px: 7.3,
-              my: 5.5
+              px: 6,
+              mt: 1,
+              mb: 5.5
             }}
           >
             <ListItemIcon
               sx={{
                 minWidth: 0,
-                mr: open ? 4.3 : 'auto',
-                justifyContent: 'center'
+                color: 'secondary.dark',
+                backgroundColor: 'secondary.light',
+                '&:hover': {
+                  backgroundColor: 'secondary.light'
+                },
+                mr: 'auto',
+                borderRadius: 2
               }}
             >
-              <ExploreRoundedIcon
-                fontSize="inherit"
-                sx={{
-                  color: 'secondary.light'
-                }}
-              />
+              {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
             </ListItemIcon>
-            {open && <Typography variant="h5">Discover</Typography>}
           </ListItemButton>
-        </Link>
-      </List>
-      {authUser != null && data?.me != null && (
-        <>
-          <Divider variant="middle" sx={{ borderColor: 'secondary.main' }} />
-          <List
-            sx={{
-              flexGrow: 1
-            }}
-          >
+          <Link href="/" passHref>
             <ListItemButton
               sx={{
-                flexGrow: 1,
-                justifyContent: open ? 'initial' : 'center',
                 color: 'secondary.light',
-                px: 8,
+                fontSize: 28,
+                px: 5.4,
                 my: 5.5
               }}
-              onClick={handleProfileClick}
             >
-              <Avatar
-                alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
-                src={data.me.imageUrl ?? undefined}
+              <ListItemIcon
                 sx={{
-                  width: 24,
-                  height: 24,
-                  mr: open ? 5 : 'auto'
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  mr: 6
                 }}
-              />
-              {open && <Typography variant="h5">Profile</Typography>}
+              >
+                <ExploreRoundedIcon
+                  fontSize="inherit"
+                  sx={{
+                    color: 'secondary.light'
+                  }}
+                />
+              </ListItemIcon>
+              <Typography variant="h5">Discover</Typography>
             </ListItemButton>
-          </List>
-          <Toolbar
-            sx={{
-              border: 'transparent',
-              justifyContent: open ? 'initial' : 'center',
-              mx: smUp ? 5 : 2,
-              mb: 8
-            }}
-          >
-            <Box
+          </Link>
+        </List>
+        {authUser != null && data?.me != null && (
+          <>
+            <Divider sx={{ borderColor: 'secondary.main' }} />
+            <List
               sx={{
-                mr: open ? 5 : 'auto'
+                flexGrow: 1
               }}
             >
-              <Image
-                src={taskbarIcon}
-                width={32}
-                height={32}
-                layout="fixed"
-                alt="Next Steps"
-              />
-            </Box>
-            {open && (
-              <Typography variant="h5" sx={{ color: 'secondary.contrastText' }}>
+              <ListItemButton
+                sx={{
+                  flexGrow: 1,
+                  color: 'secondary.light',
+                  px: 6,
+                  my: 5.5
+                }}
+                onClick={handleProfileClick}
+              >
+                <Avatar
+                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+                  src={data.me.imageUrl ?? undefined}
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    mr: 6.5
+                  }}
+                />
+                <Typography variant="h5">Profile</Typography>
+              </ListItemButton>
+            </List>
+            <Toolbar
+              sx={{
+                border: 'transparent',
+                mx: smUp ? 2 : 2,
+                mb: 8
+              }}
+            >
+              <Box
+                sx={{
+                  mr: 5.5
+                }}
+              >
+                <Image
+                  src={taskbarIcon}
+                  width={32}
+                  height={32}
+                  layout="fixed"
+                  alt="Next Steps"
+                />
+              </Box>
+              <Typography
+                variant="h5"
+                sx={{ color: 'secondary.contrastText' }}
+              >
                 NextSteps
               </Typography>
-            )}
-          </Toolbar>
-          <UserMenu
-            user={data.me}
-            profileOpen={profileOpen}
-            profileAnchorEl={profileAnchorEl}
-            handleProfileClose={handleProfileClose}
-            authUser={authUser}
-          />
-        </>
-      )}
+            </Toolbar>
+            <UserMenu
+              user={data.me}
+              profileOpen={profileOpen}
+              profileAnchorEl={profileAnchorEl}
+              handleProfileClose={handleProfileClose}
+              authUser={authUser}
+            />
+          </>
+        )}
+      </Box>
     </StyledNavigationDrawer>
   )
 }
