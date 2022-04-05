@@ -1,5 +1,9 @@
-import { Create } from '@mui/icons-material'
-import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material'
+import Create from '@mui/icons-material/Create'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
 import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -62,7 +66,7 @@ export function VideoBlockEditorSettingsPoster({
                     ? theme.palette.action.disabled
                     : theme.palette.primary.main
                 }}
-              ></Create>
+              />
             </IconButton>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={selectedBlock}

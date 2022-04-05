@@ -10,22 +10,18 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../../../libs/context'
 import { Drawer } from '../../../../../Drawer'
 import { BackgroundColor } from '.'
 
 const BackgroundColorStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: BackgroundColor,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor',
   parameters: {
-    ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      viewports: [360, 600]
-    }
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
   }
 }
 

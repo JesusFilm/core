@@ -1,5 +1,5 @@
 import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
-import { CurrentUserId, KeyAsId } from '@core/nest/decorators'
+import { CurrentUserId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { User } from '../../__generated__/graphql'
@@ -12,7 +12,6 @@ export class UserResolver {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  @KeyAsId()
   async me(@CurrentUserId() userId: string): Promise<User> {
     const existingUser: User = await this.userService.getByUserId(userId)
 
@@ -37,7 +36,6 @@ export class UserResolver {
   }
 
   @ResolveReference()
-  @KeyAsId()
   async resolveReference(reference: {
     __typename: string
     id: string

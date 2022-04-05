@@ -15,6 +15,7 @@ import {
 import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../PageWrapper'
 import { JourneyEdit } from './JourneyEdit'
+import { EditToolbar } from './EditToolbar'
 import { Editor } from '.'
 
 const EditorStory = {
@@ -357,10 +358,16 @@ const blocks: GetJourney_journey_blocks[] = [
     parentOrder: 0,
     autoplay: false,
     muted: true,
-    title: 'video1',
-    videoContent: {
-      __typename: 'VideoArclight',
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    videoId: '2_0-FallingPlates',
+    videoVariantLanguageId: '529',
+    video: {
+      __typename: 'Video',
+      id: '2_0-FallingPlates',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '2_0-FallingPlates-529',
+        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      }
     },
     startAt: null,
     endAt: null,
@@ -528,6 +535,7 @@ const Template: Story = () => (
       <PageWrapper
         title="NUA Journey: Ep.3 – Decision"
         showDrawer
+        Menu={<EditToolbar />}
         backHref="/journeys/nua-journey-ep-3-decision"
       >
         <JourneyEdit />

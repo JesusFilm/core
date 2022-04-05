@@ -1,7 +1,6 @@
 import { UserInputError } from 'apollo-server-errors'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, ResolveField, Resolver, Parent } from '@nestjs/graphql'
-import { IdAsKey, KeyAsId } from '@core/nest/decorators'
 import {
   Action,
   ButtonBlock,
@@ -33,7 +32,6 @@ export class ButtonBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  @IdAsKey()
   async buttonBlockCreate(
     @Args('input') input: ButtonBlockCreateInput & { __typename }
   ): Promise<ButtonBlock> {
@@ -49,7 +47,6 @@ export class ButtonBlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )

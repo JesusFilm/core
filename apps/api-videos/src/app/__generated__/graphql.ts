@@ -27,6 +27,7 @@ export class Translation {
 export class Video {
     __typename?: 'Video';
     id: string;
+    primaryLanguageId: string;
     title: Translation[];
     snippet: Translation[];
     description: Translation[];
@@ -45,6 +46,7 @@ export class VideoVariantDownload {
 
 export class VideoVariant {
     __typename?: 'VideoVariant';
+    id: string;
     hls: string;
     downloads: VideoVariantDownload[];
     duration: number;

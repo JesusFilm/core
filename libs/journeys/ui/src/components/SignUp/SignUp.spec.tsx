@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { TreeBlock, handleAction, EditorProvider } from '../..'
+import { TreeBlock, handleAction } from '../..'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
@@ -164,37 +164,4 @@ describe('SignUp', () => {
 
   // it('should show error when submit fails', async () => {
   // })
-})
-
-describe('Admin SignUp', () => {
-  it('should edit submit button label on click', () => {
-    const { getByTestId } = render(
-      <MockedProvider mocks={[]}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              id: 'card0.id',
-              __typename: 'CardBlock',
-              parentBlockId: 'step0.id',
-              coverBlockId: null,
-              parentOrder: 0,
-              backgroundColor: null,
-              themeMode: null,
-              themeName: null,
-              fullscreen: false,
-              children: [block]
-            }
-          }}
-        >
-          <SignUp {...block} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('signUp-signUp0.id'))
-    expect(getByTestId('signUp-signUp0.id')).toHaveStyle(
-      'outline: 3px solid #C52D3A'
-    )
-    // Implement edit
-  })
 })

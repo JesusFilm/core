@@ -23,7 +23,7 @@ services:
     environment:
       KUBECONFIG: /workspaces/core/.kube/config
   arangodb:
-    image: arangodb/arangodb
+    image: arangodb/arangodb:3.8.6
     volumes:
       - arango-data:/var/lib/arangodb3
     environment:

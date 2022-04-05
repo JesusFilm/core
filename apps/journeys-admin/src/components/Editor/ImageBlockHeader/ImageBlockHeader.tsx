@@ -1,5 +1,8 @@
-import { DeleteOutline } from '@mui/icons-material'
-import { Box, IconButton, Stack, Typography } from '@mui/material'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
@@ -55,7 +58,7 @@ export function ImageBlockHeader({
         {showDelete && (
           <Stack direction="column" justifyContent="center">
             <IconButton onClick={onDelete} data-testid="imageBlockHeaderDelete">
-              <DeleteOutline color="primary"></DeleteOutline>
+              <DeleteOutline color="primary" />
             </IconButton>
           </Stack>
         )}

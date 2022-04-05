@@ -1,229 +1,130 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import {
+  VideoBlock,
+  VideoBlockCreateInput,
+  VideoBlockUpdateInput
+} from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { VideoBlockResolver, VideoArclightResolver } from './video.resolver'
+import { VideoBlockResolver } from './video.resolver'
 
 describe('VideoBlockResolver', () => {
-  let blockResolver: BlockResolver,
-    resolver: VideoBlockResolver,
-    videoArclightResolver: VideoArclightResolver,
-    service: BlockService
+  let resolver: VideoBlockResolver, service: BlockService
 
-  const block1 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529',
-      src: ''
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: true
+  const blockCreate: VideoBlockCreateInput = {
+    id: 'abc',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId'
   }
 
-  const blockResponse1 = {
-    id: '1',
-    journeyId: '2',
+  const createdBlock: VideoBlock = {
+    id: 'abc',
     __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529',
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullscreen: true
-  }
-
-  const block2 = {
-    _key: '1',
-    journeyId: '2',
-    __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: true
-  }
-
-  const blockResponse2 = {
-    id: '1',
-    journeyId: '2',
-    __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      src: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: true
-  }
-
-  const blockCreate = {
-    __typename: '',
-    journeyId: '2',
-    parentBlockId: '3',
     parentOrder: 0,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
-    },
-    title: 'title',
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId'
+  }
+
+  const blockUpdate: VideoBlockUpdateInput = {
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId',
+    startAt: 5,
+    endAt: 10,
+    muted: true,
+    autoplay: true,
     posterBlockId: 'posterBlockId',
     fullsize: true
   }
 
-  const blockCreateResponse = {
-    journeyId: '2',
+  const updatedBlock: VideoBlock = {
+    id: 'abc',
     __typename: 'VideoBlock',
-    parentBlockId: '3',
-    parentOrder: 1,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: true
-  }
-
-  const blockUpdate = {
-    __typename: 'VideoBlock',
-    journeyId: '2',
-    parentBlockId: '3',
     parentOrder: 0,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
-    },
-    title: 'title',
+    journeyId: 'journeyId',
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId',
+    startAt: 5,
+    endAt: 10,
+    muted: true,
+    autoplay: true,
     posterBlockId: 'posterBlockId',
     fullsize: true
   }
 
-  const blockUpdateResponse = {
-    __typename: 'VideoBlock',
-    journeyId: '2',
-    parentBlockId: '3',
-    parentOrder: 0,
-    videoContent: {
-      mediaComponentId: '2_0-FallingPlates',
-      languageId: '529'
-    },
-    title: 'title',
-    posterBlockId: 'posterBlockId',
-    fullsize: true
-  }
+  beforeEach(async () => {
+    const blockService = {
+      provide: BlockService,
+      useFactory: () => ({
+        save: jest.fn((input) => createdBlock),
+        update: jest.fn((id, input) => updatedBlock),
+        getSiblings: jest.fn(() => [])
+      })
+    }
 
-  describe('VideoBlock Arclight', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          VideoArclightResolver,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
-      }).compile()
-      videoArclightResolver = module.get<VideoArclightResolver>(
-        VideoArclightResolver
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        BlockResolver,
+        blockService,
+        VideoBlockResolver,
+        UserJourneyService,
+        {
+          provide: 'DATABASE',
+          useFactory: () => mockDeep<Database>()
+        }
+      ]
+    }).compile()
+    resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
+    service = await module.resolve(BlockService)
+  })
+
+  describe('videoBlockCreate', () => {
+    it('creates a VideoBlock', async () => {
+      await resolver.videoBlockCreate(blockCreate)
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreate.journeyId,
+        blockCreate.parentBlockId
       )
-    })
-    it('returns VideoBlock with Arclight', async () => {
-      expect(await videoArclightResolver.src(block1.videoContent)).toEqual(
-        blockResponse1.videoContent.src
-      )
+      expect(service.save).toHaveBeenCalledWith(createdBlock)
     })
   })
 
-  describe('VideoBlock', () => {
-    beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => block2)
-        })
-      }
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          blockService,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-    })
-    it('returns VideoBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(blockResponse2)
+  describe('videoBlockUpdate', () => {
+    it('updates a VideoBlock', async () => {
+      expect(
+        await resolver.videoBlockUpdate('blockId', 'journeyId', blockUpdate)
+      ).toEqual(updatedBlock)
     })
   })
 
-  describe('Create Update', () => {
-    beforeEach(async () => {
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          save: jest.fn((input) => input),
-          update: jest.fn((input) => input),
-          getSiblings: jest.fn(() => [blockCreate])
+  describe('video', () => {
+    it('returns video for external resolution', async () => {
+      expect(await resolver.video(createdBlock)).toEqual({
+        __typename: 'Video',
+        id: 'videoId',
+        primaryLanguageId: 'videoVariantLanguageId'
+      })
+    })
+
+    it('returns null if videoId is not set', async () => {
+      expect(
+        await resolver.video({ ...createdBlock, videoId: undefined })
+      ).toEqual(null)
+    })
+
+    it('returns null if videoVariantLanguageId is not set', async () => {
+      expect(
+        await resolver.video({
+          ...createdBlock,
+          videoVariantLanguageId: undefined
         })
-      }
-
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          BlockResolver,
-          blockService,
-          VideoBlockResolver,
-          UserJourneyService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
-      }).compile()
-      blockResolver = module.get<BlockResolver>(BlockResolver)
-      resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
-      service = await module.resolve(BlockService)
-    })
-    describe('videoBlockCreate', () => {
-      it('creates a VideoBlock', async () => {
-        await resolver
-          .videoBlockCreate(blockCreate)
-          .catch((err) => console.log(err))
-        expect(service.getSiblings).toHaveBeenCalledWith(
-          blockCreate.journeyId,
-          blockCreate.parentBlockId
-        )
-        expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
-      })
-    })
-
-    describe('videoBlockUpdate', () => {
-      it('updates a VideoBlock', async () => {
-        resolver
-          .videoBlockUpdate('1', '2', blockUpdate)
-          .catch((err) => console.log(err))
-        expect(service.update).toHaveBeenCalledWith('1', blockUpdateResponse)
-      })
+      ).toEqual(null)
     })
   })
 })

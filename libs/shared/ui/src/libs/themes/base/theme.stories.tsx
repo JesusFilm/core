@@ -6,23 +6,19 @@ import {
   useTheme,
   PaletteColor,
   PaletteOptions,
-  SimplePaletteColorOptions
+  SimplePaletteColorOptions,
+  Breakpoint
 } from '@mui/material/styles'
-import { Breakpoint } from '@mui/system'
 
-import { sharedUiConfig, themes, useBreakpoints } from '../../../index'
+import { simpleComponentConfig, themes, useBreakpoints } from '../../../index'
 
 const ThemeDemo = {
-  ...sharedUiConfig,
+  ...simpleComponentConfig,
   component: Typography,
   title: 'Default Theme',
   parameters: {
-    ...sharedUiConfig.parameters,
-    theme: 'dark',
-    chromatic: {
-      ...sharedUiConfig.parameters.chromatic,
-      viewports: [600]
-    }
+    ...simpleComponentConfig.parameters,
+    theme: 'dark'
   }
 }
 
@@ -111,6 +107,7 @@ const ColorTokens = ({
                   color: paletteColor.contrastText,
                   p: theme.spacing(3)
                 }}
+                key={variant}
               >
                 <Typography
                   {...props}
@@ -160,6 +157,7 @@ const ColorTokens = ({
                 color: paletteColor.contrastText,
                 p: theme.spacing(3)
               }}
+              key={variant}
             >
               <Typography {...props} variant="overline">
                 {`${variant} ${variant === 'primary' ? '(Default)' : ''}`}
@@ -227,6 +225,7 @@ const PaletteTokens = ({
                   : palette[100],
               p: (theme) => theme.spacing(2)
             }}
+            key={variant}
           >
             <Typography {...props} variant="overline">
               {`${variant}`}

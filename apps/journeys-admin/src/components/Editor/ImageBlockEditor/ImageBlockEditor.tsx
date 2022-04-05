@@ -1,5 +1,8 @@
-import { Link as LinkIcon } from '@mui/icons-material'
-import { Box, InputAdornment, Stack, TextField } from '@mui/material'
+import LinkIcon from '@mui/icons-material/Link'
+import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import { ChangeEvent, ReactElement } from 'react'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
@@ -42,7 +45,10 @@ export function ImageBlockEditor({
   }
 
   const handleImageDelete = async (): Promise<void> => {
-    if (onDelete != null) await onDelete()
+    if (onDelete != null) {
+      await onDelete()
+      formik.resetForm({ values: { src: '' } })
+    }
   }
 
   const formik = useFormik({
@@ -93,11 +99,11 @@ export function ImageBlockEditor({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LinkIcon></LinkIcon>
+                      <LinkIcon />
                     </InputAdornment>
                   )
                 }}
-              ></TextField>
+              />
             </form>
           </Stack>
         </Box>

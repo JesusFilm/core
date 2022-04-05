@@ -4,17 +4,17 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Typography from '@mui/material/Typography'
-import { Close } from '@mui/icons-material'
+import Close from '@mui/icons-material/Close'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
-import { VideoList } from './VideoList'
 import { VideoSearch } from './VideoSearch'
+import { VideoList } from './VideoList'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
-  onSelect?: (source: string) => void
+  onSelect?: (videoId: string, videoVariantLanguageId?: string) => void
 }
 
 export function VideoLibrary({
@@ -25,8 +25,8 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [title, setTitle] = useState<string>()
 
-  const onSelect = (source: string): void => {
-    if (handleSelect != null) handleSelect(source)
+  const onSelect = (videoId: string, videoVariantLanguageId?: string): void => {
+    if (handleSelect != null) handleSelect(videoId, videoVariantLanguageId)
     if (onClose != null) onClose()
   }
 
@@ -66,13 +66,14 @@ export function VideoLibrary({
         </Toolbar>
       </AppBar>
       <VideoSearch title={title} setTitle={setTitle} />
-      {/* language */}
-      {/* currentLanguageIds value is temporary */}
       <VideoList
         onSelect={onSelect}
         currentLanguageIds={['529']}
         title={title}
       />
+      {/* language */}
+      {/* currentLanguageIds value is temporary */}
+      <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
     </Drawer>
   )
 }

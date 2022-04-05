@@ -1,7 +1,10 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_JOURNEY_WITH_USER_JOURNEYS } from '../AccessDialog/AccessDialog'
+import { simpleComponentConfig } from '../../libs/storybook'
+import {
+  GET_CURRENT_USER,
+  GET_JOURNEY_WITH_USER_JOURNEYS
+} from '../AccessDialog/AccessDialog'
 import { AccessAvatarsProps } from './AccessAvatars'
 import {
   userJourney1,
@@ -14,7 +17,7 @@ import {
 import { AccessAvatars } from '.'
 
 const AccessAvatarsDemo = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: AccessAvatars,
   title: 'Journeys-Admin/AccessAvatars'
 }
@@ -71,6 +74,20 @@ const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
             }
           }
         }
+      },
+      {
+        request: {
+          query: GET_CURRENT_USER
+        },
+        result: {
+          data: {
+            me: {
+              id: 'userId1',
+              __typename: 'User',
+              email: 'amin@email.com'
+            }
+          }
+        }
       }
     ]}
   >
@@ -83,12 +100,6 @@ Default.args = {
   journeySlug: 'journeySlug',
   userJourneys: [userJourney1, userJourney2, userJourney3]
 }
-Default.parameters = {
-  chromatic: {
-    ...journeysAdminConfig.parameters.chromatic,
-    viewports: [1200]
-  }
-}
 
 export const Medium: Story<AccessAvatarsProps> = Template.bind({})
 Medium.args = {
@@ -96,24 +107,12 @@ Medium.args = {
   userJourneys: [userJourney1, userJourney2, userJourney3],
   size: 'medium'
 }
-Medium.parameters = {
-  chromatic: {
-    ...journeysAdminConfig.parameters.chromatic,
-    viewports: [1200]
-  }
-}
 
 export const Large: Story<AccessAvatarsProps> = Template.bind({})
 Large.args = {
   journeySlug: 'journeySlug',
   userJourneys: [userJourney1, userJourney2, userJourney3],
   size: 'large'
-}
-Large.parameters = {
-  chromatic: {
-    ...journeysAdminConfig.parameters.chromatic,
-    viewports: [1200]
-  }
 }
 
 export const Overflow: Story<AccessAvatarsProps> = Template.bind({})
@@ -137,12 +136,6 @@ NoImage.args = {
     { ...userJourney2, user: { ...userJourney2.user, imageUrl: null } },
     { ...userJourney3, user: { ...userJourney3.user, imageUrl: null } }
   ]
-}
-NoImage.parameters = {
-  chromatic: {
-    ...journeysAdminConfig.parameters.chromatic,
-    viewports: [1200]
-  }
 }
 
 export default AccessAvatarsDemo as Meta

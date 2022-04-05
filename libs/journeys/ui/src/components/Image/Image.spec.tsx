@@ -1,5 +1,5 @@
-import { render, fireEvent } from '@testing-library/react'
-import { TreeBlock, EditorProvider } from '../..'
+import { render } from '@testing-library/react'
+import { TreeBlock } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 import { Image } from '.'
 
@@ -30,35 +30,5 @@ describe('Image', () => {
       <Image {...block} src={null} alt="defaultImageIcon" />
     )
     expect(getByTestId('ImageRoundedIcon')).toHaveClass('MuiSvgIcon-root')
-  })
-})
-
-describe('Admin Image', () => {
-  it('should select image on click', () => {
-    const { getByRole, getByTestId } = render(
-      <EditorProvider
-        initialState={{
-          selectedBlock: {
-            id: 'card0.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step0.id',
-            coverBlockId: null,
-            parentOrder: 0,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [block]
-          }
-        }}
-      >
-        <Image {...block} />
-      </EditorProvider>
-    )
-
-    fireEvent.click(getByRole('img'))
-    expect(getByTestId('image-image0.id')).toHaveStyle(
-      'outline: 3px solid #C52D3A'
-    )
   })
 })

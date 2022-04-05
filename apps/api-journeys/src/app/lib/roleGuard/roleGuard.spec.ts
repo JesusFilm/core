@@ -65,8 +65,7 @@ describe('RoleGuard', () => {
       )
       const RoleGuardClass = RoleGuard('id', UserJourneyRole.editor, checkActor)
       const roleGuard = new RoleGuardClass(gqlContext)
-      // eslint-disable-next-line
-      expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
+      await expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
         new AuthenticationError(
           'User does not have the role to perform this action'
         )
@@ -106,8 +105,7 @@ describe('RoleGuard', () => {
       )
       const roleGuard = new RoleGuardClass(gqlContext)
 
-      // eslint-disable-next-line
-      expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
+      await expect(roleGuard.canActivate(gqlContext)).rejects.toThrow(
         new AuthenticationError(
           'User does not have the role to perform this action'
         )

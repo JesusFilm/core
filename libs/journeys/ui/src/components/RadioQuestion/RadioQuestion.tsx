@@ -1,11 +1,12 @@
-import { ReactElement, MouseEvent } from 'react'
+import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '../..'
+import { TreeBlock, BlockRenderer } from '../..'
+import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
@@ -23,11 +24,13 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
 
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
+  wrappers?: WrappersProps
+  editableLabel?: ReactElement
+  editableDescription?: ReactElement
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4),
-  '&:last-child': { marginBottom: 0 }
+  marginBottom: theme.spacing(4)
 }))
 
 export function RadioQuestion({
@@ -36,7 +39,9 @@ export function RadioQuestion({
   description,
   children,
   uuid = uuidv4,
-  ...props
+  wrappers,
+  editableLabel,
+  editableDescription
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
     useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
@@ -63,63 +68,34 @@ export function RadioQuestion({
 
   const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
-  const {
-    state: { selectedBlock },
-    dispatch
-  } = useEditor()
-
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-
-    const block: TreeBlock<RadioQuestionFields> = {
-      id: blockId,
-      label,
-      description,
-      children,
-      ...props
-    }
-
-    if (selectedBlock?.id === block.id) {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-    } else {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-      dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
-      dispatch({ type: 'SetSelectedBlockAction', block })
-      dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
-    }
-  }
+  const options = children?.map(
+    (option) =>
+      option.__typename === 'RadioOptionBlock' &&
+      (wrappers != null ? (
+        <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
+      ) : (
+        <RadioOption
+          {...option}
+          key={option.id}
+          selected={selectedId === option.id}
+          disabled={Boolean(selectedId)}
+          onClick={handleClick}
+        />
+      ))
+  )
 
   return (
-    <StyledRadioQuestion
-      data-testid={`radioQuestion-${blockId}`}
-      sx={{
-        // TODO: Pass this in via Selection Wrapper
-        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '5px'
-      }}
-      onClick={selectedBlock === undefined ? undefined : handleSelectBlock}
-    >
+    <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
       <Typography variant="h3" gutterBottom>
-        {label}
+        {editableLabel ?? label}
       </Typography>
-      {description != null && (
+      {(description != null || editableDescription != null) && (
         <Typography variant="body2" gutterBottom>
-          {description}
+          {editableDescription ?? description}
         </Typography>
       )}
       <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
-        {children?.map(
-          (option) =>
-            option.__typename === 'RadioOptionBlock' && (
-              <RadioOption
-                {...option}
-                key={option.id}
-                selected={selectedId === option.id}
-                disabled={Boolean(selectedId)}
-                onClick={handleClick}
-              />
-            )
-        )}
+        {options}
       </ButtonGroup>
     </StyledRadioQuestion>
   )

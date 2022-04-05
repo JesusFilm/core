@@ -1,6 +1,5 @@
 import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { KeyAsId } from '@core/nest/decorators'
 import { get, includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -23,12 +22,13 @@ export class ActionResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  @KeyAsId()
   async blockDeleteAction(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string
   ): Promise<Block> {
-    const block = await this.blockService.get<{ __typename: string }>(id)
+    const block = await this.blockService.get<Block & { __typename: string }>(
+      id
+    )
 
     if (
       !includes(

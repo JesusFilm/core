@@ -9,15 +9,25 @@ import { VideoBlockUpdateInput } from "./globalTypes";
 // GraphQL mutation operation: VideoBlockUpdate
 // ====================================================
 
-export interface VideoBlockUpdate_videoBlockUpdate_videoContent {
-  __typename: "VideoArclight" | "VideoGeneric";
-  src: string | null;
+export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_video {
+  __typename: "Video";
+  id: string;
+  variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
-  title: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  muted: boolean | null;
+  autoplay: boolean | null;
   /**
    * startAt dictates at which point of time the video should start playing
    */
@@ -26,15 +36,22 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * endAt dictates at which point of time the video should end
    */
   endAt: number | null;
-  muted: boolean | null;
-  autoplay: boolean | null;
-  videoContent: VideoBlockUpdate_videoBlockUpdate_videoContent;
   /**
    * posterBlockId is present if a child block should be used as a poster.
    * This child block should not be rendered normally, instead it should be used
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId: string | null;
+  fullsize: boolean | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoId: string | null;
+  /**
+   * videoId and videoVariantLanguageId both need to be set to select a video
+   */
+  videoVariantLanguageId: string | null;
+  video: VideoBlockUpdate_videoBlockUpdate_video | null;
 }
 
 export interface VideoBlockUpdate {

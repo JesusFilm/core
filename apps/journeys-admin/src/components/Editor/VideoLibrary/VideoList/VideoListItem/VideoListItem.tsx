@@ -1,8 +1,9 @@
 import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
+import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
+import { VideoDetails } from '../../VideoDetails'
 
 interface VideoListItemProps {
   id: string
@@ -10,7 +11,7 @@ interface VideoListItemProps {
   description?: string
   image?: string
   duration?: number
-  onSelect: (source: string) => void
+  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
 }
 
 export function VideoListItem({
@@ -19,12 +20,16 @@ export function VideoListItem({
   description,
   image,
   duration: time = 0,
-  onSelect
+  onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState(false)
 
   const handleOpen = (): void => {
-    setOpen(!open)
+    setOpen(true)
+  }
+
+  const handleClose = (): void => {
+    setOpen(false)
   }
 
   const duration =
@@ -82,7 +87,12 @@ export function VideoListItem({
           </Box>
         )}
       </ListItemButton>
-      {/* call VideoDetails here once merged */}
+      <VideoDetails
+        id={id}
+        open={open}
+        onClose={handleClose}
+        onSelect={handleSelect}
+      />
     </>
   )
 }

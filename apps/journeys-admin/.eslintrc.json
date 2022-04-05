@@ -31,9 +31,7 @@
     },
     {
       "files": ["*.tsx", "*.jsx"],
-      "rules": {
-        "react/jsx-indent": ["error", 2]
-      }
+      "rules": {}
     },
     {
       "files": ["next-env.d.ts"],

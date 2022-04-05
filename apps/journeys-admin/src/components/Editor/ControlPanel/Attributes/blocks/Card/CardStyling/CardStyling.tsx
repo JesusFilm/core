@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
-import { ColorLens } from '@mui/icons-material'
+import ColorLens from '@mui/icons-material/ColorLens'
 import Image from 'next/image'
 import { gql, useMutation } from '@apollo/client'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
@@ -83,7 +83,7 @@ export function CardStyling(): ReactElement {
               borderRadius: 2
             }}
           >
-            <ColorLens fontSize="large"></ColorLens>
+            <ColorLens fontSize="large" />
           </Box>
           <Stack direction="column" justifyContent="center">
             <Typography variant="subtitle2">

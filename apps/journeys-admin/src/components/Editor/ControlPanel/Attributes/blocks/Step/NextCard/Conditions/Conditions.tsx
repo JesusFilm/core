@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { useTheme } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
@@ -65,7 +65,7 @@ export function Conditions(): ReactElement {
       </Typography>
       <ToggleOption
         heading={'Lock the next step'}
-        description={"Don't allow to skip the current card"}
+        description={'Prevent skipping of current card'}
         checked={block.locked}
         handleChange={handleChange}
       >

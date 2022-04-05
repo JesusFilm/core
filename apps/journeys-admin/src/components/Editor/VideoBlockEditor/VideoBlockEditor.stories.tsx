@@ -44,15 +44,21 @@ const video: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   parentBlockId: card.id,
   parentOrder: 0,
-  title: 'my video',
   startAt: 0,
   endAt: null,
   muted: false,
   autoplay: true,
   fullsize: true,
-  videoContent: {
-    __typename: 'VideoGeneric',
-    src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
   },
   posterBlockId: 'poster1.id',
   children: []
@@ -115,8 +121,6 @@ const Template: Story = ({ ...args }) => (
           selectedBlock={args.selectedBlock}
           onChange={onChange}
           onDelete={onDelete}
-          parentBlockId={card.id}
-          parentOrder={Number(card.parentOrder)}
         />
       </MuiDrawer>
       <MuiDrawer
@@ -131,8 +135,6 @@ const Template: Story = ({ ...args }) => (
           selectedBlock={args.selectedBlock}
           onChange={onChange}
           onDelete={onDelete}
-          parentBlockId={card.id}
-          parentOrder={Number(card.parentOrder)}
         />
       </MuiDrawer>
     </ThemeProvider>
@@ -150,23 +152,6 @@ Filled.args = {
     ...video,
     children: [poster]
   }
-}
-
-export const MobileSettings = Template.bind({})
-MobileSettings.args = {
-  selectedBlock: {
-    ...video,
-    children: [poster]
-  }
-}
-MobileSettings.parameters = {
-  chromatic: {
-    viewports: [360, 540]
-  }
-}
-MobileSettings.play = async () => {
-  const settingsTab = await screen.getAllByTestId('videoSettingsTab')[1]
-  await userEvent.click(settingsTab)
 }
 
 export const PosterModal = Template.bind({})

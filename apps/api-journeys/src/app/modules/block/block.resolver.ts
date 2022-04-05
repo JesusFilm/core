@@ -8,7 +8,6 @@ import {
   Mutation,
   Parent
 } from '@nestjs/graphql'
-import { KeyAsId } from '@core/nest/decorators'
 import { UseGuards } from '@nestjs/common'
 import { Block, UserJourneyRole } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -26,28 +25,25 @@ export class BlockResolver {
   }
 
   @Query()
-  @KeyAsId()
   async blocks(): Promise<Block[]> {
     return await this.blockService.getAll()
   }
 
   @Query()
-  @KeyAsId()
-  async block(@Args('id') _key: string): Promise<Block> {
-    return await this.blockService.get(_key)
+  async block(@Args('id') id: string): Promise<Block> {
+    return await this.blockService.get(id)
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async blockOrderUpdate(
-    @Args('id') _key: string,
+    @Args('id') id: string,
     @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
   ): Promise<Block[]> {
-    const selectedBlock: Block = await this.blockService.get(_key)
+    const selectedBlock: Block = await this.blockService.get(id)
 
     if (
       selectedBlock.journeyId === journeyId &&
@@ -66,7 +62,6 @@ export class BlockResolver {
   }
 
   @Mutation()
-  @KeyAsId()
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
@@ -82,7 +77,6 @@ export class BlockResolver {
     )
   }
 
-  @KeyAsId()
   async siblings(@Parent() block: Block): Promise<Block[]> {
     return await this.blockService.getSiblings(
       block.journeyId,
@@ -90,11 +84,10 @@ export class BlockResolver {
     )
   }
 
-  @KeyAsId()
   async updateOrder(
-    @Args('id') _key: string,
+    @Args('id') id: string,
     @Args('parentOrder') parentOrder: number
   ): Promise<Block> {
-    return await this.blockService.update(_key, { parentOrder })
+    return await this.blockService.update(id, { parentOrder })
   }
 }

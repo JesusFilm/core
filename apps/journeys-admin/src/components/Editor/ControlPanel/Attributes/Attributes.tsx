@@ -55,7 +55,7 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
     }
 
     case 'ImageBlock': {
-      return withMoveButtons(<Image {...selected} />) // eslint-disable-line
+      return withMoveButtons(<Image {...selected} alt={selected.alt} />)
     }
 
     case 'TypographyBlock': {
