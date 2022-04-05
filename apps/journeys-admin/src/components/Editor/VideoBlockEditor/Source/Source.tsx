@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
 import Button from '@mui/material/Button'
-import { Box } from '@mui/system'
+import Box from '@mui/material/Box'
 import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { VideoLibrary } from '../../VideoLibrary'
