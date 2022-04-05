@@ -59,7 +59,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract videos(where?: Nullable<VideosFilter>, page?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract video(id: string): Video | Promise<Video>;
 }
