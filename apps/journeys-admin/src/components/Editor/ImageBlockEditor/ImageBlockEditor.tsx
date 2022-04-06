@@ -71,7 +71,7 @@ export function ImageBlockEditor({
         showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
       />
-      <Stack direction="column">
+      <Stack direction="column" sx={{ py: 3 }}>
         <form>
           <TextField
             id="src"

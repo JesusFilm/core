@@ -48,7 +48,7 @@ export function ImageOptions(): ReactElement {
   }
 
   return (
-    <Box sx={{ py: 3, px: 6 }}>
+    <Box sx={{ pt: 4, px: 6 }}>
       <ImageBlockEditor
         selectedBlock={imageBlock}
         onChange={updateImageBlock}
