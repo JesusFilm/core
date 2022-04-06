@@ -10,7 +10,7 @@ import { VideoService } from './video.service'
 const DEFAULT_QUERY = aql`
     FOR item IN 
       
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -20,20 +20,21 @@ const DEFAULT_QUERY = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
-        seoTitle: item.seoTitle
+        episodeIds: item.episodeIds,
+        seoTitle: item.seoTitle,
       }
     `.query
 
 const QUERY_WITH_TITLE = aql`
     FOR item IN 
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en")
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -43,12 +44,13 @@ const QUERY_WITH_TITLE = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         seoTitle: item.seoTitle
       }
     `.query
@@ -56,7 +58,7 @@ const QUERY_WITH_TITLE = aql`
 const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
     FOR item IN 
       SEARCH item.variants.languageId IN ${['en']}
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -66,12 +68,13 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         seoTitle: item.seoTitle
       }
     `.query
@@ -81,7 +84,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN ${[
   'en'
 ]}
-      FILTER item.playlist == null
+      FILTER item.episodeIds == null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -91,12 +94,13 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         seoTitle: item.seoTitle
       }
     `.query
@@ -104,7 +108,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
 const QUERY_WITH_ONLY_PLAYLISTS = aql`
     FOR item IN 
       
-      FILTER item.playlist != null
+      FILTER item.episodeIds != null
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -114,12 +118,13 @@ const QUERY_WITH_ONLY_PLAYLISTS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         seoTitle: item.seoTitle
       }
     `.query
@@ -137,12 +142,13 @@ const QUERY_WITH_PLAYLISTS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         seoTitle: item.seoTitle
       }
     `.query
@@ -150,7 +156,7 @@ const QUERY_WITH_PLAYLISTS = aql`
 const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
     FOR item IN 
       
-      FILTER item.playlist == null FILTER item.isInnerSeries != true
+      FILTER item.episodeIds == null FILTER item.isInnerSeries != true
       LIMIT @value0, @value1
       RETURN {
         _key: item._key,
@@ -160,13 +166,34 @@ const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value2, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        playlist: item.playlist,
+        episodeIds: item.episodeIds,
         seoTitle: item.seoTitle
+      }
+    `.query
+
+const EPISODES_QUERY = aql`
+    FOR item IN 
+      FILTER item._key IN @value0
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -201,14 +228,14 @@ describe('VideoService', () => {
       expect(await service.filterAll()).toEqual([])
     })
 
-    it('should query with page', async () => {
+    it('should query with offset', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(DEFAULT_QUERY)
         expect(bindVars).toEqual({ value0: 200, value1: 100, value2: null })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterAll({ page: 3 })).toEqual([])
+      expect(await service.filterAll({ offset: 200 })).toEqual([])
     })
 
     it('should query with limit', async () => {
@@ -363,6 +390,18 @@ describe('VideoService', () => {
 
     it('should return a video even without a langaugeId', async () => {
       expect(await service.getVideo('20615')).toEqual(video)
+    })
+  })
+
+  describe('episodes', () => {
+    it('should query', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(EPISODES_QUERY)
+        expect(bindVars).toEqual({ value0: ['20615', '20616'], value1: null })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
     })
   })
 })

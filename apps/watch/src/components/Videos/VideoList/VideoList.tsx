@@ -1,19 +1,15 @@
 import { gql, useQuery } from '@apollo/client'
+import { ReactElement, useEffect, useState } from 'react'
 
-import { ReactElement, useState } from 'react'
-
-import {
-  GetVideos,
-  GetVideos_videos
-} from '../../../../__generated__/GetVideos'
+import { GetVideos } from '../../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../../__generated__/globalTypes'
 import { VideoListCarousel } from './Carousel/VideoListCarousel'
 import { VideoListGrid } from './Grid/VideoListGrid'
 import { VideoListList } from './List/VideoListList'
 
 export const GET_VIDEOS = gql`
-  query GetVideos($where: VideosFilter, $page: Int, $limit: Int) {
-    videos(where: $where, page: $page, limit: $limit) {
+  query GetVideos($where: VideosFilter, $offset: Int, $limit: Int) {
+    videos(where: $where, offset: $offset, limit: $limit) {
       id
       image
       snippet {
@@ -27,7 +23,7 @@ export const GET_VIDEOS = gql`
       variant {
         duration
       }
-      playlist
+      episodeIds
       seoTitle
     }
   }
@@ -39,51 +35,54 @@ interface VideoListProps {
   variant?: 'small' | 'large'
 }
 
+function isAtEnd(count: number, limit: number, previousCount: number): boolean {
+  if (count === previousCount) return true
+  return count % limit !== 0
+}
+
 export function VideoList({
   layout = 'list',
   filter = {},
   variant = 'large'
 }: VideoListProps): ReactElement {
-  const [page, setPage] = useState(1)
   const [isEnd, setIsEnd] = useState(false)
-  const [videos, setVideos] = useState<GetVideos_videos[]>([])
+  const [previousCount, setPreviousCount] = useState(0)
   const limit = layout === 'grid' ? 20 : 8
-  const { data, loading, refetch } = useQuery<GetVideos>(GET_VIDEOS, {
+  const { data, loading, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
       where: filter,
-      page: page,
+      offset: 0,
       limit: limit
-    },
-    fetchPolicy: 'cache-and-network',
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
-      setVideos([...videos, ...data.videos])
     }
   })
+
+  useEffect(() => {
+    setIsEnd(isAtEnd(data?.videos.length ?? 0, limit, previousCount))
+  }, [data?.videos.length, setIsEnd, limit, previousCount])
+
   const handleLoadMore = async (): Promise<void> => {
     if (isEnd) return
 
-    setPage(page + 1)
-    await refetch()
-    if (data != null) {
-      await setVideos([...videos, ...data.videos])
-    } else {
-      setIsEnd(true)
-    }
+    setPreviousCount(data?.videos.length ?? 0)
+    await fetchMore({
+      variables: {
+        offset: data?.videos.length ?? 0
+      }
+    })
   }
 
   return (
     <>
       {layout === 'carousel' && (
         <VideoListCarousel
-          videos={videos}
+          videos={data?.videos ?? []}
           onLoadMore={handleLoadMore}
           loading={loading}
         />
       )}
       {layout === 'grid' && (
         <VideoListGrid
-          videos={videos}
+          videos={data?.videos ?? []}
           onLoadMore={handleLoadMore}
           loading={loading}
           isEnd={isEnd}
@@ -91,7 +90,7 @@ export function VideoList({
       )}
       {layout === 'list' && (
         <VideoListList
-          videos={videos}
+          videos={data?.videos ?? []}
           onLoadMore={handleLoadMore}
           loading={loading}
           isEnd={isEnd}

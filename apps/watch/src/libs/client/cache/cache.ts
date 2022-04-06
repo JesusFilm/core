@@ -1,4 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
+import { offsetLimitPagination } from '@apollo/client/utilities'
 
 export const cache: InMemoryCache = new InMemoryCache({
   /* https://www.apollographql.com/docs/react/data/fragments/#defining-possibletypes-manually
@@ -7,5 +8,12 @@ export const cache: InMemoryCache = new InMemoryCache({
      these relationships, we need to pass a possibleTypes option when
      initializing InMemoryCache.
    */
-  possibleTypes: {}
+  possibleTypes: {},
+  typePolicies: {
+    Query: {
+      fields: {
+        videos: offsetLimitPagination()
+      }
+    }
+  }
 })

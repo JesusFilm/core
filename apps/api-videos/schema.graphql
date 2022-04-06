@@ -18,8 +18,11 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
-  playlist: [ID!]
   seoTitle: String
+
+  """Videos containing episodes are considered playlists"""
+  episodeIds: [ID!]
+  episodes: [Video!]
   variant(languageId: ID): VideoVariant
 }
 
@@ -56,6 +59,6 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

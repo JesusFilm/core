@@ -22,7 +22,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 3680, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'the-story-of-jesus-for-children'
   },
   {
@@ -40,7 +40,7 @@ export const videos: GetVideos_videos[] = [
     title: [{ primary: true, value: 'JESUS', __typename: 'Translation' }],
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'jesus'
   },
   {
@@ -64,7 +64,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 4952, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'magdalena-directors-cut'
   },
   {
@@ -84,7 +84,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'book-of-acts'
   },
   {
@@ -108,7 +108,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 343, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'a-day-and-a-night-with-creator-sets-free'
   },
   {
@@ -132,7 +132,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 10994, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'life-of-jesus-gospel-of-john'
   },
   {
@@ -150,7 +150,7 @@ export const videos: GetVideos_videos[] = [
     title: [{ primary: true, value: 'Magdalena', __typename: 'Translation' }],
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'magdalena'
   },
   {
@@ -174,7 +174,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
-    playlist: [],
+    episodeIds: [],
     seoTitle: 'installing-the-jesus-film-media-app'
   }
 ]

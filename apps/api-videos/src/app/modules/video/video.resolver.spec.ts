@@ -71,7 +71,7 @@ describe('VideoResolver', () => {
             title: 'abc',
             availableVariantLanguageIds: ['fr']
           },
-          2,
+          100,
           200
         )
       ).toEqual([video, video])
@@ -79,7 +79,7 @@ describe('VideoResolver', () => {
         title: 'abc',
         availableVariantLanguageIds: ['fr'],
         variantLanguageId: 'en',
-        page: 2,
+        offset: 100,
         limit: 200
       })
     })

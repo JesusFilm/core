@@ -16,8 +16,12 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
-  playlist: [ID!]
   seoTitle: String
+  """
+  Videos containing episodes are considered playlists
+  """
+  episodeIds: [ID!]
+  episodes: [Video!]
 }
 
 input VideosFilter {
@@ -29,6 +33,6 @@ input VideosFilter {
 }
 
 extend type Query {
-  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

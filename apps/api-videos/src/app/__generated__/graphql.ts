@@ -42,8 +42,9 @@ export class Video {
     studyQuestions: Translation[];
     image?: Nullable<string>;
     variantLanguages: Language[];
-    playlist?: Nullable<string[]>;
     seoTitle?: Nullable<string>;
+    episodeIds?: Nullable<string[]>;
+    episodes?: Nullable<Video[]>;
     variant?: Nullable<VideoVariant>;
 }
 
@@ -69,7 +70,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract videos(where?: Nullable<VideosFilter>, page?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
 }

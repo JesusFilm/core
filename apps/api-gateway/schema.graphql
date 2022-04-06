@@ -458,10 +458,10 @@ type Query {
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys: [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!): Language @join__field(graph: LANGUAGES)
-  languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
+  languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
-  videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block {
@@ -711,9 +711,12 @@ type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """Videos containing episodes are considered playlists"""
+  episodeIds: [ID!] @join__field(graph: VIDEOS)
+  episodes: [Video!] @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
-  playlist: [ID!] @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle: String @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

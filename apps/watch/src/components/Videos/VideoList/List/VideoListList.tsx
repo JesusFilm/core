@@ -1,15 +1,13 @@
-import {
-  Box,
-  LinearProgress,
-  List,
-  ListItemButton,
-  ListItemText,
-  Typography
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import LinearProgress from '@mui/material/LinearProgress'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import Typography from '@mui/material/Typography'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { ReactElement } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui'
-import { AddRounded } from '@mui/icons-material'
+import AddRounded from '@mui/icons-material/AddRounded'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 

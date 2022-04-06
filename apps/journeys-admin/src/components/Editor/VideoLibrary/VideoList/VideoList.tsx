@@ -56,7 +56,7 @@ export function VideoList({
 
   return (
     <>
-      <List data-testId="VideoList" sx={{ px: 6 }}>
+      <List data-testid="VideoList" sx={{ px: 6 }}>
         <Divider />
         {data?.videos?.slice(0, visibleVideos).map((video) => (
           <>

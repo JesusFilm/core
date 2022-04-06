@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { useTheme } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'

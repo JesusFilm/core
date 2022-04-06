@@ -1,12 +1,10 @@
 import { ReactElement } from 'react'
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  LinearProgress,
-  Typography
-} from '@mui/material'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import LinearProgress from '@mui/material/LinearProgress'
+import Typography from '@mui/material/Typography'
 import { secondsToTimeFormat } from '@core/shared/ui'
 import Link from 'next/link'
 
@@ -43,14 +41,14 @@ export function VideoListCard({
               <Typography variant="subtitle2">
                 {video.title[0].value}
               </Typography>
-              {video.playlist == null && (
+              {video.episodeIds == null && (
                 <Typography variant="caption">
                   {secondsToTimeFormat(video.variant?.duration ?? 0)}
                 </Typography>
               )}
-              {video.playlist != null && video.playlist.length > 0 && (
+              {video.episodeIds != null && video.episodeIds.length > 0 && (
                 <Typography variant="caption">
-                  {video.playlist.length} episodes
+                  {video.episodeIds.length} episodes
                 </Typography>
               )}
             </CardContent>
