@@ -1,9 +1,11 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback } from 'react'
+import { ReactElement, useEffect, useRef, useCallback, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import IconButton from '@mui/material/IconButton'
+import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import { TreeBlock, useEditor } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -31,6 +33,8 @@ export function Video({
   fullsize,
   children
 }: TreeBlock<VideoFields>): ReactElement {
+  const [showControls, setShowControls] = useState<boolean>(false)
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const posterBlock = children.find(
@@ -73,7 +77,6 @@ export function Video({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true && !mobile,
-        controls: true,
         userActions: {
           hotkeys: true,
           doubleClick: true
@@ -120,6 +123,10 @@ export function Video({
             playerRef.current?.currentTime()
           )
         })
+
+        if (!playerRef.current.isFullscreen()) {
+          playerRef.current.controls(false)
+        }
       }
     }
   }, [
@@ -130,8 +137,21 @@ export function Video({
     blockId,
     posterBlock,
     mobile,
-    selectedBlock
+    selectedBlock,
+    showControls
   ])
+
+  const handleFullscreen = (): void => {
+    playerRef.current?.requestFullscreen()
+    playerRef.current?.controls(true)
+  }
+
+  // TODO:
+  // Check if in fullscreen
+  // if so enable controls
+  // Add a fullscreen button/icon
+  // Add logic to fullscreen button/icon
+  // When in fullscreen - controls should be displaying
 
   useEffect(() => {
     if (selectedBlock !== undefined) {
@@ -172,6 +192,23 @@ export function Video({
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
+          {!showControls && (
+            <IconButton
+              onClick={handleFullscreen}
+              sx={{
+                color: '#FFFFFF',
+                position: 'absolute',
+                right: 27,
+                bottom: 19,
+                zIndex: 1,
+                '&:hover': {
+                  backgroundColor: '#FFFFFFF'
+                }
+              }}
+            >
+              <FullscreenRounded />
+            </IconButton>
+          )}
           {children?.map(
             (option) =>
               option.__typename === 'VideoTriggerBlock' && (
