@@ -1,5 +1,6 @@
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
+import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
 
 interface Video {
@@ -68,23 +69,24 @@ interface Download {
 
 interface VideoVariant {
   id: string
-  subtitle?: Translation[]
+  subtitle: Translation[]
   hls?: string
   languageId: string
   duration: number
-  downloads?: Download[]
+  downloads: Download[]
 }
 
 interface Video {
+  type: VideoType
   primaryLanguageId: string
   title: Translation[]
   snippet: Translation[]
   description: Translation[]
   studyQuestions: Translation[][]
   image: string
-  variants?: VideoVariant[]
+  variants: VideoVariant[]
   tagIds: string[]
-  episodeIds?: string[]
+  episodeIds: string[]
 }
 
 async function getLanguages(): Promise<Language[]> {
@@ -151,6 +153,7 @@ async function digestContent(
   }
 
   const body = {
+    type: VideoType.standalone,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -182,6 +185,7 @@ async function digestContent(
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
+    episodeIds: [],
     variants
   }
 
@@ -203,7 +207,9 @@ async function digestMediaComponentLanguage(
     return {
       id: mediaComponentLanguage.refId,
       languageId: mediaComponentLanguage.languageId.toString(),
-      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001)
+      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
+      subtitle: [],
+      downloads: []
     }
   }
   const downloads: Download[] = []
@@ -265,6 +271,7 @@ async function digestSeriesContainer(
   }
   return {
     _key: mediaComponent.mediaComponentId,
+    type: VideoType.playlist,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -316,13 +323,19 @@ async function digestContainer(
     const video = await getVideo(videoId)
     if (video == null) continue
 
-    if (mediaComponent.subType === 'series') series.episodeIds?.push(videoId)
+    if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
 
     if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
-    await db.collection('videos').update(videoId, {
-      inSeries: mediaComponent.subType === 'series',
-      tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
-    })
+
+    if (mediaComponent.subType === 'series') {
+      await db.collection('videos').update(videoId, {
+        type: VideoType.episode
+      })
+    } else {
+      await db.collection('videos').update(videoId, {
+        tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
+      })
+    }
   }
   if (mediaComponent.subType === 'series') {
     const existingSeries = await getVideo(mediaComponent.mediaComponentId)
@@ -381,7 +394,7 @@ async function main(): Promise<void> {
               }
             }
           },
-          isInnerSeries: {
+          type: {
             analyzers: ['identity']
           },
           episodeIds: {

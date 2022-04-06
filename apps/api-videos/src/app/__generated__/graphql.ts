@@ -7,6 +7,12 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum VideoType {
+    episode = "episode",
+    standalone = "standalone",
+    playlist = "playlist"
+}
+
 export enum VideoVariantDownloadQuality {
     low = "low",
     high = "high"
@@ -15,9 +21,7 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-    includePlaylists?: Nullable<boolean>;
-    includePlaylistVideos?: Nullable<boolean>;
-    onlyPlaylists?: Nullable<boolean>;
+    types?: Nullable<VideoType[]>;
 }
 
 export class Translation {
@@ -30,6 +34,7 @@ export class Translation {
 export class Video {
     __typename?: 'Video';
     id: string;
+    type: VideoType;
     primaryLanguageId: string;
     title: Translation[];
     snippet: Translation[];
@@ -52,7 +57,7 @@ export class VideoVariantDownload {
 export class VideoVariant {
     __typename?: 'VideoVariant';
     id: string;
-    hls: string;
+    hls?: Nullable<string>;
     downloads: VideoVariantDownload[];
     duration: number;
     language: Language;

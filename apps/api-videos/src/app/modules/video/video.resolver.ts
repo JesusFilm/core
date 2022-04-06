@@ -29,9 +29,7 @@ export class VideoResolver {
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
-      includePlaylists: where?.includePlaylists ?? undefined,
-      includePlaylistVideos: where?.includePlaylistVideos ?? undefined,
-      onlyPlaylists: where?.onlyPlaylists ?? undefined,
+      types: where?.types ?? undefined,
       offset,
       limit
     })

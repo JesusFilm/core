@@ -721,6 +721,7 @@ type Video
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
@@ -840,10 +841,8 @@ enum VideoResponseStateEnum {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
-  includePlaylistVideos: Boolean
-  includePlaylists: Boolean
-  onlyPlaylists: Boolean
   title: String
+  types: [VideoType!]
 }
 
 """
@@ -864,10 +863,16 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
+enum VideoType {
+  episode
+  playlist
+  standalone
+}
+
 type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
-  hls: String!
+  hls: String
   id: String!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!

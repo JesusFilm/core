@@ -24,9 +24,7 @@ export class VideoService extends BaseService {
       title,
       availableVariantLanguageIds = [],
       variantLanguageId,
-      includePlaylists = false,
-      includePlaylistVideos = true,
-      onlyPlaylists = false,
+      types = null,
       offset = 0,
       limit = 100
     } = filter ?? {}
@@ -39,24 +37,14 @@ export class VideoService extends BaseService {
           aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
         title != null && availableVariantLanguageIds.length > 0 && aql`AND`,
         availableVariantLanguageIds.length > 0 &&
-          aql`item.variants.languageId IN ${availableVariantLanguageIds}`
+          aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
+        types != null && aql`FILTER item.type IN ${types}`
       ].filter((x) => x !== false)
     )
-    const playListFilter = aql.join(
-      [
-        onlyPlaylists && aql`FILTER item.episodeIds != null`,
-        !includePlaylists &&
-          !onlyPlaylists &&
-          aql`FILTER item.episodeIds == null`,
-        !includePlaylistVideos &&
-          !onlyPlaylists &&
-          aql`FILTER item.isInnerSeries != true`
-      ].filter((x) => x !== false)
-    )
+
     const res = await this.db.query(aql`
     FOR item IN ${videosView}
       ${search}
-      ${playListFilter}
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,
