@@ -1,13 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Drawer from '@mui/material/Drawer'
 import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import { useBreakpoints } from '@core/shared/ui'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { Alert } from '../Alert'
 import { useJourney } from '../../../../libs/context'
@@ -34,7 +28,6 @@ export function DescriptionDialog({
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
   const journey = useJourney()
 
-  const breakpoints = useBreakpoints()
   const [value, setValue] = useState(
     journey !== undefined ? journey.description : ''
   )
@@ -59,20 +52,6 @@ export function DescriptionDialog({
     onClose()
   }
 
-  const Form = (): ReactElement => (
-    <form onSubmit={handleSubmit}>
-      <FormControl component="fieldset" sx={{ width: '100%' }}>
-        <TextField
-          value={value}
-          multiline
-          variant="filled"
-          rows={3}
-          onChange={(e) => setValue(e.currentTarget.value)}
-        />
-      </FormControl>
-    </form>
-  )
-
   const dialogProps = {
     open,
     handleClose,
@@ -85,61 +64,20 @@ export function DescriptionDialog({
 
   return (
     <>
-      {breakpoints.md ? (
-        <Dialog {...dialogProps}>
-          <form onSubmit={handleSubmit}>
-            <FormControl component="fieldset" sx={{ width: '100%' }}>
-              <TextField
-                value={value}
-                multiline
-                variant="filled"
-                rows={3}
-                onChange={(e) => setValue(e.currentTarget.value)}
-              />
-            </FormControl>
-          </form>
-        </Dialog>
-      ) : (
-        <Drawer anchor="bottom" open={open} onClose={handleClose}>
-          <Box sx={{ p: 4 }}>
-            <form onSubmit={handleSubmit}>
-              <FormControl component="fieldset" sx={{ width: '100%' }}>
-                <FormLabel
-                  component="legend"
-                  aria-label="dialog-update-description"
-                >
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ color: 'secondary.dark' }}
-                  >
-                    Edit Description
-                  </Typography>
-                </FormLabel>
-                <Form />
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignSelf: 'flex-end'
-                  }}
-                >
-                  <Button
-                    sx={{ mt: 1, mr: 1 }}
-                    onClick={handleClose}
-                    variant="text"
-                  >
-                    Cancel
-                  </Button>
-                  <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="text">
-                    Save
-                  </Button>
-                </Box>
-              </FormControl>
-            </form>
-          </Box>
-        </Drawer>
-      )}
+      <Dialog {...dialogProps}>
+        <form onSubmit={handleSubmit}>
+          <FormControl component="fieldset" sx={{ width: '100%' }}>
+            <TextField
+              value={value}
+              multiline
+              variant="filled"
+              rows={3}
+              onChange={(e) => setValue(e.currentTarget.value)}
+            />
+          </FormControl>
+        </form>
+      </Dialog>
+
       <Alert
         open={showSuccessAlert}
         setOpen={setShowSuccessAlert}
