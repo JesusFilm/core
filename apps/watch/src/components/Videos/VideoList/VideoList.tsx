@@ -1,11 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
-import { clone } from 'lodash'
 
-import {
-  GetVideos,
-  GetVideos_videos
-} from '../../../../__generated__/GetVideos'
+import { GetVideos } from '../../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../../__generated__/globalTypes'
 import { VideoListCarousel } from './Carousel/VideoListCarousel'
 import { VideoListGrid } from './Grid/VideoListGrid'
