@@ -1,12 +1,10 @@
 import { ReactElement } from 'react'
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  LinearProgress,
-  Typography
-} from '@mui/material'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import LinearProgress from '@mui/material/LinearProgress'
+import Typography from '@mui/material/Typography'
 import { secondsToTimeFormat } from '@core/shared/ui'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'

@@ -11,7 +11,7 @@ interface VideosFilter {
   includePlaylists?: boolean
   includePlaylistVideos?: boolean
   onlyPlaylists?: boolean
-  page?: number
+  offset?: number
   limit?: number
 }
 @Injectable()
@@ -27,10 +27,9 @@ export class VideoService extends BaseService {
       includePlaylists = false,
       includePlaylistVideos = true,
       onlyPlaylists = false,
-      page = 1,
+      offset = 0,
       limit = 100
     } = filter ?? {}
-    const offset = limit * (page - 1)
     const videosView = this.db.view('videosView')
     const search = aql.join(
       [
@@ -67,6 +66,7 @@ export class VideoService extends BaseService {
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
@@ -94,7 +94,7 @@ export class VideoService extends BaseService {
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
-        episodeIds: item.episodeIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null

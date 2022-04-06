@@ -53,6 +53,6 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!): Video!
 }
