@@ -22,6 +22,7 @@ export class VideoService extends BaseService {
   async filterAll<T>(filter?: VideosFilter): Promise<T[]> {
     const {
       title,
+      tagId = null,
       availableVariantLanguageIds = [],
       variantLanguageId,
       includePlaylists = false,
@@ -53,10 +54,14 @@ export class VideoService extends BaseService {
           aql`FILTER item.isInnerSeries != true`
       ].filter((x) => x !== false)
     )
+    const tagFilter =
+      tagId == null ? aql`` : aql`FILTER ${tagId} IN item.tagIds`
+
     const res = await this.db.query(aql`
     FOR item IN ${videosView}
       ${search}
       ${playListFilter}
+      ${tagFilter}
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,

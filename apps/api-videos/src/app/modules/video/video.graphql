@@ -7,6 +7,12 @@ enum IdType {
   slug
 }
 
+enum VideoType {
+  episode
+  standalone
+  playlist
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   primaryLanguageId: ID!
@@ -17,6 +23,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   seoTitle: String
+  type: VideoType!
   """
   Videos containing episodes are considered playlists
   """
@@ -27,6 +34,7 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
+  tagId: String
   includePlaylists: Boolean
   includePlaylistVideos: Boolean
   onlyPlaylists: Boolean

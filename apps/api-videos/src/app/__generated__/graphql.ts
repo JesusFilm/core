@@ -25,6 +25,21 @@ export class VideosFilter {
     onlyPlaylists?: Nullable<boolean>;
 }
 
+export class VideoTag {
+    __typename?: 'VideoTag';
+    id: string;
+    primaryLanguageId: string;
+    title: Translation[];
+    snippet: Translation[];
+    description: Translation[];
+    studyQuestions: Translation[];
+    image?: Nullable<string>;
+    variantLanguages: Language[];
+    seoTitle?: Nullable<string>;
+    episodeIds?: Nullable<string[]>;
+    episodes?: Nullable<Video[]>;
+}
+
 export class Translation {
     __typename?: 'Translation';
     value: string;

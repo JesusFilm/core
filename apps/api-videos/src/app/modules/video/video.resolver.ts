@@ -27,6 +27,7 @@ export class VideoResolver {
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return await this.videoService.filterAll({
       title: where?.title ?? undefined,
+      tagId: where?.tagId ?? undefined,
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,

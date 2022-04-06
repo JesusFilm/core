@@ -1,3 +1,8 @@
+type VideoTag @key(fields: "id") {
+  id: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
+}
+
 type Translation {
   value: String!
   language: Language!
@@ -7,6 +12,12 @@ type Translation {
 enum IdType {
   databaseId
   slug
+}
+
+enum VideoType {
+  episode
+  standalone
+  playlist
 }
 
 type Video @key(fields: "id primaryLanguageId") {
@@ -19,6 +30,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   seoTitle: String
+  type: VideoType!
 
   """Videos containing episodes are considered playlists"""
   episodeIds: [ID!]
@@ -29,9 +41,8 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  includePlaylists: Boolean
-  includePlaylistVideos: Boolean
-  onlyPlaylists: Boolean
+  tagId: String
+  types: [VideoType!]
 }
 
 enum VideoVariantDownloadQuality {
@@ -59,6 +70,8 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
+  videoTags: [VideoTag!]!
+  videoTag(id: ID!): VideoTag!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

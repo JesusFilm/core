@@ -35,6 +35,7 @@ const QUERY_WITH_TITLE = aql`
     FOR item IN 
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en")
       FILTER item.episodeIds == null
+
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -59,6 +60,7 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
     FOR item IN 
       SEARCH item.variants.languageId IN ${['en']}
       FILTER item.episodeIds == null
+
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -85,6 +87,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
   'en'
 ]}
       FILTER item.episodeIds == null
+
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -109,6 +112,7 @@ const QUERY_WITH_ONLY_PLAYLISTS = aql`
     FOR item IN 
       
       FILTER item.episodeIds != null
+
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -133,7 +137,8 @@ const QUERY_WITH_PLAYLISTS = aql`
     FOR item IN 
       
       
-      LIMIT ${0}, ${100}
+
+      LIMIT ${0}, ${100}    
       RETURN {
         _key: item._key,
         title: item.title,
@@ -143,7 +148,7 @@ const QUERY_WITH_PLAYLISTS = aql`
         image: item.image,
         tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
-        variant: NTH(item.variants[* 
+        variant: NTH(item.variants[*
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),

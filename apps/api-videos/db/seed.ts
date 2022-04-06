@@ -89,6 +89,13 @@ interface Video {
   episodeIds?: string[]
 }
 
+interface Tag {
+  _key: string
+  title: Translation[]
+}
+
+const tags: Record<string, Tag> = {}
+
 async function getLanguages(): Promise<Language[]> {
   const response: {
     _embedded: { mediaLanguages: Language[] }
@@ -288,16 +295,24 @@ async function digestSeriesContainer(
       await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
     )
   }
+
+  const title = [
+    {
+      value: mediaComponent.title,
+      languageId: metadataLanguageId,
+      primary: true
+    }
+  ]
+
+  tags[mediaComponent.mediaComponentId] = {
+    _key: mediaComponent.mediaComponentId,
+    title
+  }
+
   return {
     _key: mediaComponent.mediaComponentId,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
-    title: [
-      {
-        value: mediaComponent.title,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
+    title,
     snippet: [
       {
         value: mediaComponent.shortDescription,
@@ -345,10 +360,17 @@ async function digestContainer(
     if (mediaComponent.subType === 'series') series.episodeIds?.push(videoId)
 
     if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
-    await db.collection('videos').update(videoId, {
-      inSeries: mediaComponent.subType === 'series',
-      tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
-    })
+
+    if (mediaComponent.subType === 'series') {
+      await db.collection('videos').update(videoId, {
+        inSeries: true
+      })
+    } else {
+      await db.collection('videos').update(videoId, {
+        inSeries: false,
+        tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
+      })
+    }
   }
   if (mediaComponent.subType === 'series') {
     const existingSeries = await getVideo(mediaComponent.mediaComponentId)
@@ -373,6 +395,10 @@ async function main(): Promise<void> {
   try {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   } catch {}
+  try {
+    await db.createCollection('videoTags', { keyOptions: { type: 'uuid' } })
+  } catch {}
+
   await db.collection('videos').ensureIndex({
     name: 'language_id',
     type: 'persistent',
@@ -442,6 +468,16 @@ async function main(): Promise<void> {
 
   for (const container of await getMediaComponents('container')) {
     await digestContainer(languages, container)
+  }
+
+  for (const key in tags) {
+    await db.collection('videoTags').save(
+      {
+        _key: tags[key]._key,
+        title: tags[key].title
+      },
+      { overwriteMode: 'update' }
+    )
   }
 }
 main().catch((e) => {
