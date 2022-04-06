@@ -86,7 +86,7 @@ export function SelectableWrapper({
         outlineOffset: '5px',
         zIndex: selectedBlock?.id === block.id ? 1 : 0
       }}
-      onClick={handleSelectBlock}
+      onClickCapture={handleSelectBlock}
     >
       {children}
     </Box>
