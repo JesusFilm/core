@@ -3,14 +3,13 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators'
+import { VideoType } from '../../__generated__/graphql'
 
 interface VideosFilter {
   title?: string
   availableVariantLanguageIds?: string[]
   variantLanguageId?: string
-  includePlaylists?: boolean
-  includePlaylistVideos?: boolean
-  onlyPlaylists?: boolean
+  types?: VideoType[]
   offset?: number
   limit?: number
 }
