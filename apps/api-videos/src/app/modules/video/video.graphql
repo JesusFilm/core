@@ -12,7 +12,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   """
-   Videos containing episodes are considered playlists
+  Videos containing episodes are considered playlists
   """
   episodeIds: [ID!]
   episodes: [Video!]
