@@ -163,6 +163,25 @@ const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
       }
     `.query
 
+const EPISODES_QUERY = aql`
+    FOR item IN 
+      FILTER item._key IN @value0
+      RETURN {
+        _key: item._key,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
+      }
+    `.query
+
 describe('VideoService', () => {
   let service: VideoService
   let db: DeepMockProxy<Database>
@@ -356,6 +375,18 @@ describe('VideoService', () => {
 
     it('should return a video even without a langaugeId', async () => {
       expect(await service.getVideo('20615')).toEqual(video)
+    })
+  })
+
+  describe('episodes', () => {
+    it('should query', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(EPISODES_QUERY)
+        expect(bindVars).toEqual({ value0: ['20615', '20616'], value1: null })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
     })
   })
 })

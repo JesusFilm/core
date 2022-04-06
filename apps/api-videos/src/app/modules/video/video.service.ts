@@ -113,9 +113,10 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
+    const videosView = this.db.view('videosView')
     const res = await this.db.query(aql`
-    FOR item in ${this.collection}
-      FILTER item._key  ${keys}
+    FOR item IN ${videosView}
+      FILTER item._key IN ${keys}
       RETURN {
         _key: item._key,
         title: item.title,
@@ -124,14 +125,12 @@ export class VideoService extends BaseService {
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
-        episodeIds: item.episodeIds,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
-        ],
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds
       }
     `)
