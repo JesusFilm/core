@@ -28,11 +28,11 @@ describe('VideoList', () => {
               request: {
                 query: GET_VIDEOS,
                 variables: {
+                  offset: 0,
+                  limit: 5,
                   where: {
                     availableVariantLanguageIds: ['529']
-                  },
-                  page: 1,
-                  limit: 8
+                  }
                 }
               },
               result: {
@@ -75,11 +75,11 @@ describe('VideoList', () => {
               request: {
                 query: GET_VIDEOS,
                 variables: {
+                  offset: 0,
+                  limit: 5,
                   where: {
                     availableVariantLanguageIds: ['529']
-                  },
-                  page: 1,
-                  limit: 20
+                  }
                 }
               },
               result: {
@@ -122,11 +122,11 @@ describe('VideoList', () => {
               request: {
                 query: GET_VIDEOS,
                 variables: {
+                  offset: 0,
+                  limit: 5,
                   where: {
                     availableVariantLanguageIds: ['529']
-                  },
-                  page: 1,
-                  limit: 8
+                  }
                 }
               },
               result: {

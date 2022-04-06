@@ -20,6 +20,7 @@ export function VideoSearch({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       inputProps={{
+        'data-testid': 'VideoSearch',
         'aria-label': 'Search'
       }}
       InputProps={{

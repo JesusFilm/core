@@ -18,11 +18,11 @@ const Template: Story = ({ ...args }) => {
           request: {
             query: GET_VIDEOS,
             variables: {
+              offset: 0,
+              limit: args.limit,
               where: {
                 availableVariantLanguageIds: ['529']
-              },
-              page: 1,
-              limit: args.limit
+              }
             }
           },
           result: {

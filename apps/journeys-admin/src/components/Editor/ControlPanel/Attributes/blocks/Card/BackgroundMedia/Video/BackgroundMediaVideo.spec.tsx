@@ -64,6 +64,8 @@ const getVideosMock = {
   request: {
     query: GET_VIDEOS,
     variables: {
+      offset: 0,
+      limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
         title: null
