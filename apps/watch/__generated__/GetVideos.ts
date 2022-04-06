@@ -45,6 +45,6 @@ export interface GetVideos {
 
 export interface GetVideosVariables {
   where?: VideosFilter | null;
-  page?: number | null;
+  offset?: number | null;
   limit?: number | null;
 }

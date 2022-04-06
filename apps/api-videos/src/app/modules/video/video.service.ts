@@ -125,6 +125,7 @@ export class VideoService extends BaseService {
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null

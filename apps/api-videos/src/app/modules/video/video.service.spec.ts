@@ -114,6 +114,7 @@ const QUERY_WITH_ONLY_PLAYLISTS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
@@ -136,6 +137,7 @@ const QUERY_WITH_PLAYLISTS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
@@ -158,6 +160,7 @@ const QUERY_WITHOUT_PLAYLIST_VIDEOS = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value2, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
@@ -178,6 +181,7 @@ const EPISODES_QUERY = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
