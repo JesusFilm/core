@@ -87,7 +87,7 @@ export function BackgroundMedia(): ReactElement {
         </StyledToggleButtonGroup>
       </Box>
       {blockType === 'ImageBlock' && (
-        <Box sx={{ py: 4, px: 6 }}>
+        <Box sx={{ pt: 4, pb: 3, px: 6 }}>
           <BackgroundMediaImage cardBlock={cardBlock} />
         </Box>
       )}
