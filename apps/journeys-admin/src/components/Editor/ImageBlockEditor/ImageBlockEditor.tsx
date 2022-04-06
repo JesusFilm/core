@@ -1,5 +1,4 @@
 import LinkIcon from '@mui/icons-material/Link'
-import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -72,42 +71,36 @@ export function ImageBlockEditor({
         showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
       />
-      <Box sx={{ py: 3, px: 6 }}>
-        <Box sx={{ px: 'auto' }}>
-          <Stack direction="column">
-            <form>
-              <TextField
-                id="src"
-                name="src"
-                variant="filled"
-                label="Paste URL of image..."
-                fullWidth
-                value={formik.values.src}
-                onChange={formik.handleChange}
-                onBlur={async (e) => {
-                  formik.handleBlur(e)
-                  await handleSrcChange(e as ChangeEvent<HTMLInputElement>)
-                }}
-                helperText={
-                  formik.touched.src === true
-                    ? formik.errors.src
-                    : 'Make sure image address is permanent'
-                }
-                error={
-                  formik.touched.src === true && Boolean(formik.errors.src)
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LinkIcon />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </form>
-          </Stack>
-        </Box>
-      </Box>
+      <Stack direction="column">
+        <form>
+          <TextField
+            id="src"
+            name="src"
+            variant="filled"
+            label="Paste URL of image..."
+            fullWidth
+            value={formik.values.src}
+            onChange={formik.handleChange}
+            onBlur={async (e) => {
+              formik.handleBlur(e)
+              await handleSrcChange(e as ChangeEvent<HTMLInputElement>)
+            }}
+            helperText={
+              formik.touched.src === true
+                ? formik.errors.src
+                : 'Make sure image address is permanent'
+            }
+            error={formik.touched.src === true && Boolean(formik.errors.src)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LinkIcon />
+                </InputAdornment>
+              )
+            }}
+          />
+        </form>
+      </Stack>
     </>
   )
 }

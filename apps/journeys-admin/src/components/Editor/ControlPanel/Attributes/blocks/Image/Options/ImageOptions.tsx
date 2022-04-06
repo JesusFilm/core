@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
@@ -47,10 +48,12 @@ export function ImageOptions(): ReactElement {
   }
 
   return (
-    <ImageBlockEditor
-      selectedBlock={imageBlock}
-      onChange={updateImageBlock}
-      showDelete={false}
-    />
+    <Box sx={{ py: 3, px: 6 }}>
+      <ImageBlockEditor
+        selectedBlock={imageBlock}
+        onChange={updateImageBlock}
+        showDelete={false}
+      />
+    </Box>
   )
 }
