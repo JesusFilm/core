@@ -32,7 +32,10 @@ export interface GetVideo_video {
   description: GetVideo_video_description[];
   title: GetVideo_video_title[];
   variant: GetVideo_video_variant | null;
-  playlist: string[] | null;
+  /**
+   * Videos containing episodes are considered playlists
+   */
+  episodeIds: string[] | null;
   seoTitle: string | null;
 }
 

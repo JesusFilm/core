@@ -27,7 +27,7 @@ export const GET_VIDEO = gql`
         duration
         hls
       }
-      playlist
+      episodeIds
       seoTitle
     }
   }

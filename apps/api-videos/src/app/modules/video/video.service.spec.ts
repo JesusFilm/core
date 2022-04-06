@@ -27,7 +27,7 @@ const DEFAULT_QUERY = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle,
+        seoTitle: item.seoTitle
       }
     `.query
 
