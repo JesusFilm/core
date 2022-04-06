@@ -92,8 +92,9 @@ export function AccessDialog({
 
   return (
     <Dialog {...dialogProps}>
-      <List>
-        <MuiListItem sx={{ px: 0 }}>
+      {/* something is overriding the y portion List and listItem styling */}
+      <List sx={{ pt: 0 }}>
+        <MuiListItem sx={{ p: 0 }}>
           <CopyTextField
             value={
               typeof window !== 'undefined'

@@ -68,7 +68,12 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
       <Dialog {...dialogProps}>
         <form onSubmit={handleSubmit}>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <TextField value={value} variant="filled" onChange={handleChange} />
+            <TextField
+              hiddenLabel
+              value={value}
+              variant="filled"
+              onChange={handleChange}
+            />
           </FormControl>
         </form>
       </Dialog>

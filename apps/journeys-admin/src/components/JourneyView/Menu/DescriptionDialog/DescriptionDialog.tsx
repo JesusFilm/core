@@ -68,6 +68,7 @@ export function DescriptionDialog({
         <form onSubmit={handleSubmit}>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
             <TextField
+              hiddenLabel
               value={value}
               multiline
               variant="filled"
