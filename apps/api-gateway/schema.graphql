@@ -712,7 +712,7 @@ type Video
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 
-  """Videos containing episodes are considered playlists"""
+  """Episodes are child videos, currently only found in a playlist type"""
   episodeIds: [ID!] @join__field(graph: VIDEOS)
   episodes: [Video!] @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
