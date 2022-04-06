@@ -209,7 +209,6 @@ describe('CardPreview', () => {
         { __ref: 'CardBlock:cardId' }
       ])
     })
-    console.log(cache.extract()['Journey:journeyId'])
   })
 
   it('should set the nextBlockId for the previous step when a new card is created', async () => {
