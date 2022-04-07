@@ -399,12 +399,6 @@ async function main(): Promise<void> {
     type: 'persistent',
     fields: ['variants[*].languageId']
   })
-  await db.collection('videos').ensureIndex({
-    name: 'permalink',
-    type: 'persistent',
-    fields: ['permalink'],
-    unique: true
-  })
 
   const view = {
     links: {
@@ -464,6 +458,13 @@ async function main(): Promise<void> {
   for (const container of await getMediaComponents('container')) {
     await digestContainer(languages, container)
   }
+
+  await db.collection('videos').ensureIndex({
+    name: 'permalink',
+    type: 'persistent',
+    fields: ['permalink'],
+    unique: true
+  })
 }
 main().catch((e) => {
   console.error(e)
