@@ -11,12 +11,14 @@ import { secondsToMinutes } from '@core/shared/ui'
 import videojs from 'video.js'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
+import { VideoType } from '../__generated__/globalTypes'
 import 'video.js/dist/video-js.css'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!) {
     video(id: $id, idType: slug) {
       id
+      type
       image
       description {
         primary
@@ -151,7 +153,7 @@ export default function SeoFriendly(): ReactElement {
                     {data.video.title.find((title) => title.primary)?.value}
                   </Typography>
                 </Stack>
-                {data.video.playlist == null && (
+                {data.video.type !== VideoType.playlist && (
                   <Stack justifyContent="center" direction="row">
                     <Typography variant="subtitle1">
                       {secondsToMinutes(data.video.variant.duration)} min
@@ -173,9 +175,9 @@ export default function SeoFriendly(): ReactElement {
                     </Typography>
                   </Stack>
                 )}
-                {data?.video.playlist != null && (
+                {data?.video.type === VideoType.playlist && (
                   <Typography variant="subtitle1">
-                    {data.video.playlist.length} episodes
+                    {data.video.episodeIds.length} episodes
                   </Typography>
                 )}
                 <Typography variant="caption">

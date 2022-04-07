@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui'
 import AddRounded from '@mui/icons-material/AddRounded'
 
+import { VideoType } from '../../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 
 interface VideoListListProps {
@@ -75,7 +76,10 @@ export function VideoListList({
                         borderRadius: 2
                       }}
                     >
-                      {secondsToTimeFormat(video.variant?.duration ?? 0)}
+                      {video.type !== VideoType.playlist &&
+                        secondsToTimeFormat(video.variant?.duration ?? 0)}
+                      {video.type === VideoType.playlist &&
+                        `${video.episodeIds.length} episodes`}
                     </Typography>
                   </Box>
                 </Box>

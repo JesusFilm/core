@@ -14,6 +14,7 @@ const DEFAULT_QUERY = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -38,6 +39,7 @@ const QUERY_WITH_TITLE = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -62,6 +64,7 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -88,6 +91,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -112,6 +116,7 @@ const QUERY_WITH_TYPES = aql`
       LIMIT @value1, @value2
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -119,7 +124,8 @@ const QUERY_WITH_TYPES = aql`
         image: item.image,
         tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
-        variant: NTH(item.variants[*
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
@@ -133,6 +139,7 @@ const EPISODES_QUERY = aql`
       FILTER item._key IN @value0
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,

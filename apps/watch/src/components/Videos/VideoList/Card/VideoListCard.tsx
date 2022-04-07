@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import { secondsToTimeFormat } from '@core/shared/ui'
 import Link from 'next/link'
 
+import { VideoType } from '../../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 
 interface VideoListCardProps {
@@ -46,12 +47,12 @@ export function VideoListCard({
                 <Typography variant="subtitle2">
                   {video.title[0].value}
                 </Typography>
-                {video.episodeIds.length === 0 && (
+                {video.type !== VideoType.playlist && (
                   <Typography variant="caption">
                     {secondsToTimeFormat(video.variant?.duration ?? 0)}
                   </Typography>
                 )}
-                {video.episodeIds.length > 0 && (
+                {video.type === VideoType.playlist && (
                   <Typography variant="caption">
                     {video.episodeIds.length} episodes
                   </Typography>
