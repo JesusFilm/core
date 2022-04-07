@@ -22,7 +22,7 @@ describe('Video Library', () => {
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
-      expect(getByTestId('VideoList').parentElement).toHaveClass(
+      expect(getByTestId('VideoList').parentElement?.parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
     })
@@ -54,7 +54,7 @@ describe('Video Library', () => {
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
-      expect(getByTestId('VideoList').parentElement).toHaveClass(
+      expect(getByTestId('VideoList').parentElement?.parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
       )
     })
