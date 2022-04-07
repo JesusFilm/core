@@ -27,8 +27,8 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   Episodes are child videos, currently only found in a playlist type
   """
-  episodeIds: [ID!]
-  episodes: [Video!]
+  episodeIds: [ID!]!
+  episodes: [Video!]!
 }
 
 input VideosFilter {

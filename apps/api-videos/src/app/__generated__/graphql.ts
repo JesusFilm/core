@@ -48,8 +48,8 @@ export class Video {
     image?: Nullable<string>;
     variantLanguages: Language[];
     seoTitle: string;
-    episodeIds?: Nullable<string[]>;
-    episodes?: Nullable<Video[]>;
+    episodeIds: string[];
+    episodes: Video[];
     variant?: Nullable<VideoVariant>;
 }
 
