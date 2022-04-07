@@ -1,7 +1,8 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo, useEffect, useState, ChangeEvent } from 'react'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import Search from '@mui/icons-material/Search'
+import { debounce } from 'lodash'
 
 interface VideoSearchProps {
   value?: string
@@ -12,13 +13,29 @@ export function VideoSearch({
   value,
   onChange
 }: VideoSearchProps): ReactElement {
+  const handleChange = useMemo(() => debounce(onChange, 500), [onChange])
+  const [search, setSearch] = useState(value ?? '')
+
+  function onSearchChange(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void {
+    setSearch(e.target.value)
+    handleChange(e.target.value)
+  }
+
+  useEffect(() => {
+    return () => {
+      handleChange.cancel()
+    }
+  }, [handleChange])
+
   return (
     <TextField
       hiddenLabel
       variant="filled"
       fullWidth
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
+      value={search}
+      onChange={onSearchChange}
       inputProps={{
         'data-testid': 'VideoSearch',
         'aria-label': 'Search'
