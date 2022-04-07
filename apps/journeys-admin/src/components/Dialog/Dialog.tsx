@@ -14,6 +14,7 @@ export interface DialogProps {
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   divider?: boolean
+  fullScreen?: boolean
   children?: ReactElement
 }
 
@@ -67,6 +68,7 @@ export function Dialog({
   dialogTitle,
   dialogAction,
   divider,
+  fullScreen,
   children
 }: DialogProps): ReactElement {
   function handleSubmit(): void {
@@ -77,6 +79,7 @@ export function Dialog({
   return (
     <StyledDialog
       open={open}
+      fullScreen={fullScreen}
       maxWidth="sm"
       fullWidth={true}
       onClose={handleClose}

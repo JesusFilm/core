@@ -11,6 +11,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui'
 import { Dialog } from '../Dialog'
 import {
@@ -69,6 +71,7 @@ export function AccessDialog({
 
   const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
 
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const disable =
     data?.journey?.userJourneys?.find(
       (userJourney) => userJourney.user?.email === currentUserData?.me?.email
@@ -87,7 +90,8 @@ export function AccessDialog({
       title: 'Invite Other Editors',
       closeButton: true
     },
-    divider: true
+    divider: true,
+    fullScreen: !smUp
   }
 
   return (
