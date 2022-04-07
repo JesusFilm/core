@@ -23,7 +23,7 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
-  seoTitle: String
+  seoTitle: String!
   """
   Episodes are child videos, currently only found in a playlist type
   """

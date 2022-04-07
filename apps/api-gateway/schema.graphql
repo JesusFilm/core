@@ -718,7 +718,7 @@ type Video
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
-  seoTitle: String @join__field(graph: VIDEOS)
+  seoTitle: String! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

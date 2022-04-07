@@ -20,7 +20,7 @@ export function VideoListCard({
   disabled = false
 }: VideoListCardProps): ReactElement {
   return (
-    <Link href={`/${video?.seoTitle ?? ''}`} passHref={true}>
+    <>
       <Card sx={{ width: 300, height: 315, my: 5, mr: 20 }}>
         {video == null && (
           <>
@@ -35,26 +35,32 @@ export function VideoListCard({
           </>
         )}
         {video != null && (
-          <CardActionArea>
-            <CardMedia component="img" image={video.image ?? ''} height="140" />
-            <CardContent>
-              <Typography variant="subtitle2">
-                {video.title[0].value}
-              </Typography>
-              {video.episodeIds == null && (
-                <Typography variant="caption">
-                  {secondsToTimeFormat(video.variant?.duration ?? 0)}
+          <Link href={`/${video.seoTitle}`} passHref={true}>
+            <CardActionArea>
+              <CardMedia
+                component="img"
+                image={video.image ?? ''}
+                height="140"
+              />
+              <CardContent>
+                <Typography variant="subtitle2">
+                  {video.title[0].value}
                 </Typography>
-              )}
-              {video.episodeIds != null && video.episodeIds.length > 0 && (
-                <Typography variant="caption">
-                  {video.episodeIds.length} episodes
-                </Typography>
-              )}
-            </CardContent>
-          </CardActionArea>
+                {video.episodeIds == null && (
+                  <Typography variant="caption">
+                    {secondsToTimeFormat(video.variant?.duration ?? 0)}
+                  </Typography>
+                )}
+                {video.episodeIds != null && video.episodeIds.length > 0 && (
+                  <Typography variant="caption">
+                    {video.episodeIds.length} episodes
+                  </Typography>
+                )}
+              </CardContent>
+            </CardActionArea>
+          </Link>
         )}
       </Card>
-    </Link>
+    </>
   )
 }
