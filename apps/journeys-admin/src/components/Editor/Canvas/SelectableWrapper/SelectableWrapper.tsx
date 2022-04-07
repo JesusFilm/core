@@ -2,6 +2,7 @@ import { ReactElement, MouseEvent } from 'react'
 import {
   ActiveTab,
   ActiveFab,
+  TreeBlock,
   WrapperProps,
   useEditor
 } from '@core/journeys/ui'
@@ -29,41 +30,55 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
+  const selectBlock = (block: TreeBlock): void => {
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({ type: 'SetSelectedBlockAction', block })
+    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+  }
+
+  const editBlock = (): void => {
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+  }
+
   // TODO: Test dispatch via E2E
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    if (block.__typename === 'RadioOptionBlock') {
+    // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
+    if (block.__typename === 'RadioQuestionBlock') {
+      if (selectedBlock?.id === block.id) {
+        editBlock()
+      } else {
+        selectBlock(block)
+      }
+    } else if (block.__typename === 'RadioOptionBlock') {
+      e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
       const siblingSelected =
         selectedBlock?.parentBlockId === block.parentBlockId
 
       if (selectedBlock?.id === block.id) {
-        e.stopPropagation()
-        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-      } else if (parentSelected || siblingSelected) {
-        e.stopPropagation()
-        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
-        })
+        // Must override RadioQuestionBlock selected during event capture
         dispatch({ type: 'SetSelectedBlockAction', block })
-        dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+        editBlock()
+      } else if (parentSelected || siblingSelected) {
+        selectBlock(block)
       }
     } else {
+      e.stopPropagation()
       if (selectedBlock?.id === block.id && isInlineEditable) {
-        e.stopPropagation()
-        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
+        editBlock()
       } else {
-        e.stopPropagation()
-        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
-        })
-        dispatch({ type: 'SetSelectedBlockAction', block })
-        dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+        selectBlock(block)
       }
     }
+  }
+
+  // Container Blocks (RadioQuestion, Grid) don't stop propogation on ClickCapture, stop onClick so child events still occur.
+  const blockNonSelectionEvents = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
   }
 
   return isSelectable ? (
@@ -87,6 +102,7 @@ export function SelectableWrapper({
         zIndex: selectedBlock?.id === block.id ? 1 : 0
       }}
       onClickCapture={handleSelectBlock}
+      onClick={blockNonSelectionEvents}
     >
       {children}
     </Box>
