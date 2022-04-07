@@ -3,14 +3,14 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators'
+import { VideoType } from '../../__generated__/graphql'
 
 interface VideosFilter {
   title?: string
+  tagId?: string
   availableVariantLanguageIds?: string[]
   variantLanguageId?: string
-  includePlaylists?: boolean
-  includePlaylistVideos?: boolean
-  onlyPlaylists?: boolean
+  types?: VideoType[]
   offset?: number
   limit?: number
 }
@@ -25,9 +25,7 @@ export class VideoService extends BaseService {
       tagId = null,
       availableVariantLanguageIds = [],
       variantLanguageId,
-      includePlaylists = false,
-      includePlaylistVideos = true,
-      onlyPlaylists = false,
+      types = null,
       offset = 0,
       limit = 100
     } = filter ?? {}
@@ -40,28 +38,15 @@ export class VideoService extends BaseService {
           aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
         title != null && availableVariantLanguageIds.length > 0 && aql`AND`,
         availableVariantLanguageIds.length > 0 &&
-          aql`item.variants.languageId IN ${availableVariantLanguageIds}`
+          aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
+        types != null && aql`FILTER item.type IN ${types}`,
+        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
       ].filter((x) => x !== false)
     )
-    const playListFilter = aql.join(
-      [
-        onlyPlaylists && aql`FILTER item.episodeIds != null`,
-        !includePlaylists &&
-          !onlyPlaylists &&
-          aql`FILTER item.episodeIds == null`,
-        !includePlaylistVideos &&
-          !onlyPlaylists &&
-          aql`FILTER item.isInnerSeries != true`
-      ].filter((x) => x !== false)
-    )
-    const tagFilter =
-      tagId == null ? aql`` : aql`FILTER ${tagId} IN item.tagIds`
 
     const res = await this.db.query(aql`
     FOR item IN ${videosView}
       ${search}
-      ${playListFilter}
-      ${tagFilter}
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,

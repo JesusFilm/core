@@ -33,7 +33,7 @@ export interface GetVideo_video {
   title: GetVideo_video_title[];
   variant: GetVideo_video_variant | null;
   /**
-   * Videos containing episodes are considered playlists
+   * Episodes are child videos, currently only found in a playlist type
    */
   episodeIds: string[] | null;
   seoTitle: string | null;

@@ -22,6 +22,7 @@ enum VideoType {
 
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
+  type: VideoType!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
@@ -30,9 +31,8 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   seoTitle: String
-  type: VideoType!
 
-  """Videos containing episodes are considered playlists"""
+  """Episodes are child videos, currently only found in a playlist type"""
   episodeIds: [ID!]
   episodes: [Video!]
   variant(languageId: ID): VideoVariant

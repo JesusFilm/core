@@ -1,6 +1,7 @@
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
+import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
 
 interface Video {
@@ -69,24 +70,25 @@ interface Download {
 
 interface VideoVariant {
   id: string
-  subtitle?: Translation[]
+  subtitle: Translation[]
   hls?: string
   languageId: string
   duration: number
-  downloads?: Download[]
+  downloads: Download[]
 }
 
 interface Video {
+  type: VideoType
   primaryLanguageId: string
   title: Translation[]
   snippet: Translation[]
   description: Translation[]
   studyQuestions: Translation[][]
   image: string
-  variants?: VideoVariant[]
+  variants: VideoVariant[]
   tagIds: string[]
   seoTitle: string
-  episodeIds?: string[]
+  episodeIds: string[]
 }
 
 interface Tag {
@@ -182,6 +184,7 @@ async function digestContent(
   }
 
   const body = {
+    type: VideoType.standalone,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -213,6 +216,7 @@ async function digestContent(
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
+    episodeIds: [],
     variants,
     seoTitle: getSeoTitle(mediaComponent.title)
   }
@@ -235,7 +239,9 @@ async function digestMediaComponentLanguage(
     return {
       id: mediaComponentLanguage.refId,
       languageId: mediaComponentLanguage.languageId.toString(),
-      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001)
+      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
+      subtitle: [],
+      downloads: []
     }
   }
   const downloads: Download[] = []
@@ -311,6 +317,7 @@ async function digestSeriesContainer(
 
   return {
     _key: mediaComponent.mediaComponentId,
+    type: VideoType.playlist,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title,
     snippet: [
@@ -357,17 +364,16 @@ async function digestContainer(
     const video = await getVideo(videoId)
     if (video == null) continue
 
-    if (mediaComponent.subType === 'series') series.episodeIds?.push(videoId)
+    if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
 
     if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
 
     if (mediaComponent.subType === 'series') {
       await db.collection('videos').update(videoId, {
-        inSeries: true
+        type: VideoType.episode
       })
     } else {
       await db.collection('videos').update(videoId, {
-        inSeries: false,
         tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
       })
     }
@@ -439,7 +445,7 @@ async function main(): Promise<void> {
               }
             }
           },
-          isInnerSeries: {
+          type: {
             analyzers: ['identity']
           },
           episodeIds: {

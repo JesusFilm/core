@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { VideoType } from '../../../__generated__/globalTypes'
 import { VideoList } from './VideoList/VideoList'
 
 export function Videos(): ReactElement {
@@ -6,8 +7,7 @@ export function Videos(): ReactElement {
     <VideoList
       filter={{
         availableVariantLanguageIds: ['529'],
-        includePlaylists: true,
-        includePlaylistVideos: false
+        types: [VideoType.playlist, VideoType.standalone]
       }}
       layout="grid"
     />
