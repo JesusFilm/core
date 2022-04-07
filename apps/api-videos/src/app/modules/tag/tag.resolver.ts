@@ -9,11 +9,15 @@ export class VideoTagResolver {
 
   @Query()
   async videoTags(): Promise<VideoTag[]> {
-    return await this.videoTagService.getAll()
+    const result = await this.videoTagService.getAll<VideoTag>()
+    console.log(result)
+    return result
   }
 
   @Query()
   async videoTag(@Args('id') id: string): Promise<VideoTag> {
-    return await this.videoTagService.get(id)
+    const result = await this.videoTagService.get<VideoTag>(id)
+    console.log(result)
+    return result
   }
 }

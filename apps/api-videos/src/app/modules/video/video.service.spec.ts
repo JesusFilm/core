@@ -35,7 +35,6 @@ const DEFAULT_QUERY = aql`
 const QUERY_WITH_TITLE = aql`
     FOR item IN 
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en")
-
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -60,7 +59,6 @@ const QUERY_WITH_TITLE = aql`
 const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
     FOR item IN 
       SEARCH item.variants.languageId IN ${['en']}
-
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -87,7 +85,6 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       SEARCH ANALYZER(TOKENS(${'abc'}, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN ${[
   'en'
 ]}
-
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
@@ -111,7 +108,6 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
 
 const QUERY_WITH_TYPES = aql`
     FOR item IN 
-
       FILTER item.type IN @value0
       LIMIT @value1, @value2
       RETURN {

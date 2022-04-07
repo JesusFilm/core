@@ -1,4 +1,4 @@
-type VideoTag @key(fields: "id") {
+type VideoTag {
   id: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
 }
@@ -65,13 +65,13 @@ type VideoVariant {
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 
-extend type Language @key(fields: "id") {
-  id: ID! @external
-}
-
 extend type Query {
-  videoTags: [VideoTag!]!
-  videoTag(id: ID!): VideoTag!
+  videoTags: [VideoTag!]
+  videoTag(id: ID!): VideoTag
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
+}
+
+extend type Language @key(fields: "id") {
+  id: ID! @external
 }

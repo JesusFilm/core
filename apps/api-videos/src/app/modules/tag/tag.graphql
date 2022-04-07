@@ -1,13 +1,9 @@
-extend type Language @key(fields: "id") {
-  id: ID! @external
-}
-
-type VideoTag @key(fields: "id") {
+type VideoTag {
   id: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 extend type Query {
-  videoTags: [VideoTag!]!
-  videoTag(id: ID!): VideoTag!
+  videoTags: [VideoTag!]
+  videoTag(id: ID!): VideoTag
 }

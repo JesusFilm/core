@@ -77,18 +77,18 @@ export class VideoVariant {
     subtitle: Translation[];
 }
 
-export class Language {
-    id: string;
-}
-
 export abstract class IQuery {
-    abstract videoTags(): VideoTag[] | Promise<VideoTag[]>;
+    abstract videoTags(): Nullable<VideoTag[]> | Promise<Nullable<VideoTag[]>>;
 
-    abstract videoTag(id: string): VideoTag | Promise<VideoTag>;
+    abstract videoTag(id: string): Nullable<VideoTag> | Promise<Nullable<VideoTag>>;
 
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
+}
+
+export class Language {
+    id: string;
 }
 
 type Nullable<T> = T | null;

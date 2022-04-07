@@ -461,8 +461,8 @@ type Query {
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
-  videoTag(id: ID!): VideoTag! @join__field(graph: VIDEOS)
-  videoTags: [VideoTag!]! @join__field(graph: VIDEOS)
+  videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
+  videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
@@ -849,12 +849,9 @@ input VideosFilter {
   types: [VideoType!]
 }
 
-type VideoTag
-  @join__owner(graph: VIDEOS)
-  @join__type(graph: VIDEOS, key: "id")
-{
-  id: ID! @join__field(graph: VIDEOS)
-  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+type VideoTag {
+  id: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 """
