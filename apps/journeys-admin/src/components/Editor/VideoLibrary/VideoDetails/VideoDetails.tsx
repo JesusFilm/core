@@ -35,6 +35,7 @@ export const GET_VIDEO = gql`
         value
       }
       variant {
+        id
         duration
         hls
       }
