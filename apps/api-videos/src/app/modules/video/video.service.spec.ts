@@ -27,7 +27,7 @@ const DEFAULT_QUERY = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `.query
 
@@ -51,7 +51,7 @@ const QUERY_WITH_TITLE = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `.query
 
@@ -75,7 +75,7 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `.query
 
@@ -101,7 +101,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `.query
 
@@ -124,7 +124,7 @@ const QUERY_WITH_TYPES = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `.query
 

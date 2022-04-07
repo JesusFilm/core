@@ -35,7 +35,7 @@ export function VideoListList({
           )?.value
           const title = video.title.find((title) => title.primary)?.value
           return (
-            <ListItemButton key={index} href={`/${video.seoTitle}`}>
+            <ListItemButton key={index} href={`/${video.permalink}`}>
               <ListItemText
                 primary={title}
                 secondary={snippet}

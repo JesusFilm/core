@@ -65,7 +65,7 @@ export class VideoService extends BaseService {
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `)
     return await res.all()
@@ -94,7 +94,7 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `)
     return await res.next()
@@ -102,12 +102,12 @@ export class VideoService extends BaseService {
 
   @KeyAsId()
   async getVideoBySeoTitle<T>(
-    seoTitle: string,
+    permalink: string,
     variantLanguageId?: string
   ): Promise<T> {
     const res = await this.db.query(aql`
     FOR item in ${this.collection}
-      FILTER item.seoTitle == ${seoTitle}
+      FILTER item.permalink == ${permalink}
       LIMIT 1
       RETURN {
         _key: item._key,
@@ -126,7 +126,7 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         episodeIds: item.episodeIds,
-        seoTitle: item.seoTitle
+        permalink: item.permalink
       }
     `)
     return await res.next()

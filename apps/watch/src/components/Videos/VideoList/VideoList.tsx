@@ -24,7 +24,7 @@ export const GET_VIDEOS = gql`
         duration
       }
       episodeIds
-      seoTitle
+      permalink
     }
   }
 `

@@ -54,9 +54,9 @@ export class Video {
     studyQuestions: Translation[];
     image?: Nullable<string>;
     variantLanguages: Language[];
-    seoTitle?: Nullable<string>;
-    episodeIds?: Nullable<string[]>;
-    episodes?: Nullable<Video[]>;
+    permalink: string;
+    episodeIds: string[];
+    episodes: Video[];
     variant?: Nullable<VideoVariant>;
 }
 
