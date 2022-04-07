@@ -4,6 +4,8 @@ import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded'
+import VolumeOffRounded from '@mui/icons-material/VolumeOffRounded'
 import IconButton from '@mui/material/IconButton'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import { TreeBlock, useEditor } from '../..'
@@ -34,6 +36,7 @@ export function Video({
   children
 }: TreeBlock<VideoFields>): ReactElement {
   const [showControls, setShowControls] = useState<boolean>(false)
+  const [volume, setVolume] = useState<boolean>(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -77,6 +80,7 @@ export function Video({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true && !mobile,
+        controls: true,
         userActions: {
           hotkeys: true,
           doubleClick: true
@@ -108,6 +112,8 @@ export function Video({
             VideoResponseStateEnum.PLAYING,
             playerRef.current?.currentTime()
           )
+          if (playerRef.current?.isFullscreen() === false)
+            playerRef.current?.controls(false)
         })
         playerRef.current.on('pause', () => {
           handleVideoResponse(
@@ -123,9 +129,18 @@ export function Video({
             playerRef.current?.currentTime()
           )
         })
-
-        if (!playerRef.current.isFullscreen()) {
-          playerRef.current.controls(false)
+        playerRef.current.on('fullscreenchange', () => {
+          if (playerRef.current?.isFullscreen() === false) {
+            playerRef.current?.controls(false)
+            setShowControls(false)
+          }
+          if (playerRef.current?.isFullscreen() === true) {
+            playerRef.current?.controls(true)
+            setShowControls(true)
+          }
+        })
+        if (muted === true) {
+          setVolume(true)
         }
       }
     }
@@ -143,15 +158,12 @@ export function Video({
 
   const handleFullscreen = (): void => {
     playerRef.current?.requestFullscreen()
-    playerRef.current?.controls(true)
   }
 
-  // TODO:
-  // Check if in fullscreen
-  // if so enable controls
-  // Add a fullscreen button/icon
-  // Add logic to fullscreen button/icon
-  // When in fullscreen - controls should be displaying
+  const handleMuted = (): void => {
+    setVolume(!volume)
+    playerRef.current?.muted(!volume)
+  }
 
   useEffect(() => {
     if (selectedBlock !== undefined) {
@@ -161,7 +173,7 @@ export function Video({
 
   return (
     <Box
-      data-testid={`video-${blockId}`}
+      data-testid={`video-${blockId} `}
       sx={{
         display: 'flex',
         width: '100%',
@@ -178,7 +190,19 @@ export function Video({
         outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
         outlineOffset: fullsize === true ? '-3px' : null,
         '> .video-js': {
-          width: '100%'
+          width: '100%',
+          display: 'flex',
+          alignSelf: 'center',
+          height: '100%'
+        },
+        '> .MuiIconButton-root': {
+          color: '#FFFFFF',
+          position: 'absolute',
+          bottom: 12,
+          zIndex: 1,
+          '&:hover': {
+            color: 'none'
+          }
         }
       }}
     >
@@ -187,27 +211,24 @@ export function Video({
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
-            style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
             playsInline
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
           {!showControls && (
-            <IconButton
-              onClick={handleFullscreen}
-              sx={{
-                color: '#FFFFFF',
-                position: 'absolute',
-                right: 27,
-                bottom: 19,
-                zIndex: 1,
-                '&:hover': {
-                  backgroundColor: '#FFFFFFF'
-                }
-              }}
-            >
-              <FullscreenRounded />
-            </IconButton>
+            // move to their own component?
+            <>
+              <IconButton onClick={handleMuted} sx={{ left: 20 }}>
+                {volume ? (
+                  <VolumeOffRounded fontSize="large" />
+                ) : (
+                  <VolumeUpRounded fontSize="large" />
+                )}
+              </IconButton>
+              <IconButton onClick={handleFullscreen} sx={{ right: 20 }}>
+                <FullscreenRounded fontSize="large" />
+              </IconButton>
+            </>
           )}
           {children?.map(
             (option) =>
