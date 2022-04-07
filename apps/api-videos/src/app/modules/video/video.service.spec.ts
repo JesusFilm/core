@@ -120,7 +120,8 @@ const QUERY_WITH_TYPES = aql`
         image: item.image,
         tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
-        variant: NTH(item.variants[*
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
