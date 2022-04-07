@@ -14,6 +14,7 @@ const DEFAULT_QUERY = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -37,6 +38,7 @@ const QUERY_WITH_TITLE = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -60,6 +62,7 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -85,6 +88,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -108,6 +112,7 @@ const QUERY_WITH_TYPES = aql`
       LIMIT @value1, @value2
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -129,6 +134,7 @@ const EPISODES_QUERY = aql`
       FILTER item._key IN @value0
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
