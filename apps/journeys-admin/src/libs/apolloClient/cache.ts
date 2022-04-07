@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { offsetLimitPagination } from "@apollo/client/utilities";
+import { offsetLimitPagination } from '@apollo/client/utilities'
 
 export const cache = (): InMemoryCache =>
   new InMemoryCache({

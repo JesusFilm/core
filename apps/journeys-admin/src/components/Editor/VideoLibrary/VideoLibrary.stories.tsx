@@ -115,7 +115,7 @@ const Template: Story = ({ onSelect }) => {
               videos: []
             }
           }
-        },
+        }
       ]}
     >
       <VideoLibrary

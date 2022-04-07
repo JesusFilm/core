@@ -92,15 +92,11 @@ describe('Video List', () => {
   it('should render a video list item', async () => {
     const onSelect = jest.fn()
     const { getByText } = render(
-      <MockedProvider
-        mocks={[getVideosMock]}
-      >
+      <MockedProvider mocks={[getVideosMock]}>
         <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByText("Andreas' Story")).toBeInTheDocument()
-    )
+    await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
     expect(getByText('Brand_Video')).toBeInTheDocument()
     expect(getByText('The Demoniac')).toBeInTheDocument()
   })
@@ -113,18 +109,17 @@ describe('Video List', () => {
     }))
     const { getByRole } = render(
       <MockedProvider
-        mocks={[
-          getVideosMock,
-          {...getVideosEmptyWithOffsetMock, result }
-        ]}
+        mocks={[getVideosMock, { ...getVideosEmptyWithOffsetMock, result }]}
       >
         <VideoList onSelect={jest.fn()} currentLanguageIds={['529']} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('button', { name: 'Load More'})).toBeEnabled())
-    fireEvent.click(getByRole('button', { name: 'Load More'}))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Load More' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByRole('button', { name: 'No More Videos'})).toBeDisabled()
+    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
   })
 
   it('should render No More Videos if video length is 0', async () => {
@@ -137,10 +132,10 @@ describe('Video List', () => {
     await waitFor(() =>
       expect(getByText('No Results Found')).toBeInTheDocument()
     )
-    expect(getByRole('button', { name: 'No More Videos'})).toBeDisabled()
+    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
   })
 
-  it('should re-enable Load More if filters change', async() => {
+  it('should re-enable Load More if filters change', async () => {
     const { getByRole, rerender } = render(
       <MockedProvider
         mocks={[
@@ -152,9 +147,13 @@ describe('Video List', () => {
         <VideoList onSelect={jest.fn()} currentLanguageIds={['529']} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('button', { name: 'Load More'})).toBeEnabled())
-    fireEvent.click(getByRole('button', { name: 'Load More'}))
-    await waitFor(() => expect(getByRole('button', { name: 'No More Videos'})).toBeDisabled())
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Load More' }))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+    )
     rerender(
       <MockedProvider
         mocks={[
@@ -163,9 +162,15 @@ describe('Video List', () => {
           getVideosWithTitleMock
         ]}
       >
-        <VideoList title="abc" onSelect={jest.fn()} currentLanguageIds={['529']} />
+        <VideoList
+          title="abc"
+          onSelect={jest.fn()}
+          currentLanguageIds={['529']}
+        />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('button', { name: 'Load More'})).toBeEnabled())
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+    )
   })
 })

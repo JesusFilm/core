@@ -136,7 +136,9 @@ export function VideoList({
           size="medium"
           disabled={(data?.videos?.length === 0 && !loading) || noMoreVideos}
         >
-          {data?.videos?.length === 0 || noMoreVideos ? 'No More Videos' : 'Load More'}
+          {data?.videos?.length === 0 || noMoreVideos
+            ? 'No More Videos'
+            : 'Load More'}
         </LoadingButton>
       </Box>
     </>
