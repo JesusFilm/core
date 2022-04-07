@@ -48,6 +48,7 @@ const Template: Story<NavigationDrawerProps> = () => {
             signOut: noop
           } as unknown as AuthUser
         }
+        title="Journeys"
       />
     </MockedProvider>
   )

@@ -48,7 +48,6 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   width: DRAWER_WIDTH,
   display: 'flex',
   boxSizing: 'border-box',
-  zIndex: 1301,
   border: 0,
   '& .MuiDrawer-paper': {
     backgroundColor: theme.palette.secondary.dark,
