@@ -7,8 +7,15 @@ enum IdType {
   slug
 }
 
+enum VideoType {
+  episode
+  standalone
+  playlist
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
+  type: VideoType!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
@@ -18,7 +25,7 @@ type Video @key(fields: "id primaryLanguageId") {
   variantLanguages: [Language!]!
   seoTitle: String
   """
-  Videos containing episodes are considered playlists
+  Episodes are child videos, currently only found in a playlist type
   """
   episodeIds: [ID!]
   episodes: [Video!]
@@ -27,9 +34,7 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  includePlaylists: Boolean
-  includePlaylistVideos: Boolean
-  onlyPlaylists: Boolean
+  types: [VideoType!]
 }
 
 extend type Query {

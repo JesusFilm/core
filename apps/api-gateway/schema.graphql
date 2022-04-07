@@ -712,7 +712,7 @@ type Video
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 
-  """Videos containing episodes are considered playlists"""
+  """Episodes are child videos, currently only found in a playlist type"""
   episodeIds: [ID!] @join__field(graph: VIDEOS)
   episodes: [Video!] @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
@@ -722,6 +722,7 @@ type Video
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
@@ -841,10 +842,8 @@ enum VideoResponseStateEnum {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
-  includePlaylistVideos: Boolean
-  includePlaylists: Boolean
-  onlyPlaylists: Boolean
   title: String
+  types: [VideoType!]
 }
 
 """
@@ -863,6 +862,12 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
+}
+
+enum VideoType {
+  episode
+  playlist
+  standalone
 }
 
 type VideoVariant {
