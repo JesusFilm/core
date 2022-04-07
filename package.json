@@ -114,7 +114,7 @@
     "@nrwl/express": "13.2.2",
     "@nrwl/jest": "13.2.2",
     "@nrwl/linter": "13.2.2",
-    "@nrwl/nest": "^13.2.2",
+    "@nrwl/nest": "^13.9.7",
     "@nrwl/next": "13.2.2",
     "@nrwl/node": "13.2.2",
     "@nrwl/nx-cloud": "12.5.4",
