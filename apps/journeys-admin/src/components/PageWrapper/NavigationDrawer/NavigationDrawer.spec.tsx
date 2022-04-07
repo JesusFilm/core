@@ -19,7 +19,7 @@ describe('NavigationDrawer', () => {
   it('should render the drawer', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer open={true} onClose={onClose} />
+        <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
@@ -61,6 +61,7 @@ describe('NavigationDrawer', () => {
               signOut
             } as unknown as AuthUser
           }
+          title="Journeys"
         />
       </MockedProvider>
     )
@@ -76,7 +77,7 @@ describe('NavigationDrawer', () => {
   it('should close the navigation drawer on chevron left click', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer open={true} onClose={onClose} />
+        <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
