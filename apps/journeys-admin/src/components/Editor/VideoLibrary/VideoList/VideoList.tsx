@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Divider from '@mui/material/Divider'
 import LoadingButton from '@mui/lab/LoadingButton'
 import AddRounded from '@mui/icons-material/AddRounded'
@@ -53,6 +53,9 @@ export function VideoList({
       }
     }
   })
+  const [noMoreVideos, setNoMoreVideos] = useState(false)
+
+  useEffect(() => setNoMoreVideos(false), [currentLanguageIds, title])
 
   return (
     <>
@@ -119,21 +122,21 @@ export function VideoList({
         sx={{ display: 'flex', justifyContent: 'center', mx: 'auto', my: 6 }}
       >
         <LoadingButton
-          data-testid="VideoListLoadMore"
           variant="outlined"
-          onClick={async () =>
-            await fetchMore({
+          onClick={async () => {
+            const response = await fetchMore({
               variables: {
                 offset: data?.videos?.length ?? 0
               }
             })
-          }
+            if (response.data?.videos?.length === 0) setNoMoreVideos(true)
+          }}
           loading={loading}
           startIcon={<AddRounded />}
-          loadingPosition="start"
           size="medium"
+          disabled={(data?.videos?.length === 0 && !loading) || noMoreVideos}
         >
-          Load More
+          {data?.videos?.length === 0 || noMoreVideos ? 'No More Videos' : 'Load More'}
         </LoadingButton>
       </Box>
     </>

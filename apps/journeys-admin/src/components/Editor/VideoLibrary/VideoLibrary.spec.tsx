@@ -102,6 +102,7 @@ describe('Video Library', () => {
                         }
                       ],
                       variant: {
+                        id: 'variantA',
                         duration: 186
                       }
                     }

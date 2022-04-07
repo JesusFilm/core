@@ -30,7 +30,25 @@ const Template: Story = ({ onSelect }) => (
         },
         result: {
           data: {
-            videos: videos
+            videos
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_VIDEOS,
+          variables: {
+            offset: 3,
+            limit: 5,
+            where: {
+              availableVariantLanguageIds: ['529'],
+              title: null
+            }
+          }
+        },
+        result: {
+          data: {
+            videos: []
           }
         }
       }

@@ -97,7 +97,7 @@ const Template: Story = ({ ...args }) => (
         },
         result: {
           data: {
-            videos: videos
+            videos
           }
         }
       }

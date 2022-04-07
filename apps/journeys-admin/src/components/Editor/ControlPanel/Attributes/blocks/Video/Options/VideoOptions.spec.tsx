@@ -61,7 +61,7 @@ describe('VideoOptions', () => {
             },
             result: {
               data: {
-                videos: [...videos, ...videos, ...videos]
+                videos
               }
             }
           },

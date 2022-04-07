@@ -63,7 +63,7 @@ export const Default: Story = () => (
         },
         result: {
           data: {
-            videos: [...videos, ...videos, ...videos]
+            videos
           }
         }
       },

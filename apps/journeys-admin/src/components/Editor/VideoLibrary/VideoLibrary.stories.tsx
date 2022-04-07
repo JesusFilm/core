@@ -35,7 +35,25 @@ const Template: Story = ({ onSelect }) => {
           },
           result: {
             data: {
-              videos: [...videos, ...videos, ...videos]
+              videos
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 3,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: null
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: []
             }
           }
         },
@@ -79,7 +97,25 @@ const Template: Story = ({ onSelect }) => {
               ]
             }
           }
-        }
+        },
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 1,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: 'Andreas'
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: []
+            }
+          }
+        },
       ]}
     >
       <VideoLibrary
