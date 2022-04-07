@@ -15,6 +15,7 @@ import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
@@ -28,6 +29,7 @@ export interface NavigationDrawerProps {
   open: boolean
   onClose: (value: boolean) => void
   authUser?: AuthUser
+  title: string
 }
 
 export const GET_ME = gql`
@@ -46,6 +48,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   width: DRAWER_WIDTH,
   display: 'flex',
   boxSizing: 'border-box',
+  zIndex: 1301,
   border: 0,
   '& .MuiDrawer-paper': {
     backgroundColor: theme.palette.secondary.dark,
@@ -70,7 +73,8 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
 export function NavigationDrawer({
   open,
   onClose,
-  authUser
+  authUser,
+  title
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
@@ -79,8 +83,13 @@ export function NavigationDrawer({
   const handleProfileClick = (event): void => {
     setProfileAnchorEl(event.currentTarget)
   }
+
   const handleProfileClose = (): void => {
     setProfileAnchorEl(null)
+  }
+
+  const handleClose = (): void => {
+    onClose(!open)
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
@@ -88,11 +97,11 @@ export function NavigationDrawer({
   return (
     <StyledNavigationDrawer
       open={open}
-      elevation={0}
-      hideBackdrop
+      onClose={handleClose}
       variant={smUp ? 'permanent' : 'temporary'}
       anchor="left"
     >
+      {open && smUp && <Backdrop open={open} onClick={handleClose} />}
       <List
         sx={{
           display: 'flex',
@@ -101,7 +110,8 @@ export function NavigationDrawer({
             pl: 0,
             mb: 6,
             '> .MuiListItemIcon-root': {
-              color: 'secondary.light',
+              color:
+                title === 'Journeys' ? 'background.paper' : 'secondary.light',
               minWidth: 'unset',
               width: '72px',
               justifyContent: 'center'
@@ -109,7 +119,7 @@ export function NavigationDrawer({
           }
         }}
       >
-        <ListItemButton onClick={() => onClose(!open)}>
+        <ListItemButton onClick={handleClose}>
           <ListItemIcon
             sx={{
               '> .MuiSvgIcon-root': {
@@ -127,7 +137,13 @@ export function NavigationDrawer({
             <ListItemIcon>
               <ExploreRoundedIcon />
             </ListItemIcon>
-            <Typography variant="h5" sx={{ color: 'secondary.light' }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color:
+                  title === 'Journeys' ? 'background.paper' : 'secondary.light'
+              }}
+            >
               Discover
             </Typography>
           </ListItemButton>
