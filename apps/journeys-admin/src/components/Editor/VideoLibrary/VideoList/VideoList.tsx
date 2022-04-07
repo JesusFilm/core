@@ -1,5 +1,4 @@
 import { ReactElement, useEffect, useState } from 'react'
-import Divider from '@mui/material/Divider'
 import LoadingButton from '@mui/lab/LoadingButton'
 import AddRounded from '@mui/icons-material/AddRounded'
 import { gql, useQuery } from '@apollo/client'
@@ -60,8 +59,7 @@ export function VideoList({
 
   return (
     <>
-      <List data-testid="VideoList" sx={{ px: 6 }}>
-        <Divider />
+      <List data-testid="VideoList" sx={{ py: 0, px: 6 }}>
         {data?.videos?.map((video) => (
           <VideoListItem
             id={video.id}

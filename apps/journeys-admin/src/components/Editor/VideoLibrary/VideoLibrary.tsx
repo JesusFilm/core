@@ -3,6 +3,8 @@ import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Close from '@mui/icons-material/Close'
 import IconButton from '@mui/material/IconButton'
@@ -68,11 +70,14 @@ export function VideoLibrary({
       <VideoSearch value={title} onChange={setTitle} />
       {/* language */}
       {/* currentLanguageIds value is temporary */}
-      <VideoList
-        onSelect={onSelect}
-        currentLanguageIds={['529']}
-        title={title}
-      />
+      <Divider />
+      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        <VideoList
+          onSelect={onSelect}
+          currentLanguageIds={['529']}
+          title={title}
+        />
+      </Box>
     </Drawer>
   )
 }
