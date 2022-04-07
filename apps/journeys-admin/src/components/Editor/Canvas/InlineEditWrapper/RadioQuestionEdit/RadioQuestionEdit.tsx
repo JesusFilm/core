@@ -34,7 +34,7 @@ export function RadioQuestionEdit({
 
   const journey = useJourney()
   const [labelValue, setLabel] = useState(label)
-  const [descriptionValue, setDescription] = useState(description)
+  const [descriptionValue, setDescription] = useState(description ?? '')
 
   async function handleSaveBlock(): Promise<void> {
     const label = labelValue.trimStart().trimEnd()
@@ -95,6 +95,7 @@ export function RadioQuestionEdit({
       description={description}
       editableLabel={labelInput}
       editableDescription={descriptionInput}
+      wrappers={{ Wrapper: ({ children }) => children }}
     />
   )
 }
