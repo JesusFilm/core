@@ -201,7 +201,7 @@ export function Video({
           bottom: 12,
           zIndex: 1,
           '&:hover': {
-            color: 'none'
+            color: '#FFFFFF'
           }
         }
       }}

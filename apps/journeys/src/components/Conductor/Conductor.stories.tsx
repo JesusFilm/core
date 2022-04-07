@@ -812,41 +812,54 @@ const videoBlocks: TreeBlock[] = [
     nextBlockId: 'step2.id',
     children: [
       {
-        id: 'video1.id',
-        __typename: 'VideoBlock',
-        parentBlockId: 'card1.id',
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step1.id',
+        coverBlockId: null,
         parentOrder: 0,
-        autoplay: true,
-        muted: true,
-        videoId: '2_0-FallingPlates',
-        videoVariantLanguageId: '529',
-        video: {
-          __typename: 'Video',
-          id: '2_0-FallingPlates',
-          variant: {
-            __typename: 'VideoVariant',
-            id: '2_0-FallingPlates-529',
-            hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-          }
-        },
-        endAt: null,
-        startAt: null,
-        posterBlockId: null,
-        fullsize: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
         children: [
           {
-            id: 'trigger.id',
-            __typename: 'VideoTriggerBlock',
-            parentBlockId: 'video1.id',
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
             parentOrder: 0,
-            triggerStart: 20,
-            triggerAction: {
-              __typename: 'NavigateToBlockAction',
-              parentBlockId: 'trigger.id',
-              gtmEventName: 'gtmEventName',
-              blockId: 'step2.id'
+            autoplay: true,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
             },
-            children: []
+            endAt: null,
+            startAt: null,
+            posterBlockId: null,
+            fullsize: true,
+            children: [
+              {
+                id: 'trigger.id',
+                __typename: 'VideoTriggerBlock',
+                parentBlockId: 'video1.id',
+                parentOrder: 0,
+                triggerStart: 20,
+                triggerAction: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'trigger.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
+                },
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -919,42 +932,55 @@ const videoBlocks: TreeBlock[] = [
     parentBlockId: null,
     parentOrder: 2,
     locked: false,
-    nextBlockId: null,
+    nextBlockId: 'step4.id',
     children: [
       {
-        id: 'video2.id',
-        __typename: 'VideoBlock',
-        parentBlockId: 'card3.id',
+        id: 'card3.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step3.id',
         parentOrder: 0,
-        autoplay: false,
-        muted: false,
-        posterBlockId: 'posterBlockId',
-        videoId: '2_0-FallingPlates',
-        videoVariantLanguageId: '529',
-        video: {
-          __typename: 'Video',
-          id: '2_0-FallingPlates',
-          variant: {
-            __typename: 'VideoVariant',
-            id: '2_0-FallingPlates-529',
-            hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-          }
-        },
-        endAt: null,
-        startAt: null,
-        fullsize: null,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
         children: [
           {
-            id: 'posterBlockId',
-            __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-            alt: 'random image from unsplash',
-            width: 1600,
-            height: 1067,
-            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-            parentBlockId: 'videoBlockId',
+            id: 'video2.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card3.id',
             parentOrder: 0,
-            children: []
+            autoplay: false,
+            muted: false,
+            posterBlockId: 'posterBlockId',
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            endAt: null,
+            startAt: null,
+            fullsize: true,
+            children: [
+              {
+                id: 'posterBlockId',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                alt: 'random image from unsplash',
+                width: 1600,
+                height: 1067,
+                blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                parentBlockId: 'videoBlockId',
+                parentOrder: 0,
+                children: []
+              }
+            ]
           }
         ]
       }
@@ -969,28 +995,41 @@ const videoBlocks: TreeBlock[] = [
     nextBlockId: null,
     children: [
       {
-        id: 'video3.id',
-        __typename: 'VideoBlock',
-        parentBlockId: 'card3.id',
+        id: 'card4.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step4.id',
         parentOrder: 0,
-        autoplay: true,
-        muted: false,
-        posterBlockId: null,
-        videoId: '2_0-FallingPlates',
-        videoVariantLanguageId: '529',
-        video: {
-          __typename: 'Video',
-          id: '2_0-FallingPlates',
-          variant: {
-            __typename: 'VideoVariant',
-            id: '2_0-FallingPlates-529',
-            hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video3.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card4.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: false,
+            posterBlockId: null,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            endAt: null,
+            startAt: 10,
+            fullsize: true,
+            children: []
           }
-        },
-        endAt: null,
-        startAt: 10,
-        fullsize: null,
-        children: []
+        ]
       }
     ]
   }
