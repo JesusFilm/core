@@ -47,6 +47,7 @@ export class VideoService extends BaseService {
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -75,6 +76,7 @@ export class VideoService extends BaseService {
       LIMIT 1
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -106,6 +108,7 @@ export class VideoService extends BaseService {
       FILTER item._key IN ${keys}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
