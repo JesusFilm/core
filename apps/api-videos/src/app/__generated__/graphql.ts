@@ -47,7 +47,7 @@ export class Video {
     studyQuestions: Translation[];
     image?: Nullable<string>;
     variantLanguages: Language[];
-    seoTitle: string;
+    permalink: string;
     episodeIds: string[];
     episodes: Video[];
     variant?: Nullable<VideoVariant>;

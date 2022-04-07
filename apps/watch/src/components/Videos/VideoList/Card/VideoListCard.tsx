@@ -35,7 +35,7 @@ export function VideoListCard({
           </>
         )}
         {video != null && (
-          <Link href={`/${video.seoTitle}`} passHref={true}>
+          <Link href={`/${video.permalink}`} passHref={true}>
             <CardActionArea>
               <CardMedia
                 component="img"

@@ -87,7 +87,7 @@ interface Video {
   image: string
   variants: VideoVariant[]
   tagIds: string[]
-  seoTitle: string
+  permalink: string
   episodeIds: string[]
 }
 
@@ -160,6 +160,9 @@ async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
+  const video = await getVideo(mediaComponent.mediaComponentId)
+  if (video?.permalink != null) usedTitles.push(video.permalink)
+
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -211,10 +214,9 @@ async function digestContent(
     tagIds: [],
     episodeIds: [],
     variants,
-    seoTitle: getSeoTitle(mediaComponent.title)
+    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title)
   }
 
-  const video = await getVideo(mediaComponent.mediaComponentId)
   if (video != null) {
     await db.collection('videos').update(mediaComponent.mediaComponentId, body)
   } else {
@@ -279,8 +281,10 @@ async function getMediaComponentLinks(
 
 async function digestSeriesContainer(
   mediaComponent,
-  languages
+  languages,
+  video
 ): Promise<Video> {
+  if (video?.permalink != null) usedTitles.push(video.permalink)
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -328,7 +332,7 @@ async function digestSeriesContainer(
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
-    seoTitle: getSeoTitle(mediaComponent.title),
+    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title),
     episodeIds: [],
     variants
   }
@@ -339,9 +343,14 @@ async function digestContainer(
   mediaComponent: MediaComponent
 ): Promise<void> {
   console.log('container:', mediaComponent.mediaComponentId)
-  let series
+  let series, existingSeries
   if (mediaComponent.subType === 'series') {
-    series = await digestSeriesContainer(mediaComponent, languages)
+    existingSeries = await getVideo(mediaComponent.mediaComponentId)
+    series = await digestSeriesContainer(
+      mediaComponent,
+      languages,
+      existingSeries
+    )
   }
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
@@ -364,7 +373,6 @@ async function digestContainer(
     }
   }
   if (mediaComponent.subType === 'series') {
-    const existingSeries = await getVideo(mediaComponent.mediaComponentId)
     if (existingSeries != null)
       await db
         .collection('videos')
@@ -392,9 +400,9 @@ async function main(): Promise<void> {
     fields: ['variants[*].languageId']
   })
   await db.collection('videos').ensureIndex({
-    name: 'seo_title',
+    name: 'permalink',
     type: 'persistent',
-    fields: ['seoTitle'],
+    fields: ['permalink'],
     unique: true
   })
 
@@ -432,7 +440,7 @@ async function main(): Promise<void> {
           episodeIds: {
             analyzers: ['identity']
           },
-          seoTitle: {
+          permalink: {
             analyzers: ['identity']
           }
         }

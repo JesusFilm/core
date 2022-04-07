@@ -23,7 +23,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 3680, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'the-story-of-jesus-for-children'
+    permalink: 'the-story-of-jesus-for-children'
   },
   {
     id: '1_jf-0-0',
@@ -41,7 +41,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'jesus'
+    permalink: 'jesus'
   },
   {
     id: '1_wl-0-0',
@@ -65,7 +65,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 4952, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'magdalena-directors-cut'
+    permalink: 'magdalena-directors-cut'
   },
   {
     id: '2_Acts-0-0',
@@ -85,7 +85,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'book-of-acts'
+    permalink: 'book-of-acts'
   },
   {
     id: '2_CSF',
@@ -109,7 +109,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 343, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'a-day-and-a-night-with-creator-sets-free'
+    permalink: 'a-day-and-a-night-with-creator-sets-free'
   },
   {
     id: '2_GOJ-0-0',
@@ -133,7 +133,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 10994, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'life-of-jesus-gospel-of-john'
+    permalink: 'life-of-jesus-gospel-of-john'
   },
   {
     id: 'MAG1',
@@ -151,7 +151,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'magdalena'
+    permalink: 'magdalena'
   },
   {
     id: '1_0-TrainV_1Install',
@@ -175,6 +175,6 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    seoTitle: 'installing-the-jesus-film-media-app'
+    permalink: 'installing-the-jesus-film-media-app'
   }
 ]

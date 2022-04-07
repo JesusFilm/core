@@ -31,7 +31,7 @@ export const GET_VIDEO = gql`
         hls
       }
       episodeIds
-      seoTitle
+      permalink
     }
   }
 `

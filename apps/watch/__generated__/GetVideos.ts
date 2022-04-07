@@ -37,7 +37,7 @@ export interface GetVideos_videos {
    * Episodes are child videos, currently only found in a playlist type
    */
   episodeIds: string[];
-  seoTitle: string;
+  permalink: string;
 }
 
 export interface GetVideos {
