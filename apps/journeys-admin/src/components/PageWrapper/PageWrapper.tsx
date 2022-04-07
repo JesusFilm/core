@@ -111,7 +111,12 @@ export function PageWrapper({
           mr: { sm: showDrawer === true ? '328px' : 0 }
         }}
       />
-      <NavigationDrawer open={open} onClose={setOpen} authUser={authUser} />
+      <NavigationDrawer
+        open={open}
+        onClose={setOpen}
+        authUser={authUser}
+        title={title}
+      />
       <Box sx={{ ml: { sm: '72px' }, pt: smUp ? 0 : '48px' }}>{children}</Box>
     </>
   )
