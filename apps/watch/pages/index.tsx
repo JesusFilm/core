@@ -7,7 +7,8 @@ function VideoPage(): ReactElement {
     <VideoList
       filter={{
         availableVariantLanguageIds: ['529'],
-        types: [VideoType.playlist]
+        types: [VideoType.playlist, VideoType.standalone],
+        tagId: 'JFM1'
       }}
       layout="carousel"
     />

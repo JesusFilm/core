@@ -26,22 +26,14 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
+    tagId?: Nullable<string>;
     types?: Nullable<VideoType[]>;
 }
 
 export class VideoTag {
     __typename?: 'VideoTag';
     id: string;
-    primaryLanguageId: string;
     title: Translation[];
-    snippet: Translation[];
-    description: Translation[];
-    studyQuestions: Translation[];
-    image?: Nullable<string>;
-    variantLanguages: Language[];
-    seoTitle?: Nullable<string>;
-    episodeIds?: Nullable<string[]>;
-    episodes?: Nullable<Video[]>;
 }
 
 export class Translation {
@@ -90,6 +82,10 @@ export class Language {
 }
 
 export abstract class IQuery {
+    abstract videoTags(): VideoTag[] | Promise<VideoTag[]>;
+
+    abstract videoTag(id: string): VideoTag | Promise<VideoTag>;
+
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;

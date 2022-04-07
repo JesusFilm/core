@@ -24,7 +24,6 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   variantLanguages: [Language!]!
   seoTitle: String
-  type: VideoType!
   """
   Episodes are child videos, currently only found in a playlist type
   """
