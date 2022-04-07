@@ -44,6 +44,7 @@ export function VideoList({
   title = ''
 }: VideoListProps): ReactElement {
   const { loading, data, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
+    notifyOnNetworkStatusChange: true,
     variables: {
       offset: 0,
       limit: 5,
