@@ -41,31 +41,32 @@ export function VideoListItem({
     <>
       <ListItemButton
         onClick={handleOpen}
-        sx={{ my: 1, alignItems: 'flex-start', mx: -1 }}
+        sx={{ alignItems: 'flex-start', p: 3 }}
+        divider
       >
         <ListItemText
           primary={title}
           secondary={description}
           secondaryTypographyProps={{
-            style: {
+            sx: {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              paddingRight: '2rem'
+              textOverflow: 'ellipsis'
             }
           }}
+          sx={{ m: 0 }}
         />
         {image != null && (
           <Box>
             <Box
               sx={{
-                justifySelf: 'end',
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'flex-end',
                 height: 79,
                 width: 79,
                 borderRadius: 2,
+                ml: 2,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
                 backgroundImage: `url(${image})`
@@ -78,6 +79,7 @@ export function VideoListItem({
                   color: 'background.paper',
                   backgroundColor: 'rgba(0, 0, 0, 0.35)',
                   px: 1,
+                  m: 1,
                   borderRadius: 2
                 }}
               >

@@ -33,6 +33,10 @@ export interface GetVideos_videos {
   snippet: GetVideos_videos_snippet[];
   title: GetVideos_videos_title[];
   variant: GetVideos_videos_variant | null;
+  /**
+   * Episodes are child videos, currently only found in a playlist type
+   */
+  episodeIds: string[];
 }
 
 export interface GetVideos {
@@ -41,6 +45,6 @@ export interface GetVideos {
 
 export interface GetVideosVariables {
   where?: VideosFilter | null;
-  page?: number | null;
+  offset?: number | null;
   limit?: number | null;
 }
