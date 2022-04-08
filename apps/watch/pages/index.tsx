@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import { useQuery, gql } from '@apollo/client'
 
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
-import { GetVideoTag } from '../__generated__/GET_VIDEO_TAG'
+import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
 
 export const GET_VIDEO_TAG = gql`
@@ -26,8 +26,8 @@ function VideoPage(): ReactElement {
   })
   return (
     <>
-      <Typography variant="h1">
-        {jfm1Data?.videoTag?.title.find((t) => t.primary).value}
+      <Typography variant="h2">
+        {jfm1Data?.videoTag?.title.find((t) => t.primary)?.value}
       </Typography>
       <VideoList
         filter={{

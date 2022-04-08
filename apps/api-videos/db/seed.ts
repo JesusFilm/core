@@ -306,24 +306,17 @@ async function digestSeriesContainer(
     )
   }
 
-  const title = [
-    {
-      value: mediaComponent.title,
-      languageId: metadataLanguageId,
-      primary: true
-    }
-  ]
-
-  tags[mediaComponent.mediaComponentId] = {
-    _key: mediaComponent.mediaComponentId,
-    title
-  }
-
   return {
     _key: mediaComponent.mediaComponentId,
     type: VideoType.playlist,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
-    title,
+    title: [
+      {
+        value: mediaComponent.title,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
@@ -366,6 +359,21 @@ async function digestContainer(
       languages,
       existingSeries
     )
+  } else {
+    const metadataLanguageId =
+      languages
+        .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
+        ?.languageId.toString() ?? '529' // english by default
+    tags[mediaComponent.mediaComponentId] = {
+      _key: mediaComponent.mediaComponentId,
+      title: [
+        {
+          value: mediaComponent.title,
+          languageId: metadataLanguageId,
+          primary: true
+        }
+      ]
+    }
   }
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
