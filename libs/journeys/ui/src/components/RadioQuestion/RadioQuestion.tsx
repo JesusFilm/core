@@ -73,7 +73,7 @@ export function RadioQuestion({
   const options = children?.map(
     (option) =>
       option.__typename === 'RadioOptionBlock' &&
-      (wrappers != null || addOption != null ? (
+      (wrappers != null ? (
         <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
       ) : (
         <RadioOption

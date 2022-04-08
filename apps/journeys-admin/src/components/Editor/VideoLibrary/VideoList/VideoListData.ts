@@ -1,6 +1,6 @@
 export const videos = [
   {
-    id: '2_0-AndreasStory',
+    id: '2_Acts7302-0-0',
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -17,6 +17,7 @@ export const videos = [
       }
     ],
     variant: {
+      id: 'variantA',
       duration: 186
     }
   },
@@ -37,6 +38,7 @@ export const videos = [
       }
     ],
     variant: {
+      id: 'variantB',
       duration: 104
     }
   },
@@ -58,6 +60,7 @@ export const videos = [
       }
     ],
     variant: {
+      id: 'variantC',
       duration: 209
     }
   }

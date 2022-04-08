@@ -57,7 +57,7 @@ export function RadioQuestionEdit({
 
   const journey = useJourney()
   const [labelValue, setLabel] = useState(label)
-  const [descriptionValue, setDescription] = useState(description)
+  const [descriptionValue, setDescription] = useState(description ?? '')
 
   async function handleUpdateBlock(): Promise<void> {
     const label = labelValue.trimStart().trimEnd()
@@ -171,6 +171,7 @@ export function RadioQuestionEdit({
       editableLabel={labelInput}
       editableDescription={descriptionInput}
       addOption={props.children.length < 12 ? addRadioOption : undefined}
+      wrappers={{ Wrapper: ({ children }) => children }}
     />
   )
 }

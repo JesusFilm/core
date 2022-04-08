@@ -12,6 +12,6 @@ type Translation {
 }
 
 extend type Query {
-  languages(page: Int, limit: Int): [Language!]!
+  languages(offset: Int, limit: Int): [Language!]!
   language(id: ID!): Language
 }

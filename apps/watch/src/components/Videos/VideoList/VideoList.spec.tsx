@@ -78,7 +78,7 @@ describe('VideoList', () => {
                   where: {
                     availableVariantLanguageIds: ['529']
                   },
-                  page: 1,
+                  offset: 0,
                   limit: 20
                 }
               },
@@ -125,7 +125,7 @@ describe('VideoList', () => {
                   where: {
                     availableVariantLanguageIds: ['529']
                   },
-                  page: 1,
+                  offset: 0,
                   limit: 8
                 }
               },
