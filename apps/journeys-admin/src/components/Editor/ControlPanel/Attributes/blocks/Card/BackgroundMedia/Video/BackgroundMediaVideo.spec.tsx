@@ -64,6 +64,8 @@ const getVideosMock = {
   request: {
     query: GET_VIDEOS,
     variables: {
+      offset: 0,
+      limit: 5,
       where: {
         availableVariantLanguageIds: ['529'],
         title: null
@@ -72,7 +74,7 @@ const getVideosMock = {
   },
   result: {
     data: {
-      videos: [...videos, ...videos, ...videos]
+      videos
     }
   }
 }
@@ -378,7 +380,7 @@ describe('BackgroundMediaVideo', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select a Video' }))
-      await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
+      await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
       fireEvent.click(getByText('Brand Video'))
       await waitFor(() =>
         expect(getByRole('button', { name: 'Select' })).toBeEnabled()

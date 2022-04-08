@@ -1,3 +1,4 @@
+import { NextRouter, useRouter } from 'next/router'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
@@ -20,7 +21,17 @@ import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { SelectableWrapper } from '.'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('SelectableWrapper', () => {
+  const push = jest.fn()
+  mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+
   const typographyBlock: TreeBlock<TypographyFields> = {
     __typename: 'TypographyBlock',
     id: 'typography.id',
@@ -35,7 +46,7 @@ describe('SelectableWrapper', () => {
 
   const buttonBlock: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlock',
-    id: 'button',
+    id: 'button.id',
     parentBlockId: 'parent.id',
     parentOrder: 0,
     label: 'button label',
@@ -44,7 +55,12 @@ describe('SelectableWrapper', () => {
     size: null,
     startIconId: null,
     endIconId: null,
-    action: null,
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: 'button.id',
+      gtmEventName: 'gtmEventName',
+      url: 'https://www.google.com'
+    },
     children: []
   }
 
@@ -175,6 +191,8 @@ describe('SelectableWrapper', () => {
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
+
+    expect(push).not.toHaveBeenCalled()
   })
 
   it('should select radio question on radio option click', async () => {
@@ -228,6 +246,7 @@ describe('SelectableWrapper', () => {
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
+    expect(push).not.toHaveBeenCalled()
   })
 
   it('should select radio option on click when sibling option selected', async () => {
@@ -255,5 +274,6 @@ describe('SelectableWrapper', () => {
       outline: '3px solid #C52D3A',
       zIndex: '1'
     })
+    expect(push).not.toHaveBeenCalled()
   })
 })
