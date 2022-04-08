@@ -47,7 +47,7 @@ export class VideoResolver {
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return idType === IdType.databaseId
       ? await this.videoService.getVideo(id, variantLanguageId)
-      : await this.videoService.getVideoBySeoTitle(id, variantLanguageId)
+      : await this.videoService.getVideoByPermalink(id, variantLanguageId)
   }
 
   @ResolveReference()

@@ -100,7 +100,7 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
-  async getVideoBySeoTitle<T>(
+  async getVideoByPermalink<T>(
     permalink: string,
     variantLanguageId?: string
   ): Promise<T> {
