@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { VideoListItem } from './VideoListItem'
@@ -23,14 +24,16 @@ describe('Video List Item', () => {
   it('should render the content of VideoListItem', () => {
     const onSelect = jest.fn()
     const { getByText } = render(
-      <VideoListItem
-        id={video.id}
-        title={video.title}
-        description={video.description}
-        image={video.image}
-        duration={video.duration}
-        onSelect={onSelect}
-      />
+      <MockedProvider>
+        <VideoListItem
+          id={video.id}
+          title={video.title}
+          description={video.description}
+          image={video.image}
+          duration={video.duration}
+          onSelect={onSelect}
+        />
+      </MockedProvider>
     )
     expect(getByText("Andreas' Story")).toBeInTheDocument()
     expect(

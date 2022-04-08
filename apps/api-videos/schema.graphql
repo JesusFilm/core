@@ -4,8 +4,15 @@ type Translation {
   primary: Boolean!
 }
 
+enum VideoType {
+  episode
+  standalone
+  playlist
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
+  type: VideoType!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
@@ -13,12 +20,17 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
+
+  """Episodes are child videos, currently only found in a playlist type"""
+  episodeIds: [ID!]!
+  episodes: [Video!]!
   variant(languageId: ID): VideoVariant
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
+  types: [VideoType!]
 }
 
 enum VideoVariantDownloadQuality {
@@ -34,7 +46,7 @@ type VideoVariantDownload {
 
 type VideoVariant {
   id: String!
-  hls: String!
+  hls: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -46,6 +58,6 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  videos(where: VideosFilter, page: Int, limit: Int): [Video!]!
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!): Video!
 }

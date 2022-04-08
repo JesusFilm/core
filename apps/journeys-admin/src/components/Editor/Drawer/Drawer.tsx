@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { Close } from '@mui/icons-material'
+import Close from '@mui/icons-material/Close'
 import { useEditor } from '@core/journeys/ui'
 
 export const DRAWER_WIDTH = 328

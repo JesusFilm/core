@@ -87,6 +87,8 @@ const Template: Story = ({ ...args }) => (
         request: {
           query: GET_VIDEOS,
           variables: {
+            offset: 0,
+            limit: 5,
             where: {
               availableVariantLanguageIds: ['529'],
               title: null
@@ -95,7 +97,7 @@ const Template: Story = ({ ...args }) => (
         },
         result: {
           data: {
-            videos: videos
+            videos
           }
         }
       }
@@ -152,23 +154,6 @@ Filled.args = {
     ...video,
     children: [poster]
   }
-}
-
-export const MobileSettings = Template.bind({})
-MobileSettings.args = {
-  selectedBlock: {
-    ...video,
-    children: [poster]
-  }
-}
-MobileSettings.parameters = {
-  chromatic: {
-    viewports: [360]
-  }
-}
-MobileSettings.play = async () => {
-  const settingsTab = await screen.getAllByTestId('videoSettingsTab')[1]
-  await userEvent.click(settingsTab)
 }
 
 export const PosterModal = Template.bind({})
