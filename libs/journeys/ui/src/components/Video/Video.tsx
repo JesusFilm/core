@@ -218,14 +218,22 @@ export function Video({
           {!showControls && (
             // move to their own component?
             <>
-              <IconButton onClick={handleMuted} sx={{ left: 20 }}>
+              <IconButton
+                data-testid="video-mute"
+                onClick={handleMuted}
+                sx={{ left: 20 }}
+              >
                 {volume ? (
                   <VolumeOffRounded fontSize="large" />
                 ) : (
                   <VolumeUpRounded fontSize="large" />
                 )}
               </IconButton>
-              <IconButton onClick={handleFullscreen} sx={{ right: 20 }}>
+              <IconButton
+                data-testid="video-fullscreen"
+                onClick={handleFullscreen}
+                sx={{ right: 20 }}
+              >
                 <FullscreenRounded fontSize="large" />
               </IconButton>
             </>
