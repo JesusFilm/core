@@ -35,6 +35,7 @@ export const GET_VIDEO = gql`
         value
       }
       variant {
+        id
         duration
         hls
       }
@@ -170,7 +171,7 @@ export function VideoDetails({
                   playsInline
                 >
                   <source
-                    src={data?.video.variant?.hls}
+                    src={data?.video.variant?.hls ?? ''}
                     type="application/x-mpegURL"
                   />
                 </video>

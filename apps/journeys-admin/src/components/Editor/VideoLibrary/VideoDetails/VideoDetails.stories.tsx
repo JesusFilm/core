@@ -48,6 +48,7 @@ const Template: Story = ({ id, onSelect }) => {
                   }
                 ],
                 variant: {
+                  id: 'variantA',
                   duration: 144,
                   hls: 'https://arc.gt/opsgn'
                 }
