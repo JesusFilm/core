@@ -10,76 +10,167 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+const getVideosMock = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 0,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null
+      }
+    }
+  },
+  result: {
+    data: {
+      videos
+    }
+  }
+}
+
+const getVideosEmptyWithOffsetMock = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 3,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null
+      }
+    }
+  },
+  result: {
+    data: {
+      videos: []
+    }
+  }
+}
+
+const getVideosEmptyMock = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 0,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null
+      }
+    }
+  },
+  result: {
+    data: {
+      videos: []
+    }
+  }
+}
+
+const getVideosWithTitleMock = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 0,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: 'abc'
+      }
+    }
+  },
+  result: {
+    data: {
+      videos
+    }
+  }
+}
+
 describe('Video List', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render a video list item', async () => {
     const onSelect = jest.fn()
-    const { getByTestId, getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VIDEOS,
-              variables: {
-                where: {
-                  availableVariantLanguageIds: ['529'],
-                  title: null
-                }
-              }
-            },
-            result: {
-              data: {
-                videos: videos
-              }
-            }
-          }
-        ]}
-      >
+    const { getByText } = render(
+      <MockedProvider mocks={[getVideosMock]}>
         <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
       </MockedProvider>
     )
-    expect(getByTestId('VideoListLoadMore')).toHaveTextContent('No More Videos')
-    await waitFor(() =>
-      expect(getAllByRole('button')[0]).toHaveTextContent("Andreas' Story")
-    )
-    expect(getAllByRole('button')[0]).toHaveClass('MuiListItemButton-root')
-    expect(getAllByRole('button')[1]).toHaveTextContent('Brand_Video')
-    expect(getAllByRole('button')[2]).toHaveTextContent('The Demoniac')
+    await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
+    expect(getByText('Brand_Video')).toBeInTheDocument()
+    expect(getByText('The Demoniac')).toBeInTheDocument()
   })
 
-  it('should render more video list items on click', async () => {
-    const onSelect = jest.fn()
-    const { getByTestId, getAllByRole } = render(
+  it('should call api to get more videos', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        videos: []
+      }
+    }))
+    const { getByRole } = render(
       <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VIDEOS,
-              variables: {
-                where: {
-                  availableVariantLanguageIds: ['529'],
-                  title: null
-                }
-              }
-            },
-            result: {
-              data: {
-                videos: [...videos, ...videos]
-              }
-            }
-          }
-        ]}
+        mocks={[getVideosMock, { ...getVideosEmptyWithOffsetMock, result }]}
       >
+        <VideoList onSelect={jest.fn()} currentLanguageIds={['529']} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Load More' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+  })
+
+  it('should render No More Videos if video length is 0', async () => {
+    const onSelect = jest.fn()
+    const { getByText, getByRole } = render(
+      <MockedProvider mocks={[getVideosEmptyMock]}>
         <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByRole('button')[0]).toHaveTextContent("Andreas' Story")
+      expect(getByText('No Results Found')).toBeInTheDocument()
     )
-    expect(getAllByRole('button')[0]).toHaveClass('MuiListItemButton-root')
-    expect(getAllByRole('button')[4]).not.toHaveTextContent('Brand_Video')
-    fireEvent.click(getByTestId('VideoListLoadMore'))
-    expect(getAllByRole('button')[4]).toHaveTextContent('Brand_Video')
+    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+  })
+
+  it('should re-enable Load More if filters change', async () => {
+    const { getByRole, rerender } = render(
+      <MockedProvider
+        mocks={[
+          getVideosMock,
+          getVideosEmptyWithOffsetMock,
+          getVideosWithTitleMock
+        ]}
+      >
+        <VideoList onSelect={jest.fn()} currentLanguageIds={['529']} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Load More' }))
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+    )
+    rerender(
+      <MockedProvider
+        mocks={[
+          getVideosMock,
+          getVideosEmptyWithOffsetMock,
+          getVideosWithTitleMock
+        ]}
+      >
+        <VideoList
+          title="abc"
+          onSelect={jest.fn()}
+          currentLanguageIds={['529']}
+        />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+    )
   })
 })

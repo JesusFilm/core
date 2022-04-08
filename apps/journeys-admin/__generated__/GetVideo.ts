@@ -21,8 +21,9 @@ export interface GetVideo_video_description {
 
 export interface GetVideo_video_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
-  hls: string;
+  hls: string | null;
 }
 
 export interface GetVideo_video {

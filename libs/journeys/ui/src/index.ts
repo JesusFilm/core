@@ -7,6 +7,7 @@ export {
   GridContainer,
   GridItem,
   RadioOption,
+  StyledRadioOption,
   RadioQuestion,
   SignUp,
   Step,

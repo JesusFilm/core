@@ -53,6 +53,8 @@ export const Default: Story = () => (
         request: {
           query: GET_VIDEOS,
           variables: {
+            offset: 0,
+            limit: 5,
             where: {
               availableVariantLanguageIds: ['529'],
               title: null
@@ -61,7 +63,7 @@ export const Default: Story = () => (
         },
         result: {
           data: {
-            videos: [...videos, ...videos, ...videos]
+            videos
           }
         }
       },

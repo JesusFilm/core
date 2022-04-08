@@ -21,7 +21,8 @@ export const videos: GetVideos_videos[] = [
       }
     ],
     variant: { duration: 3680, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: '1_jf-0-0',
@@ -37,7 +38,8 @@ export const videos: GetVideos_videos[] = [
     ],
     title: [{ primary: true, value: 'JESUS', __typename: 'Translation' }],
     variant: { duration: 7674, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: '1_wl-0-0',
@@ -59,7 +61,8 @@ export const videos: GetVideos_videos[] = [
       }
     ],
     variant: { duration: 4952, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: '2_Acts-0-0',
@@ -77,7 +80,8 @@ export const videos: GetVideos_videos[] = [
       { primary: true, value: 'Book of Acts', __typename: 'Translation' }
     ],
     variant: { duration: 11530, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: '2_CSF',
@@ -99,7 +103,8 @@ export const videos: GetVideos_videos[] = [
       }
     ],
     variant: { duration: 343, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: '2_GOJ-0-0',
@@ -121,7 +126,8 @@ export const videos: GetVideos_videos[] = [
       }
     ],
     variant: { duration: 10994, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: 'MAG1',
@@ -137,7 +143,8 @@ export const videos: GetVideos_videos[] = [
     ],
     title: [{ primary: true, value: 'Magdalena', __typename: 'Translation' }],
     variant: { duration: 3665, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   },
   {
     id: '1_0-TrainV_1Install',
@@ -159,6 +166,7 @@ export const videos: GetVideos_videos[] = [
       }
     ],
     variant: { duration: 118, __typename: 'VideoVariant' },
-    __typename: 'Video'
+    __typename: 'Video',
+    episodeIds: []
   }
 ]
