@@ -5,6 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery } from 'arangojs/aql'
+import { VideoType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const DEFAULT_QUERY = aql`
@@ -13,6 +14,7 @@ const DEFAULT_QUERY = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -24,7 +26,8 @@ const DEFAULT_QUERY = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -34,6 +37,7 @@ const QUERY_WITH_TITLE = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -45,7 +49,8 @@ const QUERY_WITH_TITLE = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -55,6 +60,7 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -66,7 +72,8 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -78,6 +85,7 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -89,7 +97,52 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
+      }
+    `.query
+
+const QUERY_WITH_TYPES = aql`
+    FOR item IN 
+      FILTER item.type IN @value0
+      LIMIT @value1, @value2
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT
+        ], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
+      }
+    `.query
+
+const EPISODES_QUERY = aql`
+    FOR item IN 
+      FILTER item._key IN @value0
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
       }
     `.query
 
@@ -212,6 +265,25 @@ describe('VideoService', () => {
       })
       expect(await service.filterAll({ variantLanguageId: 'en' })).toEqual([])
     })
+
+    it('should query with specific types', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(QUERY_WITH_TYPES)
+        expect(bindVars).toEqual({
+          value0: [VideoType.playlist, VideoType.standalone],
+          value1: 0,
+          value2: 100,
+          value3: null
+        })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(
+        await service.filterAll({
+          types: [VideoType.playlist, VideoType.standalone]
+        })
+      ).toEqual([])
+    })
   })
 
   describe('getVideo', () => {
@@ -242,6 +314,18 @@ describe('VideoService', () => {
 
     it('should return a video even without a langaugeId', async () => {
       expect(await service.getVideo('20615')).toEqual(video)
+    })
+  })
+
+  describe('episodes', () => {
+    it('should query', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(EPISODES_QUERY)
+        expect(bindVars).toEqual({ value0: ['20615', '20616'], value1: null })
+        return { all: () => [] } as unknown as ArrayCursor
+      })
+      expect(await service.getVideosByIds(['20615', '20616'])).toEqual([])
     })
   })
 })

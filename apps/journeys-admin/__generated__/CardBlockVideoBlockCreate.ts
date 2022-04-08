@@ -12,7 +12,7 @@ import { VideoBlockCreateInput } from "./globalTypes";
 export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
   __typename: "VideoVariant";
   id: string;
-  hls: string;
+  hls: string | null;
 }
 
 export interface CardBlockVideoBlockCreate_videoBlockCreate_video {

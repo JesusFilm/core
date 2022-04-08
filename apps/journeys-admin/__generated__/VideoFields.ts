@@ -10,7 +10,7 @@
 export interface VideoFields_video_variant {
   __typename: "VideoVariant";
   id: string;
-  hls: string;
+  hls: string | null;
 }
 
 export interface VideoFields_video {
