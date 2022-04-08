@@ -3,12 +3,12 @@ import Drawer from '@mui/material/Drawer'
 import { AuthUser } from 'next-firebase-auth'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { styled, Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Link from 'next/link'
@@ -69,6 +69,24 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
   }
 }))
 
+const StyledList = styled(List)({
+  display: 'flex',
+  flexDirection: 'column',
+  '& .MuiListItemButton-root': {
+    paddingLeft: 0,
+    marginBottom: 6,
+    '& .MuiListItemIcon-root': {
+      minWidth: 'unset',
+      width: '72px',
+      justifyContent: 'center'
+    },
+    '& .MuiListItemText-primary': {
+      fontSize: '15px',
+      fontWeight: 'bold'
+    }
+  }
+})
+
 export function NavigationDrawer({
   open,
   onClose,
@@ -101,23 +119,7 @@ export function NavigationDrawer({
       anchor="left"
     >
       {open && smUp && <Backdrop open={open} onClick={handleClose} />}
-      <List
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          '> .MuiListItemButton-root, > .MuiListItem-root': {
-            pl: 0,
-            mb: 6,
-            '> .MuiListItemIcon-root': {
-              color:
-                title === 'Journeys' ? 'background.paper' : 'secondary.light',
-              minWidth: 'unset',
-              width: '72px',
-              justifyContent: 'center'
-            }
-          }
-        }}
-      >
+      <StyledList>
         <ListItemButton onClick={handleClose}>
           <ListItemIcon
             sx={{
@@ -133,18 +135,21 @@ export function NavigationDrawer({
         </ListItemButton>
         <Link href="/" passHref>
           <ListItemButton>
-            <ListItemIcon>
-              <ExploreRoundedIcon />
-            </ListItemIcon>
-            <Typography
-              variant="h5"
+            <ListItemIcon
               sx={{
                 color:
                   title === 'Journeys' ? 'background.paper' : 'secondary.light'
               }}
             >
-              Discover
-            </Typography>
+              <ExploreRoundedIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Discover"
+              sx={{
+                color:
+                  title === 'Journeys' ? 'background.paper' : 'secondary.light'
+              }}
+            />
           </ListItemButton>
         </Link>
         {authUser != null && data?.me != null && (
@@ -158,9 +163,7 @@ export function NavigationDrawer({
                   sx={{ width: 24, height: 24 }}
                 />
               </ListItemIcon>
-              <Typography variant="h5" sx={{ color: 'secondary.light' }}>
-                Profile
-              </Typography>
+              <ListItemText primary={'Profile'} />
             </ListItemButton>
             <UserMenu
               user={data.me}
@@ -171,21 +174,9 @@ export function NavigationDrawer({
             />
           </>
         )}
-      </List>
+      </StyledList>
       <Box sx={{ flexGrow: 1 }} />
-      <List
-        sx={{
-          '> .MuiListItem-root': {
-            pl: 0,
-            mb: 6,
-            '> .MuiListItemIcon-root': {
-              minWidth: 'unset',
-              width: '72px',
-              justifyContent: 'center'
-            }
-          }
-        }}
-      >
+      <StyledList>
         <ListItem>
           <ListItemIcon>
             <Image
@@ -196,14 +187,12 @@ export function NavigationDrawer({
               alt="Next Steps"
             />
           </ListItemIcon>
-          <Typography
-            variant="h5"
-            sx={{ color: 'secondary.contrastText', textTransform: 'uppercase' }}
-          >
-            NextSteps
-          </Typography>
+          <ListItemText
+            primary={'NextSteps'}
+            sx={{ color: 'background.paper' }}
+          />
         </ListItem>
-      </List>
+      </StyledList>
     </StyledNavigationDrawer>
   )
 }
