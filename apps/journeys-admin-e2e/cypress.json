@@ -5,9 +5,9 @@
   "modifyObstructiveCode": false,
   "supportFile": "./src/support/index.ts",
   "pluginsFile": "./src/plugins/index",
-  "video": true,
+  "video": false,
   "videosFolder": "../../dist/cypress/apps/journeys-admin-e2e/videos",
   "screenshotsFolder": "../../dist/cypress/apps/journeys-admin-e2e/screenshots",
   "chromeWebSecurity": false,
-  "defaultCommandTimeout": 50000
+  "defaultCommandTimeout": 20000
 }

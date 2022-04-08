@@ -13,9 +13,8 @@ describe('fact-or-fiction edit', () => {
     cy.get('button').contains('Sign In').click()
     // end result brings you to /journeys/fact-or-fiction/edit
   })
-
-  const cardsPanel = 'journeys-admin-editor-tabpanel-0'
-  const card3 = '7a6c9d6a-3894-48da-9e30-27321b15402a'
+  const card3 = '8730d39c-9ba0-4dc7-8289-ad562d799f11'
+  const cardsPanel = 'control-panel-tabpanel-0'
   it('should switch to properties tab when a card is clicked', () => {
     // cards tab should be selected
     cy.get('button[role="tab"]')
@@ -43,6 +42,7 @@ describe('fact-or-fiction edit', () => {
       .should('have.attr', 'aria-selected', 'true')
   })
 
+  // inner iframe MuiBox-root iframe-1bh9mr5
   it('gets iframe for card 3, clicks on the block', () => {
     const displayedCard = 'step-' + card3
     cy.get(`[data-testid="${displayedCard}"]`).within(() => {
@@ -52,20 +52,37 @@ describe('fact-or-fiction edit', () => {
         .its('0.contentDocument.body')
         .should('not.be.empty')
         .then(cy.wrap)
-        // Click on the h6 'What do you think?' block
-        .find(`h6`)
-        .should('exist')
-        .click() // throws error here, because it has found 2 'h6'
+        .within(() => {
+          cy.get('h6')
+            .contains('What do you think?')
+            // .eq(0)
+            .should('exist')
+            .click()
+        })
+      // Click on the h6 'What do you think?' block
+      // .find(`h6`)
+      // .should('exist')
+      // .click() // throws error here, because it has found 2 'h6'
     })
   })
 
-  /* TODO in future
-    it('should switch to block properties when a block on the card is clicked', () => {
-      
-      // get the iframe of the card, so we can click on block elements within it
-  
-      // click a block on the displayed card
-  
+  it('should switch to block properties when a block on the card is clicked', () => {
+    // properties tab should now be selected
+    cy.get('button[role="tab"]')
+      .contains('Properties')
+      .should('exist')
+      .should('have.attr', 'aria-selected', 'true')
+  })
+
+  const propertiesPanel = 'control-panel-tabpanel-1'
+  it('properties tab should now be displaying the Typography properties', () => {
+    cy.get(`[id="${propertiesPanel}"]`).within(() => {
+      cy.get('p').contains('Editing Typography Properties').should('exist')
+      cy.get('span').contains('Text Variant').should('exist')
+      cy.get('p').contains('Header 6').should('exist')
+
+      // confirm that properties tab isn't displaying the regular card properties
+      cy.get('p').contains('Editing Card Properties').should('not.exist')
     })
-    */
+  })
 })
