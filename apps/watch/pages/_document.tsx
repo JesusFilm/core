@@ -26,7 +26,7 @@ export default class MyDocument extends Document {
           />
           <link rel="manifest" href="/site.webmanifest" />
         </Head>
-        <body>
+        <body style={{margin: 0}}>
           <Main />
           <NextScript />
         </body>

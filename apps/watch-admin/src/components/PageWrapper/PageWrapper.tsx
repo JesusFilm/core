@@ -141,6 +141,7 @@ export function PageWrapper({
               button
             >
               <ExploreRoundedIcon fontSize="inherit" />
+              <ListItemText primary={"text"} />
             </ListItem>
           </Link>
         </List>
