@@ -62,7 +62,8 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `)
     return await res.all()
@@ -91,7 +92,41 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
+      }
+    `)
+    return await res.next()
+  }
+
+  @KeyAsId()
+  async getVideoByPermalink<T>(
+    permalink: string,
+    variantLanguageId?: string
+  ): Promise<T> {
+    const res = await this.db.query(aql`
+    FOR item in ${this.collection}
+      FILTER item.permalink == ${permalink}
+      LIMIT 1
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        playlist: item.playlist,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${
+            variantLanguageId ?? null
+          }, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
+        ],
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `)
     return await res.next()

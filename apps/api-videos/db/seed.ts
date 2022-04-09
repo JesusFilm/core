@@ -1,5 +1,6 @@
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
+import slugify from 'slugify'
 import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
 
@@ -86,6 +87,7 @@ interface Video {
   image: string
   variants: VideoVariant[]
   tagIds: string[]
+  permalink: string
   episodeIds: string[]
 }
 
@@ -132,10 +134,35 @@ async function getMediaComponentLanguage(
   return response._embedded.mediaComponentLanguage
 }
 
+const usedTitles: string[] = []
+
+function getIteration(slug: string): string {
+  const exists = usedTitles.find((t) => t === slug)
+  if (exists != null) {
+    const iteration = slug.match(/-(\d+)$/)
+    const title =
+      iteration == null
+        ? `${slug}-2`
+        : `${slug}-${parseInt(iteration[iteration.length - 1]) + 1}`
+    return getIteration(title)
+  }
+  return slug
+}
+
+function getSeoTitle(title: string): string {
+  const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
+  const newSlug = getIteration(slug)
+  usedTitles.push(newSlug)
+  return newSlug
+}
+
 async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
+  const video = await getVideo(mediaComponent.mediaComponentId)
+  if (video?.permalink != null) usedTitles.push(video.permalink)
+
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -186,10 +213,10 @@ async function digestContent(
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
     episodeIds: [],
-    variants
+    variants,
+    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title)
   }
 
-  const video = await getVideo(mediaComponent.mediaComponentId)
   if (video != null) {
     await db.collection('videos').update(mediaComponent.mediaComponentId, body)
   } else {
@@ -254,8 +281,10 @@ async function getMediaComponentLinks(
 
 async function digestSeriesContainer(
   mediaComponent,
-  languages
+  languages,
+  video
 ): Promise<Video> {
+  if (video?.permalink != null) usedTitles.push(video.permalink)
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -303,6 +332,7 @@ async function digestSeriesContainer(
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     tagIds: [],
+    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title),
     episodeIds: [],
     variants
   }
@@ -313,9 +343,14 @@ async function digestContainer(
   mediaComponent: MediaComponent
 ): Promise<void> {
   console.log('container:', mediaComponent.mediaComponentId)
-  let series
+  let series, existingSeries
   if (mediaComponent.subType === 'series') {
-    series = await digestSeriesContainer(mediaComponent, languages)
+    existingSeries = await getVideo(mediaComponent.mediaComponentId)
+    series = await digestSeriesContainer(
+      mediaComponent,
+      languages,
+      existingSeries
+    )
   }
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
@@ -338,7 +373,6 @@ async function digestContainer(
     }
   }
   if (mediaComponent.subType === 'series') {
-    const existingSeries = await getVideo(mediaComponent.mediaComponentId)
     if (existingSeries != null)
       await db
         .collection('videos')
@@ -399,6 +433,9 @@ async function main(): Promise<void> {
           },
           episodeIds: {
             analyzers: ['identity']
+          },
+          permalink: {
+            analyzers: ['identity']
           }
         }
       }
@@ -421,6 +458,13 @@ async function main(): Promise<void> {
   for (const container of await getMediaComponents('container')) {
     await digestContainer(languages, container)
   }
+
+  await db.collection('videos').ensureIndex({
+    name: 'permalink',
+    type: 'persistent',
+    fields: ['permalink'],
+    unique: true
+  })
 }
 main().catch((e) => {
   console.error(e)

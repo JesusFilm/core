@@ -7,6 +7,11 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum IdType {
+    databaseId = "databaseId",
+    slug = "slug"
+}
+
 export enum VideoType {
     episode = "episode",
     standalone = "standalone",
@@ -42,6 +47,7 @@ export class Video {
     studyQuestions: Translation[];
     image?: Nullable<string>;
     variantLanguages: Language[];
+    permalink: string;
     episodeIds: string[];
     episodes: Video[];
     variant?: Nullable<VideoVariant>;
@@ -71,7 +77,7 @@ export class Language {
 export abstract class IQuery {
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
-    abstract video(id: string): Video | Promise<Video>;
+    abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
 }
 
 type Nullable<T> = T | null;

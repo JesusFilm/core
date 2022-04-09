@@ -460,7 +460,7 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  video(id: ID!): Video! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
@@ -717,6 +717,7 @@ type Video
   episodes: [Video!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
+  permalink: String! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
