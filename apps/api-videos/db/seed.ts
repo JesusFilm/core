@@ -81,14 +81,17 @@ interface Video {
   type: VideoType
   primaryLanguageId: string
   title: Translation[]
+  seoTitle: Translation[]
   snippet: Translation[]
   description: Translation[]
   studyQuestions: Translation[][]
   image: string
+  imageAlt: Translation[]
   variants: VideoVariant[]
   tagIds: string[]
   permalink: string
   episodeIds: string[]
+  noIndex: boolean
 }
 
 interface Tag {
@@ -196,6 +199,13 @@ async function digestContent(
         primary: true
       }
     ],
+    seoTitle: [
+      {
+        value: mediaComponent.title,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
@@ -218,10 +228,21 @@ async function digestContent(
       }
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
+    imageAlt: [
+      {
+        value:
+          mediaComponent.title.length <= 100
+            ? mediaComponent.title
+            : mediaComponent.title.substring(0, 99),
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     tagIds: [],
     episodeIds: [],
     variants,
-    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title)
+    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title),
+    noIndex: false
   }
 
   if (video != null) {
@@ -317,6 +338,13 @@ async function digestSeriesContainer(
         primary: true
       }
     ],
+    seoTitle: [
+      {
+        value: mediaComponent.title,
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
@@ -339,10 +367,21 @@ async function digestSeriesContainer(
       }
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
+    imageAlt: [
+      {
+        value:
+          mediaComponent.title.length <= 100
+            ? mediaComponent.title
+            : mediaComponent.title.substring(0, 99),
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     tagIds: [],
     permalink: video?.permalink ?? getSeoTitle(mediaComponent.title),
     episodeIds: [],
-    variants
+    variants,
+    noIndex: false
   }
 }
 

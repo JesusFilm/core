@@ -49,12 +49,15 @@ export class Video {
     type: VideoType;
     primaryLanguageId: string;
     title: Translation[];
+    seoTitle: Translation[];
     snippet: Translation[];
     description: Translation[];
     studyQuestions: Translation[];
     image?: Nullable<string>;
+    imageAlt: Translation[];
     variantLanguages: Language[];
     permalink: string;
+    noIndex?: Nullable<boolean>;
     episodeIds: string[];
     episodes: Video[];
     variant?: Nullable<VideoVariant>;
