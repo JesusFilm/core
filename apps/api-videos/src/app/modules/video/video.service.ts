@@ -7,6 +7,7 @@ import { VideoType } from '../../__generated__/graphql'
 
 interface VideosFilter {
   title?: string
+  tagId?: string
   availableVariantLanguageIds?: string[]
   variantLanguageId?: string
   types?: VideoType[]
@@ -21,6 +22,7 @@ export class VideoService extends BaseService {
   async filterAll<T>(filter?: VideosFilter): Promise<T[]> {
     const {
       title,
+      tagId = null,
       availableVariantLanguageIds = [],
       variantLanguageId,
       types = null,
@@ -37,7 +39,8 @@ export class VideoService extends BaseService {
         title != null && availableVariantLanguageIds.length > 0 && aql`AND`,
         availableVariantLanguageIds.length > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
-        types != null && aql`FILTER item.type IN ${types}`
+        types != null && aql`FILTER item.type IN ${types}`,
+        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
       ].filter((x) => x !== false)
     )
 

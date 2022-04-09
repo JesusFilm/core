@@ -34,6 +34,7 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
+  tagId: String
   types: [VideoType!]
 }
 

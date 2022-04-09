@@ -91,6 +91,13 @@ interface Video {
   episodeIds: string[]
 }
 
+interface Tag {
+  _key: string
+  title: Translation[]
+}
+
+const tags: Record<string, Tag> = {}
+
 async function getLanguages(): Promise<Language[]> {
   const response: {
     _embedded: { mediaLanguages: Language[] }
@@ -298,6 +305,7 @@ async function digestSeriesContainer(
       await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
     )
   }
+
   return {
     _key: mediaComponent.mediaComponentId,
     type: VideoType.playlist,
@@ -351,6 +359,21 @@ async function digestContainer(
       languages,
       existingSeries
     )
+  } else {
+    const metadataLanguageId =
+      languages
+        .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
+        ?.languageId.toString() ?? '529' // english by default
+    tags[mediaComponent.mediaComponentId] = {
+      _key: mediaComponent.mediaComponentId,
+      title: [
+        {
+          value: mediaComponent.title,
+          languageId: metadataLanguageId,
+          primary: true
+        }
+      ]
+    }
   }
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
@@ -394,6 +417,10 @@ async function main(): Promise<void> {
   try {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   } catch {}
+  try {
+    await db.createCollection('videoTags', { keyOptions: { type: 'uuid' } })
+  } catch {}
+
   await db.collection('videos').ensureIndex({
     name: 'language_id',
     type: 'persistent',
@@ -465,6 +492,16 @@ async function main(): Promise<void> {
     fields: ['permalink'],
     unique: true
   })
+
+  for (const key in tags) {
+    await db.collection('videoTags').save(
+      {
+        _key: tags[key]._key,
+        title: tags[key].title
+      },
+      { overwriteMode: 'update' }
+    )
+  }
 }
 main().catch((e) => {
   console.error(e)
