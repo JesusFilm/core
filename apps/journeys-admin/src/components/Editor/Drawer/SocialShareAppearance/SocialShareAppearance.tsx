@@ -3,8 +3,9 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import FacebookTwoToneIcon from '@mui/icons-material/FacebookTwoTone'
-import TwitterIcon from '@mui/icons-material/Twitter'
+import Image from 'next/image'
+import facebookIcon from '../../../../../public/Facebook.png'
+import twitterIcon from '../../../../../public/twitter.png'
 
 import { ImageEdit } from './ImageEdit/ImageEdit'
 import { TitleEdit } from './TitleEdit/TitleEdit'
@@ -32,15 +33,21 @@ export function SocialShareAppearance({
       </Typography>
 
       <Stack direction="row" spacing={3}>
-        {/* Replace icon when available */}
-        <Button startIcon={<FacebookTwoToneIcon sx={{ color: '#0163E0' }} />}>
+        <Button startIcon={<FacebookIcon />}>
           <Typography color="secondary">Facebook</Typography>
         </Button>
-        {/* Replace icon when available */}
-        <Button startIcon={<TwitterIcon sx={{ color: '#47ACDF' }} />}>
+        <Button startIcon={<TwitterIcon />}>
           <Typography color="secondary">Twitter</Typography>
         </Button>
       </Stack>
     </Box>
   )
+}
+
+function FacebookIcon(): ReactElement {
+  return <Image src={facebookIcon} alt="FacebookLogo" height={14} width={14} />
+}
+
+function TwitterIcon(): ReactElement {
+  return <Image src={twitterIcon} alt="TwitterLogo" height={14} width={14} />
 }
