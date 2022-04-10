@@ -7,6 +7,8 @@ import Stack from '@mui/material/Stack'
 import FacebookTwoToneIcon from '@mui/icons-material/FacebookTwoTone'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import Image from 'next/image'
+import ImageIcon from '@mui/icons-material/Image'
+import { useJourney } from '../../../../libs/context'
 
 interface SocialShareAppearanceProps {
   id: string
@@ -15,6 +17,8 @@ interface SocialShareAppearanceProps {
 export function SocialShareAppearance({
   id
 }: SocialShareAppearanceProps): ReactElement {
+  const { title, description, primaryImageBlock } = useJourney()
+
   const [width, setWidth] = useState(280)
   const [height, setHeight] = useState(194)
   return (
@@ -26,26 +30,47 @@ export function SocialShareAppearance({
         style={{
           overflow: 'hidden',
           display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           position: 'relative',
           borderRadius: 8,
           width: '100%',
           height: 194,
           marginBottom: 24,
-          backgroundColor: 'red'
+          backgroundColor: '#EFEFEF'
         }}
       >
         {/* Aspect ratio on image not getting preserved */}
-        <Image
-          src="https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2231&q=80"
-          // src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80"
-          alt="temp, change this later"
-          width={width}
-          height={height}
-          onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-            setWidth(naturalWidth)
-            setHeight(naturalHeight)
+        {primaryImageBlock?.src != null ? (
+          <Image
+            src={primaryImageBlock?.src}
+            // src="https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2231&q=80"
+            // src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80"
+            alt="social share image"
+            width={width}
+            height={height}
+            onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+              setWidth(naturalWidth)
+              setHeight(naturalHeight)
+            }}
+          />
+        ) : (
+          <ImageIcon fontSize="large" />
+        )}
+        <Button
+          variant="contained"
+          size="small"
+          color="secondary"
+          sx={{
+            position: 'absolute',
+            bottom: 16,
+            right: 10,
+            borderRadius: 4
           }}
-        />
+          startIcon={<ImageIcon fontSize="small" />}
+        >
+          <Typography variant="caption">Change</Typography>
+        </Button>
       </div>
 
       <TextField
@@ -53,6 +78,7 @@ export function SocialShareAppearance({
         label="Title"
         helperText="Recommended length: 5 words"
         fullWidth
+        value={title}
         sx={{
           pb: 4
         }}
@@ -62,6 +88,7 @@ export function SocialShareAppearance({
         label="Description"
         helperText="Recommended length: up to 18 words"
         fullWidth
+        value={description}
         sx={{
           pb: 6
         }}
