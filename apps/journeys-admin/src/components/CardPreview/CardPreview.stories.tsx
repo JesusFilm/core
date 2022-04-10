@@ -387,7 +387,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentBlockId: null,
     parentOrder: 4,
     locked: false,
-    nextBlockId: null,
+    nextBlockId: 'step5.id',
     children: [
       {
         id: 'card4.id',
@@ -500,17 +500,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
         fullscreen: false,
         children: [
           {
-            id: 'typographyBlockId51',
-            __typename: 'TypographyBlock',
-            parentBlockId: 'card5.id',
-            parentOrder: 1,
-            align: null,
-            color: null,
-            content: 'Card with Video Background',
-            variant: TypographyVariant.h1,
-            children: []
-          },
-          {
             id: 'video5.id',
             __typename: 'VideoBlock',
             parentBlockId: 'card5.id',
@@ -546,6 +535,17 @@ const steps: Array<TreeBlock<StepBlock>> = [
                 blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
               }
             ]
+          },
+          {
+            id: 'typographyBlockId51',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card5.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Card with Video Background',
+            variant: TypographyVariant.h1,
+            children: []
           }
         ]
       }
