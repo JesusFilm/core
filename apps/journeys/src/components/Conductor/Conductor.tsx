@@ -3,6 +3,7 @@ import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
@@ -24,13 +25,8 @@ export interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const {
-    setTreeBlocks,
-    nextActiveBlock,
-    treeBlocks,
-    activeBlock,
-    previousBlocks
-  } = useBlocks()
+  const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
+    useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
@@ -138,7 +134,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               >
                 <Box
                   sx={{
-                    display: 'flex',
+                    display: 'grid',
                     px: `${gapBetweenSlides / 2}px`,
                     height: `calc(100% - ${theme.spacing(6)})`,
                     [theme.breakpoints.up('lg')]: {
@@ -146,19 +142,31 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                     }
                   }}
                 >
-                  {activeBlock?.id === block.id ||
-                  previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
-                    <BlockRenderer block={block} />
-                  ) : (
-                    <CardWrapper
-                      id={block.id}
-                      backgroundColor={theme.palette.primary.light}
-                      themeMode={null}
-                      themeName={null}
+                  <CardWrapper
+                    id={block.id}
+                    backgroundColor={theme.palette.primary.light}
+                    themeMode={null}
+                    themeName={null}
+                    sx={{ gridColumn: 1, gridRow: 1, boxShadow: 'none' }}
+                  >
+                    <></>
+                  </CardWrapper>
+                  <Fade
+                    in={activeBlock?.id === block.id}
+                    mountOnEnter
+                    unmountOnExit
+                  >
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        gridColumn: 1,
+                        gridRow: 1
+                      }}
                     >
-                      <></>
-                    </CardWrapper>
-                  )}
+                      <BlockRenderer block={block} />
+                    </Box>
+                  </Fade>
                 </Box>
               </SwiperSlide>
             ))}

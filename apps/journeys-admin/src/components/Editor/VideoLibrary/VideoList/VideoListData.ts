@@ -17,6 +17,7 @@ export const videos = [
       }
     ],
     variant: {
+      id: 'variantA',
       duration: 186
     }
   },
@@ -37,6 +38,7 @@ export const videos = [
       }
     ],
     variant: {
+      id: 'variantB',
       duration: 104
     }
   },
@@ -58,6 +60,7 @@ export const videos = [
       }
     ],
     variant: {
+      id: 'variantC',
       duration: 209
     }
   }

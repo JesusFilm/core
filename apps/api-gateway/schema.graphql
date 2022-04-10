@@ -460,7 +460,9 @@ type Query {
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  video(id: ID!): Video! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
+  videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
+  videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
@@ -711,12 +713,18 @@ type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """Episodes are child videos, currently only found in a playlist type"""
+  episodeIds: [ID!]! @join__field(graph: VIDEOS)
+  episodes: [Video!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
+  permalink: String! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
@@ -836,7 +844,14 @@ enum VideoResponseStateEnum {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
+  tagId: String
   title: String
+  types: [VideoType!]
+}
+
+type VideoTag {
+  id: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 """
@@ -857,10 +872,16 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
+enum VideoType {
+  episode
+  playlist
+  standalone
+}
+
 type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
-  hls: String!
+  hls: String
   id: String!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!

@@ -136,6 +136,12 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export enum VideoType {
+  episode = "episode",
+  playlist = "playlist",
+  standalone = "standalone",
+}
+
 export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   id?: string | null;
@@ -334,7 +340,9 @@ export interface VideoResponseCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  tagId?: string | null;
   title?: string | null;
+  types?: VideoType[] | null;
 }
 
 //==============================================================

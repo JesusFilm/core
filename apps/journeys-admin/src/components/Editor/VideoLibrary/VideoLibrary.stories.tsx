@@ -1,6 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { expect } from '@storybook/jest'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { videos } from './VideoList/VideoListData'
 import { GET_VIDEOS } from './VideoList/VideoList'
@@ -23,6 +25,8 @@ const Template: Story = ({ onSelect }) => {
           request: {
             query: GET_VIDEOS,
             variables: {
+              offset: 0,
+              limit: 5,
               where: {
                 availableVariantLanguageIds: ['529'],
                 title: null
@@ -31,7 +35,84 @@ const Template: Story = ({ onSelect }) => {
           },
           result: {
             data: {
-              videos: [...videos, ...videos, ...videos]
+              videos
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 3,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: null
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: []
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 0,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: 'Andreas'
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: [
+                {
+                  id: '2_0-AndreasStory',
+                  image:
+                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
+                  snippet: [
+                    {
+                      primary: true,
+                      value:
+                        'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
+                    }
+                  ],
+                  title: [
+                    {
+                      primary: true,
+                      value: "Andreas' Story"
+                    }
+                  ],
+                  variant: {
+                    id: 'variantA',
+                    duration: 186
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 1,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: 'Andreas'
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: []
             }
           }
         }
@@ -47,5 +128,62 @@ const Template: Story = ({ onSelect }) => {
 }
 
 export const Default = Template.bind({})
+
+export const WithSearch = Template.bind({})
+WithSearch.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
+  await waitFor(() =>
+    expect(canvas.getByRole('textbox', { name: 'Search' })).toBeInTheDocument()
+  )
+  await userEvent.type(
+    canvas.getByRole('textbox', { name: 'Search' }),
+    'Andreas'
+  )
+}
+
+export const Empty: Story = ({ onSelect }) => {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <MockedProvider
+      mocks={[
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 0,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: '#FallingPlates'
+              }
+            }
+          },
+          result: {
+            data: {
+              videos: []
+            }
+          }
+        }
+      ]}
+    >
+      <VideoLibrary
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={onSelect}
+      />
+    </MockedProvider>
+  )
+}
+Empty.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
+  await waitFor(() =>
+    expect(canvas.getByRole('textbox', { name: 'Search' })).toBeInTheDocument()
+  )
+  await userEvent.type(
+    canvas.getByRole('textbox', { name: 'Search' }),
+    '#FallingPlates'
+  )
+}
 
 export default VideoLibraryStory as Meta
