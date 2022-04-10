@@ -635,6 +635,8 @@ input JourneyUpdateInput {
   description: String
   primaryImageBlockId: ID
   slug: String
+  socialTitle: String
+  socialDescription: String
 }
 
 type UserJourney @key(fields: "id") {

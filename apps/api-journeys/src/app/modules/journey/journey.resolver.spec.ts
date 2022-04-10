@@ -69,7 +69,9 @@ describe('JourneyResolver', () => {
     themeName: ThemeName.base,
     description: null,
     primaryImageBlockId: null,
-    slug: 'published-slug'
+    slug: 'published-slug',
+    socialTitle: 'Social media title',
+    socialDescription: 'Social media description'
   }
 
   const userJourney = {
