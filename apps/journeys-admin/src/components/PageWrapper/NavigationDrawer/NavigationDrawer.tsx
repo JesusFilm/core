@@ -163,7 +163,10 @@ export function NavigationDrawer({
                   sx={{ width: 24, height: 24 }}
                 />
               </ListItemIcon>
-              <ListItemText primary={'Profile'} />
+              <ListItemText
+                primary={'Profile'}
+                sx={{ color: 'secondary.light' }}
+              />
             </ListItemButton>
             <UserMenu
               user={data.me}
