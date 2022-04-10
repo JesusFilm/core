@@ -206,6 +206,8 @@ export interface JourneyUpdateInput {
   locale?: string | null;
   primaryImageBlockId?: string | null;
   slug?: string | null;
+  socialDescription?: string | null;
+  socialTitle?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
   title?: string | null;
