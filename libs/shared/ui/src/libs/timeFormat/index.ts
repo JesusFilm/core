@@ -1,1 +1,5 @@
-export { secondsToTimeFormat, timeFormatToSeconds } from './timeFormat'
+export {
+  secondsToTimeFormat,
+  timeFormatToSeconds,
+  secondsToMinutes
+} from './timeFormat'

@@ -27,7 +27,8 @@ const DEFAULT_QUERY = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `.query
 
@@ -50,7 +51,8 @@ const QUERY_WITH_TITLE = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `.query
 
@@ -73,7 +75,8 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `.query
 
@@ -98,7 +101,8 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `.query
 
@@ -121,7 +125,8 @@ const QUERY_WITH_TYPES = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `.query
 
