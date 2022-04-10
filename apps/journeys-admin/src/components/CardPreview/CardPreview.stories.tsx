@@ -479,6 +479,137 @@ const steps: Array<TreeBlock<StepBlock>> = [
         ]
       }
     ]
+  },
+  {
+    id: 'step5.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 4,
+    locked: false,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card5.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step5.id',
+        coverBlockId: 'video5.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'typographyBlockId51',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card5.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Card with Video Background',
+            variant: TypographyVariant.h1,
+            children: []
+          },
+          {
+            id: 'video5.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card5.id',
+            parentOrder: 0,
+            autoplay: false,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            startAt: null,
+            endAt: null,
+            posterBlockId: 'image5.id',
+            fullsize: null,
+            children: [
+              {
+                id: 'image5.id',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+                width: 1920,
+                height: 1080,
+                alt: 'random image from unsplash',
+                parentBlockId: 'video5.id',
+                parentOrder: 0,
+                children: [],
+                blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step6.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 4,
+    locked: false,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card6.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step6.id',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: true,
+        children: [
+          {
+            id: 'video6.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card6.id',
+            parentOrder: 0,
+            autoplay: false,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            startAt: null,
+            endAt: null,
+            posterBlockId: 'image6.id',
+            fullsize: null,
+            children: [
+              {
+                id: 'image6.id',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+                width: 1920,
+                height: 1080,
+                alt: 'random image from unsplash',
+                parentBlockId: 'video6.id',
+                parentOrder: 0,
+                children: [],
+                blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
 
