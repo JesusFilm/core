@@ -35,7 +35,7 @@ export function Video({
   fullsize,
   children
 }: TreeBlock<VideoFields>): ReactElement {
-  const [showControls, setShowControls] = useState<boolean>(false)
+  const [customControls, setCustomControls] = useState<boolean>(false)
   const [volume, setVolume] = useState<boolean>(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -132,11 +132,11 @@ export function Video({
         playerRef.current.on('fullscreenchange', () => {
           if (playerRef.current?.isFullscreen() === false) {
             playerRef.current?.controls(false)
-            setShowControls(false)
+            setCustomControls(false)
           }
           if (playerRef.current?.isFullscreen() === true) {
             playerRef.current?.controls(true)
-            setShowControls(true)
+            setCustomControls(true)
           }
         })
         if (muted === true) {
@@ -153,7 +153,7 @@ export function Video({
     posterBlock,
     mobile,
     selectedBlock,
-    showControls
+    customControls
   ])
 
   const handleFullscreen = (): void => {
@@ -215,8 +215,7 @@ export function Video({
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
-          {!showControls && (
-            // move to their own component?
+          {!customControls && (
             <>
               <IconButton
                 data-testid="video-mute"
