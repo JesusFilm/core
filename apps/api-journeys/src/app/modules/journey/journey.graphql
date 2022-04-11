@@ -9,6 +9,8 @@ type Journey @key(fields: "id") {
   publishedAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  seoTitle: String
+  seoDescription: String
 }
 
 enum IdType {
@@ -57,6 +59,8 @@ input JourneyUpdateInput {
   description: String
   primaryImageBlockId: ID
   slug: String
+  seoTitle: String
+  seoDescription: String
 }
 
 extend type UserJourney {

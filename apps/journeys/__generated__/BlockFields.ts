@@ -269,7 +269,7 @@ export interface BlockFields_TypographyBlock {
 export interface BlockFields_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
-  hls: string;
+  hls: string | null;
 }
 
 export interface BlockFields_VideoBlock_video {

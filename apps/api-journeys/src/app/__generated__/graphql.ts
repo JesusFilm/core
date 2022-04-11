@@ -340,6 +340,8 @@ export class JourneyUpdateInput {
     description?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
     slug?: Nullable<string>;
+    seoTitle?: Nullable<string>;
+    seoDescription?: Nullable<string>;
 }
 
 export class RadioQuestionResponseCreateInput {
@@ -422,6 +424,8 @@ export class Journey {
     publishedAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
+    seoTitle?: Nullable<string>;
+    seoDescription?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

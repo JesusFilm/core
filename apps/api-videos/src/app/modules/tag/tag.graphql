@@ -1,0 +1,9 @@
+type VideoTag {
+  id: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
+}
+
+extend type Query {
+  videoTags: [VideoTag!]
+  videoTag(id: ID!): VideoTag
+}
