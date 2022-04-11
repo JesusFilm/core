@@ -33,7 +33,7 @@ export function Cover({
           imageBlock.height,
           imageBlock.blurhash,
           imageBlock.src,
-          `${theme.palette.background.paper}88`
+          theme.palette.background.paper
         )
 
         // We need double image to get better image blending results.

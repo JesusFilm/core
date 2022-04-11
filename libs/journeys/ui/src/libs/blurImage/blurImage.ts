@@ -24,7 +24,7 @@ export const blurImage = (
     const imageData = context.createImageData(width, height)
     imageData.data.set(pixels)
     context.putImageData(imageData, 0, 0)
-    context.fillStyle = hexBackground
+    context.fillStyle = `${hexBackground}88`
     context.fillRect(0, 0, width, height)
     const blurUrl = canvas.toDataURL('image/webp')
 
