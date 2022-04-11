@@ -340,6 +340,8 @@ export class JourneyUpdateInput {
     description?: Nullable<string>;
     primaryImageBlockId?: Nullable<string>;
     slug?: Nullable<string>;
+    seoTitle?: Nullable<string>;
+    seoDescription?: Nullable<string>;
 }
 
 export class RadioQuestionResponseCreateInput {
