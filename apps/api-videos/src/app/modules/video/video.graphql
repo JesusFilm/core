@@ -2,6 +2,11 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
+enum IdType {
+  databaseId
+  slug
+}
+
 enum VideoType {
   episode
   standalone
@@ -18,6 +23,7 @@ type Video @key(fields: "id primaryLanguageId") {
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
   variantLanguages: [Language!]!
+  permalink: String!
   """
   Episodes are child videos, currently only found in a playlist type
   """
@@ -28,10 +34,11 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
+  tagId: String
   types: [VideoType!]
 }
 
 extend type Query {
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!): Video!
+  video(id: ID!, idType: IdType): Video!
 }

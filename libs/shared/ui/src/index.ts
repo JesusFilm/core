@@ -4,4 +4,8 @@ export { TabPanel, tabA11yProps } from './components/TabPanel'
 export { sharedUiConfig, simpleComponentConfig } from './libs/storybook/config'
 export { themes } from './libs/themes'
 export { useBreakpoints } from './libs/useBreakpoints'
-export { secondsToTimeFormat, timeFormatToSeconds } from './libs/timeFormat'
+export {
+  secondsToTimeFormat,
+  timeFormatToSeconds,
+  secondsToMinutes
+} from './libs/timeFormat'

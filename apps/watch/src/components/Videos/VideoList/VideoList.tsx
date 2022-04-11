@@ -11,6 +11,7 @@ export const GET_VIDEOS = gql`
   query GetVideos($where: VideosFilter, $offset: Int, $limit: Int) {
     videos(where: $where, offset: $offset, limit: $limit) {
       id
+      type
       image
       snippet {
         primary
@@ -24,6 +25,7 @@ export const GET_VIDEOS = gql`
         duration
       }
       episodeIds
+      permalink
     }
   }
 `
