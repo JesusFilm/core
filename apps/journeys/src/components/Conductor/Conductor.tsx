@@ -54,6 +54,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
+  const checkVideo = activeBlock?.children?.find(
+    (child) => child.__typename === 'VideoBlock'
+  )
+
   useEffect(() => {
     const updateWidth = (): void => {
       setWindowWidth(window.innerWidth)
@@ -94,7 +98,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             pt: { lg: 0 }
           }}
         >
-          <JourneyProgress />
+          {checkVideo?.__typename !== 'VideoBlock' && <JourneyProgress />}
         </Box>
         <Box
           sx={{
