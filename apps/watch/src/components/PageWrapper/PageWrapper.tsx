@@ -23,15 +23,11 @@ export function PageWrapper({
   title,
   children
 }: PageWrapperProps): ReactElement {
-
   return (
     <>
-      <AppBar
-        color="primary"
-        position="static"
-      >
+      <AppBar color="primary" position="static">
         <Toolbar>
-          <Link href={"/"} passHref>
+          <Link href={'/'} passHref>
             <IconButton
               edge="start"
               size="small"
@@ -68,8 +64,12 @@ export function PageWrapper({
           >
             {title}
           </Typography>
-          <Button color="inherit" href="/videos">Videos</Button>
-          <Button color="inherit" href="/countries">Countries</Button>
+          <Button color="inherit" href="/videos">
+            Videos
+          </Button>
+          <Button color="inherit" href="/countries">
+            Countries
+          </Button>
         </Toolbar>
       </AppBar>
       <Box>{children}</Box>
