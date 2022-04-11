@@ -1,0 +1,10 @@
+nx generate-graphql api-journeys
+nx generate-graphql api-languages
+nx generate-graphql api-users
+nx generate-graphql api-videos
+nx generate-graphql api-gateway
+nx codegen journeys
+nx codegen journeys-admin
+nx codegen watch
+nx codegen watch-admin
+nx codegen journeys-ui

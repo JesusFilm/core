@@ -3,11 +3,14 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators'
+import { VideoType } from '../../__generated__/graphql'
 
 interface VideosFilter {
   title?: string
+  tagId?: string
   availableVariantLanguageIds?: string[]
   variantLanguageId?: string
+  types?: VideoType[]
   offset?: number
   limit?: number
 }
@@ -19,8 +22,10 @@ export class VideoService extends BaseService {
   async filterAll<T>(filter?: VideosFilter): Promise<T[]> {
     const {
       title,
+      tagId = null,
       availableVariantLanguageIds = [],
       variantLanguageId,
+      types = null,
       offset = 0,
       limit = 100
     } = filter ?? {}
@@ -33,15 +38,19 @@ export class VideoService extends BaseService {
           aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
         title != null && availableVariantLanguageIds.length > 0 && aql`AND`,
         availableVariantLanguageIds.length > 0 &&
-          aql`item.variants.languageId IN ${availableVariantLanguageIds}`
+          aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
+        types != null && aql`FILTER item.type IN ${types}`,
+        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
       ].filter((x) => x !== false)
     )
+
     const res = await this.db.query(aql`
     FOR item IN ${videosView}
       ${search}
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -55,7 +64,9 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `)
     return await res.all()
@@ -69,6 +80,7 @@ export class VideoService extends BaseService {
       LIMIT 1
       RETURN {
         _key: item._key,
+        type: item.type,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -81,9 +93,76 @@ export class VideoService extends BaseService {
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
+        ],
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
       }
     `)
     return await res.next()
+  }
+
+  @KeyAsId()
+  async getVideoByPermalink<T>(
+    permalink: string,
+    variantLanguageId?: string
+  ): Promise<T> {
+    const res = await this.db.query(aql`
+    FOR item in ${this.collection}
+      FILTER item.permalink == ${permalink}
+      LIMIT 1
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        playlist: item.playlist,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${
+            variantLanguageId ?? null
+          }, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
+        ],
+        episodeIds: item.episodeIds,
+        permalink: item.permalink
+      }
+    `)
+    return await res.next()
+  }
+
+  @KeyAsId()
+  async getVideosByIds<T>(
+    keys: string[],
+    variantLanguageId?: string
+  ): Promise<T[]> {
+    const videosView = this.db.view('videosView')
+    const res = await this.db.query(aql`
+    FOR item IN ${videosView}
+      FILTER item._key IN ${keys}
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        primaryLanguageId: item.primaryLanguageId,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${
+            variantLanguageId ?? null
+          }, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds
+      }
+    `)
+    return await res.all()
   }
 }

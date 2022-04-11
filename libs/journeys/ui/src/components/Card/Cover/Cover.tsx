@@ -80,6 +80,10 @@ export function Cover({
         <Box
           sx={{
             flexGrow: 1,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundImage:
+              imageBlock?.src != null ? `url(${imageBlock.src})` : undefined,
             '> .video-js': {
               width: '100%',
               height: '100%',
@@ -90,14 +94,19 @@ export function Cover({
           }}
           data-testid="CardVideoCover"
         >
-          <video ref={videoRef} className="video-js" playsInline>
-            {videoBlock.video?.variant?.hls != null && (
+          {videoBlock.video?.variant?.hls != null && (
+            <video
+              ref={videoRef}
+              className="video-js"
+              playsInline
+              poster={imageBlock?.src ?? undefined}
+            >
               <source
                 src={videoBlock.video.variant.hls}
                 type="application/x-mpegURL"
               />
-            )}
-          </video>
+            </video>
+          )}
         </Box>
       ) : (
         imageBlock?.src != null && (

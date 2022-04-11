@@ -136,6 +136,12 @@ export enum VideoResponseStateEnum {
   PLAYING = "PLAYING",
 }
 
+export enum VideoType {
+  episode = "episode",
+  playlist = "playlist",
+  standalone = "standalone",
+}
+
 export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   id?: string | null;
@@ -199,6 +205,8 @@ export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
   primaryImageBlockId?: string | null;
+  seoDescription?: string | null;
+  seoTitle?: string | null;
   slug?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -334,7 +342,9 @@ export interface VideoResponseCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  tagId?: string | null;
   title?: string | null;
+  types?: VideoType[] | null;
 }
 
 //==============================================================

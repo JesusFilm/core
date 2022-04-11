@@ -20,6 +20,8 @@ describe('Source', () => {
             request: {
               query: GET_VIDEOS,
               variables: {
+                offset: 0,
+                limit: 5,
                 where: {
                   availableVariantLanguageIds: ['529'],
                   title: null
@@ -60,6 +62,7 @@ describe('Source', () => {
                     }
                   ],
                   variant: {
+                    id: 'variantA',
                     duration: 144,
                     hls: 'https://arc.gt/opsgn'
                   }
