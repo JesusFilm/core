@@ -1,25 +1,47 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
-import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
+import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../../../libs/context'
+import {
+  RadioQuestionEditProps,
+  RADIO_OPTION_BLOCK_CREATE
+} from './RadioQuestionEdit'
 import { RadioQuestionEdit, RADIO_QUESTION_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('RadioQuestionEdit', () => {
-  const props: TreeBlock<RadioQuestionFields> = {
-    __typename: 'RadioQuestionBlock',
-    parentBlockId: 'card.id',
+  const onDelete = jest.fn()
+
+  const props = (
+    children?: Array<TreeBlock<RadioOptionFields>>
+  ): RadioQuestionEditProps => {
+    return {
+      __typename: 'RadioQuestionBlock',
+      parentBlockId: 'card.id',
+      parentOrder: 0,
+      id: 'radioQuestion.id',
+      label: 'heading',
+      description: 'description',
+      children: children ?? [],
+      deleteSelf: onDelete
+    }
+  }
+
+  const option: TreeBlock<RadioOptionFields> = {
+    __typename: 'RadioOptionBlock',
+    id: 'option.id',
+    label: 'test label',
+    parentBlockId: 'card',
     parentOrder: 0,
-    id: 'radioQuestion.id',
-    label: 'heading',
-    description: 'description',
+    action: null,
     children: []
   }
+
   it('selects the heading input by default on click', () => {
     const { getAllByRole } = render(
       <MockedProvider>
-        <RadioQuestionEdit {...props} />
+        <RadioQuestionEdit {...props()} />
       </MockedProvider>
     )
     const input = getAllByRole('textbox')[0]
@@ -63,7 +85,7 @@ describe('RadioQuestionEdit', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider>
-            <RadioQuestionEdit {...props} />
+            <RadioQuestionEdit {...props()} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -111,7 +133,7 @@ describe('RadioQuestionEdit', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <EditorProvider>
-            <RadioQuestionEdit {...props} />
+            <RadioQuestionEdit {...props()} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -124,5 +146,115 @@ describe('RadioQuestionEdit', () => {
     })
     fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('calls onDelete when heading and description deleted', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <RadioQuestionEdit {...props()} />
+      </MockedProvider>
+    )
+    const headingInput = getAllByRole('textbox')[0]
+    const descriptionInput = getAllByRole('textbox')[1]
+
+    fireEvent.click(headingInput)
+    fireEvent.change(headingInput, { target: { value: '' } })
+    fireEvent.click(descriptionInput)
+    fireEvent.change(descriptionInput, { target: { value: '' } })
+    fireEvent.blur(descriptionInput)
+
+    expect(onDelete).toHaveBeenCalled()
+  })
+
+  it('adds an option on click', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        radioOptionBlockCreate: {
+          id: 'radioOption.id',
+          parentBlockId: 'radioQuestion.id',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          label: 'Option 12'
+        }
+      }
+    }))
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_OPTION_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'radioQuestion.id',
+                  label: 'Option 12'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <EditorProvider>
+            <RadioQuestionEdit
+              {...props([
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option
+              ])}
+            />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const buttons = getAllByRole('button')
+    expect(buttons).toHaveLength(12)
+    expect(buttons[11]).toHaveTextContent('Add New Option')
+
+    fireEvent.click(buttons[11])
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('hides add option button if over 11 options', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <EditorProvider>
+            <RadioQuestionEdit
+              {...props([
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option
+              ])}
+            />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const buttons = getAllByRole('button')
+    expect(buttons).toHaveLength(12)
+    expect(buttons[11]).toHaveTextContent('test label')
   })
 })

@@ -160,7 +160,7 @@ function getIteration(slug: string): string {
 }
 
 function getSeoTitle(title: string): string {
-  const slug = slugify(title, { lower: true })
+  const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
   const newSlug = getIteration(slug)
   usedTitles.push(newSlug)
   return newSlug
