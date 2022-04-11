@@ -84,11 +84,7 @@ export function Card({
               coverBlock != null
                 ? `${theme.palette.background.paper}88`
                 : undefined,
-            padding: (theme) => ({
-              xs: theme.spacing(7),
-              sm: theme.spacing(7, 10),
-              md: theme.spacing(10)
-            }),
+
             borderRadius: (theme) => theme.spacing(4)
           }}
         >
@@ -97,6 +93,11 @@ export function Card({
               margin: 'auto',
               width: '100%',
               maxWidth: 500,
+              padding: (theme) => ({
+                xs: theme.spacing(7),
+                sm: theme.spacing(7, 10),
+                md: theme.spacing(10)
+              }),
               '& > *': {
                 '&:first-child': { mt: 0 },
                 '&:last-child': { mb: 0 }
