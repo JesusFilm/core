@@ -31,6 +31,8 @@ export const GET_JOURNEY = gql`
       publishedAt
       themeName
       themeMode
+      seoTitle
+      seoDescription
       blocks {
         ...BlockFields
       }

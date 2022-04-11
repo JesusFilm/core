@@ -392,6 +392,8 @@ export interface GetJourney_journey {
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  seoTitle: string | null;
+  seoDescription: string | null;
   blocks: GetJourney_journey_blocks[] | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;
