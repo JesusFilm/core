@@ -34,8 +34,8 @@ interface UserJourney {
 }
 
 export interface AccessAvatarsProps {
-  journeySlug: string
-  userJourneys: UserJourney[]
+  journeySlug?: string
+  userJourneys?: UserJourney[]
   size?: 'small' | 'medium' | 'large'
   xsMax?: number
   smMax?: number
@@ -49,10 +49,15 @@ export function AccessAvatars({
   smMax = 5
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const children = userJourneys.map(
+  const children = userJourneys?.map(
     ({ user }) => user != null && <AccessAvatar user={user} key={user.id} />
+  ) ?? (
+    <>
+      <Avatar />
+      <Avatar />
+      <Avatar />
+    </>
   )
-
   // small default sizes
   let diameter: number
   let fontSize: number | undefined
@@ -75,8 +80,11 @@ export function AccessAvatars({
   return (
     <>
       <Box
-        onClick={() => setOpen(true)}
-        sx={{ cursor: 'pointer' }}
+        onClick={() => journeySlug != null && setOpen(true)}
+        sx={{
+          cursor: journeySlug != null ? 'pointer' : undefined,
+          height: diameter
+        }}
         role="Button"
       >
         <AvatarGroup
@@ -116,11 +124,13 @@ export function AccessAvatars({
           {children}
         </AvatarGroup>
       </Box>
-      <AccessDialog
-        journeySlug={journeySlug}
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      {journeySlug != null && (
+        <AccessDialog
+          journeySlug={journeySlug}
+          open={open}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </>
   )
 }
