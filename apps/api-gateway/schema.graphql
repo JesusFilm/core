@@ -305,6 +305,8 @@ type Journey
   locale: String! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
+  seoDescription: String @join__field(graph: JOURNEYS)
+  seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
