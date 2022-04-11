@@ -70,8 +70,8 @@ describe('JourneyResolver', () => {
     description: null,
     primaryImageBlockId: null,
     slug: 'published-slug',
-    socialTitle: 'Social media title',
-    socialDescription: 'Social media description'
+    seoTitle: 'Social media title',
+    seoDescription: 'Social media description'
   }
 
   const userJourney = {
