@@ -52,6 +52,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
+  const handleSlideChange = (): void => {
+    if (swiper != null && treeBlocks != null) {
+      const index = swiper.activeIndex
+      if (index > -1 && index < treeBlocks.length) {
+        nextActiveBlock({ id: treeBlocks[index].id })
+      }
+    }
+  }
+
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
   useEffect(() => {
@@ -119,6 +128,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
             allowSlidePrev={false}
             allowSlideNext={true}
+            onSlideChange={handleSlideChange}
             style={{
               width: '100%',
               paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
