@@ -17,6 +17,7 @@ export {
 } from './components'
 export type { WrapperProps } from './components'
 export {
+  blurImage,
   handleAction,
   useEditor,
   EditorProvider,
