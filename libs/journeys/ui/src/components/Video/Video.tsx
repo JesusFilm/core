@@ -52,6 +52,8 @@ export function Video({
   } = useEditor()
   const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
+  const android = /Android/i.test(navigator.userAgent)
+
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
       const position = videoPosition != null ? Math.floor(videoPosition) : 0
@@ -130,11 +132,12 @@ export function Video({
         })
         playerRef.current.on('fullscreenchange', () => {
           if (playerRef.current?.isFullscreen() === false) {
-            playerRef.current?.controls(false)
+            playerRef.current.controls(false)
             setCustomControls(false)
           }
           if (playerRef.current?.isFullscreen() === true) {
-            playerRef.current?.controls(true)
+            playerRef.current.controls(true)
+            if (android) playerRef.current.usingNativeControls(true)
             setCustomControls(true)
           }
         })
@@ -151,6 +154,7 @@ export function Video({
     blockId,
     posterBlock,
     mobile,
+    android,
     selectedBlock,
     customControls
   ])
@@ -172,11 +176,12 @@ export function Video({
 
   return (
     <Box
-      data-testid={`video-${blockId} `}
+      data-testid={`video-${blockId}`}
       sx={{
         display: 'flex',
         width: '100%',
         height: '100%',
+        minHeight: 'inherit',
         backgroundColor: '#000000',
         borderRadius: 4,
         overflow: 'hidden',
@@ -212,6 +217,7 @@ export function Video({
             className="video-js vjs-big-play-centered"
             playsInline
             poster={posterBlock?.src ?? undefined}
+            style={{ minHeight: 'inherit' }}
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
