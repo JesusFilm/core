@@ -345,6 +345,8 @@ input JourneyUpdateInput {
   description: String
   locale: String
   primaryImageBlockId: ID
+  seoDescription: String
+  seoTitle: String
   slug: String
   themeMode: ThemeMode
   themeName: ThemeName
