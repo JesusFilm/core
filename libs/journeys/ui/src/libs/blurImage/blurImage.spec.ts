@@ -31,7 +31,9 @@ describe('blurImage', () => {
   it('returns image source as fallback', () => {
     // Prevent 2d canvas from being generated
     const createElement = document.createElement.bind(document)
-    document.createElement = (tagName: any) => {
+    document.createElement = <K extends keyof HTMLElementTagNameMap>(
+      tagName: K
+    ) => {
       if (tagName === 'canvas') {
         return {
           getContext: () => null,
