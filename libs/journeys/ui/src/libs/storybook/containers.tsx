@@ -1,21 +1,18 @@
 import Paper from '@mui/material/Paper'
 import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui'
-import { SxProps } from '@mui/system/styleFunctionSx'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 
 interface StoryCardProps {
   children: ReactNode
   themeMode?: ThemeMode
   themeName?: ThemeName
-  sx?: SxProps
 }
 
 export const StoryCard = ({
   children,
   themeMode,
-  themeName,
-  sx
+  themeName
 }: StoryCardProps): ReactElement => {
   const Card = (
     <Paper
@@ -25,8 +22,7 @@ export const StoryCard = ({
         '& > *': {
           '&:first-child': { mt: 0 },
           '&:last-child': { mb: 0 }
-        },
-        ...sx
+        }
       }}
       elevation={3}
     >

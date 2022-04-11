@@ -182,7 +182,7 @@ export function Video({
         borderRadius: 4,
         overflow: 'hidden',
         m: 0,
-        position: fullsize === true ? 'absolute' : null,
+        position: fullsize === true ? 'absolute' : 'relative',
         top: fullsize === true ? 0 : null,
         right: fullsize === true ? 0 : null,
         bottom: fullsize === true ? 0 : null,
