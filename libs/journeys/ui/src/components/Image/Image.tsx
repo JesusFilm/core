@@ -16,6 +16,12 @@ export function Image({
   blurhash
 }: TreeBlock<ImageFields>): ReactElement {
   const theme = useTheme()
+  const placeholderSrc = blurImage(
+    width,
+    height,
+    blurhash,
+    theme.palette.background.paper
+  )
 
   return (
     <Box
@@ -32,14 +38,8 @@ export function Image({
           alt={alt}
           height={height}
           width={width}
-          placeholder="blur"
-          blurDataURL={blurImage(
-            width,
-            height,
-            blurhash,
-            src,
-            theme.palette.background.paper
-          )}
+          placeholder={placeholderSrc != null ? 'empty' : 'blur'}
+          blurDataURL={placeholderSrc}
           layout="responsive"
           objectFit="cover"
         />

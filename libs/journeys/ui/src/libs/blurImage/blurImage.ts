@@ -7,9 +7,8 @@ export const blurImage = (
   imageWidth: number,
   imageHeight: number,
   blurhash: string,
-  src: string,
   hexBackground: string
-): string => {
+): string | undefined => {
   const divisor = greatestCommonDivisor(imageWidth, imageHeight)
   const width = imageWidth / divisor
   const height = imageHeight / divisor
@@ -31,5 +30,5 @@ export const blurImage = (
     return blurUrl
   }
 
-  return src
+  return undefined
 }

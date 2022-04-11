@@ -32,13 +32,14 @@ export function Cover({
           imageBlock.width,
           imageBlock.height,
           imageBlock.blurhash,
-          imageBlock.src,
           theme.palette.background.paper
         )
 
-        // We need double image to get better image blending results.
-        xsRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
-        lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+        if (dataURL != null) {
+          // We need double image to get better image blending results.
+          xsRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+          lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
+        }
       }
     }
     if (videoRef.current != null) {
