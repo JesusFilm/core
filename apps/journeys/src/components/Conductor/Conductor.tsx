@@ -52,11 +52,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
-  const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
+  const checkVideo = activeBlock?.children
+    .find((child) => child.__typename === 'CardBlock')
+    ?.children.find((child) => child.__typename !== 'VideoBlock')
 
-  const checkVideo = activeBlock?.children?.find(
-    (child) => child.__typename === 'VideoBlock'
-  )
+  const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
   useEffect(() => {
     const updateWidth = (): void => {
@@ -98,7 +98,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             pt: { lg: 0 }
           }}
         >
-          {checkVideo?.__typename !== 'VideoBlock' && <JourneyProgress />}
+          {checkVideo != null && <JourneyProgress />}
         </Box>
         <Box
           sx={{
