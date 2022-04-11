@@ -22,7 +22,9 @@ const Template: Story = ({ ...args }) => (
 )
 
 export const Default = Template.bind({})
-Default.args = { journey: defaultJourney }
+Default.args = {
+  journey: defaultJourney
+}
 
 export const Published = Template.bind({})
 Published.args = {
@@ -33,9 +35,15 @@ export const ExcessContent = Template.bind({})
 ExcessContent.args = {
   journey: descriptiveJourney
 }
+
 export const PreYear = Template.bind({})
 PreYear.args = {
   journey: oldJourney
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
 }
 
 export default TestStory as Meta
