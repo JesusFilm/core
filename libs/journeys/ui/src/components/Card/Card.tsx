@@ -97,7 +97,6 @@ export function Card({
               margin: 'auto',
               width: '100%',
               maxWidth: 500,
-
               '& > *': {
                 '&:first-child': { mt: 0 },
                 '&:last-child': { mb: 0 }
