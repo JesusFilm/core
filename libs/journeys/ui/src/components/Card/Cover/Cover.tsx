@@ -26,12 +26,13 @@ export function Cover({
   const theme = useTheme()
 
   useEffect(() => {
-    if (imageBlock != null) {
+    if (imageBlock?.src != null) {
       if (xsRef.current != null && lgRef.current != null) {
         const dataURL = blurImage(
           imageBlock.width,
           imageBlock.height,
           imageBlock.blurhash,
+          imageBlock.src,
           `${theme.palette.background.paper}88`
         )
 
