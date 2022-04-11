@@ -206,17 +206,15 @@ export function VideoBlockEditorSettingsPosterDialog({
     }
   }
 
-  const dialogProps = {
-    open,
-    handleClose: onClose,
-    dialogTitle: {
-      title: 'Cover Image',
-      closeButton: true
-    }
-  }
-
   return (
-    <Dialog {...dialogProps}>
+    <Dialog
+      open={open}
+      handleClose={onClose}
+      dialogTitle={{
+        title: 'Cover Image',
+        closeButton: true
+      }}
+    >
       <ImageBlockEditor
         selectedBlock={selectedBlock}
         onChange={handleChange}

@@ -83,19 +83,17 @@ export function AccessDialog({
     }
   }, [open, loadJourney])
 
-  const dialogProps = {
-    open: open ?? false,
-    handleClose: onClose,
-    dialogTitle: {
-      title: 'Invite Other Editors',
-      closeButton: true
-    },
-    divider: true,
-    fullScreen: !smUp
-  }
-
   return (
-    <Dialog {...dialogProps}>
+    <Dialog
+      open={open ?? false}
+      handleClose={onClose}
+      dialogTitle={{
+        title: 'Invite Other Editors',
+        closeButton: true
+      }}
+      divider={true}
+      fullscreen={!smUp}
+    >
       <List sx={{ pt: 0 }}>
         <MuiListItem sx={{ p: 0 }}>
           <CopyTextField

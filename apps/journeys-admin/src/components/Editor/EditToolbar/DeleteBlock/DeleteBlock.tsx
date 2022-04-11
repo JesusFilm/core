@@ -92,20 +92,18 @@ export function DeleteBlock({
         })
   }
 
-  const dialogProps = {
-    open: openDialog,
-    handleClose: handleCloseDialog,
-    dialogTitle: { title: 'Delete Card?' },
-    dialogAction: {
-      onSubmit: handleDeleteBlock,
-      submitLabel: 'Delete',
-      closeLabel: 'Cancel'
-    }
-  }
-
   return (
     <>
-      <Dialog {...dialogProps}>
+      <Dialog
+        open={openDialog}
+        handleClose={handleCloseDialog}
+        dialogTitle={{ title: 'Delete Card?' }}
+        dialogAction={{
+          onSubmit: handleDeleteBlock,
+          submitLabel: 'Delete',
+          closeLabel: 'Cancel'
+        }}
+      >
         <Typography>
           Are you sure you would like to delete this card?
         </Typography>

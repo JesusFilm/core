@@ -151,7 +151,7 @@ FullScreen.args = {
     title: 'Full Screen Dialog',
     closeButton: true
   },
-  fullScreen: true,
+  fullscreen: true,
   dividers: true,
   children: (
     <>

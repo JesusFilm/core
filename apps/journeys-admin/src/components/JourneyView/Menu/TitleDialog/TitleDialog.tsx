@@ -1,6 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 import { Alert } from '../Alert'
@@ -53,27 +54,27 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     onClose()
   }
 
-  const dialogProps = {
-    open,
-    handleClose,
-    dialogTitle: { title: 'Edit Title' },
-    dialogAction: {
-      onSubmit: handleSubmit,
-      closeLabel: 'Cancel'
-    }
-  }
-
   return (
     <>
-      <Dialog {...dialogProps}>
+      <Dialog
+        open={open}
+        handleClose={handleClose}
+        dialogTitle={{ title: 'Edit Title' }}
+        dialogAction={{
+          onSubmit: handleSubmit,
+          closeLabel: 'Cancel'
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <TextField
-              hiddenLabel
-              value={value}
-              variant="filled"
-              onChange={handleChange}
-            />
+            <FormLabel component="legend" aria-label="form-update-title">
+              <TextField
+                hiddenLabel
+                value={value}
+                variant="filled"
+                onChange={handleChange}
+              />
+            </FormLabel>
           </FormControl>
         </form>
       </Dialog>

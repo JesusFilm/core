@@ -1,6 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { Alert } from '../Alert'
@@ -52,29 +53,29 @@ export function DescriptionDialog({
     onClose()
   }
 
-  const dialogProps = {
-    open,
-    handleClose,
-    dialogTitle: { title: 'Edit Description' },
-    dialogAction: {
-      onSubmit: handleSubmit,
-      closeLabel: 'Cancel'
-    }
-  }
-
   return (
     <>
-      <Dialog {...dialogProps}>
+      <Dialog
+        open={open}
+        handleClose={handleClose}
+        dialogTitle={{ title: 'Edit Description' }}
+        dialogAction={{
+          onSubmit: handleSubmit,
+          closeLabel: 'Cancel'
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <TextField
-              hiddenLabel
-              value={value}
-              multiline
-              variant="filled"
-              rows={3}
-              onChange={(e) => setValue(e.currentTarget.value)}
-            />
+            <FormLabel component="legend" aria-label="form-update-description">
+              <TextField
+                hiddenLabel
+                value={value}
+                multiline
+                variant="filled"
+                rows={3}
+                onChange={(e) => setValue(e.currentTarget.value)}
+              />
+            </FormLabel>
           </FormControl>
         </form>
       </Dialog>
