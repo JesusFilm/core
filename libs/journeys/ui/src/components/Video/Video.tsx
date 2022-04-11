@@ -92,8 +92,7 @@ export function Video({
           }
         },
         responsive: true,
-        muted: muted === true,
-        poster: posterBlock?.src != null ? posterBlock.src : undefined
+        muted: muted === true
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
@@ -169,6 +168,7 @@ export function Video({
             className="video-js vjs-big-play-centered"
             style={{ display: 'flex', alignSelf: 'center', height: '100%' }}
             playsInline
+            poster={posterBlock?.src ?? undefined}
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
@@ -188,7 +188,11 @@ export function Video({
               alignItems: 'center',
               justifyContent: 'center',
               width: '100%',
-              fontSize: 100
+              fontSize: 100,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundImage:
+                posterBlock?.src != null ? `url(${posterBlock.src})` : undefined
             }}
             elevation={0}
             variant="outlined"

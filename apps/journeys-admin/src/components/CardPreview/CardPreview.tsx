@@ -20,6 +20,8 @@ import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { HorizontalSelect } from '../HorizontalSelect'
 import { useJourney } from '../../libs/context'
+import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
+import { CardWrapper } from '../Editor/Canvas/CardWrapper'
 
 export interface CardPreviewProps {
   onSelect?: (step: TreeBlock<StepBlock>) => void
@@ -195,7 +197,13 @@ export function CardPreview({
             <FramePortal width={380} height={560}>
               <ThemeProvider themeName={themeName} themeMode={themeMode}>
                 <Box sx={{ p: 4, height: '100%' }}>
-                  <BlockRenderer block={step} />
+                  <BlockRenderer
+                    block={step}
+                    wrappers={{
+                      VideoWrapper,
+                      CardWrapper
+                    }}
+                  />
                 </Box>
               </ThemeProvider>
             </FramePortal>
