@@ -29,6 +29,5 @@ export const blurImage = (
 
     return blurUrl
   }
-
   return undefined
 }

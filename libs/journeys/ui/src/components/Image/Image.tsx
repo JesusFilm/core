@@ -38,8 +38,8 @@ export function Image({
           alt={alt}
           height={height}
           width={width}
-          placeholder={placeholderSrc != null ? 'empty' : 'blur'}
-          blurDataURL={placeholderSrc}
+          placeholder={'blur'}
+          blurDataURL={placeholderSrc ?? src}
           layout="responsive"
           objectFit="cover"
         />

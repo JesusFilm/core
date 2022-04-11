@@ -31,9 +31,8 @@ Default.parameters = {
 export const NoImageSource: Story<TreeBlock<ImageFields>> =
   DefaultTemplate.bind({})
 NoImageSource.args = {
-  id: 'Image',
-  src: null,
-  alt: 'Default Image Icon'
+  ...Default.args,
+  src: null
 }
 
 export default Demo as Meta
