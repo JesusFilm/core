@@ -62,6 +62,7 @@ describe('Source', () => {
                     }
                   ],
                   variant: {
+                    id: 'variantA',
                     duration: 144,
                     hls: 'https://arc.gt/opsgn'
                   }
