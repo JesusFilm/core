@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom'
-import './test/createMatchMedia'
 import { configure } from '@testing-library/react'
 
 configure({ asyncUtilTimeout: 2500 })
