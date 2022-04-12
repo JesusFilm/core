@@ -57,4 +57,21 @@ Card.play = () => {
   userEvent.click(menuButton)
 }
 
+export const DeleteCardDialog = Template.bind({})
+DeleteCardDialog.args = {
+  selectedBlock: {
+    __typename: 'StepBlock',
+    id: 'stepId',
+    parentBlockId: 'journeyId',
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: null,
+    children: []
+  }
+}
+DeleteCardDialog.play = () => {
+  userEvent.click(screen.getByRole('button'))
+  userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
+}
+
 export default MenuStory as Meta

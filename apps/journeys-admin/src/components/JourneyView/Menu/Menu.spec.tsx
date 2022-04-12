@@ -82,7 +82,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menuItem)
 
     const dialog = getByRole('dialog')
-    const form = getByRole('group', { name: 'dialog-update-title' })
+    const form = getByRole('group', { name: 'form-update-title' })
 
     expect(dialog).toBeInTheDocument()
     expect(form).toBeInTheDocument()
@@ -97,7 +97,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menuItem)
 
     const dialog = getByRole('dialog')
-    const form = getByRole('group', { name: 'dialog-update-description' })
+    const form = getByRole('group', { name: 'form-update-description' })
 
     expect(dialog).toBeInTheDocument()
     expect(form).toBeInTheDocument()

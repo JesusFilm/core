@@ -7,10 +7,11 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
+import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { DeleteDialog } from './DeleteDialog'
+import { Dialog } from '../../../Dialog'
 import getSelected from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
@@ -93,11 +94,20 @@ export function DeleteBlock({
 
   return (
     <>
-      <DeleteDialog
-        handleDelete={handleDeleteBlock}
+      <Dialog
         open={openDialog}
         handleClose={handleCloseDialog}
-      />
+        dialogTitle={{ title: 'Delete Card?' }}
+        dialogAction={{
+          onSubmit: handleDeleteBlock,
+          submitLabel: 'Delete',
+          closeLabel: 'Cancel'
+        }}
+      >
+        <Typography>
+          Are you sure you would like to delete this card?
+        </Typography>
+      </Dialog>
       {variant === 'button' ? (
         <IconButton
           id="delete-block-actions"
