@@ -37,7 +37,16 @@ export const GET_JOURNEY = gql`
         ...BlockFields
       }
       primaryImageBlock {
+        __typename
+        id
+        journeyId
+        parentBlockId
+        parentOrder
         src
+        width
+        height
+        alt
+        blurhash
       }
       userJourneys {
         id
