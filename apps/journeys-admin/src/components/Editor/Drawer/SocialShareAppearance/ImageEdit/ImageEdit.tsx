@@ -1,41 +1,35 @@
-import { ReactElement, useState } from 'react'
-import Image from 'next/image'
+import { ReactElement } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 import { useJourney } from '../../../../../libs/context'
 
 export function ImageEdit(): ReactElement {
   const { primaryImageBlock } = useJourney()
-  const [width, setWidth] = useState(280)
-  const [height, setHeight] = useState(194)
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         overflow: 'hidden',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        borderRadius: 8,
+        borderRadius: 2,
         width: '100%',
         height: 194,
-        marginBottom: 24,
+        mb: 6,
         backgroundColor: '#EFEFEF'
       }}
     >
-      {/* Aspect ratio on image not getting preserved */}
       {primaryImageBlock?.src != null ? (
-        <Image
-          src={primaryImageBlock?.src}
-          // src="https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2231&q=80"
-          // src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80"
-          alt="social share image"
-          width={width}
-          height={height}
-          onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-            setWidth(naturalWidth)
-            setHeight(naturalHeight)
+        <Box
+          component="img"
+          src={primaryImageBlock.src}
+          sx={{
+            width: '100%',
+            height: '194px',
+            objectFit: 'cover'
           }}
         />
       ) : (
@@ -55,6 +49,6 @@ export function ImageEdit(): ReactElement {
       >
         <Typography variant="caption">Change</Typography>
       </Button>
-    </div>
+    </Box>
   )
 }
