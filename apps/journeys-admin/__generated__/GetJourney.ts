@@ -364,13 +364,12 @@ export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
-  journeyId: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   src: string | null;
+  alt: string;
   width: number;
   height: number;
-  alt: string;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
