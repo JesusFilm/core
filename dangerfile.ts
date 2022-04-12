@@ -1,6 +1,5 @@
 import { danger, warn, markdown } from 'danger'
 import lint from '@commitlint/lint'
-import { rules } from '@commitlint/config-conventional'
 
 export default async () => {
   // ignore dependabot
@@ -40,7 +39,40 @@ export default async () => {
   }
 
   // check PR has well-formed title
-  const commitlintReport = await lint(danger.github.pr.title, rules)
+  // Rules copied from @commitlint/config-conventional
+  const commitlintReport = await lint(danger.github.pr.title, {
+    'body-leading-blank': [1, 'always'],
+    'body-max-line-length': [2, 'always', 100],
+    'footer-leading-blank': [1, 'always'],
+    'footer-max-line-length': [2, 'always', 100],
+    'header-max-length': [2, 'always', 100],
+    'subject-case': [
+      2,
+      'never',
+      ['sentence-case', 'start-case', 'pascal-case', 'upper-case']
+    ],
+    'subject-empty': [2, 'never'],
+    'subject-full-stop': [2, 'never', '.'],
+    'type-case': [2, 'always', 'lower-case'],
+    'type-empty': [2, 'never'],
+    'type-enum': [
+      2,
+      'always',
+      [
+        'build',
+        'chore',
+        'ci',
+        'docs',
+        'feat',
+        'fix',
+        'perf',
+        'refactor',
+        'revert',
+        'style',
+        'test'
+      ]
+    ]
+  })
   if (!commitlintReport.valid) {
     fail('Please ensure your PR title matches commitlint convention.')
     let errors = ''
