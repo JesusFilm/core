@@ -1,8 +1,108 @@
-import { TitleEdit } from './TitleEdit'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, fireEvent, waitFor } from '@testing-library/react'
+import { JourneyProvider } from '../../../../../libs/context'
+import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { TitleEdit, JOURNEY_SEO_TITLE_UPDATE } from './TitleEdit'
 
 describe('TitleEdit', () => {
-  it('should display seo title', () => {})
-  it('should display journey title when seo title not set', () => {})
-  it('should update seo title', () => {})
-  it('should validate the character limit on form', () => {})
+  it('should display suggested title length', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <TitleEdit />
+      </MockedProvider>
+    )
+    expect(getByText('Recommended length: 5 words')).toBeInTheDocument()
+  })
+  it('should display seo title', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={
+            {
+              title: 'journey title',
+              seoTitle: 'Social share title'
+            } as unknown as Journey
+          }
+        >
+          <TitleEdit />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Social share title')).toBeInTheDocument()
+  })
+
+  it('should display journey title when seo title not set', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={
+            {
+              title: 'journey title',
+              seoTitle: null
+            } as unknown as Journey
+          }
+        >
+          <TitleEdit />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('journey title')).toBeInTheDocument()
+  })
+
+  it('should update seo title', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: 'journey.id',
+          seoTitle: 'new title'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_SEO_TITLE_UPDATE,
+              variables: {
+                id: 'journey.id',
+                input: {
+                  seoTitle: 'new title'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+          <TitleEdit />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), { target: { value: 'new title' } })
+    fireEvent.blur(getByRole('textbox'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should not update seo title if validation fails', async () => {
+    const longTitle =
+      'This is a long title that needs to be over the character count of 65 to test validationThis is a long title that needs to be over the character count of 65 to test validation'
+
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+          <TitleEdit />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), { target: { value: longTitle } })
+    await waitFor(() =>
+      expect(getByText('Character limit reached: 65')).toBeInTheDocument()
+    )
+  })
 })
