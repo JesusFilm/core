@@ -20,6 +20,7 @@ import Image from 'next/image'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { UserMenu } from './UserMenu'
 
@@ -72,7 +73,7 @@ const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
 const StyledList = styled(List)({
   display: 'flex',
   flexDirection: 'column',
-  '& .MuiListItemButton-root': {
+  '& .MuiListItemButton-root, & .MuiListItem-root': {
     paddingLeft: 0,
     marginBottom: 6,
     '& .MuiListItemIcon-root': {
@@ -187,13 +188,18 @@ export function NavigationDrawer({
               width={32}
               height={32}
               layout="fixed"
-              alt="Next Steps"
+              alt="Next Steps Logo"
             />
           </ListItemIcon>
-          <ListItemText
-            primary={'NextSteps'}
-            sx={{ color: 'background.paper' }}
-          />
+          <Box>
+            <Image
+              src={nextstepsTitle}
+              width={106}
+              height={24}
+              layout="fixed"
+              alt="Next Steps Title"
+            />
+          </Box>
         </ListItem>
       </StyledList>
     </StyledNavigationDrawer>
