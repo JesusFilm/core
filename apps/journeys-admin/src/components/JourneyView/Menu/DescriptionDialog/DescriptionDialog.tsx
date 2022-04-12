@@ -39,7 +39,7 @@ export function DescriptionDialog({
 
     try {
       await journeyUpdate({
-        variables: { id: 'journey.id', input: updatedJourney },
+        variables: { id: journey.id, input: updatedJourney },
         optimisticResponse: {
           journeyUpdate: {
             id: journey.id,
@@ -49,7 +49,9 @@ export function DescriptionDialog({
         }
       })
     } catch (error) {
-      enqueueSnackbar('There was an error updating title', { variant: 'error' })
+      enqueueSnackbar('There was an error updating description', {
+        variant: 'error'
+      })
     }
   }
 
