@@ -1,13 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import Close from '@mui/icons-material/Close'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-
+import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
@@ -216,35 +209,17 @@ export function VideoBlockEditorSettingsPosterDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
-      aria-labelledby="poster-dialog-title"
-      fullWidth={true}
-      maxWidth="xs"
+      handleClose={onClose}
+      dialogTitle={{
+        title: 'Cover Image',
+        closeButton: true
+      }}
     >
-      <DialogTitle>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography
-            id="poster-dialog-title"
-            variant="subtitle1"
-            component="div"
-            justifyContent="center"
-            paddingTop={2}
-            sx={{ textTransform: 'initial' }}
-          >
-            Cover Image
-          </Typography>
-          <IconButton onClick={onClose}>
-            <Close />
-          </IconButton>
-        </Stack>
-      </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
-        <ImageBlockEditor
-          selectedBlock={selectedBlock}
-          onChange={handleChange}
-          onDelete={deleteCoverBlock}
-        />
-      </DialogContent>
+      <ImageBlockEditor
+        selectedBlock={selectedBlock}
+        onChange={handleChange}
+        onDelete={deleteCoverBlock}
+      />
     </Dialog>
   )
 }
