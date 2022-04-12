@@ -87,24 +87,26 @@ export function BackgroundMediaVideo({
   const [blockDelete] = useMutation<BlockDeleteForBackgroundVideo>(
     BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 
   const deleteCoverBlock = async (): Promise<void> => {
+    if (journey == null) return
+
     await blockDelete({
       variables: {
         id: coverBlock.id,
         parentBlockId: coverBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
       }
     })
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: null
         }
@@ -122,10 +124,12 @@ export function BackgroundMediaVideo({
   const createVideoBlock = async (
     input: VideoBlockUpdateInput
   ): Promise<void> => {
+    if (journey == null) return
+
     const { data } = await videoBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: cardBlock.id,
           ...input
         }
@@ -133,7 +137,7 @@ export function BackgroundMediaVideo({
       update(cache, { data }) {
         if (data?.videoBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -155,7 +159,7 @@ export function BackgroundMediaVideo({
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: data?.videoBlockCreate?.id ?? null
         }
@@ -173,10 +177,12 @@ export function BackgroundMediaVideo({
   const updateVideoBlock = async (
     input: VideoBlockUpdateInput
   ): Promise<void> => {
+    if (journey == null) return
+
     await videoBlockUpdate({
       variables: {
         id: coverBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input
       }
     })

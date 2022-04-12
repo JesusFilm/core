@@ -44,7 +44,7 @@ export function NavigateToBlockAction(): ReactElement {
     ) ?? undefined
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
-    if (selectedBlock != null) {
+    if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await navigateToBlockActionUpdate({
         variables: {

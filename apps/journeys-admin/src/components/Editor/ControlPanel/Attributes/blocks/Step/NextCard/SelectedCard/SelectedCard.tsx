@@ -11,6 +11,10 @@ import { useEditor, TreeBlock, BlockRenderer } from '@core/journeys/ui'
 import { useJourney } from '../../../../../../../../libs/context'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../../../../../FramePortal'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
@@ -44,6 +48,8 @@ export function SelectedCard(): ReactElement {
 
   // TODO: Set as block itself for now, still need to manually set next block
   async function handleRemoveCustomNextStep(): Promise<void> {
+    if (journey == null) return
+
     await stepBlockDefaultNextBlockUpdate({
       variables: {
         id,
@@ -87,8 +93,8 @@ export function SelectedCard(): ReactElement {
           >
             <FramePortal width={380} height={560}>
               <ThemeProvider
-                themeName={journey.themeName}
-                themeMode={journey.themeMode}
+                themeName={journey?.themeName ?? ThemeName.base}
+                themeMode={journey?.themeMode ?? ThemeMode.light}
               >
                 <Box sx={{ p: 4, height: '100%' }}>
                   <BlockRenderer

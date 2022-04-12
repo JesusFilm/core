@@ -107,7 +107,7 @@ export function Variant(): ReactElement {
   ]
 
   async function handleChange(variant: TypographyVariant): Promise<void> {
-    if (selectedBlock != null && variant != null) {
+    if (selectedBlock != null && variant != null && journey != null) {
       await typographyBlockUpdate({
         variables: {
           id: selectedBlock.id,

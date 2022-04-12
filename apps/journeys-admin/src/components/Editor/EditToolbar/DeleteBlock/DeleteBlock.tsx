@@ -35,7 +35,7 @@ export function DeleteBlock({
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const {
     state: { selectedBlock, selectedStep, steps },
     dispatch
@@ -50,7 +50,7 @@ export function DeleteBlock({
   }
 
   const handleDeleteBlock = async (): Promise<void> => {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
 
     const deletedBlockParentOrder = selectedBlock.parentOrder
     const deletedBlockType = selectedBlock.__typename
@@ -60,11 +60,11 @@ export function DeleteBlock({
     const { data } = await blockDelete({
       variables: {
         id: selectedBlock.id,
-        journeyId,
+        journeyId: journey.id,
         parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
-        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     })
 

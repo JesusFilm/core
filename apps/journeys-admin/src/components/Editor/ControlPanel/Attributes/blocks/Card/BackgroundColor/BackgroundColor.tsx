@@ -56,7 +56,7 @@ export function BackgroundColor(): ReactElement {
           (child) => child.__typename === 'CardBlock'
         )
   ) as TreeBlock<CardBlock> | undefined
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
 
   const [tabValue, setTabValue] = useState(0)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -68,11 +68,13 @@ export function BackgroundColor(): ReactElement {
   }
 
   const handleColorChange = async (color: string): Promise<void> => {
+    if (journey == null) return
+
     if (cardBlock != null) {
       await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
-          journeyId: journeyId,
+          journeyId: journey.id,
           input: {
             backgroundColor: color === 'null' ? null : color
           }

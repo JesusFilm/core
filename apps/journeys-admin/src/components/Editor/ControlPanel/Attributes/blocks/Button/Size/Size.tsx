@@ -31,7 +31,7 @@ export function Size(): ReactElement {
     | undefined
 
   async function handleChange(size: ButtonSize): Promise<void> {
-    if (selectedBlock != null && size != null) {
+    if (selectedBlock != null && size != null && journey != null) {
       await buttonBlockUpdate({
         variables: {
           id: selectedBlock.id,

@@ -97,21 +97,23 @@ export function BackgroundMediaImage({
     useMutation<BlockDeleteForBackgroundImage>(
       BLOCK_DELETE_FOR_BACKGROUND_IMAGE
     )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
 
   const handleImageDelete = async (): Promise<void> => {
     await deleteCoverBlock()
   }
 
   const deleteCoverBlock = async (): Promise<boolean> => {
+    if (journey == null) return false
+
     await blockDelete({
       variables: {
         id: coverBlock.id,
         parentBlockId: cardBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
       }
     })
 
@@ -120,7 +122,7 @@ export function BackgroundMediaImage({
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: null
         }
@@ -137,10 +139,12 @@ export function BackgroundMediaImage({
   }
 
   const createImageBlock = async (block): Promise<boolean> => {
+    if (journey == null) return false
+
     const { data } = await imageBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: cardBlock.id,
           src: block.src,
           alt: block.alt
@@ -149,7 +153,7 @@ export function BackgroundMediaImage({
       update(cache, { data }) {
         if (data?.imageBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -173,7 +177,7 @@ export function BackgroundMediaImage({
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: data?.imageBlockCreate.id ?? null
         }
@@ -190,10 +194,12 @@ export function BackgroundMediaImage({
   }
 
   const updateImageBlock = async (block: ImageBlock): Promise<boolean> => {
+    if (journey == null) return false
+
     await imageBlockUpdate({
       variables: {
         id: coverBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           src: block.src,
           alt: block.alt

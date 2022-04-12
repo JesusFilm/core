@@ -38,6 +38,8 @@ export function Cards(): ReactElement {
   )
 
   async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
+    if (journey == null) return
+
     await stepBlockNextBlockUpdate({
       variables: {
         id,

@@ -14,6 +14,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import last from 'lodash/last'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
 import { FramePortal } from '../FramePortal'
@@ -70,7 +71,7 @@ export function CardPreview({
   const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
     STEP_BLOCK_NEXTBLOCKID_UPDATE
   )
-  const { id: journeyId, themeMode, themeName } = useJourney()
+  const journey = useJourney()
 
   const handleChange = (selectedId: string): void => {
     const selectedStep = steps.find(({ id }) => id === selectedId)
@@ -78,18 +79,20 @@ export function CardPreview({
   }
 
   const handleClick = async (): Promise<void> => {
+    if (journey == null) return
+
     const stepId = uuidv4()
     const cardId = uuidv4()
     const { data } = await stepAndCardBlockCreate({
       variables: {
-        journeyId,
+        journeyId: journey.id,
         stepId,
         cardId
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newStepBlockRef = cache.writeFragment({
@@ -132,7 +135,7 @@ export function CardPreview({
       await stepBlockNextBlockIdUpdate({
         variables: {
           id: lastStep.id,
-          journeyId,
+          journeyId: journey.id,
           input: {
             nextBlockId: stepId
           }
@@ -195,7 +198,10 @@ export function CardPreview({
             }}
           >
             <FramePortal width={380} height={560}>
-              <ThemeProvider themeName={themeName} themeMode={themeMode}>
+              <ThemeProvider
+                themeName={journey?.themeName ?? ThemeName.base}
+                themeMode={journey?.themeMode ?? ThemeMode.light}
+              >
                 <Box sx={{ p: 4, height: '100%' }}>
                   <BlockRenderer
                     block={step}

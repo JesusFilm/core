@@ -15,6 +15,7 @@ import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
 import { useJourney } from '../../../libs/context'
+import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
@@ -32,7 +33,7 @@ export function Canvas(): ReactElement {
     state: { steps, selectedStep, selectedBlock },
     dispatch
   } = useEditor()
-  const { themeMode, themeName } = useJourney()
+  const journey = useJourney()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null) {
@@ -134,7 +135,10 @@ export function Canvas(): ReactElement {
                 }}
               />
               <FramePortal width={356} height={536}>
-                <ThemeProvider themeName={themeName} themeMode={themeMode}>
+                <ThemeProvider
+                  themeName={journey?.themeName ?? ThemeName.base}
+                  themeMode={journey?.themeMode ?? ThemeMode.light}
+                >
                   <Box sx={{ p: 1, height: '100%' }}>
                     <BlockRenderer
                       block={step}

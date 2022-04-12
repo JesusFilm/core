@@ -23,16 +23,16 @@ export function VideoOptions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const [videoBlockUpdate] = useMutation<VideoBlockUpdate>(VIDEO_BLOCK_UPDATE)
 
   const handleChange = async (input: VideoBlockUpdateInput): Promise<void> => {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
 
     await videoBlockUpdate({
       variables: {
         id: selectedBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input
       }
     })

@@ -32,6 +32,8 @@ export function RadioOptionEdit({
   const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {
+    if (journey == null) return
+    
     const label = value.trim().replace(/\n/g, '')
     await radioOptionBlockUpdate({
       variables: {
