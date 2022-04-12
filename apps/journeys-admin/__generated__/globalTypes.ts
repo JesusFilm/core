@@ -205,6 +205,8 @@ export interface JourneyUpdateInput {
   description?: string | null;
   locale?: string | null;
   primaryImageBlockId?: string | null;
+  seoDescription?: string | null;
+  seoTitle?: string | null;
   slug?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -340,6 +342,7 @@ export interface VideoResponseCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  tagId?: string | null;
   title?: string | null;
   types?: VideoType[] | null;
 }

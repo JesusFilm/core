@@ -3,11 +3,31 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
+import { useQuery, gql } from '@apollo/client'
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
+
+import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
 
+export const GET_VIDEO_TAG = gql`
+  query GetVideoTag($id: ID!) {
+    videoTag(id: $id) {
+      id
+      title {
+        primary
+        value
+      }
+    }
+  }
+`
+
 function VideoPage(): ReactElement {
+  const { data: jfm1Data } = useQuery<GetVideoTag>(GET_VIDEO_TAG, {
+    variables: {
+      id: 'JFM1'
+    }
+  })
   return (
     <PageWrapper title="NextSteps Watch" backHref="/asdf">
       <Box sx={{ bgcolor: '#cfe8fc' }}>
@@ -52,15 +72,16 @@ function VideoPage(): ReactElement {
 
       <Box sx={{ bgcolor: '#cfe8fc', paddingY: '5rem' }}>
         <Container maxWidth="xl">
-          <Typography variant="h3">Featured Films</Typography>
-          <Typography variant="h5">Great for events!</Typography>
+          <Typography variant="h2">
+            {jfm1Data?.videoTag?.title.find((t) => t.primary)?.value}
+          </Typography>
           <VideoList
             filter={{
               availableVariantLanguageIds: ['529'],
-              types: [VideoType.standalone]
+              types: [VideoType.playlist, VideoType.standalone],
+              tagId: 'JFM1'
             }}
-            variant="small"
-            layout="list"
+            layout="carousel"
           />
         </Container>
       </Box>

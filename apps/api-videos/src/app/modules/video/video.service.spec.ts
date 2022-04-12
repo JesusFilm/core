@@ -27,7 +27,11 @@ const DEFAULT_QUERY = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `.query
 
@@ -50,7 +54,11 @@ const QUERY_WITH_TITLE = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `.query
 
@@ -73,7 +81,11 @@ const QUERY_WITH_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `.query
 
@@ -98,7 +110,11 @@ const QUERY_WITH_TITLE_AND_AVAILABLE_VARIANT_LANGUAGE_IDS = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `.query
 
@@ -121,7 +137,11 @@ const QUERY_WITH_TYPES = aql`
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `.query
 
@@ -142,7 +162,11 @@ const EPISODES_QUERY = aql`
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `.query
 

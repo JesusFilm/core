@@ -1,11 +1,6 @@
 import { ReactElement, MouseEvent, useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
-import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Menu from '@mui/material/Menu'
 import List from '@mui/material/List'
@@ -13,13 +8,13 @@ import MuiListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui'
+import { Dialog } from '../Dialog'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
@@ -61,7 +56,7 @@ export const GET_CURRENT_USER = gql`
 interface AccessDialogProps {
   journeySlug: string
   open?: boolean
-  onClose?: () => void
+  onClose: () => void
 }
 
 export function AccessDialog({
@@ -69,8 +64,6 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeySlug }
@@ -78,6 +71,7 @@ export function AccessDialog({
 
   const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
 
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const disable =
     data?.journey?.userJourneys?.find(
       (userJourney) => userJourney.user?.email === currentUserData?.me?.email
@@ -92,61 +86,49 @@ export function AccessDialog({
   return (
     <Dialog
       open={open ?? false}
-      onClose={onClose}
-      fullScreen={!smUp}
-      maxWidth="sm"
+      handleClose={onClose}
+      dialogTitle={{
+        title: 'Invite Other Editors',
+        closeButton: true
+      }}
+      divider={true}
+      fullscreen={!smUp}
     >
-      <Box
-        sx={{
-          mx: 6,
-          my: 4,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Typography variant="subtitle1">Invite Other Editors</Typography>
-        <IconButton onClick={onClose} aria-label="Close">
-          <CloseRoundedIcon />
-        </IconButton>
-      </Box>
-      <DialogContent dividers>
-        <List>
-          <MuiListItem sx={{ px: 0 }}>
-            <CopyTextField
-              value={
-                typeof window !== 'undefined'
-                  ? `${
-                      window.location.host.endsWith('.chromatic.com')
-                        ? 'https://admin.nextstep.is'
-                        : window.location.origin
-                    }/journeys/${journeySlug}`
-                  : undefined
-              }
-              messageText="Editor invite link copied"
-              helperText="Anyone with this link can see journey and ask for editing rights.
+      <List sx={{ pt: 0 }}>
+        <MuiListItem sx={{ p: 0 }}>
+          <CopyTextField
+            value={
+              typeof window !== 'undefined'
+                ? `${
+                    window.location.host.endsWith('.chromatic.com')
+                      ? 'https://admin.nextstep.is'
+                      : window.location.origin
+                  }/journeys/${journeySlug}`
+                : undefined
+            }
+            messageText="Editor invite link copied"
+            helperText="Anyone with this link can see journey and ask for editing rights.
               You can accept or reject every request."
-            />
-          </MuiListItem>
-          {!loading && (
-            <UserJourneyList
-              title="Requested Editing Rights"
-              userJourneys={data?.journey?.userJourneys?.filter(
-                ({ role }) => role === UserJourneyRole.inviteRequested
-              )}
-              disable={disable}
-            />
-          )}
+          />
+        </MuiListItem>
+        {!loading && (
           <UserJourneyList
-            title="Users With Access"
-            loading={loading}
+            title="Requested Editing Rights"
             userJourneys={data?.journey?.userJourneys?.filter(
-              ({ role }) => role !== UserJourneyRole.inviteRequested
+              ({ role }) => role === UserJourneyRole.inviteRequested
             )}
             disable={disable}
           />
-        </List>
-      </DialogContent>
+        )}
+        <UserJourneyList
+          title="Users With Access"
+          loading={loading}
+          userJourneys={data?.journey?.userJourneys?.filter(
+            ({ role }) => role !== UserJourneyRole.inviteRequested
+          )}
+          disable={disable}
+        />
+      </List>
     </Dialog>
   )
 }
@@ -206,7 +188,11 @@ function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
   const open = Boolean(anchorEl)
   const { id, role, user } = userJourney
 
-  useEffect(() => setAnchorEl(null), [])
+  useEffect(() => {
+    return () => {
+      setAnchorEl(null)
+    }
+  }, [])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)

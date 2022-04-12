@@ -143,4 +143,39 @@ ExcessText.args = {
   )
 }
 
+export const FullScreen = Template.bind({})
+FullScreen.args = {
+  open: true,
+  handleClose: noop,
+  dialogTitle: {
+    title: 'Full Screen Dialog',
+    closeButton: true
+  },
+  fullscreen: true,
+  dividers: true,
+  children: (
+    <>
+      <Typography>This is the content for the information</Typography>
+      {[0, 1, 2].map((i) => (
+        <MuiListItem sx={{ px: 0 }} key={i}>
+          <ListItemAvatar>
+            <Skeleton
+              animation={false}
+              variant="circular"
+              width={40}
+              height={40}
+            />
+          </ListItemAvatar>
+          <ListItemText
+            primary={<Skeleton animation={false} variant="text" width="100%" />}
+            secondary={
+              <Skeleton animation={false} variant="text" width="60%" />
+            }
+          />
+        </MuiListItem>
+      ))}
+    </>
+  )
+}
+
 export default DialogStory as Meta

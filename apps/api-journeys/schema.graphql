@@ -84,6 +84,8 @@ type Journey @key(fields: "id") {
   publishedAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  seoTitle: String
+  seoDescription: String
   userJourneys: [UserJourney!]
 }
 
@@ -529,9 +531,7 @@ input VideoBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
 
-  """
-  startAt dictates at which point of time the video should start playing
-  """
+  """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """endAt dictates at which point of time the video should end"""
@@ -637,6 +637,8 @@ input JourneyUpdateInput {
   description: String
   primaryImageBlockId: ID
   slug: String
+  seoTitle: String
+  seoDescription: String
 }
 
 type UserJourney @key(fields: "id") {
