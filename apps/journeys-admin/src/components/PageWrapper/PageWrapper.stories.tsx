@@ -64,4 +64,10 @@ Complete.args = {
   )
 }
 
+export const NoMobileNavbar = Template.bind({})
+NoMobileNavbar.args = {
+  backHref: '/',
+  title: 'NUA Journey: Ep.3 – Decision'
+}
+
 export default PageWrapperStory as Meta
