@@ -35,7 +35,7 @@ export function PageWrapper({
               sx={{ mr: 2 }}
             >
               <Image
-                src={`/${taskbarIcon}`}
+                src={taskbarIcon}
                 width={32}
                 height={32}
                 layout="fixed"
