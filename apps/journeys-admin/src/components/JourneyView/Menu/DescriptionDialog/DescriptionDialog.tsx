@@ -66,16 +66,18 @@ export function DescriptionDialog({
       >
         <form onSubmit={handleSubmit}>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <FormLabel component="legend" aria-label="form-update-description">
-              <TextField
-                hiddenLabel
-                value={value}
-                multiline
-                variant="filled"
-                rows={3}
-                onChange={(e) => setValue(e.currentTarget.value)}
-              />
-            </FormLabel>
+            <FormLabel
+              component="legend"
+              aria-label="form-update-description"
+            />
+            <TextField
+              hiddenLabel
+              value={value}
+              multiline
+              variant="filled"
+              rows={3}
+              onChange={(e) => setValue(e.currentTarget.value)}
+            />
           </FormControl>
         </form>
       </Dialog>

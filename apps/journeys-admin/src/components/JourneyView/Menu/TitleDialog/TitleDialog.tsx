@@ -67,14 +67,13 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
       >
         <form onSubmit={handleSubmit}>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <FormLabel component="legend" aria-label="form-update-title">
-              <TextField
-                hiddenLabel
-                value={value}
-                variant="filled"
-                onChange={handleChange}
-              />
-            </FormLabel>
+            <FormLabel component="legend" aria-label="form-update-title" />
+            <TextField
+              hiddenLabel
+              value={value}
+              variant="filled"
+              onChange={handleChange}
+            />
           </FormControl>
         </form>
       </Dialog>
