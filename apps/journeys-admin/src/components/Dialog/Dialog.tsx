@@ -14,6 +14,7 @@ export interface DialogProps {
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   divider?: boolean
+  fullscreen?: boolean
   children?: ReactElement
 }
 
@@ -67,6 +68,7 @@ export function Dialog({
   dialogTitle,
   dialogAction,
   divider,
+  fullscreen,
   children
 }: DialogProps): ReactElement {
   function handleSubmit(): void {
@@ -77,6 +79,7 @@ export function Dialog({
   return (
     <StyledDialog
       open={open}
+      fullScreen={fullscreen}
       maxWidth="sm"
       fullWidth={true}
       onClose={handleClose}
@@ -85,7 +88,11 @@ export function Dialog({
         <MuiDialogTitle>
           {dialogTitle.title}
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
-            <IconButton size="medium" onClick={handleClose}>
+            <IconButton
+              size="medium"
+              onClick={handleClose}
+              data-testid="dialog-close-button"
+            >
               <CloseRoundedIcon />
             </IconButton>
           )}
