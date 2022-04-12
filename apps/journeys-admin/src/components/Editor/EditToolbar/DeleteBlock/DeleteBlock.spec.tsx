@@ -253,6 +253,8 @@ describe('DeleteBlock', () => {
       getByTestId('DeleteOutlineRoundedIcon')
     )
     fireEvent.click(getByRole('button'))
+
+    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -318,6 +320,8 @@ describe('DeleteBlock', () => {
     )
 
     fireEvent.click(getByRole('menuitem', { name: 'Delete Card' }))
+
+    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())

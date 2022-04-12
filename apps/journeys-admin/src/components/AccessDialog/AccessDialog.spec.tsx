@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { noop } from 'lodash'
 import { SnackbarProvider } from 'notistack'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import {
@@ -173,7 +174,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeySlug="journeySlug" open={true} />
+          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -194,7 +195,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeySlug="journeySlug" open={true} />
+          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -216,7 +217,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeySlug="journeySlug" open={true} />
+          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -239,7 +240,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
-          <AccessDialog journeySlug="journeySlug" open={true} />
+          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -326,7 +327,7 @@ describe('AccessDialog', () => {
             }
           ]}
         >
-          <AccessDialog journeySlug="journeySlug" open={true} />
+          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -339,7 +340,7 @@ describe('AccessDialog', () => {
 
   it('calls on close', () => {
     const handleClose = jest.fn()
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
           <AccessDialog
@@ -350,7 +351,7 @@ describe('AccessDialog', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Close' }))
+    fireEvent.click(getByTestId('dialog-close-button'))
     expect(handleClose).toHaveBeenCalled()
   })
 
@@ -374,7 +375,11 @@ describe('AccessDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <MockedProvider mocks={mocks}>
-            <AccessDialog journeySlug="journeySlug" open={true} />
+            <AccessDialog
+              journeySlug="journeySlug"
+              open={true}
+              onClose={noop}
+            />
           </MockedProvider>
         </SnackbarProvider>
       )
