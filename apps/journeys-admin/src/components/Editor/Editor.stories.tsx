@@ -512,28 +512,11 @@ const blocks: GetJourney_journey_blocks[] = [
   }
 ]
 
-const Template: Story = () => (
+const Template: Story = (args) => (
   <MockedProvider>
-    <Editor
-      journey={{
-        __typename: 'Journey',
-        id: 'journeyId',
-        themeName: ThemeName.base,
-        themeMode: ThemeMode.light,
-        title: 'NUA Journey: Ep.3 – Decision',
-        slug: 'nua-journey-ep-3-decision',
-        description: 'my cool journey',
-        locale: 'en-US',
-        status: JourneyStatus.draft,
-        createdAt: '2021-11-19T12:34:56.647Z',
-        publishedAt: null,
-        primaryImageBlock: null,
-        userJourneys: [],
-        blocks
-      }}
-    >
+    <Editor journey={args.journey}>
       <PageWrapper
-        title="NUA Journey: Ep.3 – Decision"
+        title="NUA Journey: Ep.3 - Decision"
         showDrawer
         Menu={<EditToolbar />}
         backHref="/journeys/nua-journey-ep-3-decision"
@@ -545,5 +528,28 @@ const Template: Story = () => (
 )
 
 export const Default = Template.bind({})
+Default.args = {
+  journey: {
+    __typename: 'Journey',
+    id: 'journeyId',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
+    title: 'NUA Journey: Ep.3 – Decision',
+    slug: 'nua-journey-ep-3-decision',
+    description: 'my cool journey',
+    locale: 'en-US',
+    status: JourneyStatus.draft,
+    createdAt: '2021-11-19T12:34:56.647Z',
+    publishedAt: null,
+    primaryImageBlock: null,
+    userJourneys: [],
+    blocks
+  }
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
+}
 
 export default EditorStory as Meta
