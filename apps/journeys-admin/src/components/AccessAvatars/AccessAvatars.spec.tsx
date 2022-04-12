@@ -92,7 +92,7 @@ describe('AccessAvatars', () => {
   })
 
   it('should show access dialog on click', async () => {
-    const { getByRole, queryByText } = render(
+    const { getByRole, queryByText, getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -106,7 +106,7 @@ describe('AccessAvatars', () => {
     )
     fireEvent.click(getByRole('Button'))
     expect(queryByText('Invite Other Editors')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Close' }))
+    fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
     )

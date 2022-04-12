@@ -424,6 +424,8 @@ export class Journey {
     publishedAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
+    seoTitle?: Nullable<string>;
+    seoDescription?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
