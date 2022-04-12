@@ -1,4 +1,5 @@
 export { handleAction } from './action'
+export { blurImage } from './blurImage'
 export { journeyUiConfig, simpleComponentConfig } from './storybook/config'
 export { StoryCard } from './storybook/containers'
 export {
