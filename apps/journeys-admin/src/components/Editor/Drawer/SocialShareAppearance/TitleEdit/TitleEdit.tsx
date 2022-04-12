@@ -42,32 +42,32 @@ export function TitleEdit(): ReactElement {
     })
   }
 
-  const initialValues = { socialTitle: seoTitle ?? title }
-  const socialTitleSchema = object().shape({
-    socialTitle: string().max(65, 'Character limit reached: 65') // 65 characters is about 2 lines of text on desktop view
+  const initialValues = { seoTitle: seoTitle ?? title }
+  const seoTitleSchema = object().shape({
+    seoTitle: string().max(65, 'Character limit reached: 65') // 65 characters is about 2 lines of text on desktop view
   })
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={socialTitleSchema}
+      validationSchema={seoTitleSchema}
       onSubmit={noop}
     >
       {({ values, touched, errors, handleChange, handleBlur }) => (
         <Form>
           <TextField
-            id="socialTitle"
-            name="socialTitle"
+            id="seoTitle"
+            name="seoTitle"
             variant="filled"
             label="Title"
             fullWidth
             multiline
             maxRows={2}
-            value={values.socialTitle}
-            error={touched.socialTitle === true && Boolean(errors.socialTitle)}
+            value={values.seoTitle}
+            error={touched.seoTitle === true && Boolean(errors.seoTitle)}
             helperText={
-              errors.socialTitle != null
-                ? errors.socialTitle
+              errors.seoTitle != null
+                ? errors.seoTitle
                 : 'Recommended length: 5 words'
             }
             onChange={handleChange}

@@ -42,42 +42,41 @@ export function DescriptionEdit(): ReactElement {
   }
 
   const initialValues = {
-    socialDescription: seoDescription ?? description ?? ''
+    seoDescription: seoDescription ?? description ?? ''
   }
-  const socialDescriptionSchema = object().shape({
-    socialDescription: string().max(180, 'Character limit reached') // 180 characters just a few more words than 18 on average
+  const seoDescriptionSchema = object().shape({
+    seoDescription: string().max(180, 'Character limit reached') // 180 characters just a few more words than 18 on average
   })
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={socialDescriptionSchema}
+      validationSchema={seoDescriptionSchema}
       onSubmit={noop}
     >
       {({ values, touched, errors, handleChange, handleBlur }) => (
         <Form>
           <TextField
-            id="socialDescription"
-            name="socialDescription"
+            id="seoDescription"
+            name="seoDescription"
             variant="filled"
             label="Description"
             fullWidth
             multiline
             maxRows={5}
-            value={values.socialDescription}
+            value={values.seoDescription}
             error={
-              touched.socialDescription === true &&
-              Boolean(errors.socialDescription)
+              touched.seoDescription === true && Boolean(errors.seoDescription)
             }
             helperText={
-              errors.socialDescription != null
-                ? errors.socialDescription
+              errors.seoDescription != null
+                ? errors.seoDescription
                 : 'Recommended length: up to 18 words'
             }
             onChange={handleChange}
             onBlur={(e) => {
               handleBlur(e)
-              errors.socialDescription == null && handleSubmit(e)
+              errors.seoDescription == null && handleSubmit(e)
             }}
             sx={{
               pb: 6

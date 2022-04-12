@@ -98,7 +98,7 @@ export function ImageEdit(): ReactElement {
       variables: {
         input: {
           journeyId: id,
-          parentBlockId: null,
+          parentBlockId: id,
           src: imageBlock.src,
           alt: imageBlock.alt
         }
@@ -191,8 +191,9 @@ export function ImageEdit(): ReactElement {
 
   async function handleChange(primaryImageBlock: ImageBlock): Promise<void> {
     if (primaryImageBlock.src === '') return
+    console.log(primaryImageBlock)
 
-    if (primaryImageBlock == null) {
+    if (primaryImageBlock.id == null) {
       await createImageBlock(primaryImageBlock)
     } else {
       await updateImageBlock(primaryImageBlock)
@@ -219,6 +220,7 @@ export function ImageEdit(): ReactElement {
           <Box
             component="img"
             src={primaryImageBlock.src}
+            alt={primaryImageBlock.alt}
             sx={{
               width: '100%',
               height: '194px',
