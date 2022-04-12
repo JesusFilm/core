@@ -59,7 +59,7 @@ export function InlineEditWrapper({
 
   const EditComponent =
     block.__typename === 'TypographyBlock' ? (
-      <TypographyEdit {...block} />
+      <TypographyEdit {...block} deleteSelf={handleDeleteBlock} />
     ) : block.__typename === 'ButtonBlock' ? (
       <ButtonEdit {...block} />
     ) : block.__typename === 'SignUpBlock' ? (
