@@ -44,7 +44,7 @@ export function TitleEdit(): ReactElement {
 
   const initialValues = { seoTitle: seoTitle ?? title }
   const seoTitleSchema = object().shape({
-    seoTitle: string().max(65, 'Character limit reached: 65') // 65 characters is about 2 lines of text on desktop view
+    seoTitle: string().max(65, 'Character limit reached') // 65 characters is about 2 lines of text on desktop view
   })
 
   return (

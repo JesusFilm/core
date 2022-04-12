@@ -88,7 +88,7 @@ describe('TitleEdit', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should not update seo title if validation fails', async () => {
+  it('should show error text when character limit exeeded', async () => {
     const longTitle =
       'This is a long title that needs to be over the character count of 65 to test validationThis is a long title that needs to be over the character count of 65 to test validation'
 
@@ -102,7 +102,7 @@ describe('TitleEdit', () => {
 
     fireEvent.change(getByRole('textbox'), { target: { value: longTitle } })
     await waitFor(() =>
-      expect(getByText('Character limit reached: 65')).toBeInTheDocument()
+      expect(getByText('Character limit reached')).toBeInTheDocument()
     )
   })
 })
