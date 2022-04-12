@@ -50,7 +50,7 @@ export function PageWrapper({
           }
         }}
       >
-        {!smUp ? (
+        {!smUp && (title === 'Journeys' || title === 'Journey Details') ? (
           <Toolbar
             sx={{
               backgroundColor: 'secondary.dark',
@@ -117,7 +117,17 @@ export function PageWrapper({
         authUser={authUser}
         title={title}
       />
-      <Box sx={{ ml: { sm: '72px' }, pt: smUp ? 0 : '48px' }}>{children}</Box>
+      <Box
+        sx={{
+          ml: { sm: '72px' },
+          pt:
+            !smUp && (title === 'Journeys' || title === 'Journey Details')
+              ? '48px'
+              : 0
+        }}
+      >
+        {children}
+      </Box>
     </>
   )
 }
