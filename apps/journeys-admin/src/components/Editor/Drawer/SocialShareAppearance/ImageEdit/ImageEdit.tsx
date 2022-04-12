@@ -226,6 +226,7 @@ export function ImageEdit(): ReactElement {
           mb: 6,
           backgroundColor: '#EFEFEF'
         }}
+        data-testid="social-image-edit"
       >
         {primaryImageBlock?.src != null ? (
           <Box

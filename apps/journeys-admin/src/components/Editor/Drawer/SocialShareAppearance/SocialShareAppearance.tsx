@@ -33,10 +33,10 @@ export function SocialShareAppearance({
       </Typography>
 
       <Stack direction="row" spacing={3}>
-        <Button startIcon={<FacebookIcon />}>
+        <Button startIcon={<FacebookIcon />} data-testid="facebook-button">
           <Typography color="secondary">Facebook</Typography>
         </Button>
-        <Button startIcon={<TwitterIcon />}>
+        <Button startIcon={<TwitterIcon />} data-testid="twitter-button">
           <Typography color="secondary">Twitter</Typography>
         </Button>
       </Stack>

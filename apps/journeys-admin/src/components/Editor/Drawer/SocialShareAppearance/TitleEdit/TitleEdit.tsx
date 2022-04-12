@@ -54,7 +54,7 @@ export function TitleEdit(): ReactElement {
       onSubmit={noop}
     >
       {({ values, touched, errors, handleChange, handleBlur }) => (
-        <Form>
+        <Form data-testid="seo-title-form">
           <TextField
             id="seoTitle"
             name="seoTitle"
