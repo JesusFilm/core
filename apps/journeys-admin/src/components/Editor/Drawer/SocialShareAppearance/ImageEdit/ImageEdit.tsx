@@ -12,7 +12,7 @@ import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDe
 import { BlockDeletePrimaryImage } from '../../../../../../__generated__/BlockDeletePrimaryImage'
 import { PrimaryImageBlockCreate } from '../../../../../../__generated__/PrimaryImageBlockCreate'
 import { PrimaryImageBlockUpdate } from '../../../../../../__generated__/PrimaryImageBlockUpdate'
-// import { JourneyPrimaryImageUpdate } from '../../../../../../__generated__/JourneyPrimaryImageUpdate'
+import { JourneyPrimaryImageUpdate } from '../../../../../../__generated__/JourneyPrimaryImageUpdate'
 
 export const BLOCK_DELETE_PRIMARY_IMAGE = gql`
   mutation BlockDeletePrimaryImage(
@@ -60,14 +60,13 @@ export const PRIMARY_IMAGE_BLOCK_UPDATE = gql`
   }
 `
 
-// export const JOURNEY_PRIMARY_IMAGE_UPDATE = gql`
-//   mutation JourneyPrimaryImageUpdate($id: ID!, $input: JourneyUpdateInput!) {
-//     journeyUpdate(id: $id, input: $input) {
-//       id
-//       primaryImageBlockId
-//     }
-//   }
-// `
+export const JOURNEY_PRIMARY_IMAGE_UPDATE = gql`
+  mutation JourneyPrimaryImageUpdate($id: ID!, $input: JourneyUpdateInput!) {
+    journeyUpdate(id: $id, input: $input) {
+      id
+    }
+  }
+`
 
 export function ImageEdit(): ReactElement {
   const [blockDeletePrimaryImage] = useMutation<BlockDeletePrimaryImage>(
@@ -79,9 +78,9 @@ export function ImageEdit(): ReactElement {
   const [primaryImageBlockUpdate] = useMutation<PrimaryImageBlockUpdate>(
     PRIMARY_IMAGE_BLOCK_UPDATE
   )
-  // const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
-  //   JOURNEY_PRIMARY_IMAGE_UPDATE
-  // )
+  const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
+    JOURNEY_PRIMARY_IMAGE_UPDATE
+  )
 
   const { id, primaryImageBlock } = useJourney()
   const [open, setOpen] = useState(false)
@@ -125,23 +124,37 @@ export function ImageEdit(): ReactElement {
       }
     })
 
-    // if (data?.imageBlockCreate != null) {
-    //   await journeyPrimaryImageUpdate({
-    //     variables: {
-    //       id,
-    //       input: {
-    //         primaryImageBlockId: data?.imageBlockCreate.id ?? null
-    //       }
-    //     },
-    //     optimisticResponse: {
-    //       journeyUpdate: {
-    //         __typename: 'Journey',
-    //         id,
-    //         primaryImageBlockId: data?.imageBlockCreate.id ?? null
-    //       }
-    //     }
-    //   })
-    // }
+    if (data?.imageBlockCreate != null) {
+      const imageData = data.imageBlockCreate
+      await journeyPrimaryImageUpdate({
+        variables: {
+          id,
+          input: {
+            primaryImageBlockId: data?.imageBlockCreate.id
+          }
+        },
+        update(cache, { data }) {
+          if (data?.journeyUpdate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id }),
+              fields: {
+                primaryImageBlock(existingBlockRefs = null) {
+                  const newBlockRef = cache.writeFragment({
+                    data: imageData,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return newBlockRef
+                }
+              }
+            })
+          }
+        }
+      })
+    }
   }
 
   async function updateImageBlock(imageBlock: ImageBlock): Promise<void> {
@@ -170,28 +183,26 @@ export function ImageEdit(): ReactElement {
         blockDeleteUpdate(primaryImageBlock, data?.blockDelete, cache, id)
       }
     })
-    // if (data?.blockDelete != null) {
-    //   await journeyPrimaryImageUpdate({
-    //     variables: {
-    //       id,
-    //       input: {
-    //         primaryImageBlockId: null
-    //       }
-    //     },
-    //     optimisticResponse: {
-    //       journeyUpdate: {
-    //         __typename: 'Journey',
-    //         id,
-    //         primaryImageBlockId: null
-    //       }
-    //     }
-    //   })
-    // }
+    if (data?.blockDelete != null) {
+      await journeyPrimaryImageUpdate({
+        variables: {
+          id,
+          input: {
+            primaryImageBlockId: null
+          }
+        },
+        optimisticResponse: {
+          journeyUpdate: {
+            __typename: 'Journey',
+            id
+          }
+        }
+      })
+    }
   }
 
   async function handleChange(primaryImageBlock: ImageBlock): Promise<void> {
     if (primaryImageBlock.src === '') return
-    console.log(primaryImageBlock)
 
     if (primaryImageBlock.id == null) {
       await createImageBlock(primaryImageBlock)
