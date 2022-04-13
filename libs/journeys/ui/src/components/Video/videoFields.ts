@@ -15,6 +15,9 @@ export const VIDEO_FIELDS = gql`
     videoVariantLanguageId
     video {
       id
+      title(primary: true) {
+        value
+      }
       variant {
         id
         hls
