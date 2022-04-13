@@ -54,7 +54,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const checkVideo = activeBlock?.children
     .find((child) => child.__typename === 'CardBlock')
-    ?.children.find((child) => child.__typename !== 'VideoBlock')
+    ?.children.some((child) => child.__typename === 'VideoBlock')
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
@@ -98,7 +98,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             pt: { lg: 0 }
           }}
         >
-          {checkVideo != null && <JourneyProgress />}
+          {checkVideo === false && <JourneyProgress />}
         </Box>
         <Box
           sx={{
