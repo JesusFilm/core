@@ -14,7 +14,7 @@ describe('DescriptionEdit', () => {
         <DescriptionEdit />
       </MockedProvider>
     )
-    expect(getByText('0/ 180 characters')).toBeInTheDocument()
+    expect(getByText('0 / 180 characters')).toBeInTheDocument()
   })
   it('should display seo description', () => {
     const { getByText } = render(
