@@ -1,0 +1,8 @@
+build instructions:
+
+1. ensure gloud.json service account key is present in this folder
+2. login to aws (aws configure)
+3. run: docker build . -t 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-bqexport:latest
+4. run: aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 894231352815.dkr.ecr.us-east-2.amazonaws.com
+5. run: docker push 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-bqexport:latest
+6. run: kubectl apply -f bigquery-exporter-deployment.yaml
