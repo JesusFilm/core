@@ -52,7 +52,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
 
   const handlePublish = async (): Promise<void> => {
     if (journey == null) return
-    
+
     await journeyPublish({
       variables: { id: journey?.id },
       optimisticResponse: {
