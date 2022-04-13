@@ -3,8 +3,8 @@ import { useMutation, gql } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
+import { useSnackbar } from 'notistack'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
-import { Alert } from '../Alert'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
 
@@ -25,25 +25,27 @@ interface TitleDialogProps {
 export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
   const journey = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [value, setValue] = useState(journey?.title ?? '')
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
 
   const handleSubmit = async (): Promise<void> => {
     const updatedJourney = { title: value }
 
-    await journeyUpdate({
-      variables: { id: journey.id, input: updatedJourney },
-      optimisticResponse: {
-        journeyUpdate: {
-          id: journey.id,
-          __typename: 'Journey',
-          ...updatedJourney
+    try {
+      await journeyUpdate({
+        variables: { id: journey.id, input: updatedJourney },
+        optimisticResponse: {
+          journeyUpdate: {
+            id: journey.id,
+            __typename: 'Journey',
+            ...updatedJourney
+          }
         }
-      }
-    })
-
-    setShowSuccessAlert(true)
+      })
+    } catch (error) {
+      enqueueSnackbar('There was an error updating title', { variant: 'error' })
+    }
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -77,11 +79,6 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           </FormControl>
         </form>
       </Dialog>
-      <Alert
-        open={showSuccessAlert}
-        setOpen={setShowSuccessAlert}
-        message="Title updated successfully"
-      />
     </>
   )
 }
