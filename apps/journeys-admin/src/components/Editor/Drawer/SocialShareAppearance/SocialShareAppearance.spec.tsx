@@ -13,7 +13,5 @@ describe('SocialShareAppearance', () => {
     expect(getByTestId('social-image-edit')).toBeInTheDocument()
     expect(getByTestId('seo-title-form')).toBeInTheDocument()
     expect(getByTestId('seo-description-form')).toBeInTheDocument()
-    expect(getByTestId('facebook-button')).toBeInTheDocument()
-    expect(getByTestId('twitter-button')).toBeInTheDocument()
   })
 })
