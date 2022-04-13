@@ -50,7 +50,6 @@ export function Video({
   const {
     state: { selectedBlock }
   } = useEditor()
-  const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
@@ -79,7 +78,7 @@ export function Video({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: autoplay === true && !mobile,
+        autoplay: autoplay === true,
         controls: true,
         userActions: {
           hotkeys: true,
@@ -150,7 +149,6 @@ export function Video({
     autoplay,
     blockId,
     posterBlock,
-    mobile,
     selectedBlock,
     customControls
   ])
