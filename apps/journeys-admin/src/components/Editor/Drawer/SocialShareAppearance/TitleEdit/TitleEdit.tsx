@@ -72,7 +72,7 @@ export function TitleEdit(): ReactElement {
             helperText={
               errors.seoTitle != null
                 ? errors.seoTitle
-                : `${values.seoTitle.length as string}/ 65 characters`
+                : `${values.seoTitle.length as string} / 65 characters`
             }
             onChange={handleChange}
             onBlur={(e) => {

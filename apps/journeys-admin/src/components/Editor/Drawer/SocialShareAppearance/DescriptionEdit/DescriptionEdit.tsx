@@ -74,7 +74,7 @@ export function DescriptionEdit(): ReactElement {
             helperText={
               errors.seoDescription != null
                 ? errors.seoDescription
-                : `${values.seoDescription.length as string}/ 180 characters`
+                : `${values.seoDescription.length as string} / 180 characters`
             }
             onChange={handleChange}
             onBlur={(e) => {
