@@ -20,9 +20,8 @@ export function CardView({ slug, blocks }: CardViewProps): ReactElement {
   const handleSelect = (step: { id: string }): void => {
     if (slug == null) return
 
-    void router.push({
-      pathname: '/journeys/[slug]/edit',
-      query: { slug, stepId: step.id }
+    void router.push(`/journeys/${slug}/edit?stepId=${step.id}`, undefined, {
+      shallow: true
     })
   }
 
