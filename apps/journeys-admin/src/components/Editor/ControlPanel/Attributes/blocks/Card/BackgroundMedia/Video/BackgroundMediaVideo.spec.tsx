@@ -2,6 +2,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetJourney_journey as Journey,
@@ -177,7 +178,9 @@ describe('BackgroundMediaVideo', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <ThemeProvider>
-            <BackgroundMediaVideo cardBlock={card} />
+            <SnackbarProvider>
+              <BackgroundMediaVideo cardBlock={card} />
+            </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -306,7 +309,9 @@ describe('BackgroundMediaVideo', () => {
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <ThemeProvider>
-            <BackgroundMediaVideo cardBlock={videoCard} />
+            <SnackbarProvider>
+              <BackgroundMediaVideo cardBlock={videoCard} />
+            </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -375,7 +380,9 @@ describe('BackgroundMediaVideo', () => {
         >
           <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
             <ThemeProvider>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -453,7 +460,9 @@ describe('BackgroundMediaVideo', () => {
         >
           <ThemeProvider>
             <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </JourneyProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -474,7 +483,9 @@ describe('BackgroundMediaVideo', () => {
           <MockedProvider>
             <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
               <ThemeProvider>
-                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                </SnackbarProvider>
               </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
@@ -533,7 +544,9 @@ describe('BackgroundMediaVideo', () => {
           >
             <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
               <ThemeProvider>
-                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                <SnackbarProvider>
+                  <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                </SnackbarProvider>
               </ThemeProvider>
             </JourneyProvider>
           </MockedProvider>
@@ -585,7 +598,9 @@ describe('BackgroundMediaVideo', () => {
         >
           <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
             <ThemeProvider>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -636,7 +651,9 @@ describe('BackgroundMediaVideo', () => {
         >
           <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
             <ThemeProvider>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -688,7 +705,9 @@ describe('BackgroundMediaVideo', () => {
         >
           <ThemeProvider>
             <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-              <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              <SnackbarProvider>
+                <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+              </SnackbarProvider>
             </JourneyProvider>
           </ThemeProvider>
         </MockedProvider>

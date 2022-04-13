@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
+import { useSnackbar } from 'notistack'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -88,6 +89,7 @@ export function BackgroundMediaVideo({
     BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
   const journey = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
   const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 
   const deleteCoverBlock = async (): Promise<void> => {
@@ -188,15 +190,44 @@ export function BackgroundMediaVideo({
     })
   }
 
-  const handleChange = async (input: VideoBlockUpdateInput): Promise<void> => {
-    if (coverBlock != null && coverBlock.__typename !== 'VideoBlock') {
-      // remove existing cover block if type changed
+  const handleDelete = async (): Promise<void> => {
+    try {
       await deleteCoverBlock()
+      enqueueSnackbar('Video Deleted', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
-    if (videoBlock == null) {
-      await createVideoBlock(input)
-    } else {
-      await updateVideoBlock(input)
+  }
+
+  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
+    try {
+      if (
+        coverBlock != null &&
+        coverBlock?.__typename.toString() !== 'VideoBlock'
+      ) {
+        // remove existing cover block if type changed
+        await deleteCoverBlock()
+      }
+      if (videoBlock == null) {
+        await createVideoBlock(block)
+      } else {
+        await updateVideoBlock(block)
+      }
+      enqueueSnackbar('Video Updated', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 
@@ -204,7 +235,7 @@ export function BackgroundMediaVideo({
     <VideoBlockEditor
       selectedBlock={videoBlock}
       onChange={handleChange}
-      onDelete={deleteCoverBlock}
+      onDelete={handleDelete}
     />
   )
 }
