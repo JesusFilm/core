@@ -104,7 +104,7 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('Button'))
+    fireEvent.click(getByRole('button'))
     expect(queryByText('Invite Other Editors')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>

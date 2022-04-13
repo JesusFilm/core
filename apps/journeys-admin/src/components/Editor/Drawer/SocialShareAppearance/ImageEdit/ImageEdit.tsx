@@ -75,7 +75,8 @@ export function ImageEdit(): ReactElement {
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
 
-  const { id, primaryImageBlock } = useJourney()
+  // const { id, primaryImageBlock } = useJourney()
+  const journey = useJourney()
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {
@@ -89,8 +90,8 @@ export function ImageEdit(): ReactElement {
     const { data } = await primaryImageBlockCreate({
       variables: {
         input: {
-          journeyId: id,
-          parentBlockId: id,
+          journeyId: journey?.id,
+          parentBlockId: journey?.id,
           src: imageBlock.src,
           alt: imageBlock.alt
         }
@@ -98,7 +99,7 @@ export function ImageEdit(): ReactElement {
       update(cache, { data }) {
         if (data?.imageBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id }),
+            id: cache.identify({ __typename: 'Journey', id: journey?.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -120,7 +121,7 @@ export function ImageEdit(): ReactElement {
     if (data?.imageBlockCreate != null) {
       await journeyPrimaryImageUpdate({
         variables: {
-          id,
+          id: journey?.id,
           input: {
             primaryImageBlockId: data?.imageBlockCreate.id
           }
@@ -133,7 +134,7 @@ export function ImageEdit(): ReactElement {
     await primaryImageBlockUpdate({
       variables: {
         id: imageBlock.id,
-        journeyId: id,
+        journeyId: journey?.id,
         input: {
           src: imageBlock.src,
           alt: imageBlock.alt
@@ -143,22 +144,28 @@ export function ImageEdit(): ReactElement {
   }
 
   async function handleDelete(): Promise<void> {
-    if (primaryImageBlock == null) return
+    if (journey == null || journey.primaryImageBlock == null) return
 
+    const primaryImageBlock = journey.primaryImageBlock
     const { data } = await blockDeletePrimaryImage({
       variables: {
         id: primaryImageBlock.id,
         parentBlockId: primaryImageBlock.parentBlockId,
-        journeyId: id
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(primaryImageBlock, data?.blockDelete, cache, id)
+        blockDeleteUpdate(
+          primaryImageBlock,
+          data?.blockDelete,
+          cache,
+          journey.id
+        )
       }
     })
     if (data?.blockDelete != null) {
       await journeyPrimaryImageUpdate({
         variables: {
-          id,
+          id: journey.id,
           input: {
             primaryImageBlockId: null
           }
@@ -194,12 +201,12 @@ export function ImageEdit(): ReactElement {
         }}
         data-testid="social-image-edit"
       >
-        {primaryImageBlock?.src != null ? (
+        {journey?.primaryImageBlock?.src != null ? (
           <Box
             data-testid="social-image"
             component="img"
-            src={primaryImageBlock.src}
-            alt={primaryImageBlock.alt}
+            src={journey.primaryImageBlock.src}
+            alt={journey.primaryImageBlock.alt}
             sx={{
               width: '100%',
               height: '194px',
@@ -231,7 +238,7 @@ export function ImageEdit(): ReactElement {
         dialogTitle={{ title: 'Social media image', closeButton: true }}
       >
         <ImageBlockEditor
-          selectedBlock={primaryImageBlock}
+          selectedBlock={journey?.primaryImageBlock ?? null}
           onChange={handleChange}
           onDelete={handleDelete}
         />

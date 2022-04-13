@@ -138,4 +138,10 @@ NoImage.args = {
   ]
 }
 
+export const Loading: Story<AccessAvatarsProps> = Template.bind({})
+Loading.args = {
+  journeySlug: undefined,
+  userJourneys: undefined
+}
+
 export default AccessAvatarsDemo as Meta

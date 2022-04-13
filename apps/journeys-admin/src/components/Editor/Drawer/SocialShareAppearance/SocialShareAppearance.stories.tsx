@@ -60,7 +60,7 @@ const Template: Story = ({ ...args }) => {
         <EditorProvider
           initialState={{
             drawerTitle: 'Social Share Appearance',
-            drawerChildren: <SocialShareAppearance id="1" />,
+            drawerChildren: <SocialShareAppearance />,
             drawerMobileOpen: true
           }}
         >

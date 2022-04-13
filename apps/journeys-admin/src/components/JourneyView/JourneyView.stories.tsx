@@ -37,4 +37,9 @@ Default.args = {
   journey: publishedJourney
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
+}
+
 export default JourneyViewStory as Meta

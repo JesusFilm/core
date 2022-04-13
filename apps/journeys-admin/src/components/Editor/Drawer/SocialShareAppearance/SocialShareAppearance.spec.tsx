@@ -6,7 +6,7 @@ describe('SocialShareAppearance', () => {
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
-        <SocialShareAppearance id="journeyId" />
+        <SocialShareAppearance />
       </MockedProvider>
     )
     expect(getByText('Social Image')).toBeInTheDocument()

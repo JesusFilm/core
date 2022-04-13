@@ -11,13 +11,7 @@ import { ImageEdit } from './ImageEdit/ImageEdit'
 import { TitleEdit } from './TitleEdit/TitleEdit'
 import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 
-interface SocialShareAppearanceProps {
-  id: string
-}
-
-export function SocialShareAppearance({
-  id
-}: SocialShareAppearanceProps): ReactElement {
+export function SocialShareAppearance(): ReactElement {
   return (
     <Box sx={{ px: 6, py: 4 }}>
       <Typography variant="subtitle2" sx={{ pb: 4 }}>

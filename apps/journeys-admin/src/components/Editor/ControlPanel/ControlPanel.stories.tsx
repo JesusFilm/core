@@ -578,7 +578,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
   }
 ]
 
-const Template: Story = () => {
+const Template: Story = (args) => {
   return (
     <MockedProvider>
       <JourneyProvider
@@ -592,7 +592,7 @@ const Template: Story = () => {
       >
         <EditorProvider
           initialState={{
-            steps
+            steps: args.steps
           }}
         >
           <Box sx={{ mt: '80px' }}>
@@ -605,5 +605,13 @@ const Template: Story = () => {
 }
 
 export const Default = Template.bind({})
+Default.args = {
+  steps
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  steps: undefined
+}
 
 export default ControlPanelStory as Meta
