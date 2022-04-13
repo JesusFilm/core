@@ -9,9 +9,15 @@ import { JourneyUpdateInput } from "./globalTypes";
 // GraphQL mutation operation: JourneyPrimaryImageUpdate
 // ====================================================
 
+export interface JourneyPrimaryImageUpdate_journeyUpdate_primaryImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+}
+
 export interface JourneyPrimaryImageUpdate_journeyUpdate {
   __typename: "Journey";
   id: string;
+  primaryImageBlock: JourneyPrimaryImageUpdate_journeyUpdate_primaryImageBlock | null;
 }
 
 export interface JourneyPrimaryImageUpdate {

@@ -12,12 +12,12 @@ import { ImageBlockCreateInput } from "./globalTypes";
 export interface PrimaryImageBlockCreate_imageBlockCreate {
   __typename: "ImageBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
   src: string | null;
   alt: string;
-  parentBlockId: string | null;
   width: number;
   height: number;
-  parentOrder: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
