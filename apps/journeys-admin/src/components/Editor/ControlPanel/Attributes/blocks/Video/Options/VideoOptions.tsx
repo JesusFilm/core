@@ -43,8 +43,8 @@ export function VideoOptions(): ReactElement {
         variant: 'success',
         preventDuplicate: true
       })
-    } catch (error) {
-      enqueueSnackbar(error, {
+    } catch (e) {
+      enqueueSnackbar(e.message, {
         variant: 'error',
         preventDuplicate: true
       })
