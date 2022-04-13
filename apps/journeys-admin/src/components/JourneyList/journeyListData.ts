@@ -19,8 +19,6 @@ export const defaultJourney: Journey = {
   createdAt: formatISO(startOfYear(new Date())),
   publishedAt: null,
   status: JourneyStatus.draft,
-  seoTitle: null,
-  seoDescription: null,
   userJourneys: [
     {
       __typename: 'UserJourney',

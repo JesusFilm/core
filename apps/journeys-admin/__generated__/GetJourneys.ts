@@ -35,8 +35,6 @@ export interface GetJourneys_journeys {
   themeMode: ThemeMode;
   locale: string;
   status: JourneyStatus;
-  seoTitle: string | null;
-  seoDescription: string | null;
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
 }
 
