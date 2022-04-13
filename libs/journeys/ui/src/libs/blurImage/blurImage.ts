@@ -7,9 +7,8 @@ export const blurImage = (
   imageWidth: number,
   imageHeight: number,
   blurhash: string,
-  src: string,
   hexBackground: string
-): string => {
+): string | undefined => {
   const divisor = greatestCommonDivisor(imageWidth, imageHeight)
   const width = imageWidth / divisor
   const height = imageHeight / divisor
@@ -24,12 +23,11 @@ export const blurImage = (
     const imageData = context.createImageData(width, height)
     imageData.data.set(pixels)
     context.putImageData(imageData, 0, 0)
-    context.fillStyle = hexBackground
+    context.fillStyle = `${hexBackground}88`
     context.fillRect(0, 0, width, height)
     const blurUrl = canvas.toDataURL('image/webp')
 
     return blurUrl
   }
-
-  return src
+  return undefined
 }

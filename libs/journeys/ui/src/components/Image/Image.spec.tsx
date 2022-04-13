@@ -1,7 +1,19 @@
 import { render } from '@testing-library/react'
-import { TreeBlock } from '../..'
+import { TreeBlock, blurImage } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 import { Image } from '.'
+
+jest.mock('../..', () => ({
+  __esModule: true,
+  blurImage: jest.fn()
+}))
+
+beforeEach(() => {
+  const blurImageMock = blurImage as jest.Mock
+  blurImageMock.mockReturnValue(
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
+  )
+})
 
 const block: TreeBlock<ImageFields> = {
   __typename: 'ImageBlock',
@@ -23,11 +35,18 @@ describe('Image', () => {
       'alt',
       'random image from unsplash'
     )
+
+    expect(blurImage).toBeCalledWith(
+      block.width,
+      block.height,
+      block.blurhash,
+      '#fff'
+    )
   })
 
   it('should render the default image', () => {
     const { getByTestId } = render(
-      <Image {...block} src={null} alt="defaultImageIcon" />
+      <Image {...block} src={null} alt="defaultImage" />
     )
     expect(getByTestId('ImageRoundedIcon')).toHaveClass('MuiSvgIcon-root')
   })

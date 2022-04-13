@@ -24,13 +24,15 @@ Default.args = {
   height: 1067,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
 }
+Default.parameters = {
+  chromatic: { delay: 300 }
+}
 
 export const NoImageSource: Story<TreeBlock<ImageFields>> =
   DefaultTemplate.bind({})
 NoImageSource.args = {
-  id: 'Image',
-  src: null,
-  alt: 'Default Image Icon'
+  ...Default.args,
+  src: null
 }
 
 export default Demo as Meta
