@@ -1,6 +1,8 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
+
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourney'
 import { Drawer } from '../../../../Drawer'
@@ -211,8 +213,10 @@ describe('Card', () => {
         <MockedProvider>
           <ThemeProvider>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <Drawer />
-              <Card {...card} />
+              <SnackbarProvider>
+                <Drawer />
+                <Card {...card} />
+              </SnackbarProvider>
             </EditorProvider>
           </ThemeProvider>
         </MockedProvider>

@@ -1,6 +1,7 @@
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetJourney_journey as Journey,
@@ -56,7 +57,9 @@ describe('BackgroundMedia', () => {
         <ThemeProvider>
           <JourneyProvider value={journey}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundMedia />
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -109,7 +112,9 @@ describe('BackgroundMedia', () => {
         <ThemeProvider>
           <JourneyProvider value={journey}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundMedia />
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -159,7 +164,9 @@ describe('BackgroundMedia', () => {
         <ThemeProvider>
           <JourneyProvider value={journey}>
             <EditorProvider initialState={{ selectedBlock: step }}>
-              <BackgroundMedia />
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
