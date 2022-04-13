@@ -75,7 +75,6 @@ export function ImageEdit(): ReactElement {
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
 
-  // const { id, primaryImageBlock } = useJourney()
   const journey = useJourney()
   const [open, setOpen] = useState(false)
 

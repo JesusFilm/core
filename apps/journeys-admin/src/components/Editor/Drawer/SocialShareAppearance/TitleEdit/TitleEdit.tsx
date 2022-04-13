@@ -21,20 +21,21 @@ export function TitleEdit(): ReactElement {
     JOURNEY_SEO_TITLE_UPDATE
   )
 
-  const { title, seoTitle, id } = useJourney()
+  const journey = useJourney()
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
+    if (journey == null) return
     const target = e.target as HTMLInputElement
     await journeyUpdate({
       variables: {
-        id,
+        id: journey.id,
         input: {
           seoTitle: target.value
         }
       },
       optimisticResponse: {
         journeyUpdate: {
-          id,
+          id: journey.id,
           __typename: 'Journey',
           seoTitle: target.value
         }
@@ -42,7 +43,9 @@ export function TitleEdit(): ReactElement {
     })
   }
 
-  const initialValues = { seoTitle: seoTitle ?? title }
+  const initialValues = {
+    seoTitle: journey?.seoTitle ?? journey?.title ?? ''
+  }
   const seoTitleSchema = object().shape({
     seoTitle: string().max(65, 'Character limit reached') // 65 characters is about 2 lines of text on desktop view
   })

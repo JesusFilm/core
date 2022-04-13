@@ -20,20 +20,22 @@ export function DescriptionEdit(): ReactElement {
   const [journeyUpdate] = useMutation<JourneySeoDescriptionUpdate>(
     JOURNEY_SEO_DESCRIPTION_UPDATE
   )
-  const { description, seoDescription, id } = useJourney()
+
+  const journey = useJourney()
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
+    if (journey == null) return
     const target = e.target as HTMLInputElement
     await journeyUpdate({
       variables: {
-        id,
+        id: journey.id,
         input: {
           seoDescription: target.value
         }
       },
       optimisticResponse: {
         journeyUpdate: {
-          id,
+          id: journey.id,
           __typename: 'Journey',
           seoDescription: target.value
         }
@@ -42,7 +44,7 @@ export function DescriptionEdit(): ReactElement {
   }
 
   const initialValues = {
-    seoDescription: seoDescription ?? description ?? ''
+    seoDescription: journey?.seoDescription ?? journey?.description ?? ''
   }
   const seoDescriptionSchema = object().shape({
     seoDescription: string().max(180, 'Character limit reached') // 180 characters just a few more words than 18 on average
