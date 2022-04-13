@@ -11,7 +11,7 @@ import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
-  const { slug, userJourneys } = useJourney()
+  const journey = useJourney()
 
   return (
     <>
@@ -35,24 +35,28 @@ export function Properties(): ReactElement {
           <Box sx={{ px: 6 }}>
             <JourneyDetails />
           </Box>
-          {userJourneys != null && (
-            <Box sx={{ px: 6 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                Access Control
-              </Typography>
-              <AccessAvatars
-                journeySlug={slug}
-                userJourneys={userJourneys}
-                size="medium"
-                xsMax={5}
-              />
-            </Box>
-          )}
+          <Box sx={{ px: 6 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              Access Control
+            </Typography>
+            <AccessAvatars
+              journeySlug={journey?.slug}
+              userJourneys={journey?.userJourneys ?? undefined}
+              size="medium"
+              xsMax={5}
+            />
+          </Box>
           <Box sx={{ px: 6 }}>
             <Typography variant="subtitle2" gutterBottom>
               Journey URL
             </Typography>
-            <CopyTextField value={`https://your.nextstep.is/${slug}`} />
+            <CopyTextField
+              value={
+                journey?.slug != null
+                  ? `https://your.nextstep.is/${journey.slug}`
+                  : undefined
+              }
+            />
           </Box>
         </Stack>
       </Drawer>
@@ -67,22 +71,24 @@ export function Properties(): ReactElement {
         }}
         spacing={6}
       >
-        {userJourneys != null && (
-          <Divider>
-            <AccessAvatars
-              journeySlug={slug}
-              userJourneys={userJourneys}
-              size="medium"
-            />
-          </Divider>
-        )}
+        <Divider>
+          <AccessAvatars
+            journeySlug={journey?.slug}
+            userJourneys={journey?.userJourneys ?? undefined}
+            size="medium"
+          />
+        </Divider>
         <Box sx={{ px: 6 }}>
           <JourneyDetails />
         </Box>
         <Divider />
         <Box sx={{ px: 6 }}>
           <CopyTextField
-            value={`https://your.nextstep.is/${slug}`}
+            value={
+              journey?.slug != null
+                ? `https://your.nextstep.is/${journey.slug}`
+                : undefined
+            }
             label="Journey URL"
           />
         </Box>

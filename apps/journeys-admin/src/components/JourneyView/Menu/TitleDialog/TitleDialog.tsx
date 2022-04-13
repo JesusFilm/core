@@ -30,6 +30,8 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [value, setValue] = useState(journey?.title ?? '')
 
   const handleSubmit = async (): Promise<void> => {
+    if (journey == null) return
+
     const updatedJourney = { title: value }
 
     try {

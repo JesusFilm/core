@@ -8,38 +8,35 @@ import {
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-import {
-  addApolloState,
-  initializeApollo
-} from '../../../src/libs/apolloClient'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { GET_JOURNEY } from '../[journeySlug]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
+import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
 
 function JourneyEditPage(): ReactElement {
   const router = useRouter()
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetJourney>(GET_JOURNEY, {
+  const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
     variables: { id: router.query.journeySlug }
   })
 
   return (
     <>
-      {data?.journey != null && (
+      {error == null && (
         <>
           <NextSeo
-            title={`Edit ${data.journey.title}`}
-            description={data.journey.description ?? undefined}
+            title={`Edit ${data?.journey?.title ?? 'Journey'}`}
+            description={data?.journey?.description ?? undefined}
           />
           <Editor
-            journey={data.journey}
+            journey={data?.journey ?? undefined}
             selectedStepId={router.query.stepId as string | undefined}
           >
             <PageWrapper
-              title={data.journey.title}
+              title={data?.journey?.title ?? 'Edit Journey'}
               showDrawer
               backHref={`/journeys/${router.query.journeySlug as string}`}
               Menu={<EditToolbar />}
@@ -50,39 +47,32 @@ function JourneyEditPage(): ReactElement {
           </Editor>
         </>
       )}
+      {error?.graphQLErrors[0].message ===
+        'User has not received an invitation to edit this journey.' && (
+        <>
+          <NextSeo title="Access Denied" />
+          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+        </>
+      )}
+      {error?.graphQLErrors[0].message === 'User invitation pending.' && (
+        <>
+          <NextSeo title="Access Denied" />
+          <JourneyInvite
+            journeySlug={router.query.journeySlug as string}
+            requestReceived
+          />
+        </>
+      )}
     </>
   )
 }
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, query }) => {
-  const apolloClient = initializeApollo({
-    token: (await AuthUser.getIdToken()) ?? ''
-  })
-  try {
-    await apolloClient.query({
-      query: GET_JOURNEY,
-      variables: {
-        id: query.journeySlug
-      }
-    })
-  } catch (error) {
-    if (error?.graphQLErrors[0].extensions.code === 'FORBIDDEN')
-      return {
-        redirect: {
-          destination: `/journeys/${query.journeySlug as string}`,
-          permanent: false
-        }
-      }
-    throw error
+})(async () => {
+  return {
+    props: {}
   }
-
-  return addApolloState(apolloClient, {
-    props: {
-      journeySlug: query.journeySlug
-    }
-  })
 })
 
 export default withAuthUser({

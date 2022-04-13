@@ -47,7 +47,7 @@ export function NewRadioQuestionButton(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -59,22 +59,22 @@ export function NewRadioQuestionButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null) {
+    if (card != null && journey != null) {
       const { data } = await radioQuestionBlockCreate({
         variables: {
           input: {
-            journeyId,
+            journeyId: journey.id,
             id,
             parentBlockId: card.id,
             label: 'Your Question Here?'
           },
           radioOptionBlockCreateInput1: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             label: 'Option 1'
           },
           radioOptionBlockCreateInput2: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             label: 'Option 2'
           }
@@ -82,7 +82,7 @@ export function NewRadioQuestionButton(): ReactElement {
         update(cache, { data }) {
           if (data?.radioQuestionBlockCreate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({

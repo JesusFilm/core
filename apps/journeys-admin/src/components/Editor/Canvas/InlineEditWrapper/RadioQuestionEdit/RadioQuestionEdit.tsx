@@ -60,6 +60,8 @@ export function RadioQuestionEdit({
   const [descriptionValue, setDescription] = useState(description ?? '')
 
   async function handleUpdateBlock(): Promise<void> {
+    if (journey == null) return
+
     const label = labelValue.trimStart().trimEnd()
     const description = descriptionValue?.trimStart().trimEnd() ?? ''
 
@@ -85,6 +87,8 @@ export function RadioQuestionEdit({
   }
 
   const handleCreateOption = async (): Promise<void> => {
+    if (journey == null) return
+
     await radioOptionBlockCreate({
       variables: {
         input: {

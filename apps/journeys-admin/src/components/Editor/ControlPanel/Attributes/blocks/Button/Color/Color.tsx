@@ -32,7 +32,7 @@ export function Color(): ReactElement {
     | undefined
 
   async function handleChange(color: ButtonColor): Promise<void> {
-    if (selectedBlock != null && color != null) {
+    if (selectedBlock != null && color != null && journey != null) {
       await buttonBlockUpdate({
         variables: {
           id: selectedBlock.id,

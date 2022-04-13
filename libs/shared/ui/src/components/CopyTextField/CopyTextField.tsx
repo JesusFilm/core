@@ -47,6 +47,7 @@ export function CopyTextField({
       label={label}
       defaultValue={value}
       inputRef={inputRef}
+      disabled={value == null}
       inputProps={{ onFocus: handleFocus }}
       InputProps={{
         startAdornment: (
@@ -56,7 +57,11 @@ export function CopyTextField({
         ),
         endAdornment: (
           <InputAdornment position="end">
-            <IconButton onClick={handleCopyClick} aria-label="Copy">
+            <IconButton
+              onClick={handleCopyClick}
+              aria-label="Copy"
+              disabled={value == null}
+            >
               <ContentCopyRoundedIcon />
             </IconButton>
           </InputAdornment>

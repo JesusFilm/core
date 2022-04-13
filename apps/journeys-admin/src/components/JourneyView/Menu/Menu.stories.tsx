@@ -48,4 +48,7 @@ Published.args = {
   forceOpen: true
 }
 
+export const Loading = Template.bind({})
+Loading.args = { journey: undefined }
+
 export default MenuStory as Meta

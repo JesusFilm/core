@@ -30,7 +30,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   const journey = useJourney()
 
   async function handleChange(color: IconColor): Promise<void> {
-    if (color !== iconColor && color != null) {
+    if (color !== iconColor && color != null && journey != null) {
       await iconBlockColorUpdate({
         variables: {
           id,

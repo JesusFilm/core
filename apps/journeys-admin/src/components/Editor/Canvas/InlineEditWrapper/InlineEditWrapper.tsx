@@ -38,6 +38,8 @@ export function InlineEditWrapper({
   const journey = useJourney()
 
   const handleDeleteBlock = async (): Promise<void> => {
+    if (journey == null) return
+
     await blockDelete({
       variables: {
         id: block.id,

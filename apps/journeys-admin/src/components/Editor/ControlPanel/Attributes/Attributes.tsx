@@ -95,7 +95,7 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
       type: 'SetDrawerPropsAction',
       title: 'Social Share Appearance',
       mobileOpen: false,
-      children: <SocialShareAppearance id={selected.id} />
+      children: <SocialShareAppearance />
     })
   }, [selected.id, dispatch])
   return (
