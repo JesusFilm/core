@@ -115,3 +115,9 @@ As an example we are going to run through the steps to get the Next Steps Journe
 ## Adding to the code base
 
 New features should be merged to a `feature/*` branch where it can be refined until it's ready to be merged to `main`.
+
+# PR naming
+
+For now, please make sure your PR name does not start with a capital letter.
+eg `feat: Add NewComponent`
+Instead use `feat: add NewComponent`
