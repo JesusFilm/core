@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { IMAGE_FIELDS } from '@core/journeys/ui'
+import Skeleton from '@mui/material/Skeleton'
 import { useJourney } from '../../../../../libs/context'
 import { Dialog } from '../../../../Dialog'
 import { ImageBlockEditor } from '../../../ImageBlockEditor'
@@ -185,52 +186,81 @@ export function ImageEdit(): ReactElement {
 
   return (
     <>
-      <Box
-        sx={{
-          overflow: 'hidden',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'relative',
-          borderRadius: 2,
-          width: '100%',
-          height: 194,
-          mb: 6,
-          backgroundColor: '#EFEFEF'
-        }}
-        data-testid="social-image-edit"
-      >
-        {journey?.primaryImageBlock?.src != null ? (
-          <Box
-            data-testid="social-image"
-            component="img"
-            src={journey.primaryImageBlock.src}
-            alt={journey.primaryImageBlock.alt}
-            sx={{
-              width: '100%',
-              height: '194px',
-              objectFit: 'cover'
-            }}
-          />
-        ) : (
-          <ImageIcon fontSize="large" />
-        )}
-        <Button
-          variant="contained"
-          size="small"
-          color="secondary"
+      {journey != null ? (
+        <Box
           sx={{
-            position: 'absolute',
-            bottom: 16,
-            right: 10,
-            borderRadius: 4
+            overflow: 'hidden',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+            borderRadius: 2,
+            width: '100%',
+            height: 194,
+            mb: 6,
+            backgroundColor: '#EFEFEF'
           }}
-          startIcon={<ImageIcon fontSize="small" />}
-          onClick={handleOpen}
+          data-testid="social-image-edit"
         >
-          <Typography variant="caption">Change</Typography>
-        </Button>
-      </Box>
+          {journey?.primaryImageBlock?.src != null ? (
+            <Box
+              data-testid="social-image"
+              component="img"
+              src={journey.primaryImageBlock.src}
+              alt={journey.primaryImageBlock.alt}
+              sx={{
+                width: '100%',
+                height: '194px',
+                objectFit: 'cover'
+              }}
+            />
+          ) : (
+            <ImageIcon fontSize="large" />
+          )}
+
+          <Button
+            variant="contained"
+            size="small"
+            color="secondary"
+            sx={{
+              position: 'absolute',
+              bottom: 16,
+              right: 10,
+              borderRadius: 4
+            }}
+            startIcon={<ImageIcon fontSize="small" />}
+            onClick={handleOpen}
+          >
+            <Typography variant="caption">Change</Typography>
+          </Button>
+        </Box>
+      ) : (
+        <Box sx={{ position: 'relative', mb: 6 }}>
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height={194}
+            sx={{ borderRadius: 2 }}
+          />
+          <Button
+            variant="contained"
+            size="small"
+            color="secondary"
+            sx={{
+              position: 'absolute',
+              bottom: 16,
+              right: 10,
+              borderRadius: 4
+            }}
+            startIcon={<ImageIcon fontSize="small" />}
+            onClick={handleOpen}
+            disabled
+          >
+            <Typography variant="caption">Change</Typography>
+          </Button>
+        </Box>
+      )}
+
       <Dialog
         open={open}
         handleClose={handleClose}

@@ -59,6 +59,7 @@ export function TitleEdit(): ReactElement {
       {({ values, touched, errors, handleChange, handleBlur }) => (
         <Form data-testid="seo-title-form">
           <TextField
+            disabled={journey == null}
             id="seoTitle"
             name="seoTitle"
             variant="filled"

@@ -54,9 +54,10 @@ const image: ImageBlock = {
 }
 
 const Template: Story = ({ ...args }) => {
+  console.log(args)
   return (
     <MockedProvider>
-      <JourneyProvider value={{ ...args } as unknown as Journey}>
+      <JourneyProvider value={args.journey}>
         <EditorProvider
           initialState={{
             drawerTitle: 'Social Share Appearance',
@@ -72,30 +73,37 @@ const Template: Story = ({ ...args }) => {
 }
 
 export const Default = Template.bind({})
-Default.args = { ...journey }
+Default.args = { journey: journey }
 
 export const Filled = Template.bind({})
 Filled.args = {
-  ...journey,
-  blocks: [image],
-  primaryImageBlock: image,
-  seoTitle: 'Social title',
-  seoDescription: 'Social description'
+  journey: {
+    ...journey,
+    blocks: [image],
+    primaryImageBlock: image,
+    seoTitle: 'Social title',
+    seoDescription: 'Social description'
+  }
 }
 
+export const Loading = Template.bind({})
+Loading.args = { journey: null }
+
 export const NoImageDialog = Template.bind({})
-NoImageDialog.args = { ...journey }
+NoImageDialog.args = { journey: journey }
 NoImageDialog.play = () => {
   userEvent.click(screen.getByRole('button', { name: 'Change' }))
 }
 
 export const ImageDialog = Template.bind({})
 ImageDialog.args = {
-  ...journey,
-  blocks: [image],
-  primaryImageBlock: image,
-  seoTitle: 'Social title',
-  seoDescription: 'Social description'
+  journey: {
+    ...journey,
+    blocks: [image],
+    primaryImageBlock: image,
+    seoTitle: 'Social title',
+    seoDescription: 'Social description'
+  }
 }
 ImageDialog.play = () => {
   userEvent.click(screen.getByRole('button', { name: 'Change' }))

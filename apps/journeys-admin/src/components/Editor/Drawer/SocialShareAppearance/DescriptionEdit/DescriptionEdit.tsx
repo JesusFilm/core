@@ -59,6 +59,7 @@ export function DescriptionEdit(): ReactElement {
       {({ values, touched, errors, handleChange, handleBlur }) => (
         <Form data-testid="seo-description-form">
           <TextField
+            disabled={journey == null}
             id="seoDescription"
             name="seoDescription"
             variant="filled"
