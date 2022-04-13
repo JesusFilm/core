@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, journeyUiConfig } from '../..'
+import { TreeBlock, journeyUiConfig, StoryCard } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
 import { Video, VIDEO_RESPONSE_CREATE } from '.'
@@ -66,7 +66,9 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
       }
     ]}
   >
-    <Video {...props} />
+    <StoryCard>
+      <Video {...props} />
+    </StoryCard>
   </MockedProvider>
 )
 

@@ -16,7 +16,7 @@ describe('blurImage', () => {
 
   it('returns url of blurred image', () => {
     expect(
-      blurImage(image.width, image.height, image.blurhash, '#00000088')
+      blurImage(image.width, image.height, image.blurhash, '#000000')
     ).toBe(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAAAGElEQVQokWNkYGD4z0ABYKJE86gBw8YAAFmzAREE4ESyAAAAAElFTkSuQmCC'
     )
@@ -38,7 +38,7 @@ describe('blurImage', () => {
     }
 
     expect(
-      blurImage(image.width, image.height, image.blurhash, '#00000088')
+      blurImage(image.width, image.height, image.blurhash, '#000000')
     ).toBe(undefined)
   })
 })
