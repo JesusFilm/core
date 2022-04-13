@@ -24,6 +24,8 @@ const GET_JOURNEYS = gql`
       themeMode
       locale
       status
+      seoTitle
+      seoDescription
       userJourneys {
         id
         user {

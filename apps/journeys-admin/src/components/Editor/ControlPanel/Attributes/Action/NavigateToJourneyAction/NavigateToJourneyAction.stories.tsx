@@ -35,7 +35,9 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
 export const NavigateToJourney: Story = () => {
