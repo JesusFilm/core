@@ -1,7 +1,7 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-
+import { SnackbarProvider } from 'notistack'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
@@ -81,16 +81,18 @@ describe('ImageOptions', () => {
         ]}
       >
         <JourneyProvider value={journey}>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...image,
-                src: 'https://example.com/image2.jpg'
-              }
-            }}
-          >
-            <ImageOptions />
-          </EditorProvider>
+          <SnackbarProvider>
+            <EditorProvider
+              initialState={{
+                selectedBlock: {
+                  ...image,
+                  src: 'https://example.com/image2.jpg'
+                }
+              }}
+            >
+              <ImageOptions />
+            </EditorProvider>
+          </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
     )
