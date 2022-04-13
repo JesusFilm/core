@@ -35,6 +35,8 @@ export function DescriptionDialog({
   )
 
   const handleSubmit = async (): Promise<void> => {
+    if (journey == null) return
+
     const updatedJourney = { description: value }
 
     try {

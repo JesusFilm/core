@@ -17,12 +17,20 @@ const PropertiesStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={[]}>
-    <JourneyProvider value={defaultJourney}>
+    <JourneyProvider value={args.journey}>
       <Properties {...args} />
     </JourneyProvider>
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
+Default.args = {
+  journey: defaultJourney
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
+}
 
 export default PropertiesStory as Meta

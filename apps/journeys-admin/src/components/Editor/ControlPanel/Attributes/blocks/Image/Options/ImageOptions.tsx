@@ -30,15 +30,17 @@ export function ImageOptions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const [imageBlockUpdate] = useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
   const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+    if (journey == null) return
+
     await imageBlockUpdate({
       variables: {
         id: imageBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           src: block.src,
           alt: block.alt

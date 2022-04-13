@@ -33,6 +33,8 @@ export function SignUpEdit({
   const [value, setValue] = useState(submitLabel ?? '')
 
   async function handleSaveBlock(): Promise<void> {
+    if (journey == null) return
+
     const submitLabel = value.trim().replace(/\n/g, '')
     await signUpBlockUpdate({
       variables: {

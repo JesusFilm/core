@@ -51,7 +51,7 @@ export function LinkAction(): ReactElement {
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     const target = e.target as HTMLInputElement
-    if (selectedBlock != null) {
+    if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
         variables: {

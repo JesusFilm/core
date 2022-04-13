@@ -61,7 +61,7 @@ export function NavigateToJourneyAction(): ReactElement {
     )?.id ?? ''
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (selectedBlock != null) {
+    if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await navigateToJourneyActionUpdate({
         variables: {

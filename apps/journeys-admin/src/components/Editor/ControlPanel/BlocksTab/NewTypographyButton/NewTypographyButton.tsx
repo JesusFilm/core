@@ -27,7 +27,7 @@ export function NewTypographyButton(): ReactElement {
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -40,11 +40,11 @@ export function NewTypographyButton(): ReactElement {
     const checkTypography = card?.children.map((block) =>
       block.children.find((child) => child.__typename === 'TypographyBlock')
     )
-    if (card != null && checkTypography !== undefined) {
+    if (card != null && checkTypography !== undefined && journey != null) {
       const { data } = await typographyBlockCreate({
         variables: {
           input: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             content: 'Add your text here...',
             variant: checkTypography.length > 0 ? 'body2' : 'h1'
@@ -53,7 +53,7 @@ export function NewTypographyButton(): ReactElement {
         update(cache, { data }) {
           if (data?.typographyBlockCreate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({

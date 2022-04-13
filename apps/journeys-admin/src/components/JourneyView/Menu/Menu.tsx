@@ -51,8 +51,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   }
 
   const handlePublish = async (): Promise<void> => {
+    if (journey == null) return
+
     await journeyPublish({
-      variables: { id: journey.id },
+      variables: { id: journey?.id },
       optimisticResponse: {
         journeyPublish: { id: journey.id, __typename: 'Journey' }
       }
@@ -70,94 +72,102 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   }
 
   const handleCopyLink = async (): Promise<void> => {
-    await navigator.clipboard.writeText(`your.nextstep.is/${journey.slug}`)
+    await navigator.clipboard.writeText(
+      `your.nextstep.is/${journey?.slug ?? ''}`
+    )
     setShowLinkAlert(true)
   }
 
   return (
     <>
-      <IconButton
-        id="single-journey-actions"
-        edge="end"
-        aria-controls="single-journey-actions"
-        aria-haspopup="true"
-        aria-expanded={openMenu ? 'true' : undefined}
-        onClick={handleShowMenu}
-      >
-        <MoreVert />
-      </IconButton>
-
-      <MuiMenu
-        id="single-journey-actions"
-        anchorEl={anchorEl}
-        open={openMenu}
-        onClose={handleCloseMenu}
-        MenuListProps={{
-          'aria-labelledby': 'journey-actions'
-        }}
-      >
-        <MenuItem
-          disabled={journey.status === JourneyStatus.draft}
-          component="a"
-          href={`http://your.nextstep.is/${journey.slug}`}
-        >
-          <ListItemIcon>
-            <AssignmentTurnedInIcon />
-          </ListItemIcon>
-          <ListItemText>Preview</ListItemText>
-        </MenuItem>
-        <MenuItem
-          disabled={journey.status === JourneyStatus.published}
-          onClick={handlePublish}
-        >
-          <ListItemIcon>
-            <VisibilityIcon />
-          </ListItemIcon>
-          <ListItemText>Publish</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleUpdateTitle}>
-          <ListItemIcon>
-            <EditIcon />
-          </ListItemIcon>
-          <ListItemText>Title</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleUpdateDescription}>
-          <ListItemIcon>
-            <DescriptionIcon />
-          </ListItemIcon>
-          <ListItemText>Description</ListItemText>
-        </MenuItem>
-        <Divider />
-        <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
-          <MenuItem>
-            <ListItemIcon>
-              <ViewCarouselIcon />
-            </ListItemIcon>
-            <ListItemText>Edit Cards</ListItemText>
-          </MenuItem>
-        </NextLink>
-        <Divider />
-        <MenuItem onClick={handleCopyLink}>
-          <ListItemIcon>
-            <ContentCopyIcon />
-          </ListItemIcon>
-          <ListItemText>Copy Link</ListItemText>
-        </MenuItem>
-      </MuiMenu>
-
-      <TitleDialog
-        open={showTitleDialog}
-        onClose={() => setShowTitleDialog(false)}
-      />
-      <DescriptionDialog
-        open={showDescriptionDialog}
-        onClose={() => setShowDescriptionDialog(false)}
-      />
-      <Alert
-        open={showLinkAlert}
-        setOpen={setShowLinkAlert}
-        message="Link Copied"
-      />
+      {journey != null ? (
+        <>
+          <IconButton
+            id="single-journey-actions"
+            edge="end"
+            aria-controls="single-journey-actions"
+            aria-haspopup="true"
+            aria-expanded={openMenu ? 'true' : undefined}
+            onClick={handleShowMenu}
+          >
+            <MoreVert />
+          </IconButton>
+          <MuiMenu
+            id="single-journey-actions"
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            MenuListProps={{
+              'aria-labelledby': 'journey-actions'
+            }}
+          >
+            <MenuItem
+              disabled={journey.status === JourneyStatus.draft}
+              component="a"
+              href={`http://your.nextstep.is/${journey.slug}`}
+            >
+              <ListItemIcon>
+                <AssignmentTurnedInIcon />
+              </ListItemIcon>
+              <ListItemText>Preview</ListItemText>
+            </MenuItem>
+            <MenuItem
+              disabled={journey.status === JourneyStatus.published}
+              onClick={handlePublish}
+            >
+              <ListItemIcon>
+                <VisibilityIcon />
+              </ListItemIcon>
+              <ListItemText>Publish</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleUpdateTitle}>
+              <ListItemIcon>
+                <EditIcon />
+              </ListItemIcon>
+              <ListItemText>Title</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleUpdateDescription}>
+              <ListItemIcon>
+                <DescriptionIcon />
+              </ListItemIcon>
+              <ListItemText>Description</ListItemText>
+            </MenuItem>
+            <Divider />
+            <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
+              <MenuItem>
+                <ListItemIcon>
+                  <ViewCarouselIcon />
+                </ListItemIcon>
+                <ListItemText>Edit Cards</ListItemText>
+              </MenuItem>
+            </NextLink>
+            <Divider />
+            <MenuItem onClick={handleCopyLink}>
+              <ListItemIcon>
+                <ContentCopyIcon />
+              </ListItemIcon>
+              <ListItemText>Copy Link</ListItemText>
+            </MenuItem>
+          </MuiMenu>
+          <TitleDialog
+            open={showTitleDialog}
+            onClose={() => setShowTitleDialog(false)}
+          />
+          <DescriptionDialog
+            open={showDescriptionDialog}
+            onClose={() => setShowDescriptionDialog(false)}
+          />
+          <Alert
+            open={showLinkAlert}
+            setOpen={setShowLinkAlert}
+            message="Link Copied"
+          />
+        </>
+      ) : (
+        <IconButton disabled>
+          <MoreVert />
+        </IconButton>
+      )}
     </>
   )
 }

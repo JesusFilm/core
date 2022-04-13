@@ -35,6 +35,11 @@ Default.args = {
   journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  journeys: undefined
+}
+
 export const Empty = Template.bind({})
 Empty.args = {
   journeys: []

@@ -6,7 +6,7 @@ import { JourneyProvider } from '../../libs/context'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 
 interface EditorProps {
-  journey: Journey
+  journey?: Journey
   selectedStepId?: string
   children: ReactNode
 }
@@ -16,9 +16,12 @@ export function Editor({
   selectedStepId,
   children
 }: EditorProps): ReactElement {
-  const steps = transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>
+  const steps =
+    journey != null
+      ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
+      : undefined
   const selectedStep =
-    selectedStepId != null
+    selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
@@ -29,7 +32,7 @@ export function Editor({
           steps,
           selectedStep,
           drawerTitle: 'Social Share Appearance',
-          drawerChildren: <SocialShareAppearance id={journey.id} />
+          drawerChildren: <SocialShareAppearance />
         }}
       >
         {children}

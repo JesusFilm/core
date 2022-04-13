@@ -36,7 +36,10 @@ export function Menu(): ReactElement {
       <>
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         <Divider />
-        <NextLink href={`/journeys/${journey.slug}`} passHref>
+        <NextLink
+          href={journey != null ? `/journeys/${journey.slug}` : ''}
+          passHref
+        >
           <MenuItem>
             <ListItemIcon>
               <SettingsIcon />
@@ -57,6 +60,7 @@ export function Menu(): ReactElement {
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
         onClick={handleShowMenu}
+        disabled={journey == null}
       >
         <MoreVert />
       </IconButton>

@@ -27,9 +27,11 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
 `
 
 export function NavigateToBlockAction(): ReactElement {
-  const { state } = useEditor()
+  const {
+    state: { steps, selectedBlock }
+  } = useEditor()
   const journey = useJourney()
-  const selectedBlock = state.selectedBlock as
+  const selectedButtonBlock = selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
@@ -37,15 +39,15 @@ export function NavigateToBlockAction(): ReactElement {
     useMutation<NavigateToBlockActionUpdate>(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
 
   const currentActionStep =
-    state.steps.find(
+    steps?.find(
       ({ id }) =>
-        selectedBlock?.action?.__typename === 'NavigateToBlockAction' &&
-        id === selectedBlock?.action?.blockId
+        selectedButtonBlock?.action?.__typename === 'NavigateToBlockAction' &&
+        id === selectedButtonBlock?.action?.blockId
     ) ?? undefined
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
-    if (selectedBlock != null) {
-      const { id, __typename: typeName } = selectedBlock
+    if (selectedButtonBlock != null && journey != null) {
+      const { id, __typename: typeName } = selectedButtonBlock
       await navigateToBlockActionUpdate({
         variables: {
           id,
@@ -72,7 +74,7 @@ export function NavigateToBlockAction(): ReactElement {
   return (
     <CardPreview
       selected={currentActionStep}
-      steps={state.steps}
+      steps={steps}
       onSelect={handleSelectStep}
     />
   )

@@ -31,7 +31,7 @@ export function Variant(): ReactElement {
     | undefined
 
   async function handleChange(variant: ButtonVariant): Promise<void> {
-    if (selectedBlock != null && variant != null) {
+    if (selectedBlock != null && variant != null && journey != null) {
       await buttonBlockUpdate({
         variables: {
           id: selectedBlock.id,
