@@ -45,7 +45,7 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title="Journeys" />
       <PageWrapper title="Journeys" authUser={AuthUser}>
-        {data?.journeys != null && <JourneyList journeys={data.journeys} />}
+        <JourneyList journeys={data?.journeys} />
       </PageWrapper>
     </>
   )
