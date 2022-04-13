@@ -5,6 +5,11 @@ import { JourneyProvider } from '../../libs/context'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { JourneyView } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('JourneyView', () => {
   it('should have edit button', () => {
     const { getByRole } = render(
