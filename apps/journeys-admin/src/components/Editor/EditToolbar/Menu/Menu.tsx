@@ -60,6 +60,7 @@ export function Menu(): ReactElement {
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
         onClick={handleShowMenu}
+        disabled={journey == null}
       >
         <MoreVert />
       </IconButton>

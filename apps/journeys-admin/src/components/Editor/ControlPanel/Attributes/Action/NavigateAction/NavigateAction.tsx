@@ -7,11 +7,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { CardPreview } from '../../../../../CardPreview'
 
 export function NavigateAction(): ReactElement {
-  const { state } = useEditor()
+  const {
+    state: { steps, selectedStep }
+  } = useEditor()
 
-  const nextStep = state.steps.find(
-    (step) => step.id === state.selectedStep?.nextBlockId
-  )
+  const nextStep = steps?.find((step) => step.id === selectedStep?.nextBlockId)
 
   return (
     <>
@@ -23,7 +23,7 @@ export function NavigateAction(): ReactElement {
         }}
         data-testid="cards-disabled-view"
       >
-        <CardPreview selected={nextStep} steps={state.steps} />
+        <CardPreview selected={nextStep} steps={steps} />
       </Box>
       <Stack
         direction={'row'}

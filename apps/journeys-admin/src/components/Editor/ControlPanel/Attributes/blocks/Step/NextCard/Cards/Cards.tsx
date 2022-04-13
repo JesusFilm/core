@@ -33,7 +33,7 @@ export function Cards(): ReactElement {
   const theme = useTheme()
   const { id, nextBlockId } = selectedBlock as TreeBlock<StepFields>
 
-  const nextStep: TreeBlock<StepFields> | undefined = steps.find(
+  const nextStep: TreeBlock<StepFields> | undefined = steps?.find(
     ({ id }) => nextBlockId === id
   )
 

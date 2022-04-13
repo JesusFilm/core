@@ -39,11 +39,11 @@ export function SelectedCard(): ReactElement {
   const journey = useJourney()
   const { id, nextBlockId, locked } = selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
-    steps.find((step) => nextBlockId === step.id)
+    steps?.find((step) => nextBlockId === step.id)
   )
 
   useEffect(() => {
-    setNextStep(steps.find((step) => nextBlockId === step.id))
+    setNextStep(steps?.find((step) => nextBlockId === step.id))
   }, [steps, nextBlockId])
 
   // TODO: Set as block itself for now, still need to manually set next block

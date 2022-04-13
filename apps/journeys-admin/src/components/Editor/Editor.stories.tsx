@@ -516,7 +516,7 @@ const Template: Story = (args) => (
   <MockedProvider>
     <Editor journey={args.journey}>
       <PageWrapper
-        title="NUA Journey: Ep.3 - Decision"
+        title={args.journey?.title ?? 'Edit Journey'}
         showDrawer
         Menu={<EditToolbar />}
         backHref="/journeys/nua-journey-ep-3-decision"

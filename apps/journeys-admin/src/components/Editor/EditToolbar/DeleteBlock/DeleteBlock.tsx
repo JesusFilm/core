@@ -50,7 +50,7 @@ export function DeleteBlock({
   }
 
   const handleDeleteBlock = async (): Promise<void> => {
-    if (selectedBlock == null || journey == null) return
+    if (selectedBlock == null || journey == null || steps == null) return
 
     const deletedBlockParentOrder = selectedBlock.parentOrder
     const deletedBlockType = selectedBlock.__typename

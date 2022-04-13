@@ -16,11 +16,12 @@ export function Editor({
   selectedStepId,
   children
 }: EditorProps): ReactElement {
-  const steps = transformer(journey?.blocks ?? []) as Array<
-    TreeBlock<StepBlock>
-  >
+  const steps =
+    journey != null
+      ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
+      : undefined
   const selectedStep =
-    selectedStepId != null
+    selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
