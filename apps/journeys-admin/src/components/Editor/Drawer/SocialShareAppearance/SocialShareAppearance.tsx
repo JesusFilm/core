@@ -13,10 +13,10 @@ import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 
 export function SocialShareAppearance(): ReactElement {
   const journey = useJourney()
-
   const shareUrl = journey?.slug ?? `untitled-journey-${journey?.id as string}`
 
   function handleShareFacebook(e): void {
+    if (journey == null) return
     e.preventDefault()
     window.open(
       `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${shareUrl}`,
@@ -25,6 +25,7 @@ export function SocialShareAppearance(): ReactElement {
   }
 
   function handleShareTwitter(e): void {
+    if (journey == null) return
     e.preventDefault()
     const encodedUrl = encodeURIComponent(shareUrl)
     window.open(
@@ -47,12 +48,20 @@ export function SocialShareAppearance(): ReactElement {
         Share Preview
       </Typography>
       <Stack direction="row" spacing={3}>
-        <Button onClick={handleShareFacebook} startIcon={<FacebookIcon />}>
+        <Button
+          onClick={handleShareFacebook}
+          startIcon={<FacebookIcon />}
+          data-testid="facebook-share-button"
+        >
           <Typography variant="caption" sx={{ color: 'black' }}>
             Facebook
           </Typography>
         </Button>
-        <Button onClick={handleShareTwitter} startIcon={<TwitterIcon />}>
+        <Button
+          onClick={handleShareTwitter}
+          startIcon={<TwitterIcon />}
+          data-testid="twitter-share-button"
+        >
           <Typography variant="caption" sx={{ color: 'black' }}>
             Twitter
           </Typography>
