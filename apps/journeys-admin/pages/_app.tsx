@@ -12,12 +12,11 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 initAuth()
 
 function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
-  const apolloClient = useApollo(
-    pageProps.AuthUserSerialized != null
-      ? JSON.parse(pageProps.AuthUserSerialized)._token
-      : '',
-    pageProps
-  )
+  const token =
+    (pageProps.AuthUserSerialized != null
+      ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
+      : '') ?? ''
+  const apolloClient = useApollo(token)
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_GTM_ID != null)
