@@ -14,7 +14,7 @@ describe('DescriptionEdit', () => {
         <DescriptionEdit />
       </MockedProvider>
     )
-    expect(getByText('0/ 180 characters')).toBeInTheDocument()
+    expect(getByText('Recommended length: up to 18 words')).toBeInTheDocument()
   })
   it('should display seo description', () => {
     const { getByText } = render(

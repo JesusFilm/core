@@ -282,6 +282,11 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface GetJourney_journey_blocks_VideoBlock_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetJourney_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -291,6 +296,7 @@ export interface GetJourney_journey_blocks_VideoBlock_video_variant {
 export interface GetJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
+  title: GetJourney_journey_blocks_VideoBlock_video_title[];
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
 }
 

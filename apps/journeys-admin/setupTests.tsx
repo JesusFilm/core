@@ -12,4 +12,6 @@ jest.mock('next/image', () => ({
   )
 }))
 
+jest.setTimeout(10000)
+
 Element.prototype.scrollIntoView = jest.fn()

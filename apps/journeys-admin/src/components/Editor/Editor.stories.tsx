@@ -363,6 +363,12 @@ const blocks: GetJourney_journey_blocks[] = [
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'FallingPlates'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
@@ -518,7 +524,7 @@ const Template: Story = (args) => (
       <PageWrapper
         title={args.journey?.title ?? 'Edit Journey'}
         showDrawer
-        Menu={<EditToolbar />}
+        menu={<EditToolbar />}
         backHref="/journeys/nua-journey-ep-3-decision"
       >
         <JourneyEdit />

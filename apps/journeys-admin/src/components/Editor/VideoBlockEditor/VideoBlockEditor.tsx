@@ -38,10 +38,11 @@ export function VideoBlockEditor({
         <ImageBlockHeader
           selectedBlock={posterBlock}
           header={
-            selectedBlock?.video?.variant?.hls == null
+            selectedBlock?.video?.title?.[0]?.value == null
               ? 'Select Video File'
-              : selectedBlock.video.variant.hls
+              : selectedBlock.video.title[0].value
           }
+          caption={selectedBlock?.video?.variant?.hls ?? undefined}
           showDelete={showDelete && selectedBlock?.video != null}
           onDelete={handleVideoDelete}
         />

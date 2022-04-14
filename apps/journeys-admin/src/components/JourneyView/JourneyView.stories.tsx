@@ -24,7 +24,7 @@ const Template: Story = ({ ...args }) => (
         title="Journey Details"
         showDrawer
         backHref="/"
-        Menu={<Menu />}
+        menu={<Menu />}
       >
         <JourneyView />
       </PageWrapper>

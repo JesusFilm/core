@@ -50,7 +50,14 @@ export function ImageBlockHeader({
               {header}
             </Typography>
           )}
-          <Typography variant="caption">
+          <Typography
+            variant="caption"
+            sx={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden'
+            }}
+          >
             {caption}
             &nbsp;
           </Typography>

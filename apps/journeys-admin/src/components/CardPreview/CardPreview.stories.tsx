@@ -511,6 +511,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -582,6 +588,12 @@ const steps: Array<TreeBlock<StepBlock>> = [
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',

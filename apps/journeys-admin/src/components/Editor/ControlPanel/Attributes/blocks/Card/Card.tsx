@@ -6,6 +6,8 @@ import VerticalSplit from '@mui/icons-material/VerticalSplit'
 import Videocam from '@mui/icons-material/Videocam'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
+import { themes } from '@core/shared/ui'
+import { useJourney } from '../../../../../../libs/context'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {
@@ -22,14 +24,24 @@ export function Card({
   id,
   backgroundColor,
   fullscreen,
+  themeName,
   themeMode,
   coverBlockId,
   children
 }: TreeBlock<CardBlock>): ReactElement {
+  const { dispatch } = useEditor()
+  const journey = useJourney()
+
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
-  const { dispatch } = useEditor()
+
+  const cardTheme =
+    themes[themeName ?? journey?.themeName ?? 'base'][
+      themeMode ?? journey?.themeMode ?? 'dark'
+    ]
+  const selectedCardColor =
+    backgroundColor ?? cardTheme.palette.background.paper
 
   const handleBackgroundMediaClick = (): void => {
     dispatch({
@@ -53,14 +65,13 @@ export function Card({
                 height: 25,
                 m: 1,
                 borderRadius: 1000,
-                backgroundColor: (theme) =>
-                  backgroundColor ?? theme.palette.text.primary
+                backgroundColor: selectedCardColor
               }}
             />
           </Paper>
         }
         name="Color"
-        value={backgroundColor?.toUpperCase() ?? 'None'}
+        value={selectedCardColor.toUpperCase()}
         description="Background Color"
         onClick={() => {
           dispatch({

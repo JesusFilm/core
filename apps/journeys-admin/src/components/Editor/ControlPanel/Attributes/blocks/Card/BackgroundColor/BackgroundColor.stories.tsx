@@ -1,17 +1,16 @@
 import { Story, Meta } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
-  JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { Drawer } from '../../../../../Drawer'
 import { BackgroundColor } from '.'
 
@@ -25,87 +24,83 @@ const BackgroundColorStory = {
   }
 }
 
-const journey: Journey = {
-  __typename: 'Journey',
-  id: 'journeyId',
+const step = (block: TreeBlock): TreeBlock<StepBlock> => {
+  return {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    children: [block],
+    locked: false,
+    nextBlockId: null
+  }
+}
+
+const cardLight: TreeBlock<CardBlock> = {
+  id: 'card1.id',
+  __typename: 'CardBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  coverBlockId: null,
+  backgroundColor: null,
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
-  title: 'my journey',
-  slug: 'my-journey',
-  locale: 'en-US',
-  description: 'my cool journey',
-  status: JourneyStatus.draft,
-  createdAt: '2021-11-19T12:34:56.647Z',
-  publishedAt: null,
-  blocks: [] as TreeBlock[],
-  primaryImageBlock: null,
-  userJourneys: [],
-  seoTitle: null,
-  seoDescription: null
+  fullscreen: false,
+  children: []
 }
 
-export const Default: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: null,
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: []
-  }
-
+export const Light: Story = () => {
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <BackgroundColor />,
-            drawerTitle: 'Background Color Properties',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
+      <EditorProvider
+        initialState={{
+          selectedStep: step(cardLight),
+          drawerChildren: <BackgroundColor />,
+          drawerTitle: 'Background Color Properties',
+          drawerMobileOpen: true
+        }}
+      >
+        <Drawer />
+      </EditorProvider>
     </MockedProvider>
   )
 }
 
-export const Colored: Story = () => {
-  const block: TreeBlock<CardBlock> = {
-    id: 'card1.id',
-    __typename: 'CardBlock',
-    parentBlockId: 'step1.id',
-    parentOrder: 0,
-    coverBlockId: null,
-    backgroundColor: '#DCDDE5',
-    themeMode: null,
-    themeName: null,
-    fullscreen: false,
-    children: []
+const Template: Story = () => {
+  const cardDark: TreeBlock<CardBlock> = {
+    ...cardLight,
+    backgroundColor: '#0277BD',
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.dark
   }
 
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: block,
-            drawerChildren: <BackgroundColor />,
-            drawerTitle: 'Background Color Properties',
-            drawerMobileOpen: true
-          }}
-        >
-          <Drawer />
-        </EditorProvider>
-      </JourneyProvider>
+      <EditorProvider
+        initialState={{
+          selectedStep: step(cardDark),
+          drawerChildren: <BackgroundColor />,
+          drawerTitle: 'Background Color Properties',
+          drawerMobileOpen: true
+        }}
+      >
+        <Drawer />
+      </EditorProvider>
     </MockedProvider>
   )
+}
+
+export const Dark = Template.bind({})
+
+export const MobileColorPicker = Template.bind({})
+MobileColorPicker.parameters = {
+  chromatic: {
+    viewports: [360]
+  }
+}
+MobileColorPicker.play = async () => {
+  const customTab = await screen.getByRole('tab', { name: 'Custom' })
+  await userEvent.click(customTab)
 }
 
 export default BackgroundColorStory as Meta

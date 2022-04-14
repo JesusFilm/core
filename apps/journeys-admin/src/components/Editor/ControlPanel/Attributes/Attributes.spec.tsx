@@ -5,6 +5,7 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
+import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
 import { Attributes } from '.'
 
 describe('Attributes', () => {
@@ -15,8 +16,8 @@ describe('Attributes', () => {
     parentOrder: 0,
     coverBlockId: null,
     backgroundColor: null,
-    themeMode: null,
-    themeName: null,
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
     fullscreen: true,
     children: []
   }
@@ -73,6 +74,12 @@ describe('Attributes', () => {
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'FallingPlates'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
