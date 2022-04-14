@@ -37,6 +37,12 @@ describe('CardWrapper', () => {
           video: {
             __typename: 'Video',
             id: '2_0-FallingPlates',
+            title: [
+              {
+                __typename: 'Translation',
+                value: 'FallingPlates'
+              }
+            ],
             variant: {
               __typename: 'VideoVariant',
               id: '2_0-FallingPlates-529',
@@ -102,6 +108,12 @@ describe('CardWrapper', () => {
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
               variant: {
                 __typename: 'VideoVariant',
                 hls: null,
@@ -251,6 +263,12 @@ describe('CardWrapper', () => {
           video: {
             __typename: 'Video',
             id: '2_0-FallingPlates',
+            title: [
+              {
+                __typename: 'Translation',
+                value: 'FallingPlates'
+              }
+            ],
             variant: null
           },
           startAt: null,
@@ -312,6 +330,12 @@ describe('CardWrapper', () => {
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
               variant: null
             },
             videoId: '2_0-FallingPlates',

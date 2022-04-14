@@ -233,7 +233,9 @@ export function BackgroundMediaVideo({
 
   return (
     <VideoBlockEditor
-      selectedBlock={videoBlock}
+      selectedBlock={
+        videoBlock != null ? { ...videoBlock, parentOrder: null } : videoBlock
+      }
       onChange={handleChange}
       onDelete={handleDelete}
     />
