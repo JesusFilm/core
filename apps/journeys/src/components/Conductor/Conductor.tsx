@@ -133,7 +133,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               >
                 <Box
                   sx={{
-                    display: 'grid',
                     px: `${gapBetweenSlides / 2}px`,
                     height: `calc(100% - ${theme.spacing(6)})`,
                     [theme.breakpoints.up('lg')]: {
@@ -146,26 +145,23 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                     backgroundColor={theme.palette.primary.light}
                     themeMode={null}
                     themeName={null}
-                    sx={{ gridColumn: 1, gridRow: 1, boxShadow: 'none' }}
                   >
-                    <></>
-                  </CardWrapper>
-                  <Fade
-                    in={activeBlock?.id === block.id}
-                    mountOnEnter
-                    unmountOnExit
-                  >
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        gridColumn: 1,
-                        gridRow: 1
-                      }}
+                    <Fade
+                      in={activeBlock?.id === block.id}
+                      mountOnEnter
+                      unmountOnExit
                     >
-                      <BlockRenderer block={block} />
-                    </Box>
-                  </Fade>
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      >
+                        <BlockRenderer block={block} />
+                      </Box>
+                    </Fade>
+                  </CardWrapper>
                 </Box>
               </SwiperSlide>
             ))}

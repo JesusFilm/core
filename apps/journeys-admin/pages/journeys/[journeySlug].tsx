@@ -72,8 +72,8 @@ function JourneySlugPage(): ReactElement {
               title="Journey Details"
               showDrawer
               backHref="/"
-              Menu={<Menu />}
-              AuthUser={AuthUser}
+              menu={<Menu />}
+              authUser={AuthUser}
             >
               <JourneyView />
             </PageWrapper>
