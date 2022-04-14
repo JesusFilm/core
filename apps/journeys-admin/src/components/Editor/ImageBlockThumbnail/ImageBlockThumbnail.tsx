@@ -32,7 +32,7 @@ export function ImageBlockThumbnail({
           objectFit="cover"
         />
       ) : (
-        <ImageIcon />
+        <ImageIcon data-testid="imageBlockThumbnailPlaceholder" />
       )}
     </Box>
   )
