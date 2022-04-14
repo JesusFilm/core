@@ -86,6 +86,19 @@ Filled.args = {
   }
 }
 
+export const Max = Template.bind({})
+Max.args = {
+  journey: {
+    ...journey,
+    blocks: [image],
+    primaryImageBlock: image,
+    seoTitle:
+      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean.',
+    seoDescription:
+      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur rid'
+  }
+}
+
 export const Loading = Template.bind({})
 Loading.args = { journey: null }
 
