@@ -109,15 +109,15 @@ export function Card({
             }}
           >
             {renderedChildren}
-            {blurUrl != null && coverBlock?.__typename === 'ImageBlock' && (
-              <NextImage
-                src={blurUrl}
-                alt={coverBlock.alt}
-                objectFit="cover"
-                layout="fill"
-              />
-            )}
           </Box>
+          {blurUrl != null && coverBlock?.__typename === 'ImageBlock' && (
+            <NextImage
+              src={blurUrl}
+              alt={coverBlock.alt}
+              objectFit="cover"
+              layout="fill"
+            />
+          )}
         </Box>
       )}
     </CardWrapper>

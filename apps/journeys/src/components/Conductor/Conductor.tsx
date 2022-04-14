@@ -84,7 +84,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         direction={breakpoints.lg ? 'column-reverse' : 'column'}
         sx={{
           justifyContent: 'center',
-          minHeight: '100%'
+          height: '100%'
         }}
       >
         <Box

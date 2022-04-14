@@ -50,7 +50,7 @@ export function Video({
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
 
-  const placeholderPoster =
+  const blurBackground =
     posterBlock != null
       ? blurImage(
           posterBlock.width,
@@ -111,7 +111,7 @@ export function Video({
         responsive: true,
         muted: muted === true,
         // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
-        poster: placeholderPoster
+        poster: blurBackground
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
@@ -153,7 +153,7 @@ export function Video({
     blockId,
     posterBlock,
     selectedBlock,
-    placeholderPoster
+    blurBackground
   ])
 
   useEffect(() => {
@@ -210,8 +210,8 @@ export function Video({
         <NextImage
           src={posterBlock.src}
           alt={posterBlock.alt}
-          placeholder={placeholderPoster != null ? 'blur' : 'empty'}
-          blurDataURL={placeholderPoster ?? posterBlock.src}
+          placeholder={blurBackground != null ? 'blur' : 'empty'}
+          blurDataURL={blurBackground ?? posterBlock.src}
           objectFit="cover"
           layout="fill"
         />
