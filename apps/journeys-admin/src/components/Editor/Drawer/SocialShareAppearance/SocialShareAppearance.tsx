@@ -3,10 +3,9 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import Image from 'next/image'
+import FacebookIcon from '@mui/icons-material/FacebookOutlined'
+import TwitterIcon from '@mui/icons-material/Twitter'
 import { useJourney } from '../../../../libs/context'
-import facebookIcon from '../../../../../public/facebook.svg'
-import twitterIcon from '../../../../../public/twitter.svg'
 import { ImageEdit } from './ImageEdit/ImageEdit'
 import { TitleEdit } from './TitleEdit/TitleEdit'
 import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
@@ -51,35 +50,33 @@ export function SocialShareAppearance(): ReactElement {
       <Stack direction="row" spacing={3}>
         <Button
           onClick={handleShareFacebook}
-          startIcon={<FacebookIcon />}
+          startIcon={
+            <FacebookIcon
+              sx={{ height: '16px', width: '16px', color: '#1877F2' }}
+            />
+          }
           data-testid="facebook-share-button"
           disabled={journey == null}
         >
-          <Typography variant="caption" sx={{ color: 'black' }}>
+          <Typography variant="body2" sx={{ color: 'black' }}>
             Facebook
           </Typography>
         </Button>
         <Button
           onClick={handleShareTwitter}
-          startIcon={<TwitterIcon />}
+          startIcon={
+            <TwitterIcon
+              sx={{ height: '16px', width: '16px', color: '#1DA1F2' }}
+            />
+          }
           data-testid="twitter-share-button"
           disabled={journey == null}
         >
-          <Typography variant="caption" sx={{ color: 'black' }}>
+          <Typography variant="body2" sx={{ color: 'black' }}>
             Twitter
           </Typography>
         </Button>
       </Stack>
     </Box>
   )
-}
-
-function FacebookIcon(): ReactElement {
-  return (
-    <Image src={facebookIcon} alt="Facebook share" height={14} width={14} />
-  )
-}
-
-function TwitterIcon(): ReactElement {
-  return <Image src={twitterIcon} alt="Twitter share" height={14} width={14} />
 }
