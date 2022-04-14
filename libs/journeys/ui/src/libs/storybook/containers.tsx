@@ -17,9 +17,6 @@ export const StoryCard = ({
   const Card = (
     <Paper
       sx={{
-        position: 'relative',
-        minHeight: 'inherit',
-        height: '100%',
         p: 7,
         borderRadius: (theme) => theme.spacing(4),
         '& > *': {
