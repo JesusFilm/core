@@ -18,6 +18,7 @@ import {
   useBlocks
 } from '@core/journeys/ui'
 import Div100vh from 'react-div-100vh'
+import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
 
 export interface ConductorProps {
@@ -52,9 +53,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
-  const checkVideo = activeBlock?.children
-    .find((child) => child.__typename === 'CardBlock')
-    ?.children.find((child) => child.__typename !== 'VideoBlock')
+  const cardBlock = activeBlock?.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
+
+  const videoBlockExists =
+    cardBlock?.children.some(
+      (child) => child.__typename === 'VideoBlock' && child.id !== cardBlock.coverBlockId
+    ) ?? false
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
@@ -98,7 +104,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             pt: { lg: 0 }
           }}
         >
-          {checkVideo != null && <JourneyProgress />}
+          <Fade in={!videoBlockExists}>
+            <Box>
+              <JourneyProgress />
+            </Box>
+          </Fade>
         </Box>
         <Box
           sx={{
