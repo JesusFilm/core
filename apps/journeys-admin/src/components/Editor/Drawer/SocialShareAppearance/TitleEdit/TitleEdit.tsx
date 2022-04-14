@@ -77,7 +77,7 @@ export function TitleEdit(): ReactElement {
             onChange={handleChange}
             onBlur={(e) => {
               handleBlur(e)
-              errors.socialTitle == null && handleSubmit(e)
+              errors.seoTitle == null && handleSubmit(e)
             }}
             sx={{
               pb: 4
