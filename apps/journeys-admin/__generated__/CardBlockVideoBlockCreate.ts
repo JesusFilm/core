@@ -9,6 +9,11 @@ import { VideoBlockCreateInput } from "./globalTypes";
 // GraphQL mutation operation: CardBlockVideoBlockCreate
 // ====================================================
 
+export interface CardBlockVideoBlockCreate_videoBlockCreate_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -18,6 +23,7 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
 export interface CardBlockVideoBlockCreate_videoBlockCreate_video {
   __typename: "Video";
   id: string;
+  title: CardBlockVideoBlockCreate_videoBlockCreate_video_title[];
   variant: CardBlockVideoBlockCreate_videoBlockCreate_video_variant | null;
 }
 

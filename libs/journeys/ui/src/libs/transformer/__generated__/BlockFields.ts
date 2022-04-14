@@ -266,6 +266,11 @@ export interface BlockFields_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface BlockFields_VideoBlock_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface BlockFields_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,6 +280,7 @@ export interface BlockFields_VideoBlock_video_variant {
 export interface BlockFields_VideoBlock_video {
   __typename: "Video";
   id: string;
+  title: BlockFields_VideoBlock_video_title[];
   variant: BlockFields_VideoBlock_video_variant | null;
 }
 

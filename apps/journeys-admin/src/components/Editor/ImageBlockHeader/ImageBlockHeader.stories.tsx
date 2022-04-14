@@ -71,7 +71,7 @@ export const Image = Template.bind({})
 Image.args = {
   selectedBlock: image,
   header: image.alt,
-  caption: '300x200px',
+  caption: 'Very long caption. So long in fact that it goes over the edge.',
   showDelete: true
 }
 

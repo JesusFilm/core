@@ -92,8 +92,7 @@ Max.args = {
     ...journey,
     blocks: [image],
     primaryImageBlock: image,
-    seoTitle:
-      'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean.',
+    seoTitle: 'Lorem ipsum dolor sit amet, consectetuer adipiscin',
     seoDescription:
       'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur rid'
   }

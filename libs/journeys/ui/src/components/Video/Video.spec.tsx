@@ -21,6 +21,12 @@ const block: TreeBlock<VideoFields> = {
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'FallingPlates'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -86,30 +92,6 @@ describe('Video', () => {
       </MockedProvider>
     )
     expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')
-  })
-
-  it('should not show video controls', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <Video {...block} />
-      </MockedProvider>
-    )
-    expect(getByTestId('video-video0.id')).not.toHaveClass('vjs-control-bar')
-    expect(getByTestId('video-fullscreen')).toContainElement(
-      getByTestId('FullscreenRoundedIcon')
-    )
-  })
-
-  it('should mute the video on volume icon click', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <Video {...block} />
-      </MockedProvider>
-    )
-    const button = getByTestId('video-mute')
-    expect(button).toContainElement(getByTestId('VolumeUpRoundedIcon'))
-    fireEvent.click(button)
-    expect(button).toContainElement(getByTestId('VolumeOffRoundedIcon'))
   })
 })
 
