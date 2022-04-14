@@ -3,20 +3,18 @@ import ImageIcon from '@mui/icons-material/Image'
 import Image from 'next/image'
 import Box from '@mui/material/Box'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-
 interface ImageBlockThumbnailProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock: { src: string | null; alt: string } | null
 }
 
 export function ImageBlockThumbnail({
   selectedBlock
 }: ImageBlockThumbnailProps): ReactElement {
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         overflow: 'hidden',
-        borderRadius: 8,
+        borderRadius: 2,
         height: 55,
         width: 55,
         backgroundColor: '#EFEFEF',
@@ -47,6 +45,6 @@ export function ImageBlockThumbnail({
           <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }} />
         </Box>
       )}
-    </div>
+    </Box>
   )
 }

@@ -6,10 +6,8 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-
 interface ImageBlockHeaderProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock: { src: string | null; alt: string } | null
   caption?: string
   header: string
   showDelete: boolean
