@@ -106,7 +106,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }}
         >
           <Fade in={!videoBlockExists}>
-            <Box>
+            <Box data-testid="journey-progress">
               <JourneyProgress />
             </Box>
           </Fade>
