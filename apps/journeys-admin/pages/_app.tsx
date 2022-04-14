@@ -19,6 +19,9 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
   )
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_GTM_ID != null)
+      TagManager.initialize({ gtmId: process.env.GTM_ID })
+
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
