@@ -18,6 +18,7 @@ export const VIDEO_FIELDS = gql`
       title(primary: true) {
         value
       }
+      image
       variant {
         id
         hls

@@ -13,37 +13,26 @@ export function ImageBlockThumbnail({
   return (
     <Box
       sx={{
-        overflow: 'hidden',
+        display: 'flex',
         borderRadius: 2,
         height: 55,
         width: 55,
-        backgroundColor: '#EFEFEF',
-        minWidth: 55
+        backgroundColor: 'background.default',
+        position: 'relative',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden'
       }}
     >
-      {selectedBlock?.src != null && (
+      {selectedBlock?.src != null ? (
         <Image
           src={selectedBlock.src}
           alt={selectedBlock.alt}
-          width={55}
-          height={55}
-          object-fit="cover"
+          layout="fill"
+          objectFit="cover"
         />
-      )}
-      {selectedBlock?.src == null && (
-        <Box
-          borderRadius={2}
-          sx={{
-            width: 55,
-            height: 55,
-            bgcolor: '#EFEFEF',
-            verticalAlign: 'center'
-          }}
-          justifyContent="center"
-          data-testid="imageBlockThumbnailPlaceholder"
-        >
-          <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }} />
-        </Box>
+      ) : (
+        <ImageIcon />
       )}
     </Box>
   )
