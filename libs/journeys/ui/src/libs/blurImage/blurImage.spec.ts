@@ -41,4 +41,10 @@ describe('blurImage', () => {
       blurImage(image.width, image.height, image.blurhash, '#00000088')
     ).toBe(undefined)
   })
+
+  it('returns undefined if blurhash is empty string', () => {
+    expect(blurImage(image.width, image.height, '', '#00000088')).toBe(
+      undefined
+    )
+  })
 })
