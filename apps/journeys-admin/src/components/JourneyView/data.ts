@@ -25,6 +25,8 @@ export const defaultJourney: Journey = {
   themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
+  seoTitle: null,
+  seoDescription: null,
   userJourneys: [
     {
       id: 'userJourneyId1',

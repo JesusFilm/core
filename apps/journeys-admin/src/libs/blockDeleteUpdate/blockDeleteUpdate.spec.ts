@@ -73,7 +73,9 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]
