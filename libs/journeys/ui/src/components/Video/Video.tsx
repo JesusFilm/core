@@ -1,13 +1,9 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback, useState } from 'react'
+import { ReactElement, useEffect, useRef, useCallback } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded'
-import VolumeOffRounded from '@mui/icons-material/VolumeOffRounded'
-import IconButton from '@mui/material/IconButton'
-import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import { TreeBlock, useEditor } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -35,9 +31,6 @@ export function Video({
   fullsize,
   children
 }: TreeBlock<VideoFields>): ReactElement {
-  const [customControls, setCustomControls] = useState(false)
-  const [volume, setVolume] = useState(false)
-
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const posterBlock = children.find(
@@ -80,6 +73,7 @@ export function Video({
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
         controls: true,
+        nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
           doubleClick: true
@@ -110,8 +104,6 @@ export function Video({
             VideoResponseStateEnum.PLAYING,
             playerRef.current?.currentTime()
           )
-          if (playerRef.current?.isFullscreen() === false)
-            playerRef.current?.controls(false)
         })
         playerRef.current.on('pause', () => {
           handleVideoResponse(
@@ -127,19 +119,6 @@ export function Video({
             playerRef.current?.currentTime()
           )
         })
-        playerRef.current.on('fullscreenchange', () => {
-          if (playerRef.current?.isFullscreen() === false) {
-            playerRef.current.controls(false)
-            setCustomControls(false)
-          }
-          if (playerRef.current?.isFullscreen() === true) {
-            playerRef.current.controls(true)
-            setCustomControls(true)
-          }
-        })
-        if (muted === true) {
-          setVolume(true)
-        }
       }
     }
   }, [
@@ -149,18 +128,8 @@ export function Video({
     autoplay,
     blockId,
     posterBlock,
-    selectedBlock,
-    customControls
+    selectedBlock
   ])
-
-  const handleFullscreen = (): void => {
-    playerRef.current?.requestFullscreen()
-  }
-
-  const handleMuted = (): void => {
-    setVolume(!volume)
-    playerRef.current?.muted(!volume)
-  }
 
   useEffect(() => {
     if (selectedBlock !== undefined) {
@@ -215,28 +184,6 @@ export function Video({
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
-          {!customControls && (
-            <>
-              <IconButton
-                data-testid="video-mute"
-                onClick={handleMuted}
-                sx={{ left: 20 }}
-              >
-                {volume ? (
-                  <VolumeOffRounded fontSize="large" />
-                ) : (
-                  <VolumeUpRounded fontSize="large" />
-                )}
-              </IconButton>
-              <IconButton
-                data-testid="video-fullscreen"
-                onClick={handleFullscreen}
-                sx={{ right: 20 }}
-              >
-                <FullscreenRounded fontSize="large" />
-              </IconButton>
-            </>
-          )}
           {children?.map(
             (option) =>
               option.__typename === 'VideoTriggerBlock' && (
