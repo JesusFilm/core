@@ -5,6 +5,7 @@ import { ApolloProvider } from '@apollo/client'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { DefaultSeo } from 'next-seo'
+import TagManager from 'react-gtm-module'
 import { createApolloClient } from '../src/libs/client'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
@@ -21,6 +22,9 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   }, [signIn])
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_GTM_ID != null)
+      TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
+
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
