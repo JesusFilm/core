@@ -19,9 +19,7 @@ export function ContentOverlay({
       <Box
         sx={{
           display: { xs: 'flex', md: 'none' },
-          width: { xs: '100%', sm: '50%' },
-          height: { xs: 'auto', sm: '100%' },
-          overflow: 'hidden',
+          flexDirection: 'column',
           clipPath: {
             xs: 'polygon(0 6vw, 100% 0, 100% 100%, 0 100%)',
             sm: 'polygon(6vh 0, 100% 0, 100% 100%, 0 100%)'
@@ -29,8 +27,9 @@ export function ContentOverlay({
           marginTop: { xs: '-6vw', sm: 0 },
           marginLeft: { xs: 0, sm: '-6vh' },
           paddingLeft: { sm: `6vh` },
-          right: 0,
-          bottom: 0,
+          width: { xs: 'auto', sm: '50%' },
+          overflow: 'hidden',
+          position: 'relative',
           borderTopRightRadius: { sm: theme.spacing(4) },
           borderBottomRightRadius: { sm: theme.spacing(4) }
         }}
