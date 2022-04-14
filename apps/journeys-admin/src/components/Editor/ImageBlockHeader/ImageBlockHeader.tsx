@@ -6,10 +6,8 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
-
 interface ImageBlockHeaderProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock: { src: string | null; alt: string } | null
   caption?: string
   header: string
   showDelete: boolean
@@ -27,11 +25,13 @@ export function ImageBlockHeader({
     <Box sx={{ mb: 4 }}>
       <Stack
         direction="row"
-        spacing="16px"
+        spacing={4}
         data-testid="imageSrcStack"
         justifyContent="space-between"
       >
-        <ImageBlockThumbnail selectedBlock={selectedBlock} />
+        <Box>
+          <ImageBlockThumbnail selectedBlock={selectedBlock} />
+        </Box>
         <Stack
           direction="column"
           justifyContent="center"

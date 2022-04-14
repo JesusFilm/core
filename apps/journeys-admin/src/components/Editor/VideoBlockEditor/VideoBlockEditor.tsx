@@ -36,7 +36,14 @@ export function VideoBlockEditor({
     <>
       <Box sx={{ px: 6, pt: 4 }}>
         <ImageBlockHeader
-          selectedBlock={posterBlock}
+          selectedBlock={
+            selectedBlock?.video?.image != null
+              ? {
+                  src: selectedBlock.video.image,
+                  alt: selectedBlock?.video?.title?.[0]?.value
+                }
+              : null
+          }
           header={
             selectedBlock?.video?.title?.[0]?.value == null
               ? 'Select Video File'
