@@ -127,7 +127,7 @@ Poster.args = {
   ]
 }
 Poster.parameters = {
-  chromatic: { disableSnapshot: false }
+  chromatic: { delay: 100, disableSnapshot: false }
 }
 
 export const NoVideoSource = Template.bind({})

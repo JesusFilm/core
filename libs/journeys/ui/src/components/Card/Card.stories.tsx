@@ -238,9 +238,6 @@ VideoCover.args = {
     }
   ]
 }
-VideoCover.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.85 }
-}
 
 export const VideoContent: Story<TreeBlock<CardFields>> = Template.bind({})
 VideoContent.args = {
