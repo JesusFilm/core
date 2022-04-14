@@ -2,7 +2,7 @@ import { TreeBlock } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-
+import { SnackbarProvider } from 'notistack'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -133,7 +133,9 @@ describe('BackgroundMediaImage', () => {
         ]}
       >
         <JourneyProvider value={journey}>
-          <BackgroundMediaImage cardBlock={card} />
+          <SnackbarProvider>
+            <BackgroundMediaImage cardBlock={card} />
+          </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -276,7 +278,9 @@ describe('BackgroundMediaImage', () => {
         ]}
       >
         <JourneyProvider value={journey}>
-          <BackgroundMediaImage cardBlock={videoCard} />
+          <SnackbarProvider>
+            <BackgroundMediaImage cardBlock={videoCard} />
+          </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -354,7 +358,9 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            <SnackbarProvider>
+              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -428,7 +434,9 @@ describe('BackgroundMediaImage', () => {
           ]}
         >
           <JourneyProvider value={journey}>
-            <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            <SnackbarProvider>
+              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )

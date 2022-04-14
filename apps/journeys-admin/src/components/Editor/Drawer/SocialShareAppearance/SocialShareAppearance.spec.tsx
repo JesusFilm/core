@@ -3,7 +3,7 @@ import { SocialShareAppearance } from '.'
 
 describe('SocialShareAppearance', () => {
   it('should render SocialShareAppearance', () => {
-    const { getByText } = render(<SocialShareAppearance id="journeyId" />)
+    const { getByText } = render(<SocialShareAppearance />)
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 })

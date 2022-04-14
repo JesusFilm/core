@@ -24,7 +24,7 @@ const Template: Story = ({ ...args }) => (
         title="Journey Details"
         showDrawer
         backHref="/"
-        Menu={<Menu />}
+        menu={<Menu />}
       >
         <JourneyView />
       </PageWrapper>
@@ -35,6 +35,11 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   journey: publishedJourney
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
 }
 
 export default JourneyViewStory as Meta

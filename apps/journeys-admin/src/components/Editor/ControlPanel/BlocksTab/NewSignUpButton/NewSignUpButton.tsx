@@ -41,7 +41,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 export function NewSignUpButton(): ReactElement {
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -53,23 +53,23 @@ export function NewSignUpButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null) {
+    if (card != null && journey != null) {
       const { data } = await signUpBlockCreate({
         variables: {
           input: {
             id,
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             submitLabel: 'Submit'
           },
           iconBlockCreateInput: {
             id: submitId,
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             name: null
           },
           id,
-          journeyId,
+          journeyId: journey.id,
           updateInput: {
             submitIconId: submitId
           }
@@ -77,7 +77,7 @@ export function NewSignUpButton(): ReactElement {
         update(cache, { data }) {
           if (data?.signUpBlockUpdate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newSubmitIconBlockRef = cache.writeFragment({

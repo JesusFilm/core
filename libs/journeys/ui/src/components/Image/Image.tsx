@@ -1,9 +1,10 @@
 import { ReactElement } from 'react'
 import NextImage from 'next/image'
+import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
-import { TreeBlock } from '../..'
+import { TreeBlock, blurImage } from '../..'
 import { ImageFields } from './__generated__/ImageFields'
 
 export function Image({
@@ -11,18 +12,24 @@ export function Image({
   src,
   alt,
   height,
-  width
+  width,
+  blurhash
 }: TreeBlock<ImageFields>): ReactElement {
+  const theme = useTheme()
+  const placeholderSrc = blurImage(
+    width,
+    height,
+    blurhash,
+    theme.palette.background.paper
+  )
+
   return (
     <Box
       data-testid={`image-${id}`}
       sx={{
         borderRadius: (theme) => theme.spacing(4),
         overflow: 'hidden',
-        mb: 4,
-        '> div:not(.MuiPaper-root)': {
-          display: 'block !important'
-        }
+        mb: 4
       }}
     >
       {src != null ? (
@@ -31,6 +38,9 @@ export function Image({
           alt={alt}
           height={height}
           width={width}
+          placeholder={'blur'}
+          blurDataURL={placeholderSrc ?? src}
+          layout="responsive"
           objectFit="cover"
         />
       ) : (

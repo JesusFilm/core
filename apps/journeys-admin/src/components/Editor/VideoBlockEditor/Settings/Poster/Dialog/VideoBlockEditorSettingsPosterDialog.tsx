@@ -1,13 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import Close from '@mui/icons-material/Close'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-
+import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
@@ -89,7 +82,7 @@ export function VideoBlockEditorSettingsPosterDialog({
   open,
   onClose
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
   const [videoBlockUpdate, { error: videoBlockUpdateError }] =
@@ -100,16 +93,17 @@ export function VideoBlockEditorSettingsPosterDialog({
     useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
 
   const deleteCoverBlock = async (): Promise<void> => {
-    if (selectedBlock == null || parentBlockId == null) return
+    if (selectedBlock == null || parentBlockId == null || journey == null)
+      return
 
     await blockDelete({
       variables: {
         id: selectedBlock.id,
         parentBlockId: selectedBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     })
     if (blockDeleteError != null) return
@@ -117,7 +111,7 @@ export function VideoBlockEditorSettingsPosterDialog({
     await videoBlockUpdate({
       variables: {
         id: parentBlockId,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           posterBlockId: null
         }
@@ -133,12 +127,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   const createImageBlock = async (block): Promise<boolean> => {
-    if (parentBlockId == null) return false
+    if (parentBlockId == null || journey == null) return false
 
     const { data } = await imageBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: parentBlockId,
           src: block.src,
           alt: block.alt
@@ -147,7 +141,7 @@ export function VideoBlockEditorSettingsPosterDialog({
       update(cache, { data }) {
         if (data?.imageBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -171,7 +165,7 @@ export function VideoBlockEditorSettingsPosterDialog({
     await videoBlockUpdate({
       variables: {
         id: parentBlockId,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           posterBlockId: data?.imageBlockCreate.id ?? null
         }
@@ -188,12 +182,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   const updateImageBlock = async (block: ImageBlock): Promise<boolean> => {
-    if (selectedBlock == null) return false
+    if (selectedBlock == null || journey == null) return false
 
     await imageBlockUpdate({
       variables: {
         id: selectedBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           src: block.src,
           alt: block.alt
@@ -216,35 +210,17 @@ export function VideoBlockEditorSettingsPosterDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
-      aria-labelledby="poster-dialog-title"
-      fullWidth={true}
-      maxWidth="xs"
+      handleClose={onClose}
+      dialogTitle={{
+        title: 'Cover Image',
+        closeButton: true
+      }}
     >
-      <DialogTitle>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography
-            id="poster-dialog-title"
-            variant="subtitle1"
-            component="div"
-            justifyContent="center"
-            paddingTop={2}
-            sx={{ textTransform: 'initial' }}
-          >
-            Cover Image
-          </Typography>
-          <IconButton onClick={onClose}>
-            <Close />
-          </IconButton>
-        </Stack>
-      </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
-        <ImageBlockEditor
-          selectedBlock={selectedBlock}
-          onChange={handleChange}
-          onDelete={deleteCoverBlock}
-        />
-      </DialogContent>
+      <ImageBlockEditor
+        selectedBlock={selectedBlock}
+        onChange={handleChange}
+        onDelete={deleteCoverBlock}
+      />
     </Dialog>
   )
 }

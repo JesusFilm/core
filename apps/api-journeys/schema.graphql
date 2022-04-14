@@ -84,6 +84,8 @@ type Journey @key(fields: "id") {
   publishedAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  seoTitle: String
+  seoDescription: String
   userJourneys: [UserJourney!]
 }
 

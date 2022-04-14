@@ -18,7 +18,9 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {}
+export interface TypographyEditProps extends TreeBlock<TypographyFields> {
+  deleteSelf: () => void
+}
 
 export function TypographyEdit({
   id,
@@ -26,6 +28,7 @@ export function TypographyEdit({
   align,
   color,
   content,
+  deleteSelf,
   ...props
 }: TypographyEditProps): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
@@ -36,21 +39,28 @@ export function TypographyEdit({
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {
+    if (journey == null) return
+
     const content = value.trimStart().trimEnd()
-    await typographyBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { content }
-      },
-      optimisticResponse: {
-        typographyBlockUpdate: {
+
+    if (content === '') {
+      deleteSelf()
+    } else {
+      await typographyBlockUpdate({
+        variables: {
           id,
-          __typename: 'TypographyBlock',
-          content
+          journeyId: journey.id,
+          input: { content }
+        },
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id,
+            __typename: 'TypographyBlock',
+            content
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   const input = (

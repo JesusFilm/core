@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
+import { SnackbarProvider } from 'notistack'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../libs/context'
 import { defaultJourney, publishedJourney } from '../data'
@@ -24,7 +25,11 @@ const MenuMock = ({ journey }: { journey: Journey }): ReactElement => {
 
 describe('JourneyView/Menu', () => {
   it('should open menu on click', () => {
-    const { getByRole } = render(<MenuMock journey={defaultJourney} />)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MenuMock journey={defaultJourney} />
+      </SnackbarProvider>
+    )
 
     const menu = getByRole('button')
 
@@ -34,7 +39,11 @@ describe('JourneyView/Menu', () => {
   })
 
   it('should not preview if journey is draft', () => {
-    const { getByRole } = render(<MenuMock journey={defaultJourney} />)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MenuMock journey={defaultJourney} />
+      </SnackbarProvider>
+    )
 
     const menu = getByRole('button')
 
@@ -46,7 +55,11 @@ describe('JourneyView/Menu', () => {
   })
 
   it('should preview if journey is published', () => {
-    const { getByRole } = render(<MenuMock journey={publishedJourney} />)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MenuMock journey={publishedJourney} />
+      </SnackbarProvider>
+    )
 
     const menu = getByRole('button')
 
@@ -61,7 +74,11 @@ describe('JourneyView/Menu', () => {
   })
 
   it('should not publish if journey is published', () => {
-    const { getByRole } = render(<MenuMock journey={publishedJourney} />)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MenuMock journey={publishedJourney} />
+      </SnackbarProvider>
+    )
 
     const menu = getByRole('button')
 
@@ -73,7 +90,11 @@ describe('JourneyView/Menu', () => {
   })
 
   it('should handle edit journey title', () => {
-    const { getByRole } = render(<MenuMock journey={defaultJourney} />)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MenuMock journey={defaultJourney} />
+      </SnackbarProvider>
+    )
 
     const menu = getByRole('button')
     fireEvent.click(menu)
@@ -82,13 +103,17 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menuItem)
 
     const dialog = getByRole('dialog')
-    const form = getByRole('group', { name: 'dialog-update-title' })
+    const form = getByRole('group', { name: 'form-update-title' })
 
     expect(dialog).toBeInTheDocument()
     expect(form).toBeInTheDocument()
   })
   it('should handle edit journey description', () => {
-    const { getByRole } = render(<MenuMock journey={defaultJourney} />)
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MenuMock journey={defaultJourney} />
+      </SnackbarProvider>
+    )
 
     const menu = getByRole('button')
     fireEvent.click(menu)
@@ -97,7 +122,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menuItem)
 
     const dialog = getByRole('dialog')
-    const form = getByRole('group', { name: 'dialog-update-description' })
+    const form = getByRole('group', { name: 'form-update-description' })
 
     expect(dialog).toBeInTheDocument()
     expect(form).toBeInTheDocument()
@@ -107,7 +132,9 @@ describe('JourneyView/Menu', () => {
     jest.spyOn(navigator.clipboard, 'writeText')
 
     const { getByRole, getByText } = render(
-      <MenuMock journey={defaultJourney} />
+      <SnackbarProvider>
+        <MenuMock journey={defaultJourney} />
+      </SnackbarProvider>
     )
 
     const menu = getByRole('button')

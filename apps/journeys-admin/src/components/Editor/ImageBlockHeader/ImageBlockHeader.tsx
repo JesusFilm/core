@@ -24,7 +24,7 @@ export function ImageBlockHeader({
   onDelete
 }: ImageBlockHeaderProps): ReactElement {
   return (
-    <Box sx={{ px: 6, py: 4 }}>
+    <Box sx={{ mb: 4 }}>
       <Stack
         direction="row"
         spacing="16px"

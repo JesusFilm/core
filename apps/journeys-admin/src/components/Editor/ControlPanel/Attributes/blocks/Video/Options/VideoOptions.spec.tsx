@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
 import { GET_VIDEO } from '../../../../../VideoLibrary/VideoDetails/VideoDetails'
 import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
@@ -124,7 +125,9 @@ describe('VideoOptions', () => {
                 selectedBlock: video
               }}
             >
-              <VideoOptions />
+              <SnackbarProvider>
+                <VideoOptions />
+              </SnackbarProvider>
             </EditorProvider>
           </ThemeProvider>
         </JourneyProvider>

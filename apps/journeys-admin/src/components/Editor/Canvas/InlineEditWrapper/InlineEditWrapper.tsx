@@ -38,6 +38,8 @@ export function InlineEditWrapper({
   const journey = useJourney()
 
   const handleDeleteBlock = async (): Promise<void> => {
+    if (journey == null) return
+
     await blockDelete({
       variables: {
         id: block.id,
@@ -59,7 +61,7 @@ export function InlineEditWrapper({
 
   const EditComponent =
     block.__typename === 'TypographyBlock' ? (
-      <TypographyEdit {...block} />
+      <TypographyEdit {...block} deleteSelf={handleDeleteBlock} />
     ) : block.__typename === 'ButtonBlock' ? (
       <ButtonEdit {...block} />
     ) : block.__typename === 'SignUpBlock' ? (

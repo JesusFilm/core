@@ -1,16 +1,12 @@
 import { ReactElement, ReactNode, useEffect, useRef } from 'react'
-import { decode } from 'blurhash'
 import videojs from 'video.js'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { TreeBlock } from '../../..'
+import { TreeBlock, blurImage } from '../../..'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 
 import 'video.js/dist/video-js.css'
-
-const greatestCommonDivisor = (a: number, b: number): number =>
-  b === 0 ? a : greatestCommonDivisor(b, a % b)
 
 interface CoverProps {
   children: ReactNode
@@ -30,27 +26,16 @@ export function Cover({
   const theme = useTheme()
 
   useEffect(() => {
-    if (imageBlock != null) {
+    if (imageBlock?.src != null) {
       if (xsRef.current != null && lgRef.current != null) {
-        const divisor = greatestCommonDivisor(
+        const dataURL = blurImage(
           imageBlock.width,
-          imageBlock.height
+          imageBlock.height,
+          imageBlock.blurhash,
+          theme.palette.background.paper
         )
-        const width = imageBlock.width / divisor
-        const height = imageBlock.height / divisor
-        const pixels = decode(imageBlock.blurhash, width, height, 1)
 
-        const canvas = document.createElement('canvas')
-        canvas.setAttribute('width', `${width}px`)
-        canvas.setAttribute('height', `${height}px`)
-        const context = canvas.getContext('2d')
-        if (context != null) {
-          const imageData = context.createImageData(width, height)
-          imageData.data.set(pixels)
-          context.putImageData(imageData, 0, 0)
-          context.fillStyle = `${theme.palette.background.paper}88`
-          context.fillRect(0, 0, width, height)
-          const dataURL = canvas.toDataURL('image/webp')
+        if (dataURL != null) {
           // We need double image to get better image blending results.
           xsRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`
           lgRef.current.style.backgroundImage = `url(${dataURL}), url(${dataURL})`

@@ -1,7 +1,8 @@
 import { ReactElement } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
-
+import Box from '@mui/material/Box'
+import { useSnackbar } from 'notistack'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
 import { useJourney } from '../../../../../../../libs/context'
@@ -29,28 +30,44 @@ export function ImageOptions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
   const [imageBlockUpdate] = useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
   const updateImageBlock = async (block: ImageBlock): Promise<void> => {
-    await imageBlockUpdate({
-      variables: {
-        id: imageBlock.id,
-        journeyId: journeyId,
-        input: {
-          src: block.src,
-          alt: block.alt
+    if (journey == null) return
+
+    try {
+      await imageBlockUpdate({
+        variables: {
+          id: imageBlock.id,
+          journeyId: journey.id,
+          input: {
+            src: block.src,
+            alt: block.alt
+          }
         }
-      }
-    })
+      })
+      enqueueSnackbar('Image Updated', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
+    }
   }
 
   return (
-    <ImageBlockEditor
-      selectedBlock={imageBlock}
-      onChange={updateImageBlock}
-      showDelete={false}
-    />
+    <Box sx={{ pt: 4, pb: 3, px: 6 }}>
+      <ImageBlockEditor
+        selectedBlock={imageBlock}
+        onChange={updateImageBlock}
+        showDelete={false}
+      />
+    </Box>
   )
 }

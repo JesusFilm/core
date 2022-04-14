@@ -48,7 +48,7 @@ export const BUTTON_BLOCK_CREATE = gql`
 export function NewButtonButton(): ReactElement {
   const [buttonBlockCreate] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -61,12 +61,12 @@ export function NewButtonButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null) {
+    if (card != null && journey != null) {
       const { data } = await buttonBlockCreate({
         variables: {
           input: {
             id,
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             label: 'Edit Text...',
             variant: ButtonVariant.contained,
@@ -75,18 +75,18 @@ export function NewButtonButton(): ReactElement {
           },
           iconBlockCreateInput1: {
             id: startId,
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             name: null
           },
           iconBlockCreateInput2: {
             id: endId,
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             name: null
           },
           id,
-          journeyId,
+          journeyId: journey.id,
           updateInput: {
             startIconId: startId,
             endIconId: endId
@@ -95,7 +95,7 @@ export function NewButtonButton(): ReactElement {
         update(cache, { data }) {
           if (data?.buttonBlockUpdate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newStartIconBlockRef = cache.writeFragment({

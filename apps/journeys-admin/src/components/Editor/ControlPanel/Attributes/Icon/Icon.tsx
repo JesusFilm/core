@@ -138,6 +138,8 @@ export function Icon({ id }: IconProps): ReactElement {
   const iconName = iconBlock?.iconName ?? ''
 
   async function iconUpdate(name: IconName | null): Promise<void> {
+    if (journey == null) return
+
     await iconBlockNameUpdate({
       variables: {
         id,

@@ -13,7 +13,6 @@ import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyProvider } from '../../src/libs/context'
 import { JourneyView } from '../../src/components/JourneyView'
-import { addApolloState, initializeApollo } from '../../src/libs/apolloClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 
@@ -59,19 +58,19 @@ function JourneySlugPage(): ReactElement {
 
   return (
     <>
-      {data?.journey != null && (
+      {error == null && (
         <>
           <NextSeo
-            title={data.journey.title}
-            description={data.journey.description ?? undefined}
+            title={data?.journey?.title ?? 'Journey'}
+            description={data?.journey?.description ?? undefined}
           />
-          <JourneyProvider value={data.journey}>
+          <JourneyProvider value={data?.journey ?? undefined}>
             <PageWrapper
               title="Journey Details"
               showDrawer
               backHref="/"
-              Menu={<Menu />}
-              AuthUser={AuthUser}
+              menu={<Menu />}
+              authUser={AuthUser}
             >
               <JourneyView />
             </PageWrapper>
@@ -100,30 +99,10 @@ function JourneySlugPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, query }) => {
-  const apolloClient = initializeApollo({
-    token: (await AuthUser.getIdToken()) ?? ''
-  })
-
-  try {
-    await apolloClient.query({
-      query: GET_JOURNEY,
-      variables: {
-        id: query.journeySlug
-      }
-    })
-  } catch (error) {
-    if (error.graphQLErrors[0].extensions.code === 'FORBIDDEN') {
-      return addApolloState(apolloClient, {
-        props: {}
-      })
-    }
-    throw error
-  }
-
-  return addApolloState(apolloClient, {
+})(async () => {
+  return {
     props: {}
-  })
+  }
 })
 
 export default withAuthUser({
