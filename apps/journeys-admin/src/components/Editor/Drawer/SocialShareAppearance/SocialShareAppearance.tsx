@@ -47,11 +47,13 @@ export function SocialShareAppearance(): ReactElement {
       <Typography variant="subtitle2" sx={{ pb: 4 }}>
         Share Preview
       </Typography>
+
       <Stack direction="row" spacing={3}>
         <Button
           onClick={handleShareFacebook}
           startIcon={<FacebookIcon />}
           data-testid="facebook-share-button"
+          disabled={journey == null}
         >
           <Typography variant="caption" sx={{ color: 'black' }}>
             Facebook
@@ -61,6 +63,7 @@ export function SocialShareAppearance(): ReactElement {
           onClick={handleShareTwitter}
           startIcon={<TwitterIcon />}
           data-testid="twitter-share-button"
+          disabled={journey == null}
         >
           <Typography variant="caption" sx={{ color: 'black' }}>
             Twitter
