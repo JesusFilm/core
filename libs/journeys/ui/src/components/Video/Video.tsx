@@ -27,6 +27,9 @@ export const VIDEO_RESPONSE_CREATE = gql`
   }
 `
 
+const videoBackgroundColor = '#000'
+const videoForegroundColor = '#FFF'
+
 export function Video({
   id: blockId,
   video,
@@ -197,15 +200,13 @@ export function Video({
         width: '100%',
         height: '100%',
         minHeight: 'inherit',
-        backgroundColor: '#000000',
+        backgroundColor: videoBackgroundColor,
         borderRadius: 4,
         overflow: 'hidden',
         m: 0,
         position: 'absolute',
         top: 0,
         right: 0,
-        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-        outlineOffset: '-3px',
         '> .video-js': {
           width: '100%',
           display: 'flex',
@@ -219,21 +220,32 @@ export function Video({
             zIndex: 1
           },
           '> .vjs-poster': {
-            backgroundColor: '#000',
+            backgroundColor: videoBackgroundColor,
             backgroundSize: 'cover'
           }
         },
         '> .MuiIconButton-root': {
-          color: '#FFFFFF',
+          color: videoForegroundColor,
           position: 'absolute',
           bottom: 12,
           zIndex: 1,
           '&:hover': {
-            color: '#FFFFFF'
+            color: videoForegroundColor
           }
         }
       }}
     >
+      {/* Lazy load higher res poster */}
+      {posterBlock?.src != null && loading && (
+        <NextImage
+          src={posterBlock.src}
+          alt={posterBlock.alt}
+          placeholder={placeholderPoster != null ? 'blur' : 'empty'}
+          blurDataURL={placeholderPoster ?? posterBlock.src}
+          objectFit="cover"
+          layout="fill"
+        />
+      )}
       {video?.variant?.hls != null ? (
         <>
           <video
@@ -276,32 +288,30 @@ export function Video({
         <>
           <Paper
             sx={{
+              backgroundColor: 'transparent',
               borderRadius: (theme) => theme.spacing(4),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               width: '100%',
               fontSize: 100,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              backgroundImage:
-                posterBlock?.src != null ? `url(${posterBlock.src})` : undefined
+              zIndex: 1,
+              outline:
+                selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+              outlineOffset: '-3px'
             }}
             elevation={0}
             variant="outlined"
           >
-            <VideocamRounded fontSize="inherit" />
+            <VideocamRounded
+              fontSize="inherit"
+              sx={{
+                color: videoForegroundColor,
+                filter: `drop-shadow(-1px 0px 5px ${videoBackgroundColor})`
+              }}
+            />
           </Paper>
         </>
-      )}
-      {/* Lazy load higher res poster */}
-      {posterBlock?.src != null && loading && (
-        <NextImage
-          src={posterBlock.src}
-          alt={posterBlock.alt}
-          objectFit="cover"
-          layout="fill"
-        />
       )}
     </Box>
   )
