@@ -89,7 +89,6 @@ export function Video({
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay != null,
         controls: true,
-        preload: 'metadata',
         nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
