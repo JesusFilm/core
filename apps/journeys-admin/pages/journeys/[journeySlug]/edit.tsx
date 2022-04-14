@@ -39,8 +39,8 @@ function JourneyEditPage(): ReactElement {
               title={data?.journey?.title ?? 'Edit Journey'}
               showDrawer
               backHref={`/journeys/${router.query.journeySlug as string}`}
-              Menu={<EditToolbar />}
-              AuthUser={AuthUser}
+              menu={<EditToolbar />}
+              authUser={AuthUser}
             >
               <JourneyEdit />
             </PageWrapper>
