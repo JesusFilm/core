@@ -21,6 +21,14 @@ const video: TreeBlock<VideoBlock> = {
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'FallingPlates'
+      }
+    ],
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -31,9 +39,6 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
-const onChange = jest.fn()
-const onDelete = jest.fn()
-
 describe('VideoBlockEditor', () => {
   describe('no existing block', () => {
     it('shows placeholders on null', () => {
@@ -42,8 +47,8 @@ describe('VideoBlockEditor', () => {
           <MockedProvider>
             <VideoBlockEditor
               selectedBlock={null}
-              onChange={onChange}
-              onDelete={onDelete}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
@@ -53,13 +58,32 @@ describe('VideoBlockEditor', () => {
   })
 
   describe('existing block', () => {
+    it('shows title and hls link', async () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <VideoBlockEditor
+              selectedBlock={video}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+            />
+          </MockedProvider>
+        </ThemeProvider>
+      )
+      expect(getByText('FallingPlates')).toBeInTheDocument()
+      expect(
+        getByText('https://arc.gt/hls/2_0-FallingPlates/529')
+      ).toBeInTheDocument()
+    })
+
     it('calls onDelete', async () => {
+      const onDelete = jest.fn()
       const { getByTestId } = render(
         <ThemeProvider>
           <MockedProvider>
             <VideoBlockEditor
               selectedBlock={video}
-              onChange={onChange}
+              onChange={jest.fn()}
               onDelete={onDelete}
             />
           </MockedProvider>
@@ -76,8 +100,8 @@ describe('VideoBlockEditor', () => {
           <MockedProvider>
             <VideoBlockEditor
               selectedBlock={video}
-              onChange={onChange}
-              onDelete={onDelete}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
