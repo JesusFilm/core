@@ -55,7 +55,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const cardBlock = activeBlock?.children.find(
     (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock>
+  ) as TreeBlock<CardBlock> | undefined
 
   const videoBlockExists =
     cardBlock?.children.some(
