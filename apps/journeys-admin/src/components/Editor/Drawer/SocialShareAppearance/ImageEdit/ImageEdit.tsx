@@ -221,17 +221,21 @@ export function ImageEdit(): ReactElement {
           <Button
             variant="contained"
             size="small"
-            color="secondary"
             sx={{
               position: 'absolute',
               bottom: 16,
               right: 10,
-              borderRadius: 4
+              borderRadius: 4,
+              backgroundColor: 'background.paper'
             }}
-            startIcon={<ImageIcon fontSize="small" />}
+            startIcon={
+              <ImageIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
+            }
             onClick={handleOpen}
           >
-            <Typography variant="caption">Change</Typography>
+            <Typography variant="caption" color="secondary.dark">
+              Change
+            </Typography>
           </Button>
         </Box>
       ) : (
@@ -245,18 +249,22 @@ export function ImageEdit(): ReactElement {
           <Button
             variant="contained"
             size="small"
-            color="secondary"
             sx={{
               position: 'absolute',
               bottom: 16,
               right: 10,
-              borderRadius: 4
+              borderRadius: 4,
+              backgroundColor: 'background.paper'
             }}
-            startIcon={<ImageIcon fontSize="small" />}
+            startIcon={
+              <ImageIcon fontSize="small" sx={{ color: 'secondary.dark' }} />
+            }
             onClick={handleOpen}
             disabled
           >
-            <Typography variant="caption">Change</Typography>
+            <Typography variant="caption" color="secondary.dark">
+              Change
+            </Typography>
           </Button>
         </Box>
       )}
