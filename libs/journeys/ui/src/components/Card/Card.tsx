@@ -92,11 +92,9 @@ export function Card({
         >
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
+              margin: 'auto',
               width: '100%',
               maxWidth: 500,
-              justifyContent: 'center',
               zIndex: 1,
               '& > *': {
                 '&:first-child': { mt: 0 },
