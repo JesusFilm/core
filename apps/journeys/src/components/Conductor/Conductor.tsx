@@ -59,7 +59,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const videoBlockExists =
     cardBlock?.children.some(
-      (child) => child.__typename === 'VideoBlock' && child.id !== cardBlock.coverBlockId
+      (child) =>
+        child.__typename === 'VideoBlock' && child.id !== cardBlock.coverBlockId
     ) ?? false
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
