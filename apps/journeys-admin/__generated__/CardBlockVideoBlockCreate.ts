@@ -24,6 +24,7 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate_video {
   __typename: "Video";
   id: string;
   title: CardBlockVideoBlockCreate_videoBlockCreate_video_title[];
+  image: string | null;
   variant: CardBlockVideoBlockCreate_videoBlockCreate_video_variant | null;
 }
 

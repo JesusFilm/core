@@ -297,6 +297,7 @@ export interface GetJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetJourney_journey_blocks_VideoBlock_video_title[];
+  image: string | null;
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
 }
 

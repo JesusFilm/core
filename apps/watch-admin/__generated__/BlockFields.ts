@@ -281,6 +281,7 @@ export interface BlockFields_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: BlockFields_VideoBlock_video_title[];
+  image: string | null;
   variant: BlockFields_VideoBlock_video_variant | null;
 }
 
