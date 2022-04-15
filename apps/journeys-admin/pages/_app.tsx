@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
 import { DefaultSeo } from 'next-seo'
+import TagManager from 'react-gtm-module'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -11,14 +12,16 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 initAuth()
 
 function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
-  const apolloClient = useApollo(
-    pageProps.AuthUserSerialized != null
-      ? JSON.parse(pageProps.AuthUserSerialized)._token
-      : '',
-    pageProps
-  )
+  const token =
+    (pageProps.AuthUserSerialized != null
+      ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
+      : '') ?? ''
+  const apolloClient = useApollo(token)
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_GTM_ID != null)
+      TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
+
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {

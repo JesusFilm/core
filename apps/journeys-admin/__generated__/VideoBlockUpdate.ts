@@ -9,6 +9,11 @@ import { VideoBlockUpdateInput } from "./globalTypes";
 // GraphQL mutation operation: VideoBlockUpdate
 // ====================================================
 
+export interface VideoBlockUpdate_videoBlockUpdate_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -18,6 +23,8 @@ export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
 export interface VideoBlockUpdate_videoBlockUpdate_video {
   __typename: "Video";
   id: string;
+  title: VideoBlockUpdate_videoBlockUpdate_video_title[];
+  image: string | null;
   variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
 }
 

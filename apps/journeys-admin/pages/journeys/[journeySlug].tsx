@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { BLOCK_FIELDS } from '@core/journeys/ui'
+import { BLOCK_FIELDS, IMAGE_FIELDS } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -18,6 +18,7 @@ import { Menu } from '../../src/components/JourneyView/Menu'
 
 export const GET_JOURNEY = gql`
   ${BLOCK_FIELDS}
+  ${IMAGE_FIELDS}
   query GetJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: slug) {
       id
@@ -30,11 +31,13 @@ export const GET_JOURNEY = gql`
       publishedAt
       themeName
       themeMode
+      seoTitle
+      seoDescription
       blocks {
         ...BlockFields
       }
       primaryImageBlock {
-        src
+        ...ImageFields
       }
       userJourneys {
         id
@@ -69,8 +72,8 @@ function JourneySlugPage(): ReactElement {
               title="Journey Details"
               showDrawer
               backHref="/"
-              Menu={<Menu />}
-              AuthUser={AuthUser}
+              menu={<Menu />}
+              authUser={AuthUser}
             >
               <JourneyView />
             </PageWrapper>
