@@ -8,6 +8,8 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { ReactElement } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui'
 import AddRounded from '@mui/icons-material/AddRounded'
+import ListItem from '@mui/material/ListItem'
+import Link from 'next/link'
 
 import { VideoType } from '../../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
@@ -15,17 +17,19 @@ import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 interface VideoListListProps {
   videos: GetVideos_videos[]
   variant?: 'small' | 'large' | undefined
-  loading: boolean
-  isEnd: boolean
-  onLoadMore: () => Promise<void>
+  loading?: boolean | undefined
+  isEnd?: boolean | undefined
+  routePrefix?: string | undefined
+  onLoadMore?: () => Promise<void> | undefined
 }
 
 export function VideoListList({
   videos,
   loading = false,
   variant = 'large',
-  isEnd,
-  onLoadMore
+  isEnd = false,
+  onLoadMore = undefined,
+  routePrefix = undefined
 }: VideoListListProps): ReactElement {
   return (
     <List data-testid="video-list-list">
@@ -35,56 +39,62 @@ export function VideoListList({
             (snippet) => snippet.primary
           )?.value
           const title = video.title.find((title) => title.primary)?.value
+          const href =
+            routePrefix == null
+              ? `/${video.permalink as string}`
+              : `/${routePrefix}/${video.permalink as string}`
           return (
-            <ListItemButton key={index} href={`/${video.permalink}`}>
-              <ListItemText
-                primary={title}
-                secondary={snippet}
-                secondaryTypographyProps={{
-                  style: {
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    paddingRight: '2rem'
-                  }
-                }}
-              />
-              {video.image != null && (
-                <Box>
-                  <Box
-                    data-testid={`video-list-list-image-${variant}`}
-                    sx={{
-                      justifySelf: 'end',
-                      display: 'flex',
-                      alignItems: 'flex-end',
-                      justifyContent: 'flex-end',
-                      height: variant === 'small' ? 79 : 150,
-                      width: variant === 'small' ? 79 : 150,
-                      borderRadius: 2,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center center',
-                      backgroundImage: `url(${video.image})`
-                    }}
-                  >
-                    <Typography
-                      component="div"
-                      variant="caption"
+            <Link key={index} href={href} passHref={true}>
+              <ListItem button component="a">
+                <ListItemText
+                  primary={title}
+                  secondary={snippet}
+                  secondaryTypographyProps={{
+                    style: {
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      paddingRight: '2rem'
+                    }
+                  }}
+                />
+                {video.image != null && (
+                  <Box>
+                    <Box
+                      data-testid={`video-list-list-image-${variant}`}
                       sx={{
-                        color: 'background.paper',
-                        backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                        px: 1,
-                        borderRadius: 2
+                        justifySelf: 'end',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        justifyContent: 'flex-end',
+                        height: variant === 'small' ? 79 : 150,
+                        width: variant === 'small' ? 79 : 150,
+                        borderRadius: 2,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center center',
+                        backgroundImage: `url(${video.image})`
                       }}
                     >
-                      {video.type !== VideoType.playlist &&
-                        secondsToTimeFormat(video.variant?.duration ?? 0)}
-                      {video.type === VideoType.playlist &&
-                        `${video.episodeIds.length} episodes`}
-                    </Typography>
+                      <Typography
+                        component="div"
+                        variant="caption"
+                        sx={{
+                          color: 'background.paper',
+                          backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                          px: 1,
+                          borderRadius: 2
+                        }}
+                      >
+                        {video.type !== VideoType.playlist &&
+                          secondsToTimeFormat(video.variant?.duration ?? 0)}
+                        {video.type === VideoType.playlist &&
+                          `${video.episodeIds.length} episodes`}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              )}
-            </ListItemButton>
+                )}
+              </ListItem>
+            </Link>
           )
         })}
       {loading &&
@@ -109,22 +119,26 @@ export function VideoListList({
             </Box>
           </ListItemButton>
         ))}
-      <LoadingButton
-        data-testid="VideoListLoadMore"
-        variant="outlined"
-        onClick={onLoadMore}
-        loading={loading}
-        startIcon={(videos?.length ?? 0) > 0 && !isEnd ? null : <AddRounded />}
-        disabled={(videos?.length ?? 0) === 0 || isEnd}
-        loadingPosition="start"
-        size="medium"
-      >
-        {loading && 'Loading...'}
-        {!loading &&
-          ((videos?.length ?? 0) > 0 && !isEnd
-            ? 'Load More'
-            : 'No More Videos')}
-      </LoadingButton>
+      {onLoadMore != null && (
+        <LoadingButton
+          data-testid="VideoListLoadMore"
+          variant="outlined"
+          onClick={onLoadMore}
+          loading={loading}
+          startIcon={
+            (videos?.length ?? 0) > 0 && !isEnd ? null : <AddRounded />
+          }
+          disabled={(videos?.length ?? 0) === 0 || isEnd}
+          loadingPosition="start"
+          size="medium"
+        >
+          {loading && 'Loading...'}
+          {!loading &&
+            ((videos?.length ?? 0) > 0 && !isEnd
+              ? 'Load More'
+              : 'No More Videos')}
+        </LoadingButton>
+      )}
     </List>
   )
 }

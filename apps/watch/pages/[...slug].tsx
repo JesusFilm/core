@@ -13,6 +13,7 @@ import videojs from 'video.js'
 import { routeParser } from '../src/libs/routeParser/routeParser'
 import { VideoType } from '../__generated__/globalTypes'
 import 'video.js/dist/video-js.css'
+import { VideoListList } from '../src/components/Videos/VideoList/List/VideoListList'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!) {
@@ -32,11 +33,57 @@ export const GET_VIDEO = gql`
         duration
         hls
       }
+      episodes {
+        id
+        title {
+          primary
+          value
+        }
+        image
+        imageAlt {
+          primary
+          value
+        }
+        snippet {
+          primary
+          value
+        }
+        permalink
+        episodeIds
+        variant {
+          duration
+          hls
+        }
+      }
+      permalink
+    }
+  }
+`
+
+export const GET_VIDEO_SIBLINGS = gql`
+  query GetVideoSiblings($playlistId: ID!) {
+    episodes(playlistId: $playlistId, idType: slug) {
+      id
+      type
+      image
+      snippet {
+        primary
+        value
+      }
+      title {
+        primary
+        value
+      }
+      variant {
+        duration
+        hls
+      }
       episodeIds
       permalink
     }
   }
 `
+
 export const GET_LANGUAGE = gql`
   query GetLanguage($id: ID!) {
     language(id: $id) {
@@ -73,6 +120,12 @@ export default function SeoFriendly(): ReactElement {
     variables: { id: subtitleLanguage }
   })
 
+  const playlistId = routes?.[routes.length - 2]
+  const { data: siblingsData } = useQuery(GET_VIDEO_SIBLINGS, {
+    skip: playlistId == null,
+    variables: { playlistId: playlistId ?? '' }
+  })
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -102,6 +155,10 @@ export default function SeoFriendly(): ReactElement {
   })
 
   if (routes == null) return throw404()
+
+  const siblingRoute = (routes: string[]): string[] => {
+    return routes.filter((route, index) => index !== routes.length - 1)
+  }
 
   return (
     <div>
@@ -177,7 +234,7 @@ export default function SeoFriendly(): ReactElement {
                 )}
                 {data?.video.type === VideoType.playlist && (
                   <Typography variant="subtitle1">
-                    {data.video.episodeIds.length} episodes
+                    {data.video.episodes.length} episodes
                   </Typography>
                 )}
                 <Typography variant="caption">
@@ -186,6 +243,24 @@ export default function SeoFriendly(): ReactElement {
               </Stack>
             </Stack>
           </Box>
+          {data.video.episodes.length > 0 && (
+            <>
+              <Typography variant="h2">Episodes</Typography>
+              <VideoListList
+                videos={data.video.episodes}
+                routePrefix={routes.join('/')}
+              />
+            </>
+          )}
+          {siblingsData?.episodes?.length > 0 && (
+            <>
+              <Typography variant="h2">Episodes</Typography>
+              <VideoListList
+                videos={siblingsData.episodes}
+                routePrefix={siblingRoute(routes).join('/')}
+              />
+            </>
+          )}
         </>
       )}
       <div>Locale - {locale} </div>
