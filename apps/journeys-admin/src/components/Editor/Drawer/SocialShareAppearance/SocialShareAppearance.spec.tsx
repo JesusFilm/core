@@ -1,10 +1,12 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { SocialShareAppearance } from '.'
 
 describe('SocialShareAppearance', () => {
+  const slug = 'https://wwww.example.jpg'
+  const encodedUrl = encodeURIComponent(slug)
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId } = render(
       <MockedProvider>
@@ -20,12 +22,9 @@ describe('SocialShareAppearance', () => {
   })
 
   it('should open facebook share in new window', () => {
-    const closeSpy = jest.fn()
-    window.open = jest.fn().mockReturnValue({ close: closeSpy })
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`
 
-    const slug = 'https://wwww.example.jpg'
-
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ slug } as unknown as Journey}>
           <SocialShareAppearance />
@@ -33,22 +32,20 @@ describe('SocialShareAppearance', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('facebook-share-button'))
-
-    expect(window.open).toHaveBeenCalledWith(
-      `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${slug}`,
+    expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
+      'href',
+      facebookUrl
+    )
+    expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
+      'target',
       '_blank'
     )
   })
 
   it('should open twitter share in new window', () => {
-    const closeSpy = jest.fn()
-    window.open = jest.fn().mockReturnValue({ close: closeSpy })
+    const twitterUrl = `https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`
 
-    const slug = 'https://wwww.example.jpg'
-    const encodedUrl = encodeURIComponent(slug)
-
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider value={{ slug } as unknown as Journey}>
           <SocialShareAppearance />
@@ -56,10 +53,12 @@ describe('SocialShareAppearance', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('twitter-share-button'))
-
-    expect(window.open).toHaveBeenCalledWith(
-      `https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`,
+    expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
+      'href',
+      twitterUrl
+    )
+    expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
+      'target',
       '_blank'
     )
   })
