@@ -67,7 +67,9 @@ describe('Card', () => {
       publishedAt: null,
       blocks: [] as TreeBlock[],
       primaryImageBlock: null,
-      userJourneys: []
+      userJourneys: [],
+      seoTitle: null,
+      seoDescription: null
     }
     it('shows background color from prop', () => {
       const { getByRole } = render(

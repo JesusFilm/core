@@ -43,7 +43,9 @@ describe('Editor', () => {
       }
     ] as TreeBlock[],
     primaryImageBlock: null,
-    userJourneys: []
+    userJourneys: [],
+    seoTitle: null,
+    seoDescription: null
   }
 
   it('should render the element', () => {
