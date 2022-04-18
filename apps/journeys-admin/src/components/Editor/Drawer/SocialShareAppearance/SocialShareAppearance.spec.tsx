@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
@@ -60,6 +60,32 @@ describe('SocialShareAppearance', () => {
     expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
       'target',
       '_blank'
+    )
+  })
+
+  it('should disable share buttons  and show tool tip if journey is not published', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ publishedAt: null } as unknown as Journey}>
+          <SocialShareAppearance />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Facebook' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Twitter' })).toBeDisabled()
+
+    fireEvent.focusIn(getByRole('button', { name: 'Facebook' }))
+    await waitFor(() =>
+      expect(
+        getByText('Only published journeys are shareable')
+      ).toBeInTheDocument()
+    )
+
+    fireEvent.focusIn(getByRole('button', { name: 'Twitter' }))
+    await waitFor(() =>
+      expect(
+        getByText('Only published journeys are shareable')
+      ).toBeInTheDocument()
     )
   })
 })
