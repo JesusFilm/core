@@ -219,17 +219,6 @@ export function Video({
                 <VideoTrigger player={playerRef.current} {...option} />
               )
           )}
-          {/* Lazy load higher res poster */}
-          {posterBlock?.src != null && loading && (
-            <NextImage
-              src={posterBlock.src}
-              alt={posterBlock.alt}
-              placeholder={blurBackground != null ? 'blur' : 'empty'}
-              blurDataURL={blurBackground ?? posterBlock.src}
-              objectFit="cover"
-              layout="fill"
-            />
-          )}
         </>
       ) : (
         <>
@@ -259,6 +248,17 @@ export function Video({
             />
           </Paper>
         </>
+      )}
+      {/* Lazy load higher res poster */}
+      {posterBlock?.src != null && loading && (
+        <NextImage
+          src={posterBlock.src}
+          alt={posterBlock.alt}
+          placeholder={blurBackground != null ? 'blur' : 'empty'}
+          blurDataURL={blurBackground ?? posterBlock.src}
+          objectFit="cover"
+          layout="fill"
+        />
       )}
     </Box>
   )
