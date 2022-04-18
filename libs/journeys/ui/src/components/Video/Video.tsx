@@ -23,8 +23,8 @@ export const VIDEO_RESPONSE_CREATE = gql`
   }
 `
 
-const videoBackgroundColor = '#000'
-const videoForegroundColor = '#FFF'
+const VIDEO_BACKGROUND_COLOR = '#000'
+const VIDEO_FOREGROUND_COLOR = '#FFF'
 
 export function Video({
   id: blockId,
@@ -87,7 +87,7 @@ export function Video({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: autoplay != null,
+        autoplay: autoplay === true,
         controls: true,
         nativeControlsForTouch: true,
         userActions: {
@@ -169,7 +169,7 @@ export function Video({
         width: '100%',
         height: '100%',
         minHeight: 'inherit',
-        backgroundColor: videoBackgroundColor,
+        backgroundColor: VIDEO_BACKGROUND_COLOR,
         borderRadius: 4,
         overflow: 'hidden',
         m: 0,
@@ -189,32 +189,21 @@ export function Video({
             zIndex: 1
           },
           '> .vjs-poster': {
-            backgroundColor: videoBackgroundColor,
+            backgroundColor: VIDEO_BACKGROUND_COLOR,
             backgroundSize: 'cover'
           }
         },
         '> .MuiIconButton-root': {
-          color: videoForegroundColor,
+          color: VIDEO_FOREGROUND_COLOR,
           position: 'absolute',
           bottom: 12,
           zIndex: 1,
           '&:hover': {
-            color: videoForegroundColor
+            color: VIDEO_FOREGROUND_COLOR
           }
         }
       }}
     >
-      {/* Lazy load higher res poster */}
-      {posterBlock?.src != null && loading && (
-        <NextImage
-          src={posterBlock.src}
-          alt={posterBlock.alt}
-          placeholder={blurBackground != null ? 'blur' : 'empty'}
-          blurDataURL={blurBackground ?? posterBlock.src}
-          objectFit="cover"
-          layout="fill"
-        />
-      )}
       {video?.variant?.hls != null ? (
         <>
           <video
@@ -229,6 +218,17 @@ export function Video({
               option.__typename === 'VideoTriggerBlock' && (
                 <VideoTrigger player={playerRef.current} {...option} />
               )
+          )}
+          {/* Lazy load higher res poster */}
+          {posterBlock?.src != null && loading && (
+            <NextImage
+              src={posterBlock.src}
+              alt={posterBlock.alt}
+              placeholder={blurBackground != null ? 'blur' : 'empty'}
+              blurDataURL={blurBackground ?? posterBlock.src}
+              objectFit="cover"
+              layout="fill"
+            />
           )}
         </>
       ) : (
@@ -253,8 +253,8 @@ export function Video({
             <VideocamRounded
               fontSize="inherit"
               sx={{
-                color: videoForegroundColor,
-                filter: `drop-shadow(-1px 0px 5px ${videoBackgroundColor})`
+                color: VIDEO_FOREGROUND_COLOR,
+                filter: `drop-shadow(-1px 0px 5px ${VIDEO_BACKGROUND_COLOR})`
               }}
             />
           </Paper>
