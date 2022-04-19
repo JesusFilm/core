@@ -132,7 +132,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onBeforeResize={() => setGapBetween(getResponsiveGap())}
             onSlideChangeTransitionStart={() => setShowNavArrow(false)}
             onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
-            allowTouchMove={false}
+            // allowTouchMove={false}
+            allowSlidePrev={false}
+            allowSlideNext={true}
             style={{
               width: '100%',
               paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
