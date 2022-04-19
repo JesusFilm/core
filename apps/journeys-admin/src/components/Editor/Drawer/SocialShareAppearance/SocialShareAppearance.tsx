@@ -66,7 +66,6 @@ export function SocialShareAppearance(): ReactElement {
                   sx={{ height: '16px', width: '16px', color: '#1877F2' }}
                 />
               }
-              data-testid="facebook-share-button"
               disabled={journey == null || journey?.publishedAt == null}
               href={`https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`}
               target="_blank"
@@ -92,7 +91,6 @@ export function SocialShareAppearance(): ReactElement {
                   sx={{ height: '16px', width: '16px', color: '#1DA1F2' }}
                 />
               }
-              data-testid="twitter-share-button"
               disabled={journey == null || journey?.publishedAt == null}
               href={`https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`}
               target="_blank"

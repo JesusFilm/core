@@ -8,17 +8,17 @@ describe('SocialShareAppearance', () => {
   const slug = 'https://wwww.example.jpg'
   const encodedUrl = encodeURIComponent(slug)
   it('should render SocialShareAppearance', () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>
         <SocialShareAppearance />
       </MockedProvider>
     )
     expect(getByText('Social Image')).toBeInTheDocument()
     expect(getByTestId('social-image-edit')).toBeInTheDocument()
-    expect(getByTestId('seo-title-form')).toBeInTheDocument()
-    expect(getByTestId('seo-description-form')).toBeInTheDocument()
-    expect(getByTestId('facebook-share-button')).toBeInTheDocument()
-    expect(getByTestId('twitter-share-button')).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Title' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Description' })).toBeInTheDocument()
+    expect(getByRole('link', { name: 'Facebook' })).toBeInTheDocument()
+    expect(getByRole('link', { name: 'Twitter' })).toBeInTheDocument()
   })
 
   it('should open facebook share in new window', () => {
