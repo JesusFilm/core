@@ -149,19 +149,20 @@ export function Video({
         borderRadius: 4,
         overflow: 'hidden',
         m: 0,
-        position: fullsize === true ? 'absolute' : 'relative',
+        position: fullsize === true ? 'absolute' : null,
         top: fullsize === true ? 0 : null,
         right: fullsize === true ? 0 : null,
         bottom: fullsize === true ? 0 : null,
         left: fullsize === true ? 0 : null,
         outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
         outlineOffset: fullsize === true ? '-3px' : null,
-        '> .video-js': {
+        '> .video-js, .vjs-tech': {
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
           height: '100%',
-          minHeight: 'inherit'
+          minHeight: 'inherit',
+          objectFit: 'cover'
         },
         '> .MuiIconButton-root': {
           color: '#FFFFFF',
