@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
 import ToolTip from '@mui/material/Tooltip'
 import FacebookIcon from '@mui/icons-material/FacebookOutlined'
 import TwitterIcon from '@mui/icons-material/Twitter'
@@ -16,6 +15,7 @@ export function SocialShareAppearance(): ReactElement {
   const journey = useJourney()
   const shareUrl = journey?.slug ?? `untitled-journey-${journey?.id as string}`
   const encodedUrl = encodeURIComponent(shareUrl)
+  const toolTipText = 'Only published journeys are shareable'
 
   const [openFacebookTooltip, setOpenFacebookTooltip] = useState(false)
   const [openTwitterTooltip, setOpenTwitterTooltip] = useState(false)
@@ -57,7 +57,7 @@ export function SocialShareAppearance(): ReactElement {
           open={openFacebookTooltip}
           onOpen={handleOpenFacebookTooltip}
           onClose={handleCloseFacebookTooltip}
-          title="Only published journeys are shareable"
+          title={toolTipText}
         >
           <span>
             <Button
@@ -68,18 +68,13 @@ export function SocialShareAppearance(): ReactElement {
               }
               data-testid="facebook-share-button"
               disabled={journey == null || journey?.publishedAt == null}
+              href={`https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`}
+              target="_blank"
+              rel="noopener"
             >
-              <Link
-                component="a"
-                variant="body2"
-                color="secondary.dark"
-                underline="none"
-                href={`https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`}
-                target="_blank"
-                rel="noopener"
-              >
+              <Typography variant="body2" color="secondary.dark">
                 Facebook
-              </Link>
+              </Typography>
             </Button>
           </span>
         </ToolTip>
@@ -88,7 +83,7 @@ export function SocialShareAppearance(): ReactElement {
           open={openTwitterTooltip}
           onOpen={handleOpenTwitterTooltip}
           onClose={handleCloseTwitterTooltip}
-          title="Only published journeys are shareable"
+          title={toolTipText}
         >
           <span>
             <Button
@@ -99,18 +94,13 @@ export function SocialShareAppearance(): ReactElement {
               }
               data-testid="twitter-share-button"
               disabled={journey == null || journey?.publishedAt == null}
+              href={`https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`}
+              target="_blank"
+              rel="noopener"
             >
-              <Link
-                component="a"
-                variant="body2"
-                color="secondary.dark"
-                underline="none"
-                href={`https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`}
-                target="_blank"
-                rel="noopener"
-              >
+              <Typography variant="body2" color="secondary.dark">
                 Twitter
-              </Link>
+              </Typography>
             </Button>
           </span>
         </ToolTip>

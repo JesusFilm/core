@@ -71,17 +71,23 @@ describe('SocialShareAppearance', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Facebook' })).toBeDisabled()
-    expect(getByRole('button', { name: 'Twitter' })).toBeDisabled()
+    expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+    expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
 
-    fireEvent.focusIn(getByRole('button', { name: 'Facebook' }))
+    fireEvent.focusIn(getByRole('link', { name: 'Facebook' }))
     await waitFor(() =>
       expect(
         getByText('Only published journeys are shareable')
       ).toBeInTheDocument()
     )
 
-    fireEvent.focusIn(getByRole('button', { name: 'Twitter' }))
+    fireEvent.focusIn(getByRole('link', { name: 'Twitter' }))
     await waitFor(() =>
       expect(
         getByText('Only published journeys are shareable')
