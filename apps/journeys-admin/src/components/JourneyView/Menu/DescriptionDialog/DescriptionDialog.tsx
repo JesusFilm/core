@@ -51,8 +51,9 @@ export function DescriptionDialog({
         }
       })
     } catch (error) {
-      enqueueSnackbar('There was an error updating description', {
-        variant: 'error'
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
       })
     }
   }

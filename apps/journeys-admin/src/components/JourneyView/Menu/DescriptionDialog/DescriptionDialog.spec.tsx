@@ -76,20 +76,6 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
   })
 
   it('shows notistack error alert when description fails to update', async () => {
-    const updatedJourney = {
-      description: 'Wrong New Journey'
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          ...updatedJourney
-        }
-      }
-    }))
-
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -98,10 +84,12 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
               query: JOURNEY_DESC_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: updatedJourney
+                input: {
+                  description: 'New Description'
+                }
               }
             },
-            result
+            error: new Error('An error occurred')
           }
         ]}
       >
@@ -117,11 +105,8 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
       target: { value: 'New Description' }
     })
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
     await waitFor(() =>
-      expect(
-        getByText('There was an error updating description')
-      ).toBeInTheDocument()
+      expect(getByText('An error occurred')).toBeInTheDocument()
     )
   })
 })

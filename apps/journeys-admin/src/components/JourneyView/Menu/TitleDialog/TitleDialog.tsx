@@ -46,7 +46,10 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
         }
       })
     } catch (error) {
-      enqueueSnackbar('There was an error updating title', { variant: 'error' })
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 
