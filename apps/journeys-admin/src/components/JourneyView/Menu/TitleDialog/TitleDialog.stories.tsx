@@ -13,34 +13,11 @@ const TitleDialogStory = {
   title: 'Journeys-Admin/JourneyView/Menu/TitleDialog'
 }
 
-const Template: Story = () => {
+const Template: Story = (args) => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: JOURNEY_TITLE_UPDATE,
-            variables: {
-              input: {
-                id: defaultJourney.id,
-                title: 'New Journey'
-              }
-            }
-          },
-          result: {
-            data: {
-              journeyUpdate: {
-                id: defaultJourney.id,
-                __typename: 'Journey',
-                title: 'New Journey'
-              }
-            }
-          }
-        }
-      ]}
-    >
+    <MockedProvider mocks={args.mocks}>
       <JourneyProvider value={defaultJourney}>
         <TitleDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
@@ -49,8 +26,53 @@ const Template: Story = () => {
 }
 
 export const Default = Template.bind({})
+Default.args = {
+  mocks: [
+    {
+      request: {
+        query: JOURNEY_TITLE_UPDATE,
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            title: 'Journey Heading'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyUpdate: {
+            id: defaultJourney.id,
+            __typename: 'Journey',
+            title: 'Journey Heading'
+          }
+        }
+      }
+    }
+  ]
+}
+
 export const Error = Template.bind({})
+Error.args = {
+  mocks: [
+    {
+      request: {
+        query: JOURNEY_TITLE_UPDATE,
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            title: 'Journey Heading error'
+          }
+        }
+      },
+      error: {
+        name: 'USER_INPUT_ERROR',
+        message: 'Mocked network error'
+      }
+    }
+  ]
+}
 Error.play = () => {
+  userEvent.type(screen.getByRole('textbox'), ' error')
   const button = screen.getByRole('button', { name: 'Save' })
   userEvent.click(button)
 }

@@ -13,34 +13,11 @@ const DescriptionDialogStory = {
   title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog'
 }
 
-const Template: Story = () => {
+const Template: Story = (args) => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: JOURNEY_DESC_UPDATE,
-            variables: {
-              input: {
-                id: defaultJourney.id,
-                description: 'New Description'
-              }
-            }
-          },
-          result: {
-            data: {
-              journeyUpdate: {
-                id: defaultJourney.id,
-                __typename: 'Journey',
-                description: 'New Description'
-              }
-            }
-          }
-        }
-      ]}
-    >
+    <MockedProvider mocks={args.mocks}>
       <JourneyProvider value={defaultJourney}>
         <DescriptionDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
@@ -49,8 +26,53 @@ const Template: Story = () => {
 }
 
 export const Default = Template.bind({})
+Default.args = {
+  mocks: [
+    {
+      request: {
+        query: JOURNEY_DESC_UPDATE,
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            description: 'Description'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeyUpdate: {
+            id: defaultJourney.id,
+            __typename: 'Journey',
+            description: 'Description'
+          }
+        }
+      }
+    }
+  ]
+}
+
 export const Error = Template.bind({})
+Error.args = {
+  mocks: [
+    {
+      request: {
+        query: JOURNEY_DESC_UPDATE,
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            description: 'Description error'
+          }
+        }
+      },
+      error: {
+        name: 'USER_INPUT_ERROR',
+        message: 'Mocked network error'
+      }
+    }
+  ]
+}
 Error.play = () => {
+  userEvent.type(screen.getByRole('textbox'), ' error')
   const button = screen.getByRole('button', { name: 'Save' })
   userEvent.click(button)
 }
