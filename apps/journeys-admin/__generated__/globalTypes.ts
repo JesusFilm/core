@@ -190,6 +190,7 @@ export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
   id?: string | null;
+  isCover?: boolean | null;
   journeyId: string;
   parentBlockId: string;
   src?: string | null;
@@ -313,6 +314,7 @@ export interface VideoBlockCreateInput {
   endAt?: number | null;
   fullsize?: boolean | null;
   id?: string | null;
+  isCover?: boolean | null;
   journeyId: string;
   muted?: boolean | null;
   parentBlockId: string;
