@@ -87,6 +87,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       (windowWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
 
+  const handleSlideChange = (): void => {
+    if (swiper != null && activeBlock != null && treeBlocks != null) {
+      const index = swiper.activeIndex
+      if (index > -1 && index < treeBlocks.length) {
+        nextActiveBlock({ id: treeBlocks[index].id })
+      }
+    }
+  }
+
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
   return (
@@ -135,6 +144,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             // allowTouchMove={false}
             allowSlidePrev={false}
             allowSlideNext={true}
+            onSlideChange={handleSlideChange}
             style={{
               width: '100%',
               paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
