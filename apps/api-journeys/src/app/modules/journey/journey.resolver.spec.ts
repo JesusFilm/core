@@ -41,7 +41,7 @@ describe('JourneyResolver', () => {
     slug: 'journey-slug',
     title: 'published',
     status: JourneyStatus.published,
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
@@ -64,7 +64,7 @@ describe('JourneyResolver', () => {
 
   const journeyUpdate = {
     title: 'published',
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
@@ -254,13 +254,16 @@ describe('JourneyResolver', () => {
     it('creates a Journey', async () => {
       mockUuidv4.mockReturnValueOnce('journeyId')
       expect(
-        await resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+        await resolver.journeyCreate(
+          { title: 'Untitled Journey', languageId: '529' },
+          'userId'
+        )
       ).toEqual({
         id: 'journeyId',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         createdAt: new Date().toISOString(),
-        locale: 'en-US',
+        languageId: '529',
         status: JourneyStatus.draft,
         slug: 'untitled-journey',
         title: 'Untitled Journey'
@@ -269,7 +272,10 @@ describe('JourneyResolver', () => {
 
     it('creates a UserJourney', async () => {
       mockUuidv4.mockReturnValueOnce('journeyId')
-      await resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+      await resolver.journeyCreate(
+        { title: 'Untitled Journey', languageId: '529' },
+        'userId'
+      )
       expect(ujService.save).toHaveBeenCalledWith({
         userId: 'userId',
         journeyId: 'journeyId',
@@ -282,13 +288,16 @@ describe('JourneyResolver', () => {
       mockSave.mockRejectedValueOnce({ errorNum: 1210 })
       mockUuidv4.mockReturnValueOnce('journeyId')
       expect(
-        await resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+        await resolver.journeyCreate(
+          { title: 'Untitled Journey', languageId: '529' },
+          'userId'
+        )
       ).toEqual({
         id: 'journeyId',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
         createdAt: new Date().toISOString(),
-        locale: 'en-US',
+        languageId: '529',
         status: JourneyStatus.draft,
         slug: 'untitled-journey-journeyId',
         title: 'Untitled Journey'
@@ -299,7 +308,10 @@ describe('JourneyResolver', () => {
       const mockSave = service.save as jest.MockedFunction<typeof service.save>
       mockSave.mockRejectedValueOnce(new Error('database error'))
       await expect(
-        resolver.journeyCreate({ title: 'Untitled Journey' }, 'userId')
+        resolver.journeyCreate(
+          { title: 'Untitled Journey', languageId: '529' },
+          'userId'
+        )
       ).rejects.toThrow('database error')
     })
   })
@@ -366,6 +378,15 @@ describe('JourneyResolver', () => {
 
     it('should return published', async () => {
       expect(resolver.status(journey)).toEqual(JourneyStatus.published)
+    })
+  })
+
+  describe('language', () => {
+    it('returns object for federation', async () => {
+      expect(await resolver.language({ languageId: 'languageId' })).toEqual({
+        __typename: 'Language',
+        id: 'languageId'
+      })
     })
   })
 })

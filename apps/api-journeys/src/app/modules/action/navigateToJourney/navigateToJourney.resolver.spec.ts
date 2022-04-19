@@ -33,7 +33,7 @@ describe('NavigateToJourneyActionResolver', () => {
     id: '4',
     title: 'Fact or Fiction',
     status: JourneyStatus.published,
-    locale: 'en-US',
+    languageId: '529',
     themeMode: 'light',
     themeName: 'base',
     slug: 'fact-or-fiction'

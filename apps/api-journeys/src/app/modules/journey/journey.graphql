@@ -1,7 +1,11 @@
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   title: String!
-  locale: String!
+  language: Language!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
@@ -37,7 +41,7 @@ input JourneyCreateInput {
   """
   id: ID
   title: String!
-  locale: String
+  languageId: String!
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -53,7 +57,7 @@ input JourneyCreateInput {
 
 input JourneyUpdateInput {
   title: String
-  locale: String
+  languageId: String
   themeMode: ThemeMode
   themeName: ThemeName
   description: String

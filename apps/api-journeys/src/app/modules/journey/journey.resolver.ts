@@ -107,7 +107,6 @@ export class JourneyResolver {
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           createdAt: new Date().toISOString(),
-          locale: 'en-US',
           status: JourneyStatus.draft,
           ...input
         })
@@ -181,5 +180,12 @@ export class JourneyResolver {
   @ResolveField()
   status(@Parent() { publishedAt }: Journey): JourneyStatus {
     return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
+  }
+
+  @ResolveField('language')
+  async language(
+    @Parent() journey
+  ): Promise<{ __typename: 'Language'; id: string }> {
+    return { __typename: 'Language', id: journey.languageId }
   }
 }

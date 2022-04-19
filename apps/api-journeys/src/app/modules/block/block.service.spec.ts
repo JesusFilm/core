@@ -44,7 +44,7 @@ describe('BlockService', () => {
     title: 'published',
     createdAt: '1234',
     status: JourneyStatus.published,
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
