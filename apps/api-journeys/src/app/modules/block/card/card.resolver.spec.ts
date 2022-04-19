@@ -45,7 +45,7 @@ describe('CardBlockResolver', () => {
     parentOrder: 2,
     backgroundColor: '#FFF',
     coverBlockId: '4',
-    themeMode: ThemeMode.light,
+    themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
     fullscreen: true
   }
