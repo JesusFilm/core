@@ -1,7 +1,7 @@
 import videojs from 'video.js'
-import NextImage from 'next/image'
 import { ReactElement, useEffect, useRef, useCallback, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
+import { NextImage } from '@core/shared/ui'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
@@ -256,8 +256,8 @@ export function Video({
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground ?? posterBlock.src}
-          objectFit="cover"
           layout="fill"
+          objectFit="cover"
         />
       )}
     </Box>

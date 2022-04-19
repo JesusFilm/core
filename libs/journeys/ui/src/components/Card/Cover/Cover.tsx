@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
-import NextImage from 'next/image'
+import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { TreeBlock, blurImage } from '../../..'
@@ -75,13 +75,12 @@ export function Cover({
             '> .vjs-tech': {
               objectFit: 'cover'
             },
+            '> .vjs-loading-spinner': {
+              zIndex: 1
+            },
             '> .vjs-poster': {
               backgroundSize: 'cover'
             }
-          },
-          // NextImage span
-          '> span': {
-            minHeight: '100%'
           }
         }}
       >
@@ -102,8 +101,8 @@ export function Cover({
             alt={imageBlock.alt}
             placeholder="blur"
             blurDataURL={blurBackground}
-            objectFit="cover"
             layout="fill"
+            objectFit="cover"
           />
         )}
       </Box>

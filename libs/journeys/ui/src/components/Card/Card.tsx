@@ -1,6 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
-import { ThemeProvider } from '@core/shared/ui'
-import NextImage from 'next/image'
+import { ThemeProvider, NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
@@ -112,8 +111,8 @@ export function Card({
             <NextImage
               src={blurUrl}
               alt={coverBlock.alt}
-              objectFit="cover"
               layout="fill"
+              objectFit="cover"
             />
           )}
         </Box>
