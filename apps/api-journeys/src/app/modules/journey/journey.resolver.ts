@@ -186,6 +186,7 @@ export class JourneyResolver {
   async language(
     @Parent() journey
   ): Promise<{ __typename: 'Language'; id: string }> {
-    return { __typename: 'Language', id: journey.languageId }
+    // 529 (english) is default if not set
+    return { __typename: 'Language', id: journey.languageId ?? '529' }
   }
 }
