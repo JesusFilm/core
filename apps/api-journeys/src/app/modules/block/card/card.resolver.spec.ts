@@ -27,13 +27,13 @@ describe('CardBlockResolver', () => {
   }
 
   const blockUpdate = {
-    __typename: '',
+    __typename: 'CardBlock',
     journeyId: '2',
     parentBlockId: '3',
     parentOrder: 0,
     backgroundColor: '#FFF',
     coverBlockId: '4',
-    themeMode: ThemeMode.light,
+    themeMode: ThemeMode.dark,
     themeName: ThemeName.base,
     fullscreen: true
   }
@@ -56,6 +56,7 @@ describe('CardBlockResolver', () => {
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
+      removeBlockAndChildren: jest.fn((input) => input),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input)
     })
@@ -101,10 +102,44 @@ describe('CardBlockResolver', () => {
 
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
-      resolver
+      await resolver
         .cardBlockUpdate(block.id, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
+
+      expect(service.removeBlockAndChildren).not.toHaveBeenCalled()
       expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
+    })
+    it('replaces a CardBlock coverBlock', async () => {
+      await resolver
+        .cardBlockUpdate(block.id, block.journeyId, {
+          ...blockUpdate,
+          coverBlockId: '3'
+        })
+        .catch((err) => console.log(err))
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        block.coverBlockId,
+        block.journeyId
+      )
+      expect(service.update).toHaveBeenCalledWith(block.id, {
+        ...blockUpdate,
+        coverBlockId: '3'
+      })
+    })
+    it('removes a CardBlock coverBlock', async () => {
+      await resolver
+        .cardBlockUpdate(block.id, block.journeyId, {
+          ...blockUpdate,
+          coverBlockId: null
+        })
+        .catch((err) => console.log(err))
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        block.coverBlockId,
+        block.journeyId
+      )
+      expect(service.update).toHaveBeenCalledWith(block.id, {
+        ...blockUpdate,
+        coverBlockId: null
+      })
     })
   })
 

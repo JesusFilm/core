@@ -42,6 +42,19 @@ export class CardBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: CardBlockUpdateInput
   ): Promise<CardBlock> {
+    const selectedCard: CardBlock = await this.blockService.get(id)
+
+    // Delete existing coverBlock when replacing or removing
+    if (
+      selectedCard.coverBlockId != null &&
+      input.coverBlockId !== selectedCard.coverBlockId
+    ) {
+      await this.blockService.removeBlockAndChildren(
+        selectedCard.coverBlockId,
+        journeyId
+      )
+    }
+
     return await this.blockService.update(id, input)
   }
 

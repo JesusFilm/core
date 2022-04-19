@@ -93,6 +93,16 @@ describe('VideoBlockResolver', () => {
       )
       expect(service.save).toHaveBeenCalledWith(createdBlock)
     })
+
+    it('creates a cover VideoBlock', async () => {
+      await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
+
+      expect(service.save).toHaveBeenCalledWith({
+        ...createdBlock,
+        isCover: true,
+        parentOrder: null
+      })
+    })
   })
 
   describe('videoBlockUpdate', () => {

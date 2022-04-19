@@ -24,6 +24,10 @@ input ImageBlockCreateInput {
   src: String
   alt: String!
   blurhash: String
+  """
+  True if the coverBlockId in a parent block is set to this block id. Cover blocks should only be set at creation.
+  """
+  isCover: Boolean
 }
 
 input ImageBlockUpdateInput {

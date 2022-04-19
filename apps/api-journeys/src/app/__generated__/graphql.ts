@@ -220,6 +220,7 @@ export class ImageBlockCreateInput {
     src?: Nullable<string>;
     alt: string;
     blurhash?: Nullable<string>;
+    isCover?: Nullable<boolean>;
 }
 
 export class ImageBlockUpdateInput {
@@ -309,6 +310,7 @@ export class VideoBlockCreateInput {
     videoVariantLanguageId?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
+    isCover?: Nullable<boolean>;
 }
 
 export class VideoBlockUpdateInput {

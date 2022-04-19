@@ -274,6 +274,11 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """
+  True if the coverBlockId in a parent block is set to this block id. Cover blocks should only be set at creation.
+  """
+  isCover: Boolean
   journeyId: ID!
   parentBlockId: ID!
   src: String
@@ -778,6 +783,11 @@ input VideoBlockCreateInput {
   endAt: Int
   fullsize: Boolean
   id: ID
+
+  """
+  True if the coverBlockId in a parent block is set to this block id. Cover blocks should only be set at creation.
+  """
+  isCover: Boolean
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID!

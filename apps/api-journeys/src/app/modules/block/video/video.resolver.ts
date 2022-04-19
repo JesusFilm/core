@@ -22,15 +22,23 @@ export class VideoBlockResolver {
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
   ): Promise<VideoBlock> {
-    const siblings = await this.blockService.getSiblings(
-      input.journeyId,
-      input.parentBlockId
-    )
-    return await this.blockService.save({
-      ...input,
-      __typename: 'VideoBlock',
-      parentOrder: siblings.length
-    })
+    if (input.isCover === true) {
+      return await this.blockService.save({
+        ...input,
+        __typename: 'VideoBlock',
+        parentOrder: null
+      })
+    } else {
+      const siblings = await this.blockService.getSiblings(
+        input.journeyId,
+        input.parentBlockId
+      )
+      return await this.blockService.save({
+        ...input,
+        __typename: 'VideoBlock',
+        parentOrder: siblings.length
+      })
+    }
   }
 
   @Mutation()

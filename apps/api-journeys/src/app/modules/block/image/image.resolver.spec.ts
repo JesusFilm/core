@@ -109,6 +109,15 @@ describe('ImageBlockResolver', () => {
       )
       expect(service.save).toHaveBeenCalledWith(inputWithId)
     })
+    it('creates a cover ImageBlock', async () => {
+      await resolver.imageBlockCreate({ ...input, isCover: true })
+
+      expect(service.save).toHaveBeenCalledWith({
+        ...inputWithId,
+        isCover: true,
+        parentOrder: null
+      })
+    })
   })
 
   describe('imageBlockUpdate', () => {

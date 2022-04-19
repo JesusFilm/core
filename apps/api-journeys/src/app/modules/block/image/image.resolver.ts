@@ -72,14 +72,22 @@ export class ImageBlockResolver {
   ): Promise<ImageBlock> {
     input.__typename = 'ImageBlock'
     const block = (await handleImage(input)) as ImageBlockCreateInput
-    const siblings = await this.blockService.getSiblings(
-      block.journeyId,
-      block.parentBlockId
-    )
-    return await this.blockService.save({
-      ...block,
-      parentOrder: siblings.length
-    })
+
+    if (block.isCover === true) {
+      return await this.blockService.save({
+        ...block,
+        parentOrder: null
+      })
+    } else {
+      const siblings = await this.blockService.getSiblings(
+        block.journeyId,
+        block.parentBlockId
+      )
+      return await this.blockService.save({
+        ...block,
+        parentOrder: siblings.length
+      })
+    }
   }
 
   @Mutation()
