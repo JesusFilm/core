@@ -545,7 +545,7 @@ Default.args = {
     title: 'NUA Journey: Ep.3 – Decision',
     slug: 'nua-journey-ep-3-decision',
     description: 'my cool journey',
-    locale: 'en-US',
+    languageId: '529',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,

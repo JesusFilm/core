@@ -9,6 +9,18 @@ import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 // GraphQL query operation: GetJourneys
 // ====================================================
 
+export interface GetJourneys_journeys_language_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetJourneys_journeys_language {
+  __typename: "Language";
+  id: string;
+  name: GetJourneys_journeys_language_name[];
+}
+
 export interface GetJourneys_journeys_userJourneys_user {
   __typename: "User";
   id: string;
@@ -33,7 +45,7 @@ export interface GetJourneys_journeys {
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
-  locale: string;
+  language: GetJourneys_journeys_language;
   status: JourneyStatus;
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
 }
