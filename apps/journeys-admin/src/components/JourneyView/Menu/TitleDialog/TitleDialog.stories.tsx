@@ -10,7 +10,11 @@ import { TitleDialog, JOURNEY_TITLE_UPDATE } from './TitleDialog'
 const TitleDialogStory = {
   ...journeysAdminConfig,
   component: TitleDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/TitleDialog'
+  title: 'Journeys-Admin/JourneyView/Menu/TitleDialog',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story = (args) => {

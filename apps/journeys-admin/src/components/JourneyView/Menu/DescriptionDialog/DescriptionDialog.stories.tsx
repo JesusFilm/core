@@ -10,7 +10,11 @@ import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 const DescriptionDialogStory = {
   ...journeysAdminConfig,
   component: DescriptionDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog'
+  title: 'Journeys-Admin/JourneyView/Menu/DescriptionDialog',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story = (args) => {
