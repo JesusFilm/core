@@ -40,7 +40,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
               : []
         }}
         twitter={{
-          site: '@JesusFilm',
+          site: '@YourNextStepIs',
           cardType: 'summary_large_image'
         }}
       />
