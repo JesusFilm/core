@@ -1,4 +1,11 @@
-import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Args,
+  ResolveField,
+  ResolveReference,
+  Parent
+} from '@nestjs/graphql'
 import { TranslationField } from '@core/nest/decorators'
 import { Language } from '../../__generated__/graphql'
 import { LanguageService } from './language.service'
@@ -27,4 +34,12 @@ export class LanguageResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): void {}
+
+  @ResolveReference()
+  async resolveReference(reference: {
+    __typename: 'Language'
+    id: string
+  }): Promise<Language> {
+    return await this.languageService.get(reference.id)
+  }
 }

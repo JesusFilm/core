@@ -65,4 +65,15 @@ describe('LangaugeResolver', () => {
       ])
     })
   })
+
+  describe('resolveReference', () => {
+    it('should return language', async () => {
+      expect(
+        await resolver.resolveReference({
+          __typename: 'Language',
+          id: language.id
+        })
+      ).toEqual(language)
+    })
+  })
 })
