@@ -45,10 +45,9 @@ export function CopyTextField({
       }}
       hiddenLabel={label == null}
       label={label}
-      defaultValue={value}
       inputRef={inputRef}
       disabled={value == null}
-      inputProps={{ onFocus: handleFocus }}
+      inputProps={{ onFocus: handleFocus, value }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
