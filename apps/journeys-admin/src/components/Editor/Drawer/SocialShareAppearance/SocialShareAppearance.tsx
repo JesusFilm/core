@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -15,28 +15,7 @@ export function SocialShareAppearance(): ReactElement {
   const journey = useJourney()
   const shareUrl = journey?.slug ?? `untitled-journey-${journey?.id as string}`
   const encodedUrl = encodeURIComponent(shareUrl)
-  const toolTipText = 'Only published journeys are shareable'
-
-  const [openFacebookTooltip, setOpenFacebookTooltip] = useState(false)
-  const [openTwitterTooltip, setOpenTwitterTooltip] = useState(false)
-
-  const handleOpenFacebookTooltip = (): void => {
-    if (journey?.publishedAt != null) return
-    setOpenFacebookTooltip(true)
-  }
-
-  const handleCloseFacebookTooltip = (): void => {
-    setOpenFacebookTooltip(false)
-  }
-
-  const handleOpenTwitterTooltip = (): void => {
-    if (journey?.publishedAt != null) return
-    setOpenTwitterTooltip(true)
-  }
-
-  const handleCloseTwitterTooltip = (): void => {
-    setOpenTwitterTooltip(false)
-  }
+  const isPublished = journey?.status === 'published'
 
   return (
     <Box sx={{ px: 6, py: 4 }}>
@@ -54,10 +33,8 @@ export function SocialShareAppearance(): ReactElement {
 
       <Stack direction="row" spacing={3}>
         <ToolTip
-          open={openFacebookTooltip}
-          onOpen={handleOpenFacebookTooltip}
-          onClose={handleCloseFacebookTooltip}
-          title={toolTipText}
+          title="Only published journeys are shareable"
+          disableHoverListener={isPublished}
         >
           <span>
             <Button
@@ -66,7 +43,7 @@ export function SocialShareAppearance(): ReactElement {
                   sx={{ height: '16px', width: '16px', color: '#1877F2' }}
                 />
               }
-              disabled={journey == null || journey?.publishedAt == null}
+              disabled={journey == null || !isPublished}
               href={`https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`}
               target="_blank"
               rel="noopener"
@@ -79,10 +56,8 @@ export function SocialShareAppearance(): ReactElement {
         </ToolTip>
 
         <ToolTip
-          open={openTwitterTooltip}
-          onOpen={handleOpenTwitterTooltip}
-          onClose={handleCloseTwitterTooltip}
-          title={toolTipText}
+          title="Only published journeys are shareable"
+          disableHoverListener={isPublished}
         >
           <span>
             <Button
@@ -91,7 +66,7 @@ export function SocialShareAppearance(): ReactElement {
                   sx={{ height: '16px', width: '16px', color: '#1DA1F2' }}
                 />
               }
-              disabled={journey == null || journey?.publishedAt == null}
+              disabled={journey == null || !isPublished}
               href={`https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`}
               target="_blank"
               rel="noopener"

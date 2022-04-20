@@ -54,7 +54,6 @@ const image: ImageBlock = {
 }
 
 const Template: Story = ({ ...args }) => {
-  console.log(args)
   return (
     <MockedProvider>
       <JourneyProvider value={args.journey}>
@@ -82,7 +81,8 @@ Filled.args = {
     blocks: [image],
     primaryImageBlock: image,
     seoTitle: 'Social title',
-    seoDescription: 'Social description'
+    seoDescription: 'Social description',
+    status: 'published'
   }
 }
 
