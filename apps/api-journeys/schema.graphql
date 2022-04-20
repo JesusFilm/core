@@ -182,7 +182,7 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
-  coverBlockId: ID
+  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -191,11 +191,7 @@ input CardBlockCreateInput {
 input CardBlockUpdateInput {
   parentBlockId: ID
   backgroundColor: String
-
-  """
-  DEPRECATED: coverBlockId will be updated on Image/Video Cover block creation
-  """
-  coverBlockId: ID
+  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName

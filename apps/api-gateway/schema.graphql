@@ -128,10 +128,6 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   backgroundColor: String
-
-  """
-  DEPRECATED: coverBlockId will be updated on Image/Video Cover block creation
-  """
   coverBlockId: ID
   fullscreen: Boolean
   parentBlockId: ID
