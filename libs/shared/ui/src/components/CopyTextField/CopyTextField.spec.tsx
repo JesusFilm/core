@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { CopyTextField } from '.'
 
-describe('AccessDialog', () => {
+describe('CopyTextField', () => {
   const originalNavigator = { ...global.navigator }
 
   beforeEach(() => {
