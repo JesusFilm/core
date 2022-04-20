@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 
-import { ImageBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  CardBlock,
+  ImageBlock,
+  ImageBlockCreateInput,
+  ImageBlockUpdateInput
+} from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
@@ -13,66 +18,61 @@ describe('ImageBlockResolver', () => {
     blockResolver: BlockResolver,
     service: BlockService
 
-  const block = {
+  const blockCreate: ImageBlockCreateInput = {
     id: '1',
     journeyId: '2',
-    __typename: 'ImageBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
-    src: 'https://source.unsplash.com/random/1920x1080',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080
-  }
-
-  const input: ImageBlockCreateInput & { __typename: string } = {
-    __typename: '',
-    id: '1',
-    parentBlockId: '2',
-    journeyId: '3',
-    src: 'https://blurha.sh/assets/images/img2.jpg',
-    alt: 'grid image',
-    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
-  }
-
-  const inputUpdate = {
-    parentBlockId: '2',
-    journeyId: '3',
+    parentBlockId: 'parentBlockId',
     src: 'https://blurha.sh/assets/images/img2.jpg',
     alt: 'grid image'
   }
 
-  const inputWithId = {
-    id: input.id,
-    parentBlockId: input.parentBlockId,
-    parentOrder: 2,
-    journeyId: input.journeyId,
+  const createdBlock: ImageBlock = {
+    id: '1',
+    journeyId: '2',
     __typename: 'ImageBlock',
-    src: input.src,
-    alt: input.alt,
+    parentBlockId: 'parentBlockId',
+    parentOrder: 2,
+    src: 'https://blurha.sh/assets/images/img2.jpg',
+    alt: 'grid image',
     width: 301,
     height: 193,
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
-  const imageBlockUpdateResponse = {
-    parentBlockId: input.parentBlockId,
-    journeyId: input.journeyId,
-    src: input.src,
-    alt: input.alt,
-    width: 301,
-    height: 193,
-    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
+  const parentBlock: CardBlock = {
+    id: 'parentBlockId',
+    journeyId: createdBlock.journeyId,
+    __typename: 'CardBlock',
+    parentBlockId: '0',
+    parentOrder: 0,
+    coverBlockId: createdBlock.id,
+    fullscreen: true
+  }
+
+  const blockUpdate: ImageBlockUpdateInput = {
+    src: 'https://unsplash.it/640/425?image=42',
+    alt: 'placeholder image from unsplash'
+  }
+
+  const updatedBlock: ImageBlock = {
+    ...createdBlock,
+    src: 'https://unsplash.it/640/425?image=42',
+    alt: 'placeholder image from unsplash',
+    width: 640,
+    height: 425
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block),
-      getAll: jest.fn(() => [block, block]),
-      getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
-      update: jest.fn((input) => input)
+      get: jest.fn((id) =>
+        id === blockCreate.id ? createdBlock : parentBlock
+      ),
+      getAll: jest.fn(() => [createdBlock, createdBlock]),
+      getSiblings: jest.fn(() => [createdBlock, createdBlock]),
+      removeBlockAndChildren: jest.fn((input) => input),
+      save: jest.fn((input) => createdBlock),
+      update: jest.fn((id, input) => updatedBlock)
     })
   }
   beforeEach(async () => {
@@ -95,35 +95,44 @@ describe('ImageBlockResolver', () => {
 
   describe('ImageBlock', () => {
     it('returns ImageBlock', async () => {
-      expect(await blockResolver.block('1')).toEqual(block)
-      expect(await blockResolver.blocks()).toEqual([block, block])
+      expect(await blockResolver.block('1')).toEqual(createdBlock)
+      expect(await blockResolver.blocks()).toEqual([createdBlock, createdBlock])
     })
   })
 
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {
-      await resolver.imageBlockCreate(input)
+      await resolver.imageBlockCreate(blockCreate)
       expect(service.getSiblings).toHaveBeenCalledWith(
-        input.journeyId,
-        input.parentBlockId
+        blockCreate.journeyId,
+        blockCreate.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(inputWithId)
+      expect(service.save).toHaveBeenCalledWith(createdBlock)
+      expect(service.update).not.toHaveBeenCalled()
     })
     it('creates a cover ImageBlock', async () => {
-      await resolver.imageBlockCreate({ ...input, isCover: true })
+      await resolver.imageBlockCreate({ ...blockCreate, isCover: true })
 
       expect(service.save).toHaveBeenCalledWith({
-        ...inputWithId,
+        ...createdBlock,
         isCover: true,
         parentOrder: null
+      })
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        parentBlock.coverBlockId,
+        parentBlock.journeyId
+      )
+      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
+        coverBlockId: createdBlock.id
       })
     })
   })
 
   describe('imageBlockUpdate', () => {
     it('updates an ImageBlock', async () => {
-      await resolver.imageBlockUpdate('1', '2', inputUpdate)
-      expect(service.update).toHaveBeenCalledWith('1', imageBlockUpdateResponse)
+      expect(await resolver.imageBlockUpdate('1', '2', blockUpdate)).toEqual(
+        updatedBlock
+      )
     })
   })
 })

@@ -8,6 +8,7 @@ import * as sharp from 'sharp'
 
 import { BlockService } from '../block.service'
 import {
+  CardBlock,
   ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput,
@@ -68,16 +69,32 @@ export class ImageBlockResolver {
     ])
   )
   async imageBlockCreate(
-    @Args('input') input: ImageBlockCreateInput & { __typename }
+    @Args('input') input: ImageBlockCreateInput
   ): Promise<ImageBlock> {
-    input.__typename = 'ImageBlock'
     const block = (await handleImage(input)) as ImageBlockCreateInput
 
     if (block.isCover === true) {
-      return await this.blockService.save({
+      const coverBlock: ImageBlock = await this.blockService.save({
         ...block,
+        __typename: 'ImageBlock',
         parentOrder: null
       })
+      const parentBlock: CardBlock = await this.blockService.get(
+        block.parentBlockId
+      )
+
+      // Delete and replace existing coverBlock
+      if (parentBlock.coverBlockId != null) {
+        await this.blockService.removeBlockAndChildren(
+          parentBlock.coverBlockId,
+          parentBlock.journeyId
+        )
+      }
+      await this.blockService.update(parentBlock.id, {
+        coverBlockId: coverBlock.id
+      })
+
+      return coverBlock
     } else {
       const siblings = await this.blockService.getSiblings(
         block.journeyId,
@@ -85,6 +102,7 @@ export class ImageBlockResolver {
       )
       return await this.blockService.save({
         ...block,
+        __typename: 'ImageBlock',
         parentOrder: siblings.length
       })
     }
