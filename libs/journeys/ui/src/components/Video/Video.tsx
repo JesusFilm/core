@@ -53,11 +53,11 @@ export function Video({
   const blurBackground =
     posterBlock != null
       ? blurImage(
-        posterBlock.width,
-        posterBlock.height,
-        posterBlock.blurhash,
-        theme.palette.background.paper
-      )
+          posterBlock.width,
+          posterBlock.height,
+          posterBlock.blurhash,
+          theme.palette.background.paper
+        )
       : undefined
 
   const handleVideoResponse = useCallback(
