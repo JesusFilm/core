@@ -16,6 +16,8 @@ interface JourneyPageProps {
   journey: Journey
 }
 
+const fbAppId = process.env.NEXT_FACEBOOK_APP_ID
+
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
@@ -23,7 +25,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         title={journey.title}
         description={journey.description ?? undefined}
         openGraph={{
+          type: 'website',
           title: journey.seoTitle ?? journey.title,
+          url: `https://wwww.your.nextstep.is/${journey.slug}`,
           description:
             journey.seoDescription ?? journey.description ?? undefined,
           images:
@@ -39,6 +43,13 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
                 ]
               : []
         }}
+        facebook={
+          fbAppId != null
+            ? {
+                appId: fbAppId
+              }
+            : undefined
+        }
         twitter={{
           site: '@YourNextStepIs',
           cardType: 'summary_large_image'
@@ -70,6 +81,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
           themeMode
           title
           description
+          slug
           seoTitle
           seoDescription
           primaryImageBlock {
