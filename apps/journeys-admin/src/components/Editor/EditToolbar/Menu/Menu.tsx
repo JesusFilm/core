@@ -32,9 +32,10 @@ export function Menu(): ReactElement {
     setAnchorEl(null)
   }
 
-  function SocialSettings(): ReactElement {
+  function BlockMenu(): ReactElement {
     return (
       <>
+        <DeleteBlock variant="list-item" />
         {!smUp && (
           <MenuItem onClick={handleOpenSocial}>
             <ListItemIcon>
@@ -47,20 +48,18 @@ export function Menu(): ReactElement {
     )
   }
 
-  function BlockMenu(): ReactElement {
-    return (
-      <>
-        <DeleteBlock variant="list-item" />
-        <SocialSettings />
-      </>
-    )
-  }
-
   function CardMenu(): ReactElement {
     return (
       <>
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
-        <SocialSettings />
+        {!smUp && (
+          <MenuItem onClick={handleOpenSocial}>
+            <ListItemIcon>
+              <ShareRoundedIcon />
+            </ListItemIcon>
+            <ListItemText>Social Settings</ListItemText>
+          </MenuItem>
+        )}
         <Divider />
         <NextLink
           href={journey != null ? `/journeys/${journey.slug}` : ''}

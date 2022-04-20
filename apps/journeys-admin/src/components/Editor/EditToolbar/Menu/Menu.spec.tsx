@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { ThemeProvider } from '../../../ThemeProvider'
 import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -9,6 +11,11 @@ import {
 } from '../../../../../__generated__/GetJourney'
 import { JourneyProvider } from '../../../../libs/context'
 import { Menu } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 describe('EditToolbar Menu', () => {
   it('should open the block menu on icon click', () => {
@@ -50,7 +57,7 @@ describe('EditToolbar Menu', () => {
       children: []
     }
 
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByTestId, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <EditorProvider initialState={{ selectedBlock }}>
@@ -63,6 +70,9 @@ describe('EditToolbar Menu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menu')).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Social Settings' })
+    ).not.toBeInTheDocument()
   })
 
   it('should link back to journey on click', () => {
@@ -100,5 +110,74 @@ describe('EditToolbar Menu', () => {
       'href',
       '/journeys/my-journey'
     )
+  })
+
+  describe('social settings', () => {
+    beforeEach(() =>
+      (useMediaQuery as jest.Mock).mockImplementation(() => false)
+    )
+    it('should display on mobile and opens social share drawer when card is selected', () => {
+      const selectedBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'stepId',
+        parentBlockId: 'journeyId',
+        parentOrder: 0,
+        locked: true,
+        nextBlockId: null,
+        children: []
+      }
+
+      const { getByRole, getByText } = render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <EditorProvider initialState={{ selectedBlock }}>
+              <ThemeProvider>
+                <Menu />
+              </ThemeProvider>
+            </EditorProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(getByRole('button'))
+      expect(
+        getByRole('menuitem', { name: 'Social Settings' })
+      ).toBeInTheDocument()
+
+      fireEvent.click(getByRole('menuitem', { name: 'Social Settings' }))
+      expect(getByText('Social Settings')).toBeInTheDocument()
+    })
+
+    it('should display on mobile and opens social share drawer when block is selected', () => {
+      const selectedBlock: TreeBlock<TypographyBlock> = {
+        id: 'typography0.id',
+        __typename: 'TypographyBlock',
+        parentBlockId: 'card1.id',
+        parentOrder: 0,
+        content: 'Title',
+        variant: null,
+        color: null,
+        align: null,
+        children: []
+      }
+
+      const { getByRole, getByText } = render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <EditorProvider initialState={{ selectedBlock }}>
+              <ThemeProvider>
+                <Menu />
+              </ThemeProvider>
+            </EditorProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(getByRole('button'))
+      expect(
+        getByRole('menuitem', { name: 'Social Settings' })
+      ).toBeInTheDocument()
+
+      fireEvent.click(getByRole('menuitem', { name: 'Social Settings' }))
+      expect(getByText('Social Settings')).toBeInTheDocument()
+    })
   })
 })

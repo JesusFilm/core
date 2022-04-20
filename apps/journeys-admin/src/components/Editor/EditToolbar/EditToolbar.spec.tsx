@@ -4,6 +4,10 @@ import { SnackbarProvider } from 'notistack'
 import { EditToolbar } from '.'
 
 describe('Edit Toolbar', () => {
+  jest.mock('@mui/material/useMediaQuery', () => ({
+    __esModule: true,
+    default: () => true
+  }))
   it('should render Toolbar', () => {
     const { getAllByRole, getByTestId } = render(
       <SnackbarProvider>
