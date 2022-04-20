@@ -13,8 +13,7 @@ import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 
 export function SocialShareAppearance(): ReactElement {
   const journey = useJourney()
-  const shareUrl = journey?.slug ?? `untitled-journey-${journey?.id as string}`
-  const encodedUrl = encodeURIComponent(shareUrl)
+  const shareUrl = journey?.slug ?? ''
   const isPublished = journey?.status === 'published'
 
   return (
@@ -44,7 +43,7 @@ export function SocialShareAppearance(): ReactElement {
                 />
               }
               disabled={journey == null || !isPublished}
-              href={`https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`}
+              href={`https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${shareUrl}`}
               target="_blank"
               rel="noopener"
             >
@@ -67,7 +66,7 @@ export function SocialShareAppearance(): ReactElement {
                 />
               }
               disabled={journey == null || !isPublished}
-              href={`https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`}
+              href={`https://twitter.com/intent/tweet?url=https://your.nextstep.is/${shareUrl}`}
               target="_blank"
               rel="noopener"
             >

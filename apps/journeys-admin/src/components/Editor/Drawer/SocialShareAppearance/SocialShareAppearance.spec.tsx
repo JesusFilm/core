@@ -6,7 +6,6 @@ import { SocialShareAppearance } from '.'
 
 describe('SocialShareAppearance', () => {
   const slug = 'https://wwww.example.jpg'
-  const encodedUrl = encodeURIComponent(slug)
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>
@@ -22,7 +21,7 @@ describe('SocialShareAppearance', () => {
   })
 
   it('should open facebook share in new window', () => {
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${encodedUrl}`
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${slug}`
 
     const { getByRole } = render(
       <MockedProvider>
@@ -43,7 +42,7 @@ describe('SocialShareAppearance', () => {
   })
 
   it('should open twitter share in new window', () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?url=https://your.nextstep.is/${encodedUrl}`
+    const twitterUrl = `https://twitter.com/intent/tweet?url=https://your.nextstep.is/${slug}`
 
     const { getByRole } = render(
       <MockedProvider>
