@@ -16,7 +16,7 @@ describe('CardBlockResolver', () => {
   const block = {
     id: '1',
     journeyId: '2',
-    __typename: '',
+    __typename: 'CardBlock',
     parentBlockId: '3',
     parentOrder: 0,
     backgroundColor: '#FFF',
@@ -27,13 +27,13 @@ describe('CardBlockResolver', () => {
   }
 
   const blockUpdate = {
-    __typename: 'CardBlock',
+    __typename: '',
     journeyId: '2',
     parentBlockId: '3',
     parentOrder: 0,
     backgroundColor: '#FFF',
     coverBlockId: '4',
-    themeMode: ThemeMode.dark,
+    themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     fullscreen: true
   }
@@ -104,7 +104,6 @@ describe('CardBlockResolver', () => {
       resolver
         .cardBlockUpdate(block.id, block.journeyId, blockUpdate)
         .catch((err) => console.log(err))
-
       expect(service.update).toHaveBeenCalledWith(block.id, blockUpdate)
     })
   })
