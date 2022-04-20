@@ -128,6 +128,10 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   backgroundColor: String
+
+  """
+  DEPRECATED: coverBlockId will be updated on Image/Video Cover block creation
+  """
   coverBlockId: ID
   fullscreen: Boolean
   parentBlockId: ID
@@ -276,7 +280,7 @@ input ImageBlockCreateInput {
   id: ID
 
   """
-  True if the coverBlockId in a parent block is set to this block id. Cover blocks should only be set at creation.
+  True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
   journeyId: ID!
@@ -786,7 +790,7 @@ input VideoBlockCreateInput {
   id: ID
 
   """
-  True if the coverBlockId in a parent block is set to this block id. Cover blocks should only be set at creation.
+  True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
   journeyId: ID!
