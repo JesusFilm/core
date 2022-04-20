@@ -16,8 +16,8 @@ describe('SocialShareAppearance', () => {
     expect(getByTestId('social-image-edit')).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Title' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Description' })).toBeInTheDocument()
-    expect(getByRole('link', { name: 'Facebook' })).toBeInTheDocument()
-    expect(getByRole('link', { name: 'Twitter' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Facebook' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Twitter' })).toBeInTheDocument()
   })
 
   it('should open facebook share in new window', () => {
@@ -70,23 +70,17 @@ describe('SocialShareAppearance', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-    expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    expect(getByRole('button', { name: 'Facebook' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Twitter' })).toBeDisabled()
 
-    fireEvent.focusIn(getByRole('link', { name: 'Facebook' }))
+    fireEvent.focusIn(getByRole('button', { name: 'Facebook' }))
     await waitFor(() =>
       expect(
         getByText('Only published journeys are shareable')
       ).toBeInTheDocument()
     )
 
-    fireEvent.focusIn(getByRole('link', { name: 'Twitter' }))
+    fireEvent.focusIn(getByRole('button', { name: 'Twitter' }))
     await waitFor(() =>
       expect(
         getByText('Only published journeys are shareable')
