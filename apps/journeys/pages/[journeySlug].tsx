@@ -16,8 +16,6 @@ interface JourneyPageProps {
   journey: Journey
 }
 
-const fbAppId = process.env.NEXT_FACEBOOK_APP_ID
-
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
@@ -44,9 +42,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
               : []
         }}
         facebook={
-          fbAppId != null
+          process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
             ? {
-                appId: fbAppId
+                appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
               }
             : undefined
         }
