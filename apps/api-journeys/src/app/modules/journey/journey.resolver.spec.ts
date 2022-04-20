@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import {
   IdType,
+  Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -36,16 +37,16 @@ describe('JourneyResolver', () => {
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
-  const journey = {
+  const journey: Journey = {
     id: 'journeyId',
     slug: 'journey-slug',
     title: 'published',
     status: JourneyStatus.published,
-    languageId: '529',
+    language: { id: '529' },
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlockId: null,
+    primaryImageBlock: null,
     publishedAt,
     createdAt
   }
