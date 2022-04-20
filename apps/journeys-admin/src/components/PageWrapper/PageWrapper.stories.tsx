@@ -4,7 +4,8 @@ import MenuRounded from '@mui/icons-material/MenuRounded'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { GET_ME, PageWrapperProps } from './PageWrapper'
+import { PageWrapperProps } from './PageWrapper'
+import { GET_ME } from './NavigationDrawer/NavigationDrawer'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
@@ -50,13 +51,13 @@ Complete.args = {
   backHref: '/',
   showDrawer: true,
   title: 'Journey Details',
-  AuthUser: {
+  authUser: {
     displayName: 'Amin One',
     photoURL: 'https://bit.ly/3Gth4Yf',
     email: 'amin@email.com',
     signOut: noop
   },
-  Menu: (
+  menu: (
     <IconButton edge="end" size="large" color="inherit" sx={{ ml: 2 }}>
       <MenuRounded />
     </IconButton>

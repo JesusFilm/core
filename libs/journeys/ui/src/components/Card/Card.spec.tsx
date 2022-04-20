@@ -82,8 +82,9 @@ describe('CardBlock', () => {
         coverBlockId="imageBlockId1"
       />
     )
-    expect(getByTestId('CardImageCover')).toHaveStyle(
-      'background-image: url(https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920)'
+    expect(getByTestId('CardImageCover')).toHaveAttribute(
+      'alt',
+      'random image from unsplash'
     )
     expect(getAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
@@ -111,6 +112,14 @@ describe('CardBlock', () => {
               video: {
                 __typename: 'Video',
                 id: '2_0-FallingPlates',
+                title: [
+                  {
+                    __typename: 'Translation',
+                    value: 'FallingPlates'
+                  }
+                ],
+                image:
+                  'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
                 variant: {
                   __typename: 'VideoVariant',
                   id: '2_0-FallingPlates-529',
@@ -122,7 +131,7 @@ describe('CardBlock', () => {
                   id: 'posterBlockId',
                   __typename: 'ImageBlock',
                   src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-                  alt: 'random image from unsplash',
+                  alt: 'random image from unsplash - video',
                   width: 1600,
                   height: 1067,
                   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
@@ -137,12 +146,15 @@ describe('CardBlock', () => {
         coverBlockId="videoBlockId1"
       />
     )
-    const sourceTag =
-      getByTestId('CardVideoCover').querySelector('.vjs-tech source')
+    const sourceTag = getByTestId('CardCover').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
+    expect(getByTestId('VideoPosterCover')).toHaveAttribute(
+      'alt',
+      'random image from unsplash - video'
+    )
     expect(getAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
 })

@@ -5,8 +5,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import {
   GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -26,32 +25,44 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
-describe('CardStyling', () => {
-  it('shows default ', () => {
-    const card: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
+describe('BackgroundColor', () => {
+  const card: TreeBlock<CardBlock> = {
+    id: 'card1.id',
+    __typename: 'CardBlock',
+    parentBlockId: 'step1.id',
+    parentOrder: 0,
+    coverBlockId: null,
+    backgroundColor: null,
+    themeMode: null,
+    themeName: null,
+    fullscreen: false,
+    children: []
+  }
 
-    const { getByTestId } = render(
+  it('shows the selected card color', () => {
+    const { getByTestId, getByRole, getAllByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={journey}>
@@ -62,54 +73,25 @@ describe('CardStyling', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(
-      getByTestId('bgColorTextField').children[0].children[1].getAttribute(
-        'value'
-      )
-    ).toEqual('Default')
+
+    expect(getByTestId('bg-color-#FEFEFE')).toHaveStyle({
+      backgroundColor: '#FEFEFE'
+    })
+    expect(getByRole('textbox')).toHaveValue('#FEFEFE')
+
+    // Palette picker
+    expect(getAllByTestId('#FEFEFE')[0].parentElement).toHaveStyle({
+      outline: '2px solid #C52D3A'
+    })
+    expect(getAllByTestId('#FEFEFE')[0]).toHaveStyle({
+      backgroundColor: '#FEFEFE'
+    })
+
+    // Custom color picker tested via VR.
+    // .react-colorful__pointer-fill always defaults to rgb(47, 47, 47)
   })
 
-  it('works in a step block', () => {
-    const card: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-    const step: TreeBlock<StepBlock> = {
-      id: 'step1.id',
-      __typename: 'StepBlock',
-      parentBlockId: 'journeyId',
-      locked: false,
-      nextBlockId: null,
-      parentOrder: 0,
-      children: [card]
-    }
-    const { getByTestId } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <JourneyProvider value={journey}>
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <BackgroundColor />
-            </EditorProvider>
-          </JourneyProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(
-      getByTestId('bgColorTextField').children[0].children[1].getAttribute(
-        'value'
-      )
-    ).toEqual('Default')
-  })
-
-  it('changes to gql selection', async () => {
+  it('changes color via palette picker', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
@@ -120,22 +102,11 @@ describe('CardStyling', () => {
     })
     const result = jest.fn(() => ({
       data: {
-        cardBlockUpdate: { id: 'card1.id', backgroundColor: '#DCDDE5' }
+        cardBlockUpdate: { id: 'card1.id', backgroundColor: '#283593' }
       }
     }))
-    const card: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-    const { getByTestId } = render(
+
+    const { getAllByTestId } = render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -146,7 +117,7 @@ describe('CardStyling', () => {
                 id: 'card1.id',
                 journeyId: 'journeyId',
                 input: {
-                  backgroundColor: '#DCDDE5'
+                  backgroundColor: '#B0BEC5'
                 }
               }
             },
@@ -163,7 +134,7 @@ describe('CardStyling', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('#DCDDE5'))
+    fireEvent.click(getAllByTestId('#B0BEC5')[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

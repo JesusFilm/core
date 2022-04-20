@@ -37,4 +37,9 @@ PreviousYear.args = {
   }
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
+}
+
 export default JourneyDetailsStory as Meta

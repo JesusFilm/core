@@ -11,7 +11,18 @@ import { ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirec
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
   src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
@@ -271,6 +282,11 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface GetJourney_journey_blocks_VideoBlock_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetJourney_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -280,6 +296,8 @@ export interface GetJourney_journey_blocks_VideoBlock_video_variant {
 export interface GetJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
+  title: GetJourney_journey_blocks_VideoBlock_video_title[];
+  image: string | null;
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
 }
 
@@ -373,6 +391,8 @@ export interface GetJourney_journey {
   themeMode: ThemeMode;
   title: string;
   description: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   blocks: GetJourney_journey_blocks[] | null;
 }

@@ -1,14 +1,45 @@
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourney'
+import { SnackbarProvider } from 'notistack'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_CardBlock as CardBlock
+} from '../../../../../../../__generated__/GetJourney'
+import { JourneyProvider } from '../../../../../../libs/context'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Card } from '.'
 
 describe('Card', () => {
-  it('shows default messages', () => {
+  it('shows default attributes', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      children: []
+    }
+    const { getByRole } = render(<Card {...card} />)
+
+    expect(getByRole('button', { name: 'Color #FEFEFE' })).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Layout Contained' })
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Background None' })).toBeInTheDocument()
+  })
+
+  describe('backgroundColor', () => {
     const card: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
@@ -21,56 +52,84 @@ describe('Card', () => {
       fullscreen: false,
       children: []
     }
-    const { getByText } = render(<Card {...card} />)
-    expect(getByText('Default')).toBeInTheDocument()
-    expect(getByText('Contained')).toBeInTheDocument()
-    expect(getByText('Background')).toBeInTheDocument()
-  })
 
-  describe('backgroundColor', () => {
-    it('shows backgroundColor', () => {
-      const card: TreeBlock<CardBlock> = {
-        id: 'card1.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'step1.id',
-        coverBlockId: null,
-        parentOrder: 0,
-        backgroundColor: '#00ffcc',
-        themeMode: ThemeMode.light,
-        themeName: null,
-        fullscreen: false,
-        children: []
-      }
-      const { getByText } = render(<Card {...card} />)
-      expect(getByText('#00FFCC')).toBeInTheDocument()
+    const journey: Journey = {
+      __typename: 'Journey',
+      id: 'journeyId',
+      themeName: ThemeName.base,
+      themeMode: ThemeMode.dark,
+      title: 'my journey',
+      slug: 'my-journey',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'English',
+            primary: true
+          }
+        ]
+      },
+      description: 'my cool journey',
+      status: JourneyStatus.draft,
+      createdAt: '2021-11-19T12:34:56.647Z',
+      publishedAt: null,
+      blocks: [] as TreeBlock[],
+      primaryImageBlock: null,
+      userJourneys: [],
+      seoTitle: null,
+      seoDescription: null
+    }
+    it('shows background color from prop', () => {
+      const { getByRole } = render(
+        <JourneyProvider value={journey}>
+          <Card {...card} backgroundColor="#00FFCC" />
+        </JourneyProvider>
+      )
+
+      expect(getByRole('button', { name: 'Color #00FFCC' })).toBeInTheDocument()
+    })
+
+    it('shows background color from card theme', () => {
+      const { getByRole } = render(
+        <JourneyProvider value={journey}>
+          <Card
+            {...card}
+            themeName={ThemeName.base}
+            themeMode={ThemeMode.light}
+          />
+        </JourneyProvider>
+      )
+
+      expect(getByRole('button', { name: 'Color #FEFEFE' })).toBeInTheDocument()
+    })
+
+    it('shows background color from journey theme', () => {
+      const { getByRole } = render(
+        <JourneyProvider value={journey}>
+          <Card {...card} />
+        </JourneyProvider>
+      )
+
+      expect(getByRole('button', { name: 'Color #30313D' })).toBeInTheDocument()
     })
 
     it('shows background color drawer', () => {
-      const card: TreeBlock<CardBlock> = {
-        id: 'card1.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'step1.id',
-        coverBlockId: null,
-        parentOrder: 0,
-        backgroundColor: '#00ffcc',
-        themeMode: null,
-        themeName: null,
-        fullscreen: true,
-        children: []
-      }
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <EditorProvider>
-              <Drawer />
-              <Card {...card} />
-            </EditorProvider>
+            <JourneyProvider value={journey}>
+              <EditorProvider>
+                <Drawer />
+                <Card {...card} backgroundColor="#00FFCC" />
+              </EditorProvider>
+            </JourneyProvider>
           </ThemeProvider>
         </MockedProvider>
       )
       fireEvent.click(getByText('#00FFCC'))
       expect(getByText('Background Color Properties')).toBeInTheDocument()
-      expect(getByText('Theme')).toBeInTheDocument()
     })
   })
 
@@ -84,7 +143,7 @@ describe('Card', () => {
         parentOrder: 0,
         backgroundColor: '#00ffcc',
         themeMode: ThemeMode.light,
-        themeName: null,
+        themeName: ThemeName.base,
         fullscreen: false,
         children: [
           {
@@ -124,7 +183,7 @@ describe('Card', () => {
         parentOrder: 0,
         backgroundColor: '#00ffcc',
         themeMode: ThemeMode.light,
-        themeName: null,
+        themeName: ThemeName.base,
         fullscreen: false,
         children: [
           {
@@ -137,6 +196,14 @@ describe('Card', () => {
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -178,7 +245,7 @@ describe('Card', () => {
         parentOrder: 0,
         backgroundColor: '#00ffcc',
         themeMode: ThemeMode.light,
-        themeName: null,
+        themeName: ThemeName.base,
         fullscreen: false,
         children: [
           {
@@ -191,6 +258,14 @@ describe('Card', () => {
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -211,8 +286,10 @@ describe('Card', () => {
         <MockedProvider>
           <ThemeProvider>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <Drawer />
-              <Card {...card} />
+              <SnackbarProvider>
+                <Drawer />
+                <Card {...card} />
+              </SnackbarProvider>
             </EditorProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -232,7 +309,7 @@ describe('Card', () => {
         parentOrder: 0,
         backgroundColor: null,
         themeMode: ThemeMode.light,
-        themeName: null,
+        themeName: ThemeName.base,
         fullscreen: false,
         children: []
       }
@@ -265,8 +342,8 @@ describe('Card', () => {
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
-        themeMode: null,
-        themeName: null,
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
         fullscreen: false,
         children: []
       }
@@ -280,7 +357,7 @@ describe('Card', () => {
           </ThemeProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('Default'))
+      fireEvent.click(getByText('Light'))
       expect(getByText('Card Style Property')).toBeInTheDocument()
     })
   })
@@ -294,8 +371,8 @@ describe('Card', () => {
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
-        themeMode: null,
-        themeName: null,
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
         fullscreen: true,
         children: []
       }
@@ -311,8 +388,8 @@ describe('Card', () => {
         coverBlockId: null,
         parentOrder: 0,
         backgroundColor: null,
-        themeMode: null,
-        themeName: null,
+        themeMode: ThemeMode.light,
+        themeName: ThemeName.base,
         fullscreen: false,
         children: []
       }

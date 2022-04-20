@@ -325,7 +325,7 @@ export class VideoBlockUpdateInput {
 export class JourneyCreateInput {
     id?: Nullable<string>;
     title: string;
-    locale?: Nullable<string>;
+    languageId: string;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
@@ -334,7 +334,7 @@ export class JourneyCreateInput {
 
 export class JourneyUpdateInput {
     title?: Nullable<string>;
-    locale?: Nullable<string>;
+    languageId?: Nullable<string>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
@@ -416,7 +416,7 @@ export class Journey {
     primaryImageBlock?: Nullable<ImageBlock>;
     id: string;
     title: string;
-    locale: string;
+    language: Language;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
@@ -699,6 +699,10 @@ export abstract class IMutation {
 export class Video {
     id: string;
     primaryLanguageId: string;
+}
+
+export class Language {
+    id: string;
 }
 
 export abstract class IQuery {

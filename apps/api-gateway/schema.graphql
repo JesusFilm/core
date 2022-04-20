@@ -302,7 +302,7 @@ type Journey
   createdAt: DateTime! @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
-  locale: String! @join__field(graph: JOURNEYS)
+  language: Language! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   seoDescription: String @join__field(graph: JOURNEYS)
@@ -323,7 +323,7 @@ input JourneyCreateInput {
   (Provided for optimistic mutation result matching)
   """
   id: ID
-  locale: String
+  languageId: String!
 
   """
   Slug should be unique amongst all journeys
@@ -345,7 +345,7 @@ enum JourneyStatus {
 
 input JourneyUpdateInput {
   description: String
-  locale: String
+  languageId: String
   primaryImageBlockId: ID
   seoDescription: String
   seoTitle: String
@@ -358,6 +358,7 @@ input JourneyUpdateInput {
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   bcp47: String @join__field(graph: LANGUAGES)

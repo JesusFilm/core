@@ -26,7 +26,7 @@ describe('AddJourneyButton', () => {
       description:
         'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
       id: 'journeyId',
-      locale: 'en-US',
+      languageId: '529',
       publishedAt: null,
       slug: 'untitled-journey-journeyId',
       status: 'draft',
@@ -127,7 +127,9 @@ describe('AddJourneyButton', () => {
     ])
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        `/journeys/${resultData.journeyCreate.slug}/edit`
+        `/journeys/${resultData.journeyCreate.slug}/edit`,
+        undefined,
+        { shallow: true }
       )
     )
   })
@@ -188,7 +190,9 @@ describe('AddJourneyButton', () => {
     ])
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        `/journeys/${resultData.journeyCreate.slug}/edit`
+        `/journeys/${resultData.journeyCreate.slug}/edit`,
+        undefined,
+        { shallow: true }
       )
     )
   })

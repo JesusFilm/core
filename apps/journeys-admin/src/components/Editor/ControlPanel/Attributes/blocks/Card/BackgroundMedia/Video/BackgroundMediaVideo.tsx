@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
+import { useSnackbar } from 'notistack'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -87,24 +88,27 @@ export function BackgroundMediaVideo({
   const [blockDelete] = useMutation<BlockDeleteForBackgroundVideo>(
     BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
   const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 
   const deleteCoverBlock = async (): Promise<void> => {
+    if (journey == null) return
+
     await blockDelete({
       variables: {
         id: coverBlock.id,
         parentBlockId: coverBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
       }
     })
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: null
         }
@@ -122,10 +126,12 @@ export function BackgroundMediaVideo({
   const createVideoBlock = async (
     input: VideoBlockUpdateInput
   ): Promise<void> => {
+    if (journey == null) return
+
     const { data } = await videoBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: cardBlock.id,
           ...input
         }
@@ -133,7 +139,7 @@ export function BackgroundMediaVideo({
       update(cache, { data }) {
         if (data?.videoBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -155,7 +161,7 @@ export function BackgroundMediaVideo({
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: data?.videoBlockCreate?.id ?? null
         }
@@ -173,32 +179,65 @@ export function BackgroundMediaVideo({
   const updateVideoBlock = async (
     input: VideoBlockUpdateInput
   ): Promise<void> => {
+    if (journey == null) return
+
     await videoBlockUpdate({
       variables: {
         id: coverBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input
       }
     })
   }
 
-  const handleChange = async (input: VideoBlockUpdateInput): Promise<void> => {
-    if (coverBlock != null && coverBlock.__typename !== 'VideoBlock') {
-      // remove existing cover block if type changed
+  const handleDelete = async (): Promise<void> => {
+    try {
       await deleteCoverBlock()
+      enqueueSnackbar('Video Deleted', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
-    if (videoBlock == null) {
-      await createVideoBlock(input)
-    } else {
-      await updateVideoBlock(input)
+  }
+
+  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
+    try {
+      if (
+        coverBlock != null &&
+        coverBlock?.__typename.toString() !== 'VideoBlock'
+      ) {
+        // remove existing cover block if type changed
+        await deleteCoverBlock()
+      }
+      if (videoBlock == null) {
+        await createVideoBlock(block)
+      } else {
+        await updateVideoBlock(block)
+      }
+      enqueueSnackbar('Video Updated', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 
   return (
     <VideoBlockEditor
-      selectedBlock={videoBlock}
+      selectedBlock={
+        videoBlock != null ? { ...videoBlock, parentOrder: null } : videoBlock
+      }
       onChange={handleChange}
-      onDelete={deleteCoverBlock}
+      onDelete={handleDelete}
     />
   )
 }

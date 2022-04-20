@@ -44,14 +44,14 @@ export function CardStyling(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
     CARD_BLOCK_THEME_MODE_UPDATE
   )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
-    if (cardBlock != null) {
+    if (journey != null && cardBlock != null) {
       await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
-          journeyId,
+          journeyId: journey.id,
           input: {
             themeMode
           }

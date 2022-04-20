@@ -34,8 +34,8 @@ interface UserJourney {
 }
 
 export interface AccessAvatarsProps {
-  journeySlug: string
-  userJourneys: UserJourney[]
+  journeySlug?: string
+  userJourneys?: UserJourney[]
   size?: 'small' | 'medium' | 'large'
   xsMax?: number
   smMax?: number
@@ -49,10 +49,9 @@ export function AccessAvatars({
   smMax = 5
 }: AccessAvatarsProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const children = userJourneys.map(
+  const children = userJourneys?.map(
     ({ user }) => user != null && <AccessAvatar user={user} key={user.id} />
   )
-
   // small default sizes
   let diameter: number
   let fontSize: number | undefined
@@ -74,53 +73,79 @@ export function AccessAvatars({
 
   return (
     <>
-      <Box
-        onClick={() => setOpen(true)}
-        sx={{ cursor: 'pointer' }}
-        role="Button"
-      >
-        <AvatarGroup
-          max={xsMax}
-          sx={{
-            display: { xs: 'inline-flex', sm: 'none' },
-            '> .MuiAvatar-root': {
-              width: diameter,
-              height: diameter,
-              fontSize,
-              borderWidth,
-              borderColor: '#FFF'
-            },
-            '> .MuiAvatarGroup-avatar': {
-              backgroundColor: 'primary.main'
-            }
-          }}
-        >
-          {children}
-        </AvatarGroup>
-        <AvatarGroup
-          max={smMax}
-          sx={{
-            display: { xs: 'none', sm: 'inline-flex' },
-            '> .MuiAvatar-root': {
-              width: diameter,
-              height: diameter,
-              fontSize,
-              borderWidth,
-              borderColor: '#FFF'
-            },
-            '> .MuiAvatarGroup-avatar': {
-              backgroundColor: 'primary.main'
-            }
-          }}
-        >
-          {children}
-        </AvatarGroup>
-      </Box>
-      <AccessDialog
-        journeySlug={journeySlug}
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      {journeySlug != null ? (
+        <>
+          <Box
+            onClick={() => setOpen(true)}
+            sx={{
+              cursor: 'pointer',
+              height: diameter
+            }}
+            role="button"
+          >
+            <AvatarGroup
+              max={xsMax}
+              sx={{
+                display: { xs: 'inline-flex', sm: 'none' },
+                '> .MuiAvatar-root': {
+                  width: diameter,
+                  height: diameter,
+                  fontSize,
+                  borderWidth,
+                  borderColor: '#FFF'
+                },
+                '> .MuiAvatarGroup-avatar': {
+                  backgroundColor: 'primary.main'
+                }
+              }}
+            >
+              {children}
+            </AvatarGroup>
+            <AvatarGroup
+              max={smMax}
+              sx={{
+                display: { xs: 'none', sm: 'inline-flex' },
+                '> .MuiAvatar-root': {
+                  width: diameter,
+                  height: diameter,
+                  fontSize,
+                  borderWidth,
+                  borderColor: '#FFF'
+                },
+                '> .MuiAvatarGroup-avatar': {
+                  backgroundColor: 'primary.main'
+                }
+              }}
+            >
+              {children}
+            </AvatarGroup>
+          </Box>
+          <AccessDialog
+            journeySlug={journeySlug}
+            open={open}
+            onClose={() => setOpen(false)}
+          />
+        </>
+      ) : (
+        <Box>
+          <AvatarGroup
+            sx={{
+              display: 'inline-flex',
+              '> .MuiAvatar-root': {
+                width: diameter,
+                height: diameter,
+                fontSize,
+                borderWidth,
+                borderColor: '#FFF'
+              }
+            }}
+          >
+            <Avatar />
+            <Avatar />
+            <Avatar />
+          </AvatarGroup>
+        </Box>
+      )}
     </>
   )
 }

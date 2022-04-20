@@ -23,7 +23,11 @@ const Template: Story = ({ ...args }) => (
         },
         result: {
           data: {
-            journeyPublish: { id: defaultJourney.id, __typename: 'Journey' }
+            journeyPublish: {
+              id: defaultJourney.id,
+              __typename: 'Journey',
+              status: JourneyStatus.published
+            }
           }
         }
       }
@@ -47,5 +51,8 @@ Published.args = {
   },
   forceOpen: true
 }
+
+export const Loading = Template.bind({})
+Loading.args = { journey: undefined }
 
 export default MenuStory as Meta
