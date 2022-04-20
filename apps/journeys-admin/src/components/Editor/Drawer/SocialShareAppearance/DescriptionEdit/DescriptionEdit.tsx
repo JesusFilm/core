@@ -57,7 +57,7 @@ export function DescriptionEdit(): ReactElement {
       onSubmit={noop}
     >
       {({ values, touched, errors, handleChange, handleBlur }) => (
-        <Form data-testid="seo-description-form">
+        <Form>
           <TextField
             disabled={journey == null}
             id="seoDescription"
