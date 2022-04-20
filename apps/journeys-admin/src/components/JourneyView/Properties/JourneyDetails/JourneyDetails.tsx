@@ -61,9 +61,9 @@ export function JourneyDetails(): ReactElement {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
         <TranslateRounded fontSize="small" />
-        <Typography variant="body2" data-testid="locale" sx={{ ml: 2 }}>
+        <Typography variant="body2" sx={{ ml: 2 }}>
           {journey != null ? (
-            journey.locale
+            journey.language.name.find(({ primary }) => primary)?.value
           ) : (
             <Skeleton variant="text" width={40} />
           )}

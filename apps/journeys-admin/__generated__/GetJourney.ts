@@ -9,6 +9,18 @@ import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, Button
 // GraphQL query operation: GetJourney
 // ====================================================
 
+export interface GetJourney_journey_language_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetJourney_journey_language {
+  __typename: "Language";
+  id: string;
+  name: GetJourney_journey_language_name[];
+}
+
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -405,7 +417,7 @@ export interface GetJourney_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  locale: string;
+  language: GetJourney_journey_language;
   createdAt: any;
   publishedAt: any | null;
   themeName: ThemeName;

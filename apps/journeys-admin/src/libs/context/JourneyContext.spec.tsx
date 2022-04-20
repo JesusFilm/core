@@ -25,7 +25,17 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
@@ -62,7 +72,17 @@ describe('JourneyContext', () => {
       themeMode: ThemeMode.light,
       title: 'my journey',
       slug: 'my-journey',
-      locale: 'en-US',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'English',
+            primary: true
+          }
+        ]
+      },
       description: 'my cool journey',
       status: JourneyStatus.draft,
       createdAt: '2021-11-19T12:34:56.647Z',

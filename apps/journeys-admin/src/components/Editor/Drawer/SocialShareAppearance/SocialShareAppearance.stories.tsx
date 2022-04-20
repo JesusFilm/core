@@ -29,7 +29,17 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: null,
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
@@ -54,7 +64,6 @@ const image: ImageBlock = {
 }
 
 const Template: Story = ({ ...args }) => {
-  console.log(args)
   return (
     <MockedProvider>
       <JourneyProvider value={args.journey}>
@@ -82,7 +91,8 @@ Filled.args = {
     blocks: [image],
     primaryImageBlock: image,
     seoTitle: 'Social title',
-    seoDescription: 'Social description'
+    seoDescription: 'Social description',
+    status: 'published'
   }
 }
 

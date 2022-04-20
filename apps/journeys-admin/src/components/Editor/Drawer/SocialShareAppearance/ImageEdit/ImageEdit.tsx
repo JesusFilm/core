@@ -204,7 +204,6 @@ export function ImageEdit(): ReactElement {
         >
           {journey?.primaryImageBlock?.src != null ? (
             <Box
-              data-testid="social-image"
               component="img"
               src={journey.primaryImageBlock.src}
               alt={journey.primaryImageBlock.alt}

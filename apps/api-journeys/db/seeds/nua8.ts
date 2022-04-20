@@ -24,7 +24,7 @@ export async function nua8(): Promise<void> {
   const journey = await db.collection('journeys').save({
     _key: '3',
     title: "What's Jesus Got to Do With Me",
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     slug: slug,

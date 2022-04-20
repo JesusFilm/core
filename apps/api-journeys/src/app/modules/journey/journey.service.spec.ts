@@ -40,7 +40,7 @@ describe('JourneyService', () => {
     _key: '1',
     title: 'published',
     status: JourneyStatus.published,
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,

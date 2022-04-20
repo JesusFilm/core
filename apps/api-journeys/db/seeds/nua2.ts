@@ -24,7 +24,7 @@ export async function nua2(): Promise<void> {
   const journey = await db.collection('journeys').save({
     _key: '2',
     title: 'What About The Resurrection?',
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     slug: slug,

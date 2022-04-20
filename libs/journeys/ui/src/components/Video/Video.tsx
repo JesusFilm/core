@@ -1,10 +1,12 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback } from 'react'
+import { ReactElement, useEffect, useRef, useCallback, useState } from 'react'
 import { useMutation, gql } from '@apollo/client'
+import { NextImage } from '@core/shared/ui'
 import Box from '@mui/material/Box'
+import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { TreeBlock, useEditor } from '../..'
+import { TreeBlock, useEditor, blurImage } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
@@ -21,6 +23,9 @@ export const VIDEO_RESPONSE_CREATE = gql`
   }
 `
 
+const VIDEO_BACKGROUND_COLOR = '#000'
+const VIDEO_FOREGROUND_COLOR = '#FFF'
+
 export function Video({
   id: blockId,
   video,
@@ -28,21 +33,32 @@ export function Video({
   startAt,
   muted,
   posterBlockId,
-  fullsize,
   children
 }: TreeBlock<VideoFields>): ReactElement {
+  const [videoResponseCreate] = useMutation<VideoResponseCreate>(
+    VIDEO_RESPONSE_CREATE
+  )
+  const [loading, setLoading] = useState(true)
+  const theme = useTheme()
+  const {
+    state: { selectedBlock }
+  } = useEditor()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
+
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
 
-  const [videoResponseCreate] = useMutation<VideoResponseCreate>(
-    VIDEO_RESPONSE_CREATE
-  )
-  const {
-    state: { selectedBlock }
-  } = useEditor()
+  const blurBackground =
+    posterBlock != null
+      ? blurImage(
+          posterBlock.width,
+          posterBlock.height,
+          posterBlock.blurhash,
+          theme.palette.background.paper
+        )
+      : undefined
 
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
@@ -92,14 +108,21 @@ export function Video({
           }
         },
         responsive: true,
-        muted: muted === true
+        muted: muted === true,
+        // VideoJS blur background persists so we cover video when using png poster on non-autoplay videos
+        poster: blurBackground
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
       })
 
       if (selectedBlock === undefined) {
+        // Video jumps to new time and finishes loading - occurs on autoplay
+        playerRef.current.on('seeked', () => {
+          if (autoplay === true) setLoading(false)
+        })
         playerRef.current.on('playing', () => {
+          if (autoplay !== true) setLoading(false)
           handleVideoResponse(
             VideoResponseStateEnum.PLAYING,
             playerRef.current?.currentTime()
@@ -128,7 +151,8 @@ export function Video({
     autoplay,
     blockId,
     posterBlock,
-    selectedBlock
+    selectedBlock,
+    blurBackground
   ])
 
   useEffect(() => {
@@ -145,31 +169,37 @@ export function Video({
         width: '100%',
         height: '100%',
         minHeight: 'inherit',
-        backgroundColor: '#000000',
+        backgroundColor: VIDEO_BACKGROUND_COLOR,
         borderRadius: 4,
         overflow: 'hidden',
         m: 0,
-        position: fullsize === true ? 'absolute' : 'relative',
-        top: fullsize === true ? 0 : null,
-        right: fullsize === true ? 0 : null,
-        bottom: fullsize === true ? 0 : null,
-        left: fullsize === true ? 0 : null,
-        outline: selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
-        outlineOffset: fullsize === true ? '-3px' : null,
+        position: 'absolute',
+        top: 0,
+        right: 0,
         '> .video-js': {
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
           height: '100%',
-          minHeight: 'inherit'
+          minHeight: 'inherit',
+          '> .vjs-loading-spinner': {
+            zIndex: 1
+          },
+          '> .vjs-big-play-button': {
+            zIndex: 1
+          },
+          '> .vjs-poster': {
+            backgroundColor: VIDEO_BACKGROUND_COLOR,
+            backgroundSize: 'cover'
+          }
         },
         '> .MuiIconButton-root': {
-          color: '#FFFFFF',
+          color: VIDEO_FOREGROUND_COLOR,
           position: 'absolute',
           bottom: 12,
           zIndex: 1,
           '&:hover': {
-            color: '#FFFFFF'
+            color: VIDEO_FOREGROUND_COLOR
           }
         }
       }}
@@ -180,7 +210,6 @@ export function Video({
             ref={videoRef}
             className="video-js vjs-big-play-centered"
             playsInline
-            poster={posterBlock?.src ?? undefined}
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
@@ -195,23 +224,41 @@ export function Video({
         <>
           <Paper
             sx={{
+              backgroundColor: 'transparent',
               borderRadius: (theme) => theme.spacing(4),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               width: '100%',
               fontSize: 100,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-              backgroundImage:
-                posterBlock?.src != null ? `url(${posterBlock.src})` : undefined
+              zIndex: 1,
+              outline:
+                selectedBlock?.id === blockId ? '3px solid #C52D3A' : 'none',
+              outlineOffset: '-3px'
             }}
             elevation={0}
             variant="outlined"
           >
-            <VideocamRounded fontSize="inherit" />
+            <VideocamRounded
+              fontSize="inherit"
+              sx={{
+                color: VIDEO_FOREGROUND_COLOR,
+                filter: `drop-shadow(-1px 0px 5px ${VIDEO_BACKGROUND_COLOR})`
+              }}
+            />
           </Paper>
         </>
+      )}
+      {/* Lazy load higher res poster */}
+      {posterBlock?.src != null && loading && (
+        <NextImage
+          src={posterBlock.src}
+          alt={posterBlock.alt}
+          placeholder={blurBackground != null ? 'blur' : 'empty'}
+          blurDataURL={blurBackground ?? posterBlock.src}
+          layout="fill"
+          objectFit="cover"
+        />
       )}
     </Box>
   )
