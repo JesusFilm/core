@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
-import { BLOCK_FIELDS, transformer } from '@core/journeys/ui'
+import { BLOCK_FIELDS, IMAGE_FIELDS, transformer } from '@core/journeys/ui'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import client from '../src/libs/client'
@@ -23,12 +23,25 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         title={journey.title}
         description={journey.description ?? undefined}
         openGraph={{
-          title: journey.title,
-          description: journey.description ?? undefined,
+          title: journey.seoTitle ?? journey.title,
+          description:
+            journey.seoDescription ?? journey.description ?? undefined,
           images:
             journey.primaryImageBlock?.src != null
-              ? [{ url: journey.primaryImageBlock.src }]
+              ? [
+                  {
+                    url: journey.primaryImageBlock.src,
+                    width: journey.primaryImageBlock.width,
+                    height: journey.primaryImageBlock.height,
+                    alt: journey.primaryImageBlock.alt,
+                    type: 'image/jpeg'
+                  }
+                ]
               : []
+        }}
+        twitter={{
+          site: '@JesusFilm',
+          cardType: 'summary_large_image'
         }}
       />
       <ThemeProvider
@@ -49,16 +62,18 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
   const { data } = await client.query<GetJourney>({
     query: gql`
       ${BLOCK_FIELDS}
+      ${IMAGE_FIELDS}
       query GetJourney($id: ID!) {
-        # slug might have to be string
         journey(id: $id, idType: slug) {
           id
           themeName
           themeMode
           title
           description
+          seoTitle
+          seoDescription
           primaryImageBlock {
-            src
+            ...ImageFields
           }
           blocks {
             ...BlockFields
