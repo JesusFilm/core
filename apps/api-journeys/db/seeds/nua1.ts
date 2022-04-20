@@ -24,7 +24,7 @@ export async function nua1(): Promise<void> {
   const journey = await db.collection('journeys').save({
     _key: '1',
     title: 'Fact or Fiction',
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     slug: 'fact-or-fiction',

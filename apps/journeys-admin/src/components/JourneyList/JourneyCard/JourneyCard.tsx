@@ -143,7 +143,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             <Grid item>
               <Typography variant="caption">
                 {journey != null ? (
-                  journey.locale
+                  journey.language.name.find(({ primary }) => primary)?.value
                 ) : (
                   <Skeleton variant="text" width={40} />
                 )}
