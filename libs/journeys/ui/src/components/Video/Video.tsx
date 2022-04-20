@@ -176,13 +176,15 @@ export function Video({
         position: 'absolute',
         top: 0,
         right: 0,
-        '> .video-js, .vjs-tech': {
+        '> .video-js': {
           width: '100%',
           display: 'flex',
           alignSelf: 'center',
           height: '100%',
           minHeight: 'inherit',
-          objectFit: 'cover',
+          '> .vjs-tech': {
+            objectFit: 'cover'
+          },
           '> .vjs-loading-spinner': {
             zIndex: 1
           },
