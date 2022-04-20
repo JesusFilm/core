@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import NextImage from 'next/image'
+import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'

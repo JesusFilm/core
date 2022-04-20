@@ -10,6 +10,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators'
 
 import {
+  Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -47,14 +48,14 @@ describe('UserJourneyService', () => {
 
   const userJourneyWithId = keyAsId(userJourney)
 
-  const journey = {
+  const journey: Journey = {
     id: '1',
     title: 'published',
-    locale: 'en-US',
+    language: { id: '529' },
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlockId: null,
+    primaryImageBlock: null,
     slug: 'published-slug',
     createdAt: '',
     status: JourneyStatus.published

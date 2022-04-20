@@ -1,4 +1,5 @@
 export { CopyTextField } from './components/CopyTextField'
+export { NextImage } from './components/NextImage'
 export { ThemeProvider } from './components/ThemeProvider'
 export { TabPanel, tabA11yProps } from './components/TabPanel'
 export { sharedUiConfig, simpleComponentConfig } from './libs/storybook/config'

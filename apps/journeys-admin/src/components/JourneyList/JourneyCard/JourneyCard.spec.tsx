@@ -49,7 +49,7 @@ describe('JourneyCard', () => {
     expect(getByText('January 1 - a published journey')).toBeInTheDocument()
   })
 
-  it('should render the locale captialized', () => {
+  it('should render the language name', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -59,7 +59,7 @@ describe('JourneyCard', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByText('en-US')).toBeInTheDocument()
+    expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should render the formated date with year if journey is created before the current year', () => {

@@ -76,7 +76,7 @@ type Journey @key(fields: "id") {
   primaryImageBlock: ImageBlock
   id: ID!
   title: String!
-  locale: String!
+  language: Language!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
@@ -624,7 +624,7 @@ input JourneyCreateInput {
   """
   id: ID
   title: String!
-  locale: String
+  languageId: String!
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -641,7 +641,7 @@ input JourneyCreateInput {
 
 input JourneyUpdateInput {
   title: String
-  locale: String
+  languageId: String
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -774,6 +774,10 @@ extend type Mutation {
 extend type Video @key(fields: "id primaryLanguageId") {
   id: ID! @external
   primaryLanguageId: ID! @external
+}
+
+extend type Language @key(fields: "id") {
+  id: ID! @external
 }
 
 extend type Query {
