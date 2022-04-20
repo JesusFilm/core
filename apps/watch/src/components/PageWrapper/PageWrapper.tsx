@@ -1,78 +1,109 @@
-import { ReactElement, ReactNode } from 'react'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import Link from 'next/link'
-import Button from '@mui/material/Button'
-import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import Image from 'next/image'
-import taskbarIcon from '../../../public/taskbar-icon.svg'
+import React, { ReactElement, ReactNode } from 'react'
+import AppBar from '@mui/material/AppBar'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer'
+import IconButton from '@mui/material/IconButton'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Toolbar from '@mui/material/Toolbar'
+import ListIcon from '@mui/icons-material/List'
+import MenuIcon from '@mui/icons-material/Menu'
+import SearchIcon from '@mui/icons-material/Search'
+import logo from '../../../public/taskbar-icon.svg'
 
-export interface PageWrapperProps {
-  backHref?: string
-  showDrawer?: boolean
-  title: string
-  Menu?: ReactNode
-  children?: ReactNode
-}
+export function PageWrapper(): React.ReactElement {
+  const [state, setState] = React.useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false
+  })
 
-export function PageWrapper({
-  backHref,
-  title,
-  children
-}: PageWrapperProps): ReactElement {
+  const toggleDrawer =
+    (anchor: string, open: boolean) =>
+    (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === 'keydown' &&
+        ((event as React.KeyboardEvent).key === 'Tab' ||
+          (event as React.KeyboardEvent).key === 'Shift')
+      ) {
+        return
+      }
+
+      setState({ ...state, [anchor]: open })
+    }
+
+  const menuItems = ['Videos', 'Series']
+
+  const list = (): ReactElement => (
+    <Box
+      sx={{ width: '240px' }}
+      role="presentation"
+      onClick={toggleDrawer('left', false)}
+      onKeyDown={toggleDrawer('left', false)}
+    >
+      <List>
+        {menuItems.map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>
+              {index % 2 === 0 ? <PlayArrowIcon /> : <ListIcon />}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  )
+
   return (
-    <>
-      <AppBar color="primary" position="static">
-        <Toolbar>
-          <Link href={'/'} passHref>
-            <IconButton
-              edge="start"
-              size="small"
-              color="inherit"
-              sx={{ mr: 2 }}
-            >
-              <Image
-                src={taskbarIcon}
-                width={32}
-                height={32}
-                layout="fixed"
-                alt="Next Steps Watch"
-              />
-            </IconButton>
-          </Link>
-          {backHref != null && (
-            <Link href={backHref} passHref>
-              <IconButton
-                data-testid="backicon"
-                edge="start"
-                size="small"
-                color="inherit"
-                sx={{ mr: 2 }}
-              >
-                <ChevronLeftRounded />
-              </IconButton>
-            </Link>
-          )}
-          <Typography
-            variant="subtitle1"
-            component="div"
-            noWrap
-            sx={{ flexGrow: 1 }}
+    <Box sx={{ display: 'flex' }}>
+      <AppBar position="fixed">
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={toggleDrawer('left', true)}
+            sx={{ mr: 2, display: { sm: 'none' } }}
           >
-            {title}
-          </Typography>
-          <Button color="inherit" href="/videos">
-            Videos
-          </Button>
-          <Button color="inherit" href="/countries">
-            Countries
-          </Button>
+            <MenuIcon />
+          </IconButton>
+          <Image src={logo} width="60" height="40" alt="Watch Logo" />
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
+            {menuItems.map((menuItem) => (
+              <Button
+                key={menuItem}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                {menuItem}
+              </Button>
+            ))}
+          </Box>
+          <Box>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={toggleDrawer('left', true)}
+            >
+              <SearchIcon />
+            </IconButton>
+            <Button sx={{ my: 2, color: 'white' }}>Rus</Button>
+          </Box>
         </Toolbar>
       </AppBar>
-      <Box>{children}</Box>
-    </>
+      <SwipeableDrawer
+        anchor={'left'}
+        open={state.left}
+        onClose={toggleDrawer('left', false)}
+        onOpen={toggleDrawer('left', true)}
+      >
+        {list()}
+      </SwipeableDrawer>
+    </Box>
   )
 }

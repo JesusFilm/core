@@ -1,5 +1,4 @@
 import { Meta, Story } from '@storybook/react'
-import { PageWrapperProps } from './PageWrapper'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
@@ -10,17 +9,8 @@ const PageWrapperStory = {
   }
 }
 
-const Template: Story<PageWrapperProps> = ({ ...args }) => (
-  <PageWrapper {...args} />
-)
+const Template: Story = () => <PageWrapper />
 
 export const Default = Template.bind({})
-Default.args = { title: 'Journeys' }
-
-export const Complete = Template.bind({})
-Complete.args = {
-  backHref: '/',
-  title: 'Journey Details'
-}
 
 export default PageWrapperStory as Meta

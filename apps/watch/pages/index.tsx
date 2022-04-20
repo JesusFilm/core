@@ -29,8 +29,9 @@ function VideoPage(): ReactElement {
     }
   })
   return (
-    <PageWrapper title="NextSteps Watch" backHref="/asdf">
-      <Box sx={{ bgcolor: '#cfe8fc' }}>
+    <>
+      <PageWrapper />
+      <Box sx={{ bgcolor: '#fff' }}>
         <Container maxWidth="xl">
           <Grid
             container
@@ -40,7 +41,7 @@ function VideoPage(): ReactElement {
             sx={{ minHeight: '50vh', paddingY: '5rem' }}
           >
             <Grid item>
-              <Typography variant="h1">
+              <Typography variant="h2">
                 Equip a Team to Reach the Unreached With JESUS
               </Typography>
               <Typography variant="h4">
@@ -85,7 +86,7 @@ function VideoPage(): ReactElement {
           />
         </Container>
       </Box>
-    </PageWrapper>
+    </>
   )
 }
 
