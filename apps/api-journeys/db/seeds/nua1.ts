@@ -27,10 +27,11 @@ export async function nua1(): Promise<void> {
     languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
-    slug: 'fact-or-fiction',
+    slug,
     status: JourneyStatus.published,
-    createdAt: new Date('2031-12-25T12:34:56.647Z'),
-    publishedAt: new Date('2031-12-25T12:34:56.647Z')
+    createdAt: new Date(),
+    publishedAt: new Date(),
+    featuredAt: new Date()
   })
 
   // first step

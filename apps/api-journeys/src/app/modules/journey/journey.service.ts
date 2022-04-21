@@ -3,22 +3,43 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators'
-
 import {
   Journey,
   JourneyStatus,
-  UserJourneyRole
+  UserJourneyRole,
+  JourneysFilter
 } from '../../__generated__/graphql'
 
 @Injectable()
 export class JourneyService extends BaseService {
   @KeyAsId()
-  async getAllPublishedJourneys(): Promise<Journey[]> {
-    const rst = await this.db.query(aql`
-    FOR journey IN ${this.collection}
-      FILTER journey.status == ${JourneyStatus.published}
-      RETURN journey`)
-    return await rst.all()
+  async getAllPublishedJourneys(filter?: JourneysFilter): Promise<Journey[]> {
+    if (filter?.featured === true) {
+      return await (
+        await this.db.query(aql`
+          FOR journey IN ${this.collection}
+            FILTER journey.status == ${JourneyStatus.published}
+              AND journey.featuredAt != null
+            RETURN journey
+        `)
+      ).all()
+    } else if (filter?.featured === false) {
+      return await (
+        await this.db.query(aql`
+          FOR journey IN ${this.collection}
+            FILTER journey.status == ${JourneyStatus.published}
+              AND journey.featuredAt == null
+            RETURN journey
+        `)
+      ).all()
+    }
+    return await (
+      await this.db.query(aql`
+        FOR journey IN ${this.collection}
+          FILTER journey.status == ${JourneyStatus.published}
+          RETURN journey
+      `)
+    ).all()
   }
 
   @KeyAsId()
