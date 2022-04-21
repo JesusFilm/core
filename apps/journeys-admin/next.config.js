@@ -21,6 +21,7 @@ const nextConfig = {
         permanent: true
       }
     ]
-  }
+  },
+  productionBrowserSourceMaps: true
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)
