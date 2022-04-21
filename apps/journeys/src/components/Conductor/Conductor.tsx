@@ -31,7 +31,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
   const [swipePrev, setSwipePrev] = useState(false)
-  const [index, setIndex] = useState<number>(0)
+  const [index, setIndex] = useState(0)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
 
@@ -50,15 +50,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, activeBlock, index, treeBlocks])
 
-  console.log(swiper?.activeIndex, index)
-
   function handleNext(): void {
+    if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
+  }
+
+  function handleSlideChange(): void {
     if (swiper != null && activeBlock != null && treeBlocks != null) {
       if (swiper.activeIndex === treeBlocks.length - 1) setSwipePrev(true)
-
-      if (!activeBlock.locked && swiper.activeIndex !== index) {
-        nextActiveBlock()
-      }
+      if (!activeBlock.locked && swiper.activeIndex !== index) nextActiveBlock()
     }
   }
 
@@ -143,7 +142,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
             allowSlidePrev={swipePrev}
             allowSlideNext={activeBlock?.locked === false}
-            onSlideChange={handleNext}
+            onSlideChange={handleSlideChange}
             // enables video controls to be clicked
             noSwipingClass={'swiper-no-swiping'}
             style={{
@@ -253,6 +252,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }}
             >
               <ChevronRightIcon
+                className={'swiper-no-swiping'}
                 fontSize={'large'}
                 sx={{
                   display: 'none',
