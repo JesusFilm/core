@@ -83,29 +83,29 @@ export class ImageBlockResolver {
         block.parentBlockId
       )
 
-      // Delete and replace existing coverBlock
+      await this.blockService.update(parentBlock.id, {
+        coverBlockId: coverBlock.id
+      })
+      // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {
         await this.blockService.removeBlockAndChildren(
           parentBlock.coverBlockId,
           parentBlock.journeyId
         )
       }
-      await this.blockService.update(parentBlock.id, {
-        coverBlockId: coverBlock.id
-      })
 
       return coverBlock
-    } else {
-      const siblings = await this.blockService.getSiblings(
-        block.journeyId,
-        block.parentBlockId
-      )
-      return await this.blockService.save({
-        ...block,
-        __typename: 'ImageBlock',
-        parentOrder: siblings.length
-      })
     }
+
+    const siblings = await this.blockService.getSiblings(
+      block.journeyId,
+      block.parentBlockId
+    )
+    return await this.blockService.save({
+      ...block,
+      __typename: 'ImageBlock',
+      parentOrder: siblings.length
+    })
   }
 
   @Mutation()

@@ -33,6 +33,10 @@ export class VideoBlockResolver {
         input.parentBlockId
       )
 
+      await this.blockService.update(input.parentBlockId, {
+        coverBlockId: coverBlock.id
+      })
+
       if (parentBlock.coverBlockId != null) {
         await this.blockService.removeBlockAndChildren(
           parentBlock.coverBlockId,
@@ -40,22 +44,18 @@ export class VideoBlockResolver {
         )
       }
 
-      await this.blockService.update(input.parentBlockId, {
-        coverBlockId: coverBlock.id
-      })
-
       return coverBlock
-    } else {
-      const siblings = await this.blockService.getSiblings(
-        input.journeyId,
-        input.parentBlockId
-      )
-      return await this.blockService.save({
-        ...input,
-        __typename: 'VideoBlock',
-        parentOrder: siblings.length
-      })
     }
+
+    const siblings = await this.blockService.getSiblings(
+      input.journeyId,
+      input.parentBlockId
+    )
+    return await this.blockService.save({
+      ...input,
+      __typename: 'VideoBlock',
+      parentOrder: siblings.length
+    })
   }
 
   @Mutation()
