@@ -66,6 +66,10 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
   fullsize: Boolean
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input VideoBlockUpdateInput {

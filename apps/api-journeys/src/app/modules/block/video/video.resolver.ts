@@ -2,6 +2,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { BlockService } from '../block.service'
 import {
+  CardBlock,
   UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
@@ -22,6 +23,30 @@ export class VideoBlockResolver {
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
   ): Promise<VideoBlock> {
+    if (input.isCover === true) {
+      const coverBlock: VideoBlock = await this.blockService.save({
+        ...input,
+        __typename: 'VideoBlock',
+        parentOrder: null
+      })
+      const parentBlock: CardBlock = await this.blockService.get(
+        input.parentBlockId
+      )
+
+      await this.blockService.update(input.parentBlockId, {
+        coverBlockId: coverBlock.id
+      })
+
+      if (parentBlock.coverBlockId != null) {
+        await this.blockService.removeBlockAndChildren(
+          parentBlock.coverBlockId,
+          input.journeyId
+        )
+      }
+
+      return coverBlock
+    }
+
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId

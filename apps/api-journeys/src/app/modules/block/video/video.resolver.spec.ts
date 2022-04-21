@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import {
+  CardBlock,
   VideoBlock,
   VideoBlockCreateInput,
   VideoBlockUpdateInput
@@ -30,6 +31,16 @@ describe('VideoBlockResolver', () => {
     parentBlockId: 'parentBlockId',
     videoId: 'videoId',
     videoVariantLanguageId: 'videoVariantLanguageId'
+  }
+
+  const parentBlock: CardBlock = {
+    id: 'parentBlockId',
+    journeyId: createdBlock.journeyId,
+    __typename: 'CardBlock',
+    parentBlockId: '0',
+    parentOrder: 0,
+    coverBlockId: createdBlock.id,
+    fullscreen: true
   }
 
   const blockUpdate: VideoBlockUpdateInput = {
@@ -62,6 +73,10 @@ describe('VideoBlockResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
+        get: jest.fn((id) =>
+          id === createdBlock.id ? createdBlock : parentBlock
+        ),
+        removeBlockAndChildren: jest.fn((input) => input),
         save: jest.fn((input) => createdBlock),
         update: jest.fn((id, input) => updatedBlock),
         getSiblings: jest.fn(() => [])
@@ -92,6 +107,23 @@ describe('VideoBlockResolver', () => {
         blockCreate.parentBlockId
       )
       expect(service.save).toHaveBeenCalledWith(createdBlock)
+    })
+
+    it('creates a cover VideoBlock', async () => {
+      await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
+
+      expect(service.save).toHaveBeenCalledWith({
+        ...createdBlock,
+        isCover: true,
+        parentOrder: null
+      })
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        parentBlock.coverBlockId,
+        parentBlock.journeyId
+      )
+      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
+        coverBlockId: createdBlock.id
+      })
     })
   })
 
