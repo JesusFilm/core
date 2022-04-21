@@ -25,7 +25,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         openGraph={{
           type: 'website',
           title: journey.seoTitle ?? journey.title,
-          url: `https://wwww.your.nextstep.is/${journey.slug}`,
+          url: `https://${
+            process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
+          }/${journey.slug}`,
           description:
             journey.seoDescription ?? journey.description ?? undefined,
           images:
