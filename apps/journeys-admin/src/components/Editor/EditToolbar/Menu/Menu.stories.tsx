@@ -2,11 +2,11 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { EditorProvider } from '@core/journeys/ui'
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import { Menu } from '.'
 
 const MenuStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: Menu,
   title: 'Journeys-Admin/Editor/EditToolbar/Menu'
 }

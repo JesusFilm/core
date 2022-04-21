@@ -25,7 +25,7 @@ export async function nua9(): Promise<void> {
   const journey = await db.collection('journeys').save({
     _key: '4',
     title: 'Decision',
-    locale: 'en-US',
+    languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     slug: slug,

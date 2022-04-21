@@ -203,7 +203,7 @@ export interface ImageBlockUpdateInput {
 
 export interface JourneyUpdateInput {
   description?: string | null;
-  locale?: string | null;
+  languageId?: string | null;
   primaryImageBlockId?: string | null;
   seoDescription?: string | null;
   seoTitle?: string | null;

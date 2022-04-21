@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { CopyTextField } from '.'
 
-describe('AccessDialog', () => {
+describe('CopyTextField', () => {
   const originalNavigator = { ...global.navigator }
 
   beforeEach(() => {
@@ -55,7 +55,9 @@ describe('AccessDialog', () => {
         />
       </SnackbarProvider>
     )
-    expect(getByRole('textbox', { name: 'Journey URL' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Journey URL' })).toHaveValue(
+      'http://localhost/journeys/journeySlug'
+    )
     expect(getByText('this is custom helper text')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Copy' }))
     await waitFor(() =>

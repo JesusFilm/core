@@ -11,6 +11,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators'
 
 import {
+  Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -39,16 +40,16 @@ describe('BlockService', () => {
     jest.resetAllMocks()
   })
 
-  const journey = {
+  const journey: Journey = {
     id: '1',
     title: 'published',
     createdAt: '1234',
     status: JourneyStatus.published,
-    locale: 'en-US',
+    language: { id: '529' },
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlockId: null,
+    primaryImageBlock: null,
     slug: 'published-slug'
   }
 

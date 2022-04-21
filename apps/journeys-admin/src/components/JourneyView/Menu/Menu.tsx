@@ -14,10 +14,10 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
+import { useSnackbar } from 'notistack'
 import { useJourney } from '../../../libs/context'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { Alert } from './Alert'
 import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 
@@ -25,6 +25,7 @@ export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
     journeyPublish(id: $id) {
       id
+      status
     }
   }
 `
@@ -39,7 +40,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showLinkAlert, setShowLinkAlert] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
 
@@ -49,33 +50,44 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
-
   const handlePublish = async (): Promise<void> => {
     if (journey == null) return
 
     await journeyPublish({
-      variables: { id: journey?.id },
+      variables: { id: journey.id },
       optimisticResponse: {
-        journeyPublish: { id: journey.id, __typename: 'Journey' }
+        journeyPublish: {
+          id: journey.id,
+          __typename: 'Journey',
+          status: JourneyStatus.published
+        }
       }
     })
+    setAnchorEl(null)
+    enqueueSnackbar('Journey Published', {
+      variant: 'success',
+      preventDuplicate: true
+    })
   }
-
   const handleUpdateTitle = (): void => {
     setShowTitleDialog(true)
     setAnchorEl(null)
   }
-
   const handleUpdateDescription = (): void => {
     setShowDescriptionDialog(true)
     setAnchorEl(null)
   }
-
   const handleCopyLink = async (): Promise<void> => {
+    if (journey == null) return
+
     await navigator.clipboard.writeText(
-      `your.nextstep.is/${journey?.slug ?? ''}`
+      `https://your.nextstep.is/${journey.slug}`
     )
-    setShowLinkAlert(true)
+    setAnchorEl(null)
+    enqueueSnackbar('Link Copied', {
+      variant: 'success',
+      preventDuplicate: true
+    })
   }
 
   return (
@@ -104,7 +116,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
             <MenuItem
               disabled={journey.status === JourneyStatus.draft}
               component="a"
-              href={`http://your.nextstep.is/${journey.slug}`}
+              href={`https://your.nextstep.is/${journey.slug}`}
+              target="_blank"
+              rel="noopener"
+              onClick={handleCloseMenu}
             >
               <ListItemIcon>
                 <AssignmentTurnedInIcon />
@@ -156,11 +171,6 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
           <DescriptionDialog
             open={showDescriptionDialog}
             onClose={() => setShowDescriptionDialog(false)}
-          />
-          <Alert
-            open={showLinkAlert}
-            setOpen={setShowLinkAlert}
-            message="Link Copied"
           />
         </>
       ) : (
