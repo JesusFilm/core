@@ -31,6 +31,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
   const [swipePrev, setSwipePrev] = useState(false)
+  const [index, setIndex] = useState<number>(0)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
 
@@ -40,18 +41,25 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     if (swiper != null && activeBlock != null && treeBlocks != null) {
-      const index = findIndex(
-        treeBlocks,
-        (treeBlock) => treeBlock.id === activeBlock.id
+      setIndex(
+        findIndex(treeBlocks, (treeBlock) => treeBlock.id === activeBlock.id)
       )
       if (index > -1 && swiper.activeIndex !== index) {
         swiper.slideTo(index)
       }
     }
-  }, [swiper, activeBlock, treeBlocks])
+  }, [swiper, activeBlock, index, treeBlocks])
+
+  console.log(swiper?.activeIndex, index)
 
   function handleNext(): void {
-    if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
+    if (swiper != null && activeBlock != null && treeBlocks != null) {
+      if (swiper.activeIndex === treeBlocks.length - 1) setSwipePrev(true)
+
+      if (!activeBlock.locked && swiper.activeIndex !== index) {
+        nextActiveBlock()
+      }
+    }
   }
 
   const cardBlock = activeBlock?.children.find(
@@ -87,25 +95,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       minGapBetween,
       (windowWidth - maxSlideWidth - edgeSlideWidth * 2) / 2
     )
-
-  const handleSlideChange = (): void => {
-    if (swiper != null && activeBlock != null && treeBlocks != null) {
-      const index = findIndex(
-        treeBlocks,
-        (treeBlock) => treeBlock.id === activeBlock.id
-      )
-
-      if (index + 1 === treeBlocks.length - 1) setSwipePrev(true)
-
-      if (
-        activeBlock != null &&
-        !activeBlock.locked &&
-        swiper.activeIndex !== index
-      ) {
-        nextActiveBlock()
-      }
-    }
-  }
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
@@ -152,10 +141,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onBeforeResize={() => setGapBetween(getResponsiveGap())}
             onSlideChangeTransitionStart={() => setShowNavArrow(false)}
             onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
-            // need a better way to prevent swiping to the previous card
             allowSlidePrev={swipePrev}
-            allowSlideNext={true}
-            onSlideChange={handleSlideChange}
+            allowSlideNext={activeBlock?.locked === false}
+            onSlideChange={handleNext}
+            // enables video controls to be clicked
             noSwipingClass={'swiper-no-swiping'}
             style={{
               width: '100%',
