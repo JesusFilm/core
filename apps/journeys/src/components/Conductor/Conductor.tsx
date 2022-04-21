@@ -30,6 +30,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
+  const [swipePrev, setSwipePrev] = useState(false)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
 
@@ -93,6 +94,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         treeBlocks,
         (treeBlock) => treeBlock.id === activeBlock.id
       )
+
+      if (index + 1 === treeBlocks.length - 1) setSwipePrev(true)
+
       if (
         activeBlock != null &&
         !activeBlock.locked &&
@@ -149,7 +153,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onSlideChangeTransitionStart={() => setShowNavArrow(false)}
             onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
             // need a better way to prevent swiping to the previous card
-            // allowSlidePrev={false}
+            allowSlidePrev={swipePrev}
             allowSlideNext={true}
             onSlideChange={handleSlideChange}
             noSwipingClass={'swiper-no-swiping'}
