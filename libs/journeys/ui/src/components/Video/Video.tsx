@@ -208,7 +208,7 @@ export function Video({
         <>
           <video
             ref={videoRef}
-            className="video-js vjs-big-play-centered"
+            className="video-js vjs-big-play-centered swiper-no-swiping"
             playsInline
           >
             <source src={video.variant.hls} type="application/x-mpegURL" />

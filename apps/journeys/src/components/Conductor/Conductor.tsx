@@ -89,9 +89,16 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const handleSlideChange = (): void => {
     if (swiper != null && activeBlock != null && treeBlocks != null) {
-      const index = swiper.activeIndex
-      if (index > -1 && index < treeBlocks.length) {
-        nextActiveBlock({ id: treeBlocks[index].id })
+      const index = findIndex(
+        treeBlocks,
+        (treeBlock) => treeBlock.id === activeBlock.id
+      )
+      if (
+        activeBlock != null &&
+        !activeBlock.locked &&
+        swiper.activeIndex !== index
+      ) {
+        nextActiveBlock()
       }
     }
   }
@@ -141,10 +148,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             onBeforeResize={() => setGapBetween(getResponsiveGap())}
             onSlideChangeTransitionStart={() => setShowNavArrow(false)}
             onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
-            // allowTouchMove={false}
-            allowSlidePrev={false}
+            // need a better way to prevent swiping to the previous card
+            // allowSlidePrev={false}
             allowSlideNext={true}
             onSlideChange={handleSlideChange}
+            noSwipingClass={'swiper-no-swiping'}
             style={{
               width: '100%',
               paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
