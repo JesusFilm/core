@@ -252,7 +252,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               }}
             >
               <ChevronRightIcon
-                className={'swiper-no-swiping'}
                 fontSize={'large'}
                 sx={{
                   display: 'none',
