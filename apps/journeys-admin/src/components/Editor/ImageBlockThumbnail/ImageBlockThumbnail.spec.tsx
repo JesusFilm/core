@@ -19,7 +19,7 @@ describe('ImageBlockThumbnail', () => {
   describe('No existing ImageBlock', () => {
     it('shows placeholders on null', async () => {
       const { getByTestId } = render(
-        <ImageBlockThumbnail selectedBlock={null} />
+        <ImageBlockThumbnail selectedBlock={null} loading={false} />
       )
       expect(getByTestId('imageBlockThumbnailPlaceholder')).toBeInTheDocument()
     })
@@ -27,7 +27,7 @@ describe('ImageBlockThumbnail', () => {
   describe('Existing ImageBlock', () => {
     it('shows image', async () => {
       const { getByRole } = render(
-        <ImageBlockThumbnail selectedBlock={image} />
+        <ImageBlockThumbnail selectedBlock={image} loading={false} />
       )
       const img = await getByRole('img')
       expect(img).toHaveAttribute('src', image.src)
