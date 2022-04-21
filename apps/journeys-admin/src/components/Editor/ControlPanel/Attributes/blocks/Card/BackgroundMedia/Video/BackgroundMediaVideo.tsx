@@ -155,6 +155,15 @@ export function BackgroundMediaVideo({
               }
             }
           })
+          cache.modify({
+            id: cache.identify({
+              __typename: cardBlock.__typename,
+              id: cardBlock.id
+            }),
+            fields: {
+              coverBlockId: () => data.videoBlockCreate.id
+            }
+          })
         }
       }
     })
@@ -191,13 +200,6 @@ export function BackgroundMediaVideo({
 
   const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
     try {
-      if (
-        coverBlock != null &&
-        coverBlock?.__typename.toString() !== 'VideoBlock'
-      ) {
-        // remove existing cover block if type changed
-        await deleteCoverBlock()
-      }
       if (videoBlock == null) {
         await createVideoBlock(block)
       } else {

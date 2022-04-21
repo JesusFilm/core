@@ -69,6 +69,19 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
+const image: TreeBlock<ImageBlock> = {
+  id: 'imageId',
+  __typename: 'ImageBlock',
+  parentBlockId: 'cardId',
+  parentOrder: 0,
+  src: 'https://example.com/image.jpg',
+  alt: 'https://example.com/image.jpg',
+  width: 1920,
+  height: 1080,
+  blurhash: '',
+  children: []
+}
+
 const getVideosMock = {
   request: {
     query: GET_VIDEOS,
@@ -133,7 +146,8 @@ describe('BackgroundMediaVideo', () => {
         blocks: [{ __ref: 'CardBlock:cardId' }],
         id: 'journeyId',
         __typename: 'Journey'
-      }
+      },
+      'CardBlock:cardId': { ...card }
     })
     const videoBlockResult = jest.fn(() => ({
       data: {
@@ -183,22 +197,11 @@ describe('BackgroundMediaVideo', () => {
       { __ref: 'CardBlock:cardId' },
       { __ref: 'VideoBlock:videoId' }
     ])
+    expect(cache.extract()['CardBlock:cardId']?.coverBlockId).toEqual(video.id)
   })
 
   it('replaces existing image cover block', async () => {
-    const image: TreeBlock<ImageBlock> = {
-      id: 'imageId',
-      __typename: 'ImageBlock',
-      parentBlockId: 'cardId',
-      parentOrder: 0,
-      src: 'https://example.com/image.jpg',
-      alt: 'https://example.com/image.jpg',
-      width: 1920,
-      height: 1080,
-      blurhash: '',
-      children: []
-    }
-    const videoCard: TreeBlock<CardBlock> = {
+    const imageCard: TreeBlock<CardBlock> = {
       ...card,
       coverBlockId: image.id,
       children: [image]
@@ -208,29 +211,16 @@ describe('BackgroundMediaVideo', () => {
       'Journey:journeyId': {
         blocks: [
           { __ref: 'CardBlock:cardId' },
-          { __ref: 'ImageBlock:imageId' }
+          { __ref: `ImageBlock:${image.id}` }
         ],
         id: 'journeyId',
         __typename: 'Journey'
-      }
+      },
+      'CardBlock:cardId': { ...card, coverBlockId: image.id }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: 'cardId',
-          coverBlockId: image.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const videoBlockResult = jest.fn(() => ({
       data: {
         videoBlockCreate: video
-      }
-    }))
-    const blockDeleteResult = jest.fn(() => ({
-      data: {
-        blockDelete: []
       }
     }))
     const { getByRole, getByText } = render(
@@ -239,30 +229,7 @@ describe('BackgroundMediaVideo', () => {
         mocks={[
           getVideosMock,
           getVideoMock,
-          {
-            request: {
-              query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
-              variables: {
-                id: image.id,
-                parentBlockId: image.parentBlockId,
-                journeyId: 'journeyId'
-              }
-            },
-            result: blockDeleteResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-              variables: {
-                id: 'cardId',
-                journeyId: 'journeyId',
-                input: {
-                  coverBlockId: null
-                }
-              }
-            },
-            result: cardBlockResult
-          },
+
           {
             request: {
               query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -276,26 +243,13 @@ describe('BackgroundMediaVideo', () => {
               }
             },
             result: videoBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-              variables: {
-                id: 'cardId',
-                journeyId: 'journeyId',
-                input: {
-                  coverBlockId: video.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <ThemeProvider>
             <SnackbarProvider>
-              <BackgroundMediaVideo cardBlock={videoCard} />
+              <BackgroundMediaVideo cardBlock={imageCard} />
             </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
@@ -308,13 +262,13 @@ describe('BackgroundMediaVideo', () => {
       expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
+      { __ref: 'ImageBlock:imageId' },
       { __ref: 'VideoBlock:videoId' }
     ])
+    expect(cache.extract()['CardBlock:cardId']?.coverBlockId).toEqual(video.id)
   })
 
   describe('Existing video cover', () => {
