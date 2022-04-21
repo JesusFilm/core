@@ -46,7 +46,7 @@ export function DescriptionEdit(): ReactElement {
   const initialValues =
     journey != null
       ? {
-          seoDescription: journey?.seoDescription ?? journey?.description ?? ''
+          seoDescription: journey.seoDescription ?? journey.description ?? ''
         }
       : null
 
