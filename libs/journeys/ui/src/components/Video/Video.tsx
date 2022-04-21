@@ -182,6 +182,9 @@ export function Video({
           alignSelf: 'center',
           height: '100%',
           minHeight: 'inherit',
+          '> .vjs-tech': {
+            objectFit: 'cover'
+          },
           '> .vjs-loading-spinner': {
             zIndex: 1
           },
