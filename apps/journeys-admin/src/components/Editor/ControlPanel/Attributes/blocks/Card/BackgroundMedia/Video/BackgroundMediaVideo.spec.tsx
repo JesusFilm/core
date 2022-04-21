@@ -135,15 +135,6 @@ describe('BackgroundMediaVideo', () => {
         __typename: 'Journey'
       }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: 'cardId',
-          coverBlockId: video.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const videoBlockResult = jest.fn(() => ({
       data: {
         videoBlockCreate: video
@@ -168,19 +159,6 @@ describe('BackgroundMediaVideo', () => {
               }
             },
             result: videoBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-              variables: {
-                id: 'cardId',
-                journeyId: 'journeyId',
-                input: {
-                  coverBlockId: video.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
@@ -201,7 +179,6 @@ describe('BackgroundMediaVideo', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
       { __ref: 'VideoBlock:videoId' }

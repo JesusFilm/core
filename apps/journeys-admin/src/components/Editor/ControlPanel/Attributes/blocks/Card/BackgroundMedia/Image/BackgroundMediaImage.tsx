@@ -152,7 +152,7 @@ export function BackgroundMediaImage({
   const createImageBlock = async (block): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await imageBlockCreate({
+    await imageBlockCreate({
       variables: {
         input: {
           journeyId: journey.id,
@@ -179,23 +179,6 @@ export function BackgroundMediaImage({
               }
             }
           })
-        }
-      }
-    })
-
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journey.id,
-        input: {
-          coverBlockId: data?.imageBlockCreate.id ?? null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: data?.imageBlockCreate.id ?? null,
-          __typename: 'CardBlock'
         }
       }
     })

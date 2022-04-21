@@ -87,15 +87,6 @@ describe('BackgroundMediaImage', () => {
         __typename: 'Journey'
       }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: card.id,
-          coverBlockId: image.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const imageBlockResult = jest.fn(() => ({
       data: {
         imageBlockCreate: {
@@ -128,19 +119,6 @@ describe('BackgroundMediaImage', () => {
               }
             },
             result: imageBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-              variables: {
-                id: card.id,
-                journeyId: journey.id,
-                input: {
-                  coverBlockId: image.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
@@ -157,7 +135,6 @@ describe('BackgroundMediaImage', () => {
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
       { __ref: `CardBlock:${card.id}` },
       { __ref: `ImageBlock:${image.id}` }
@@ -194,7 +171,7 @@ describe('BackgroundMediaImage', () => {
           hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
         }
       },
-      posterBlockId: 'poster1.id',
+      posterBlockId: null,
       children: []
     }
 
@@ -281,19 +258,6 @@ describe('BackgroundMediaImage', () => {
               }
             },
             result: imageBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-              variables: {
-                id: card.id,
-                journeyId: journey.id,
-                input: {
-                  coverBlockId: image.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >

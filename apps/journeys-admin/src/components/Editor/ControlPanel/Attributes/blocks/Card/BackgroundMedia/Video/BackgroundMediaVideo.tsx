@@ -128,7 +128,7 @@ export function BackgroundMediaVideo({
   ): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await videoBlockCreate({
+    await videoBlockCreate({
       variables: {
         input: {
           journeyId: journey.id,
@@ -155,22 +155,6 @@ export function BackgroundMediaVideo({
               }
             }
           })
-        }
-      }
-    })
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journey.id,
-        input: {
-          coverBlockId: data?.videoBlockCreate?.id ?? null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: data?.videoBlockCreate?.id ?? null,
-          __typename: 'CardBlock'
         }
       }
     })
