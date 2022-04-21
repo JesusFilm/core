@@ -3,6 +3,10 @@ import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { EditToolbar } from '.'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 describe('Edit Toolbar', () => {
   it('should render Toolbar', () => {
     const { getAllByRole, getByTestId } = render(
