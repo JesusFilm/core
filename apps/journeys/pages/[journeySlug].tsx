@@ -23,7 +23,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         title={journey.title}
         description={journey.description ?? undefined}
         openGraph={{
+          type: 'website',
           title: journey.seoTitle ?? journey.title,
+          url: `https://wwww.your.nextstep.is/${journey.slug}`,
           description:
             journey.seoDescription ?? journey.description ?? undefined,
           images:
@@ -39,8 +41,15 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
                 ]
               : []
         }}
+        facebook={
+          process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
+            ? {
+                appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
+              }
+            : undefined
+        }
         twitter={{
-          site: '@JesusFilm',
+          site: '@YourNextStepIs',
           cardType: 'summary_large_image'
         }}
       />
@@ -70,6 +79,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
           themeMode
           title
           description
+          slug
           seoTitle
           seoDescription
           primaryImageBlock {

@@ -55,7 +55,9 @@ describe('CopyTextField', () => {
         />
       </SnackbarProvider>
     )
-    expect(getByRole('textbox', { name: 'Journey URL' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Journey URL' })).toHaveValue(
+      'http://localhost/journeys/journeySlug'
+    )
     expect(getByText('this is custom helper text')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Copy' }))
     await waitFor(() =>

@@ -67,7 +67,7 @@ export function Card({
                   (block) =>
                     block.id === coverBlock.posterBlockId &&
                     block.__typename === 'ImageBlock'
-                ) as TreeBlock<ImageFields>
+                ) as TreeBlock<ImageFields> | undefined
               }
             >
               {renderedChildren}
