@@ -391,6 +391,7 @@ export interface GetJourney_journey {
   themeMode: ThemeMode;
   title: string;
   description: string | null;
+  slug: string;
   seoTitle: string | null;
   seoDescription: string | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
