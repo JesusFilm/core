@@ -182,7 +182,7 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
-  coverBlockId: ID
+  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -191,7 +191,7 @@ input CardBlockCreateInput {
 input CardBlockUpdateInput {
   parentBlockId: ID
   backgroundColor: String
-  coverBlockId: ID
+  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -329,6 +329,11 @@ input ImageBlockCreateInput {
   src: String
   alt: String!
   blurhash: String
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -557,6 +562,11 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
   fullsize: Boolean
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input VideoBlockUpdateInput {
