@@ -11,6 +11,7 @@ type Journey @key(fields: "id") {
   description: String
   slug: String!
   publishedAt: DateTime
+  featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
   seoTitle: String

@@ -426,6 +426,7 @@ export class Journey {
     description?: Nullable<string>;
     slug: string;
     publishedAt?: Nullable<DateTime>;
+    featuredAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
