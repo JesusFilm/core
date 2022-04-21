@@ -43,50 +43,69 @@ export function DescriptionEdit(): ReactElement {
     })
   }
 
-  const initialValues = {
-    seoDescription: journey?.seoDescription ?? journey?.description ?? ''
-  }
+  const initialValues =
+    journey != null
+      ? {
+          seoDescription: journey.seoDescription ?? journey.description ?? ''
+        }
+      : null
+
   const seoDescriptionSchema = object().shape({
     seoDescription: string().max(180, 'Character limit reached') // 180 characters just a few more words than 18 on average
   })
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={seoDescriptionSchema}
-      onSubmit={noop}
-    >
-      {({ values, touched, errors, handleChange, handleBlur }) => (
-        <Form>
-          <TextField
-            disabled={journey == null}
-            id="seoDescription"
-            name="seoDescription"
-            variant="filled"
-            label="Description"
-            fullWidth
-            multiline
-            maxRows={5}
-            value={values.seoDescription}
-            error={
-              touched.seoDescription === true && Boolean(errors.seoDescription)
-            }
-            helperText={
-              errors.seoDescription != null
-                ? errors.seoDescription
-                : 'Recommended length: up to 18 words'
-            }
-            onChange={handleChange}
-            onBlur={(e) => {
-              handleBlur(e)
-              errors.seoDescription == null && handleSubmit(e)
-            }}
-            sx={{
-              pb: 6
-            }}
-          />
-        </Form>
+    <>
+      {initialValues != null ? (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={seoDescriptionSchema}
+          onSubmit={noop}
+        >
+          {({ values, touched, errors, handleChange, handleBlur }) => (
+            <Form>
+              <TextField
+                id="seoDescription"
+                name="seoDescription"
+                variant="filled"
+                label="Description"
+                fullWidth
+                multiline
+                maxRows={5}
+                value={values.seoDescription}
+                error={
+                  touched.seoDescription === true &&
+                  Boolean(errors.seoDescription)
+                }
+                helperText={
+                  errors.seoDescription != null
+                    ? errors.seoDescription
+                    : 'Recommended length: up to 18 words'
+                }
+                onChange={handleChange}
+                onBlur={(e) => {
+                  handleBlur(e)
+                  errors.seoDescription == null && handleSubmit(e)
+                }}
+                sx={{
+                  pb: 6
+                }}
+              />
+            </Form>
+          )}
+        </Formik>
+      ) : (
+        <TextField
+          variant="filled"
+          label="Description"
+          fullWidth
+          disabled
+          helperText="Recommended length: up to 18 words"
+          sx={{
+            pb: 6
+          }}
+        />
       )}
-    </Formik>
+    </>
   )
 }
