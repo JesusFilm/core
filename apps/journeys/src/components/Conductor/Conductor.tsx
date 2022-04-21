@@ -56,7 +56,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   function handleSlideChange(): void {
     if (swiper != null && activeBlock != null && treeBlocks != null) {
-      if (swiper.activeIndex === treeBlocks.length - 1) setSwipePrev(true)
+      swiper.activeIndex === treeBlocks.length - 1
+        ? setSwipePrev(true)
+        : setSwipePrev(false)
       if (!activeBlock.locked && swiper.activeIndex !== index) nextActiveBlock()
     }
   }
